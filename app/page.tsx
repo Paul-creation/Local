@@ -13,7 +13,7 @@ export default async function Home() {
   return (
     <main className="page">
       <div className="header">
-        <h1>베타버전 디자인중</h1>
+        <h1>임시제목임</h1>
         <p>친구들이랑 하기 좋은 바이럴 게임, 한눈에</p>
       </div>
       <div className="grid">
@@ -27,6 +27,12 @@ export default async function Home() {
             </div>
             <div className="card-body">
               <h3>{game.name}</h3>
+              <p style={{ color: 'var(--text-dim)', fontSize: 13, margin: '6px 0 0' }}>
+                {game.min_players && game.max_players
+                  ? `${game.min_players}-${game.max_players}인`
+                  : ''}
+                {game.difficulty ? ` · ${game.difficulty}` : ''}
+              </p>
             </div>
           </div>
         ))}
