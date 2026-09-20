@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import FeaturedCarousel from './FeaturedCarousel';
 
 const CATEGORIES = ['전체', '파티', '협동', '퍼즐', '서바이벌'];
 
@@ -33,6 +34,8 @@ export default function GameGrid({ games }: { games: any[] }) {
           </div>
         </Link>
       )}
+
+      <FeaturedCarousel games={rest} />
 
       <div className="category-pills">
         {CATEGORIES.map((c) => (
