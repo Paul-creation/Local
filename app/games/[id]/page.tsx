@@ -11,11 +11,13 @@ const SAMPLE_DISCOUNT_HISTORY = [
 ];
 const SAMPLE_STREAMERS = ['스트리머 A', '스트리머 B', '스트리머 C'];
 
-export default async function GameDetail({ params }: { params: { id: string } }) {
+export default async function GameDetail({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+
   const { data: game, error } = await supabase
     .from('games')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (error || !game) {
