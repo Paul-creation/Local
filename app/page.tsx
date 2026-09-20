@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 export default async function Home() {
   const { data: games, error } = await supabase
     .from('games')
-    .select('*')
+    .select('*, price_history(price, discount_percent)')
     .order('created_at', { ascending: false });
 
   if (error) {

@@ -32,7 +32,7 @@ button { font-family: inherit; }
   padding: 0 24px 80px;
 }
 
-/* Top nav — dark navy like Steam */
+/* Top nav */
 .topnav {
   display: flex;
   align-items: center;
@@ -85,51 +85,6 @@ button { font-family: inherit; }
 .hero-tagline { color: #fff; font-size: 15px; margin: 0 0 12px; opacity: 0.92; }
 .hero-meta { color: #d8dae0; font-size: 14px; }
 
-/* Featured carousel */
-.carousel-section { margin-bottom: 36px; }
-.carousel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-.carousel-header h2 { font-size: 19px; font-weight: 700; margin: 0; }
-.carousel-controls { display: flex; gap: 6px; }
-.carousel-controls button {
-  width: 30px; height: 30px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--bg-card);
-  color: var(--text-dim);
-  font-size: 16px;
-  cursor: pointer;
-}
-.carousel-controls button:hover { border-color: var(--accent); color: var(--accent); }
-
-.carousel-track {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-  animation: carouselIn 0.15s ease-out;
-}
-@keyframes carouselIn {
-  from { opacity: 0.3; transform: scale(0.98); }
-  to { opacity: 1; transform: scale(1); }
-}
-.carousel-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-.carousel-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); }
-.carousel-image-wrap { aspect-ratio: 16/9; background: var(--border); }
-.carousel-image-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.carousel-card-body { padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.carousel-card-name { font-size: 13px; font-weight: 600; }
-
 /* Category pills */
 .category-pills { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
 .pill {
@@ -176,6 +131,57 @@ button { font-family: inherit; }
   color: var(--teal); background: rgba(15,155,142,0.1);
   padding: 3px 10px; border-radius: 100px;
 }
+
+/* Price */
+.price-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.discount-badge {
+  background: #4a9e3a; color: #fff;
+  font-size: 12px; font-weight: 800;
+  padding: 3px 7px; border-radius: 4px;
+}
+.price-original { color: var(--text-dimmer); font-size: 12px; text-decoration: line-through; }
+.price-final { color: var(--text); font-size: 14px; font-weight: 700; }
+.price-final.no-discount { color: var(--text-dim); font-weight: 600; }
+
+/* Big banner carousel */
+.banner-carousel {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 36px;
+  min-height: 320px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+.banner-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+}
+.banner-slide.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.banner-dots {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+}
+.banner-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.4);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s ease;
+}
+.banner-dot.active { background: #fff; width: 20px; border-radius: 4px; }
 
 /* Detail page */
 .back-link { display: inline-block; color: var(--text-dim); font-size: 14px; margin: 20px 0 16px; }

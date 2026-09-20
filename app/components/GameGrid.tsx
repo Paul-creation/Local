@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import FeaturedCarousel from './FeaturedCarousel';
+import BannerCarousel from './BannerCarousel';
+import { getPriceInfo } from '../lib/price';
 
 const CATEGORIES = ['전체', '파티', '협동', '퍼즐', '서바이벌'];
 
@@ -12,6 +13,7 @@ export default function GameGrid({ games }: { games: any[] }) {
   const featured = games.find((g) => g.featured);
   const rest = games.filter((g) => !g.featured);
   const filtered = category === '전체' ? rest : rest.filter((g) => g.category === category);
+  const featuredPrice = featured ? getPriceInfo(featured) : null;
 
   return (
     <>
@@ -31,11 +33,22 @@ export default function GameGrid({ games }: { games: any[] }) {
                 : ''}
               {featured.difficulty ? ` · ${featured.difficulty}` : ''}
             </div>
+            {featuredPrice && (
+              <div className="price-row">
+                {featuredPrice.discount > 0 && (
+                  <>
+                    <span className="discount-badge">-{featuredPrice.discount}%</span>
+                    <span className="price-original">{featuredPrice.formattedOriginal}</span>
+                  </>
+                )}
+                <span className="price-final">{featuredPrice.formattedFinal}</span>
+              </div>
+            )}
           </div>
         </Link>
       )}
 
-      <FeaturedCarousel games={rest} />
+      <BannerCarousel games={rest} />
 
       <div className="category-pills">
         {CATEGORIES.map((c) => (
@@ -50,22 +63,38 @@ export default function GameGrid({ games }: { games: any[] }) {
       </div>
 
       <div className="grid">
-        {filtered.map((game) => (
-          <Link href={`/games/${game.id}`} key={game.id} className="card">
-            <div className="card-image-wrap">
-              <img src={game.cover_image_url} alt={game.name} />
-              {game.platform?.[0] && <span className="platform-badge">{game.platform[0]}</span>}
-            </div>
-            <div className="card-body">
-              <h3>{game.name}</h3>
-              <p className="card-meta">
-                {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : ''}
-                {game.difficulty ? ` · ${game.difficulty}` : ''}
-              </p>
-              {game.category && <span className="category-tag">{game.category}</span>}
-            </div>
-          </Link>
-        ))}
+        {filtered.map((game) => {
+          const price = getPriceInfo(game);
+          return (
+            <Link href={`/games/${game.id}`} key={game.id} className="card">
+              <div className="card-image-wrap">
+                <img src={game.cover_image_url} alt={game.name} />
+                {game.platform?.[0] && <span className="platform-badge">{game.platform[0]}</span>}
+              </div>
+              <div className="card-body">
+                <h3>{game.name}</h3>
+                <p className="card-meta">
+                  {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : ''}
+                  {game.difficulty ? ` · ${game.difficulty}` : ''}
+                </p>
+                {game.category && <span className="category-tag">{game.category}</span>}
+                {price && (
+                  <div className="price-row">
+                    {price.discount > 0 && (
+                      <>
+                        <span className="discount-badge">-{price.discount}%</span>
+                        <span className="price-original">{price.formattedOriginal}</span>
+                      </>
+                    )}
+                    <span className={`price-final ${price.discount === 0 ? 'no-discount' : ''}`}>
+                      {price.formattedFinal}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </>
   );
