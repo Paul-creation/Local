@@ -11,6 +11,7 @@ export default function GameGrid({ games }: { games: any[] }) {
   const [category, setCategory] = useState('전체');
   const [tagPanelOpen, setTagPanelOpen] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [query, setQuery] = useState('');
 
   const featured = games.find((g) => g.featured);
   const rest = games.filter((g) => !g.featured);
@@ -23,10 +24,16 @@ export default function GameGrid({ games }: { games: any[] }) {
     );
   };
 
+  const normalizedQuery = query.trim().toLowerCase();
+
   const filtered = rest.filter((g) => {
     const categoryMatch = category === '전체' || g.category === category;
     const tagMatch = selectedTags.length === 0 || selectedTags.some((t) => g.tags?.includes(t));
-    return categoryMatch && tagMatch;
+    const queryMatch =
+      normalizedQuery === '' ||
+      g.name.toLowerCase().includes(normalizedQuery) ||
+      g.tags?.some((t: string) => t.toLowerCase().includes(normalizedQuery));
+    return categoryMatch && tagMatch && queryMatch;
   });
 
   const featuredPrice = featured ? getPriceInfo(featured) : null;
@@ -66,6 +73,19 @@ export default function GameGrid({ games }: { games: any[] }) {
 
       <div className="section-label">🎯 추천 게임</div>
       <BannerCarousel games={rest} />
+
+      <div className="search-bar">
+        <span className="search-icon">🔍</span>
+        <input
+          type="text"
+          placeholder="게임 이름이나 태그로 검색 (예: 협동, 파티, PEAK)"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        {query && (
+          <button className="search-clear" onClick={() => setQuery('')}>✕</button>
+        )}
+      </div>
 
       <div className="category-pills">
         {CATEGORIES.map((c) => (
@@ -107,40 +127,44 @@ export default function GameGrid({ games }: { games: any[] }) {
         </div>
       )}
 
-      <div className="grid">
-        {filtered.map((game) => {
-          const price = getPriceInfo(game);
-          return (
-            <Link href={`/games/${game.id}`} key={game.id} className="card">
-              <div className="card-image-wrap">
-                <img src={game.cover_image_url} alt={game.name} />
-                {game.platform?.[0] && <span className="platform-badge">{game.platform[0]}</span>}
-              </div>
-              <div className="card-body">
-                <h3>{game.name}</h3>
-                <p className="card-meta">
-                  {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : ''}
-                  {game.difficulty ? ` · ${game.difficulty}` : ''}
-                </p>
-                {game.category && <span className="category-tag">{game.category}</span>}
-                {price && (
-                  <div className="price-row">
-                    {price.discount > 0 && (
-                      <>
-                        <span className="discount-badge">-{price.discount}%</span>
-                        <span className="price-original">{price.formattedOriginal}</span>
-                      </>
-                    )}
-                    <span className={`price-final ${price.discount === 0 ? 'no-discount' : ''}`}>
-                      {price.formattedFinal}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </Link>
-          );
-        })}
-      </div>
+      {filtered.length === 0 ? (
+        <div className="empty-state">검색/필터 조건에 맞는 게임이 없어요.</div>
+      ) : (
+        <div className="grid">
+          {filtered.map((game) => {
+            const price = getPriceInfo(game);
+            return (
+              <Link href={`/games/${game.id}`} key={game.id} className="card">
+                <div className="card-image-wrap">
+                  <img src={game.cover_image_url} alt={game.name} />
+                  {game.platform?.[0] && <span className="platform-badge">{game.platform[0]}</span>}
+                </div>
+                <div className="card-body">
+                  <h3>{game.name}</h3>
+                  <p className="card-meta">
+                    {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : ''}
+                    {game.difficulty ? ` · ${game.difficulty}` : ''}
+                  </p>
+                  {game.category && <span className="category-tag">{game.category}</span>}
+                  {price && (
+                    <div className="price-row">
+                      {price.discount > 0 && (
+                        <>
+                          <span className="discount-badge">-{price.discount}%</span>
+                          <span className="price-original">{price.formattedOriginal}</span>
+                        </>
+                      )}
+                      <span className={`price-final ${price.discount === 0 ? 'no-discount' : ''}`}>
+                        {price.formattedFinal}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </>
   );
 }
