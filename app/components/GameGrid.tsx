@@ -1,5 +1,6 @@
 'use client';
 
+import AIRecommend from './AIRecommend';
 import Link from 'next/link';
 import { useState } from 'react';
 import BannerCarousel from './BannerCarousel';
@@ -74,18 +75,19 @@ export default function GameGrid({ games }: { games: any[] }) {
       <div className="section-label">🎯 추천 게임</div>
       <BannerCarousel games={rest} />
 
-      <div className="search-bar">
-        <span className="search-icon">🔍</span>
-        <input
-          type="text"
-          placeholder="게임 이름이나 태그로 검색 (예: 협동, 파티, PEAK)"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        {query && (
-          <button className="search-clear" onClick={() => setQuery('')}>✕</button>
-        )}
-      </div>
+      <div className="search-row">
+  <div className="search-bar">
+    <span className="search-icon">🔍</span>
+    <input
+      type="text"
+      placeholder="게임 이름이나 태그로 검색 (예: 협동, 파티, PEAK)"
+      value={query}
+      onChange={(e) => setQuery(e.target.value)}
+    />
+    {query && <button className="search-clear" onClick={() => setQuery('')}>✕</button>}
+  </div>
+  <AIRecommend />
+</div>
 
       <div className="category-pills">
         {CATEGORIES.map((c) => (
