@@ -1,5 +1,6 @@
 import { supabase } from '../../lib/supabase';
 import Link from 'next/link';
+import DiscountChart from '../../components/DiscountChart';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,7 +36,10 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       <h1 className="detail-title">{game.name}</h1>
       <div className="detail-tags">
         {game.category && <span className="category-tag">{game.category}</span>}
-        {game.platform?.[0] && <span className="platform-badge">{game.platform[0]}</span>}
+        {game.platform?.[0] && <span className="tag-badge">{game.platform[0]}</span>}
+        {game.tags?.map((tag: string) => (
+          <span key={tag} className="category-tag">{tag}</span>
+        ))}
       </div>
 
       <div className="detail-grid">
@@ -57,16 +61,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
 
       <section className="detail-section">
         <h3>할인 전적<span className="sample-note">※ 샘플 데이터</span></h3>
-        <div className="discount-row">
-          {SAMPLE_DISCOUNT_HISTORY.map((d, i) => (
-            <div key={i} className="discount-chip">
-              <span className="discount-date">{d.date}</span>
-              <span className={`discount-value ${d.discount > 0 ? 'is-discount' : ''}`}>
-                {d.discount > 0 ? `-${d.discount}%` : '정가'}
-              </span>
-            </div>
-          ))}
-        </div>
+        <DiscountChart data={SAMPLE_DISCOUNT_HISTORY} />
       </section>
 
       <section className="detail-section">

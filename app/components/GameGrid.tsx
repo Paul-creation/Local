@@ -9,10 +9,26 @@ const CATEGORIES = ['전체', '파티', '협동', '퍼즐', '서바이벌'];
 
 export default function GameGrid({ games }: { games: any[] }) {
   const [category, setCategory] = useState('전체');
+  const [tagPanelOpen, setTagPanelOpen] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const featured = games.find((g) => g.featured);
   const rest = games.filter((g) => !g.featured);
-  const filtered = category === '전체' ? rest : rest.filter((g) => g.category === category);
+
+  const allTags = Array.from(new Set(rest.flatMap((g) => g.tags || []))).sort();
+
+  const toggleTag = (tag: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  };
+
+  const filtered = rest.filter((g) => {
+    const categoryMatch = category === '전체' || g.category === category;
+    const tagMatch = selectedTags.length === 0 || selectedTags.some((t) => g.tags?.includes(t));
+    return categoryMatch && tagMatch;
+  });
+
   const featuredPrice = featured ? getPriceInfo(featured) : null;
 
   return (
@@ -48,6 +64,7 @@ export default function GameGrid({ games }: { games: any[] }) {
         </Link>
       )}
 
+      <div className="section-label">🎯 추천 게임</div>
       <BannerCarousel games={rest} />
 
       <div className="category-pills">
@@ -61,6 +78,34 @@ export default function GameGrid({ games }: { games: any[] }) {
           </button>
         ))}
       </div>
+
+      <div className="tag-toggle-row">
+        <button
+          className={`tag-toggle ${tagPanelOpen ? 'open' : ''}`}
+          onClick={() => setTagPanelOpen((v) => !v)}
+        >
+          세부 태그 설정 <span className="arrow">▾</span>
+        </button>
+        {selectedTags.length > 0 && (
+          <span style={{ color: 'var(--text-dimmer)', fontSize: 13 }}>
+            {selectedTags.length}개 선택됨
+          </span>
+        )}
+      </div>
+
+      {tagPanelOpen && (
+        <div className="tag-panel">
+          {allTags.map((tag) => (
+            <button
+              key={tag}
+              className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
+              onClick={() => toggleTag(tag)}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="grid">
         {filtered.map((game) => {
