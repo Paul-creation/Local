@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
     .select('id, name, cover_image_url, category, tags, min_players, max_players, difficulty');
 
   if (error || !games) {
+    console.error('Supabase 조회 에러:', error);
     return NextResponse.json({ error: '게임 목록을 불러오지 못했어요.' }, { status: 500 });
   }
 
@@ -52,19 +53,31 @@ ${gameList}
   });
 
   const aiData = await aiRes.json();
+
+  if (!aiRes.ok) {
+    console.error('Anthropic API 에러:', aiData);
+    return NextResponse.json(
+      { error: `AI 호출 실패: ${aiData.error?.message || '알 수 없는 오류'}` },
+      { status: 500 }
+    );
+  }
+
   const text = aiData.content?.[0]?.text || '';
+  console.log('AI 원본 응답:', text);
 
   let parsed;
   try {
     const cleaned = text.replace(/```json|```/g, '').trim();
     parsed = JSON.parse(cleaned);
   } catch {
+    console.error('JSON 파싱 실패, 원본 텍스트:', text);
     return NextResponse.json({ error: 'AI 응답을 이해하지 못했어요. 다시 시도해줘.' }, { status: 500 });
   }
 
   const matchedGame = games.find((g) => g.id === parsed.game_id);
 
   if (!matchedGame) {
+    console.error('매칭되는 게임을 못 찾음. AI가 준 game_id:', parsed.game_id);
     return NextResponse.json({ error: '추천 결과를 찾지 못했어요.' }, { status: 500 });
   }
 
