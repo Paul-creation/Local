@@ -49,7 +49,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             {game.review_summary}
           </span>
         )}
-        {game.tags?.map((tag: string) => (
+        {game.tags?.slice(0, 3).map((tag: string) => (
           <span key={tag} className="category-tag">{tag}</span>
         ))}
       </div>
