@@ -5,7 +5,6 @@ import { getPriceInfo } from '../../lib/price';
 import { translateGenres } from '../../lib/genreTranslate';
 import { getPlatformCategories, CATEGORY_LABEL, PlatformCategory } from '../../lib/platformDisplay';
 import { FaPlaystation, FaXbox, FaDesktop, FaVrCardboard } from 'react-icons/fa';
-import { FaDesktop, FaVrCardboard } from 'react-icons/fa';
 
 export const dynamic = 'force-dynamic';
 
