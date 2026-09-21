@@ -3,7 +3,9 @@ import Link from 'next/link';
 import DiscountChart from '../../components/DiscountChart';
 import { getPriceInfo } from '../../lib/price';
 import { translateGenres } from '../../lib/genreTranslate';
-import { getPlatformInfo } from '../../lib/platformDisplay';
+import { getPlatformCategories, CATEGORY_LABEL, PlatformCategory } from '../../lib/platformDisplay';
+import { SiPlaystation, SiNintendoswitch, SiXbox } from 'react-icons/si';
+import { FaDesktop, FaVrCardboard } from 'react-icons/fa';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,6 +16,14 @@ const SAMPLE_DISCOUNT_HISTORY = [
   { date: '지금', discount: 30 },
 ];
 const SAMPLE_STREAMERS = ['스트리머 A', '스트리머 B', '스트리머 C'];
+
+const CATEGORY_ICON: Record<PlatformCategory, React.ReactNode> = {
+  pc: <FaDesktop />,
+  playstation: <SiPlaystation />,
+  xbox: <SiXbox />,
+  switch: <SiNintendoswitch />,
+  vr: <FaVrCardboard />,
+};
 
 function getReviewClass(summary: string | null) {
   if (!summary) return '';
@@ -40,6 +50,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const subGenres = Array.from(
     new Set(translateGenres([...(game.genres || []), ...(game.themes || [])]))
   ).slice(0, 10);
+  const platformCategories = getPlatformCategories(game.platform);
 
   return (
     <main className="page">
@@ -89,19 +100,16 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </div>
       </div>
 
-      {game.platform?.length > 0 && (
+      {platformCategories.length > 0 && (
         <div className="platform-section">
           <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12 }}>이용 가능한 플랫폼</h3>
           <div className="platform-grid">
-            {game.platform.map((p: string) => {
-              const info = getPlatformInfo(p);
-              return (
-                <div key={p} className="platform-card">
-                  <span className="platform-card-icon">{info.icon}</span>
-                  <span className="platform-card-label">{info.label}</span>
-                </div>
-              );
-            })}
+            {platformCategories.map((cat) => (
+              <div key={cat} className="platform-card">
+                <span className="platform-card-icon">{CATEGORY_ICON[cat]}</span>
+                <span className="platform-card-label">{CATEGORY_LABEL[cat]}</span>
+              </div>
+            ))}
           </div>
         </div>
       )}

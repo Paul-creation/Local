@@ -567,5 +567,6 @@ button { font-family: inherit; }
   border-radius: 10px;
   padding: 14px 16px;
 }
-.platform-card-icon { font-size: 20px; }
+.platform-card-icon { display: flex; align-items: center; }
+.platform-card-icon svg { width: 22px; height: 22px; }
 .platform-card-label { font-size: 14px; font-weight: 700; }
