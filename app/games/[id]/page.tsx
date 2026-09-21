@@ -56,6 +56,29 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
 
       {game.description && <p className="detail-description">{game.description}</p>}
 
+      {(game.critic_score || game.developer || game.genres?.length > 0) && (
+        <div className="detail-grid" style={{ marginBottom: 32 }}>
+          {game.critic_score && (
+            <div className="detail-block">
+              <span className="detail-label">평론가 점수</span>
+              <span className="detail-value">{game.critic_score}점</span>
+            </div>
+          )}
+          {game.developer && (
+            <div className="detail-block">
+              <span className="detail-label">개발사</span>
+              <span className="detail-value">{game.developer}</span>
+            </div>
+          )}
+          {game.genres?.length > 0 && (
+            <div className="detail-block">
+              <span className="detail-label">장르</span>
+              <span className="detail-value">{game.genres.join(', ')}</span>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="detail-grid">
         <div className="detail-block">
           <span className="detail-label">인원수</span>
