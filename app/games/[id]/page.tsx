@@ -3,6 +3,7 @@ import Link from 'next/link';
 import DiscountChart from '../../components/DiscountChart';
 import { getPriceInfo } from '../../lib/price';
 import { translateGenres } from '../../lib/genreTranslate';
+import { getPlatformInfo } from '../../lib/platformDisplay';
 
 export const dynamic = 'force-dynamic';
 
@@ -86,14 +87,24 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             Steam에서 구매하기 →
           </a>
         </div>
-        {game.platform?.length > 0 && (
-          <div className="platform-list">
-            {game.platform.map((p: string) => (
-              <span key={p} className="platform-chip">{p}</span>
-            ))}
-          </div>
-        )}
       </div>
+
+      {game.platform?.length > 0 && (
+        <div className="platform-section">
+          <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12 }}>이용 가능한 플랫폼</h3>
+          <div className="platform-grid">
+            {game.platform.map((p: string) => {
+              const info = getPlatformInfo(p);
+              return (
+                <div key={p} className="platform-card">
+                  <span className="platform-card-icon">{info.icon}</span>
+                  <span className="platform-card-label">{info.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="spec-list">
         <div className="spec-row">

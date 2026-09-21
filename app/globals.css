@@ -551,3 +551,21 @@ button { font-family: inherit; }
 
 /* Main tag pills on detail page */
 .main-tag-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 16px; }
+/* Platform availability section (standalone, Metacritic-style) */
+.platform-section { margin: 32px 0; }
+.platform-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+.platform-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.platform-card-icon { font-size: 20px; }
+.platform-card-label { font-size: 14px; font-weight: 700; }
