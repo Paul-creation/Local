@@ -12,6 +12,13 @@ const SAMPLE_DISCOUNT_HISTORY = [
 ];
 const SAMPLE_STREAMERS = ['스트리머 A', '스트리머 B', '스트리머 C'];
 
+function getReviewClass(summary: string | null) {
+  if (!summary) return '';
+  if (summary.includes('긍정')) return 'positive';
+  if (summary.includes('부정')) return 'negative';
+  return 'mixed';
+}
+
 export default async function GameDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
@@ -37,10 +44,17 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       <div className="detail-tags">
         {game.category && <span className="category-tag">{game.category}</span>}
         {game.platform?.[0] && <span className="tag-badge">{game.platform[0]}</span>}
+        {game.review_summary && (
+          <span className={`review-badge ${getReviewClass(game.review_summary)}`}>
+            {game.review_summary}
+          </span>
+        )}
         {game.tags?.map((tag: string) => (
           <span key={tag} className="category-tag">{tag}</span>
         ))}
       </div>
+
+      {game.description && <p className="detail-description">{game.description}</p>}
 
       <div className="detail-grid">
         <div className="detail-block">

@@ -15,6 +15,28 @@ const APPIDS = [
   '341800',  // Keep Talking and Nobody Explodes
 ];
 
+const REVIEW_LABELS = {
+  'Overwhelmingly Positive': '압도적으로 긍정적',
+  'Very Positive': '매우 긍정적',
+  'Positive': '긍정적',
+  'Mostly Positive': '대체로 긍정적',
+  'Mixed': '복합적',
+  'Mostly Negative': '대체로 부정적',
+  'Negative': '부정적',
+  'Very Negative': '매우 부정적',
+  'Overwhelmingly Negative': '압도적으로 부정적',
+  'No user reviews': '리뷰 없음',
+};
+
+async function getReviewSummary(appid) {
+  const res = await fetch(
+    `https://store.steampowered.com/appreviews/${appid}?json=1&filter=summary&language=all&purchase_type=all`
+  );
+  const json = await res.json();
+  const desc = json.query_summary?.review_score_desc;
+  return REVIEW_LABELS[desc] || desc || null;
+}
+
 async function fetchAndSave(appid) {
   const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${appid}&cc=kr&l=korean`);
   const json = await res.json();
@@ -25,6 +47,7 @@ async function fetchAndSave(appid) {
   }
 
   const data = json[appid].data;
+  const reviewSummary = await getReviewSummary(appid);
 
   const { data: inserted, error } = await supabase
     .from('games')
@@ -33,6 +56,8 @@ async function fetchAndSave(appid) {
       steam_appid: appid,
       platform: ['steam'],
       cover_image_url: data.header_image,
+      description: data.short_description,
+      review_summary: reviewSummary,
     })
     .select()
     .single();
@@ -42,7 +67,7 @@ async function fetchAndSave(appid) {
     return;
   }
 
-  console.log(`저장 성공: ${data.name}`);
+  console.log(`저장 성공: ${data.name} (평가: ${reviewSummary})`);
 
   if (!data.is_free && data.price_overview) {
     await supabase.from('price_history').insert({
@@ -50,10 +75,9 @@ async function fetchAndSave(appid) {
       price: data.price_overview.final / 100,
       discount_percent: data.price_overview.discount_percent,
     });
-    console.log(`  → 가격 저장: ${data.price_overview.final_formatted}`);
   }
 
-  await new Promise((r) => setTimeout(r, 1000)); // 스팀 API 과호출 방지
+  await new Promise((r) => setTimeout(r, 1000));
 }
 
 async function main() {

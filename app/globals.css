@@ -391,3 +391,19 @@ button { font-family: inherit; }
   background: none; border: 1px solid var(--border); color: var(--text-dim);
   border-radius: 10px; padding: 10px 14px; font-size: 14px; cursor: pointer;
 }
+/* Review badge */
+.review-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 13px; font-weight: 700;
+  padding: 5px 12px; border-radius: 100px;
+}
+.review-badge.positive { background: rgba(74,158,58,0.12); color: #3f8a30; }
+.review-badge.mixed { background: rgba(154,154,68,0.12); color: #9a8a1f; }
+.review-badge.negative { background: rgba(214,69,69,0.12); color: var(--danger); }
+
+.detail-description {
+  color: var(--text-dim);
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
