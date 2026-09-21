@@ -434,3 +434,90 @@ button { font-family: inherit; }
   border-radius: 100px;
 }
 .all-tags-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+/* Apple-style unified detail page */
+.detail-header { margin-bottom: 28px; }
+.detail-title-v2 {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin: 0 0 10px;
+}
+.detail-meta-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.badge-neutral {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dimmer);
+  border: 1px solid var(--border);
+  padding: 4px 11px;
+  border-radius: 100px;
+}
+.detail-description-v2 {
+  color: var(--text-dim);
+  font-size: 16px;
+  line-height: 1.65;
+  max-width: 62ch;
+}
+
+.detail-divider { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
+
+/* Unified spec list — single consistent format for ALL facts */
+.spec-list { display: flex; flex-direction: column; }
+.spec-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 24px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--border);
+}
+.spec-row:first-child { border-top: 1px solid var(--border); }
+.spec-label { color: var(--text-dim); font-size: 14px; flex-shrink: 0; }
+.spec-value { color: var(--text); font-size: 15px; font-weight: 600; text-align: right; }
+.spec-value.spec-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.spec-value .badge-neutral { font-weight: 600; }
+
+/* Collapsible "더 알아보기" section, Apple spec-expander style */
+.detail-accordion {
+  border-top: 1px solid var(--border);
+  padding: 18px 0;
+  margin-top: 8px;
+}
+.detail-accordion summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 700;
+}
+.detail-accordion summary::-webkit-details-marker { display: none; }
+.detail-accordion summary::after {
+  content: '+';
+  color: var(--accent);
+  font-size: 22px;
+  font-weight: 400;
+  transition: transform 0.2s ease;
+}
+.detail-accordion[open] summary::after { transform: rotate(45deg); }
+.detail-accordion .spec-list { margin-top: 16px; }
+.accordion-note {
+  color: var(--text-dim);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-top: 14px;
+}
+
+.detail-section-v2 { margin-top: 36px; }
+.detail-section-v2 h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 16px;
+  letter-spacing: -0.01em;
+}

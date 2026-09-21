@@ -32,9 +32,6 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
     return <div className="page">게임을 찾을 수 없어요.</div>;
   }
 
-  const topTags = game.tags?.slice(0, 3) || [];
-  const remainingTags = game.tags?.slice(3) || [];
-
   return (
     <main className="page">
       <Link href="/" className="back-link">← 목록으로</Link>
@@ -43,111 +40,104 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         <img src={game.cover_image_url} alt={game.name} />
       </div>
 
-      <h1 className="detail-title">{game.name}</h1>
-      <div className="detail-tags">
-        {game.category && <span className="category-tag">{game.category}</span>}
-        {game.platform?.[0] && <span className="tag-badge">{game.platform[0]}</span>}
-        {game.review_summary && (
-          <span className={`review-badge ${getReviewClass(game.review_summary)}`}>
-            {game.review_summary}
-          </span>
-        )}
-        {topTags.map((tag: string) => (
-          <span key={tag} className="category-tag">{tag}</span>
-        ))}
+      <div className="detail-header">
+        <h1 className="detail-title-v2">{game.name}</h1>
+        <div className="detail-meta-line">
+          {game.review_summary && (
+            <span className={`review-badge ${getReviewClass(game.review_summary)}`}>
+              {game.review_summary}
+            </span>
+          )}
+          {game.category && <span className="badge-neutral">{game.category}</span>}
+          {game.platform?.[0] && <span className="badge-neutral">{game.platform[0]}</span>}
+        </div>
+        {game.description && <p className="detail-description-v2">{game.description}</p>}
       </div>
 
-      {game.description && <p className="detail-description">{game.description}</p>}
-
-      {(game.critic_score || game.developer || game.genres?.length > 0 || game.themes?.length > 0) && (
-        <div className="detail-grid-auto">
-          {game.critic_score && (
-            <div className="detail-block">
-              <span className="detail-label">평론가 점수</span>
-              <span className="detail-value">{game.critic_score}점</span>
-            </div>
-          )}
-          {game.developer && (
-            <div className="detail-block">
-              <span className="detail-label">개발사</span>
-              <span className="detail-value">{game.developer}</span>
-            </div>
-          )}
-          {game.genres?.length > 0 && (
-            <div className="detail-block">
-              <span className="detail-label">장르</span>
-              <span className="detail-value">{game.genres.join(', ')}</span>
-            </div>
-          )}
-          {game.themes?.length > 0 && (
-            <div className="detail-block">
-              <span className="detail-label">테마</span>
-              <span className="detail-value">{game.themes.join(', ')}</span>
-            </div>
-          )}
-        </div>
-      )}
-
-      {remainingTags.length > 0 && (
-        <div className="all-tags-row">
-          {remainingTags.map((tag: string) => (
-            <span key={tag} className="tag-chip-static">{tag}</span>
-          ))}
-        </div>
-      )}
-
-      <div className="detail-grid">
-        <div className="detail-block">
-          <span className="detail-label">인원수</span>
-          <span className="detail-value">
+      <div className="spec-list">
+        <div className="spec-row">
+          <span className="spec-label">인원수</span>
+          <span className="spec-value">
             {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : '정보 없음'}
           </span>
         </div>
-        <div className="detail-block">
-          <span className="detail-label">난이도</span>
-          <span className="detail-value">{game.difficulty || '정보 없음'}</span>
+        <div className="spec-row">
+          <span className="spec-label">난이도</span>
+          <span className="spec-value">{game.difficulty || '정보 없음'}</span>
         </div>
-        <div className="detail-block">
-          <span className="detail-label">클리어까지</span>
-          <span className="detail-value">{game.story_length || '정보 없음'}</span>
+        <div className="spec-row">
+          <span className="spec-label">클리어까지</span>
+          <span className="spec-value">{game.story_length || '정보 없음'}</span>
         </div>
+        {game.critic_score && (
+          <div className="spec-row">
+            <span className="spec-label">평론가 점수</span>
+            <span className="spec-value">{game.critic_score}점</span>
+          </div>
+        )}
+        {game.developer && (
+          <div className="spec-row">
+            <span className="spec-label">개발사</span>
+            <span className="spec-value">{game.developer}</span>
+          </div>
+        )}
+        {game.genres?.length > 0 && (
+          <div className="spec-row">
+            <span className="spec-label">장르</span>
+            <span className="spec-value">{game.genres.join(', ')}</span>
+          </div>
+        )}
+        {game.themes?.length > 0 && (
+          <div className="spec-row">
+            <span className="spec-label">테마</span>
+            <span className="spec-value">{game.themes.join(', ')}</span>
+          </div>
+        )}
+        {game.tags?.length > 0 && (
+          <div className="spec-row">
+            <span className="spec-label">태그</span>
+            <span className="spec-value spec-tags">
+              {game.tags.map((tag: string) => (
+                <span key={tag} className="badge-neutral">{tag}</span>
+              ))}
+            </span>
+          </div>
+        )}
       </div>
 
       {(game.has_ending !== null || game.server_type || game.min_spec) && (
-        <section className="detail-section">
-          <h3>매니아 정보</h3>
-          <div className="detail-grid-auto">
+        <details className="detail-accordion">
+          <summary>더 자세히 들어가 보시겠어요?</summary>
+          <div className="spec-list">
             {game.has_ending !== null && (
-              <div className="detail-block">
-                <span className="detail-label">엔딩 유무</span>
-                <span className="detail-value">{game.has_ending ? '있음' : '없음'}</span>
+              <div className="spec-row">
+                <span className="spec-label">엔딩 유무</span>
+                <span className="spec-value">{game.has_ending ? '있음' : '없음'}</span>
               </div>
             )}
             {game.server_type && (
-              <div className="detail-block">
-                <span className="detail-label">서버 방식</span>
-                <span className="detail-value">{game.server_type}</span>
+              <div className="spec-row">
+                <span className="spec-label">서버 방식</span>
+                <span className="spec-value">{game.server_type}</span>
               </div>
             )}
             {game.min_spec && (
-              <div className="detail-block" style={{ gridColumn: '1 / -1' }}>
-                <span className="detail-label">최소 사양</span>
-                <span className="detail-value" style={{ fontWeight: 500, fontSize: 13 }}>{game.min_spec}</span>
+              <div className="spec-row">
+                <span className="spec-label">최소 사양</span>
+                <span className="spec-value" style={{ fontWeight: 500 }}>{game.min_spec}</span>
               </div>
             )}
           </div>
-          {game.ending_note && (
-            <p className="detail-description" style={{ marginTop: -12 }}>{game.ending_note}</p>
-          )}
-        </section>
+          {game.ending_note && <p className="accordion-note">{game.ending_note}</p>}
+        </details>
       )}
 
-      <section className="detail-section">
+      <section className="detail-section-v2">
         <h3>할인 전적<span className="sample-note">※ 샘플 데이터</span></h3>
         <DiscountChart data={SAMPLE_DISCOUNT_HISTORY} />
       </section>
 
-      <section className="detail-section">
+      <section className="detail-section-v2">
         <h3>이 게임을 플레이한 스트리머<span className="sample-note">※ 샘플 데이터</span></h3>
         <div className="streamer-list">
           {SAMPLE_STREAMERS.map((s) => (

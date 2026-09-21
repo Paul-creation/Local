@@ -17,9 +17,8 @@ export default function GameGrid({ games }: { games: any[] }) {
   const [query, setQuery] = useState('');
 
   const featured = games.find((g) => g.featured);
-  const rest = games.filter((g) => !g.featured);
 
-  const presentTags = new Set(rest.flatMap((g) => g.tags || []));
+  const presentTags = new Set(games.flatMap((g) => g.tags || []));
   const groupedTags = Object.entries(TAG_GROUPS)
     .map(([group, tags]) => [group, tags.filter((t) => presentTags.has(t))] as [string, string[]])
     .filter(([, tags]) => tags.length > 0);
@@ -40,7 +39,7 @@ export default function GameGrid({ games }: { games: any[] }) {
 
   const normalizedQuery = query.trim().toLowerCase();
 
-  const filtered = rest.filter((g) => {
+  const filtered = games.filter((g) => {
     const categoryMatch = category === '전체' || g.category === category;
     const tagMatch = selectedTags.length === 0 || selectedTags.some((t) => g.tags?.includes(t));
     const queryMatch =
@@ -86,7 +85,7 @@ export default function GameGrid({ games }: { games: any[] }) {
       )}
 
       <div className="section-label">🎯 추천 게임</div>
-      <BannerCarousel games={rest} />
+      <BannerCarousel games={games} />
 
       <div className="search-row">
         <div className="search-bar">
