@@ -14,6 +14,14 @@ function stripHtml(html) {
     .trim();
 }
 
+function mapAgeRating(requiredAge) {
+  const age = Number(requiredAge) || 0;
+  if (age >= 18) return '청소년이용불가 (18세 이상)';
+  if (age >= 15) return '15세이용가';
+  if (age >= 12) return '12세이용가';
+  return '전체이용가';
+}
+
 async function main() {
   const { data: games, error } = await supabase.from('games').select('id, name, steam_appid');
   if (error) {
@@ -32,16 +40,17 @@ async function main() {
 
     const data = json[game.steam_appid].data;
     const minSpec = stripHtml(data.pc_requirements?.minimum);
+    const ageRating = mapAgeRating(data.required_age);
 
     const { error: updateError } = await supabase
       .from('games')
-      .update({ min_spec: minSpec })
+      .update({ min_spec: minSpec, age_rating: ageRating })
       .eq('id', game.id);
 
     if (updateError) {
       console.error(`업데이트 실패 (${game.name}):`, updateError.message);
     } else {
-      console.log(`업데이트 성공: ${game.name}`);
+      console.log(`업데이트 성공: ${game.name} (등급: ${ageRating})`);
     }
 
     await new Promise((r) => setTimeout(r, 1000));

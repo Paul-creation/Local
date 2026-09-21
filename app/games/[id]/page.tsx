@@ -1,6 +1,8 @@
 import { supabase } from '../../lib/supabase';
 import Link from 'next/link';
 import DiscountChart from '../../components/DiscountChart';
+import { getPriceInfo } from '../../lib/price';
+import { translateGenres } from '../../lib/genreTranslate';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,13 +26,19 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
 
   const { data: game, error } = await supabase
     .from('games')
-    .select('*')
+    .select('*, price_history(price, discount_percent)')
     .eq('id', id)
     .single();
 
   if (error || !game) {
     return <div className="page">게임을 찾을 수 없어요.</div>;
   }
+
+  const price = getPriceInfo(game);
+  const steamUrl = `https://store.steampowered.com/app/${game.steam_appid}`;
+  const subGenres = Array.from(
+    new Set(translateGenres([...(game.genres || []), ...(game.themes || [])]))
+  ).slice(0, 10);
 
   return (
     <main className="page">
@@ -48,10 +56,43 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               {game.review_summary}
             </span>
           )}
-          {game.category && <span className="badge-neutral">{game.category}</span>}
-          {game.platform?.[0] && <span className="badge-neutral">{game.platform[0]}</span>}
+          {game.age_rating && <span className="age-badge">{game.age_rating}</span>}
         </div>
+        {game.tags?.length > 0 && (
+          <div className="main-tag-row">
+            {game.tags.map((tag: string) => (
+              <span key={tag} className="category-tag">{tag}</span>
+            ))}
+          </div>
+        )}
         {game.description && <p className="detail-description-v2">{game.description}</p>}
+      </div>
+
+      <div className="buy-card">
+        <div className="buy-top">
+          <div className="buy-price-block">
+            <span className="buy-label">지금 바로 구매하세요!</span>
+            <div className="buy-price-row">
+              {price && price.discount > 0 && (
+                <>
+                  <span className="buy-discount-badge">-{price.discount}%</span>
+                  <span className="buy-price-original">{price.formattedOriginal}</span>
+                </>
+              )}
+              <span className="buy-price-final">{price ? price.formattedFinal : '가격 정보 없음'}</span>
+            </div>
+          </div>
+          <a href={steamUrl} target="_blank" rel="noopener noreferrer" className="buy-cta">
+            Steam에서 구매하기 →
+          </a>
+        </div>
+        {game.platform?.length > 0 && (
+          <div className="platform-list">
+            {game.platform.map((p: string) => (
+              <span key={p} className="platform-chip">{p}</span>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="spec-list">
@@ -81,24 +122,12 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             <span className="spec-value">{game.developer}</span>
           </div>
         )}
-        {game.genres?.length > 0 && (
+        {subGenres.length > 0 && (
           <div className="spec-row">
             <span className="spec-label">장르</span>
-            <span className="spec-value">{game.genres.join(', ')}</span>
-          </div>
-        )}
-        {game.themes?.length > 0 && (
-          <div className="spec-row">
-            <span className="spec-label">테마</span>
-            <span className="spec-value">{game.themes.join(', ')}</span>
-          </div>
-        )}
-        {game.tags?.length > 0 && (
-          <div className="spec-row">
-            <span className="spec-label">태그</span>
             <span className="spec-value spec-tags">
-              {game.tags.map((tag: string) => (
-                <span key={tag} className="badge-neutral">{tag}</span>
+              {subGenres.map((g) => (
+                <span key={g} className="badge-neutral">{g}</span>
               ))}
             </span>
           </div>

@@ -521,3 +521,33 @@ button { font-family: inherit; }
   margin: 0 0 16px;
   letter-spacing: -0.01em;
 }
+/* Buy section (Metacritic-style) */
+.buy-card {
+  background: var(--bg-nav);
+  border-radius: 14px;
+  padding: 20px 24px;
+  margin: 24px 0 32px;
+}
+.buy-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+.buy-price-block { display: flex; flex-direction: column; gap: 4px; }
+.buy-label { color: #aab0bd; font-size: 12px; }
+.buy-price-row { display: flex; align-items: center; gap: 10px; }
+.buy-price-original { color: #7c8291; font-size: 14px; text-decoration: line-through; }
+.buy-price-final { color: #fff; font-size: 22px; font-weight: 800; }
+.buy-discount-badge { background: #4a9e3a; color: #fff; font-size: 13px; font-weight: 800; padding: 4px 9px; border-radius: 4px; }
+.buy-cta { background: var(--accent); color: #fff; font-size: 15px; font-weight: 700; padding: 12px 22px; border-radius: 10px; white-space: nowrap; }
+.buy-cta:hover { opacity: 0.9; }
+.platform-list { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); }
+.platform-chip { background: rgba(255,255,255,0.08); color: #d8dae0; font-size: 12px; font-weight: 700; padding: 5px 11px; border-radius: 100px; text-transform: uppercase; }
+
+/* Age rating badge */
+.age-badge {
+  display: inline-flex; align-items: center;
+  font-size: 12px; font-weight: 700;
+  color: #8a5a00; background: rgba(230,116,46,0.14);
+  border: 1px solid rgba(230,116,46,0.3);
+  padding: 4px 11px; border-radius: 6px;
+}
+
+/* Main tag pills on detail page */
+.main-tag-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 16px; }
