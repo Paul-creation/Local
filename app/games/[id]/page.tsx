@@ -4,7 +4,7 @@ import DiscountChart from '../../components/DiscountChart';
 import { getPriceInfo } from '../../lib/price';
 import { translateGenres } from '../../lib/genreTranslate';
 import { getPlatformCategories, CATEGORY_LABEL, PlatformCategory } from '../../lib/platformDisplay';
-import { SiPlaystation, SiNintendoswitch, SiXbox } from 'react-icons/si';
+import { FaPlaystation, FaXbox, FaDesktop, FaVrCardboard } from 'react-icons/fa';
 import { FaDesktop, FaVrCardboard } from 'react-icons/fa';
 
 export const dynamic = 'force-dynamic';
@@ -19,9 +19,9 @@ const SAMPLE_STREAMERS = ['스트리머 A', '스트리머 B', '스트리머 C'];
 
 const CATEGORY_ICON: Record<PlatformCategory, React.ReactNode> = {
   pc: <FaDesktop />,
-  playstation: <SiPlaystation />,
-  xbox: <SiXbox />,
-  switch: <SiNintendoswitch />,
+  playstation: <FaPlaystation />,
+  xbox: <FaXbox />,
+  switch: <span style={{ fontSize: 18 }}>🎮</span>,
   vr: <FaVrCardboard />,
 };
 
