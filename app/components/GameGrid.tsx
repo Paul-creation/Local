@@ -1,23 +1,36 @@
 'use client';
 
-import AIRecommend from './AIRecommend';
 import Link from 'next/link';
 import { useState } from 'react';
 import BannerCarousel from './BannerCarousel';
+import AIRecommend from './AIRecommend';
 import { getPriceInfo } from '../lib/price';
+import { TAG_GROUPS } from '../lib/tagGroups';
 
 const CATEGORIES = ['전체', '파티', '협동', '퍼즐', '서바이벌'];
 
 export default function GameGrid({ games }: { games: any[] }) {
   const [category, setCategory] = useState('전체');
   const [tagPanelOpen, setTagPanelOpen] = useState(false);
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [query, setQuery] = useState('');
 
   const featured = games.find((g) => g.featured);
   const rest = games.filter((g) => !g.featured);
 
-  const allTags = Array.from(new Set(rest.flatMap((g) => g.tags || []))).sort();
+  const presentTags = new Set(rest.flatMap((g) => g.tags || []));
+  const groupedTags = Object.entries(TAG_GROUPS)
+    .map(([group, tags]) => [group, tags.filter((t) => presentTags.has(t))] as [string, string[]])
+    .filter(([, tags]) => tags.length > 0);
+
+  const knownTags = new Set(Object.values(TAG_GROUPS).flat());
+  const ungroupedTags = Array.from(presentTags).filter((t) => !knownTags.has(t));
+  if (ungroupedTags.length > 0) groupedTags.push(['기타', ungroupedTags]);
+
+  const toggleGroup = (group: string) => {
+    setOpenGroups((prev) => ({ ...prev, [group]: !prev[group] }));
+  };
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
@@ -76,18 +89,18 @@ export default function GameGrid({ games }: { games: any[] }) {
       <BannerCarousel games={rest} />
 
       <div className="search-row">
-  <div className="search-bar">
-    <span className="search-icon">🔍</span>
-    <input
-      type="text"
-      placeholder="게임 이름이나 태그로 검색 (예: 협동, 파티, PEAK)"
-      value={query}
-      onChange={(e) => setQuery(e.target.value)}
-    />
-    {query && <button className="search-clear" onClick={() => setQuery('')}>✕</button>}
-  </div>
-  <AIRecommend />
-</div>
+        <div className="search-bar">
+          <span className="search-icon">🔍</span>
+          <input
+            type="text"
+            placeholder="게임 이름이나 태그로 검색 (예: 협동, 파티, PEAK)"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          {query && <button className="search-clear" onClick={() => setQuery('')}>✕</button>}
+        </div>
+        <AIRecommend />
+      </div>
 
       <div className="category-pills">
         {CATEGORIES.map((c) => (
@@ -116,15 +129,30 @@ export default function GameGrid({ games }: { games: any[] }) {
       </div>
 
       {tagPanelOpen && (
-        <div className="tag-panel">
-          {allTags.map((tag) => (
-            <button
-              key={tag}
-              className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
-              onClick={() => toggleTag(tag)}
-            >
-              {tag}
-            </button>
+        <div className="tag-panel" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
+          {groupedTags.map(([group, tags]) => (
+            <div className="tag-group" key={group}>
+              <div
+                className={`tag-group-header ${openGroups[group] ? 'open' : ''}`}
+                onClick={() => toggleGroup(group)}
+              >
+                <span>{group}<span className="tag-group-count">{tags.length}</span></span>
+                <span className="arrow">▾</span>
+              </div>
+              {openGroups[group] && (
+                <div className="tag-group-tags">
+                  {tags.map((tag) => (
+                    <button
+                      key={tag}
+                      className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
+                      onClick={() => toggleTag(tag)}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
         </div>
       )}
