@@ -32,6 +32,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
     return <div className="page">게임을 찾을 수 없어요.</div>;
   }
 
+  const topTags = game.tags?.slice(0, 3) || [];
+  const remainingTags = game.tags?.slice(3) || [];
+
   return (
     <main className="page">
       <Link href="/" className="back-link">← 목록으로</Link>
@@ -49,15 +52,15 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             {game.review_summary}
           </span>
         )}
-        {game.tags?.slice(0, 3).map((tag: string) => (
+        {topTags.map((tag: string) => (
           <span key={tag} className="category-tag">{tag}</span>
         ))}
       </div>
 
       {game.description && <p className="detail-description">{game.description}</p>}
 
-      {(game.critic_score || game.developer || game.genres?.length > 0) && (
-        <div className="detail-grid" style={{ marginBottom: 32 }}>
+      {(game.critic_score || game.developer || game.genres?.length > 0 || game.themes?.length > 0) && (
+        <div className="detail-grid-auto">
           {game.critic_score && (
             <div className="detail-block">
               <span className="detail-label">평론가 점수</span>
@@ -76,6 +79,20 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               <span className="detail-value">{game.genres.join(', ')}</span>
             </div>
           )}
+          {game.themes?.length > 0 && (
+            <div className="detail-block">
+              <span className="detail-label">테마</span>
+              <span className="detail-value">{game.themes.join(', ')}</span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {remainingTags.length > 0 && (
+        <div className="all-tags-row">
+          {remainingTags.map((tag: string) => (
+            <span key={tag} className="tag-chip-static">{tag}</span>
+          ))}
         </div>
       )}
 
@@ -95,6 +112,35 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           <span className="detail-value">{game.story_length || '정보 없음'}</span>
         </div>
       </div>
+
+      {(game.has_ending !== null || game.server_type || game.min_spec) && (
+        <section className="detail-section">
+          <h3>매니아 정보</h3>
+          <div className="detail-grid-auto">
+            {game.has_ending !== null && (
+              <div className="detail-block">
+                <span className="detail-label">엔딩 유무</span>
+                <span className="detail-value">{game.has_ending ? '있음' : '없음'}</span>
+              </div>
+            )}
+            {game.server_type && (
+              <div className="detail-block">
+                <span className="detail-label">서버 방식</span>
+                <span className="detail-value">{game.server_type}</span>
+              </div>
+            )}
+            {game.min_spec && (
+              <div className="detail-block" style={{ gridColumn: '1 / -1' }}>
+                <span className="detail-label">최소 사양</span>
+                <span className="detail-value" style={{ fontWeight: 500, fontSize: 13 }}>{game.min_spec}</span>
+              </div>
+            )}
+          </div>
+          {game.ending_note && (
+            <p className="detail-description" style={{ marginTop: -12 }}>{game.ending_note}</p>
+          )}
+        </section>
+      )}
 
       <section className="detail-section">
         <h3>할인 전적<span className="sample-note">※ 샘플 데이터</span></h3>

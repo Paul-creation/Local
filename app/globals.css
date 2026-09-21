@@ -421,3 +421,16 @@ button { font-family: inherit; }
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
+/* Flexible auto-sizing grid for expanded detail info */
+.detail-grid-auto { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 32px; }
+
+/* Static (non-clickable) tag chip for display-only lists */
+.tag-chip-static {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 13px;
+  padding: 6px 13px;
+  border-radius: 100px;
+}
+.all-tags-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
