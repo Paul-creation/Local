@@ -597,3 +597,13 @@ button { font-family: inherit; }
 .banner-slide .price-original {
   color: #d8dae0;
 }
+.free-badge {
+  display: inline-block;
+  background: rgba(15,155,142,0.12);
+  color: var(--teal);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 100px;
+  margin-top: 8px;
+}

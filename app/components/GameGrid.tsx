@@ -174,19 +174,25 @@ export default function GameGrid({ games }: { games: any[] }) {
                     {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : ''}
                     {game.difficulty ? ` · ${game.difficulty}` : ''}
                   </p>
-                  {game.category && <span className="category-tag">{game.category}</span>}
-                  {price && (
-                    <div className="price-row">
-                      {price.discount > 0 && (
-                        <>
-                          <span className="discount-badge">-{price.discount}%</span>
-                          <span className="price-original">{price.formattedOriginal}</span>
-                        </>
-                      )}
-                      <span className={`price-final ${price.discount === 0 ? 'no-discount' : ''}`}>
-                        {price.formattedFinal}
-                      </span>
-                    </div>
+                                   {game.tags?.slice(0, 3).map((tag: string) => (
+                    <span key={tag} className="category-tag">{tag}</span>
+                  ))}
+                                    {game.is_free ? (
+                    <span className="free-badge">무료 플레이</span>
+                  ) : (
+                    price && (
+                      <div className="price-row">
+                        {price.discount > 0 && (
+                          <>
+                            <span className="discount-badge">-{price.discount}%</span>
+                            <span className="price-original">{price.formattedOriginal}</span>
+                          </>
+                        )}
+                        <span className={`price-final ${price.discount === 0 ? 'no-discount' : ''}`}>
+                          {price.formattedFinal}
+                        </span>
+                      </div>
+                    )
                   )}
                 </div>
               </Link>
