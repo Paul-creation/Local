@@ -8,12 +8,6 @@ import { FaPlaystation, FaXbox, FaDesktop, FaVrCardboard } from 'react-icons/fa'
 
 export const dynamic = 'force-dynamic';
 
-const SAMPLE_DISCOUNT_HISTORY = [
-  { date: '3개월 전', discount: 0 },
-  { date: '2개월 전', discount: 20 },
-  { date: '1개월 전', discount: 0 },
-  { date: '지금', discount: 30 },
-];
 const SAMPLE_STREAMERS = ['스트리머 A', '스트리머 B', '스트리머 C'];
 
 const CATEGORY_ICON: Record<PlatformCategory, React.ReactNode> = {
@@ -34,9 +28,9 @@ function getReviewClass(summary: string | null) {
 export default async function GameDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  const { data: game, error } = await supabase
+    const { data: game, error } = await supabase
     .from('games')
-    .select('*, price_history(price, discount_percent)')
+    .select('*, price_history(price, discount_percent, checked_at)')
     .eq('id', id)
     .single();
 
@@ -191,10 +185,19 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </details>
       )}
 
-      <section className="detail-section-v2">
-        <h3>할인 전적<span className="sample-note">※ 샘플 데이터</span></h3>
-        <DiscountChart data={SAMPLE_DISCOUNT_HISTORY} />
-      </section>
+            {game.price_history?.length >= 2 && (
+        <section className="detail-section-v2">
+          <h3>할인 전적</h3>
+          <DiscountChart
+            data={[...game.price_history]
+              .sort((a: any, b: any) => new Date(a.checked_at).getTime() - new Date(b.checked_at).getTime())
+              .map((p: any) => ({
+                date: new Date(p.checked_at).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }),
+                discount: p.discount_percent,
+              }))}
+          />
+        </section>
+      )}
 
       <section className="detail-section-v2">
         <h3>이 게임을 플레이한 스트리머<span className="sample-note">※ 샘플 데이터</span></h3>

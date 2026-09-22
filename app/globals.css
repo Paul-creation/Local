@@ -589,3 +589,11 @@ button { font-family: inherit; }
 .chart-label { font-size: 11px; color: var(--text-dimmer); text-align: center; }
 .chart-label strong { display: block; font-size: 12px; color: var(--text-dim); margin-top: 2px; }
 .chart-label strong.has-discount { color: var(--danger); }
+.hero-content .price-final,
+.banner-slide .price-final {
+  color: #fff;
+}
+.hero-content .price-original,
+.banner-slide .price-original {
+  color: #d8dae0;
+}
