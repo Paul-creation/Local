@@ -570,3 +570,13 @@ button { font-family: inherit; }
 .platform-card-icon { display: flex; align-items: center; }
 .platform-card-icon svg { width: 22px; height: 22px; }
 .platform-card-label { font-size: 14px; font-weight: 700; }
+.activity-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.activity-chip {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 13px;
+  border-radius: 100px;
+}

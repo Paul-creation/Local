@@ -152,7 +152,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         )}
       </div>
 
-      {(game.has_ending !== null || game.server_type || game.min_spec) && (
+      {(game.has_ending !== null || game.server_type || game.min_spec || game.activities?.length > 0) && (
         <details className="detail-accordion">
           <summary>더 자세히 들어가 보시겠어요?</summary>
           <div className="spec-list">
@@ -172,6 +172,18 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               <div className="spec-row">
                 <span className="spec-label">최소 사양</span>
                 <span className="spec-value" style={{ fontWeight: 500 }}>{game.min_spec}</span>
+              </div>
+            )}
+                        {game.activities?.length > 0 && (
+              <div className="spec-row">
+                <span className="spec-label">가능한 활동</span>
+                <span className="spec-value spec-tags">
+                  <span className="activity-list">
+                    {game.activities.map((a: string) => (
+                      <span key={a} className="activity-chip">{a}</span>
+                    ))}
+                  </span>
+                </span>
               </div>
             )}
           </div>
