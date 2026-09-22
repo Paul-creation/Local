@@ -607,3 +607,56 @@ button { font-family: inherit; }
   border-radius: 100px;
   margin-top: 8px;
 }
+/* Browse panel (Steam-style category overview) */
+.browse-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.browse-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+.browse-group-card {
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: var(--bg);
+  border-left: 3px solid var(--group-color, var(--accent));
+}
+.browse-group-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--group-color, var(--accent));
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.browse-group-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.all-tags-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 16px 0 0;
+  width: 100%;
+  border-top: 1px solid var(--border);
+  margin-top: 16px;
+}
+.all-tags-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 4px;
+}

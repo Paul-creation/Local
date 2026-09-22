@@ -8,17 +8,19 @@ import { getPriceInfo } from '../lib/price';
 import { TAG_GROUPS } from '../lib/tagGroups';
 
 const CATEGORIES = ['전체', '파티', '협동', '퍼즐', '서바이벌'];
+const GROUP_COLORS = ['#e6742e', '#0f9b8e', '#5b6ef5', '#c0392b', '#9b59b6', '#d4a017'];
 
 export default function GameGrid({ games }: { games: any[] }) {
   const [category, setCategory] = useState('전체');
-  const [tagPanelOpen, setTagPanelOpen] = useState(false);
-  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
+  const [browseOpen, setBrowseOpen] = useState(false);
+  const [allTagsOpen, setAllTagsOpen] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [query, setQuery] = useState('');
-  const [showFullLibrary, setShowFullLibrary] = useState(false);
 
   const featured = games.find((g) => g.featured);
-  const pool = showFullLibrary ? games : games.filter((g) => g.is_casual_party);
+
+  // 메인 그리드는 항상 전체 라이브러리
+  const pool = games;
 
   const presentTags = new Set(pool.flatMap((g) => g.tags || []));
   const groupedTags = Object.entries(TAG_GROUPS)
@@ -26,10 +28,11 @@ export default function GameGrid({ games }: { games: any[] }) {
     .filter(([, tags]) => tags.length > 0);
 
   const knownTags = new Set(Object.values(TAG_GROUPS).flat());
-  const ungroupedTags = Array.from(presentTags).filter((t) => !knownTags.has(t));
-  if (ungroupedTags.length > 0) groupedTags.push(['기타', ungroupedTags]);
+  const ungroupedInGroups = Array.from(presentTags).filter((t) => !knownTags.has(t));
+  if (ungroupedInGroups.length > 0) groupedTags.push(['기타', ungroupedInGroups]);
 
-  const toggleGroup = (group: string) => setOpenGroups((prev) => ({ ...prev, [group]: !prev[group] }));
+  const allTagsSorted = Array.from(presentTags).sort((a, b) => a.localeCompare(b, 'ko'));
+
   const toggleTag = (tag: string) =>
     setSelectedTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
 
@@ -46,6 +49,7 @@ export default function GameGrid({ games }: { games: any[] }) {
   });
 
   const featuredPrice = featured ? getPriceInfo(featured) : null;
+  const bannerPool = games.filter((g) => g.is_casual_party && !g.featured);
 
   return (
     <>
@@ -78,15 +82,19 @@ export default function GameGrid({ games }: { games: any[] }) {
         </Link>
       )}
 
-      <div className="section-label">🎯 추천 게임</div>
-      <BannerCarousel games={games.filter((g) => g.is_casual_party && !g.featured)} />
+      {bannerPool.length > 0 && (
+        <>
+          <div className="section-label">🎯 추천 게임</div>
+          <BannerCarousel games={bannerPool} />
+        </>
+      )}
 
       <div className="search-row">
         <div className="search-bar">
           <span className="search-icon">🔍</span>
           <input
             type="text"
-            placeholder="게임 이름이나 태그로 검색 (예: 협동, 파티, PEAK)"
+            placeholder="게임 이름이나 태그로 검색"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -101,43 +109,58 @@ export default function GameGrid({ games }: { games: any[] }) {
             {c}
           </button>
         ))}
-        <button
-          className={`pill ${showFullLibrary ? 'pill-active' : ''}`}
-          onClick={() => setShowFullLibrary((v) => !v)}
-          style={{ marginLeft: 'auto' }}
-        >
-          {showFullLibrary ? '✓ 전체 라이브러리' : '전체 라이브러리 보기'}
-        </button>
-      </div>
-
-      <div className="tag-toggle-row">
-        <button className={`tag-toggle ${tagPanelOpen ? 'open' : ''}`} onClick={() => setTagPanelOpen((v) => !v)}>
-          세부 태그 설정 <span className="arrow">▾</span>
+        <button className={`pill ${browseOpen ? 'pill-active' : ''}`} onClick={() => setBrowseOpen((v) => !v)}>
+          태그로 찾기 {browseOpen ? '▴' : '▾'}
         </button>
         {selectedTags.length > 0 && (
-          <span style={{ color: 'var(--text-dimmer)', fontSize: 13 }}>{selectedTags.length}개 선택됨</span>
+          <span style={{ color: 'var(--text-dimmer)', fontSize: 13, alignSelf: 'center' }}>
+            {selectedTags.length}개 선택됨
+          </span>
         )}
       </div>
 
-      {tagPanelOpen && (
-        <div className="tag-panel" style={{ flexDirection: 'column', alignItems: 'stretch' }}>
-          {groupedTags.map(([group, tags]) => (
-            <div className="tag-group" key={group}>
-              <div className={`tag-group-header ${openGroups[group] ? 'open' : ''}`} onClick={() => toggleGroup(group)}>
-                <span>{group}<span className="tag-group-count">{tags.length}</span></span>
-                <span className="arrow">▾</span>
-              </div>
-              {openGroups[group] && (
-                <div className="tag-group-tags">
+      {browseOpen && (
+        <div className="browse-panel">
+          <div className="browse-groups">
+            {groupedTags.map(([group, tags], i) => (
+              <div
+                className="browse-group-card"
+                key={group}
+                style={{ '--group-color': GROUP_COLORS[i % GROUP_COLORS.length] } as React.CSSProperties}
+              >
+                <div className="browse-group-title">{group}</div>
+                <div className="browse-group-tags">
                   {tags.map((tag) => (
-                    <button key={tag} className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`} onClick={() => toggleTag(tag)}>
+                    <button
+                      key={tag}
+                      className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
+                      onClick={() => toggleTag(tag)}
+                    >
                       {tag}
                     </button>
                   ))}
                 </div>
-              )}
+              </div>
+            ))}
+          </div>
+
+          <button className="all-tags-toggle" onClick={() => setAllTagsOpen((v) => !v)}>
+            세부 태그 설정 보기 {allTagsOpen ? '▴' : '▾'}
+          </button>
+
+          {allTagsOpen && (
+            <div className="all-tags-cloud">
+              {allTagsSorted.map((tag) => (
+                <button
+                  key={tag}
+                  className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
+                  onClick={() => toggleTag(tag)}
+                >
+                  {tag}
+                </button>
+              ))}
             </div>
-          ))}
+          )}
         </div>
       )}
 
