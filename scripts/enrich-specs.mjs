@@ -14,11 +14,14 @@ function stripHtml(html) {
     .trim();
 }
 
-function mapAgeRating(requiredAge) {
-  const age = Number(requiredAge) || 0;
+function mapAgeRating(data) {
+  const age = Number(data.required_age) || 0;
+  const hasContentWarning = (data.content_descriptors?.ids || []).length > 0;
+
   if (age >= 18) return '청소년이용불가 (18세 이상)';
   if (age >= 15) return '15세이용가';
   if (age >= 12) return '12세이용가';
+  if (hasContentWarning) return '연령 등급 정보 불명확 (폭력성 등 콘텐츠 포함 가능)';
   return '전체이용가';
 }
 
@@ -40,7 +43,7 @@ async function main() {
 
     const data = json[game.steam_appid].data;
     const minSpec = stripHtml(data.pc_requirements?.minimum);
-    const ageRating = mapAgeRating(data.required_age);
+    const ageRating = mapAgeRating(data);
 
     const { error: updateError } = await supabase
       .from('games')
