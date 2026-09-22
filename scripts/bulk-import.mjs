@@ -12,7 +12,7 @@ const REVIEW_LABELS = {
   'Very Negative': '매우 부정적', 'Overwhelmingly Negative': '압도적으로 부정적',
   'No user reviews': '리뷰 없음',
 };
-const MAX_NEW_GAMES = 20; // 한 번에 최대 몇 개 추가할지
+const MAX_NEW_GAMES = 20;
 
 async function getReviewSummary(appid) {
   const res = await fetch(`https://store.steampowered.com/appreviews/${appid}?json=1&filter=summary&language=all&purchase_type=all`);
@@ -28,22 +28,37 @@ async function main() {
   const listJson = await listRes.json();
   const candidates = Object.values(listJson);
 
+  console.log(`SteamSpy 후보 ${candidates.length}개 확보, 스팀에서 co-op 여부 확인 중...\n`);
+
   let addedCount = 0;
+  let checkedCount = 0;
 
   for (const candidate of candidates) {
     if (addedCount >= MAX_NEW_GAMES) break;
     const appid = String(candidate.appid);
     if (existingAppids.has(appid)) continue;
 
-    const tags = candidate.tags ? Object.keys(candidate.tags) : [];
-    const isCoop = tags.some((t) => /co-?op/i.test(t));
-    if (!isCoop) continue;
-
     const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${appid}&cc=kr&l=korean`);
     const json = await res.json();
-    if (!json[appid]?.success) continue;
+    checkedCount++;
+
+    if (!json[appid]?.success) {
+      if (checkedCount <= 10) console.log(`  ✗ 조회 실패: appid ${appid} (${candidate.name || '이름 없음'})`);
+      await new Promise((r) => setTimeout(r, 600));
+      continue;
+    }
 
     const data = json[appid].data;
+    const categories = (data.categories || []).map((c) => c.description);
+    const isCoop = categories.some((c) => /co-?op/i.test(c));
+
+    if (checkedCount <= 10) console.log(`  · ${data.name}: [${categories.join(', ')}]`);
+
+    if (!isCoop) {
+      await new Promise((r) => setTimeout(r, 600));
+      continue;
+    }
+
     const reviewSummary = await getReviewSummary(appid);
 
     const { data: inserted, error } = await supabase
@@ -64,7 +79,7 @@ async function main() {
       continue;
     }
 
-    console.log(`추가됨: ${data.name} (co-op 태그 감지됨)`);
+    console.log(`✅ 추가됨: ${data.name} (co-op: ${categories.filter((c) => /co-?op/i.test(c)).join(', ')})`);
     addedCount++;
 
     if (!data.is_free && data.price_overview) {
@@ -78,7 +93,7 @@ async function main() {
     await new Promise((r) => setTimeout(r, 1200));
   }
 
-  console.log(`\n총 ${addedCount}개 게임 추가 완료.`);
+  console.log(`\n총 ${addedCount}개 게임 추가 완료. (조회 성공: ${checkedCount}개)`);
 }
 
 main();

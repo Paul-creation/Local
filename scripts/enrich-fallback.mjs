@@ -6,7 +6,8 @@ const supabase = createClient(
 );
 
 function guessCategory(genres = [], name = '') {
-  const all = [...genres, name].join(' ').toLowerCase();
+  const safeGenres = genres || [];
+  const all = [...safeGenres, name].join(' ').toLowerCase();
   if (all.includes('survival')) return '서바이벌';
   if (all.includes('puzzle')) return '퍼즐';
   if (all.includes('party')) return '파티';
