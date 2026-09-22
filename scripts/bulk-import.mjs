@@ -69,7 +69,7 @@ async function main() {
 
     const reviewSummary = await getReviewSummary(appid);
 
-    const { data: inserted, error } = await supabase
+        const { data: inserted, error } = await supabase
       .from('games')
       .insert({
         name: data.name,
@@ -78,7 +78,9 @@ async function main() {
         cover_image_url: data.header_image,
         description: data.short_description,
         review_summary: reviewSummary,
+        is_casual_party: false,
       })
+      
       .select()
       .single();
 

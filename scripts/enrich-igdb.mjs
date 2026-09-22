@@ -6,15 +6,15 @@ const supabase = createClient(
 );
 
 const PLATFORM_MAP = {
-  'pc (microsoft windows)': 'steam',
-  'mac': 'steam',
-  'linux': 'steam',
-  'playstation 4': 'ps4',
-  'playstation 5': 'ps5',
-  'xbox one': 'xbox',
-  'xbox series x|s': 'xbox',
+  'pc (microsoft windows)': 'steam', 'mac': 'steam', 'linux': 'steam',
+  'playstation 4': 'ps4', 'playstation 5': 'ps5',
+  'xbox one': 'xbox', 'xbox series x|s': 'xbox',
   'nintendo switch': 'switch',
 };
+
+const GAME_FIELDS = `game.name, game.genres.name, game.themes.name, game.aggregated_rating,
+  game.platforms.name, game.involved_companies.company.name,
+  game.involved_companies.developer, game.involved_companies.publisher`;
 
 async function getIgdbToken() {
   const res = await fetch(
@@ -25,25 +25,38 @@ async function getIgdbToken() {
   return data.access_token;
 }
 
-async function fetchIgdbData(name, token) {
-  const query = `
-    fields name, genres.name, themes.name, aggregated_rating, platforms.name,
-           involved_companies.company.name, involved_companies.developer, involved_companies.publisher;
-    search "${name}";
-    limit 1;
-  `;
-
-  const res = await fetch('https://api.igdb.com/v4/games', {
+async function igdbQuery(endpoint, body, token) {
+  const res = await fetch(`https://api.igdb.com/v4/${endpoint}`, {
     method: 'POST',
     headers: {
       'Client-ID': process.env.IGDB_CLIENT_ID,
       Authorization: `Bearer ${token}`,
       Accept: 'application/json',
     },
-    body: query,
+    body,
   });
+  return res.json();
+}
 
-  const data = await res.json();
+// 1순위: 스팀 appid로 정확히 매칭 (external_games, category 1 = Steam)
+async function fetchByAppid(appid, token) {
+  const data = await igdbQuery(
+    'external_games',
+    `fields ${GAME_FIELDS}; where uid = "${appid}" & category = 1;`,
+    token
+  );
+  return data[0]?.game || null;
+}
+
+// 2순위: 이름 검색 (appid 매칭 실패했을 때 폴백)
+async function fetchByName(name, token) {
+  const data = await igdbQuery(
+    'games',
+    `fields name, genres.name, themes.name, aggregated_rating, platforms.name,
+     involved_companies.company.name, involved_companies.developer, involved_companies.publisher;
+     search "${name}"; limit 1;`,
+    token
+  );
   return data[0] || null;
 }
 
@@ -59,21 +72,28 @@ function mapPlatforms(igdbPlatforms = []) {
 async function main() {
   const token = await getIgdbToken();
   if (!token) {
-    console.error('IGDB 토큰 발급 실패 — Client ID/Secret 확인해줘');
+    console.error('IGDB 토큰 발급 실패');
     return;
   }
 
-  const { data: games, error } = await supabase.from('games').select('id, name, platform');
+  const { data: games, error } = await supabase.from('games').select('id, name, steam_appid, platform');
   if (error) {
-    console.error('게임 목록 조회 실패:', error.message);
+    console.error('조회 실패:', error.message);
     return;
   }
 
   for (const game of games) {
-    const igdbGame = await fetchIgdbData(game.name, token);
+    let igdbGame = await fetchByAppid(game.steam_appid, token);
+    let matchedVia = 'appid';
+
+    if (!igdbGame) {
+      igdbGame = await fetchByName(game.name, token);
+      matchedVia = 'name';
+    }
 
     if (!igdbGame) {
       console.log(`매칭 실패: ${game.name}`);
+      await new Promise((r) => setTimeout(r, 300));
       continue;
     }
 
@@ -85,12 +105,10 @@ async function main() {
 
     const update = { genres, themes, critic_score: criticScore, developer, publisher };
 
-    // 플랫폼은 기본값(steam만)일 때만 덮어씀 — 수동으로 정확하게 채운 건 안 건드림
-    const isDefaultPlatform =
-      !game.platform || (game.platform.length === 1 && game.platform[0] === 'steam');
+    const isDefaultPlatform = !game.platform || (game.platform.length === 1 && game.platform[0] === 'steam');
     if (isDefaultPlatform) {
-      const detectedPlatforms = mapPlatforms(igdbGame.platforms);
-      if (detectedPlatforms.length > 0) update.platform = detectedPlatforms;
+      const detected = mapPlatforms(igdbGame.platforms);
+      if (detected.length > 0) update.platform = detected;
     }
 
     const { error: updateError } = await supabase.from('games').update(update).eq('id', game.id);
@@ -98,7 +116,7 @@ async function main() {
     if (updateError) {
       console.error(`업데이트 실패 (${game.name}):`, updateError.message);
     } else {
-      console.log(`업데이트 성공: ${game.name} — 플랫폼: ${update.platform?.join(',') || '(유지)'}`);
+      console.log(`업데이트 성공 [${matchedVia}]: ${game.name}`);
     }
 
     await new Promise((r) => setTimeout(r, 300));
