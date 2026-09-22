@@ -12,6 +12,7 @@ const REVIEW_LABELS = {
   'Very Negative': '매우 부정적', 'Overwhelmingly Negative': '압도적으로 부정적',
   'No user reviews': '리뷰 없음',
 };
+const COOP_CATEGORY_IDS = [9, 38, 39]; // Co-op, Online Co-op, Shared/Split Screen Co-op
 const MAX_NEW_GAMES = 20;
 
 async function getReviewSummary(appid) {
@@ -38,21 +39,27 @@ async function main() {
     const appid = String(candidate.appid);
     if (existingAppids.has(appid)) continue;
 
-    const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${appid}&cc=kr&l=korean`);
-    const json = await res.json();
+    let json;
+    try {
+      const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${appid}&cc=kr&l=korean`);
+      json = await res.json();
+    } catch {
+      json = null;
+    }
     checkedCount++;
 
-    if (!json[appid]?.success) {
-      if (checkedCount <= 10) console.log(`  ✗ 조회 실패: appid ${appid} (${candidate.name || '이름 없음'})`);
+    if (!json || !json[appid]?.success) {
       await new Promise((r) => setTimeout(r, 600));
       continue;
     }
 
     const data = json[appid].data;
-    const categories = (data.categories || []).map((c) => c.description);
-    const isCoop = categories.some((c) => /co-?op/i.test(c));
+    const categories = data.categories || [];
+    const isCoop = categories.some((c) => COOP_CATEGORY_IDS.includes(c.id));
 
-    if (checkedCount <= 10) console.log(`  · ${data.name}: [${categories.join(', ')}]`);
+    if (checkedCount <= 15) {
+      console.log(`  · ${data.name}: co-op=${isCoop}`);
+    }
 
     if (!isCoop) {
       await new Promise((r) => setTimeout(r, 600));
@@ -79,7 +86,7 @@ async function main() {
       continue;
     }
 
-    console.log(`✅ 추가됨: ${data.name} (co-op: ${categories.filter((c) => /co-?op/i.test(c)).join(', ')})`);
+    console.log(`✅ 추가됨: ${data.name}`);
     addedCount++;
 
     if (!data.is_free && data.price_overview) {
