@@ -6,38 +6,32 @@ const supabase = createClient(
 );
 
 const APPIDS = [
-  '3527290', // PEAK
-  '3949040', // RV There Yet?
-  '1509960', // PICO PARK
-  '1625450', // Muck
-  '319450',  // Chariot
-  '4704690', // MECCHA CHAMELEON
-  '341800',  // Keep Talking and Nobody Explodes
+  '108600',  // Project Zomboid (좀보이드) — 괴물쥐, 랄로 둘 다 플레이
+  '322330',  // Don't Starve Together — 괴물쥐 "쥐지마"
+  '1326470', // Sons Of The Forest — 괴물쥐 플레이
 ];
 
 const REVIEW_LABELS = {
-  'Overwhelmingly Positive': '압도적으로 긍정적',
-  'Very Positive': '매우 긍정적',
-  'Positive': '긍정적',
-  'Mostly Positive': '대체로 긍정적',
-  'Mixed': '복합적',
-  'Mostly Negative': '대체로 부정적',
-  'Negative': '부정적',
-  'Very Negative': '매우 부정적',
-  'Overwhelmingly Negative': '압도적으로 부정적',
+  'Overwhelmingly Positive': '압도적으로 긍정적', 'Very Positive': '매우 긍정적',
+  'Positive': '긍정적', 'Mostly Positive': '대체로 긍정적', 'Mixed': '복합적',
+  'Mostly Negative': '대체로 부정적', 'Negative': '부정적',
+  'Very Negative': '매우 부정적', 'Overwhelmingly Negative': '압도적으로 부정적',
   'No user reviews': '리뷰 없음',
 };
 
 async function getReviewSummary(appid) {
-  const res = await fetch(
-    `https://store.steampowered.com/appreviews/${appid}?json=1&filter=summary&language=all&purchase_type=all`
-  );
+  const res = await fetch(`https://store.steampowered.com/appreviews/${appid}?json=1&filter=summary&language=all&purchase_type=all`);
   const json = await res.json();
   const desc = json.query_summary?.review_score_desc;
   return REVIEW_LABELS[desc] || desc || null;
 }
 
-async function fetchAndSave(appid) {
+async function fetchAndSave(appid, existingAppids) {
+  if (existingAppids.has(String(appid))) {
+    console.log(`건너뜀 (이미 있음): appid ${appid}`);
+    return;
+  }
+
   const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${appid}&cc=kr&l=korean`);
   const json = await res.json();
 
@@ -81,8 +75,11 @@ async function fetchAndSave(appid) {
 }
 
 async function main() {
+  const { data: existing } = await supabase.from('games').select('steam_appid');
+  const existingAppids = new Set((existing || []).map((g) => String(g.steam_appid)));
+
   for (const appid of APPIDS) {
-    await fetchAndSave(appid);
+    await fetchAndSave(appid, existingAppids);
   }
 }
 
