@@ -5,6 +5,17 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
+const PLATFORM_MAP = {
+  'pc (microsoft windows)': 'steam',
+  'mac': 'steam',
+  'linux': 'steam',
+  'playstation 4': 'ps4',
+  'playstation 5': 'ps5',
+  'xbox one': 'xbox',
+  'xbox series x|s': 'xbox',
+  'nintendo switch': 'switch',
+};
+
 async function getIgdbToken() {
   const res = await fetch(
     `https://id.twitch.tv/oauth2/token?client_id=${process.env.IGDB_CLIENT_ID}&client_secret=${process.env.IGDB_CLIENT_SECRET}&grant_type=client_credentials`,
@@ -16,7 +27,7 @@ async function getIgdbToken() {
 
 async function fetchIgdbData(name, token) {
   const query = `
-    fields name, genres.name, themes.name, aggregated_rating,
+    fields name, genres.name, themes.name, aggregated_rating, platforms.name,
            involved_companies.company.name, involved_companies.developer, involved_companies.publisher;
     search "${name}";
     limit 1;
@@ -36,6 +47,15 @@ async function fetchIgdbData(name, token) {
   return data[0] || null;
 }
 
+function mapPlatforms(igdbPlatforms = []) {
+  const codes = new Set();
+  igdbPlatforms.forEach((p) => {
+    const code = PLATFORM_MAP[p.name?.toLowerCase()];
+    if (code) codes.add(code);
+  });
+  return Array.from(codes);
+}
+
 async function main() {
   const token = await getIgdbToken();
   if (!token) {
@@ -43,7 +63,7 @@ async function main() {
     return;
   }
 
-  const { data: games, error } = await supabase.from('games').select('id, name');
+  const { data: games, error } = await supabase.from('games').select('id, name, platform');
   if (error) {
     console.error('게임 목록 조회 실패:', error.message);
     return;
@@ -63,15 +83,22 @@ async function main() {
     const publisher = igdbGame.involved_companies?.find((c) => c.publisher)?.company?.name || null;
     const criticScore = igdbGame.aggregated_rating ? Math.round(igdbGame.aggregated_rating) : null;
 
-    const { error: updateError } = await supabase
-      .from('games')
-      .update({ genres, themes, critic_score: criticScore, developer, publisher })
-      .eq('id', game.id);
+    const update = { genres, themes, critic_score: criticScore, developer, publisher };
+
+    // 플랫폼은 기본값(steam만)일 때만 덮어씀 — 수동으로 정확하게 채운 건 안 건드림
+    const isDefaultPlatform =
+      !game.platform || (game.platform.length === 1 && game.platform[0] === 'steam');
+    if (isDefaultPlatform) {
+      const detectedPlatforms = mapPlatforms(igdbGame.platforms);
+      if (detectedPlatforms.length > 0) update.platform = detectedPlatforms;
+    }
+
+    const { error: updateError } = await supabase.from('games').update(update).eq('id', game.id);
 
     if (updateError) {
       console.error(`업데이트 실패 (${game.name}):`, updateError.message);
     } else {
-      console.log(`업데이트 성공: ${game.name} — 평론가 점수: ${criticScore}, 장르: ${genres.join(', ')}`);
+      console.log(`업데이트 성공: ${game.name} — 플랫폼: ${update.platform?.join(',') || '(유지)'}`);
     }
 
     await new Promise((r) => setTimeout(r, 300));

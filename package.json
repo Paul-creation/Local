@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
-  },
+  "dev": "next dev",
+  "build": "next build",
+  "start": "next start",
+  "lint": "next lint",
+  "refresh-games": "node --env-file=.env.local scripts/bulk-import.mjs && node --env-file=.env.local scripts/check-delisted.mjs && node --env-file=.env.local scripts/enrich-fallback.mjs && node --env-file=.env.local scripts/enrich-igdb.mjs && node --env-file=.env.local scripts/enrich-specs.mjs && node --env-file=.env.local scripts/enrich-tags.mjs && node --env-file=.env.local scripts/fix-missing-prices.mjs && node --env-file=.env.local scripts/rewrite-descriptions.mjs && node --env-file=.env.local scripts/backfill-price-history.mjs"
+},
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",
     "next": "16.3.5",

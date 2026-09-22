@@ -24,7 +24,8 @@ async function getReviewSummary(appid) {
 async function main() {
   const { data: existing } = await supabase.from('games').select('steam_appid');
   const existingAppids = new Set((existing || []).map((g) => String(g.steam_appid)));
-
+  const { data: delisted } = await supabase.from('delisted_appids').select('steam_appid');
+  const delistedAppids = new Set((delisted || []).map((d) => String(d.steam_appid)));
   const listRes = await fetch('https://steamspy.com/api.php?request=top100in2weeks');
   const listJson = await listRes.json();
   const candidates = Object.values(listJson);
@@ -38,7 +39,7 @@ async function main() {
     if (addedCount >= MAX_NEW_GAMES) break;
     const appid = String(candidate.appid);
     if (existingAppids.has(appid)) continue;
-
+    if (delistedAppids.has(appid)) continue;
     let json;
     try {
       const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${appid}&cc=kr&l=korean`);

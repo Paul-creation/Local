@@ -5,10 +5,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-const DELISTED_PHRASES = [
-  'no longer available',
-  'this item is not longer available', // 스팀에 실제로 이렇게 오타난 문구가 있음
-];
+const DELISTED_PHRASES = ['no longer available', 'this item is not longer available'];
 
 async function isDelisted(appid) {
   try {
@@ -16,8 +13,7 @@ async function isDelisted(appid) {
       headers: { 'Accept-Language': 'en-US' },
     });
     const html = await res.text();
-    const lower = html.toLowerCase();
-    return DELISTED_PHRASES.some((phrase) => lower.includes(phrase));
+    return DELISTED_PHRASES.some((phrase) => html.toLowerCase().includes(phrase));
   } catch {
     return false;
   }
@@ -33,8 +29,7 @@ async function main() {
   const candidates = [];
 
   for (const game of games) {
-    const delisted = await isDelisted(game.steam_appid);
-    if (delisted) {
+    if (await isDelisted(game.steam_appid)) {
       candidates.push(game);
       console.log(`⚠️  삭제된 것으로 보임: ${game.name} (appid: ${game.steam_appid})`);
     }
@@ -46,13 +41,13 @@ async function main() {
     return;
   }
 
-  console.log(`\n총 ${candidates.length}개 발견. 위 목록 직접 스팀에서 한 번 확인해보고,`);
-  console.log('맞으면 아래 SQL을 Supabase에 붙여넣어서 삭제해줘:\n');
-  console.log(
-    candidates
-      .map((g) => `delete from games where id = '${g.id}'; -- ${g.name}`)
-      .join('\n')
-  );
+  console.log(`\n총 ${candidates.length}개 발견. 확인 후 아래 SQL을 Supabase에서 실행해줘:\n`);
+
+  const values = candidates.map((g) => `('${g.steam_appid}', '${g.name.replace(/'/g, "''")}')`).join(', ');
+  const names = candidates.map((g) => `'${g.name.replace(/'/g, "''")}'`).join(', ');
+
+  console.log(`insert into delisted_appids (steam_appid, name) values ${values};`);
+  console.log(`delete from games where name in (${names});`);
 }
 
 main();
