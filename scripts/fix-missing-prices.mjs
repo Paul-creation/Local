@@ -33,7 +33,7 @@ async function main() {
     const original = data.price_overview.initial / 100;
     const discount = data.price_overview.discount_percent;
 
-    // 기존 기록 전부 삭제 후 새로 삽입 (통화 혼용 문제 해결)
+    // 기존 기록 전부 삭제 후 원화로 새로 삽입
     await supabase.from('price_history').delete().eq('game_id', game.id);
     await supabase.from('price_history').insert({
       game_id: game.id,
@@ -41,7 +41,7 @@ async function main() {
       discount_percent: discount,
     });
 
-    console.log(`업데이트: ${game.name} — ₩${price.toLocaleString()} (${discount > 0 ? `-${discount}%` : '정가'})`);
+    console.log(`✅ ${game.name}: ₩${price.toLocaleString()} (할인 ${discount}%, 정가 ₩${original.toLocaleString()})`);
     await new Promise((r) => setTimeout(r, 700));
   }
 }
