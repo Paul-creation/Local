@@ -6,6 +6,7 @@ import BannerCarousel from './BannerCarousel';
 import AIRecommend from './AIRecommend';
 import { getPriceInfo } from '../lib/price';
 import { TAG_GROUPS } from '../lib/tagGroups';
+import DiscountSection from './DiscountSection';
 
 const CATEGORIES = ['전체', '파티', '협동', '퍼즐', '서바이벌'];
 const GROUP_COLORS = ['#e6742e', '#0f9b8e', '#5b6ef5', '#c0392b', '#9b59b6', '#d4a017'];
@@ -50,7 +51,7 @@ export default function GameGrid({ games }: { games: any[] }) {
 
   return (
     <>
-      {featured && (
+            {featured && (
         <Link href={`/games/${featured.id}`} className="hero-card">
           <div className="hero-image-wrap">
             <img src={featured.cover_image_url} alt={featured.name} />
@@ -85,6 +86,8 @@ export default function GameGrid({ games }: { games: any[] }) {
           <BannerCarousel games={bannerPool} />
         </>
       )}
+
+      <DiscountSection games={games} />
 
       <div className="search-row">
         <div className="search-bar-clean">

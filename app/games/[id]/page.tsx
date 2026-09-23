@@ -107,45 +107,92 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           </a>
         </div>
       </div>
-      
-      {(game.review_summary || game.critic_score || game.heat_rank) && (
+
+      {(game.review_positive_percent || game.critic_score || game.heat_rank) && (
   <div className="review-panel">
-    {game.review_summary && (
+    {game.review_positive_percent && (
       <div className="review-row">
         <div className="review-source">
-          <span className="review-source-label">🎮 Steam 유저 평가</span>
-          <span className="review-count">종합 평가</span>
+          <span className="review-source-label">Steam 유저 평가</span>
+          <span className="review-count">
+            {game.review_total?.toLocaleString('ko-KR')}개 리뷰 기준
+          </span>
         </div>
-        <span className={`review-badge ${getReviewClass(game.review_summary)}`}>
-          {game.review_summary}
-        </span>
+        <div className="review-bar-wrap">
+          <div className="review-bar-track">
+            <div
+              className="review-bar-fill"
+              style={{
+                width: `${game.review_positive_percent}%`,
+                background:
+                  game.review_positive_percent >= 80
+                    ? '#4a9e3a'
+                    : game.review_positive_percent >= 60
+                    ? '#d4a017'
+                    : '#d64545',
+              }}
+            />
+            <div
+              className="review-bar-neg"
+              style={{ width: `${100 - game.review_positive_percent}%` }}
+            />
+          </div>
+          <div className="review-bar-labels">
+            <span style={{ color: '#4a9e3a', fontWeight: 700 }}>
+              👍 {game.review_positive_percent}%
+            </span>
+            <span style={{ color: '#d64545', fontWeight: 700 }}>
+              {100 - game.review_positive_percent}% 👎
+            </span>
+          </div>
+        </div>
       </div>
     )}
     {game.critic_score && (
       <div className="review-row">
         <div className="review-source">
-          <span className="review-source-label">📰 평론가 점수</span>
-          <span className="review-count">OpenCritic · Metacritic 종합</span>
+          <span className="review-source-label">평론가 종합</span>
+          <span className="review-count">OpenCritic · Metacritic 평균</span>
         </div>
-        <div className="review-score-bar">
-          <div
-            className="review-score-fill"
-            style={{
-              width: `${game.critic_score}%`,
-              background: game.critic_score >= 75 ? '#4a9e3a' : game.critic_score >= 50 ? '#d4a017' : '#d64545',
-            }}
-          />
-          <span className="review-score-num">{game.critic_score}점</span>
+        <div className="review-bar-wrap">
+          <div className="review-bar-track">
+            <div
+              className="review-bar-fill"
+              style={{
+                width: `${game.critic_score}%`,
+                background:
+                  game.critic_score >= 75
+                    ? '#4a9e3a'
+                    : game.critic_score >= 50
+                    ? '#d4a017'
+                    : '#d64545',
+              }}
+            />
+            <div
+              className="review-bar-neg"
+              style={{ width: `${100 - game.critic_score}%` }}
+            />
+          </div>
+          <div className="review-bar-labels">
+            <span style={{ color: game.critic_score >= 75 ? '#4a9e3a' : game.critic_score >= 50 ? '#d4a017' : '#d64545', fontWeight: 700 }}>
+              {game.critic_score}점 / 100
+            </span>
+            <span style={{ color: 'var(--text-dimmer)', fontSize: 12 }}>
+              {game.critic_score >= 75 ? '추천' : game.critic_score >= 50 ? '보통' : '비추천'}
+            </span>
+          </div>
         </div>
       </div>
     )}
     {game.heat_rank && (
       <div className="review-row">
         <div className="review-source">
-          <span className="review-source-label">🔥 ITAD 인기 순위</span>
-          <span className="review-count">IsThereAnyDeal 기준 글로벌 인기도</span>
+          <span className="review-source-label">ITAD 인기 순위</span>
+          <span className="review-count">IsThereAnyDeal 글로벌 기준</span>
         </div>
-        <span className="review-heat">#{game.heat_rank.toLocaleString()}</span>
+        <span style={{ fontSize: 18, fontWeight: 800, color: 'var(--accent)' }}>
+          #{game.heat_rank.toLocaleString('ko-KR')}위
+        </span>
       </div>
     )}
   </div>
