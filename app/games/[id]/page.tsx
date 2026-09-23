@@ -175,6 +175,25 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             </span>
           </div>
         )}
+                {game.last_updated && (
+          <div className="spec-row">
+            <span className="spec-label">마지막 업데이트</span>
+            <span className="spec-value" style={{
+              color: (() => {
+                const diff = (Date.now() - new Date(game.last_updated).getTime()) / (1000 * 60 * 60 * 24);
+                return diff < 30 ? '#4a9e3a' : diff < 180 ? 'var(--text)' : 'var(--text-dimmer)';
+              })()
+            }}>
+              {new Date(game.last_updated).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
+              {(() => {
+                const diff = Math.floor((Date.now() - new Date(game.last_updated).getTime()) / (1000 * 60 * 60 * 24));
+                if (diff < 30) return <span style={{ marginLeft: 8, fontSize: 12, color: '#4a9e3a', fontWeight: 700 }}>활발히 업데이트 중</span>;
+                if (diff < 180) return <span style={{ marginLeft: 8, fontSize: 12, color: 'var(--text-dimmer)' }}>{Math.floor(diff / 30)}개월 전</span>;
+                return <span style={{ marginLeft: 8, fontSize: 12, color: 'var(--danger)' }}>업데이트 없음</span>;
+              })()}
+            </span>
+          </div>
+        )}
         <div className="spec-row">
           <span className="spec-label">한국어</span>
           <span className="spec-value" style={{
