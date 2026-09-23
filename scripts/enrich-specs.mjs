@@ -10,10 +10,14 @@ function stripHtml(html) {
   return html.replace(/<br\s*\/?>/gi, ' / ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
 }
 
-function parseKoreanSupport(languages) {
+function parseKoreanSupport(languages, fullAudioLanguages) {
   if (!languages) return '한국어 없음';
-  const lower = languages.toLowerCase();
-  if (!lower.includes('korean')) return '한국어 없음';
+  const stripped = languages.replace(/<[^>]+>/g, '');
+  const hasKorean = stripped.includes('한국어') || stripped.toLowerCase().includes('korean');
+  if (!hasKorean) return '한국어 없음';
+  const audio = (fullAudioLanguages || '').replace(/<[^>]+>/g, '');
+  const hasKoreanAudio = audio.includes('한국어') || audio.toLowerCase().includes('korean');
+  if (hasKoreanAudio) return '자막+더빙';
   return '자막';
 }
 
@@ -29,7 +33,20 @@ function parseStorage(requirements) {
   if (!match) return null;
   const num = parseFloat(match[1]);
   const unit = match[2].toUpperCase();
-  return unit === 'GB' ? num : Math.round(num / 1024 * 10) / 10;
+  return unit === 'GB' ? num : Math.round((num / 1024) * 10) / 10;
+}
+
+async function getEnglishReleaseDate(appid) {
+  try {
+    const res = await fetch(
+      `https://store.steampowered.com/api/appdetails?appids=${appid}&cc=kr&l=english`
+    );
+    const json = await res.json();
+    const dateStr = json[appid]?.data?.release_date?.date;
+    if (!dateStr) return null;
+    const d = new Date(dateStr);
+    return isNaN(d.getTime()) ? null : d.toISOString().slice(0, 10);
+  } catch { return null; }
 }
 
 async function getReviewStats(appid) {
@@ -43,7 +60,9 @@ async function getReviewStats(appid) {
     return {
       total: qs.total_reviews,
       positive: qs.total_positive,
-      percent: qs.total_reviews > 0 ? Math.round((qs.total_positive / qs.total_reviews) * 100) : 0,
+      percent: qs.total_reviews > 0
+        ? Math.round((qs.total_positive / qs.total_reviews) * 100)
+        : 0,
     };
   } catch { return null; }
 }
@@ -58,29 +77,20 @@ async function getAchievementCount(appid) {
   } catch { return null; }
 }
 
-async function getLowestPrice(steamAppid) {
+async function getLowestPrice(gameId) {
   try {
-    const lookupRes = await fetch(
-      `https://api.isthereanydeal.com/games/lookup/v1?key=${process.env.ITAD_API_KEY}&appid=${steamAppid}`
-    );
-    const lookup = await lookupRes.json();
-    if (!lookup.found) return null;
+    const { data } = await supabase
+      .from('price_history')
+      .select('price, discount_percent, checked_at')
+      .eq('game_id', gameId)
+      .order('price', { ascending: true })
+      .limit(1)
+      .single();
 
-    const histRes = await fetch(
-      `https://api.isthereanydeal.com/games/history/v2?key=${process.env.ITAD_API_KEY}&id=${lookup.game.id}&country=KR`
-    );
-    const hist = await histRes.json();
-    if (!Array.isArray(hist) || hist.length === 0) return null;
-
-    const steamOnly = hist.filter((h) => h.shop?.name === 'Steam');
-    if (steamOnly.length === 0) return null;
-
-    const lowest = steamOnly.reduce((min, h) =>
-      h.deal.price.amount < min.deal.price.amount ? h : min
-    );
+    if (!data || !data.price) return null;
     return {
-      price: lowest.deal.price.amount,
-      date: lowest.timestamp?.slice(0, 10) ?? null,
+      price: data.price,
+      date: data.checked_at?.slice(0, 10) ?? null,
     };
   } catch { return null; }
 }
@@ -98,24 +108,19 @@ async function main() {
       console.log(`실패: ${game.name}`);
       continue;
     }
-
     const data = json[game.steam_appid].data;
 
-    const [reviews, achievements, lowestPriceData] = await Promise.all([
+        const [releaseDate, reviews, achievements, lowestPriceData] = await Promise.all([
+      getEnglishReleaseDate(game.steam_appid),
       getReviewStats(game.steam_appid),
       getAchievementCount(game.steam_appid),
-      getLowestPrice(game.steam_appid),
+      getLowestPrice(game.id), // ← steam_appid → game.id
     ]);
 
     const update = {
       min_spec: stripHtml(data.pc_requirements?.minimum),
-      release_date: (() => {
-        try {
-          const d = new Date(data.release_date?.date);
-          return isNaN(d.getTime()) ? null : d.toISOString().slice(0, 10);
-        } catch { return null; }
-      })(),
-      korean_support: parseKoreanSupport(data.supported_languages),
+      release_date: releaseDate,
+      korean_support: parseKoreanSupport(data.supported_languages, data.full_audio_languages),
       storage_gb: parseStorage(data.pc_requirements?.minimum),
       has_dlc: (data.dlc?.length ?? 0) > 0,
       family_sharing: parseFamilySharing(data.categories),
@@ -137,7 +142,7 @@ async function main() {
       console.error(`실패 (${game.name}):`, error.message);
     } else {
       console.log(
-        `✅ ${game.name}: 출시일 ${update.release_date} | 한국어 ${update.korean_support} | 용량 ${update.storage_gb}GB | 역대최저 ${lowestPriceData?.price ?? '없음'}`
+        `✅ ${game.name}: 출시일 ${releaseDate ?? 'null'} | 한국어 ${update.korean_support} | 용량 ${update.storage_gb ?? '?'}GB | 역대최저 ₩${lowestPriceData?.price?.toLocaleString() ?? '없음'}`
       );
     }
 
