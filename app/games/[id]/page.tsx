@@ -107,6 +107,49 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           </a>
         </div>
       </div>
+      
+      {(game.review_summary || game.critic_score || game.heat_rank) && (
+  <div className="review-panel">
+    {game.review_summary && (
+      <div className="review-row">
+        <div className="review-source">
+          <span className="review-source-label">🎮 Steam 유저 평가</span>
+          <span className="review-count">종합 평가</span>
+        </div>
+        <span className={`review-badge ${getReviewClass(game.review_summary)}`}>
+          {game.review_summary}
+        </span>
+      </div>
+    )}
+    {game.critic_score && (
+      <div className="review-row">
+        <div className="review-source">
+          <span className="review-source-label">📰 평론가 점수</span>
+          <span className="review-count">OpenCritic · Metacritic 종합</span>
+        </div>
+        <div className="review-score-bar">
+          <div
+            className="review-score-fill"
+            style={{
+              width: `${game.critic_score}%`,
+              background: game.critic_score >= 75 ? '#4a9e3a' : game.critic_score >= 50 ? '#d4a017' : '#d64545',
+            }}
+          />
+          <span className="review-score-num">{game.critic_score}점</span>
+        </div>
+      </div>
+    )}
+    {game.heat_rank && (
+      <div className="review-row">
+        <div className="review-source">
+          <span className="review-source-label">🔥 ITAD 인기 순위</span>
+          <span className="review-count">IsThereAnyDeal 기준 글로벌 인기도</span>
+        </div>
+        <span className="review-heat">#{game.heat_rank.toLocaleString()}</span>
+      </div>
+    )}
+  </div>
+)}
 
       {platformCategories.length > 0 && (
         <div className="platform-section">

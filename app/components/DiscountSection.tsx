@@ -1,40 +1,17 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
-
-function getLatestDiscount(priceHistory: any[]) {
-  if (!priceHistory?.length) return null;
-  const sorted = [...priceHistory].sort(
-    (a, b) => new Date(b.checked_at).getTime() - new Date(a.checked_at).getTime()
-  );
-  const latest = sorted[0];
-  if (!latest.discount_percent || latest.discount_percent === 0) return null;
-  // original은 discount 없을 때의 가격, 없으면 역산
-  const originalRecord = sorted.find((p) => p.discount_percent === 0);
-  const originalPrice = originalRecord
-    ? originalRecord.price
-    : Math.round(latest.price / (1 - latest.discount_percent / 100));
-  return {
-    discount: latest.discount_percent,
-    finalPrice: latest.price,
-    originalPrice,
-  };
-}
+import { getPriceInfo } from '../lib/price';
 
 export default function DiscountSection({ games }: { games: any[] }) {
-  const [current, setCurrent] = useState(0);
   const discounted = games
-    .map((g) => ({ ...g, deal: getLatestDiscount(g.price_history) }))
-    .filter((g) => g.deal !== null)
+    .filter((g) => {
+      const price = getPriceInfo(g);
+      return price && price.discount > 0;
+    })
     .slice(0, 8);
 
   if (discounted.length === 0) return null;
-
-  const fmt = (n: number) => {
-  if (n === 0) return '무료';
-  return `₩${Math.round(n).toLocaleString('ko-KR')}`;
-};
 
   return (
     <section className="discount-section">
@@ -42,26 +19,39 @@ export default function DiscountSection({ games }: { games: any[] }) {
         <h2 className="section-title">🔥 지금 할인 중</h2>
         <span className="section-sub">할인 끝나기 전에 확인해봐</span>
       </div>
-      <div className="discount-strip">
-        {discounted.map((g) => (
-          <Link href={`/games/${g.id}`} key={g.id} className="discount-card">
-            <div className="discount-card-img">
-              <img src={g.cover_image_url} alt={g.name} />
-              <span className="discount-card-badge">-{g.deal.discount}%</span>
-            </div>
-            <div className="discount-card-body">
-              <p className="discount-card-name">{g.name}</p>
-              <div className="discount-card-price">
-                <span className="discount-card-original">
-                  {fmt(g.deal.originalPrice)}
-                </span>
-                <span className="discount-card-final">
-                  {fmt(g.deal.finalPrice)}
-                </span>
+      <div className="grid">
+        {discounted.map((game) => {
+          const price = getPriceInfo(game);
+          return (
+            <Link href={`/games/${game.id}`} key={game.id} className="card">
+              <div className="card-image-wrap">
+                <img src={game.cover_image_url} alt={game.name} />
+                {game.steam_appid && <span className="platform-badge">Steam</span>}
               </div>
-            </div>
-          </Link>
-        ))}
+              <div className="card-body">
+                <h3>{game.name}</h3>
+                <p className="card-meta">
+                  {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : ''}
+                  {game.difficulty ? ` · ${game.difficulty}` : ''}
+                </p>
+                {game.tags?.slice(0, 3).map((tag: string) => (
+                  <span key={tag} className="category-tag">{tag}</span>
+                ))}
+                {price && (
+                  <div className="price-row">
+                    {price.discount > 0 && (
+                      <>
+                        <span className="discount-badge">-{price.discount}%</span>
+                        <span className="price-original">{price.formattedOriginal}</span>
+                      </>
+                    )}
+                    <span className="price-final">{price.formattedFinal}</span>
+                  </div>
+                )}
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );

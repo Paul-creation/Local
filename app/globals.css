@@ -524,3 +524,33 @@ button { font-family: inherit; }
 overflow: hidden;
 line-clamp: 2;
 }
+/* Review panel */
+.review-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 4px 20px;
+  margin-bottom: 28px;
+}
+.review-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+.review-row:last-child { border-bottom: none; }
+.review-source { display: flex; flex-direction: column; gap: 3px; }
+.review-source-label { font-size: 14px; font-weight: 700; color: var(--text); }
+.review-count { font-size: 12px; color: var(--text-dimmer); }
+.review-score-bar {
+  display: flex; align-items: center; gap: 10px;
+  width: 160px;
+}
+.review-score-fill {
+  height: 6px; border-radius: 3px;
+  flex: 1; transition: width 0.4s ease;
+}
+.review-score-num { font-size: 15px; font-weight: 800; color: var(--text); min-width: 36px; text-align: right; }
+.review-heat { font-size: 18px; font-weight: 800; color: var(--accent); }
