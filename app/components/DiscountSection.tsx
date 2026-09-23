@@ -27,8 +27,10 @@ export default function DiscountSection({ games }: { games: any[] }) {
 
   if (discounted.length === 0) return null;
 
-  const fmt = (n: number) =>
-    n === 0 ? '무료' : `₩${Math.round(n * 1000 / 10).toLocaleString()}`;
+  const fmt = (n: number) => {
+  if (n === 0) return '무료';
+  return `$${n.toFixed(2)}`;
+};
 
   return (
     <section className="discount-section">

@@ -17,7 +17,22 @@ const CATEGORY_ICON: Record<PlatformCategory, React.ReactNode> = {
   switch: <span style={{ fontSize: 18 }}>🎮</span>,
   vr: <FaVrCardboard />,
 };
-
+function parseMinSpec(raw: string | null) {
+  if (!raw) return null;
+  const lines = raw.split('/').map((s) => s.trim()).filter(Boolean);
+  const result: { label: string; value: string }[] = [];
+  for (const line of lines) {
+    const colonIdx = line.indexOf(':');
+    if (colonIdx === -1) continue;
+    const label = line.slice(0, colonIdx).trim();
+    const value = line.slice(colonIdx + 1).trim();
+    if (!value || label.toLowerCase() === '최소') continue;
+    // 너무 긴 항목(추가사항 등)은 생략
+    if (value.length > 80) continue;
+    result.push({ label, value });
+  }
+  return result.length > 0 ? result : null;
+}
 function getReviewClass(summary: string | null) {
   if (!summary) return '';
   if (summary.includes('긍정')) return 'positive';
@@ -61,7 +76,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               {game.review_summary}
             </span>
           )}
-          {game.age_rating && <span className="age-badge">{game.age_rating}</span>}
+          
         </div>
         {game.tags?.length > 0 && (
           <div className="main-tag-row">
@@ -162,12 +177,23 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
                 <span className="spec-value">{game.server_type}</span>
               </div>
             )}
-            {game.min_spec && (
-              <div className="spec-row">
-                <span className="spec-label">최소 사양</span>
-                <span className="spec-value" style={{ fontWeight: 500 }}>{game.min_spec}</span>
-              </div>
-            )}
+            {(() => {
+  const parsed = parseMinSpec(game.min_spec);
+  if (!parsed) return null;
+  return (
+    <>
+      <div className="spec-row" style={{ borderBottom: 'none', paddingBottom: 4 }}>
+        <span className="spec-label" style={{ fontWeight: 700, color: 'var(--text)' }}>최소 사양</span>
+      </div>
+      {parsed.map(({ label, value }) => (
+        <div className="spec-row" key={label} style={{ paddingLeft: 12 }}>
+          <span className="spec-label">{label}</span>
+          <span className="spec-value" style={{ fontWeight: 500, fontSize: 13 }}>{value}</span>
+        </div>
+      ))}
+    </>
+  );
+})()}
                         {game.activities?.length > 0 && (
               <div className="spec-row">
                 <span className="spec-label">가능한 활동</span>

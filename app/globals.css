@@ -518,6 +518,9 @@ button { font-family: inherit; }
 .free-chip span {
   font-size: 12px; font-weight: 600; color: var(--text-dim);
   text-align: center; line-height: 1.3;
-  display: -webkit-box; -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical; overflow: hidden;
+ display: -webkit-box;
+-webkit-line-clamp: 2;
+-webkit-box-orient: vertical;
+overflow: hidden;
+line-clamp: 2;
 }
