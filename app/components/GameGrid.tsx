@@ -183,9 +183,18 @@ export default function GameGrid({ games }: { games: any[] }) {
                 </div>
                 <div className="card-body">
                   <h3>{game.name}</h3>
-                  <p className="card-meta">
-                    {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : ''}
+                                    <p className="card-meta">
+                    {game.recommended_players
+                      ? `추천 ${game.recommended_players}`
+                      : game.min_players && game.max_players
+                      ? `${game.min_players}-${game.max_players}인`
+                      : ''}
                     {game.difficulty ? ` · ${game.difficulty}` : ''}
+                    {game.solo_playable === false && (
+                      <span style={{ marginLeft: 6, color: 'var(--danger)', fontSize: 11, fontWeight: 700 }}>
+                        멀티필수
+                      </span>
+                    )}
                   </p>
                   {game.tags?.slice(0, 3).map((tag: string) => (
                     <span key={tag} className="category-tag">{tag}</span>

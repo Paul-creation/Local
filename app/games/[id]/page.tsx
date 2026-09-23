@@ -296,10 +296,24 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       )}
 
       <div className="spec-list">
-        <div className="spec-row">
+                <div className="spec-row">
           <span className="spec-label">인원수</span>
           <span className="spec-value">
             {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : '정보 없음'}
+          </span>
+        </div>
+        {game.recommended_players && (
+          <div className="spec-row">
+            <span className="spec-label">추천 인원</span>
+            <span className="spec-value" style={{ color: 'var(--accent)', fontWeight: 700 }}>
+              {game.recommended_players}
+            </span>
+          </div>
+        )}
+        <div className="spec-row">
+          <span className="spec-label">솔로 플레이</span>
+          <span className="spec-value" style={{ color: game.solo_playable ? '#4a9e3a' : 'var(--danger)', fontWeight: 700 }}>
+            {game.solo_playable ? '혼자도 가능' : '멀티 필수'}
           </span>
         </div>
         <div className="spec-row">
