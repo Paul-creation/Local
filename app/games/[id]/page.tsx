@@ -18,6 +18,14 @@ const CATEGORY_ICON: Record<PlatformCategory, React.ReactNode> = {
   switch: <span style={{ fontSize: 18 }}>🎮</span>,
   vr: <FaVrCardboard />,
 };
+
+function getReviewClass(summary: string | null) {
+  if (!summary) return '';
+  if (summary.includes('긍정')) return 'positive';
+  if (summary.includes('부정')) return 'negative';
+  return 'mixed';
+}
+
 function parseMinSpec(raw: string | null) {
   if (!raw) return null;
   const lines = raw.split('/').map((s) => s.trim()).filter(Boolean);
@@ -28,23 +36,16 @@ function parseMinSpec(raw: string | null) {
     const label = line.slice(0, colonIdx).trim();
     const value = line.slice(colonIdx + 1).trim();
     if (!value || label.toLowerCase() === '최소') continue;
-    // 너무 긴 항목(추가사항 등)은 생략
-    if (value.length > 80) continue;
+    if (value.length > 120) continue;
     result.push({ label, value });
   }
   return result.length > 0 ? result : null;
-}
-function getReviewClass(summary: string | null) {
-  if (!summary) return '';
-  if (summary.includes('긍정')) return 'positive';
-  if (summary.includes('부정')) return 'negative';
-  return 'mixed';
 }
 
 export default async function GameDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-      const { data: game, error } = await supabase
+  const { data: game, error } = await supabase
     .from('games')
     .select('*, price_history(price, discount_percent, checked_at), player_history(player_count, recorded_at)')
     .eq('id', id)
@@ -65,10 +66,12 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
     <main className="page">
       <Link href="/" className="back-link">← 목록으로</Link>
 
+      {/* 히어로 이미지 */}
       <div className="detail-hero">
         <img src={game.cover_image_url} alt={game.name} />
       </div>
 
+      {/* 제목 + 평가 배지 + 태그 + 설명 */}
       <div className="detail-header">
         <h1 className="detail-title-v2">{game.name}</h1>
         <div className="detail-meta-line">
@@ -77,7 +80,12 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               {game.review_summary}
             </span>
           )}
-          
+          {game.is_early_access && (
+            <span style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 700, border: '1px solid var(--accent)', padding: '3px 10px', borderRadius: 100 }}>
+              얼리 액세스
+            </span>
+          )}
+          {game.category && <span className="badge-neutral">{game.category}</span>}
         </div>
         {game.tags?.length > 0 && (
           <div className="main-tag-row">
@@ -89,6 +97,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         {game.description && <p className="detail-description-v2">{game.description}</p>}
       </div>
 
+      {/* 구매 카드 */}
       <div className="buy-card">
         <div className="buy-top">
           <div className="buy-price-block">
@@ -100,7 +109,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
                   <span className="buy-price-original">{price.formattedOriginal}</span>
                 </>
               )}
-              <span className="buy-price-final">{price ? price.formattedFinal : '가격 정보 없음'}</span>
+              <span className="buy-price-final">
+                {game.is_free ? '무료' : price ? price.formattedFinal : '가격 정보 없음'}
+              </span>
             </div>
           </div>
           <a href={steamUrl} target="_blank" rel="noopener noreferrer" className="buy-cta">
@@ -108,179 +119,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           </a>
         </div>
       </div>
-              {game.release_date && (
-          <div className="spec-row">
-            <span className="spec-label">출시일</span>
-            <span className="spec-value">
-              {new Date(game.release_date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
-              {game.is_early_access && <span style={{ marginLeft: 8, fontSize: 12, color: 'var(--accent)', fontWeight: 700 }}>얼리 액세스</span>}
-            </span>
-          </div>
-        )}
-        <div className="spec-row">
-  <span className="spec-label">한국어</span>
-  <span className="spec-value" style={{
-    color: game.korean_support === '한국어 없음' || !game.korean_support ? 'var(--danger)' : '#4a9e3a',
-    fontWeight: 700
-  }}>
-    {!game.korean_support || game.korean_support === '한국어 없음'
-      ? '지원 안 함'
-      : game.korean_support === '자막+더빙'
-      ? '자막 · 더빙 지원'
-      : '자막 지원'}
-  </span>
-</div>
-        {game.storage_gb && (
-          <div className="spec-row">
-            <span className="spec-label">필요 용량</span>
-            <span className="spec-value">{game.storage_gb} GB</span>
-          </div>
-        )}
-        {game.family_sharing !== null && game.family_sharing !== undefined && (
-  <div className="spec-row">
-    <span className="spec-label">Steam 가족 공유</span>
-    <span className="spec-value" style={{ color: game.family_sharing ? '#4a9e3a' : 'var(--danger)' }}>
-      {game.family_sharing ? '공유 가능' : '공유 불가'}
-    </span>
-  </div>
-)}
-        {game.achievement_count && (
-          <div className="spec-row">
-            <span className="spec-label">도전과제</span>
-            <span className="spec-value">{game.achievement_count.toLocaleString('ko-KR')}개</span>
-          </div>
-        )}
-        {game.has_dlc && (
-          <div className="spec-row">
-            <span className="spec-label">DLC</span>
-            <span className="spec-value">있음</span>
-          </div>
-        )}
-        {game.lowest_price && !game.is_free && (
-  <div className="spec-row">
-    <span className="spec-label">역대 최저가</span>
-            <span className="spec-value">
-              ₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}
-              {game.lowest_price_date && (
-                <span style={{ color: 'var(--text-dimmer)', fontSize: 12, fontWeight: 400, marginLeft: 6 }}>
-                  ({game.lowest_price_date})
-                </span>
-              )}
-            </span>
-          </div>
-        )}
-            {(game.current_players || game.player_history?.length >= 2) && (
-        <section className="detail-section-v2">
-          <h3>플레이어 현황</h3>
-          <div className="player-stats">
-            {game.current_players && (
-              <div className="player-stat-card">
-                <span className="player-stat-label">지금 접속 중</span>
-                <span className="player-stat-num">
-                  {game.current_players.toLocaleString('ko-KR')}명
-                </span>
-              </div>
-            )}
-          </div>
-          {game.player_history?.length >= 2 && (
-            <PlayerChart data={game.player_history} />
-          )}
-          <p style={{ fontSize: 12, color: 'var(--text-dimmer)', marginTop: 8 }}>
-            Tracked from Steam · 매일 자정 갱신
-          </p>
-        </section>
-      )}
 
-      {(game.review_positive_percent || game.critic_score || game.heat_rank) && (
-  <div className="review-panel">
-    {game.review_positive_percent && (
-      <div className="review-row">
-        <div className="review-source">
-          <span className="review-source-label">Steam 유저 평가</span>
-          <span className="review-count">
-            {game.review_total?.toLocaleString('ko-KR')}개 리뷰 기준
-          </span>
-        </div>
-        <div className="review-bar-wrap">
-          <div className="review-bar-track">
-            <div
-              className="review-bar-fill"
-              style={{
-                width: `${game.review_positive_percent}%`,
-                background:
-                  game.review_positive_percent >= 80
-                    ? '#4a9e3a'
-                    : game.review_positive_percent >= 60
-                    ? '#d4a017'
-                    : '#d64545',
-              }}
-            />
-            <div
-              className="review-bar-neg"
-              style={{ width: `${100 - game.review_positive_percent}%` }}
-            />
-          </div>
-          <div className="review-bar-labels">
-            <span style={{ color: '#4a9e3a', fontWeight: 700 }}>
-              👍 {game.review_positive_percent}%
-            </span>
-            <span style={{ color: '#d64545', fontWeight: 700 }}>
-              {100 - game.review_positive_percent}% 👎
-            </span>
-          </div>
-        </div>
-      </div>
-    )}
-    {game.critic_score && (
-      <div className="review-row">
-        <div className="review-source">
-          <span className="review-source-label">평론가 종합</span>
-          <span className="review-count">OpenCritic · Metacritic 평균</span>
-        </div>
-        <div className="review-bar-wrap">
-          <div className="review-bar-track">
-            <div
-              className="review-bar-fill"
-              style={{
-                width: `${game.critic_score}%`,
-                background:
-                  game.critic_score >= 75
-                    ? '#4a9e3a'
-                    : game.critic_score >= 50
-                    ? '#d4a017'
-                    : '#d64545',
-              }}
-            />
-            <div
-              className="review-bar-neg"
-              style={{ width: `${100 - game.critic_score}%` }}
-            />
-          </div>
-          <div className="review-bar-labels">
-            <span style={{ color: game.critic_score >= 75 ? '#4a9e3a' : game.critic_score >= 50 ? '#d4a017' : '#d64545', fontWeight: 700 }}>
-              {game.critic_score}점 / 100
-            </span>
-            <span style={{ color: 'var(--text-dimmer)', fontSize: 12 }}>
-              {game.critic_score >= 75 ? '추천' : game.critic_score >= 50 ? '보통' : '비추천'}
-            </span>
-          </div>
-        </div>
-      </div>
-    )}
-    {game.heat_rank && (
-      <div className="review-row">
-        <div className="review-source">
-          <span className="review-source-label">ITAD 인기 순위</span>
-          <span className="review-count">IsThereAnyDeal 글로벌 기준</span>
-        </div>
-        <span style={{ fontSize: 18, fontWeight: 800, color: 'var(--accent)' }}>
-          #{game.heat_rank.toLocaleString('ko-KR')}위
-        </span>
-      </div>
-    )}
-  </div>
-)}
-
+      {/* 플랫폼 */}
       {platformCategories.length > 0 && (
         <div className="platform-section">
           <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12 }}>이용 가능한 플랫폼</h3>
@@ -295,30 +135,14 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </div>
       )}
 
+      {/* 스펙 리스트 */}
       <div className="spec-list">
-                <div className="spec-row">
+        <div className="spec-row">
           <span className="spec-label">인원수</span>
           <span className="spec-value">
             {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : '정보 없음'}
           </span>
         </div>
-        {game.recommended_spec && (() => {
-  const parsed = parseMinSpec(game.recommended_spec);
-  if (!parsed) return null;
-  return (
-    <>
-      <div className="spec-row" style={{ borderBottom: 'none', paddingBottom: 4, marginTop: 8 }}>
-        <span className="spec-label" style={{ fontWeight: 700, color: 'var(--text)' }}>권장 사양</span>
-      </div>
-      {parsed.map(({ label, value }) => (
-        <div className="spec-row" key={`rec-${label}`} style={{ paddingLeft: 12 }}>
-          <span className="spec-label">{label}</span>
-          <span className="spec-value" style={{ fontWeight: 500, fontSize: 13 }}>{value}</span>
-        </div>
-      ))}
-    </>
-  );
-})()}
         {game.recommended_players && (
           <div className="spec-row">
             <span className="spec-label">추천 인원</span>
@@ -337,10 +161,72 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           <span className="spec-label">난이도</span>
           <span className="spec-value">{game.difficulty || '정보 없음'}</span>
         </div>
+        {game.story_length && (
+          <div className="spec-row">
+            <span className="spec-label">클리어까지</span>
+            <span className="spec-value">{game.story_length}</span>
+          </div>
+        )}
+        {game.release_date && (
+          <div className="spec-row">
+            <span className="spec-label">출시일</span>
+            <span className="spec-value">
+              {new Date(game.release_date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </span>
+          </div>
+        )}
         <div className="spec-row">
-          <span className="spec-label">클리어까지</span>
-          <span className="spec-value">{game.story_length || '정보 없음'}</span>
+          <span className="spec-label">한국어</span>
+          <span className="spec-value" style={{
+            color: !game.korean_support || game.korean_support === '한국어 없음' ? 'var(--danger)' : '#4a9e3a',
+            fontWeight: 700
+          }}>
+            {!game.korean_support || game.korean_support === '한국어 없음'
+              ? '지원 안 함'
+              : game.korean_support === '자막+더빙'
+              ? '자막 · 더빙 지원'
+              : '자막 지원'}
+          </span>
         </div>
+        {game.storage_gb && (
+          <div className="spec-row">
+            <span className="spec-label">필요 용량</span>
+            <span className="spec-value">{game.storage_gb} GB</span>
+          </div>
+        )}
+        {game.family_sharing !== null && game.family_sharing !== undefined && (
+          <div className="spec-row">
+            <span className="spec-label">Steam 가족 공유</span>
+            <span className="spec-value" style={{ color: game.family_sharing ? '#4a9e3a' : 'var(--danger)' }}>
+              {game.family_sharing ? '공유 가능' : '공유 불가'}
+            </span>
+          </div>
+        )}
+        {game.achievement_count && (
+          <div className="spec-row">
+            <span className="spec-label">도전과제</span>
+            <span className="spec-value">{game.achievement_count.toLocaleString('ko-KR')}개</span>
+          </div>
+        )}
+        {game.has_dlc && (
+          <div className="spec-row">
+            <span className="spec-label">DLC</span>
+            <span className="spec-value">있음</span>
+          </div>
+        )}
+        {!game.is_free && game.lowest_price && (
+          <div className="spec-row">
+            <span className="spec-label">역대 최저가</span>
+            <span className="spec-value">
+              ₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}
+              {game.lowest_price_date && (
+                <span style={{ color: 'var(--text-dimmer)', fontSize: 12, fontWeight: 400, marginLeft: 6 }}>
+                  ({game.lowest_price_date})
+                </span>
+              )}
+            </span>
+          </div>
+        )}
         {game.critic_score && (
           <div className="spec-row">
             <span className="spec-label">평론가 점수</span>
@@ -365,7 +251,89 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         )}
       </div>
 
-      {(game.has_ending !== null || game.server_type || game.min_spec || game.activities?.length > 0) && (
+      {/* 리뷰 패널 */}
+      {(game.review_positive_percent || game.critic_score || game.heat_rank) && (
+        <div className="review-panel">
+          {game.review_positive_percent && (
+            <div className="review-row">
+              <div className="review-source">
+                <span className="review-source-label">Steam 유저 평가</span>
+                <span className="review-count">
+                  {game.review_total?.toLocaleString('ko-KR')}개 리뷰 기준
+                </span>
+              </div>
+              <div className="review-bar-wrap">
+                <div className="review-bar-track">
+                  <div className="review-bar-fill" style={{
+                    width: `${game.review_positive_percent}%`,
+                    background: game.review_positive_percent >= 80 ? '#4a9e3a' : game.review_positive_percent >= 60 ? '#d4a017' : '#d64545',
+                  }} />
+                  <div className="review-bar-neg" style={{ width: `${100 - game.review_positive_percent}%` }} />
+                </div>
+                <div className="review-bar-labels">
+                  <span style={{ color: '#4a9e3a', fontWeight: 700 }}>👍 {game.review_positive_percent}%</span>
+                  <span style={{ color: '#d64545', fontWeight: 700 }}>{100 - game.review_positive_percent}% 👎</span>
+                </div>
+              </div>
+            </div>
+          )}
+          {game.heat_rank && (
+            <div className="review-row">
+              <div className="review-source">
+                <span className="review-source-label">ITAD 인기 순위</span>
+                <span className="review-count">IsThereAnyDeal 글로벌 기준</span>
+              </div>
+              <span style={{ fontSize: 18, fontWeight: 800, color: 'var(--accent)' }}>
+                #{game.heat_rank.toLocaleString('ko-KR')}위
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* PC 사양 — 독립 섹션 */}
+      {(game.min_spec || game.recommended_spec) && (
+        <section className="detail-section-v2">
+          <h3>PC 사양</h3>
+          {game.min_spec && (() => {
+            const parsed = parseMinSpec(game.min_spec);
+            if (!parsed) return null;
+            return (
+              <div style={{ marginBottom: game.recommended_spec ? 24 : 0 }}>
+                <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 8 }}>최소 사양</p>
+                <div className="spec-list">
+                  {parsed.map(({ label, value }) => (
+                    <div className="spec-row" key={label}>
+                      <span className="spec-label">{label}</span>
+                      <span className="spec-value" style={{ fontWeight: 500, fontSize: 13 }}>{value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+          {game.recommended_spec && (() => {
+            const parsed = parseMinSpec(game.recommended_spec);
+            if (!parsed) return null;
+            return (
+              <div>
+                <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 8, marginTop: 8 }}>권장 사양</p>
+                <div className="spec-list">
+                  {parsed.map(({ label, value }) => (
+                    <div className="spec-row" key={`rec-${label}`}>
+                      <span className="spec-label">{label}</span>
+                      <span className="spec-value" style={{ fontWeight: 500, fontSize: 13 }}>{value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+        </section>
+      )}
+
+      {/* 더 자세히 — 엔딩/서버/활동만 */}
+      {(game.has_ending !== null || game.server_type || game.activities?.length > 0) && (
         <details className="detail-accordion">
           <summary>더 자세히 들어가 보시겠어요?</summary>
           <div className="spec-list">
@@ -381,32 +349,13 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
                 <span className="spec-value">{game.server_type}</span>
               </div>
             )}
-            {(() => {
-  const parsed = parseMinSpec(game.min_spec);
-  if (!parsed) return null;
-  return (
-    <>
-      <div className="spec-row" style={{ borderBottom: 'none', paddingBottom: 4 }}>
-        <span className="spec-label" style={{ fontWeight: 700, color: 'var(--text)' }}>최소 사양</span>
-      </div>
-      {parsed.map(({ label, value }) => (
-        <div className="spec-row" key={label} style={{ paddingLeft: 12 }}>
-          <span className="spec-label">{label}</span>
-          <span className="spec-value" style={{ fontWeight: 500, fontSize: 13 }}>{value}</span>
-        </div>
-      ))}
-    </>
-  );
-})()}
-                        {game.activities?.length > 0 && (
+            {game.activities?.length > 0 && (
               <div className="spec-row">
                 <span className="spec-label">가능한 활동</span>
                 <span className="spec-value spec-tags">
-                  <span className="activity-list">
-                    {game.activities.map((a: string) => (
-                      <span key={a} className="activity-chip">{a}</span>
-                    ))}
-                  </span>
+                  {game.activities.map((a: string) => (
+                    <span key={a} className="activity-chip">{a}</span>
+                  ))}
                 </span>
               </div>
             )}
@@ -415,7 +364,39 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </details>
       )}
 
-            {game.price_history?.length >= 2 && (
+      {/* 플레이어 현황 */}
+      {(game.current_players || game.player_history?.length >= 2) && (
+        <section className="detail-section-v2">
+          <h3>플레이어 현황</h3>
+          <div className="player-stats">
+            {game.current_players && (
+              <div className="player-stat-card">
+                <span className="player-stat-label">지금 접속 중</span>
+                <span className="player-stat-num">
+                  {game.current_players.toLocaleString('ko-KR')}명
+                </span>
+              </div>
+            )}
+            {game.peak_players && (
+              <div className="player-stat-card">
+                <span className="player-stat-label">역대 최고</span>
+                <span className="player-stat-num">
+                  {game.peak_players.toLocaleString('ko-KR')}명
+                </span>
+              </div>
+            )}
+          </div>
+          {game.player_history?.length >= 2 && (
+            <PlayerChart data={game.player_history} />
+          )}
+          <p style={{ fontSize: 12, color: 'var(--text-dimmer)', marginTop: 8 }}>
+            Tracked from Steam · 매일 자정 갱신
+          </p>
+        </section>
+      )}
+
+      {/* 할인 전적 */}
+      {game.price_history?.length >= 2 && (
         <section className="detail-section-v2">
           <h3>할인 전적</h3>
           <DiscountChart
@@ -429,6 +410,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </section>
       )}
 
+      {/* 스트리머 */}
       <section className="detail-section-v2">
         <h3>이 게임을 플레이한 스트리머<span className="sample-note">※ 샘플 데이터</span></h3>
         <div className="streamer-list">
