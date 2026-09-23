@@ -660,3 +660,42 @@ button { font-family: inherit; }
   overflow-y: auto;
   padding-right: 4px;
 }
+/* 검색창 — 아이콘 없이 깔끔하게 */
+.search-bar-clean {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 0 16px;
+  transition: border-color 0.15s ease;
+}
+.search-bar-clean:focus-within { border-color: var(--accent); }
+.search-bar-clean input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: none;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--text);
+  height: 48px;
+}
+.search-bar-clean input::placeholder { color: var(--text-dimmer); }
+.search-bar-clean .search-clear {
+  background: none; border: none; cursor: pointer;
+  color: var(--text-dimmer); font-size: 16px; padding: 0 0 0 8px;
+}
+
+/* AI 추천 버튼 — 텍스트만 */
+.ai-trigger-clean {
+  height: 48px;
+  display: flex; align-items: center;
+  background: var(--bg-nav); color: var(--navy-text);
+  border: none; border-radius: 10px;
+  padding: 0 20px; font-size: 14px; font-weight: 700;
+  cursor: pointer; white-space: nowrap;
+  transition: opacity 0.15s ease;
+}
+.ai-trigger-clean:hover { opacity: 0.88; }

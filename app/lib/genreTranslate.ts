@@ -8,7 +8,14 @@ export const GENRE_KO: Record<string, string> = {
   'Thriller': '스릴러', 'Historical': '역사', 'Stealth': '잠입', 'Comedy': '코미디',
   'Business': '경영', 'Drama': '드라마', 'Sandbox': '샌드박스', 'Educational': '교육',
   'Kids': '어린이', 'Open world': '오픈월드', 'Warfare': '전쟁', 'Party': '파티',
-  'Mystery': '미스터리', 'Romance': '로맨스',
+  'Mystery': '미스터리', 'Romance': '로맨스',  'open world survival craft': '오픈월드 생존', 'online co-op': '온라인 협동',
+  'psychological horror': '심리적 공포', 'third-person shooter': '3인칭 슈팅',
+  'action roguelike': '액션 로그라이크', 'rogue-lite': '로그라이트',
+  'extraction shooter': '추출 슈팅', 'atmospheric': '분위기 있는',
+  'character customization': '캐릭터 커스텀', 'naval combat': '해상 전투',
+  'base-building': '기지 건설', 'automation': '자동화', 'tanks': '탱크',
+  'memes': '밈', 'farming sim': '농사 시뮬', 'pixel graphics': '픽셀아트',
+  'life sim': '생활 시뮬', 'e-sports': 'e스포츠',
 };
 
 export function translateGenres(list: string[] = []): string[] {

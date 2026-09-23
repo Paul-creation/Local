@@ -56,9 +56,6 @@ export default function AIRecommend() {
 
   return (
     <>
-      <button className="ai-trigger" onClick={() => setOpen(true)}>
-        🎮 AI 추천
-      </button>
 
       {open && (
         <div className="ai-modal-overlay" onClick={close}>

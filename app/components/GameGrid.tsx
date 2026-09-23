@@ -90,11 +90,11 @@ export default function GameGrid({ games }: { games: any[] }) {
       )}
 
       <div className="search-row">
-        <div className="search-bar">
-          <span className="search-icon">🔍</span>
+              <div className="search-row">
+        <div className="search-bar-clean">
           <input
             type="text"
-            placeholder="게임 이름이나 태그로 검색"
+            placeholder="게임 이름 또는 태그로 검색"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
