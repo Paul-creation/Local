@@ -18,18 +18,16 @@ export default function GameGrid({ games }: { games: any[] }) {
   const [query, setQuery] = useState('');
 
   const featured = games.find((g) => g.featured);
+  const bannerPool = games.filter((g) => g.is_casual_party && !g.featured);
 
-  // 메인 그리드는 항상 전체 라이브러리
-  const pool = games;
-
-  const presentTags = new Set(pool.flatMap((g) => g.tags || []));
+  const presentTags = new Set(games.flatMap((g) => g.tags || []));
   const groupedTags = Object.entries(TAG_GROUPS)
     .map(([group, tags]) => [group, tags.filter((t) => presentTags.has(t))] as [string, string[]])
     .filter(([, tags]) => tags.length > 0);
 
   const knownTags = new Set(Object.values(TAG_GROUPS).flat());
-  const ungroupedInGroups = Array.from(presentTags).filter((t) => !knownTags.has(t));
-  if (ungroupedInGroups.length > 0) groupedTags.push(['기타', ungroupedInGroups]);
+  const ungrouped = Array.from(presentTags).filter((t) => !knownTags.has(t));
+  if (ungrouped.length > 0) groupedTags.push(['기타', ungrouped]);
 
   const allTagsSorted = Array.from(presentTags).sort((a, b) => a.localeCompare(b, 'ko'));
 
@@ -38,7 +36,7 @@ export default function GameGrid({ games }: { games: any[] }) {
 
   const normalizedQuery = query.trim().toLowerCase();
 
-  const filtered = pool.filter((g) => {
+  const filtered = games.filter((g) => {
     const categoryMatch = category === '전체' || g.category === category;
     const tagMatch = selectedTags.length === 0 || selectedTags.some((t) => g.tags?.includes(t));
     const queryMatch =
@@ -49,7 +47,6 @@ export default function GameGrid({ games }: { games: any[] }) {
   });
 
   const featuredPrice = featured ? getPriceInfo(featured) : null;
-  const bannerPool = games.filter((g) => g.is_casual_party && !g.featured);
 
   return (
     <>
@@ -90,7 +87,6 @@ export default function GameGrid({ games }: { games: any[] }) {
       )}
 
       <div className="search-row">
-              <div className="search-row">
         <div className="search-bar-clean">
           <input
             type="text"
@@ -113,8 +109,14 @@ export default function GameGrid({ games }: { games: any[] }) {
           태그로 찾기 {browseOpen ? '▴' : '▾'}
         </button>
         {selectedTags.length > 0 && (
-          <span style={{ color: 'var(--text-dimmer)', fontSize: 13, alignSelf: 'center' }}>
+          <span style={{ color: 'var(--text-dimmer)', fontSize: 13 }}>
             {selectedTags.length}개 선택됨
+            <button
+              onClick={() => setSelectedTags([])}
+              style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', fontSize: 13, marginLeft: 4 }}
+            >
+              초기화
+            </button>
           </span>
         )}
       </div>

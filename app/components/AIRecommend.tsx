@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 const MOODS = ['신나게', '느긋하게', '긴장감있게'];
 const GROUP_SIZES = ['2인', '3-4인', '5인 이상'];
-const VIBES = ['웃긴거', '몰입감있는거', '머리쓰는거'];
+const VIBES = ['웃길거', '몰입감있는거', '머리쓰는거'];
 
 export default function AIRecommend() {
   const [open, setOpen] = useState(false);
@@ -56,6 +56,9 @@ export default function AIRecommend() {
 
   return (
     <>
+      <button className="ai-trigger-clean" onClick={() => setOpen(true)}>
+        AI 추천
+      </button>
 
       {open && (
         <div className="ai-modal-overlay" onClick={close}>
