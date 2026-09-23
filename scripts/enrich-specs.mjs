@@ -13,9 +13,8 @@ function stripHtml(html) {
 function parseMinSpecOnly(html) {
   if (!html) return null;
   const text = html.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').trim();
-  // "최소:" 부분만 추출, "권장:" 이후는 버림
-  const minMatch = text.split(/권장[:：]|Recommended[:：]/i)[0];
-  return minMatch.replace(/\n+/g, ' / ').replace(/\s+/g, ' ').trim();
+  const minPart = text.split(/권장[:：]|Recommended[:：]/i)[0];
+  return minPart.replace(/\n+/g, ' / ').replace(/\s+/g, ' ').trim() || null;
 }
 
 function parseKoreanSupport(languages, fullAudioLanguages) {
@@ -94,8 +93,9 @@ async function getLowestPrice(gameId) {
       .order('price', { ascending: true })
       .limit(1)
       .single();
-
     if (!data || !data.price) return null;
+    // 달러로 잘못 들어간 데이터 필터링 (100 미만이면 달러로 판단)
+    if (data.price < 100) return null;
     return {
       price: data.price,
       date: data.checked_at?.slice(0, 10) ?? null,
@@ -118,11 +118,11 @@ async function main() {
     }
     const data = json[game.steam_appid].data;
 
-        const [releaseDate, reviews, achievements, lowestPriceData] = await Promise.all([
+    const [releaseDate, reviews, achievements, lowestPriceData] = await Promise.all([
       getEnglishReleaseDate(game.steam_appid),
       getReviewStats(game.steam_appid),
       getAchievementCount(game.steam_appid),
-      getLowestPrice(game.id), // ← steam_appid → game.id
+      getLowestPrice(game.id),
     ]);
 
     const update = {
