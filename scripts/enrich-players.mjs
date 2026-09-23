@@ -15,16 +15,6 @@ async function getCurrentPlayers(appid) {
   } catch { return null; }
 }
 
-async function getGameDetails(appid) {
-  try {
-    const res = await fetch(
-      `https://store.steampowered.com/api/appdetails?appids=${appid}&cc=kr&l=korean`
-    );
-    const json = await res.json();
-    return json[appid]?.data ?? null;
-  } catch { return null; }
-}
-
 async function getAccurateReviews(appid) {
   try {
     const res = await fetch(
@@ -48,18 +38,29 @@ async function main() {
   if (!games) return;
 
   for (const game of games) {
-    const [currentPlayers, details, reviews] = await Promise.all([
+    const [currentPlayers, reviews] = await Promise.all([
       getCurrentPlayers(game.steam_appid),
-      getGameDetails(game.steam_appid),
       getAccurateReviews(game.steam_appid),
     ]);
 
     const update = {};
+
     if (currentPlayers !== null) update.current_players = currentPlayers;
     if (reviews) {
       update.review_positive_percent = reviews.percent;
       update.review_total = reviews.total;
     }
+
+    // 역대 피크 플레이어 (SteamSpy)
+    try {
+      const spyRes = await fetch(
+        `https://steamspy.com/api.php?request=appdetails&appid=${game.steam_appid}`
+      );
+      const spyJson = await spyRes.json();
+      if (spyJson.peak_ccu) {
+        update.peak_players = spyJson.peak_ccu;
+      }
+    } catch {}
 
     if (Object.keys(update).length > 0) {
       await supabase.from('games').update(update).eq('id', game.id);
@@ -74,7 +75,7 @@ async function main() {
     }
 
     console.log(
-      `${game.name}: 현재 ${currentPlayers?.toLocaleString() ?? '?'}명 | 리뷰 ${reviews?.percent ?? '?'}% (${reviews?.total?.toLocaleString() ?? '?'}개)`
+      `${game.name}: 현재 ${currentPlayers?.toLocaleString() ?? '?'}명 | 피크 ${update.peak_players?.toLocaleString() ?? '?'}명 | 리뷰 ${reviews?.percent ?? '?'}% (${reviews?.total?.toLocaleString() ?? '?'}개)`
     );
 
     await new Promise((r) => setTimeout(r, 800));

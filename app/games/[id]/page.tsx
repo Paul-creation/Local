@@ -108,6 +108,63 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           </a>
         </div>
       </div>
+              {game.release_date && (
+          <div className="spec-row">
+            <span className="spec-label">출시일</span>
+            <span className="spec-value">
+              {new Date(game.release_date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
+              {game.is_early_access && <span style={{ marginLeft: 8, fontSize: 12, color: 'var(--accent)', fontWeight: 700 }}>얼리 액세스</span>}
+            </span>
+          </div>
+        )}
+        {game.korean_support && (
+          <div className="spec-row">
+            <span className="spec-label">한국어 지원</span>
+            <span className="spec-value" style={{
+              color: game.korean_support === '한국어 없음' ? 'var(--danger)' : '#4a9e3a',
+              fontWeight: 700
+            }}>
+              {game.korean_support}
+            </span>
+          </div>
+        )}
+        {game.storage_gb && (
+          <div className="spec-row">
+            <span className="spec-label">필요 용량</span>
+            <span className="spec-value">{game.storage_gb} GB</span>
+          </div>
+        )}
+        <div className="spec-row">
+          <span className="spec-label">가족 공유</span>
+          <span className="spec-value" style={{ color: game.family_sharing ? '#4a9e3a' : 'var(--danger)' }}>
+            {game.family_sharing ? '가능' : '불가'}
+          </span>
+        </div>
+        {game.achievement_count && (
+          <div className="spec-row">
+            <span className="spec-label">도전과제</span>
+            <span className="spec-value">{game.achievement_count.toLocaleString('ko-KR')}개</span>
+          </div>
+        )}
+        {game.has_dlc && (
+          <div className="spec-row">
+            <span className="spec-label">DLC</span>
+            <span className="spec-value">있음</span>
+          </div>
+        )}
+        {game.lowest_price && (
+          <div className="spec-row">
+            <span className="spec-label">역대 최저가</span>
+            <span className="spec-value">
+              ₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}
+              {game.lowest_price_date && (
+                <span style={{ color: 'var(--text-dimmer)', fontSize: 12, fontWeight: 400, marginLeft: 6 }}>
+                  ({game.lowest_price_date})
+                </span>
+              )}
+            </span>
+          </div>
+        )}
             {(game.current_players || game.player_history?.length >= 2) && (
         <section className="detail-section-v2">
           <h3>플레이어 현황</h3>
