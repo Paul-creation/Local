@@ -10,11 +10,15 @@ function getLatestDiscount(priceHistory: any[]) {
   );
   const latest = sorted[0];
   if (!latest.discount_percent || latest.discount_percent === 0) return null;
-  const original = sorted.find((p) => p.discount_percent === 0)?.price || latest.price;
+  // original은 discount 없을 때의 가격, 없으면 역산
+  const originalRecord = sorted.find((p) => p.discount_percent === 0);
+  const originalPrice = originalRecord
+    ? originalRecord.price
+    : Math.round(latest.price / (1 - latest.discount_percent / 100));
   return {
     discount: latest.discount_percent,
     finalPrice: latest.price,
-    originalPrice: original,
+    originalPrice,
   };
 }
 
@@ -29,7 +33,7 @@ export default function DiscountSection({ games }: { games: any[] }) {
 
   const fmt = (n: number) => {
   if (n === 0) return '무료';
-  return `$${n.toFixed(2)}`;
+  return `₩${Math.round(n).toLocaleString('ko-KR')}`;
 };
 
   return (

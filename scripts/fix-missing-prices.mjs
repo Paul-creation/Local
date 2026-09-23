@@ -6,36 +6,42 @@ const supabase = createClient(
 );
 
 async function main() {
-  const { data: games, error } = await supabase
+  const { data: games } = await supabase
     .from('games')
-    .select('id, name, steam_appid, is_free, price_history(id)');
+    .select('id, name, steam_appid, is_free');
 
-  if (error) {
-    console.error('조회 실패:', error.message);
-    return;
-  }
+  if (!games) return;
 
   for (const game of games) {
-    const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${game.steam_appid}&cc=kr&l=korean`);
-    const json = await res.json();
-    if (!json[game.steam_appid]?.success) continue;
-
-    const data = json[game.steam_appid].data;
-
-    if (data.is_free) {
-      if (!game.is_free) {
-        await supabase.from('games').update({ is_free: true }).eq('id', game.id);
-        console.log(`무료 게임으로 표시: ${game.name}`);
-      }
-    } else if ((game.price_history?.length || 0) === 0 && data.price_overview) {
-      await supabase.from('price_history').insert({
-        game_id: game.id,
-        price: data.price_overview.final / 100,
-        discount_percent: data.price_overview.discount_percent,
-      });
-      console.log(`가격 채움: ${game.name} → ${data.price_overview.final_formatted}`);
+    if (game.is_free) {
+      console.log(`건너뜀 (무료): ${game.name}`);
+      continue;
     }
 
+    const res = await fetch(
+      `https://store.steampowered.com/api/appdetails?appids=${game.steam_appid}&cc=kr&l=korean`
+    );
+    const json = await res.json();
+    const data = json[game.steam_appid]?.data;
+
+    if (!data || data.is_free || !data.price_overview) {
+      console.log(`가격 없음: ${game.name}`);
+      continue;
+    }
+
+    const price = data.price_overview.final / 100;
+    const original = data.price_overview.initial / 100;
+    const discount = data.price_overview.discount_percent;
+
+    // 기존 기록 전부 삭제 후 새로 삽입 (통화 혼용 문제 해결)
+    await supabase.from('price_history').delete().eq('game_id', game.id);
+    await supabase.from('price_history').insert({
+      game_id: game.id,
+      price: price,
+      discount_percent: discount,
+    });
+
+    console.log(`업데이트: ${game.name} — ₩${price.toLocaleString()} (${discount > 0 ? `-${discount}%` : '정가'})`);
     await new Promise((r) => setTimeout(r, 700));
   }
 }
