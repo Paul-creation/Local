@@ -139,7 +139,6 @@ async function main() {
       korean_support: parseKoreanSupport(data.supported_languages, data.full_audio_languages),
       storage_gb: parseStorage(data.pc_requirements?.minimum),
       has_dlc: (data.dlc?.length ?? 0) > 0,
-      family_sharing: parseFamilySharing(data.categories),
       is_early_access: data.genres?.some((g) => g.id === '70') ?? false,
       achievement_count: achievements,
       ...(reviews && {
