@@ -134,6 +134,7 @@ async function main() {
 
     const update = {
       min_spec: parseMinSpecOnly(data.pc_requirements?.minimum),
+      recommended_spec: parseMinSpecOnly(data.pc_requirements?.recommended),
       release_date: releaseDate,
       korean_support: parseKoreanSupport(data.supported_languages, data.full_audio_languages),
       storage_gb: parseStorage(data.pc_requirements?.minimum),

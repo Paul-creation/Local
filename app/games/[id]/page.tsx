@@ -302,6 +302,23 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : '정보 없음'}
           </span>
         </div>
+        {game.recommended_spec && (() => {
+  const parsed = parseMinSpec(game.recommended_spec);
+  if (!parsed) return null;
+  return (
+    <>
+      <div className="spec-row" style={{ borderBottom: 'none', paddingBottom: 4, marginTop: 8 }}>
+        <span className="spec-label" style={{ fontWeight: 700, color: 'var(--text)' }}>권장 사양</span>
+      </div>
+      {parsed.map(({ label, value }) => (
+        <div className="spec-row" key={`rec-${label}`} style={{ paddingLeft: 12 }}>
+          <span className="spec-label">{label}</span>
+          <span className="spec-value" style={{ fontWeight: 500, fontSize: 13 }}>{value}</span>
+        </div>
+      ))}
+    </>
+  );
+})()}
         {game.recommended_players && (
           <div className="spec-row">
             <span className="spec-label">추천 인원</span>
