@@ -41,14 +41,18 @@ function parseFamilySharing(categories) {
   return !ids.includes(62);
 }
 
-function parseStorage(requirements) {
-  if (!requirements) return null;
-  const text = requirements.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ');
-  const match = text.match(/(\d+(?:\.\d+)?)\s*(GB|MB)/i);
-  if (!match) return null;
-  const num = parseFloat(match[1]);
-  const unit = match[2].toUpperCase();
-  return unit === 'GB' ? num : Math.round((num / 1024) * 10) / 10;
+function parseStorage(html) {
+  if (!html) return null;
+  const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
+  // "저장 공간" 또는 "Storage" 키워드 이후 숫자만 찾기
+  const storageMatch = text.match(/저장\s*공간[^0-9]*(\d+(?:\.\d+)?)\s*(GB|MB|TB)/i)
+    || text.match(/storage[^0-9]*(\d+(?:\.\d+)?)\s*(GB|MB|TB)/i);
+  if (!storageMatch) return null;
+  const num = parseFloat(storageMatch[1]);
+  const unit = storageMatch[2].toUpperCase();
+  if (unit === 'TB') return num * 1024;
+  if (unit === 'MB') return Math.round((num / 1024) * 10) / 10;
+  return num;
 }
 
 async function getEnglishReleaseDate(appid) {
