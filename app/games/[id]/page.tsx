@@ -117,29 +117,33 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             </span>
           </div>
         )}
-        {game.korean_support && (
-          <div className="spec-row">
-            <span className="spec-label">한국어 지원</span>
-            <span className="spec-value" style={{
-              color: game.korean_support === '한국어 없음' ? 'var(--danger)' : '#4a9e3a',
-              fontWeight: 700
-            }}>
-              {game.korean_support}
-            </span>
-          </div>
-        )}
+        <div className="spec-row">
+  <span className="spec-label">한국어</span>
+  <span className="spec-value" style={{
+    color: game.korean_support === '한국어 없음' || !game.korean_support ? 'var(--danger)' : '#4a9e3a',
+    fontWeight: 700
+  }}>
+    {!game.korean_support || game.korean_support === '한국어 없음'
+      ? '지원 안 함'
+      : game.korean_support === '자막+더빙'
+      ? '자막 · 더빙 지원'
+      : '자막 지원'}
+  </span>
+</div>
         {game.storage_gb && (
           <div className="spec-row">
             <span className="spec-label">필요 용량</span>
             <span className="spec-value">{game.storage_gb} GB</span>
           </div>
         )}
-        <div className="spec-row">
-          <span className="spec-label">가족 공유</span>
-          <span className="spec-value" style={{ color: game.family_sharing ? '#4a9e3a' : 'var(--danger)' }}>
-            {game.family_sharing ? '가능' : '불가'}
-          </span>
-        </div>
+        {game.family_sharing !== null && game.family_sharing !== undefined && (
+  <div className="spec-row">
+    <span className="spec-label">Steam 가족 공유</span>
+    <span className="spec-value" style={{ color: game.family_sharing ? '#4a9e3a' : 'var(--danger)' }}>
+      {game.family_sharing ? '공유 가능' : '공유 불가'}
+    </span>
+  </div>
+)}
         {game.achievement_count && (
           <div className="spec-row">
             <span className="spec-label">도전과제</span>
