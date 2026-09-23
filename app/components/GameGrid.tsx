@@ -176,7 +176,7 @@ export default function GameGrid({ games }: { games: any[] }) {
               <Link href={`/games/${game.id}`} key={game.id} className="card">
                 <div className="card-image-wrap">
                   <img src={game.cover_image_url} alt={game.name} />
-                  {game.platform?.[0] && <span className="platform-badge">{game.platform[0]}</span>}
+                 {game.steam_appid && <span className="platform-badge">Steam</span>}
                 </div>
                 <div className="card-body">
                   <h3>{game.name}</h3>

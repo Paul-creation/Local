@@ -458,3 +458,66 @@ button { font-family: inherit; }
   color: var(--text); font-size: 13px; font-weight: 600;
   padding: 6px 13px; border-radius: 100px;
 }
+/* Section headers */
+.section-header { margin-bottom: 16px; }
+.section-title {
+  font-size: 20px; font-weight: 800;
+  letter-spacing: -0.02em; margin: 0 0 4px;
+}
+.section-sub { color: var(--text-dimmer); font-size: 14px; }
+
+/* Discount section */
+.discount-section { margin-bottom: 48px; }
+.discount-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+.discount-card {
+  display: block;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.discount-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.09); }
+.discount-card-img { position: relative; aspect-ratio: 16/9; }
+.discount-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.discount-card-badge {
+  position: absolute; bottom: 8px; left: 8px;
+  background: #4a9e3a; color: #fff;
+  font-size: 13px; font-weight: 800;
+  padding: 4px 9px; border-radius: 6px;
+}
+.discount-card-body { padding: 12px 14px; }
+.discount-card-name {
+  font-size: 14px; font-weight: 700; margin: 0 0 6px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.discount-card-price { display: flex; align-items: center; gap: 8px; }
+.discount-card-original {
+  color: var(--text-dimmer); font-size: 12px; text-decoration: line-through;
+}
+.discount-card-final { color: var(--text); font-size: 15px; font-weight: 800; }
+
+/* Free games strip */
+.free-section { margin-bottom: 48px; }
+.free-strip { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; }
+.free-strip::-webkit-scrollbar { display: none; }
+.free-chip {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  flex-shrink: 0; width: 100px; text-decoration: none;
+}
+.free-chip img {
+  width: 100px; height: 60px; object-fit: cover;
+  border-radius: 8px; border: 1px solid var(--border);
+  transition: transform 0.15s ease;
+}
+.free-chip:hover img { transform: scale(1.04); }
+.free-chip span {
+  font-size: 12px; font-weight: 600; color: var(--text-dim);
+  text-align: center; line-height: 1.3;
+  display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
