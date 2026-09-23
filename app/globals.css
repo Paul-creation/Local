@@ -560,3 +560,14 @@ line-clamp: 2;
   justify-content: space-between;
   font-size: 13px;
 }
+/* Player stats */
+.player-stats { display: flex; gap: 12px; margin-bottom: 16px; }
+.player-stat-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 18px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.player-stat-label { font-size: 12px; color: var(--text-dimmer); }
+.player-stat-num { font-size: 20px; font-weight: 800; color: var(--teal); }

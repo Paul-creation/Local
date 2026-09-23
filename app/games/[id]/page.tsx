@@ -5,6 +5,7 @@ import { getPriceInfo } from '../../lib/price';
 import { translateGenres } from '../../lib/genreTranslate';
 import { getPlatformCategories, CATEGORY_LABEL, PlatformCategory } from '../../lib/platformDisplay';
 import { FaPlaystation, FaXbox, FaDesktop, FaVrCardboard } from 'react-icons/fa';
+import PlayerChart from '../../components/PlayerChart';
 
 export const dynamic = 'force-dynamic';
 
@@ -43,9 +44,9 @@ function getReviewClass(summary: string | null) {
 export default async function GameDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-    const { data: game, error } = await supabase
+      const { data: game, error } = await supabase
     .from('games')
-    .select('*, price_history(price, discount_percent, checked_at)')
+    .select('*, price_history(price, discount_percent, checked_at), player_history(player_count, recorded_at)')
     .eq('id', id)
     .single();
 
@@ -107,6 +108,27 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           </a>
         </div>
       </div>
+            {(game.current_players || game.player_history?.length >= 2) && (
+        <section className="detail-section-v2">
+          <h3>플레이어 현황</h3>
+          <div className="player-stats">
+            {game.current_players && (
+              <div className="player-stat-card">
+                <span className="player-stat-label">지금 접속 중</span>
+                <span className="player-stat-num">
+                  {game.current_players.toLocaleString('ko-KR')}명
+                </span>
+              </div>
+            )}
+          </div>
+          {game.player_history?.length >= 2 && (
+            <PlayerChart data={game.player_history} />
+          )}
+          <p style={{ fontSize: 12, color: 'var(--text-dimmer)', marginTop: 8 }}>
+            Tracked from Steam · 매일 자정 갱신
+          </p>
+        </section>
+      )}
 
       {(game.review_positive_percent || game.critic_score || game.heat_rank) && (
   <div className="review-panel">

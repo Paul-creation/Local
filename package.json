@@ -7,7 +7,7 @@
   "build": "next build",
   "start": "next start",
   "lint": "next lint",
-"refresh-games": "node --env-file=.env.local scripts/bulk-import.mjs && node --env-file=.env.local scripts/check-delisted.mjs && node --env-file=.env.local scripts/enrich-fallback.mjs && node --env-file=.env.local scripts/enrich-igdb.mjs && node --env-file=.env.local scripts/enrich-specs.mjs && node --env-file=.env.local scripts/enrich-tags.mjs && node --env-file=.env.local scripts/fix-missing-prices.mjs && node --env-file=.env.local scripts/rewrite-descriptions.mjs && node --env-file=.env.local scripts/backfill-price-history.mjs && node --env-file=.env.local scripts/enrich-itad-heat.mjs"  
+"refresh-games": "node --env-file=.env.local scripts/bulk-import.mjs && node --env-file=.env.local scripts/check-delisted.mjs && node --env-file=.env.local scripts/enrich-fallback.mjs && node --env-file=.env.local scripts/enrich-igdb.mjs && node --env-file=.env.local scripts/enrich-specs.mjs && node --env-file=.env.local scripts/enrich-tags.mjs && node --env-file=.env.local scripts/fix-missing-prices.mjs && node --env-file=.env.local scripts/rewrite-descriptions.mjs && node --env-file=.env.local scripts/backfill-price-history.mjs && node --env-file=.env.local scripts/enrich-itad-heat.mjs&& node --env-file=.env.local scripts/enrich-players.mjs"  
 },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",
