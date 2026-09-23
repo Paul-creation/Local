@@ -10,6 +10,14 @@ function stripHtml(html) {
   return html.replace(/<br\s*\/?>/gi, ' / ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
 }
 
+function parseMinSpecOnly(html) {
+  if (!html) return null;
+  const text = html.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').trim();
+  // "최소:" 부분만 추출, "권장:" 이후는 버림
+  const minMatch = text.split(/권장[:：]|Recommended[:：]/i)[0];
+  return minMatch.replace(/\n+/g, ' / ').replace(/\s+/g, ' ').trim();
+}
+
 function parseKoreanSupport(languages, fullAudioLanguages) {
   if (!languages) return '한국어 없음';
   const stripped = languages.replace(/<[^>]+>/g, '');
@@ -118,7 +126,7 @@ async function main() {
     ]);
 
     const update = {
-      min_spec: stripHtml(data.pc_requirements?.minimum),
+      min_spec: parseMinSpecOnly(data.pc_requirements?.minimum),
       release_date: releaseDate,
       korean_support: parseKoreanSupport(data.supported_languages, data.full_audio_languages),
       storage_gb: parseStorage(data.pc_requirements?.minimum),
