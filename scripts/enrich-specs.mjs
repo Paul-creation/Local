@@ -5,33 +5,24 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-function stripHtml(html) {
-  if (!html) return null;
-  return html.replace(/<br\s*\/?>/gi, ' / ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
-}
-
 function parseMinSpecOnly(html) {
   if (!html) return null;
-  // HTML에서 줄바꿈 보존
-  const text = html
+  return html
     .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<ul[^>]*>/gi, '')
+    .replace(/<\/ul>/gi, '')
+    .replace(/<li>/gi, '')
+    .replace(/<\/li>/gi, '\n')
+    .replace(/<strong>최소[:：]<\/strong>/gi, '')
+    .replace(/<strong>Minimum[:：]<\/strong>/gi, '')
     .replace(/<strong>/gi, '')
     .replace(/<\/strong>/gi, '')
     .replace(/<[^>]+>/g, '')
-    .trim();
-
-  // "권장:" 또는 "Recommended:" 이전 부분만
-  const minPart = text.split(/\n권장[:：]|\nRecommended[:：]/i)[0];
-
-  // "최소:" 레이블 제거
-  const cleaned = minPart
-    .replace(/^최소[:：]\s*/i, '')
-    .replace(/^Minimum[:：]\s*/i, '')
-    .replace(/\n+/g, ' / ')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  return cleaned || null;
+    .split('\n')
+    .map(s => s.trim())
+    .filter(s => s.length > 0 && !s.includes('64비트 프로세서'))
+    .join(' / ')
+    .trim() || null;
 }
 
 function parseKoreanSupport(languages, fullAudioLanguages) {
@@ -52,7 +43,7 @@ function parseFamilySharing(categories) {
 
 function parseStorage(requirements) {
   if (!requirements) return null;
-  const text = stripHtml(requirements) || '';
+  const text = requirements.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ');
   const match = text.match(/(\d+(?:\.\d+)?)\s*(GB|MB)/i);
   if (!match) return null;
   const num = parseFloat(match[1]);
@@ -111,7 +102,6 @@ async function getLowestPrice(gameId) {
       .limit(1)
       .single();
     if (!data || !data.price) return null;
-    // 달러로 잘못 들어간 데이터 필터링 (100 미만이면 달러로 판단)
     if (data.price < 100) return null;
     return {
       price: data.price,
