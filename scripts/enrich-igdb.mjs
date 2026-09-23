@@ -14,7 +14,9 @@ const PLATFORM_MAP = {
 
 const GAME_FIELDS = `game.name, game.genres.name, game.themes.name, game.aggregated_rating,
   game.platforms.name, game.involved_companies.company.name,
-  game.involved_companies.developer, game.involved_companies.publisher`;
+  game.involved_companies.developer, game.involved_companies.publisher,
+  game.multiplayer_modes.onlinecoopmax, game.multiplayer_modes.offlinecoopmax,
+  game.multiplayer_modes.onlinemax`;
 
 async function getIgdbToken() {
   const res = await fetch(
@@ -38,7 +40,6 @@ async function igdbQuery(endpoint, body, token) {
   return res.json();
 }
 
-// 1순위: 스팀 appid로 정확히 매칭 (external_games, category 1 = Steam)
 async function fetchByAppid(appid, token) {
   const data = await igdbQuery(
     'external_games',
@@ -48,12 +49,12 @@ async function fetchByAppid(appid, token) {
   return data[0]?.game || null;
 }
 
-// 2순위: 이름 검색 (appid 매칭 실패했을 때 폴백)
 async function fetchByName(name, token) {
   const data = await igdbQuery(
     'games',
     `fields name, genres.name, themes.name, aggregated_rating, platforms.name,
-     involved_companies.company.name, involved_companies.developer, involved_companies.publisher;
+     involved_companies.company.name, involved_companies.developer, involved_companies.publisher,
+     multiplayer_modes.onlinecoopmax, multiplayer_modes.offlinecoopmax, multiplayer_modes.onlinemax;
      search "${name}"; limit 1;`,
     token
   );
@@ -76,11 +77,11 @@ async function main() {
     return;
   }
 
-  const { data: games, error } = await supabase.from('games').select('id, name, steam_appid, platform');
-  if (error) {
-    console.error('조회 실패:', error.message);
-    return;
-  }
+  const { data: games } = await supabase
+    .from('games')
+    .select('id, name, steam_appid, platform, min_players');
+
+  if (!games) return;
 
   for (const game of games) {
     let igdbGame = await fetchByAppid(game.steam_appid, token);
@@ -105,18 +106,31 @@ async function main() {
 
     const update = { genres, themes, critic_score: criticScore, developer, publisher };
 
+    // 플랫폼 — 기본값(steam만)일 때만 덮어씀
     const isDefaultPlatform = !game.platform || (game.platform.length === 1 && game.platform[0] === 'steam');
     if (isDefaultPlatform) {
       const detected = mapPlatforms(igdbGame.platforms);
       if (detected.length > 0) update.platform = detected;
     }
 
-    const { error: updateError } = await supabase.from('games').update(update).eq('id', game.id);
+    // 인원수 — 아직 안 채워진 게임만
+    const modes = igdbGame.multiplayer_modes?.[0];
+    if (modes && !game.min_players) {
+      const maxPlayers = modes.onlinecoopmax || modes.offlinecoopmax || modes.onlinemax || null;
+      if (maxPlayers) {
+        update.min_players = 1;
+        update.max_players = maxPlayers;
+      }
+    }
 
-    if (updateError) {
-      console.error(`업데이트 실패 (${game.name}):`, updateError.message);
+    const { error } = await supabase.from('games').update(update).eq('id', game.id);
+
+    if (error) {
+      console.error(`업데이트 실패 (${game.name}):`, error.message);
     } else {
-      console.log(`업데이트 성공 [${matchedVia}]: ${game.name}`);
+      console.log(
+        `업데이트 성공 [${matchedVia}]: ${game.name} — 인원 ${update.max_players ? `최대 ${update.max_players}인` : '(유지)'} | 플랫폼: ${update.platform?.join(',') || '(유지)'}`
+      );
     }
 
     await new Promise((r) => setTimeout(r, 300));
