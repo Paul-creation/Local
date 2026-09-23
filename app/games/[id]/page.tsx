@@ -156,9 +156,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             <span className="spec-value">있음</span>
           </div>
         )}
-        {game.lowest_price && (
-          <div className="spec-row">
-            <span className="spec-label">역대 최저가</span>
+        {game.lowest_price && !game.is_free && (
+  <div className="spec-row">
+    <span className="spec-label">역대 최저가</span>
             <span className="spec-value">
               ₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}
               {game.lowest_price_date && (
