@@ -12,9 +12,26 @@ function stripHtml(html) {
 
 function parseMinSpecOnly(html) {
   if (!html) return null;
-  const text = html.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').trim();
-  const minPart = text.split(/권장[:：]|Recommended[:：]/i)[0];
-  return minPart.replace(/\n+/g, ' / ').replace(/\s+/g, ' ').trim() || null;
+  // HTML에서 줄바꿈 보존
+  const text = html
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<strong>/gi, '')
+    .replace(/<\/strong>/gi, '')
+    .replace(/<[^>]+>/g, '')
+    .trim();
+
+  // "권장:" 또는 "Recommended:" 이전 부분만
+  const minPart = text.split(/\n권장[:：]|\nRecommended[:：]/i)[0];
+
+  // "최소:" 레이블 제거
+  const cleaned = minPart
+    .replace(/^최소[:：]\s*/i, '')
+    .replace(/^Minimum[:：]\s*/i, '')
+    .replace(/\n+/g, ' / ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  return cleaned || null;
 }
 
 function parseKoreanSupport(languages, fullAudioLanguages) {
