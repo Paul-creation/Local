@@ -7,6 +7,7 @@ import AIRecommend from './AIRecommend';
 import { getPriceInfo } from '../lib/price';
 import { TAG_GROUPS } from '../lib/tagGroups';
 import DiscountSection from './DiscountSection';
+import { translateTag } from '../lib/tagTranslate';
 
 function getPriceTiming(game: any) {
   const price = getPriceInfo(game);
@@ -251,8 +252,8 @@ export default function GameGrid({ games }: { games: any[] }) {
                     )}
                   </p>
                   {game.tags?.slice(0, 3).map((tag: string) => (
-                    <span key={tag} className="category-tag">{tag}</span>
-                  ))}
+  <span key={tag} className="category-tag">{translateTag(tag)}</span>
+))}
                   {game.is_free ? (
                     <div className="price-row">
                       <span className="price-final" style={{ color: '#4a9e3a', fontWeight: 800 }}>무료 플레이</span>

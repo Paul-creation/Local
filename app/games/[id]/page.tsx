@@ -6,6 +6,7 @@ import { translateGenres } from '../../lib/genreTranslate';
 import { getPlatformCategories, CATEGORY_LABEL, PlatformCategory } from '../../lib/platformDisplay';
 import { FaPlaystation, FaXbox, FaDesktop, FaVrCardboard } from 'react-icons/fa';
 import PlayerChart from '../../components/PlayerChart';
+import { translateTag } from '../../lib/tagTranslate';
 
 export const dynamic = 'force-dynamic';
 
