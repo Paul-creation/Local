@@ -624,3 +624,9 @@ line-clamp: 2;
 .timing-badge.near {
   background: #d4a017; color: #fff;
 }
+.video-section {
+  margin-bottom: 28px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}

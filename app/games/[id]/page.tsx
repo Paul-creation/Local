@@ -70,7 +70,24 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       <div className="detail-hero">
         <img src={game.cover_image_url} alt={game.name} />
       </div>
-
+      {/* 게임 영상 */}
+      {game.video_url && (
+        <div className="video-section">
+          <iframe
+            src={`${game.video_url}?autoplay=0&rel=0&modestbranding=1`}
+            title={`${game.name} 트레일러`}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{
+              width: '100%',
+              aspectRatio: '16/9',
+              border: 'none',
+              borderRadius: 12,
+              display: 'block',
+            }}
+          />
+        </div>
+      )}
       {/* 제목 + 평가 배지 + 태그 + 설명 */}
       <div className="detail-header">
         <h1 className="detail-title-v2">{game.name}</h1>
