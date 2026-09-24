@@ -214,7 +214,6 @@ export default function GameGrid({ games }: { games: any[] }) {
                 <div className="card-image-wrap">
                   <img src={game.cover_image_url} alt={game.name} />
                   {game.steam_appid && <span className="platform-badge">Steam</span>}
-                  {game.is_free && <span className="free-badge">무료 플레이</span>}
                 </div>
                 <div className="card-body">
                   <h3>{game.name}</h3>
@@ -234,9 +233,9 @@ export default function GameGrid({ games }: { games: any[] }) {
                   {game.tags?.slice(0, 3).map((tag: string) => (
                     <span key={tag} className="category-tag">{tag}</span>
                   ))}
-                  {game.is_free ? (
+                                    {game.is_free ? (
                     <div className="price-row">
-                      <span className="price-final" style={{ color: '#4a9e3a' }}>무료</span>
+                      <span className="price-final" style={{ color: '#4a9e3a', fontWeight: 800 }}>무료 플레이</span>
                     </div>
                   ) : (
                     price && (
