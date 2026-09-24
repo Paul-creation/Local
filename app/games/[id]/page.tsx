@@ -327,16 +327,16 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </div>
       )}
 
-      {/* PC 사양 — 독립 섹션 */}
+            {/* PC 사양 — 아코디언 */}
       {(game.min_spec || game.recommended_spec) && (
-        <section className="detail-section-v2">
-          <h3 style={{ marginBottom: 20 }}>PC 사양</h3>
+        <details className="detail-accordion">
+          <summary>PC 사양 보기</summary>
           {game.min_spec && (() => {
             const parsed = parseMinSpec(game.min_spec);
             if (!parsed) return null;
             return (
               <div style={{ marginBottom: game.recommended_spec ? 24 : 0 }}>
-                <p style={{ fontSize: 15, fontWeight: 800, color: 'var(--text)', marginBottom: 10, letterSpacing: '-0.01em' }}>최소 사양</p>
+                <p style={{ fontSize: 15, fontWeight: 800, color: 'var(--text)', marginBottom: 10, marginTop: 16, letterSpacing: '-0.01em' }}>최소 사양</p>
                 <div className="spec-list">
                   {parsed.map(({ label, value }) => (
                     <div className="spec-row" key={label}>
@@ -353,7 +353,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             if (!parsed) return null;
             return (
               <div>
-                <p style={{ fontSize: 15, fontWeight: 800, color: 'var(--text)', marginBottom: 10, marginTop: 24, letterSpacing: '-0.01em' }}>권장 사양</p>
+                <p style={{ fontSize: 15, fontWeight: 800, color: 'var(--text)', marginBottom: 10, marginTop: 8, letterSpacing: '-0.01em' }}>권장 사양</p>
                 <div className="spec-list">
                   {parsed.map(({ label, value }) => (
                     <div className="spec-row" key={`rec-${label}`}>
@@ -365,7 +365,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               </div>
             );
           })()}
-        </section>
+        </details>
       )}
 
       {/* 더 자세히 — 엔딩/서버/활동만 */}
