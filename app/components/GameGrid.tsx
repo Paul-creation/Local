@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import BannerCarousel from './BannerCarousel';
 import AIRecommend from './AIRecommend';
 import { getPriceInfo } from '../lib/price';
@@ -17,9 +17,11 @@ export default function GameGrid({ games }: { games: any[] }) {
   const [allTagsOpen, setAllTagsOpen] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [query, setQuery] = useState('');
+  const tagPanelRef = useRef<HTMLDivElement>(null);
 
   const featured = games.find((g) => g.featured);
   const bannerPool = games.filter((g) => g.is_casual_party && !g.featured);
+  const freeGames = games.filter((g) => g.is_free);
 
   const presentTags = new Set(games.flatMap((g) => g.tags || []));
   const groupedTags = Object.entries(TAG_GROUPS)
@@ -36,8 +38,10 @@ export default function GameGrid({ games }: { games: any[] }) {
     setSelectedTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
 
   const normalizedQuery = query.trim().toLowerCase();
+  const isFreeQuery = ['무료', '무료플레이', '무료 플레이', 'free'].includes(normalizedQuery);
 
   const filtered = games.filter((g) => {
+    if (isFreeQuery) return g.is_free;
     const categoryMatch = category === '전체' || g.category === category;
     const tagMatch = selectedTags.length === 0 || selectedTags.some((t) => g.tags?.includes(t));
     const queryMatch =
@@ -51,7 +55,7 @@ export default function GameGrid({ games }: { games: any[] }) {
 
   return (
     <>
-            {featured && (
+      {featured && (
         <Link href={`/games/${featured.id}`} className="hero-card">
           <div className="hero-image-wrap">
             <img src={featured.cover_image_url} alt={featured.name} />
@@ -89,11 +93,29 @@ export default function GameGrid({ games }: { games: any[] }) {
 
       <DiscountSection games={games} />
 
+      {/* 무료 게임 섹션 */}
+      {freeGames.length > 0 && !normalizedQuery && category === '전체' && selectedTags.length === 0 && (
+        <section className="free-section">
+          <div className="section-header">
+            <h2 className="section-title">🆓 지금 무료로 즐길 수 있는 게임</h2>
+            <span className="section-sub">설치만 하면 바로 친구랑 시작 가능</span>
+          </div>
+          <div className="free-strip">
+            {freeGames.map((g) => (
+              <a href={`/games/${g.id}`} key={g.id} className="free-chip">
+                <img src={g.cover_image_url} alt={g.name} />
+                <span>{g.name}</span>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
       <div className="search-row">
         <div className="search-bar-clean">
           <input
             type="text"
-            placeholder="게임 이름 또는 태그로 검색"
+            placeholder="게임 이름 또는 태그로 검색 (무료 플레이 검색 가능)"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -108,7 +130,19 @@ export default function GameGrid({ games }: { games: any[] }) {
             {c}
           </button>
         ))}
-        <button className={`pill ${browseOpen ? 'pill-active' : ''}`} onClick={() => setBrowseOpen((v) => !v)}>
+        <button
+          className={`pill ${browseOpen ? 'pill-active' : ''}`}
+          onClick={() => {
+            setBrowseOpen((v) => {
+              if (!v) {
+                setTimeout(() => {
+                  tagPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 50);
+              }
+              return !v;
+            });
+          }}
+        >
           태그로 찾기 {browseOpen ? '▴' : '▾'}
         </button>
         {selectedTags.length > 0 && (
@@ -125,7 +159,7 @@ export default function GameGrid({ games }: { games: any[] }) {
       </div>
 
       {browseOpen && (
-        <div className="browse-panel">
+        <div className="browse-panel" ref={tagPanelRef}>
           <div className="browse-groups">
             {groupedTags.map(([group, tags], i) => (
               <div
@@ -179,11 +213,12 @@ export default function GameGrid({ games }: { games: any[] }) {
               <Link href={`/games/${game.id}`} key={game.id} className="card">
                 <div className="card-image-wrap">
                   <img src={game.cover_image_url} alt={game.name} />
-                 {game.steam_appid && <span className="platform-badge">Steam</span>}
+                  {game.steam_appid && <span className="platform-badge">Steam</span>}
+                  {game.is_free && <span className="free-badge">무료 플레이</span>}
                 </div>
                 <div className="card-body">
                   <h3>{game.name}</h3>
-                                    <p className="card-meta">
+                  <p className="card-meta">
                     {game.recommended_players
                       ? `추천 ${game.recommended_players}`
                       : game.min_players && game.max_players
@@ -200,7 +235,9 @@ export default function GameGrid({ games }: { games: any[] }) {
                     <span key={tag} className="category-tag">{tag}</span>
                   ))}
                   {game.is_free ? (
-                    <span className="free-badge">무료 플레이</span>
+                    <div className="price-row">
+                      <span className="price-final" style={{ color: '#4a9e3a' }}>무료</span>
+                    </div>
                   ) : (
                     price && (
                       <div className="price-row">

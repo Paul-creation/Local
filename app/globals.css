@@ -584,3 +584,32 @@ line-clamp: 2;
 }
 .player-stat-label { font-size: 12px; color: var(--text-dimmer); }
 .player-stat-num { font-size: 20px; font-weight: 800; color: var(--teal); }
+/* 무료 게임 섹션 */
+.free-section { margin-bottom: 48px; }
+.free-strip { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; }
+.free-strip::-webkit-scrollbar { display: none; }
+.free-chip {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  flex-shrink: 0; width: 100px; text-decoration: none;
+}
+.free-chip img {
+  width: 100px; height: 60px; object-fit: cover;
+  border-radius: 8px; border: 1px solid var(--border);
+  transition: transform 0.15s ease;
+}
+.free-chip:hover img { transform: scale(1.04); }
+.free-chip span {
+  font-size: 12px; font-weight: 600; color: var(--text-dim);
+  text-align: center; line-height: 1.3;
+  display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+  line-clamp: 2;
+}
+
+/* 무료 배지 */
+.free-badge {
+  position: absolute; top: 8px; left: 8px;
+  background: #4a9e3a; color: #fff;
+  font-size: 11px; font-weight: 800;
+  padding: 3px 8px; border-radius: 6px;
+}
