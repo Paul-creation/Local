@@ -24,9 +24,17 @@ export default function DiscountSection({ games }: { games: any[] }) {
           const price = getPriceInfo(game);
           return (
             <Link href={`/games/${game.id}`} key={game.id} className="card">
-              <div className="card-image-wrap">
+                            <div className="card-image-wrap">
                 <img src={game.cover_image_url} alt={game.name} />
                 {game.steam_appid && <span className="platform-badge">Steam</span>}
+                {(() => {
+                  if (!price || price.discount === 0 || !game.lowest_price || game.is_free) return null;
+                  if (price.final < 100 || game.lowest_price < 100) return null;
+                  const ratio = price.final / game.lowest_price;
+                  if (ratio <= 1.05) return <span className="timing-badge best">🔥 역대 최저가</span>;
+                  if (ratio <= 1.15) return <span className="timing-badge near">💰 최저가 근접</span>;
+                  return null;
+                })()}
               </div>
               <div className="card-body">
                 <h3>{game.name}</h3>
