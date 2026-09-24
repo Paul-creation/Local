@@ -11,6 +11,7 @@ import DiscountSection from './DiscountSection';
 function getPriceTiming(game: any) {
   const price = getPriceInfo(game);
   if (!price || !game.lowest_price || game.is_free) return null;
+  if (price.discount === 0) return null; // 할인 중이 아니면 표시 안 함
   const ratio = price.final / game.lowest_price;
   if (ratio <= 1.05) return 'best';
   if (ratio <= 1.15) return 'near';
