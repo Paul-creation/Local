@@ -40,7 +40,7 @@ async function main() {
     }
 
     // 원화 기록(100 이상)이 2개 이상이면 건너뜀
-    const krwRecords = (game.price_history || []).filter((p: any) => p.price >= 100);
+   const krwRecords = (game.price_history || []).filter((p) => p.price >= 100);
     if (krwRecords.length > 1) {
       console.log(`건너뜀 (이미 기록 있음): ${game.name}`);
       continue;
