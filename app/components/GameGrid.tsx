@@ -5,7 +5,6 @@ import { useState, useRef } from 'react';
 import BannerCarousel from './BannerCarousel';
 import AIRecommend from './AIRecommend';
 import { getPriceInfo } from '../lib/price';
-import { getPriceInfo } from '../lib/price';
 
 function getPriceTiming(game: any) {
   const price = getPriceInfo(game);
