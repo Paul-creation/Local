@@ -5,6 +5,16 @@ import { useState, useRef } from 'react';
 import BannerCarousel from './BannerCarousel';
 import AIRecommend from './AIRecommend';
 import { getPriceInfo } from '../lib/price';
+import { getPriceInfo } from '../lib/price';
+
+function getPriceTiming(game: any) {
+  const price = getPriceInfo(game);
+  if (!price || !game.lowest_price || game.is_free) return null;
+  const ratio = price.final / game.lowest_price;
+  if (ratio <= 1.05) return 'best';
+  if (ratio <= 1.15) return 'near';
+  return null;
+}
 import { TAG_GROUPS } from '../lib/tagGroups';
 import DiscountSection from './DiscountSection';
 
@@ -214,7 +224,20 @@ export default function GameGrid({ games }: { games: any[] }) {
                 <div className="card-image-wrap">
                   <img src={game.cover_image_url} alt={game.name} />
                   {game.steam_appid && <span className="platform-badge">Steam</span>}
-                </div>
+                  <div className="card-image-wrap">
+  <img src={game.cover_image_url} alt={game.name} />
+  {game.steam_appid && <span className="platform-badge">Steam</span>}
+  {(() => {
+    const timing = getPriceTiming(game);
+    if (!timing) return null;
+    return (
+      <span className={`timing-badge ${timing}`}>
+        {timing === 'best' ? '🔥 역대 최저가' : '💰 최저가 근접'}
+      </span>
+    );
+  })()}
+</div>
+             </div>
                 <div className="card-body">
                   <h3>{game.name}</h3>
                   <p className="card-meta">
