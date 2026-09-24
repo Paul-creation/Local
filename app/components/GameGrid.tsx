@@ -16,8 +16,6 @@ function getPriceTiming(game: any) {
   if (ratio <= 1.15) return 'near';
   return null;
 }
-import { TAG_GROUPS } from '../lib/tagGroups';
-import DiscountSection from './DiscountSection';
 
 const CATEGORIES = ['전체', '파티', '협동', '퍼즐', '서바이벌'];
 const GROUP_COLORS = ['#e6742e', '#0f9b8e', '#5b6ef5', '#c0392b', '#9b59b6', '#d4a017'];
@@ -104,7 +102,6 @@ export default function GameGrid({ games }: { games: any[] }) {
 
       <DiscountSection games={games} />
 
-      {/* 무료 게임 섹션 */}
       {freeGames.length > 0 && !normalizedQuery && category === '전체' && selectedTags.length === 0 && (
         <section className="free-section">
           <div className="section-header">
@@ -222,7 +219,7 @@ export default function GameGrid({ games }: { games: any[] }) {
             const price = getPriceInfo(game);
             return (
               <Link href={`/games/${game.id}`} key={game.id} className="card">
-                                <div className="card-image-wrap">
+                <div className="card-image-wrap">
                   <img src={game.cover_image_url} alt={game.name} />
                   {game.steam_appid && <span className="platform-badge">Steam</span>}
                   {(() => {
@@ -253,7 +250,7 @@ export default function GameGrid({ games }: { games: any[] }) {
                   {game.tags?.slice(0, 3).map((tag: string) => (
                     <span key={tag} className="category-tag">{tag}</span>
                   ))}
-                                    {game.is_free ? (
+                  {game.is_free ? (
                     <div className="price-row">
                       <span className="price-final" style={{ color: '#4a9e3a', fontWeight: 800 }}>무료 플레이</span>
                     </div>
