@@ -429,7 +429,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </section>
       )}
 
-      {/* 스트리머 */}
+          {/* 스트리머 */}
       {game.game_streamers?.length > 0 && (
         <section className="detail-section-v2">
           <h3>이 게임을 플레이한 스트리머</h3>
@@ -440,14 +440,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
                 s.platform === 'chzzk' ? '치지직' :
                 s.platform === 'youtube' ? '유튜브' :
                 s.platform === 'soop' ? '숲(SOOP)' : s.platform;
-                              return (
-                
-                  key={s.id}
-                  href={s.handle}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="streamer-chip"
-                >
+              return (
+                <a key={s.id} href={s.handle} target="_blank" rel="noopener noreferrer" className="streamer-chip">
                   <span className="streamer-name">{s.name}</span>
                   <span className="streamer-platform">{platformLabel}</span>
                 </a>
