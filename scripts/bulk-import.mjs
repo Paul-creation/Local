@@ -13,7 +13,7 @@ const REVIEW_LABELS = {
   'No user reviews': '리뷰 없음',
 };
 
-const MAX_NEW_GAMES = 200;
+const MAX_NEW_GAMES = 300;
 
 // 제외할 장르 (성인물, 유틸리티 등)
 const EXCLUDE_GENRES = ['Sexual Content', 'Adult Only', 'Nudity', 'Video Production', 'Photo Editing', 'Accounting'];
@@ -33,11 +33,18 @@ async function main() {
   const delistedAppids = new Set((delisted || []).map((d) => String(d.steam_appid)));
 
   // 여러 SteamSpy 엔드포인트에서 게임 수집
-  const endpoints = [
-    'https://steamspy.com/api.php?request=top100in2weeks',
-    'https://steamspy.com/api.php?request=top100forever',
-    'https://steamspy.com/api.php?request=top100owned',
-  ];
+ const endpoints = [
+  'https://steamspy.com/api.php?request=top100in2weeks',
+  'https://steamspy.com/api.php?request=top100forever',
+  'https://steamspy.com/api.php?request=genre&genre=Action',
+  'https://steamspy.com/api.php?request=genre&genre=RPG',
+  'https://steamspy.com/api.php?request=genre&genre=Strategy',
+  'https://steamspy.com/api.php?request=genre&genre=Adventure',
+  'https://steamspy.com/api.php?request=genre&genre=Simulation',
+  'https://steamspy.com/api.php?request=genre&genre=Sports',
+  'https://steamspy.com/api.php?request=genre&genre=Racing',
+  'https://steamspy.com/api.php?request=genre&genre=Indie',
+];
 
   const allCandidates = new Map();
   for (const endpoint of endpoints) {
