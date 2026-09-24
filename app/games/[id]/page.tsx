@@ -231,6 +231,22 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             <span className="spec-value">{game.storage_gb} GB</span>
           </div>
         )}
+        {game.has_workshop && (
+  <div className="spec-row">
+    <span className="spec-label">모드 지원</span>
+    <span className="spec-value" style={{ color: '#4a9e3a', fontWeight: 700 }}>
+      Steam 창작마당 지원
+    </span>
+  </div>
+)}
+{game.is_esports && (
+  <div className="spec-row">
+    <span className="spec-label">e스포츠</span>
+    <span className="spec-value" style={{ color: '#4a9e3a', fontWeight: 700 }}>
+      공식 대회 있음
+    </span>
+  </div>
+)}
         {game.family_sharing !== null && game.family_sharing !== undefined && (
           <div className="spec-row">
             <span className="spec-label">Steam 가족 공유</span>

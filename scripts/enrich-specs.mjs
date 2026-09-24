@@ -25,6 +25,17 @@ function parseMinSpecOnly(html) {
     .trim() || null;
 }
 
+function isLowSpec(minSpec) {
+  if (!minSpec) return false;
+  const text = minSpec.toLowerCase();
+  return (
+    text.includes('gtx 750') || text.includes('gtx 960') ||
+    text.includes('gtx 1050') || text.includes('rx 470') ||
+    text.includes('intel hd') || text.includes('integrated') ||
+    text.includes('4 gb ram') || text.includes('4gb ram')
+  );
+}
+
 function parseKoreanSupport(languages, fullAudioLanguages) {
   if (!languages) return '한국어 없음';
   const stripped = languages.replace(/<[^>]+>/g, '');
@@ -44,7 +55,6 @@ function parseFamilySharing(categories) {
 function parseStorage(html) {
   if (!html) return null;
   const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
-  // "저장 공간" 또는 "Storage" 키워드 이후 숫자만 찾기
   const storageMatch = text.match(/저장\s*공간[^0-9]*(\d+(?:\.\d+)?)\s*(GB|MB|TB)/i)
     || text.match(/storage[^0-9]*(\d+(?:\.\d+)?)\s*(GB|MB|TB)/i);
   if (!storageMatch) return null;
@@ -99,13 +109,12 @@ async function getAchievementCount(appid) {
 async function getLowestPrice(gameId) {
   try {
     const { data } = await supabase
-  .from('price_history')
-  .select('price, discount_percent, checked_at')
-  .eq('game_id', gameId)
-  .eq('currency', 'KRW')  // ← 여기 추가
-  .order('price', { ascending: true })
-  .limit(1)
-  .single();
+      .from('price_history')
+      .select('price, discount_percent, checked_at')
+      .eq('game_id', gameId)
+      .order('price', { ascending: true })
+      .limit(1)
+      .single();
     if (!data || !data.price) return null;
     if (data.price < 100) return null;
     return {
@@ -116,7 +125,9 @@ async function getLowestPrice(gameId) {
 }
 
 async function main() {
-  const { data: games } = await supabase.from('games').select('id, name, steam_appid');
+  const { data: games } = await supabase
+    .from('games')
+    .select('id, name, steam_appid, tags');
   if (!games) return;
 
   for (const game of games) {
@@ -129,6 +140,7 @@ async function main() {
       continue;
     }
     const data = json[game.steam_appid].data;
+    const categoryIds = (data.categories || []).map((c) => c.id);
 
     const [releaseDate, reviews, achievements, lowestPriceData] = await Promise.all([
       getEnglishReleaseDate(game.steam_appid),
@@ -137,15 +149,29 @@ async function main() {
       getLowestPrice(game.id),
     ]);
 
+    const minSpec = parseMinSpecOnly(data.pc_requirements?.minimum);
+
+    // 저사양 태그 자동 추가
+    const currentTags = game.tags || [];
+    const lowSpec = isLowSpec(minSpec);
+    let updatedTags = [...currentTags];
+    if (lowSpec && !updatedTags.includes('저사양')) {
+      updatedTags = [...updatedTags, '저사양'];
+    }
+
     const update = {
-      min_spec: parseMinSpecOnly(data.pc_requirements?.minimum),
+      min_spec: minSpec,
       recommended_spec: parseMinSpecOnly(data.pc_requirements?.recommended),
       release_date: releaseDate,
       korean_support: parseKoreanSupport(data.supported_languages, data.full_audio_languages),
       storage_gb: parseStorage(data.pc_requirements?.minimum),
       has_dlc: (data.dlc?.length ?? 0) > 0,
+      family_sharing: parseFamilySharing(data.categories),
       is_early_access: data.genres?.some((g) => g.id === '70') ?? false,
       achievement_count: achievements,
+      has_workshop: categoryIds.includes(30),
+      is_esports: categoryIds.includes(24),
+      tags: updatedTags,
       ...(reviews && {
         review_positive_percent: reviews.percent,
         review_total: reviews.total,
@@ -162,7 +188,7 @@ async function main() {
       console.error(`실패 (${game.name}):`, error.message);
     } else {
       console.log(
-        `✅ ${game.name}: 출시일 ${releaseDate ?? 'null'} | 한국어 ${update.korean_support} | 용량 ${update.storage_gb ?? '?'}GB | 역대최저 ₩${lowestPriceData?.price?.toLocaleString() ?? '없음'}`
+        `✅ ${game.name}: 출시일 ${releaseDate ?? 'null'} | 한국어 ${update.korean_support} | 용량 ${update.storage_gb ?? '?'}GB | Workshop ${update.has_workshop} | e스포츠 ${update.is_esports}`
       );
     }
 
