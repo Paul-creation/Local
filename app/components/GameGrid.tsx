@@ -5,6 +5,8 @@ import { useState, useRef } from 'react';
 import BannerCarousel from './BannerCarousel';
 import AIRecommend from './AIRecommend';
 import { getPriceInfo } from '../lib/price';
+import { TAG_GROUPS } from '../lib/tagGroups';
+import DiscountSection from './DiscountSection';
 
 function getPriceTiming(game: any) {
   const price = getPriceInfo(game);
@@ -220,23 +222,19 @@ export default function GameGrid({ games }: { games: any[] }) {
             const price = getPriceInfo(game);
             return (
               <Link href={`/games/${game.id}`} key={game.id} className="card">
-                <div className="card-image-wrap">
+                                <div className="card-image-wrap">
                   <img src={game.cover_image_url} alt={game.name} />
                   {game.steam_appid && <span className="platform-badge">Steam</span>}
-                  <div className="card-image-wrap">
-  <img src={game.cover_image_url} alt={game.name} />
-  {game.steam_appid && <span className="platform-badge">Steam</span>}
-  {(() => {
-    const timing = getPriceTiming(game);
-    if (!timing) return null;
-    return (
-      <span className={`timing-badge ${timing}`}>
-        {timing === 'best' ? '🔥 역대 최저가' : '💰 최저가 근접'}
-      </span>
-    );
-  })()}
-</div>
-             </div>
+                  {(() => {
+                    const timing = getPriceTiming(game);
+                    if (!timing) return null;
+                    return (
+                      <span className={`timing-badge ${timing}`}>
+                        {timing === 'best' ? '🔥 역대 최저가' : '💰 최저가 근접'}
+                      </span>
+                    );
+                  })()}
+                </div>
                 <div className="card-body">
                   <h3>{game.name}</h3>
                   <p className="card-meta">
