@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 export default async function Home() {
   const { data: games } = await supabase
     .from('games')
-    .select('*, price_history(price, discount_percent, checked_at)')
+    .select('*, price_history(price, discount_percent, checked_at, currency)')
     .order('created_at', { ascending: false });
 
   const allGames = games || [];

@@ -99,12 +99,13 @@ async function getAchievementCount(appid) {
 async function getLowestPrice(gameId) {
   try {
     const { data } = await supabase
-      .from('price_history')
-      .select('price, discount_percent, checked_at')
-      .eq('game_id', gameId)
-      .order('price', { ascending: true })
-      .limit(1)
-      .single();
+  .from('price_history')
+  .select('price, discount_percent, checked_at')
+  .eq('game_id', gameId)
+  .eq('currency', 'KRW')  // ← 여기 추가
+  .order('price', { ascending: true })
+  .limit(1)
+  .single();
     if (!data || !data.price) return null;
     if (data.price < 100) return null;
     return {
