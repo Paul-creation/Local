@@ -433,11 +433,24 @@ button { font-family: inherit; }
 .detail-section-v2 { margin-top: 36px; }
 .detail-section-v2 h3 { font-size: 18px; font-weight: 700; margin: 0 0 16px; letter-spacing: -0.01em; }
 .sample-note { color: var(--text-dimmer); font-size: 12px; font-weight: 400; margin-left: 6px; }
-.streamer-list { display: flex; gap: 8px; flex-wrap: wrap; }
+.streamer-list { display: flex; flex-wrap: wrap; gap: 10px; }
 .streamer-chip {
-  background: var(--bg-card); border: 1px solid var(--border); color: var(--text-dim);
-  font-size: 13px; padding: 6px 14px; border-radius: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
+.streamer-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.streamer-name { font-size: 14px; font-weight: 700; color: var(--text); }
+.streamer-platform { font-size: 12px; color: var(--text-dimmer); }
 
 /* Discount chart */
 .chart-wrap { margin-bottom: 6px; }

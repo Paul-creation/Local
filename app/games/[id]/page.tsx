@@ -45,9 +45,9 @@ function parseMinSpec(raw: string | null) {
 export default async function GameDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
-  const { data: game, error } = await supabase
+    const { data: game, error } = await supabase
     .from('games')
-    .select('*, price_history(price, discount_percent, checked_at), player_history(player_count, recorded_at)')
+    .select('*, price_history(price, discount_percent, checked_at), player_history(player_count, recorded_at), game_streamers(streamer_id, streamers(id, name, platform, handle))')
     .eq('id', id)
     .single();
 
@@ -383,7 +383,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </details>
       )}
 
-      {/* 플레이어 현황 */}
+            {/* 플레이어 현황 */}
       {(game.current_players || game.player_history?.length >= 2) && (
         <section className="detail-section-v2">
           <h3>플레이어 현황</h3>
@@ -430,14 +430,32 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       )}
 
       {/* 스트리머 */}
-      <section className="detail-section-v2">
-        <h3>이 게임을 플레이한 스트리머<span className="sample-note">※ 샘플 데이터</span></h3>
-        <div className="streamer-list">
-          {SAMPLE_STREAMERS.map((s) => (
-            <span key={s} className="streamer-chip">{s}</span>
-          ))}
-        </div>
-      </section>
+      {game.game_streamers?.length > 0 && (
+        <section className="detail-section-v2">
+          <h3>이 게임을 플레이한 스트리머</h3>
+          <div className="streamer-list">
+            {game.game_streamers.map((gs: any) => {
+              const s = gs.streamers;
+              const platformLabel =
+                s.platform === 'chzzk' ? '치지직' :
+                s.platform === 'youtube' ? '유튜브' :
+                s.platform === 'soop' ? '숲(SOOP)' : s.platform;
+                              return (
+                
+                  key={s.id}
+                  href={s.handle}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="streamer-chip"
+                >
+                  <span className="streamer-name">{s.name}</span>
+                  <span className="streamer-platform">{platformLabel}</span>
+                </a>
+              );
+            })}
+          </div>
+        </section>
+      )}
     </main>
   );
 }
