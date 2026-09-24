@@ -182,14 +182,14 @@ export default function GameGrid({ games }: { games: any[] }) {
                 <div className="browse-group-title">{group}</div>
                 <div className="browse-group-tags">
                   {tags.map((tag) => (
-                    <button
-                      key={tag}
-                      className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
-                      onClick={() => toggleTag(tag)}
-                    >
-                      {tag}
-                    </button>
-                  ))}
+  <button
+    key={tag}
+    className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
+    onClick={() => toggleTag(tag)}
+  >
+    {translateTag(tag)}
+  </button>
+))}
                 </div>
               </div>
             ))}
@@ -202,14 +202,14 @@ export default function GameGrid({ games }: { games: any[] }) {
           {allTagsOpen && (
             <div className="all-tags-cloud">
               {allTagsSorted.map((tag) => (
-                <button
-                  key={tag}
-                  className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
-                  onClick={() => toggleTag(tag)}
-                >
-                  {tag}
-                </button>
-              ))}
+  <button
+    key={tag}
+    className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
+    onClick={() => toggleTag(tag)}
+  >
+    {translateTag(tag)}
+  </button>
+))}
             </div>
           )}
         </div>
