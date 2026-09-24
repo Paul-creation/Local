@@ -12,13 +12,18 @@ const REVIEW_LABELS = {
   'Very Negative': '매우 부정적', 'Overwhelmingly Negative': '압도적으로 부정적',
   'No user reviews': '리뷰 없음',
 };
-const COOP_CATEGORY_IDS = [9, 38, 39]; // Co-op, Online Co-op, Shared/Split Screen Co-op
-const MAX_NEW_GAMES = 100;
+
+const MAX_NEW_GAMES = 200;
+
+// 제외할 장르 (성인물, 유틸리티 등)
+const EXCLUDE_GENRES = ['Sexual Content', 'Adult Only', 'Nudity', 'Video Production', 'Photo Editing', 'Accounting'];
 
 async function getReviewSummary(appid) {
-  const res = await fetch(`https://store.steampowered.com/appreviews/${appid}?json=1&filter=summary&language=all&purchase_type=all`);
-  const json = await res.json();
-  return REVIEW_LABELS[json.query_summary?.review_score_desc] || null;
+  try {
+    const res = await fetch(`https://store.steampowered.com/appreviews/${appid}?json=1&filter=summary&language=all&purchase_type=all`);
+    const json = await res.json();
+    return REVIEW_LABELS[json.query_summary?.review_score_desc] || null;
+  } catch { return null; }
 }
 
 async function main() {
@@ -26,28 +31,43 @@ async function main() {
   const existingAppids = new Set((existing || []).map((g) => String(g.steam_appid)));
   const { data: delisted } = await supabase.from('delisted_appids').select('steam_appid');
   const delistedAppids = new Set((delisted || []).map((d) => String(d.steam_appid)));
-  const listRes = await fetch('https://steamspy.com/api.php?request=top100in2weeks');
-  const listJson = await listRes.json();
-  const candidates = Object.values(listJson);
 
-  console.log(`SteamSpy 후보 ${candidates.length}개 확보, 스팀에서 co-op 여부 확인 중...\n`);
+  // 여러 SteamSpy 엔드포인트에서 게임 수집
+  const endpoints = [
+    'https://steamspy.com/api.php?request=top100in2weeks',
+    'https://steamspy.com/api.php?request=top100forever',
+    'https://steamspy.com/api.php?request=top100owned',
+  ];
+
+  const allCandidates = new Map();
+  for (const endpoint of endpoints) {
+    try {
+      const res = await fetch(endpoint);
+      const json = await res.json();
+      Object.values(json).forEach(g => allCandidates.set(String(g.appid), g));
+      await new Promise((r) => setTimeout(r, 1000));
+    } catch (e) {
+      console.error(`엔드포인트 실패: ${endpoint}`);
+    }
+  }
+
+  const candidates = Array.from(allCandidates.values());
+  console.log(`총 후보 ${candidates.length}개 확보\n`);
 
   let addedCount = 0;
-  let checkedCount = 0;
 
   for (const candidate of candidates) {
     if (addedCount >= MAX_NEW_GAMES) break;
+
     const appid = String(candidate.appid);
     if (existingAppids.has(appid)) continue;
     if (delistedAppids.has(appid)) continue;
+
     let json;
     try {
       const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${appid}&cc=kr&l=korean`);
       json = await res.json();
-    } catch {
-      json = null;
-    }
-    checkedCount++;
+    } catch { continue; }
 
     if (!json || !json[appid]?.success) {
       await new Promise((r) => setTimeout(r, 600));
@@ -55,21 +75,23 @@ async function main() {
     }
 
     const data = json[appid].data;
-    const categories = data.categories || [];
-    const isCoop = categories.some((c) => COOP_CATEGORY_IDS.includes(c.id));
 
-    if (checkedCount <= 15) {
-      console.log(`  · ${data.name}: co-op=${isCoop}`);
+    // 게임 타입만
+    if (data.type !== 'game') {
+      await new Promise((r) => setTimeout(r, 300));
+      continue;
     }
 
-    if (!isCoop) {
-      await new Promise((r) => setTimeout(r, 600));
+    // 성인물 제외
+    const genres = (data.genres || []).map(g => g.description);
+    if (EXCLUDE_GENRES.some(e => genres.includes(e))) {
+      await new Promise((r) => setTimeout(r, 300));
       continue;
     }
 
     const reviewSummary = await getReviewSummary(appid);
 
-        const { data: inserted, error } = await supabase
+    const { data: inserted, error } = await supabase
       .from('games')
       .insert({
         name: data.name,
@@ -80,7 +102,6 @@ async function main() {
         review_summary: reviewSummary,
         is_casual_party: false,
       })
-      
       .select()
       .single();
 
@@ -89,8 +110,9 @@ async function main() {
       continue;
     }
 
-    console.log(`✅ 추가됨: ${data.name}`);
+    console.log(`✅ 추가됨: ${data.name} (${appid})`);
     addedCount++;
+    existingAppids.add(appid);
 
     if (!data.is_free && data.price_overview) {
       await supabase.from('price_history').insert({
@@ -103,7 +125,7 @@ async function main() {
     await new Promise((r) => setTimeout(r, 1200));
   }
 
-  console.log(`\n총 ${addedCount}개 게임 추가 완료. (조회 성공: ${checkedCount}개)`);
+  console.log(`\n총 ${addedCount}개 게임 추가 완료.`);
 }
 
 main();
