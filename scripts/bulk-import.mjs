@@ -13,7 +13,7 @@ const REVIEW_LABELS = {
   'No user reviews': '리뷰 없음',
 };
 const COOP_CATEGORY_IDS = [9, 38, 39]; // Co-op, Online Co-op, Shared/Split Screen Co-op
-const MAX_NEW_GAMES = 20;
+const MAX_NEW_GAMES = 100;
 
 async function getReviewSummary(appid) {
   const res = await fetch(`https://store.steampowered.com/appreviews/${appid}?json=1&filter=summary&language=all&purchase_type=all`);
