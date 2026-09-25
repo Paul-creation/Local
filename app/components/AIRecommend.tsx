@@ -126,7 +126,7 @@ export default function AIRecommend() {
                     <div style={{
                       height: '100%', background: 'var(--accent)',
                       borderRadius: 2,
-                      width: `${Math.min(100, (answers.length / 6) * 100)}%`,
+                      width: `${Math.min(100, (answers.length / 5) * 100)}%`,
                       transition: 'width 0.3s ease'
                     }} />
                   </div>
