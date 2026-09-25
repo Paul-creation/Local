@@ -9,8 +9,6 @@ export default function DiscountSection({ games }: { games: any[] }) {
       const price = getPriceInfo(g);
       return price && price.discount > 0;
     })
-    .slice(0, 8);
-
   if (discounted.length === 0) return null;
 
   return (
