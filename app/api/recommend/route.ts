@@ -136,8 +136,8 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  // 후보 3개 이하 or 질문 5개 이상이면 추천
-  if (filtered.length <= 3 || answers.length >= 5) {
+  // 후보 3개 이하 or (질문 8개 이상) or (질문 5개 이상이고 후보 10개 이하)
+  if (filtered.length <= 3 || answers.length >= 8 || (answers.length >= 5 && filtered.length <= 10)) {
     const candidates = filtered.slice(0, 5);
     const pick = candidates[Math.floor(Math.random() * candidates.length)];
 
