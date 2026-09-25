@@ -14,8 +14,6 @@ const REVIEW_LABELS = {
 };
 
 const MAX_NEW_GAMES = 300;
-
-// 제외할 장르 (성인물, 유틸리티 등)
 const EXCLUDE_GENRES = ['Sexual Content', 'Adult Only', 'Nudity', 'Video Production', 'Photo Editing', 'Accounting'];
 
 async function getReviewSummary(appid) {
@@ -26,19 +24,37 @@ async function getReviewSummary(appid) {
   } catch { return null; }
 }
 
+async function getEnglishReleaseYear(appid) {
+  try {
+    const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${appid}&cc=kr&l=english`);
+    const json = await res.json();
+    const dateStr = json[appid]?.data?.release_date?.date;
+    if (!dateStr) return null;
+    const year = new Date(dateStr).getFullYear();
+    return isNaN(year) ? null : year;
+  } catch { return null; }
+}
+
 async function main() {
   const { data: existing } = await supabase.from('games').select('steam_appid');
   const existingAppids = new Set((existing || []).map((g) => String(g.steam_appid)));
   const { data: delisted } = await supabase.from('delisted_appids').select('steam_appid');
   const delistedAppids = new Set((delisted || []).map((d) => String(d.steam_appid)));
 
-  // 여러 SteamSpy 엔드포인트에서 게임 수집
- const endpoints = [
-  'https://steamspy.com/api.php?request=top100in2weeks',
-  'https://steamspy.com/api.php?request=top100forever',
-  'https://steamspy.com/api.php?request=top100owned',
-];
-
+    const endpoints = [
+    'https://steamspy.com/api.php?request=top100in2weeks',
+    'https://steamspy.com/api.php?request=top100forever',
+    'https://steamspy.com/api.php?request=tag&tag=Co-op',
+    'https://steamspy.com/api.php?request=tag&tag=Multiplayer',
+    'https://steamspy.com/api.php?request=tag&tag=Online+Co-Op',
+    'https://steamspy.com/api.php?request=tag&tag=Survival',
+    'https://steamspy.com/api.php?request=tag&tag=Open+World',
+    'https://steamspy.com/api.php?request=tag&tag=Battle+Royale',
+    'https://steamspy.com/api.php?request=tag&tag=Horror',
+    'https://steamspy.com/api.php?request=tag&tag=RPG',
+    'https://steamspy.com/api.php?request=tag&tag=Strategy',
+    'https://steamspy.com/api.php?request=tag&tag=Puzzle',
+  ];
   const allCandidates = new Map();
   for (const endpoint of endpoints) {
     try {
@@ -63,6 +79,13 @@ async function main() {
     if (existingAppids.has(appid)) continue;
     if (delistedAppids.has(appid)) continue;
 
+    // 출시년도 먼저 확인 (영어로)
+    const releaseYear = await getEnglishReleaseYear(appid);
+    if (releaseYear !== null && releaseYear < 2015) {
+      await new Promise((r) => setTimeout(r, 300));
+      continue;
+    }
+
     let json;
     try {
       const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${appid}&cc=kr&l=korean`);
@@ -76,22 +99,11 @@ async function main() {
 
     const data = json[appid].data;
 
-    // 게임 타입만
     if (data.type !== 'game') {
       await new Promise((r) => setTimeout(r, 300));
       continue;
     }
-    // 스팀 appdetails에서 출시일 확인
-const releaseDate = data.release_date?.date;
-if (releaseDate) {
-  const year = new Date(releaseDate).getFullYear();
-  if (year < 2015) {
-    await new Promise((r) => setTimeout(r, 300));
-    continue;
-  }
-}
 
-    // 성인물 제외
     const genres = (data.genres || []).map(g => g.description);
     if (EXCLUDE_GENRES.some(e => genres.includes(e))) {
       await new Promise((r) => setTimeout(r, 300));
@@ -119,7 +131,7 @@ if (releaseDate) {
       continue;
     }
 
-    console.log(`✅ 추가됨: ${data.name} (${appid})`);
+    console.log(`✅ 추가됨: ${data.name} (${appid}) — ${releaseYear}년`);
     addedCount++;
     existingAppids.add(appid);
 

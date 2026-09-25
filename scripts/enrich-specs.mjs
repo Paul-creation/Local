@@ -135,8 +135,9 @@ async function main() {
       `https://store.steampowered.com/api/appdetails?appids=${game.steam_appid}&cc=kr&l=korean`
     );
     const json = await res.json();
-    if (!json[game.steam_appid]?.success) {
+        if (!json || !json[game.steam_appid]?.success) {
       console.log(`실패: ${game.name}`);
+      await new Promise((r) => setTimeout(r, 600));
       continue;
     }
     const data = json[game.steam_appid].data;
