@@ -66,63 +66,9 @@ export default function GameGrid({ games }: { games: any[] }) {
 
   const featuredPrice = featured ? getPriceInfo(featured) : null;
 
-  return (
+    return (
     <>
-      {featured && (
-        <Link href={`/games/${featured.id}`} className="hero-card">
-          <div className="hero-image-wrap">
-            <img src={featured.cover_image_url} alt={featured.name} />
-            <div className="hero-overlay" />
-          </div>
-          <div className="hero-content">
-            <span className="hero-badge">🔥 이번주의 게임</span>
-            <h2>{featured.name}</h2>
-            <p className="hero-tagline">이번주에 가장 인기있던 작품, 친구들하고 어때요?</p>
-            <div className="hero-meta">
-              {featured.min_players && featured.max_players ? `${featured.min_players}-${featured.max_players}인` : ''}
-              {featured.difficulty ? ` · ${featured.difficulty}` : ''}
-            </div>
-            {featuredPrice && (
-              <div className="price-row">
-                {featuredPrice.discount > 0 && (
-                  <>
-                    <span className="discount-badge">-{featuredPrice.discount}%</span>
-                    <span className="price-original">{featuredPrice.formattedOriginal}</span>
-                  </>
-                )}
-                <span className="price-final">{featuredPrice.formattedFinal}</span>
-              </div>
-            )}
-          </div>
-        </Link>
-      )}
-
-      {bannerPool.length > 0 && (
-        <>
-          <div className="section-label">🎯 추천 게임</div>
-          <BannerCarousel games={bannerPool} />
-        </>
-      )}
-
-      <DiscountSection games={games} />
-
-      {freeGames.length > 0 && !normalizedQuery && category === '전체' && selectedTags.length === 0 && (
-        <section className="free-section">
-          <div className="section-header">
-            <h2 className="section-title">🆓 지금 무료로 즐길 수 있는 게임</h2>
-            <span className="section-sub">설치만 하면 바로 친구랑 시작 가능</span>
-          </div>
-          <div className="free-strip">
-            {freeGames.map((g) => (
-              <a href={`/games/${g.id}`} key={g.id} className="free-chip">
-                <img src={g.cover_image_url} alt={g.name} />
-                <span>{g.name}</span>
-              </a>
-            ))}
-          </div>
-        </section>
-      )}
-
+      {/* 검색 + AI 버튼 — 항상 최상단 */}
       <div className="search-row">
         <div className="search-bar-clean">
           <input
@@ -136,6 +82,7 @@ export default function GameGrid({ games }: { games: any[] }) {
         <AIRecommend />
       </div>
 
+      {/* 카테고리 필터 */}
       <div className="category-pills">
         {CATEGORIES.map((c) => (
           <button key={c} className={`pill ${category === c ? 'pill-active' : ''}`} onClick={() => setCategory(c)}>
@@ -182,37 +129,95 @@ export default function GameGrid({ games }: { games: any[] }) {
                 <div className="browse-group-title">{group}</div>
                 <div className="browse-group-tags">
                   {tags.map((tag) => (
-  <button
-    key={tag}
-    className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
-    onClick={() => toggleTag(tag)}
-  >
-    {translateTag(tag)}
-  </button>
-))}
+                    <button
+                      key={tag}
+                      className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
+                      onClick={() => toggleTag(tag)}
+                    >
+                      {translateTag(tag)}
+                    </button>
+                  ))}
                 </div>
               </div>
             ))}
           </div>
-
           <button className="all-tags-toggle" onClick={() => setAllTagsOpen((v) => !v)}>
             세부 태그 설정 보기 {allTagsOpen ? '▴' : '▾'}
           </button>
-
           {allTagsOpen && (
             <div className="all-tags-cloud">
               {allTagsSorted.map((tag) => (
-  <button
-    key={tag}
-    className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
-    onClick={() => toggleTag(tag)}
-  >
-    {translateTag(tag)}
-  </button>
-))}
+                <button
+                  key={tag}
+                  className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
+                  onClick={() => toggleTag(tag)}
+                >
+                  {translateTag(tag)}
+                </button>
+              ))}
             </div>
           )}
         </div>
+      )}
+
+      {/* 검색/필터 중이 아닐 때만 히어로/배너/할인/무료 표시 */}
+      {!normalizedQuery && category === '전체' && selectedTags.length === 0 && (
+        <>
+          {featured && (
+            <Link href={`/games/${featured.id}`} className="hero-card">
+              <div className="hero-image-wrap">
+                <img src={featured.cover_image_url} alt={featured.name} />
+                <div className="hero-overlay" />
+              </div>
+              <div className="hero-content">
+                <span className="hero-badge">🔥 이번주의 게임</span>
+                <h2>{featured.name}</h2>
+                <p className="hero-tagline">이번주에 가장 인기있던 작품, 친구들하고 어때요?</p>
+                <div className="hero-meta">
+                  {featured.min_players && featured.max_players ? `${featured.min_players}-${featured.max_players}인` : ''}
+                  {featured.difficulty ? ` · ${featured.difficulty}` : ''}
+                </div>
+                {featuredPrice && (
+                  <div className="price-row">
+                    {featuredPrice.discount > 0 && (
+                      <>
+                        <span className="discount-badge">-{featuredPrice.discount}%</span>
+                        <span className="price-original">{featuredPrice.formattedOriginal}</span>
+                      </>
+                    )}
+                    <span className="price-final">{featuredPrice.formattedFinal}</span>
+                  </div>
+                )}
+              </div>
+            </Link>
+          )}
+
+          {bannerPool.length > 0 && (
+            <>
+              <div className="section-label">🎯 추천 게임</div>
+              <BannerCarousel games={bannerPool} />
+            </>
+          )}
+
+          <DiscountSection games={games} />
+
+          {freeGames.length > 0 && (
+            <section className="free-section">
+              <div className="section-header">
+                <h2 className="section-title">🆓 지금 무료로 즐길 수 있는 게임</h2>
+                <span className="section-sub">설치만 하면 바로 친구랑 시작 가능</span>
+              </div>
+              <div className="free-strip">
+                {freeGames.map((g) => (
+                  <a href={`/games/${g.id}`} key={g.id} className="free-chip">
+                    <img src={g.cover_image_url} alt={g.name} />
+                    <span>{g.name}</span>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+        </>
       )}
 
       {filtered.length === 0 ? (
@@ -252,8 +257,8 @@ export default function GameGrid({ games }: { games: any[] }) {
                     )}
                   </p>
                   {game.tags?.slice(0, 3).map((tag: string) => (
-  <span key={tag} className="category-tag">{translateTag(tag)}</span>
-))}
+                    <span key={tag} className="category-tag">{translateTag(tag)}</span>
+                  ))}
                   {game.is_free ? (
                     <div className="price-row">
                       <span className="price-final" style={{ color: '#4a9e3a', fontWeight: 800 }}>무료 플레이</span>
