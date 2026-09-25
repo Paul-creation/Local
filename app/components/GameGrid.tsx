@@ -30,6 +30,7 @@ export default function GameGrid({ games }: { games: any[] }) {
   const [allTagsOpen, setAllTagsOpen] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [query, setQuery] = useState('');
+  const [compareMode, setCompareMode] = useState(false);
   const [compareList, setCompareList] = useState<any[]>([]);
   const tagPanelRef = useRef<HTMLDivElement>(null);
 
@@ -87,8 +88,41 @@ export default function GameGrid({ games }: { games: any[] }) {
           />
           {query && <button className="search-clear" onClick={() => setQuery('')}>✕</button>}
         </div>
+        <button
+          className="ai-trigger-clean"
+          style={{
+            background: compareMode ? 'var(--danger)' : 'var(--bg-card)',
+            color: compareMode ? '#fff' : 'var(--text)',
+            border: '1.5px solid var(--border)',
+          }}
+          onClick={() => { setCompareMode(v => !v); setCompareList([]); }}
+        >
+          {compareMode ? '취소' : '⚖️ 비교'}
+        </button>
         <AIRecommend />
       </div>
+
+      {compareMode && (
+        <div style={{
+          background: 'var(--accent-soft)', border: '1.5px solid var(--accent)',
+          borderRadius: 'var(--radius-md)', padding: '12px 16px',
+          marginBottom: 16, fontSize: 14, color: 'var(--accent)', fontWeight: 600,
+        }}>
+          비교할 게임을 클릭해서 선택하세요 (최대 3개)
+          {compareList.length >= 2 && (
+            
+              href={`/compare?ids=${compareList.map(g => g.id).join(',')}`}
+              style={{
+                marginLeft: 16, background: 'var(--accent)', color: '#fff',
+                padding: '6px 16px', borderRadius: 100,
+                fontSize: 13, fontWeight: 700, textDecoration: 'none',
+              }}
+            >
+              비교하기 ({compareList.length}개) →
+            </a>
+          )}
+        </div>
+      )}
 
       <div className="category-pills">
         {CATEGORIES.map((c) => (
@@ -148,7 +182,7 @@ export default function GameGrid({ games }: { games: any[] }) {
         </div>
       )}
 
-      {!normalizedQuery && category === '전체' && selectedTags.length === 0 && (
+      {!normalizedQuery && category === '전체' && selectedTags.length === 0 && !compareMode && (
         <>
           {featured && (
             <Link href={`/games/${featured.id}`} className="hero-card">
@@ -213,7 +247,48 @@ export default function GameGrid({ games }: { games: any[] }) {
         <div className="grid">
           {filtered.map((game) => {
             const price = getPriceInfo(game);
-            return (
+            const isSelected = compareList.find(g => g.id === game.id);
+            return compareMode ? (
+              <div
+                key={game.id}
+                className="card"
+                onClick={() => toggleCompare(game)}
+                style={{
+                  cursor: 'pointer',
+                  outline: isSelected ? '3px solid var(--accent)' : '3px solid transparent',
+                  outlineOffset: 2,
+                }}
+              >
+                <div className="card-image-wrap">
+                  <img src={game.cover_image_url} alt={game.name} />
+                  {isSelected && (
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      background: 'rgba(0,113,227,0.15)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <span style={{ background: 'var(--accent)', color: '#fff', borderRadius: 100, padding: '6px 16px', fontWeight: 700, fontSize: 14 }}>
+                        ✓ 선택됨
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="card-body">
+                  <h3>{game.name}</h3>
+                  <p className="card-meta">
+                    {game.recommended_players
+                      ? `추천 ${game.recommended_players}`
+                      : game.min_players && game.max_players
+                      ? `${game.min_players}-${game.max_players}인`
+                      : ''}
+                    {game.difficulty ? ` · ${game.difficulty}` : ''}
+                  </p>
+                  {game.tags?.slice(0, 3).map((tag: string) => (
+                    <span key={tag} className="category-tag">{translateTag(tag)}</span>
+                  ))}
+                </div>
+              </div>
+            ) : (
               <Link href={`/games/${game.id}`} key={game.id} className="card">
                 <div className="card-image-wrap">
                   <img src={game.cover_image_url} alt={game.name} />
@@ -227,19 +302,6 @@ export default function GameGrid({ games }: { games: any[] }) {
                       </span>
                     );
                   })()}
-                  <button
-                    onClick={(e) => { e.preventDefault(); toggleCompare(game); }}
-                    style={{
-                      position: 'absolute', top: 10, right: 10,
-                      background: compareList.find(g => g.id === game.id) ? 'var(--accent)' : 'rgba(0,0,0,0.6)',
-                      color: '#fff', border: 'none', borderRadius: 6,
-                      fontSize: 11, fontWeight: 700, padding: '4px 8px',
-                      cursor: 'pointer', zIndex: 2,
-                      backdropFilter: 'blur(4px)',
-                    }}
-                  >
-                    {compareList.find(g => g.id === game.id) ? '✓ 비교중' : '+ 비교'}
-                  </button>
                 </div>
                 <div className="card-body">
                   <h3>{game.name}</h3>
@@ -282,37 +344,6 @@ export default function GameGrid({ games }: { games: any[] }) {
               </Link>
             );
           })}
-        </div>
-      )}
-
-      {compareList.length >= 2 && (
-        <div style={{
-          position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-          background: 'var(--bg-nav)', color: '#fff',
-          borderRadius: 100, padding: '14px 28px',
-          display: 'flex', alignItems: 'center', gap: 16,
-          boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
-          zIndex: 100, whiteSpace: 'nowrap',
-        }}>
-          <span style={{ fontSize: 14, fontWeight: 600 }}>
-            {compareList.map(g => g.name).join(' vs ')}
-          </span>
-            <a
-            href={`/compare?ids=${compareList.map(g => g.id).join(',')}`}
-            style={{
-              background: 'var(--accent)', color: '#fff',
-              padding: '8px 18px', borderRadius: 100,
-              fontSize: 14, fontWeight: 700, textDecoration: 'none',
-            }}
-          >
-            비교하기 →
-          </a>
-          <button
-            onClick={() => setCompareList([])}
-            style={{ background: 'none', border: 'none', color: '#aaa', cursor: 'pointer', fontSize: 18 }}
-          >
-            ✕
-          </button>
         </div>
       )}
     </>
