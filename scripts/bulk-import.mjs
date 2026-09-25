@@ -22,7 +22,12 @@ async function getKoreanTopSellers(page = 0) {
       `https://store.steampowered.com/search/results?filter=topsellers&cc=kr&l=korean&json=1&start=${page * 50}&count=50`
     );
     const json = await res.json();
-    return json.items || [];
+    return (json.items || []).map(item => {
+      // logo URL에서 appid 추출
+      // 예: /steam/apps/578080/...
+      const match = item.logo?.match(/\/apps\/(\d+)\//);
+      return match ? { appid: match[1], name: item.name } : null;
+    }).filter(Boolean);
   } catch { return []; }
 }
 
@@ -44,7 +49,7 @@ async function main() {
     for (const item of items) {
       if (addedCount >= MAX_NEW_GAMES) break;
 
-      const appid = String(item.id);
+      const appid = String(item.appid);
       if (!appid || appid === 'undefined') continue;
       if (existingAppids.has(appid)) continue;
       if (delistedAppids.has(appid)) continue;
