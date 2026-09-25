@@ -13,8 +13,8 @@ function getPriceTiming(game: any) {
   const price = getPriceInfo(game);
   if (!price || !game.lowest_price || game.is_free) return null;
   if (price.discount === 0) return null;
-  if (price.final < 100) return null; // 달러 데이터 방어
-  if (game.lowest_price < 100) return null; // lowest_price 달러 방어
+  if (price.final < 100) return null;
+  if (game.lowest_price < 100) return null;
   const ratio = price.final / game.lowest_price;
   if (ratio <= 1.05) return 'best';
   if (ratio <= 1.15) return 'near';
@@ -30,7 +30,16 @@ export default function GameGrid({ games }: { games: any[] }) {
   const [allTagsOpen, setAllTagsOpen] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [query, setQuery] = useState('');
+  const [compareList, setCompareList] = useState<any[]>([]);
   const tagPanelRef = useRef<HTMLDivElement>(null);
+
+  const toggleCompare = (game: any) => {
+    setCompareList(prev => {
+      if (prev.find(g => g.id === game.id)) return prev.filter(g => g.id !== game.id);
+      if (prev.length >= 3) return prev;
+      return [...prev, game];
+    });
+  };
 
   const featured = games.find((g) => g.featured);
   const bannerPool = games.filter((g) => g.is_casual_party && !g.featured);
@@ -66,9 +75,8 @@ export default function GameGrid({ games }: { games: any[] }) {
 
   const featuredPrice = featured ? getPriceInfo(featured) : null;
 
-    return (
+  return (
     <>
-      {/* 검색 + AI 버튼 — 항상 최상단 */}
       <div className="search-row">
         <div className="search-bar-clean">
           <input
@@ -82,7 +90,6 @@ export default function GameGrid({ games }: { games: any[] }) {
         <AIRecommend />
       </div>
 
-      {/* 카테고리 필터 */}
       <div className="category-pills">
         {CATEGORIES.map((c) => (
           <button key={c} className={`pill ${category === c ? 'pill-active' : ''}`} onClick={() => setCategory(c)}>
@@ -93,11 +100,7 @@ export default function GameGrid({ games }: { games: any[] }) {
           className={`pill ${browseOpen ? 'pill-active' : ''}`}
           onClick={() => {
             setBrowseOpen((v) => {
-              if (!v) {
-                setTimeout(() => {
-                  tagPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 50);
-              }
+              if (!v) setTimeout(() => tagPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
               return !v;
             });
           }}
@@ -107,10 +110,7 @@ export default function GameGrid({ games }: { games: any[] }) {
         {selectedTags.length > 0 && (
           <span style={{ color: 'var(--text-dimmer)', fontSize: 13 }}>
             {selectedTags.length}개 선택됨
-            <button
-              onClick={() => setSelectedTags([])}
-              style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', fontSize: 13, marginLeft: 4 }}
-            >
+            <button onClick={() => setSelectedTags([])} style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', fontSize: 13, marginLeft: 4 }}>
               초기화
             </button>
           </span>
@@ -121,19 +121,11 @@ export default function GameGrid({ games }: { games: any[] }) {
         <div className="browse-panel" ref={tagPanelRef}>
           <div className="browse-groups">
             {groupedTags.map(([group, tags], i) => (
-              <div
-                className="browse-group-card"
-                key={group}
-                style={{ '--group-color': GROUP_COLORS[i % GROUP_COLORS.length] } as React.CSSProperties}
-              >
+              <div className="browse-group-card" key={group} style={{ '--group-color': GROUP_COLORS[i % GROUP_COLORS.length] } as React.CSSProperties}>
                 <div className="browse-group-title">{group}</div>
                 <div className="browse-group-tags">
                   {tags.map((tag) => (
-                    <button
-                      key={tag}
-                      className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
-                      onClick={() => toggleTag(tag)}
-                    >
+                    <button key={tag} className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`} onClick={() => toggleTag(tag)}>
                       {translateTag(tag)}
                     </button>
                   ))}
@@ -147,11 +139,7 @@ export default function GameGrid({ games }: { games: any[] }) {
           {allTagsOpen && (
             <div className="all-tags-cloud">
               {allTagsSorted.map((tag) => (
-                <button
-                  key={tag}
-                  className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`}
-                  onClick={() => toggleTag(tag)}
-                >
+                <button key={tag} className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`} onClick={() => toggleTag(tag)}>
                   {translateTag(tag)}
                 </button>
               ))}
@@ -160,7 +148,6 @@ export default function GameGrid({ games }: { games: any[] }) {
         </div>
       )}
 
-      {/* 검색/필터 중이 아닐 때만 히어로/배너/할인/무료 표시 */}
       {!normalizedQuery && category === '전체' && selectedTags.length === 0 && (
         <>
           {featured && (
@@ -240,6 +227,19 @@ export default function GameGrid({ games }: { games: any[] }) {
                       </span>
                     );
                   })()}
+                  <button
+                    onClick={(e) => { e.preventDefault(); toggleCompare(game); }}
+                    style={{
+                      position: 'absolute', top: 10, right: 10,
+                      background: compareList.find(g => g.id === game.id) ? 'var(--accent)' : 'rgba(0,0,0,0.6)',
+                      color: '#fff', border: 'none', borderRadius: 6,
+                      fontSize: 11, fontWeight: 700, padding: '4px 8px',
+                      cursor: 'pointer', zIndex: 2,
+                      backdropFilter: 'blur(4px)',
+                    }}
+                  >
+                    {compareList.find(g => g.id === game.id) ? '✓ 비교중' : '+ 비교'}
+                  </button>
                 </div>
                 <div className="card-body">
                   <h3>{game.name}</h3>
@@ -282,6 +282,37 @@ export default function GameGrid({ games }: { games: any[] }) {
               </Link>
             );
           })}
+        </div>
+      )}
+
+      {compareList.length >= 2 && (
+        <div style={{
+          position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+          background: 'var(--bg-nav)', color: '#fff',
+          borderRadius: 100, padding: '14px 28px',
+          display: 'flex', alignItems: 'center', gap: 16,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
+          zIndex: 100, whiteSpace: 'nowrap',
+        }}>
+          <span style={{ fontSize: 14, fontWeight: 600 }}>
+            {compareList.map(g => g.name).join(' vs ')}
+          </span>
+            <a
+            href={`/compare?ids=${compareList.map(g => g.id).join(',')}`}
+            style={{
+              background: 'var(--accent)', color: '#fff',
+              padding: '8px 18px', borderRadius: 100,
+              fontSize: 14, fontWeight: 700, textDecoration: 'none',
+            }}
+          >
+            비교하기 →
+          </a>
+          <button
+            onClick={() => setCompareList([])}
+            style={{ background: 'none', border: 'none', color: '#aaa', cursor: 'pointer', fontSize: 18 }}
+          >
+            ✕
+          </button>
         </div>
       )}
     </>
