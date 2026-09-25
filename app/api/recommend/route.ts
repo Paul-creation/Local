@@ -13,14 +13,12 @@ function filterGames(games: any[], answers: { question: string; answer: string }
     const q = question.toLowerCase();
     const a = answer.toLowerCase();
 
-    // 플레이 방식
     if (q.includes('어떻게 플레이')) {
       if (a.includes('혼자')) filtered = filtered.filter(g => g.solo_playable !== false);
       else if (a.includes('친구')) filtered = filtered.filter(g => g.max_players >= 2);
       continue;
     }
 
-    // 무료
     if (q.includes('무료') || q.includes('돈')) {
       if (a.includes('무료') || a.includes('공짜') || a.includes('응') || a.includes('예')) {
         filtered = filtered.filter(g => g.is_free);
@@ -30,7 +28,6 @@ function filterGames(games: any[], answers: { question: string; answer: string }
       continue;
     }
 
-    // 한국어
     if (q.includes('한국어')) {
       if (a.includes('필요') || a.includes('응') || a.includes('예') || a.includes('있')) {
         filtered = filtered.filter(g => g.korean_support && g.korean_support !== '한국어 없음');
@@ -38,7 +35,6 @@ function filterGames(games: any[], answers: { question: string; answer: string }
       continue;
     }
 
-    // 난이도
     if (q.includes('난이도') || q.includes('어렵') || q.includes('쉽')) {
       if (a.includes('쉬') || a.includes('가볍') || a.includes('편하')) {
         filtered = filtered.filter(g => g.difficulty === '쉬움' || g.difficulty === '보통');
@@ -48,7 +44,6 @@ function filterGames(games: any[], answers: { question: string; answer: string }
       continue;
     }
 
-    // 인원수
     if (q.includes('인원') || q.includes('몇 명') || q.includes('명이') || q.includes('몇명')) {
       if (a.includes('2인') || a.includes('2명') || a.includes('둘')) {
         filtered = filtered.filter(g => g.min_players <= 2 && g.max_players >= 2);
@@ -60,7 +55,6 @@ function filterGames(games: any[], answers: { question: string; answer: string }
       continue;
     }
 
-    // 공포
     if (q.includes('공포') || q.includes('호러') || q.includes('무서')) {
       if (a.includes('좋아') || a.includes('응') || a.includes('예') || a.includes('ㅇ')) {
         filtered = filtered.filter(g => g.tags?.some((t: string) => ['호러', 'Survival Horror', '심리 공포'].includes(t)));
@@ -70,7 +64,6 @@ function filterGames(games: any[], answers: { question: string; answer: string }
       continue;
     }
 
-    // 장르
     if (q.includes('장르') || q.includes('게임 종류') || q.includes('어떤 게임')) {
       if (a.includes('슈팅') || a.includes('fps')) {
         filtered = filtered.filter(g => g.tags?.some((t: string) => ['FPS', '슈팅'].includes(t)));
@@ -86,7 +79,6 @@ function filterGames(games: any[], answers: { question: string; answer: string }
       continue;
     }
 
-    // 오픈월드
     if (q.includes('오픈월드') || q.includes('자유롭게')) {
       if (a.includes('좋아') || a.includes('응') || a.includes('예')) {
         filtered = filtered.filter(g => g.tags?.includes('오픈월드'));
@@ -96,7 +88,6 @@ function filterGames(games: any[], answers: { question: string; answer: string }
       continue;
     }
 
-    // 경쟁/협동
     if (q.includes('경쟁') || q.includes('협동') || q.includes('같이')) {
       if (a.includes('협동') || a.includes('같이') || a.includes('협력')) {
         filtered = filtered.filter(g => g.category === '협동' || g.tags?.includes('온라인 협동'));
@@ -127,7 +118,7 @@ export async function POST(req: NextRequest) {
 
   const filtered = filterGames(games, answers);
 
-  // 첫 질문은 고정
+  // 첫 질문 고정
   if (answers.length === 0) {
     return NextResponse.json({
       question: '어떻게 플레이하고 싶어?',
@@ -136,12 +127,21 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  // 후보 3개 이하 or (질문 8개 이상) or (질문 5개 이상이고 후보 10개 이하)
-  if (filtered.length <= 3 || answers.length >= 8 || (answers.length >= 5 && filtered.length <= 10)) {
+  // 추천 조건
+  if (filtered.length <= 5 || answers.length >= 8 || (answers.length >= 5 && filtered.length <= 10)) {
     const candidates = filtered.slice(0, 5);
-    const pick = candidates[Math.floor(Math.random() * candidates.length)];
 
-    const prompt = `게임 "${pick.name}"을 추천하는 이유를 친근한 반말로 2문장 이내로 써줘. 텍스트만 출력.`;
+    const gameListText = candidates.map(g =>
+      `id:${g.id} | 이름:${g.name} | 태그:${(g.tags || []).slice(0, 3).join(',')}`
+    ).join('\n');
+
+    const prompt = `아래 게임들을 각각 한 줄로 추천 이유를 써줘. "~를 좋아한다면", "~가 하고 싶다면" 같은 톤으로 반말로.
+
+게임 목록:
+${gameListText}
+
+JSON 배열로만 출력:
+[{"game_id":"id","hook":"한 줄 추천 이유"}]`;
 
     const aiRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -152,15 +152,27 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 200,
+        max_tokens: 500,
         messages: [{ role: 'user', content: prompt }],
       }),
     });
 
     const aiData = await aiRes.json();
-    const reason = aiData.content?.[0]?.text?.trim() || '딱 맞는 게임이야!';
+    const text = aiData.content?.[0]?.text?.trim() || '[]';
 
-    return NextResponse.json({ done: true, game: pick, reason });
+    let hooks: { game_id: string; hook: string }[] = [];
+    try {
+      hooks = JSON.parse(text.replace(/```json|```/g, '').trim());
+    } catch {
+      hooks = candidates.map(g => ({ game_id: g.id, hook: '딱 맞는 게임이야!' }));
+    }
+
+    const results = candidates.map(g => ({
+      game: g,
+      hook: hooks.find(h => h.game_id === g.id)?.hook || '딱 맞는 게임이야!',
+    }));
+
+    return NextResponse.json({ done: true, results });
   }
 
   // 다음 질문 생성
@@ -182,13 +194,12 @@ ${answersText}
 이미 물어본 것: ${askedQuestions}
 
 규칙:
-- 이전 답변과 모순되는 질문 절대 금지 (혼자 한다고 했으면 인원수 묻지 마)
+- 이전 답변과 모순되는 질문 절대 금지
 - 이전 답변과 자연스럽게 이어지는 질문
 - 보기는 자연스러운 한국어로 (2-3개)
 - 짧고 명확하게
 - 게임 특성(태그, 난이도, 장르, 무료여부, 한국어지원, 공포여부, 오픈월드 등) 골고루 활용
-- 답변에 따라 서버에서 필터링 가능한 질문 위주로
-- 질문과 보기 모두 반말로 (예: "좋아해?", "응 좋아", "별로야")
+- 질문과 보기 모두 반말로
 - 존댓말 절대 금지
 
 JSON만 출력:

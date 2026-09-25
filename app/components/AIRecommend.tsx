@@ -11,21 +11,18 @@ interface Question {
 export default function AIRecommend() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<'intro' | 'asking' | 'result' | 'error'>('intro');
-  const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<{ question: string; answer: string }[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [remainingCount, setRemainingCount] = useState<number>(0);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ game: any; reason: string } | null>(null);
+  const [result, setResult] = useState<any>(null);
   const [error, setError] = useState('');
 
   const startGame = async () => {
     setStep('asking');
-    setLoading(true);
     setAnswers([]);
-    setQuestions([]);
+    setCurrentQuestion(null);
     await fetchNextQuestion([]);
-    setLoading(false);
   };
 
   const fetchNextQuestion = async (currentAnswers: { question: string; answer: string }[]) => {
@@ -34,11 +31,11 @@ export default function AIRecommend() {
       const res = await fetch('/api/recommend', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'akinator', answers: currentAnswers }),
+        body: JSON.stringify({ answers: currentAnswers }),
       });
       const data = await res.json();
 
-      if (data.done || data.game) {
+      if (data.done) {
         setResult(data);
         setStep('result');
       } else if (data.question) {
@@ -67,7 +64,6 @@ export default function AIRecommend() {
   const reset = () => {
     setStep('intro');
     setAnswers([]);
-    setQuestions([]);
     setCurrentQuestion(null);
     setResult(null);
     setError('');
@@ -110,7 +106,6 @@ export default function AIRecommend() {
 
             {step === 'asking' && (
               <>
-                {/* 진행 바 */}
                 <div style={{ marginBottom: 20 }}>
                   <div style={{
                     display: 'flex', justifyContent: 'space-between',
@@ -119,13 +114,9 @@ export default function AIRecommend() {
                     <span>후보 게임 {remainingCount}개</span>
                     <span>{answers.length}개 답변 완료</span>
                   </div>
-                  <div style={{
-                    height: 4, background: 'var(--border)',
-                    borderRadius: 2, overflow: 'hidden'
-                  }}>
+                  <div style={{ height: 4, background: 'var(--border)', borderRadius: 2, overflow: 'hidden' }}>
                     <div style={{
-                      height: '100%', background: 'var(--accent)',
-                      borderRadius: 2,
+                      height: '100%', background: 'var(--accent)', borderRadius: 2,
                       width: `${Math.min(100, (answers.length / 8) * 100)}%`,
                       transition: 'width 0.3s ease'
                     }} />
@@ -143,11 +134,7 @@ export default function AIRecommend() {
                     </p>
                     <div className="ai-chip-row">
                       {currentQuestion.options.map((opt) => (
-                        <button
-                          key={opt}
-                          className="ai-chip"
-                          onClick={() => handleAnswer(opt)}
-                        >
+                        <button key={opt} className="ai-chip" onClick={() => handleAnswer(opt)}>
                           {opt}
                         </button>
                       ))}
@@ -155,7 +142,6 @@ export default function AIRecommend() {
                   </div>
                 )}
 
-                {/* 이전 답변 요약 */}
                 {answers.length > 0 && (
                   <div style={{ marginTop: 20, borderTop: '1px solid var(--border)', paddingTop: 16 }}>
                     {answers.map((a, i) => (
@@ -174,13 +160,43 @@ export default function AIRecommend() {
 
             {step === 'result' && result && (
               <div className="ai-result">
-                <img src={result.game.cover_image_url} alt={result.game.name} className="ai-result-image" />
-                <h4>{result.game.name}</h4>
-                <p className="ai-result-reason">{result.reason}</p>
-                <div className="ai-result-actions">
-                  <Link href={`/games/${result.game.id}`} className="ai-result-link">자세히 보기 →</Link>
-                  <button className="ai-result-retry" onClick={reset}>다시 찾기</button>
-                </div>
+                {result.results ? (
+                  <>
+                    <p style={{ fontSize: 15, fontWeight: 700, marginBottom: 16, color: 'var(--text)' }}>
+                      이런 게임들 어때?
+                    </p>
+                    {result.results.map((r: any) => (
+                      <Link href={`/games/${r.game.id}`} key={r.game.id} style={{
+                        display: 'flex', alignItems: 'center', gap: 12,
+                        padding: '12px 0', borderBottom: '1px solid var(--border-light)',
+                        textDecoration: 'none',
+                      }}>
+                        <img src={r.game.cover_image_url} alt={r.game.name} style={{
+                          width: 60, height: 34, objectFit: 'cover', borderRadius: 6, flexShrink: 0
+                        }} />
+                        <div>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>
+                            {r.game.name}
+                          </div>
+                          <div style={{ fontSize: 12, color: 'var(--text-dim)' }}>{r.hook}</div>
+                        </div>
+                      </Link>
+                    ))}
+                    <button className="ai-result-retry" style={{ marginTop: 16, width: '100%' }} onClick={reset}>
+                      다시 찾기
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <img src={result.game?.cover_image_url} alt={result.game?.name} className="ai-result-image" />
+                    <h4>{result.game?.name}</h4>
+                    <p className="ai-result-reason">{result.reason}</p>
+                    <div className="ai-result-actions">
+                      <Link href={`/games/${result.game?.id}`} className="ai-result-link">자세히 보기 →</Link>
+                      <button className="ai-result-retry" onClick={reset}>다시 찾기</button>
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
