@@ -9,18 +9,23 @@ const ITAD_KEY = process.env.ITAD_API_KEY;
 const MAX_RECORDS_PER_GAME = 15;
 
 async function getItadId(steamAppid) {
-  const res = await fetch(
-    `https://api.isthereanydeal.com/games/lookup/v1?key=${ITAD_KEY}&appid=${steamAppid}`
-  );
-  const json = await res.json();
-  return json.found ? json.game.id : null;
+  try {
+    const res = await fetch(
+      `https://api.isthereanydeal.com/games/lookup/v1?key=${ITAD_KEY}&appid=${steamAppid}`
+    );
+    const json = await res.json();
+    return json.found ? json.game.id : null;
+  } catch { return null; }
 }
 
 async function getPriceHistory(itadId) {
-  const res = await fetch(
-    `https://api.isthereanydeal.com/games/history/v2?key=${ITAD_KEY}&id=${itadId}&country=KR`
-  );
-  return res.json();
+  try {
+    const res = await fetch(
+      `https://api.isthereanydeal.com/games/history/v2?key=${ITAD_KEY}&id=${itadId}&country=KR`
+    );
+    const json = await res.json();
+    return Array.isArray(json) ? json : [];
+  } catch { return []; }
 }
 
 async function main() {
