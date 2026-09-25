@@ -36,14 +36,7 @@ async function main() {
  const endpoints = [
   'https://steamspy.com/api.php?request=top100in2weeks',
   'https://steamspy.com/api.php?request=top100forever',
-  'https://steamspy.com/api.php?request=genre&genre=Action',
-  'https://steamspy.com/api.php?request=genre&genre=RPG',
-  'https://steamspy.com/api.php?request=genre&genre=Strategy',
-  'https://steamspy.com/api.php?request=genre&genre=Adventure',
-  'https://steamspy.com/api.php?request=genre&genre=Simulation',
-  'https://steamspy.com/api.php?request=genre&genre=Sports',
-  'https://steamspy.com/api.php?request=genre&genre=Racing',
-  'https://steamspy.com/api.php?request=genre&genre=Indie',
+  'https://steamspy.com/api.php?request=top100owned',
 ];
 
   const allCandidates = new Map();
