@@ -448,8 +448,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </section>
       )}
 
-      {/* 할인 전적 */}
-      {game.price_history?.length >= 2 && (
+            {/* 할인 전적 */}
+      {!game.is_free && game.price_history?.length >= 2 && (
         <section className="detail-section-v2">
           <h3>할인 전적</h3>
           <DiscountChart
