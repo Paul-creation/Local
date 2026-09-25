@@ -32,9 +32,12 @@ async function main() {
       continue;
     }
 
-    const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${game.steam_appid}`);
+        const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${game.steam_appid}`);
     const json = await res.json();
-    if (!json[game.steam_appid]?.success) continue;
+    if (!json || !json[game.steam_appid]?.success) {
+      await new Promise((r) => setTimeout(r, 600));
+      continue;
+    }
 
     const data = json[game.steam_appid].data;
     const categories = (data.categories || []).map((c) => c.description);
