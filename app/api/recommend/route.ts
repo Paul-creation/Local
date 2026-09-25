@@ -137,18 +137,28 @@ JSON만 출력:
     `- id: ${g.id}, 이름: ${g.name}, 카테고리: ${g.category}, 태그: ${(g.tags || []).join(', ')}, 인원: ${g.min_players}-${g.max_players}, 난이도: ${g.difficulty}`
   ).join('\n');
 
-  const prompt = `너는 게임 추천 도우미야. 아래 사용자 응답과 게임 목록을 보고, 가장 잘 맞는 게임 1개를 골라줘.
+    const prompt = `너는 게임 추천 아키네이터야. 아래 ${filtered.length}개 후보 게임 중 가장 효과적으로 절반을 걸러낼 수 있는 질문 1개를 만들어.
 
-사용자 응답:
-- 오늘 기분: ${mood}
-- 같이 할 인원수: ${groupSize}
-- 원하는 분위기: ${vibe}
-
-게임 목록:
+후보 게임 (최대 50개):
 ${gameList}
 
-아래 JSON 형식으로만 답해:
-{"game_id": "선택한 게임의 id", "reason": "왜 이 게임을 골랐는지, 친근한 반말로 2문장 이내."}`;
+이미 물어본 것: ${askedQuestions || '없음'}
+
+규칙:
+- 이전 답변과 자연스럽게 이어지는 질문 만들기
+- 예를 들어 "혼자 할 거야?"에 "응"이라고 했으면 솔로 플레이 관련 후속 질문 금지
+- "멀티 필수야?"에 "응"이라고 했으면 인원수 관련 질문 가능하지만 "혼자도 가능해?" 같은 질문 금지
+- 모순되는 질문 절대 금지
+- 보기는 자연스러운 한국어로 (예/아니오 대신 "응 좋아"/"별로" 같은 톤)
+- 2-3개 보기
+- 짧고 명확하게
+- 게임 특성(태그, 난이도, 장르, 인원, 무료여부, 한국어지원)을 골고루 활용
+
+지금까지 답변:
+${answers.length > 0 ? answers.map((a: any) => `Q: ${a.question} → A: ${a.answer}`).join('\n') : '없음'}
+
+JSON만 출력:
+{"question":"질문","options":["보기1","보기2","보기3"]}`;
 
   const aiRes = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
