@@ -24,7 +24,13 @@ export default async function ComparePage({ searchParams }: { searchParams: { id
 
   if (!games || games.length < 2) return null;
 
-  const ROWS = [
+  type Row = {
+  label: string;
+  key?: string;
+  render?: (g: any) => any;
+};
+
+const ROWS: Row[] = [
     { label: '카테고리', key: 'category' },
     { label: '인원수', render: (g: any) => g.min_players && g.max_players ? `${g.min_players}-${g.max_players}인` : '정보 없음' },
     { label: '추천 인원', key: 'recommended_players' },
@@ -107,7 +113,7 @@ export default async function ComparePage({ searchParams }: { searchParams: { id
                 color: 'var(--text)', fontWeight: 500,
                 borderLeft: '1px solid var(--border-light)',
               }}>
-                {'render' in row ? row.render(g) : (g[row.key as string] || '-')}
+                {row.render ? row.render(g) : (g[row.key!] || '-')}
               </div>
             ))}
           </div>
