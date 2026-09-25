@@ -18,10 +18,15 @@ async function main() {
       continue;
     }
 
-    const res = await fetch(
+        const res = await fetch(
       `https://store.steampowered.com/api/appdetails?appids=${game.steam_appid}&cc=kr&l=korean`
     );
     const json = await res.json();
+    if (!json || !json[game.steam_appid]) {
+      console.log(`응답 없음: ${game.name}`);
+      await new Promise((r) => setTimeout(r, 600));
+      continue;
+    }
     const data = json[game.steam_appid]?.data;
 
     if (!data || data.is_free || !data.price_overview) {
