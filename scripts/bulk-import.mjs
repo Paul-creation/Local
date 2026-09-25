@@ -109,8 +109,15 @@ async function main() {
       await new Promise((r) => setTimeout(r, 300));
       continue;
     }
-
-    const reviewSummary = await getReviewSummary(appid);
+    // 리뷰 최소 기준: 500개 이상, 70% 이상 긍정
+    const reviewRes = await fetch(`https://store.steampowered.com/appreviews/${appid}?json=1&filter=summary&language=all&purchase_type=all`);
+    const reviewJson = await reviewRes.json();
+    const qs = reviewJson.query_summary;
+    if (!qs || qs.total_reviews < 500 || (qs.total_positive / qs.total_reviews) < 0.7) {
+      await new Promise((r) => setTimeout(r, 300));
+      continue;
+    }
+    const reviewSummary = REVIEW_LABELS[qs.review_score_desc] || null;
 
     const { data: inserted, error } = await supabase
       .from('games')
