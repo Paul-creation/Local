@@ -88,6 +88,15 @@ async function main() {
       await new Promise((r) => setTimeout(r, 300));
       continue;
     }
+    // 스팀 appdetails에서 출시일 확인
+const releaseDate = data.release_date?.date;
+if (releaseDate) {
+  const year = new Date(releaseDate).getFullYear();
+  if (year < 2015) {
+    await new Promise((r) => setTimeout(r, 300));
+    continue;
+  }
+}
 
     // 성인물 제외
     const genres = (data.genres || []).map(g => g.description);
