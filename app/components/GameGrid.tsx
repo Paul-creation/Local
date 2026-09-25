@@ -111,7 +111,7 @@ export default function GameGrid({ games }: { games: any[] }) {
           비교할 게임을 클릭해서 선택하세요 (최대 3개)
           {compareList.length >= 2 && (
             
-              href={`/compare?ids=${compareList.map(g => g.id).join(',')}`}
+            <a
               style={{
                 marginLeft: 16, background: 'var(--accent)', color: '#fff',
                 padding: '6px 16px', borderRadius: 100,
