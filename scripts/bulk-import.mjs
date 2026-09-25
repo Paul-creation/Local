@@ -120,18 +120,20 @@ async function main() {
     const reviewSummary = REVIEW_LABELS[qs.review_score_desc] || null;
 
     const { data: inserted, error } = await supabase
-      .from('games')
-      .insert({
-        name: data.name,
-        steam_appid: appid,
-        platform: ['steam'],
-        cover_image_url: data.header_image,
-        description: data.short_description,
-        review_summary: reviewSummary,
-        is_casual_party: false,
-      })
-      .select()
-      .single();
+  .from('games')
+  .insert({
+    name: data.name,
+    steam_appid: appid,
+    platform: ['steam'],
+    cover_image_url: data.header_image,
+    description: data.short_description,
+    review_summary: reviewSummary,
+    is_casual_party: false,
+    average_playtime_forever: candidate.average_forever || null,
+    average_playtime_2weeks: candidate.average_2weeks || null,
+  })
+  .select()
+  .single();
 
     if (error) {
       console.error(`저장 실패 (${data.name}):`, error.message);
