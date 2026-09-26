@@ -46,8 +46,8 @@ export default function CompareChat({ games }: { games: any[] }) {
 
   return (
     <div style={{ marginTop: 32 }}>
-      <h2 style={{ fontSize: 17, fontWeight: 800, marginBottom: 4 }}>AI에게 물어보기</h2>
-      <p style={{ fontSize: 13, color: 'var(--text-dimmer)', marginBottom: 16 }}>
+      <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 4 }}>AI에게 물어보기</h2>
+      <p style={{ fontSize: 15, color: 'var(--text-dimmer)', marginBottom: 16 }}>
         이 게임들에 대해 뭐든 물어봐 (세션당 최대 5회)
       </p>
 
@@ -61,7 +61,7 @@ export default function CompareChat({ games }: { games: any[] }) {
               style={{
                 background: 'var(--bg-card)', border: '1.5px solid var(--border)',
                 borderRadius: 100, padding: '8px 14px',
-                fontSize: 13, color: 'var(--text)', cursor: 'pointer',
+                fontSize: 15, color: 'var(--text)', cursor: 'pointer',
               }}
             >
               {q}
@@ -84,7 +84,7 @@ export default function CompareChat({ games }: { games: any[] }) {
             }}>
               <div style={{
                 maxWidth: '80%', padding: '10px 14px', borderRadius: 12,
-                fontSize: 14, lineHeight: 1.6,
+                fontSize: 15, lineHeight: 1.6,
                 background: m.role === 'user' ? 'var(--accent)' : 'var(--bg)',
                 color: m.role === 'user' ? '#fff' : 'var(--text)',
               }}>
@@ -93,7 +93,7 @@ export default function CompareChat({ games }: { games: any[] }) {
             </div>
           ))}
           {loading && (
-            <div style={{ color: 'var(--text-dimmer)', fontSize: 13 }}>생각 중...</div>
+            <div style={{ color: 'var(--text-dimmer)', fontSize: 15 }}>생각 중...</div>
           )}
         </div>
       )}
@@ -110,7 +110,7 @@ export default function CompareChat({ games }: { games: any[] }) {
             style={{
               flex: 1, padding: '10px 14px', borderRadius: 100,
               border: '1.5px solid var(--border)', background: 'var(--bg-card)',
-              fontSize: 14, color: 'var(--text)', outline: 'none',
+              fontSize: 15, color: 'var(--text)', outline: 'none',
             }}
           />
           <button
@@ -119,7 +119,7 @@ export default function CompareChat({ games }: { games: any[] }) {
             style={{
               background: 'var(--accent)', color: '#fff',
               border: 'none', borderRadius: 100,
-              padding: '10px 18px', fontSize: 14, fontWeight: 700,
+              padding: '10px 18px', fontSize: 15, fontWeight: 700,
               cursor: loading ? 'not-allowed' : 'pointer',
               opacity: loading ? 0.6 : 1,
             }}
@@ -128,7 +128,7 @@ export default function CompareChat({ games }: { games: any[] }) {
           </button>
         </div>
       ) : (
-        <p style={{ fontSize: 13, color: 'var(--text-dimmer)', textAlign: 'center' }}>
+        <p style={{ fontSize: 15, color: 'var(--text-dimmer)', textAlign: 'center' }}>
           세션당 최대 5회까지 질문할 수 있어요.
         </p>
       )}

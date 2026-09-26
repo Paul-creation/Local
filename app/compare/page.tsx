@@ -189,7 +189,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
             }}>
               <img src={g.cover_image_url} alt={g.name} style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover' }} />
               <div style={{ padding: '10px 12px' }}>
-                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3 }}>{g.name}</div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3 }}>{g.name}</div>
               </div>
             </div>
           </Link>
@@ -199,7 +199,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
       {/* 상황별 추천도 */}
       {activeSituations.length > 0 && (
         <>
-          <h2 style={{ fontSize: 17, fontWeight: 800, marginBottom: 12 }}>상황별 추천도</h2>
+          <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 12 }}>상황별 추천도</h2>
           <div style={{
             background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
             border: '1px solid var(--border-light)',
@@ -213,7 +213,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
                   gridTemplateColumns: `180px repeat(${gameCount}, 1fr)`,
                   borderBottom: si < activeSituations.length - 1 ? '1px solid var(--border-light)' : 'none',
                 }}>
-                  <div style={{ padding: '14px 16px', fontSize: 13, color: 'var(--text-dim)', fontWeight: 600, background: 'var(--bg)' }}>
+                  <div style={{ padding: '14px 16px', fontSize: 15, color: 'var(--text-dim)', fontWeight: 600, background: 'var(--bg)' }}>
                     {situation}
                   </div>
                   {games.map((g: any) => {
@@ -222,9 +222,9 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
                     return (
                       <div key={g.id} style={{ padding: '14px 16px', borderLeft: '1px solid var(--border-light)', display: 'flex', alignItems: 'center', gap: 4 }}>
                         {[1,2,3,4,5].map(n => (
-                          <span key={n} style={{ fontSize: 16, color: n <= score ? '#f59e0b' : 'var(--border)' }}>★</span>
+                          <span key={n} style={{ fontSize: 17, color: n <= score ? '#f59e0b' : 'var(--border)' }}>★</span>
                         ))}
-                        <span style={{ fontSize: 12, color: 'var(--text-dimmer)', marginLeft: 4 }}>{score}/5</span>
+                        <span style={{ fontSize: 14, color: 'var(--text-dimmer)', marginLeft: 4 }}>{score}/5</span>
                       </div>
                     );
                   })}
@@ -239,7 +239,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
                   borderBottom: si < activeSituations.length - 1 ? '1px solid var(--border-light)' : 'none',
                   padding: '12px 16px',
                 }}>
-                  <div style={{ fontSize: 13, color: 'var(--text-dim)', fontWeight: 600, marginBottom: 10 }}>
+                  <div style={{ fontSize: 15, color: 'var(--text-dim)', fontWeight: 600, marginBottom: 10 }}>
                     {situation}
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -248,15 +248,15 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
                       const score = gameScore?.scores?.[si] ?? 0;
                       return (
                         <div key={g.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <span style={{ fontSize: 12, color: 'var(--text-dimmer)', width: 90, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <span style={{ fontSize: 14, color: 'var(--text-dimmer)', width: 90, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {g.name}
                           </span>
                           <div style={{ display: 'flex', gap: 2 }}>
                             {[1,2,3,4,5].map(n => (
-                              <span key={n} style={{ fontSize: 15, color: n <= score ? '#f59e0b' : 'var(--border)' }}>★</span>
+                              <span key={n} style={{ fontSize: 16, color: n <= score ? '#f59e0b' : 'var(--border)' }}>★</span>
                             ))}
                           </div>
-                          <span style={{ fontSize: 12, color: 'var(--text-dimmer)' }}>{score}/5</span>
+                          <span style={{ fontSize: 14, color: 'var(--text-dimmer)' }}>{score}/5</span>
                         </div>
                       );
                     })}
@@ -269,7 +269,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
       )}
 
       {/* 스펙 비교 */}
-      <h2 style={{ fontSize: 17, fontWeight: 800, marginBottom: 12 }}>스펙 비교</h2>
+      <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 12 }}>스펙 비교</h2>
       <div style={{
         background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
         border: '1px solid var(--border-light)',
@@ -283,11 +283,11 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
               gridTemplateColumns: `180px repeat(${gameCount}, 1fr)`,
               borderBottom: i < ROWS.length - 1 ? '1px solid var(--border-light)' : 'none',
             }}>
-              <div style={{ padding: '14px 16px', fontSize: 13, color: 'var(--text-dim)', fontWeight: 600, background: 'var(--bg)' }}>
+              <div style={{ padding: '14px 16px', fontSize: 15, color: 'var(--text-dim)', fontWeight: 600, background: 'var(--bg)' }}>
                 {row.label}
               </div>
               {games.map((g: any) => (
-                <div key={g.id} style={{ padding: '14px 16px', fontSize: 14, color: 'var(--text)', fontWeight: 500, borderLeft: '1px solid var(--border-light)' }}>
+                <div key={g.id} style={{ padding: '14px 16px', fontSize: 15, color: 'var(--text)', fontWeight: 500, borderLeft: '1px solid var(--border-light)' }}>
                   {row.render ? row.render(g) : (g[row.key!] || '-')}
                 </div>
               ))}
@@ -302,7 +302,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
               borderBottom: i < ROWS.length - 1 ? '1px solid var(--border-light)' : 'none',
               padding: '12px 16px',
             }}>
-              <div style={{ fontSize: 12, color: 'var(--text-dimmer)', fontWeight: 600, marginBottom: 8 }}>
+              <div style={{ fontSize: 14, color: 'var(--text-dimmer)', fontWeight: 600, marginBottom: 8 }}>
                 {row.label}
               </div>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -310,9 +310,9 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
                   <div key={g.id} style={{
                     flex: 1, minWidth: 100,
                     background: 'var(--bg)', borderRadius: 8,
-                    padding: '8px 10px', fontSize: 13, color: 'var(--text)', fontWeight: 500,
+                    padding: '8px 10px', fontSize: 15, color: 'var(--text)', fontWeight: 500,
                   }}>
-                    <div style={{ fontSize: 11, color: 'var(--text-dimmer)', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: 13, color: 'var(--text-dimmer)', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {g.name}
                     </div>
                     {row.render ? row.render(g) : (g[row.key!] || '-')}

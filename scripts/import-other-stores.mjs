@@ -237,7 +237,7 @@ async function main() {
       continue;
     }
 
-    if (item.price && item.price.original > 0) {
+    if (item.price && item.price.original >= 100 && item.price.final >= 100) {
       const discount = Math.round((1 - item.price.final / item.price.original) * 100);
       await supabase.from('price_history').insert({
         game_id: inserted.id,

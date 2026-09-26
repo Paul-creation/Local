@@ -41,7 +41,7 @@ export default function BannerCarousel({ games }: { games: any[] }) {
             </div>
           )}
           {game.description && (
-            <p style={{ fontSize: 13, color: 'var(--text-dim)', lineHeight: 1.6, margin: 0 }}>
+            <p style={{ fontSize: 15, color: 'var(--text-dim)', lineHeight: 1.6, margin: 0 }}>
               {game.description.replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&#39;/g, "'").slice(0, 100)}...
             </p>
           )}

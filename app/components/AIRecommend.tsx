@@ -95,7 +95,7 @@ export default function AIRecommend() {
 
             {step === 'intro' && (
               <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                <p style={{ fontSize: 15, color: 'var(--text-dim)', marginBottom: 24, lineHeight: 1.6 }}>
+                <p style={{ fontSize: 16, color: 'var(--text-dim)', marginBottom: 24, lineHeight: 1.6 }}>
                   몇 가지 질문으로<br />딱 맞는 게임을 찾아드릴게요
                 </p>
                 <button className="ai-submit" onClick={startGame}>
@@ -109,7 +109,7 @@ export default function AIRecommend() {
                 <div style={{ marginBottom: 20 }}>
                   <div style={{
                     display: 'flex', justifyContent: 'space-between',
-                    fontSize: 12, color: 'var(--text-dimmer)', marginBottom: 6
+                    fontSize: 14, color: 'var(--text-dimmer)', marginBottom: 6
                   }}>
                     <span>후보 게임 {remainingCount}개</span>
                     <span>{answers.length}개 답변 완료</span>
@@ -129,7 +129,7 @@ export default function AIRecommend() {
                   </div>
                 ) : currentQuestion && (
                   <div className="ai-question">
-                    <p style={{ fontSize: 16, fontWeight: 700, marginBottom: 14 }}>
+                    <p style={{ fontSize: 17, fontWeight: 700, marginBottom: 14 }}>
                       {currentQuestion.question}
                     </p>
                     <div className="ai-chip-row">
@@ -147,7 +147,7 @@ export default function AIRecommend() {
                     {answers.map((a, i) => (
                       <div key={i} style={{
                         display: 'flex', justifyContent: 'space-between',
-                        fontSize: 12, color: 'var(--text-dimmer)', marginBottom: 4
+                        fontSize: 14, color: 'var(--text-dimmer)', marginBottom: 4
                       }}>
                         <span>{a.question}</span>
                         <span style={{ color: 'var(--accent)', fontWeight: 700 }}>{a.answer}</span>
@@ -162,7 +162,7 @@ export default function AIRecommend() {
               <div className="ai-result">
                 {result.results ? (
                   <>
-                    <p style={{ fontSize: 15, fontWeight: 700, marginBottom: 16, color: 'var(--text)' }}>
+                    <p style={{ fontSize: 16, fontWeight: 700, marginBottom: 16, color: 'var(--text)' }}>
                       이런 게임들 어때?
                     </p>
                     {result.results.map((r: any) => (
@@ -175,10 +175,10 @@ export default function AIRecommend() {
                           width: 60, height: 34, objectFit: 'cover', borderRadius: 6, flexShrink: 0
                         }} />
                         <div>
-                          <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>
+                          <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>
                             {r.game.name}
                           </div>
-                          <div style={{ fontSize: 12, color: 'var(--text-dim)' }}>{r.hook}</div>
+                          <div style={{ fontSize: 14, color: 'var(--text-dim)' }}>{r.hook}</div>
                         </div>
                       </Link>
                     ))}

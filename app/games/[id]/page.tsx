@@ -91,7 +91,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             </span>
           )}
           {game.is_early_access && (
-            <span style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 700, border: '1px solid var(--accent)', padding: '3px 10px', borderRadius: 100 }}>
+            <span style={{ fontSize: 14, color: 'var(--accent)', fontWeight: 700, border: '1px solid var(--accent)', padding: '3px 10px', borderRadius: 100 }}>
               얼리 액세스
             </span>
           )}
@@ -135,7 +135,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       {/* 플랫폼 */}
       {platformCategories.length > 0 && (
         <div className="platform-section">
-          <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12 }}>이용 가능한 플랫폼</h3>
+          <h3 style={{ fontSize: 17, fontWeight: 700, marginBottom: 12 }}>이용 가능한 플랫폼</h3>
           <div className="platform-grid">
             {platformCategories.map((cat) => (
               <div key={cat} className="platform-card">
@@ -199,9 +199,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               {new Date(game.last_updated).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
               {(() => {
                 const diff = Math.floor((Date.now() - new Date(game.last_updated).getTime()) / (1000 * 60 * 60 * 24));
-                if (diff < 30) return <span style={{ marginLeft: 8, fontSize: 12, color: '#4a9e3a', fontWeight: 700 }}>활발히 업데이트 중</span>;
-                if (diff < 180) return <span style={{ marginLeft: 8, fontSize: 12, color: 'var(--text-dimmer)' }}>{Math.floor(diff / 30)}개월 전</span>;
-                return <span style={{ marginLeft: 8, fontSize: 12, color: 'var(--danger)' }}>업데이트 없음</span>;
+                if (diff < 30) return <span style={{ marginLeft: 8, fontSize: 14, color: '#4a9e3a', fontWeight: 700 }}>활발히 업데이트 중</span>;
+                if (diff < 180) return <span style={{ marginLeft: 8, fontSize: 14, color: 'var(--text-dimmer)' }}>{Math.floor(diff / 30)}개월 전</span>;
+                return <span style={{ marginLeft: 8, fontSize: 14, color: 'var(--danger)' }}>업데이트 없음</span>;
               })()}
             </span>
           </div>
@@ -267,7 +267,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             <span className="spec-value">
               ₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}
               {game.lowest_price_date && (
-                <span style={{ color: 'var(--text-dimmer)', fontSize: 12, fontWeight: 400, marginLeft: 6 }}>
+                <span style={{ color: 'var(--text-dimmer)', fontSize: 14, fontWeight: 400, marginLeft: 6 }}>
                   ({game.lowest_price_date})
                 </span>
               )}
@@ -347,12 +347,12 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             if (!parsed) return null;
             return (
               <div style={{ marginBottom: game.recommended_spec ? 24 : 0 }}>
-                <p style={{ fontSize: 15, fontWeight: 800, color: 'var(--text)', marginBottom: 10, marginTop: 16, letterSpacing: '-0.01em' }}>최소 사양</p>
+                <p style={{ fontSize: 16, fontWeight: 800, color: 'var(--text)', marginBottom: 10, marginTop: 16, letterSpacing: '-0.01em' }}>최소 사양</p>
                 <div className="spec-list">
                   {parsed.map(({ label, value }) => (
                     <div className="spec-row" key={label}>
                       <span className="spec-label">{label}</span>
-                      <span className="spec-value" style={{ fontWeight: 500, fontSize: 13 }}>{value}</span>
+                      <span className="spec-value" style={{ fontWeight: 500, fontSize: 15 }}>{value}</span>
                     </div>
                   ))}
                 </div>
@@ -364,12 +364,12 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             if (!parsed) return null;
             return (
               <div>
-                <p style={{ fontSize: 15, fontWeight: 800, color: 'var(--text)', marginBottom: 10, marginTop: 8, letterSpacing: '-0.01em' }}>권장 사양</p>
+                <p style={{ fontSize: 16, fontWeight: 800, color: 'var(--text)', marginBottom: 10, marginTop: 8, letterSpacing: '-0.01em' }}>권장 사양</p>
                 <div className="spec-list">
                   {parsed.map(({ label, value }) => (
                     <div className="spec-row" key={`rec-${label}`}>
                       <span className="spec-label">{label}</span>
-                      <span className="spec-value" style={{ fontWeight: 500, fontSize: 13 }}>{value}</span>
+                      <span className="spec-value" style={{ fontWeight: 500, fontSize: 15 }}>{value}</span>
                     </div>
                   ))}
                 </div>
@@ -436,7 +436,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           {game.player_history?.length >= 2 && (
             <PlayerChart data={game.player_history} />
           )}
-          <p style={{ fontSize: 12, color: 'var(--text-dimmer)', marginTop: 8 }}>
+          <p style={{ fontSize: 14, color: 'var(--text-dimmer)', marginTop: 8 }}>
             Tracked from Steam · 매일 자정 갱신
           </p>
         </section>

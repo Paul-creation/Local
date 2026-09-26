@@ -68,12 +68,12 @@ export default function AdminPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && login()}
-            style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #ddd', marginBottom: 12, fontSize: 14, boxSizing: 'border-box' }}
+            style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #ddd', marginBottom: 12, fontSize: 15, boxSizing: 'border-box' }}
           />
-          {error && <p style={{ color: '#d64545', fontSize: 13, marginBottom: 8 }}>{error}</p>}
+          {error && <p style={{ color: '#d64545', fontSize: 15, marginBottom: 8 }}>{error}</p>}
           <button
             onClick={login}
-            style={{ width: '100%', padding: '10px 0', background: '#16202b', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: 14 }}
+            style={{ width: '100%', padding: '10px 0', background: '#16202b', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: 15 }}
           >
             로그인
           </button>
@@ -86,7 +86,7 @@ export default function AdminPage() {
     <div style={{ display: 'flex', minHeight: '100vh', background: '#f4f2ec' }}>
       {/* 게임 목록 */}
       <div style={{ width: 280, background: '#fff', borderRight: '1px solid #e5e3dc', overflowY: 'auto', padding: 16 }}>
-        <h3 style={{ fontWeight: 800, marginBottom: 16, fontSize: 15 }}>게임 목록 ({games.length})</h3>
+        <h3 style={{ fontWeight: 800, marginBottom: 16, fontSize: 16 }}>게임 목록 ({games.length})</h3>
         {games.map((g) => (
           <button
             key={g.id}
@@ -95,7 +95,7 @@ export default function AdminPage() {
               display: 'block', width: '100%', textAlign: 'left',
               padding: '10px 12px', borderRadius: 8, border: 'none',
               background: selected?.id === g.id ? '#f0f9f8' : 'transparent',
-              cursor: 'pointer', fontSize: 13, fontWeight: selected?.id === g.id ? 700 : 400,
+              cursor: 'pointer', fontSize: 15, fontWeight: selected?.id === g.id ? 700 : 400,
               color: '#16202b', marginBottom: 2,
             }}
           >
@@ -195,12 +195,12 @@ export default function AdminPage() {
                 style={{
                   padding: '12px 28px', background: '#16202b', color: '#fff',
                   border: 'none', borderRadius: 8, fontWeight: 700,
-                  cursor: saving ? 'not-allowed' : 'pointer', fontSize: 14,
+                  cursor: saving ? 'not-allowed' : 'pointer', fontSize: 15,
                 }}
               >
                 {saving ? '저장 중...' : '저장'}
               </button>
-              {saveMsg && <span style={{ fontSize: 14, fontWeight: 600 }}>{saveMsg}</span>}
+              {saveMsg && <span style={{ fontSize: 15, fontWeight: 600 }}>{saveMsg}</span>}
             </div>
           </div>
         )}
@@ -210,13 +210,13 @@ export default function AdminPage() {
 }
 
 const labelStyle: React.CSSProperties = {
-  display: 'block', fontSize: 13, fontWeight: 700,
+  display: 'block', fontSize: 15, fontWeight: 700,
   color: '#16202b', marginBottom: 6,
 };
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '10px 14px',
   borderRadius: 8, border: '1px solid #ddd',
-  fontSize: 14, marginBottom: 16,
+  fontSize: 15, marginBottom: 16,
   boxSizing: 'border-box', background: '#fff',
 };

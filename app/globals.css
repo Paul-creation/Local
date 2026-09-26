@@ -1,3 +1,4 @@
+/* FONT_SCALE_V1 */
 /* ============================================================
    GAME INFO HUB — Design System v2
    Apple Light + Premium Game Site
@@ -93,7 +94,7 @@ img { display: block; }
 }
 
 .logo {
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: #f5f5f7;
@@ -156,7 +157,7 @@ img { display: block; }
 }
 
 .hero-badge {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--accent);
   background: rgba(0,113,227,0.1);
@@ -176,7 +177,7 @@ img { display: block; }
 }
 
 .hero-tagline {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--text-dim);
   margin: 0;
   line-height: 1.5;
@@ -185,12 +186,12 @@ img { display: block; }
 
 
 .hero-meta {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-dimmer);
   font-weight: 500;
 }
 
-.hero-content .price-final { color: var(--text); font-size: 16px; font-weight: 800; }
+.hero-content .price-final { color: var(--text); font-size: 17px; font-weight: 800; }
 .hero-content .price-original { color: var(--text-dimmer); }
 
 @media (max-width: 640px) {
@@ -301,7 +302,7 @@ img { display: block; }
    ============================================================ */
 
 .section-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--accent);
   margin-bottom: 14px;
@@ -321,7 +322,7 @@ img { display: block; }
 
 .section-sub {
   color: var(--text-dimmer);
-  font-size: 14px;
+  font-size: 15px;
 }
 
 /* ============================================================
@@ -378,7 +379,7 @@ img { display: block; }
   background: rgba(0,0,0,0.7);
   backdrop-filter: blur(8px);
   color: #fff;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   padding: 4px 9px;
   border-radius: 100px;
@@ -389,7 +390,7 @@ img { display: block; }
 .card-body { padding: 16px 18px 18px; position: relative; }
 
 .card-body h3 {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   margin-bottom: 5px;
   color: var(--text);
@@ -399,13 +400,13 @@ img { display: block; }
 
 .card-meta {
   color: var(--text-dim);
-  font-size: 12px;
+  font-size: 14px;
   margin-bottom: 10px;
 }
 
 .category-tag {
   display: inline-block;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--teal);
   background: rgba(15,155,142,0.08);
@@ -430,7 +431,7 @@ img { display: block; }
 .discount-badge {
   background: var(--green);
   color: #fff;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   padding: 3px 7px;
   border-radius: 5px;
@@ -438,13 +439,13 @@ img { display: block; }
 
 .price-original {
   color: var(--text-dimmer);
-  font-size: 12px;
+  font-size: 14px;
   text-decoration: line-through;
 }
 
 .price-final {
   color: var(--text);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
 }
 
@@ -461,7 +462,7 @@ img { display: block; }
   display: inline-block;
   background: rgba(15,155,142,0.1);
   color: var(--teal);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   padding: 4px 10px;
   border-radius: 100px;
@@ -472,7 +473,7 @@ img { display: block; }
   position: absolute;
   bottom: 8px;
   right: 8px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
   padding: 3px 8px;
   border-radius: 5px;
@@ -483,7 +484,7 @@ img { display: block; }
 .timing-badge.near { background: #d4a017; color: #fff; }
 
 .badge-neutral {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--text-dimmer);
   border: 1px solid var(--border);
@@ -494,7 +495,7 @@ img { display: block; }
 .review-badge {
   display: inline-flex;
   align-items: center;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   padding: 5px 12px;
   border-radius: 100px;
@@ -536,7 +537,7 @@ img { display: block; }
   outline: none;
   background: none;
   font-family: inherit;
-  font-size: 15px;
+  font-size: 16px;
   color: var(--text);
   height: 48px;
 }
@@ -547,7 +548,7 @@ img { display: block; }
   background: none;
   border: none;
   color: var(--text-dimmer);
-  font-size: 15px;
+  font-size: 16px;
   padding: 0 0 0 8px;
 }
 
@@ -560,7 +561,7 @@ img { display: block; }
   border: none;
   border-radius: var(--radius-md);
   padding: 0 22px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   white-space: nowrap;
   transition: background 0.2s ease, transform 0.1s ease;
@@ -587,7 +588,7 @@ img { display: block; }
   background: var(--bg-card);
   border: 1.5px solid var(--border);
   color: var(--text-dim);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   padding: 7px 16px;
   border-radius: 100px;
@@ -633,7 +634,7 @@ img { display: block; }
 }
 
 .browse-group-title {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   color: var(--group-color, var(--accent));
   margin-bottom: 10px;
@@ -651,7 +652,7 @@ img { display: block; }
   border: none;
   border-top: 1px solid var(--border-light);
   color: var(--accent);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   padding: 16px 0 0;
   margin-top: 16px;
@@ -671,7 +672,7 @@ img { display: block; }
   background: var(--bg);
   border: 1.5px solid var(--border);
   color: var(--text-dim);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   padding: 5px 12px;
   border-radius: 100px;
@@ -742,7 +743,7 @@ img { display: block; }
 }
 
 .free-chip span {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-dim);
   text-align: center;
@@ -800,7 +801,7 @@ img { display: block; }
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--text-dim);
   display: flex;
   align-items: center;
@@ -810,7 +811,7 @@ img { display: block; }
 .ai-question { margin-bottom: 20px; }
 
 .ai-question p {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   margin-bottom: 10px;
   color: var(--text);
@@ -822,7 +823,7 @@ img { display: block; }
   background: var(--bg);
   border: 1.5px solid var(--border);
   color: var(--text-dim);
-  font-size: 13px;
+  font-size: 15px;
   padding: 8px 16px;
   border-radius: 100px;
   transition: all 0.15s ease;
@@ -844,7 +845,7 @@ img { display: block; }
   border: none;
   border-radius: var(--radius-md);
   padding: 14px;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   margin-top: 8px;
   transition: background 0.2s ease;
@@ -853,12 +854,12 @@ img { display: block; }
 .ai-submit:hover { background: var(--accent-hover); }
 .ai-submit:disabled { opacity: 0.4; cursor: not-allowed; }
 
-.ai-error { color: var(--danger); font-size: 13px; margin-bottom: 10px; }
+.ai-error { color: var(--danger); font-size: 15px; margin-bottom: 10px; }
 
 .ai-result { text-align: center; }
 .ai-result-image { width: 100%; border-radius: var(--radius-md); margin-bottom: 16px; aspect-ratio: 16/9; object-fit: cover; }
 .ai-result h4 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
-.ai-result-reason { color: var(--text-dim); font-size: 14px; line-height: 1.6; margin-bottom: 20px; }
+.ai-result-reason { color: var(--text-dim); font-size: 15px; line-height: 1.6; margin-bottom: 20px; }
 .ai-result-actions { display: flex; gap: 8px; }
 .ai-result-link {
   flex: 1;
@@ -866,7 +867,7 @@ img { display: block; }
   color: #fff;
   border-radius: var(--radius-md);
   padding: 11px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   text-align: center;
 }
@@ -876,7 +877,7 @@ img { display: block; }
   color: var(--text-dim);
   border-radius: var(--radius-md);
   padding: 11px 16px;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 /* ============================================================
@@ -888,7 +889,7 @@ img { display: block; }
   align-items: center;
   gap: 4px;
   color: var(--text-dimmer);
-  font-size: 14px;
+  font-size: 15px;
   margin: 24px 0 20px;
   transition: color 0.15s ease;
 }
@@ -924,7 +925,7 @@ img { display: block; }
 
 .detail-description-v2 {
   color: var(--text-dim);
-  font-size: 16px;
+  font-size: 17px;
   line-height: 1.7;
   max-width: 62ch;
 }
@@ -956,14 +957,14 @@ img { display: block; }
 }
 
 .buy-price-block { display: flex; flex-direction: column; gap: 6px; }
-.buy-label { color: #8a8a8e; font-size: 12px; letter-spacing: 0.02em; }
+.buy-label { color: #8a8a8e; font-size: 14px; letter-spacing: 0.02em; }
 .buy-price-row { display: flex; align-items: center; gap: 10px; }
-.buy-price-original { color: #636366; font-size: 14px; text-decoration: line-through; }
+.buy-price-original { color: #636366; font-size: 15px; text-decoration: line-through; }
 .buy-price-final { color: #fff; font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
 .buy-discount-badge {
   background: var(--green);
   color: #fff;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   padding: 4px 9px;
   border-radius: 6px;
@@ -972,7 +973,7 @@ img { display: block; }
 .buy-cta {
   background: var(--accent);
   color: #fff;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   padding: 13px 24px;
   border-radius: var(--radius-md);
@@ -1009,7 +1010,7 @@ img { display: block; }
 }
 
 .platform-card-icon svg { width: 20px; height: 20px; }
-.platform-card-label { font-size: 13px; font-weight: 700; }
+.platform-card-label { font-size: 15px; font-weight: 700; }
 
 /* ============================================================
    SPEC LIST
@@ -1027,8 +1028,8 @@ img { display: block; }
 }
 
 .spec-row:first-child { border-top: 1px solid var(--border-light); }
-.spec-label { color: var(--text-dim); font-size: 13px; flex-shrink: 0; }
-.spec-value { color: var(--text); font-size: 14px; font-weight: 600; text-align: right; }
+.spec-label { color: var(--text-dim); font-size: 15px; flex-shrink: 0; }
+.spec-value { color: var(--text); font-size: 15px; font-weight: 600; text-align: right; }
 .spec-value.spec-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
 
 /* ============================================================
@@ -1047,7 +1048,7 @@ img { display: block; }
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--text);
 }
@@ -1064,7 +1065,7 @@ img { display: block; }
 
 .detail-accordion[open] summary::after { transform: rotate(45deg); }
 .detail-accordion .spec-list { margin-top: 16px; }
-.accordion-note { color: var(--text-dim); font-size: 14px; line-height: 1.6; margin-top: 14px; }
+.accordion-note { color: var(--text-dim); font-size: 15px; line-height: 1.6; margin-top: 14px; }
 
 /* ============================================================
    REVIEW PANEL
@@ -1090,8 +1091,8 @@ img { display: block; }
 
 .review-row:last-child { border-bottom: none; }
 .review-source { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; }
-.review-source-label { font-size: 14px; font-weight: 700; color: var(--text); }
-.review-count { font-size: 12px; color: var(--text-dimmer); }
+.review-source-label { font-size: 15px; font-weight: 700; color: var(--text); }
+.review-count { font-size: 14px; color: var(--text-dimmer); }
 
 .review-bar-wrap { flex: 1; max-width: 260px; }
 
@@ -1110,7 +1111,7 @@ img { display: block; }
 .review-bar-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 /* ============================================================
@@ -1129,7 +1130,7 @@ img { display: block; }
   gap: 4px;
 }
 
-.player-stat-label { font-size: 12px; color: var(--text-dimmer); }
+.player-stat-label { font-size: 14px; color: var(--text-dimmer); }
 .player-stat-num { font-size: 22px; font-weight: 800; color: var(--teal); letter-spacing: -0.02em; }
 
 /* ============================================================
@@ -1143,8 +1144,8 @@ img { display: block; }
 .chart-dot { fill: var(--bg-card); stroke: var(--text-dimmer); stroke-width: 2; }
 .chart-dot.has-discount { stroke: var(--danger); }
 .chart-labels { display: flex; justify-content: space-between; margin-top: 10px; }
-.chart-label { font-size: 11px; color: var(--text-dimmer); text-align: center; }
-.chart-label strong { display: block; font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+.chart-label { font-size: 13px; color: var(--text-dimmer); text-align: center; }
+.chart-label strong { display: block; font-size: 14px; color: var(--text-dim); margin-top: 2px; }
 .chart-label strong.has-discount { color: var(--danger); }
 
 /* ============================================================
@@ -1171,8 +1172,8 @@ img { display: block; }
   box-shadow: var(--shadow-md);
 }
 
-.streamer-name { font-size: 14px; font-weight: 700; color: var(--text); }
-.streamer-platform { font-size: 11px; color: var(--text-dimmer); }
+.streamer-name { font-size: 15px; font-weight: 700; color: var(--text); }
+.streamer-platform { font-size: 13px; color: var(--text-dimmer); }
 
 /* ============================================================
    ACTIVITY
@@ -1182,7 +1183,7 @@ img { display: block; }
   background: var(--bg);
   border: 1px solid var(--border-light);
   color: var(--text);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   padding: 6px 13px;
   border-radius: 100px;
@@ -1204,7 +1205,7 @@ img { display: block; }
 
 .sample-note {
   color: var(--text-dimmer);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 400;
   margin-left: 6px;
 }
@@ -1228,7 +1229,7 @@ img { display: block; }
   text-align: center;
   padding: 80px 20px;
   color: var(--text-dimmer);
-  font-size: 15px;
+  font-size: 16px;
 }
 
 /* ============================================================
@@ -1238,7 +1239,7 @@ img { display: block; }
 .age-badge {
   display: inline-flex;
   align-items: center;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   color: #8a5a00;
   background: rgba(230,116,46,0.1);
@@ -1252,7 +1253,7 @@ img { display: block; }
   background: rgba(0,0,0,0.75);
   backdrop-filter: blur(8px);
   color: #fff;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   padding: 4px 10px;
   border-radius: 100px;

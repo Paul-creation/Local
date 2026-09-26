@@ -54,7 +54,7 @@ export default function GameVotes({ gameId }: { gameId: string }) {
   return (
     <section className="detail-section-v2">
       <h3>이 게임 어떤 상황에서 좋아요?</h3>
-      <p style={{ fontSize: 13, color: 'var(--text-dimmer)', marginBottom: 16 }}>
+      <p style={{ fontSize: 15, color: 'var(--text-dimmer)', marginBottom: 16 }}>
         해당하는 상황을 모두 눌러줘요 · {totalVotes}명 참여
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -89,11 +89,11 @@ export default function GameVotes({ gameId }: { gameId: string }) {
                 }} />
               )}
               <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 14, fontWeight: voted ? 700 : 500, color: voted ? 'var(--accent)' : 'var(--text)' }}>
+                <span style={{ fontSize: 15, fontWeight: voted ? 700 : 500, color: voted ? 'var(--accent)' : 'var(--text)' }}>
                   {voted ? '✓ ' : ''}{situation}
                 </span>
                 {!loading && (
-                  <span style={{ fontSize: 13, color: 'var(--text-dimmer)', fontWeight: 600 }}>
+                  <span style={{ fontSize: 15, color: 'var(--text-dimmer)', fontWeight: 600 }}>
                     {count > 0 ? `${count}명 (${percent}%)` : ''}
                   </span>
                 )}
