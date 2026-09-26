@@ -98,6 +98,18 @@ async function checkSite() {
   };
   const json = (method, body) => ({ method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
 
+  // PROTECTION_CHECK — Vercel 배포 보호(로그인 화면)가 대신 응답하면 점검이 무의미하므로 중단
+  try {
+    const probe = await fetch(SITE + '/api/votes?gameId=probe');
+    const type = probe.headers.get('content-type') || '';
+    if (!type.includes('application/json')) {
+      note(`이 주소는 API 대신 ${probe.status} ${type.split(';')[0] || '페이지'}를 돌려줘요 → Vercel 배포 보호가 걸린 미리보기 주소예요. Production 도메인으로 다시 실행해 주세요`);
+      return;
+    }
+  } catch (e) {
+    return note('사이트에 연결할 수 없어요: ' + e.message);
+  }
+
   let r = await call('/api/admin/games');
   r.status === 401 ? ok('로그인 없이 관리자 게임 목록 조회 차단') : bad(`로그인 없이 관리자 조회 가능 (응답 ${r.status})`, '관리자 인증 패치 후 푸시');
 
