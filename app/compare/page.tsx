@@ -3,8 +3,9 @@ import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
-export default async function ComparePage({ searchParams }: { searchParams: { ids?: string } }) {
-  const ids = searchParams.ids?.split(',').slice(0, 3) || [];
+export default async function ComparePage({ searchParams }: { searchParams: Promise<{ ids?: string }> }) {
+  const { ids: idsParam } = await searchParams;
+  const ids = idsParam?.split(',').slice(0, 3) || [];
 
   if (ids.length < 2) {
     return (
@@ -22,7 +23,16 @@ export default async function ComparePage({ searchParams }: { searchParams: { id
     .select('*, price_history(price, discount_percent, checked_at, currency)')
     .in('id', ids);
 
-  if (!games || games.length < 2) return null;
+    if (!games || games.length < 2) {
+    return (
+      <main className="page">
+        <nav className="topnav"><span className="logo">게임정보허브</span></nav>
+        <p style={{ textAlign: 'center', marginTop: 60, color: 'var(--text-dim)' }}>
+          게임을 불러오지 못했어요. 다시 시도해줘요.
+        </p>
+      </main>
+    );
+  }
 
   type Row = {
   label: string;
