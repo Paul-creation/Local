@@ -7,6 +7,7 @@ import { getPlatformCategories, CATEGORY_LABEL, PlatformCategory } from '../../l
 import { FaPlaystation, FaXbox, FaDesktop, FaVrCardboard } from 'react-icons/fa';
 import PlayerChart from '../../components/PlayerChart';
 import { translateTag } from '../../lib/tagTranslate';
+import GameVotes from '../../components/GameVotes';
 
 export const dynamic = 'force-dynamic';
 
@@ -447,7 +448,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           </p>
         </section>
       )}
-
+<GameVotes gameId={game.id} />
             {/* 할인 전적 */}
       {!game.is_free && game.price_history?.length >= 2 && (
         <section className="detail-section-v2">
