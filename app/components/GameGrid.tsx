@@ -279,8 +279,21 @@ export default function GameGrid({ games }: { games: any[] }) {
                     </div>
                   )}
                 </div>
-                <div className="card-body">
-                  <h3>{game.name}</h3>
+                                <div className="card-body">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <h3 style={{ margin: 0 }}>{game.name}</h3>
+                    <button
+                      onClick={(e) => { e.preventDefault(); toggleWishlist(game.id); }}
+                      style={{
+                        background: 'none', border: 'none',
+                        fontSize: 18, cursor: 'pointer',
+                        padding: '0 0 0 8px', flexShrink: 0,
+                        color: isWished ? '#e53e3e' : 'var(--text-dimmer)',
+                      }}
+                    >
+                      {isWished ? '♥' : '♡'}
+                    </button>
+                  </div>
                   <p className="card-meta">
                     {game.recommended_players
                       ? `추천 ${game.recommended_players}`
@@ -308,19 +321,6 @@ export default function GameGrid({ games }: { games: any[] }) {
                       </span>
                     );
                   })()}
-                  <button
-                    onClick={(e) => { e.preventDefault(); toggleWishlist(game.id); }}
-                    style={{
-                      position: 'absolute', top: 8, left: 8,
-                      background: 'rgba(0,0,0,0.5)',
-                      border: 'none', borderRadius: '50%',
-                      width: 32, height: 32, cursor: 'pointer',
-                      fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      backdropFilter: 'blur(4px)',
-                    }}
-                  >
-                    {isWished ? '❤️' : '🤍'}
-                  </button>
                 </div>
                 <div className="card-body">
                   <h3>{game.name}</h3>
