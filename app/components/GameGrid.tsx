@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import BannerCarousel from './BannerCarousel';
 import AIRecommend from './AIRecommend';
 import { getPriceInfo } from '../lib/price';
@@ -26,63 +27,65 @@ const PLAYER_OPTIONS = ['1인', '2인', '3-4인', '5인 이상'];
 const DIFFICULTY_OPTIONS = ['쉬움', '보통', '어려움'];
 
 export default function GameGrid({ games, hideHero = false }: { games: any[], hideHero?: boolean }) {
-  const [showResults, setShowResults] = useState(false);
+  const sp = useSearchParams();
+  const [showResults, setShowResults] = useState(sp.get('r') === '1');
   const [filterOpen, setFilterOpen] = useState(false);
-  const [query, setQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [selectedPlayers, setSelectedPlayers] = useState('');
-  const [selectedDifficulty, setSelectedDifficulty] = useState('');
-  const [freeOnly, setFreeOnly] = useState(false);
+  const [query, setQuery] = useState(sp.get('q') || '');
+  const [selectedCategory, setSelectedCategory] = useState(sp.get('cat') || '');
+  const [selectedTags, setSelectedTags] = useState<string[]>((sp.get('tags') || '').split(',').filter(Boolean));
+  const [selectedPlayers, setSelectedPlayers] = useState(sp.get('p') || '');
+  const [selectedDifficulty, setSelectedDifficulty] = useState(sp.get('d') || '');
+  const [freeOnly, setFreeOnly] = useState(sp.get('free') === '1');
   const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
-  const [compareList, setCompareList] = useState<any[]>([]);
+  const [compareList, setCompareList] = useState<any[]>(() => {
+    const ids = (sp.get('cmp') || '').split(',').filter(Boolean);
+    return games.filter((g: any) => ids.includes(g.id));
+  });
   const [compareError, setCompareError] = useState('');
+  const [copied, setCopied] = useState(false);
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {}
+  };
 
-  // LIST_RESTORE — 게임 상세·비교 페이지에 갔다가 돌아오면 필터·결과·비교 선택·스크롤 복원
-  const LIST_KEY = 'grid_state_v1';
-  const restoredRef = useRef(false);
+  // URL_STATE — 필터·결과·비교 선택을 주소에 담아서, 뒤로가기·목록으로 시 그대로 보이게
+  useEffect(() => {
+    const q = new URLSearchParams();
+    if (showResults) q.set('r', '1');
+    if (query) q.set('q', query);
+    if (selectedCategory) q.set('cat', selectedCategory);
+    if (selectedTags.length) q.set('tags', selectedTags.join(','));
+    if (selectedPlayers) q.set('p', selectedPlayers);
+    if (selectedDifficulty) q.set('d', selectedDifficulty);
+    if (freeOnly) q.set('free', '1');
+    if (compareList.length) q.set('cmp', compareList.map((g: any) => g.id).join(','));
+    const qs = q.toString();
+    const url = qs ? `/?${qs}` : '/';
+    // 홈 화면(필터 없음)에서는 이전 목록 기억을 지워서, 홈에서 연 게임은 홈으로 돌아가게
+    if (!qs) { try { sessionStorage.removeItem('list_url'); } catch {} }
+    if (window.location.pathname === '/' && window.location.pathname + window.location.search !== url) {
+      window.history.replaceState(null, '', url);
+    }
+  }, [showResults, query, selectedCategory, selectedTags, selectedPlayers, selectedDifficulty, freeOnly, compareList]);
 
+  // 돌아왔을 때 보던 스크롤 위치로
   useEffect(() => {
     try {
-      const raw = sessionStorage.getItem(LIST_KEY);
-      if (raw && sessionStorage.getItem('grid_restore') === '1') {
-        const st = JSON.parse(raw);
-        setQuery(st.query || '');
-        setSelectedCategory(st.selectedCategory || '');
-        setSelectedTags(st.selectedTags || []);
-        setSelectedPlayers(st.selectedPlayers || '');
-        setSelectedDifficulty(st.selectedDifficulty || '');
-        setFreeOnly(!!st.freeOnly);
-        setExpandedGroups(st.expandedGroups || []);
-        setShowResults(!!st.showResults);
-        const ids: string[] = st.compareIds || [];
-        setCompareList(games.filter((g: any) => ids.includes(g.id)));
-        const y = st.scrollY || 0;
-        setTimeout(() => window.scrollTo(0, y), 60);
-      }
-      sessionStorage.removeItem('grid_restore');
+      const y = Number(sessionStorage.getItem('list_scroll') || 0);
+      sessionStorage.removeItem('list_scroll');
+      if (y > 0 && showResults) setTimeout(() => window.scrollTo(0, y), 80);
     } catch {}
-    restoredRef.current = true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (!restoredRef.current) return;
-    try {
-      sessionStorage.setItem(LIST_KEY, JSON.stringify({
-        query, selectedCategory, selectedTags, selectedPlayers, selectedDifficulty, freeOnly,
-        expandedGroups, showResults, compareIds: compareList.map((g: any) => g.id), scrollY: window.scrollY,
-      }));
-    } catch {}
-  }, [query, selectedCategory, selectedTags, selectedPlayers, selectedDifficulty, freeOnly, expandedGroups, showResults, compareList]);
-
-  // 카드나 비교하기를 누를 때 현재 스크롤 위치와 "돌아오면 복원" 표시를 남김
+  // 카드나 비교하기를 누를 때 지금 목록 주소와 스크롤 위치를 기억
   const rememberList = () => {
     try {
-      const st = JSON.parse(sessionStorage.getItem(LIST_KEY) || '{}');
-      st.scrollY = window.scrollY;
-      sessionStorage.setItem(LIST_KEY, JSON.stringify(st));
-      sessionStorage.setItem('grid_restore', '1');
+      sessionStorage.setItem('list_url', window.location.pathname + window.location.search);
+      sessionStorage.setItem('list_scroll', String(window.scrollY));
     } catch {}
   };
 
@@ -165,7 +168,7 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
             placeholder="게임 이름으로 검색..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') setShowResults(true); }}
+            onKeyDown={(e) => { if (e.key === 'Enter') { setShowResults(true); window.scrollTo({ top: 0, behavior: 'smooth' }); } }}
           />
           {query && <button className="search-clear" onClick={() => setQuery('')}>✕</button>}
         </div>
@@ -309,7 +312,7 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
                 }}>초기화</button>
               )}
               <button
-                onClick={() => { setShowResults(true); setFilterOpen(false); }}
+                onClick={() => { setShowResults(true); setFilterOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); /* SHOW_TOP */ }}
                 style={{
                   flex: 1, padding: '12px',
                   background: 'var(--accent)', border: 'none',
@@ -441,9 +444,14 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
                 </span>
               )}
             </div>
-            <button onClick={resetFilters} style={{ background: 'none', border: 'none', color: 'var(--accent)', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
-              ← 홈으로
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0 }}>
+              <button onClick={copyLink} style={{ background: 'none', border: 'none', color: copied ? '#4a9e3a' : 'var(--text-dim)', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
+                {copied ? '✓ 복사됨' : '🔗 링크 복사'}
+              </button>
+              <button onClick={resetFilters} style={{ background: 'none', border: 'none', color: 'var(--accent)', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
+                ← 홈으로
+              </button>
+            </div>
           </div>
 
           {filtered.length === 0 ? (

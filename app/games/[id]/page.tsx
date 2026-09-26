@@ -1,5 +1,5 @@
 import { supabase } from '../../lib/supabase';
-import Link from 'next/link';
+import BackToList from '../../components/BackToList';
 import DiscountChart from '../../components/DiscountChart';
 import { getPriceInfo } from '../../lib/price';
 import { translateGenres } from '../../lib/genreTranslate';
@@ -69,7 +69,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
 
   return (
     <main className="page">
-      <Link href="/" className="back-link">← 목록으로</Link>
+      <BackToList />
 
       {/* 히어로 이미지 */}
       <div className="detail-hero">
