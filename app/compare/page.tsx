@@ -24,26 +24,39 @@ const MULTIPLAYER_SITUATIONS = [
   '술 한 잔 하면서',
 ];
 
-async function getSituationScores(games: any[], activeSituations: string[]) {
-  const gameIds = games.map(g => g.id).sort().join(',');
+// SCORES_V2 — 게임 순서(번호)로 매칭 + 올바른 결과만 캐시
+function isValidScores(scores: any, games: any[], count: number) {
+  return (
+    Array.isArray(scores) &&
+    scores.length === games.length &&
+    games.every((g) => {
+      const row = scores.find((x: any) => x?.game === g.name);
+      return row && Array.isArray(row.scores) && row.scores.length === count &&
+        row.scores.every((n: any) => Number.isInteger(n) && n >= 1 && n <= 5);
+    })
+  );
+}
 
-  // 캐시 확인
+async function getSituationScores(games: any[], activeSituations: string[]) {
+  const gameIds = games.map((g) => g.id).sort().join(',');
+
   const { data: cached } = await supabase
     .from('compare_cache')
     .select('situation_scores')
     .eq('game_ids', gameIds)
-    .single();
+    .maybeSingle();
 
-  if (cached) {
+  if (cached && isValidScores(cached.situation_scores, games, activeSituations.length)) {
     return cached.situation_scores;
   }
 
-  // 캐시 없으면 AI 호출
-  const gameList = games.map(g =>
-    `이름: ${g.name} | 태그: ${(g.tags || []).join(', ')} | 난이도: ${g.difficulty} | 인원: ${g.min_players}-${g.max_players} | 카테고리: ${g.category} | 솔로: ${g.solo_playable}`
-  ).join('\n');
+  const gameList = games
+    .map((g, i) =>
+      `${i + 1}번. ${g.name} | 태그: ${(g.tags || []).join(', ')} | 난이도: ${g.difficulty} | 인원: ${g.min_players}-${g.max_players} | 카테고리: ${g.category} | 솔로: ${g.solo_playable}`
+    )
+    .join('\n');
 
-  const prompt = `아래 게임들을 각 상황에 얼마나 적합한지 1-5점으로 평가해줘.
+  const prompt = `아래 게임들이 각 상황에 얼마나 적합한지 1~5 정수로 평가해줘.
 
 게임 목록:
 ${gameList}
@@ -51,44 +64,50 @@ ${gameList}
 상황:
 ${activeSituations.map((s, i) => `${i + 1}. ${s}`).join('\n')}
 
-JSON 형식으로만 출력:
-[
-  {
-    "game": "게임이름",
-    "scores": [${activeSituations.map((_, i) => `상황${i + 1}점수`).join(', ')}]
-  }
-]`;
+게임 번호 순서대로, 각 게임마다 상황 ${activeSituations.length}개의 점수를 담아서 JSON으로만 답해. 설명이나 코드블록은 쓰지 마.
+{"results": [{"index": 1, "scores": [${activeSituations.map(() => '점수').join(', ')}]}]}`;
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': process.env.ANTHROPIC_API_KEY!,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 500,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  });
-
-  const data = await res.json();
-  const text = data.content?.[0]?.text || '[]';
-
-  let scores;
   try {
-    scores = JSON.parse(text.replace(/```json|```/g, '').trim());
-  } catch {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY!,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
+    const data = await res.json();
+    if (data.error) {
+      console.error('상황별 추천도 AI 오류:', data.error.message);
+      return [];
+    }
+
+    const text: string = (data.content || []).filter((c: any) => c.type === 'text').map((c: any) => c.text).join('');
+    const start = text.indexOf('{');
+    const end = text.lastIndexOf('}');
+    const parsed = JSON.parse(text.slice(start, end + 1));
+
+    const scores = games.map((g, i) => {
+      const row = (parsed.results || []).find((r: any) => Number(r.index) === i + 1);
+      return {
+        game: g.name,
+        scores: (row?.scores || []).map((n: any) => Math.min(5, Math.max(1, Math.round(Number(n)) || 1))),
+      };
+    });
+
+    if (isValidScores(scores, games, activeSituations.length)) {
+      await supabase.from('compare_cache').upsert({ game_ids: gameIds, situation_scores: scores });
+    }
+    return scores;
+  } catch (err) {
+    console.error('상황별 추천도 생성 실패:', err);
     return [];
   }
-
-  // 캐시 저장
-  await supabase
-    .from('compare_cache')
-    .upsert({ game_ids: gameIds, situation_scores: scores });
-
-  return scores;
 }
 
 export default async function ComparePage({ searchParams }: { searchParams: Promise<{ ids?: string }> }) {
