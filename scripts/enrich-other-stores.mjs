@@ -1,5 +1,3 @@
-set +H
-cd /workspaces/Local && cat > scripts/enrich-other-stores.mjs <<'EOF'
 // scripts/enrich-other-stores.mjs
 // 스팀이 아닌 게임(에픽·블리자드·라이엇)만 데이터 채우기
 import { createClient } from '@supabase/supabase-js';
@@ -148,5 +146,3 @@ async function main() {
 }
 
 main();
-EOF
-node --check scripts/enrich-other-stores.mjs && node --env-file=.env.local scripts/enrich-other-stores.mjs && node --env-file=.env.local scripts/enrich-videos.mjs
