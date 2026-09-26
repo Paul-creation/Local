@@ -338,7 +338,7 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
             </>
           )}
 
-          <DiscountSection games={games} />
+      
 
           {freeGames.length > 0 && (
             <section className="free-section">
@@ -385,7 +385,9 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
                 ))}
               </div>
             </div>
-          )}
+                    )}
+
+          <DiscountSection games={games} />
         </>
       )}
 

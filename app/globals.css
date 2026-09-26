@@ -713,36 +713,40 @@ img { display: block; }
 
 .free-strip::-webkit-scrollbar { display: none; }
 
+.free-strip {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
 .free-chip {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-shrink: 0;
-  width: 110px;
+  width: 184px;
   text-decoration: none;
 }
 
 .free-chip img {
-  width: 110px;
-  height: 66px;
+  width: 184px;
+  height: auto;
+  aspect-ratio: 460 / 215;
   object-fit: cover;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md, 12px);
   border: 1px solid var(--border-light);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.free-chip:hover img {
-  transform: scale(1.05);
-  box-shadow: var(--shadow-md);
-}
-
 .free-chip span {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--text-dim);
   text-align: center;
-  line-height: 1.3;
+  line-height: 1.35;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
