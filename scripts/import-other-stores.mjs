@@ -1,56 +1,143 @@
-set +H
-cd /workspaces/Local && cat > scripts/enrich-other-stores.mjs <<'EOF'
-// scripts/enrich-other-stores.mjs
-// 스팀이 아닌 게임(에픽·블리자드·라이엇)만 데이터 채우기
+// scripts/import-other-stores.mjs
+// 에픽(무료/할인 프로모션 피드 + 독점작) · 블리자드 · 라이엇 게임 가져오기
+// 실행: node --env-file=.env.local scripts/import-other-stores.mjs
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
+
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// 이름 비교용: 소문자 + 영숫자/한글만 남김 ("Diablo® IV" == "diablo iv")
 const norm = (s = '') => s.toLowerCase().replace(/[^a-z0-9가-힣]/g, '');
 
-const CURATED = {
-  'riot:league-of-legends':     { min: 1, max: 5,  difficulty: '어려움', category: '협동', tags: ['e스포츠', '경쟁', '전술'] },
-  'riot:valorant':              { min: 1, max: 5,  difficulty: '어려움', category: '협동', tags: ['FPS', 'e스포츠', '전술'] },
-  'riot:teamfight-tactics':     { min: 1, max: 8,  difficulty: '보통',   category: '파티', tags: ['전술', '경쟁', '캐주얼'] },
-  'riot:legends-of-runeterra':  { min: 1, max: 2,  difficulty: '보통',   category: '협동', tags: ['카드 게임', '전술', '경쟁'] },
-  'riot:2xko':                  { min: 1, max: 2,  difficulty: '어려움', category: '협동', tags: ['격투', '경쟁', 'e스포츠'] },
-  'battlenet:overwatch-2':      { min: 1, max: 5,  difficulty: '보통',   category: '협동', tags: ['FPS', '경쟁', 'e스포츠'] },
-  'battlenet:diablo-iv':        { min: 1, max: 4,  difficulty: '보통',   category: '협동', tags: ['액션 RPG', '핵앤슬래시', '다크 판타지'] },
-  'battlenet:diablo-ii-resurrected': { min: 1, max: 8, difficulty: '보통', category: '협동', tags: ['액션 RPG', '핵앤슬래시', '다크 판타지'] },
-  'battlenet:diablo-iii':       { min: 1, max: 4,  difficulty: '쉬움',   category: '협동', tags: ['액션 RPG', '핵앤슬래시', '루팅'] },
-  'battlenet:hearthstone':      { min: 1, max: 2,  difficulty: '쉬움',   category: '파티', tags: ['카드 게임', '경쟁', '캐주얼'] },
-  'battlenet:heroes-of-the-storm': { min: 1, max: 5, difficulty: '보통', category: '협동', tags: ['경쟁', '전술', '캐주얼'] },
-  'battlenet:starcraft-ii':     { min: 1, max: 8,  difficulty: '어려움', category: '협동', tags: ['전술', 'e스포츠', '우주'] },
-  'battlenet:starcraft-remastered': { min: 1, max: 8, difficulty: '어려움', category: '협동', tags: ['전술', 'e스포츠', '우주'] },
-  'battlenet:world-of-warcraft': { min: 1, max: 40, difficulty: '보통',  category: '협동', tags: ['MMORPG', '대규모 멀티', '오픈월드'] },
-  'battlenet:warcraft-iii-reforged': { min: 1, max: 12, difficulty: '어려움', category: '협동', tags: ['전술', '경쟁', '다크 판타지'] },
-  'epic:fortnite':              { min: 1, max: 4,  difficulty: '보통',   category: '협동', tags: ['배틀로얄', '슈팅', '캐주얼'] },
-  'epic:fall-guys':             { min: 1, max: 4,  difficulty: '쉬움',   category: '파티', tags: ['파티 게임', '배틀로얄', '캐주얼'] },
-  'epic:alan-wake-2':           { min: 1, max: 1,  difficulty: '보통',   category: '서바이벌', tags: ['서바이벌 호러', '심리 공포', '스토리 풍부'] },
-};
+// ─────────────────────────────────────────────
+// 1) 수동 목록 — 블리자드 · 라이엇 · 에픽 독점작
+//    스토어 공개 API가 없거나(블리자드/라이엇) 카탈로그 API가 불안정해서(에픽) 직접 관리
+// ─────────────────────────────────────────────
+const MANUAL_GAMES = [
+  // Riot
+  { source: 'riot', id: 'league-of-legends', name: 'League of Legends', is_free: true,
+    description: '5대5 팀 전략 MOBA. 친구들과 랭크·칼바람으로 즐기기 좋은 대표 PC 게임.',
+    store_url: 'https://www.leagueoflegends.com/ko-kr/' },
+  { source: 'riot', id: 'valorant', name: 'VALORANT', is_free: true,
+    description: '요원 스킬과 정밀한 사격이 결합된 5대5 전술 FPS.',
+    store_url: 'https://playvalorant.com/ko-kr/' },
+  { source: 'riot', id: 'teamfight-tactics', name: 'Teamfight Tactics', is_free: true,
+    description: '롤 챔피언으로 즐기는 8인 오토배틀러. 롤 클라이언트에서 바로 플레이.',
+    store_url: 'https://teamfighttactics.leagueoflegends.com/ko-kr/' },
+  { source: 'riot', id: 'legends-of-runeterra', name: 'Legends of Runeterra', is_free: true,
+    description: '룬테라 세계관의 전략 카드 게임.',
+    store_url: 'https://playruneterra.com/ko-kr/' },
+  { source: 'riot', id: '2xko', name: '2XKO', is_free: true,
+    description: '롤 챔피언들이 등장하는 2대2 태그 대전 격투 게임.',
+    store_url: 'https://2xko.riotgames.com/' },
 
-const IGDB_TAG = {
-  'Shooter': '슈팅', 'Role-playing (RPG)': 'RPG', 'Fighting': '격투', 'Puzzle': '퍼즐',
-  'Platform': '플랫포머', 'Strategy': '전술', 'Real Time Strategy (RTS)': '전술',
-  'Turn-based strategy (TBS)': '전술', 'Tactical': '전술', "Hack and slash/Beat 'em up": '핵앤슬래시',
-  'Card & Board Game': '카드 게임', 'Sport': '스포츠', 'Racing': '운전', 'Simulator': '시뮬레이션',
-  'Horror': '호러', 'Survival': '생존', 'Open world': '오픈월드', 'Sandbox': '샌드박스',
-  'Science fiction': '우주', 'Warfare': '밀리터리', 'Comedy': '코미디', 'Party': '파티 게임',
-  'Fantasy': '다크 판타지', 'Stealth': '전술', 'Drama': '스토리 풍부', 'Mystery': '스토리 풍부',
-  'Adventure': '탐험', 'Arcade': '캐주얼', 'Indie': '캐주얼',
-};
+  // Blizzard (Battle.net)
+  { source: 'battlenet', id: 'overwatch-2', name: 'Overwatch 2', is_free: true,
+    description: '개성 있는 영웅들로 싸우는 5대5 팀 기반 히어로 슈터.',
+    store_url: 'https://overwatch.blizzard.com/ko-kr/' },
+  { source: 'battlenet', id: 'diablo-iv', name: 'Diablo IV', is_free: false,
+    description: '성역을 무대로 한 다크 판타지 액션 RPG. 최대 4인 협동.',
+    store_url: 'https://diablo4.blizzard.com/ko-kr/' },
+  { source: 'battlenet', id: 'diablo-ii-resurrected', name: 'Diablo II: Resurrected', is_free: false,
+    description: '디아블로 2와 파괴의 군주를 리마스터한 액션 RPG.',
+    store_url: 'https://diablo2.blizzard.com/ko-kr/' },
+  { source: 'battlenet', id: 'diablo-iii', name: 'Diablo III', is_free: false,
+    description: '최대 4인 협동으로 즐기는 핵앤슬래시 액션 RPG.',
+    store_url: 'https://diablo3.blizzard.com/ko-kr/' },
+  { source: 'battlenet', id: 'hearthstone', name: 'Hearthstone', is_free: true,
+    description: '워크래프트 세계관의 전략 카드 게임. 전장 모드도 인기.',
+    store_url: 'https://hearthstone.blizzard.com/ko-kr/' },
+  { source: 'battlenet', id: 'heroes-of-the-storm', name: 'Heroes of the Storm', is_free: true,
+    description: '블리자드 영웅들이 총출동하는 팀 전투 중심 MOBA.',
+    store_url: 'https://heroesofthestorm.blizzard.com/ko-kr/' },
+  { source: 'battlenet', id: 'starcraft-ii', name: 'StarCraft II', is_free: true,
+    description: '테란·저그·프로토스의 실시간 전략 게임. 협동전 임무로 친구와 플레이 가능.',
+    store_url: 'https://starcraft2.blizzard.com/ko-kr/' },
+  { source: 'battlenet', id: 'starcraft-remastered', name: 'StarCraft: Remastered', is_free: false,
+    description: '원작 스타크래프트와 브루드 워를 고화질로 리마스터.',
+    store_url: 'https://starcraft.com/ko-kr/' },
+  { source: 'battlenet', id: 'world-of-warcraft', name: 'World of Warcraft', is_free: false,
+    description: '아제로스를 무대로 한 대표 MMORPG. 월 구독제.',
+    store_url: 'https://worldofwarcraft.blizzard.com/ko-kr/' },
+  { source: 'battlenet', id: 'warcraft-iii-reforged', name: 'Warcraft III: Reforged', is_free: false,
+    description: '워크래프트 3와 프로즌 쓰론을 리메이크한 실시간 전략 게임.',
+    store_url: 'https://playwarcraft3.com/ko-kr/' },
 
-function guessCategory(tags = [], genres = []) {
-  const all = [...tags, ...genres].join(' ').toLowerCase();
-  if (all.includes('생존') || all.includes('호러') || all.includes('survival')) return '서바이벌';
-  if (all.includes('퍼즐') || all.includes('puzzle')) return '퍼즐';
-  if (all.includes('파티') || all.includes('party')) return '파티';
-  return '협동';
+  // Epic 독점 / 에픽 전용
+  { source: 'epic', id: 'fortnite', name: 'Fortnite', is_free: true,
+    description: '건설과 배틀로얄이 결합된 슈터. 스쿼드로 친구들과 즐기기 좋음.',
+    store_url: 'https://store.epicgames.com/ko/p/fortnite' },
+  { source: 'epic', id: 'rocket-league', name: 'Rocket League', is_free: true,
+    description: '로켓 자동차로 하는 축구. 2대2·3대3 파티 플레이에 최적.',
+    store_url: 'https://store.epicgames.com/ko/p/rocket-league' },
+  { source: 'epic', id: 'fall-guys', name: 'Fall Guys', is_free: true,
+    description: '최대 60명이 장애물 코스를 달리는 파티 배틀로얄.',
+    store_url: 'https://store.epicgames.com/ko/p/fall-guys' },
+  { source: 'epic', id: 'alan-wake-2', name: 'Alan Wake 2', is_free: false,
+    description: 'Remedy의 서바이벌 호러. 두 주인공의 시점을 오가는 스토리 중심 게임.',
+    store_url: 'https://store.epicgames.com/ko/p/alan-wake-2' },
+];
+
+// ─────────────────────────────────────────────
+// 2) 에픽 프로모션 피드 (무료 배포 + 예정작, KRW 가격 포함)
+// ─────────────────────────────────────────────
+async function fetchEpicPromotions() {
+  const url =
+    'https://store-site-backend-static-ipv4.ak.epicgames.com/freeGamesPromotions?locale=ko&country=KR&allowCountries=KR';
+  try {
+    const res = await fetch(url);
+    const json = await res.json();
+    const elements = json?.data?.Catalog?.searchStore?.elements || [];
+
+    return elements
+      .filter((e) => e.offerType === 'BASE_GAME' && !/mystery/i.test(e.title))
+      .map((e) => {
+        const slug =
+          e.catalogNs?.mappings?.find((m) => m.pageType === 'productHome')?.pageSlug ||
+          e.offerMappings?.find((m) => m.pageType === 'productHome')?.pageSlug ||
+          e.productSlug?.replace(/\/home$/, '');
+        if (!slug) return null;
+
+        const wide =
+          e.keyImages?.find((k) => k.type === 'OfferImageWide') ||
+          e.keyImages?.find((k) => k.type === 'DieselStoreFrontWide') ||
+          e.keyImages?.[0];
+
+        const tp = e.price?.totalPrice;
+        const decimals = tp?.currencyInfo?.decimals ?? 0;
+        const div = 10 ** decimals;
+
+        return {
+          source: 'epic',
+          id: slug,
+          name: e.title,
+          description: e.description,
+          cover_image_url: wide?.url || null,
+          store_url: `https://store.epicgames.com/ko/p/${slug}`,
+          is_free: false,
+          price:
+            tp?.currencyCode === 'KRW'
+              ? {
+                  final: tp.discountPrice / div,
+                  original: tp.originalPrice / div,
+                }
+              : null,
+        };
+      })
+      .filter(Boolean);
+  } catch (err) {
+    console.error('에픽 프로모션 피드 실패:', err.message);
+    return [];
+  }
 }
 
+// ─────────────────────────────────────────────
+// 3) IGDB — 수동 목록의 와이드 이미지 채우기
+// ─────────────────────────────────────────────
 async function getIgdbToken() {
   const res = await fetch(
     `https://id.twitch.tv/oauth2/token?client_id=${process.env.IGDB_CLIENT_ID}&client_secret=${process.env.IGDB_CLIENT_SECRET}&grant_type=client_credentials`,
@@ -59,94 +146,114 @@ async function getIgdbToken() {
   return (await res.json()).access_token;
 }
 
-async function searchIgdb(query, token) {
-  const res = await fetch('https://api.igdb.com/v4/games', {
-    method: 'POST',
-    headers: { 'Client-ID': process.env.IGDB_CLIENT_ID, Authorization: `Bearer ${token}`, Accept: 'application/json' },
-    body: `fields name, genres.name, themes.name, game_modes.name, aggregated_rating,
-      involved_companies.developer, involved_companies.publisher, involved_companies.company.name,
-      multiplayer_modes.onlinecoopmax, multiplayer_modes.onlinemax,
-      multiplayer_modes.offlinecoopmax, multiplayer_modes.offlinemax;
-      search "${query.replace(/"/g, '')}"; limit 5;`,
-  });
-  const list = await res.json();
-  if (!Array.isArray(list) || list.length === 0) return null;
-  return list.find((g) => norm(g.name) === norm(query)) || list[0];
+async function fetchIgdbWideImage(name, token) {
+  if (!token) return null;
+  try {
+    const res = await fetch('https://api.igdb.com/v4/games', {
+      method: 'POST',
+      headers: {
+        'Client-ID': process.env.IGDB_CLIENT_ID,
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+      body: `fields name, artworks.image_id, screenshots.image_id; search "${name.replace(/"/g, '')}"; limit 1;`,
+    });
+    const g = (await res.json())?.[0];
+    const imageId = g?.artworks?.[0]?.image_id || g?.screenshots?.[0]?.image_id;
+    return imageId
+      ? `https://images.igdb.com/igdb/image/upload/t_screenshot_big/${imageId}.jpg`
+      : null;
+  } catch {
+    return null;
+  }
 }
 
+// ─────────────────────────────────────────────
+// 4) 저장 — 이미 있는 게임(이름 일치)은 platform만 합치고, 없으면 새로 추가
+// ─────────────────────────────────────────────
 async function main() {
-  const { data: games, error } = await supabase
+  const { data: existing, error } = await supabase
     .from('games')
-    .select('id, name, source, external_id, tags, genres, themes, min_players, max_players, difficulty, category, developer, publisher, critic_score')
-    .is('steam_appid', null);
-  if (error) return console.error('조회 실패:', error.message);
+    .select('id, name, platform, source, external_id, store_url');
+  if (error) {
+    console.error('기존 게임 조회 실패:', error.message);
+    return;
+  }
 
-  console.log(`스팀 외 게임 ${games.length}개 처리 시작\n`);
+  const byName = new Map(existing.map((g) => [norm(g.name), g]));
+  const byExternal = new Set(
+    existing.filter((g) => g.external_id).map((g) => `${g.source}:${g.external_id}`)
+  );
+
   const token = await getIgdbToken().catch(() => null);
-  if (!token) console.log('⚠️ IGDB 토큰 실패 — 직접 지정한 게임만 채움');
+  const epicPromos = await fetchEpicPromotions();
+  console.log(`에픽 프로모션 ${epicPromos.length}개, 수동 목록 ${MANUAL_GAMES.length}개`);
 
-  for (const game of games) {
-    const update = {};
-    const curated = CURATED[`${game.source}:${game.external_id}`];
+  let added = 0;
+  let merged = 0;
 
-    let ig = null;
-    if (token) {
-      ig = await searchIgdb(game.name, token);
-      if (!ig && game.external_id) ig = await searchIgdb(game.external_id.replace(/-/g, ' '), token);
-      await sleep(300);
-    }
+  for (const item of [...MANUAL_GAMES, ...epicPromos]) {
+    const key = `${item.source}:${item.id}`;
+    if (byExternal.has(key)) continue;
 
-    if (ig) {
-      const genres = ig.genres?.map((g) => g.name) || [];
-      const themes = ig.themes?.map((t) => t.name) || [];
-      if (!game.genres?.length && genres.length) update.genres = genres;
-      if (!game.themes?.length && themes.length) update.themes = themes;
-      if (!game.critic_score && ig.aggregated_rating) update.critic_score = Math.round(ig.aggregated_rating);
-      const dev = ig.involved_companies?.find((c) => c.developer)?.company?.name;
-      const pub = ig.involved_companies?.find((c) => c.publisher)?.company?.name;
-      if (!game.developer && dev) update.developer = dev;
-      if (!game.publisher && pub) update.publisher = pub;
-    }
-
-    if (curated) {
-      update.tags = curated.tags;
-      update.min_players = curated.min;
-      update.max_players = curated.max;
-      update.difficulty = curated.difficulty;
-      update.category = curated.category;
-    } else {
-      if ((game.tags?.length || 0) < 3 && ig) {
-        const src = [...(ig.genres || []), ...(ig.themes || [])].map((x) => IGDB_TAG[x.name]).filter(Boolean);
-        const tags = Array.from(new Set(src)).slice(0, 3);
-        if (tags.length) update.tags = tags;
+    // 스팀 등에 이미 있는 게임 → 플랫폼만 추가
+    const match = byName.get(norm(item.name));
+    if (match) {
+      const platform = Array.from(new Set([...(match.platform || []), item.source]));
+      if (platform.length !== (match.platform || []).length) {
+        await supabase.from('games').update({ platform }).eq('id', match.id);
+        match.platform = platform;
+        console.log(`🔗 플랫폼 추가: ${match.name} +${item.source}`);
+        merged++;
       }
-      if (!game.min_players) {
-        const m = ig?.multiplayer_modes || [];
-        const max = Math.max(1, ...m.flatMap((x) => [x.onlinecoopmax, x.onlinemax, x.offlinecoopmax, x.offlinemax]).filter(Boolean));
-        update.min_players = 1;
-        update.max_players = max;
-      }
-      if (!game.difficulty) update.difficulty = '보통';
-      if (!game.category) update.category = guessCategory(update.tags || game.tags || [], update.genres || game.genres || []);
-    }
-
-    if (Object.keys(update).length === 0) {
-      console.log(`건너뜀 (이미 채워짐): ${game.name}`);
       continue;
     }
 
-    const { error: upErr } = await supabase.from('games').update(update).eq('id', game.id);
-    if (upErr) console.error(`❌ 실패 (${game.name}):`, upErr.message);
-    else
-      console.log(
-        `✅ ${game.name} ${curated ? '[지정]' : ig ? '[IGDB]' : '[기본값]'} — ` +
-        `${update.min_players ?? game.min_players}-${update.max_players ?? game.max_players}인 · ` +
-        `${(update.tags || game.tags || []).join(', ')}`
-      );
+    const cover = item.cover_image_url || (await fetchIgdbWideImage(item.name, token));
+    if (!cover) {
+      console.log(`⏭️  이미지 없음, 건너뜀: ${item.name}`);
+      continue;
+    }
+
+    const { data: inserted, error: insErr } = await supabase
+      .from('games')
+      .insert({
+        name: item.name,
+        steam_appid: null,
+        source: item.source,
+        external_id: item.id,
+        store_url: item.store_url,
+        platform: [item.source],
+        cover_image_url: cover,
+        description: item.description,
+        is_free: item.is_free,
+        is_casual_party: false,
+      })
+      .select()
+      .single();
+
+    if (insErr) {
+      console.error(`저장 실패 (${item.name}):`, insErr.message);
+      continue;
+    }
+
+    if (item.price && item.price.original > 0) {
+      const discount = Math.round((1 - item.price.final / item.price.original) * 100);
+      await supabase.from('price_history').insert({
+        game_id: inserted.id,
+        price: item.price.final,
+        discount_percent: discount,
+      });
+    }
+
+    console.log(`✅ 추가됨: ${item.name} [${item.source}]`);
+    byExternal.add(key);
+    byName.set(norm(item.name), inserted);
+    added++;
+    await sleep(400);
   }
-  console.log('\n완료');
+
+  console.log(`\n새로 추가 ${added}개, 기존 게임에 플랫폼 추가 ${merged}개`);
 }
 
 main();
-EOF
-node --check scripts/enrich-other-stores.mjs && node --env-file=.env.local scripts/enrich-other-stores.mjs && node --env-file=.env.local scripts/enrich-videos.mjs
