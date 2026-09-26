@@ -1,5 +1,6 @@
 import { supabase } from './lib/supabase';
 import GameGrid from './components/GameGrid';
+import HomeHero from './components/HomeHero';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,8 +17,8 @@ export default async function Home() {
       <nav className="topnav">
         <span className="logo">게임정보허브</span>
       </nav>
-      <GameGrid games={allGames} />
-            <footer style={{
+      <HomeHero games={allGames} />
+      <footer style={{
         textAlign: 'center',
         padding: '40px 0 20px',
         color: 'var(--text-dimmer)',
