@@ -35,7 +35,6 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const [freeOnly, setFreeOnly] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
-  const [compareMode, setCompareMode] = useState(false);
   const [compareList, setCompareList] = useState<any[]>([]);
   const [compareError, setCompareError] = useState('');
 
@@ -103,6 +102,7 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
     setFreeOnly(false);
     setShowResults(false);
     setFilterOpen(false);
+    setCompareList([]);
   };
 
   const featuredPrice = featured ? getPriceInfo(featured) : null;
@@ -121,17 +121,6 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
           />
           {query && <button className="search-clear" onClick={() => setQuery('')}>✕</button>}
         </div>
-        <button
-          className="ai-trigger-clean"
-          style={{
-            background: compareMode ? 'var(--danger)' : 'var(--bg-card)',
-            color: compareMode ? '#fff' : 'var(--text)',
-            border: '1.5px solid var(--border)',
-          }}
-          onClick={() => { setCompareMode(v => !v); setCompareList([]); setCompareError(''); }}
-        >
-          {compareMode ? '취소' : '비교'}
-        </button>
         <AIRecommend />
       </div>
 
@@ -398,6 +387,11 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
             <div style={{ fontSize: 14, color: 'var(--text-dim)' }}>
               <strong style={{ color: 'var(--text)' }}>{filtered.length}개</strong> 게임
               {hasFilters && ' · 필터 적용됨'}
+              {filtered.length >= 2 && (
+                <span style={{ marginLeft: 8, fontSize: 12, color: 'var(--text-dimmer)' }}>
+                  카드의 <b>+ 비교</b>로 최대 3개까지 비교해보세요
+                </span>
+              )}
             </div>
             <button onClick={resetFilters} style={{ background: 'none', border: 'none', color: 'var(--accent)', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
               ← 홈으로
@@ -411,41 +405,26 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
               {filtered.map((game) => {
                 const price = getPriceInfo(game);
                 const isSelected = compareList.find(g => g.id === game.id);
-                return compareMode ? (
-                  <div key={game.id} className="card" onClick={() => toggleCompare(game)} style={{
-                    cursor: 'pointer',
-                    outline: isSelected ? '3px solid var(--accent)' : '3px solid transparent',
-                    outlineOffset: 2,
-                  }}>
+                return (
+                  <Link href={`/games/${game.id}`} key={game.id} className="card" style={isSelected ? { outline: '3px solid var(--accent)', outlineOffset: 2 } : undefined}>
                     <div className="card-image-wrap">
                       <img src={game.cover_image_url} alt={game.name} />
-                      {isSelected && (
-                        <div style={{
-                          position: 'absolute', inset: 0,
-                          background: 'rgba(0,113,227,0.15)',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}>
-                          <span style={{ background: 'var(--accent)', color: '#fff', borderRadius: 100, padding: '6px 16px', fontWeight: 700, fontSize: 14 }}>
-                            선택됨
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="card-body">
-                      <h3>{game.name}</h3>
-                      <p className="card-meta">
-                        {game.recommended_players ? `추천 ${game.recommended_players}` : game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : ''}
-                        {game.difficulty ? ` · ${game.difficulty}` : ''}
-                      </p>
-                      {game.tags?.slice(0, 3).map((tag: string) => (
-                        <span key={tag} className="category-tag">{translateTag(tag)}</span>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <Link href={`/games/${game.id}`} key={game.id} className="card">
-                    <div className="card-image-wrap">
-                      <img src={game.cover_image_url} alt={game.name} />
+                      {/* COMPARE_V2 */}
+                      <button
+                        type="button"
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleCompare(game); }}
+                        aria-pressed={!!isSelected}
+                        style={{
+                          position: 'absolute', top: 10, right: 10, zIndex: 2,
+                          padding: '5px 11px', borderRadius: 100, fontSize: 12, fontWeight: 700,
+                          border: 'none', cursor: 'pointer',
+                          background: isSelected ? 'var(--accent)' : 'rgba(0,0,0,0.6)',
+                          color: '#fff',
+                          opacity: !isSelected && compareList.length >= 3 ? 0.4 : 1,
+                        }}
+                      >
+                        {isSelected ? '✓ 비교' : '+ 비교'}
+                      </button>
                       <span className="platform-badge">{game.steam_appid ? 'Steam' : (({ epic: 'Epic', battlenet: 'Battle.net', riot: 'Riot' } as Record<string, string>)[game.source] ?? 'PC') /* STORE_BADGE */}</span>
                       {(() => {
                         const timing = getPriceTiming(game);
@@ -497,7 +476,7 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
         </>
       )}
 
-      {compareMode && (
+      {(showResults || normalizedQuery) && (compareList.length > 0 || compareError) && (
         <div style={{
           position: 'fixed', bottom: 0, left: 0, right: 0,
           background: 'var(--bg-nav)', color: '#fff',
@@ -521,6 +500,9 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
               ))
             )}
           </div>
+          <button onClick={() => setCompareList([])} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', fontSize: 13, cursor: 'pointer', flexShrink: 0 }}>
+            초기화
+          </button>
           {compareList.length >= 2 ? (
             <a href={`/compare?ids=${compareList.map(g => g.id).join(',')}`} style={{
               background: 'var(--accent)', color: '#fff',
