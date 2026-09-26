@@ -172,7 +172,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         <div className="spec-row">
           <span className="spec-label">솔로 플레이</span>
           <span className="spec-value" style={{ color: game.solo_playable ? '#4a9e3a' : 'var(--danger)', fontWeight: 700 }}>
-            {game.solo_playable ? '혼자도 가능' : '멀티 필수'}
+            {game.solo_playable && game.max_players === 1 ? '싱글 플레이 게임' : game.solo_playable ? '솔로 가능' : '멀티 필수'}
           </span>
         </div>
         <div className="spec-row">
