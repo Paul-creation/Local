@@ -6,6 +6,7 @@ import { translateGenres } from '../../lib/genreTranslate';
 import { getPlatformCategories, CATEGORY_LABEL, PlatformCategory } from '../../lib/platformDisplay';
 import { FaPlaystation, FaXbox, FaDesktop, FaVrCardboard } from 'react-icons/fa';
 import PlayerChart from '../../components/PlayerChart';
+import YouTubeLite from '../../components/YouTubeLite';
 import { translateTag } from '../../lib/tagTranslate';
 import GameVotes from '../../components/GameVotes';
 
@@ -77,19 +78,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       {/* 게임 영상 */}
       {game.video_url && (
         <div className="video-section">
-          <iframe
-            src={`${game.video_url}?autoplay=0&rel=0&modestbranding=1`}
-            title={`${game.name} 트레일러`}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            style={{
-              width: '100%',
-              aspectRatio: '16/9',
-              border: 'none',
-              borderRadius: 12,
-              display: 'block',
-            }}
-          />
+          <YouTubeLite url={game.video_url} title={`${game.name} 트레일러`} />
         </div>
       )}
       {/* 제목 + 평가 배지 + 태그 + 설명 */}
