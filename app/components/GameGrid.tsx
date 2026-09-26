@@ -34,12 +34,6 @@ export default function GameGrid({ games }: { games: any[] }) {
   const [compareList, setCompareList] = useState<any[]>([]);
   const tagPanelRef = useRef<HTMLDivElement>(null);
   const [compareError, setCompareError] = useState('');
-  if (firstIsSolo !== newIsSolo) {
-  setCompareError(firstIsSolo ? '싱글 게임끼리만 비교할 수 있어요' : '멀티 게임끼리만 비교할 수 있어요');
-  setTimeout(() => setCompareError(''), 2000);
-  return prev;
-}
-
   const toggleCompare = (game: any) => {
   setCompareList(prev => {
     if (prev.find(g => g.id === game.id)) return prev.filter(g => g.id !== game.id);
@@ -48,7 +42,11 @@ export default function GameGrid({ games }: { games: any[] }) {
     if (prev.length > 0) {
       const firstIsSolo = prev[0].max_players === 1;
       const newIsSolo = game.max_players === 1;
-      if (firstIsSolo !== newIsSolo) return prev; // 타입 다르면 무시
+      if (firstIsSolo !== newIsSolo) {
+        setCompareError(firstIsSolo ? '싱글 게임끼리만 비교할 수 있어요' : '멀티 게임끼리만 비교할 수 있어요');
+        setTimeout(() => setCompareError(''), 2000);
+        return prev;
+      }
     }
     return [...prev, game];
   });
