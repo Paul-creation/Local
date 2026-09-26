@@ -33,14 +33,26 @@ export default function GameGrid({ games }: { games: any[] }) {
   const [compareMode, setCompareMode] = useState(false);
   const [compareList, setCompareList] = useState<any[]>([]);
   const tagPanelRef = useRef<HTMLDivElement>(null);
+  const [compareError, setCompareError] = useState('');
+  if (firstIsSolo !== newIsSolo) {
+  setCompareError(firstIsSolo ? '싱글 게임끼리만 비교할 수 있어요' : '멀티 게임끼리만 비교할 수 있어요');
+  setTimeout(() => setCompareError(''), 2000);
+  return prev;
+}
 
   const toggleCompare = (game: any) => {
-    setCompareList(prev => {
-      if (prev.find(g => g.id === game.id)) return prev.filter(g => g.id !== game.id);
-      if (prev.length >= 3) return prev;
-      return [...prev, game];
-    });
-  };
+  setCompareList(prev => {
+    if (prev.find(g => g.id === game.id)) return prev.filter(g => g.id !== game.id);
+    if (prev.length >= 3) return prev;
+    // 첫 게임 기준으로 타입 맞추기
+    if (prev.length > 0) {
+      const firstIsSolo = prev[0].max_players === 1;
+      const newIsSolo = game.max_players === 1;
+      if (firstIsSolo !== newIsSolo) return prev; // 타입 다르면 무시
+    }
+    return [...prev, game];
+  });
+};
 
   const featured = games.find((g) => g.featured);
   const bannerPool = games.filter((g) => g.is_casual_party && !g.featured);
@@ -241,6 +253,9 @@ export default function GameGrid({ games }: { games: any[] }) {
           )}
         </>
       )}
+      {compareError && (
+  <span style={{ color: 'var(--danger)', fontSize: 13 }}>{compareError}</span>
+)}
 
       {filtered.length === 0 ? (
         <div className="empty-state">검색/필터 조건에 맞는 게임이 없어요.</div>
