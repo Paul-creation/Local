@@ -105,7 +105,7 @@ img { display: block; }
 
 .hero-card {
   display: grid;
-  grid-template-columns: 55% 45%;
+  grid-template-columns: minmax(0, 55fr) minmax(0, 45fr);
   gap: 0;
   border-radius: var(--radius-xl);
   overflow: hidden;
@@ -125,17 +125,20 @@ img { display: block; }
 
 .hero-image-wrap {
   position: relative;
-  aspect-ratio: 16/9;
+  min-width: 0;
+  min-height: 280px;      /* aspect-ratio 제거, 높이는 오른쪽 콘텐츠가 결정 */
   overflow: hidden;
-  align-self: stretch;
 }
 
 .hero-image-wrap img {
+  position: absolute;     /* 이미지가 행 크기 계산에 끼어들지 않게 */
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
+  object-position: left center; /* 크롭돼도 로고가 있는 왼쪽은 살림 */
 }
+
 
 .hero-overlay {
   display: none;
@@ -192,13 +195,16 @@ img { display: block; }
 
 @media (max-width: 640px) {
   .hero-card {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .hero-image-wrap {
+    min-height: 0;
+    aspect-ratio: 460 / 215; /* 모바일에선 Steam 헤더 원본 비율 그대로 */
   }
   .hero-content {
     padding: 16px;
   }
 }
-
 /* ============================================================
    BANNER CAROUSEL
    ============================================================ */
