@@ -1,4 +1,6 @@
 import { supabase } from '../lib/supabase';
+import { headers } from 'next/headers';
+import { guardedClaudeFetch, getIp } from '../lib/aiGuard';
 import Link from 'next/link';
 import CompareChat from '../components/CompareChat';
 
@@ -68,7 +70,7 @@ ${activeSituations.map((s, i) => `${i + 1}. ${s}`).join('\n')}
 {"results": [{"index": 1, "scores": [${activeSituations.map(() => '점수').join(', ')}]}]}`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await guardedClaudeFetch(getIp(await headers()), 'compare-scores', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -41,9 +41,9 @@ async function askClaude(name, store) {
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-5',
-      max_tokens: 2000,
-      tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 5 }],
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 1200,
+      tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 2 }],
       messages: [{ role: 'user', content: PROMPT(name, store) }],
     }),
   });
@@ -96,18 +96,19 @@ async function main() {
 
   const { data: games, error } = await supabase
     .from('games')
-    .select('id, name, source, description, korean_support, release_date, min_spec, recommended_spec, storage_gb, solo_playable, recommended_players, server_type, has_ending, ending_note, story_length, activities, is_esports')
+    .select('id, name, source, description, korean_support, release_date, min_spec, recommended_spec, storage_gb, solo_playable, recommended_players, server_type, has_ending, ending_note, story_length, activities, is_esports, ai_enriched_at')
     .is('steam_appid', null);
   if (error) return console.error('조회 실패:', error.message);
 
-  const targets = FORCE ? games : games.filter((g) => !g.korean_support || !g.min_spec || !g.server_type);
+  const targets = FORCE ? games : games.filter((g) => !g.ai_enriched_at && (!g.korean_support || !g.min_spec || !g.server_type));
   console.log(`스팀 외 게임 ${games.length}개 중 ${targets.length}개 처리\n`);
 
   for (const game of targets) {
     try {
       const ai = await askClaude(game.name, STORE_NAME[game.source] || 'PC');
-      const update = clean(ai, game);
-      if (Object.keys(update).length === 0) {
+      const update = { ...clean(ai, game), ai_enriched_at: new Date().toISOString() };
+      if (Object.keys(update).length === 1) {
+        await supabase.from('games').update({ ai_enriched_at: update.ai_enriched_at }).eq('id', game.id);
         console.log(`건너뜀 (새 정보 없음): ${game.name}`);
         continue;
       }
