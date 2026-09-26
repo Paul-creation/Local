@@ -21,7 +21,7 @@ function getPriceTiming(game: any) {
   return null;
 }
 
-const CATEGORIES = ['전체', '파티', '협동', '퍼즐', '서바이벌'];
+const CATEGORIES = ['전체', '찜한 게임', '파티', '협동', '퍼즐', '서바이벌'];
 const GROUP_COLORS = ['#e6742e', '#0f9b8e', '#5b6ef5', '#c0392b', '#9b59b6', '#d4a017'];
 
 export default function GameGrid({ games }: { games: any[] }) {
@@ -33,7 +33,19 @@ export default function GameGrid({ games }: { games: any[] }) {
   const [compareMode, setCompareMode] = useState(false);
   const [compareList, setCompareList] = useState<any[]>([]);
   const [compareError, setCompareError] = useState('');
+  const [wishlist, setWishlist] = useState<string[]>(() => {
+    if (typeof window === 'undefined') return [];
+    return JSON.parse(localStorage.getItem('wishlist') || '[]');
+  });
   const tagPanelRef = useRef<HTMLDivElement>(null);
+
+  const toggleWishlist = (id: string) => {
+    setWishlist(prev => {
+      const next = prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id];
+      localStorage.setItem('wishlist', JSON.stringify(next));
+      return next;
+    });
+  };
 
   const toggleCompare = (game: any) => {
     setCompareList(prev => {
@@ -74,6 +86,7 @@ export default function GameGrid({ games }: { games: any[] }) {
   const isFreeQuery = ['무료', '무료플레이', '무료 플레이', 'free'].includes(normalizedQuery);
 
   const filtered = games.filter((g) => {
+    if (category === '찜한 게임') return wishlist.includes(g.id);
     if (isFreeQuery) return g.is_free;
     const categoryMatch = category === '전체' || g.category === category;
     const tagMatch = selectedTags.length === 0 || selectedTags.some((t) => g.tags?.includes(t));
@@ -115,7 +128,7 @@ export default function GameGrid({ games }: { games: any[] }) {
       <div className="category-pills">
         {CATEGORIES.map((c) => (
           <button key={c} className={`pill ${category === c ? 'pill-active' : ''}`} onClick={() => setCategory(c)}>
-            {c}
+            {c === '찜한 게임' ? `❤️ 찜한 게임 ${wishlist.length > 0 ? `(${wishlist.length})` : ''}` : c}
           </button>
         ))}
         <button
@@ -229,13 +242,18 @@ export default function GameGrid({ games }: { games: any[] }) {
         </>
       )}
 
-      {filtered.length === 0 ? (
+      {category === '찜한 게임' && wishlist.length === 0 && (
+        <div className="empty-state">찜한 게임이 없어요. 카드의 하트를 눌러 추가해봐요!</div>
+      )}
+
+      {filtered.length === 0 && category !== '찜한 게임' ? (
         <div className="empty-state">검색/필터 조건에 맞는 게임이 없어요.</div>
       ) : (
         <div className="grid">
           {filtered.map((game) => {
             const price = getPriceInfo(game);
             const isSelected = compareList.find(g => g.id === game.id);
+            const isWished = wishlist.includes(game.id);
             return compareMode ? (
               <div
                 key={game.id}
@@ -290,6 +308,19 @@ export default function GameGrid({ games }: { games: any[] }) {
                       </span>
                     );
                   })()}
+                  <button
+                    onClick={(e) => { e.preventDefault(); toggleWishlist(game.id); }}
+                    style={{
+                      position: 'absolute', top: 8, left: 8,
+                      background: 'rgba(0,0,0,0.5)',
+                      border: 'none', borderRadius: '50%',
+                      width: 32, height: 32, cursor: 'pointer',
+                      fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      backdropFilter: 'blur(4px)',
+                    }}
+                  >
+                    {isWished ? '❤️' : '🤍'}
+                  </button>
                 </div>
                 <div className="card-body">
                   <h3>{game.name}</h3>
@@ -335,7 +366,6 @@ export default function GameGrid({ games }: { games: any[] }) {
         </div>
       )}
 
-      {/* 하단 플로팅 비교 바 */}
       {compareMode && (
         <div style={{
           position: 'fixed', bottom: 0, left: 0, right: 0,
@@ -363,7 +393,7 @@ export default function GameGrid({ games }: { games: any[] }) {
             )}
           </div>
           {compareList.length >= 2 ? (
-            <a
+            
               href={`/compare?ids=${compareList.map(g => g.id).join(',')}`}
               style={{
                 background: 'var(--accent)', color: '#fff',
