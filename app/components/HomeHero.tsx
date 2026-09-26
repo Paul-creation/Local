@@ -105,28 +105,34 @@ export default function HomeHero({ games }: { games: any[] }) {
         <DiscountSection games={games} />
       </div>
 
-      {/* 인기 급상승 */}
+            {/* 인기 급상승 */}
       {hotGames.length > 0 && (
-        <div style={{ marginBottom: 32 }}>
+        <div style={{ marginBottom: 40 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <h2 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>인기 급상승</h2>
+            <h2 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>인기 급상승</h2>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
             {hotGames.map((game, i) => (
               <Link href={`/games/${game.id}`} key={game.id} style={{ textDecoration: 'none' }}>
                 <div style={{
-                  display: 'flex', alignItems: 'center', gap: 10,
-                  background: 'var(--bg-card)', borderRadius: 'var(--radius-md)',
-                  padding: '10px 12px', border: '1px solid var(--border-light)',
-                  boxShadow: 'var(--shadow-sm)',
+                  display: 'flex', alignItems: 'center', gap: 12,
+                  background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
+                  padding: '14px 16px', border: '1px solid var(--border-light)',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
                 }}>
-                  <span style={{ fontSize: 18, fontWeight: 900, color: 'var(--text-dimmer)', width: 24, flexShrink: 0 }}>
+                  <span style={{ fontSize: 20, fontWeight: 900, color: 'var(--text-dimmer)', width: 28, flexShrink: 0, textAlign: 'center' }}>
                     {i + 1}
                   </span>
-                  <img src={game.cover_image_url} alt={game.name} style={{ width: 48, height: 27, objectFit: 'cover', borderRadius: 4, flexShrink: 0 }} />
-                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {game.name}
-                  </span>
+                  <img src={game.cover_image_url} alt={game.name} style={{ width: 64, height: 36, objectFit: 'cover', borderRadius: 6, flexShrink: 0 }} />
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>
+                      {game.name}
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--text-dimmer)' }}>
+                      {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : ''}
+                      {game.difficulty ? ` · ${game.difficulty}` : ''}
+                    </div>
+                  </div>
                 </div>
               </Link>
             ))}
@@ -149,18 +155,19 @@ export default function HomeHero({ games }: { games: any[] }) {
         </div>
       )}
 
-      {/* 전체 게임 탐색 버튼 */}
+            {/* 전체 게임 탐색 버튼 */}
       <button
         onClick={() => setShowGrid(true)}
         style={{
-          width: '100%', padding: '16px',
-          background: 'var(--bg-card)',
-          border: '1.5px solid var(--border)',
+          width: '100%', padding: '20px',
+          background: 'var(--accent)',
+          border: 'none',
           borderRadius: 'var(--radius-lg)',
-          fontSize: 15, fontWeight: 700,
-          color: 'var(--text)', cursor: 'pointer',
+          fontSize: 16, fontWeight: 800,
+          color: '#fff', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
           marginBottom: 32,
+          boxShadow: '0 4px 16px rgba(0,113,227,0.3)',
         }}
       >
         전체 게임 탐색하기 →
