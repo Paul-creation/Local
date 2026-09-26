@@ -2,21 +2,9 @@
 
 import { useState, useEffect } from 'react';
 
-const SITUATIONS = [
-  '처음 보는 사람들이랑 어색할 때',
-  '친한 친구들이랑 밤새',
-  '혼자 심심할 때',
-  '가족이랑 같이',
-  '술 한 잔 하면서',
-  '웃기고 병맛 가득',
-  '머리 비우고 싶을 때',
-  '진지하게 몰입하고 싶을 때',
-  '짧게 한 판만',
-  '입문자도 바로 가능',
-  '고수들끼리 빡세게',
-  '한 번 시작하면 못 끊음',
-  '가볍게 5분만',
-];
+import { VOTE_SITUATIONS } from '../lib/situations';
+
+const SITUATIONS = VOTE_SITUATIONS;
 
 export default function GameVotes({ gameId }: { gameId: string }) {
   const [votes, setVotes] = useState<Record<string, number>>({});
