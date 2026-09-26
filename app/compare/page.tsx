@@ -1,4 +1,8 @@
 import { supabase } from '../lib/supabase';
+import { createClient } from '@supabase/supabase-js';
+
+// compare_cache는 RLS로 막혀 있어서 서버 전용 키로 접근 (이 파일은 서버에서만 실행됨)
+const cacheDb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 import { headers } from 'next/headers';
 import { guardedClaudeFetch, getIp } from '../lib/aiGuard';
 import Link from 'next/link';
@@ -42,7 +46,7 @@ function isValidScores(scores: any, games: any[], count: number) {
 async function getSituationScores(games: any[], activeSituations: string[]) {
   const gameIds = games.map((g) => g.id).sort().join(',');
 
-  const { data: cached } = await supabase
+  const { data: cached } = await cacheDb
     .from('compare_cache')
     .select('situation_scores')
     .eq('game_ids', gameIds)
@@ -103,7 +107,7 @@ ${activeSituations.map((s, i) => `${i + 1}. ${s}`).join('\n')}
     });
 
     if (isValidScores(scores, games, activeSituations.length)) {
-      await supabase.from('compare_cache').upsert({ game_ids: gameIds, situation_scores: scores });
+      await cacheDb.from('compare_cache').upsert({ game_ids: gameIds, situation_scores: scores });
     }
     return scores;
   } catch (err) {
