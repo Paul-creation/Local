@@ -148,14 +148,15 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
             cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           }}
         >
-          <span>
-            게임 찾기
-            {selectedCount > 0 && (
-              <span style={{ marginLeft: 8, background: 'var(--accent)', color: '#fff', borderRadius: 100, fontSize: 12, padding: '2px 8px' }}>
-                {selectedCount}개 선택됨
-              </span>
-            )}
-          </span>
+          // 버튼 텍스트
+<span>
+  태그 선택
+  {selectedCount > 0 && (
+    <span style={{ marginLeft: 8, background: 'var(--accent)', color: '#fff', borderRadius: 100, fontSize: 12, padding: '2px 8px' }}>
+      {selectedCount}개 선택됨
+    </span>
+  )}
+</span>
           <span>{filterOpen ? '▴' : '▾'}</span>
         </button>
 
@@ -262,7 +263,7 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
               </div>
             </div>
 
-            {/* 버튼들 */}
+                        {/* 버튼들 */}
             <div style={{ display: 'flex', gap: 8 }}>
               {hasFilters && (
                 <button onClick={resetFilters} style={{
