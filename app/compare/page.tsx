@@ -5,14 +5,24 @@ import CompareChat from '../components/CompareChat';
 export const dynamic = 'force-dynamic';
 
 const SITUATIONS = [
-  '처음 만나는 친구들과',
-  '빡세게 도전하고 싶을 때',
-  '느긋하게 쉬고 싶을 때',
-  '경쟁하고 싶을 때',
-  '오래 같이 하고 싶을 때',
+  '처음 보는 사람들이랑 어색할 때',
+  '친한 친구들이랑 밤새',
+  '혼자 심심할 때',
+  '가족이랑 같이',
+  '술 한 잔 하면서',
+  '머리 비우고 싶을 때',
+  '진지하게 몰입하고 싶을 때',
+  '짧게 한 판만',
+  '고수들끼리 빡세게',
+  '한 번 시작하면 못 끊음',
 ];
 
-const MULTIPLAYER_SITUATIONS = ['처음 만나는 친구들과', '술자리에서', '오래 같이 하고 싶을 때'];
+const MULTIPLAYER_SITUATIONS = [
+  '처음 보는 사람들이랑 어색할 때',
+  '친한 친구들이랑 밤새',
+  '가족이랑 같이',
+  '술 한 잔 하면서',
+];
 
 async function getSituationScores(games: any[], activeSituations: string[]) {
   const gameIds = games.map(g => g.id).sort().join(',');
