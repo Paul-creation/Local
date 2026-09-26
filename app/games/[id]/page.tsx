@@ -252,7 +252,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
     </span>
   </div>
 )}
-        {game.family_sharing !== null && game.family_sharing !== undefined && (
+        {game.steam_appid && game.family_sharing !== null && game.family_sharing !== undefined && (
           <div className="spec-row">
             <span className="spec-label">Steam 가족 공유</span>
             <span className="spec-value" style={{ color: game.family_sharing ? '#4a9e3a' : 'var(--danger)' }}>

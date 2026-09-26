@@ -7,6 +7,7 @@ const supabase = createClient(
 );
 
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
+const ONLY_OTHER = process.argv.includes('--other');
 
 async function searchTrailer(gameName) {
   try {
@@ -15,16 +16,17 @@ async function searchTrailer(gameName) {
       `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&maxResults=1&key=${YOUTUBE_API_KEY}`
     );
     const json = await res.json();
+    if (json.error) console.log(`   ⚠️ YouTube API 오류: ${json.error.message}`);
     const videoId = json.items?.[0]?.id?.videoId;
     return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
   } catch { return null; }
 }
 
 async function main() {
-  const { data: games } = await supabase
-    .from('games')
-    .select('id, name')
-    .is('video_url', null);
+  let q = supabase.from('games').select('id, name').is('video_url', null);
+  if (ONLY_OTHER) q = q.is('steam_appid', null);
+  const { data: games } = await q;
+  console.log(`영상 없는 게임 ${games?.length ?? 0}개`);
 
   if (!games) return;
 
