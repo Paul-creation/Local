@@ -9,11 +9,16 @@ function getVideoId(url: string | null): string | null {
   return m ? m[1] : null;
 }
 
+// 고화질부터 시도하고, 없으면 다음 단계로
+const THUMB_SIZES = ['maxresdefault', 'sddefault', 'hqdefault'];
+
 export default function YouTubeLite({ url, title }: { url: string | null; title: string }) {
   const [playing, setPlaying] = useState(false);
-  const [thumbFailed, setThumbFailed] = useState(false);
+  const [thumbIndex, setThumbIndex] = useState(0);
   const id = getVideoId(url);
-  if (!id || thumbFailed) return null;
+  if (!id || thumbIndex >= THUMB_SIZES.length) return null;
+
+  const nextThumb = () => setThumbIndex((i) => i + 1);
 
   const box: CSSProperties = {
     position: 'relative', width: '100%', aspectRatio: '16/9',
@@ -43,12 +48,13 @@ export default function YouTubeLite({ url, title }: { url: string | null; title:
       style={{ ...box, display: 'block', padding: 0, border: 'none', cursor: 'pointer' }}
     >
       <img
-        src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`}
+        key={thumbIndex}
+        src={`https://i.ytimg.com/vi/${id}/${THUMB_SIZES[thumbIndex]}.jpg`}
         alt={title}
-        onError={() => setThumbFailed(true)}
+        onError={nextThumb}
         onLoad={(e) => {
-          // 존재하지 않는 영상은 120px짜리 회색 대체 이미지가 옴
-          if (e.currentTarget.naturalWidth <= 120) setThumbFailed(true);
+          // 해당 해상도가 없으면 120px짜리 회색 대체 이미지가 옴 → 다음 해상도로
+          if (e.currentTarget.naturalWidth <= 120) nextThumb();
         }}
         style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
       />
