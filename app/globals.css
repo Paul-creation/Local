@@ -1222,14 +1222,16 @@ img { display: block; }
     justify-content: center;
   }
 }
+
+.compare-desktop { display: block; }
+.compare-mobile { display: none; }
+
 @media (max-width: 640px) {
-  .compare-grid {
-    grid-template-columns: 1fr !important;
+  .compare-desktop { display: none; }
+  .compare-mobile { display: block; }
+
+  .compare-header {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
   }
-  
-  .compare-label {
-    background: var(--bg) !important;
-    font-weight: 700 !important;
-    border-bottom: none !important;
-  }
+  .compare-header > div:first-child { display: none; }
 }

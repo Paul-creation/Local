@@ -128,49 +128,78 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
     { label: '역대 최저가', render: (g: any) => g.lowest_price ? `₩${g.lowest_price.toLocaleString('ko-KR')}` : '-' },
   ];
 
+  const gameCount = games.length;
+
   return (
-    <>
-      <main className="page" style={{ paddingBottom: 80 }}>
-        <nav className="topnav"><span className="logo">게임정보허브</span></nav>
+    <main className="page" style={{ paddingBottom: 32 }}>
+      <nav className="topnav"><span className="logo">게임정보허브</span></nav>
 
-        <Link href="/" className="back-link">← 돌아가기</Link>
-        <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 24, letterSpacing: '-0.02em' }}>
-          게임 비교
-        </h1>
+      <Link href="/" className="back-link">← 돌아가기</Link>
+      <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 24, letterSpacing: '-0.02em' }}>
+        게임 비교
+      </h1>
 
-        {/* 게임 헤더 — 모바일: 가로 스크롤 */}
-        <div style={{ overflowX: 'auto', marginBottom: 24 }}>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: `repeat(${games.length}, minmax(140px, 1fr))`,
-            gap: 12, minWidth: games.length > 2 ? 420 : 'auto',
-          }}>
-            {games.map((g: any) => (
-              <Link href={`/games/${g.id}`} key={g.id} style={{ textDecoration: 'none' }}>
-                <div style={{
-                  background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
-                  overflow: 'hidden', border: '1px solid var(--border-light)',
-                  boxShadow: 'var(--shadow-sm)',
-                }}>
-                  <img src={g.cover_image_url} alt={g.name} style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover' }} />
-                  <div style={{ padding: '10px 12px' }}>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3 }}>{g.name}</div>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* 상황별 추천도 */}
-        {activeSituations.length > 0 && (
-          <>
-            <h2 style={{ fontSize: 17, fontWeight: 800, marginBottom: 12 }}>상황별 추천도</h2>
+      {/* 게임 헤더 */}
+      <div className="compare-header" style={{
+        display: 'grid',
+        gridTemplateColumns: `180px repeat(${gameCount}, 1fr)`,
+        gap: 12, marginBottom: 24,
+      }}>
+        <div />
+        {games.map((g: any) => (
+          <Link href={`/games/${g.id}`} key={g.id} style={{ textDecoration: 'none' }}>
             <div style={{
               background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
-              border: '1px solid var(--border-light)',
-              boxShadow: 'var(--shadow-sm)', marginBottom: 28, overflow: 'hidden',
+              overflow: 'hidden', border: '1px solid var(--border-light)',
+              boxShadow: 'var(--shadow-sm)',
             }}>
+              <img src={g.cover_image_url} alt={g.name} style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover' }} />
+              <div style={{ padding: '10px 12px' }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3 }}>{g.name}</div>
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      {/* 상황별 추천도 */}
+      {activeSituations.length > 0 && (
+        <>
+          <h2 style={{ fontSize: 17, fontWeight: 800, marginBottom: 12 }}>상황별 추천도</h2>
+          <div style={{
+            background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
+            border: '1px solid var(--border-light)',
+            boxShadow: 'var(--shadow-sm)', marginBottom: 28, overflow: 'hidden',
+          }}>
+            {/* PC: 테이블 형태 */}
+            <div className="compare-desktop">
+              {activeSituations.map((situation, si) => (
+                <div key={situation} style={{
+                  display: 'grid',
+                  gridTemplateColumns: `180px repeat(${gameCount}, 1fr)`,
+                  borderBottom: si < activeSituations.length - 1 ? '1px solid var(--border-light)' : 'none',
+                }}>
+                  <div style={{ padding: '14px 16px', fontSize: 13, color: 'var(--text-dim)', fontWeight: 600, background: 'var(--bg)' }}>
+                    {situation}
+                  </div>
+                  {games.map((g: any) => {
+                    const gameScore = situationScores.find((s: any) => s.game === g.name);
+                    const score = gameScore?.scores?.[si] ?? 0;
+                    return (
+                      <div key={g.id} style={{ padding: '14px 16px', borderLeft: '1px solid var(--border-light)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        {[1,2,3,4,5].map(n => (
+                          <span key={n} style={{ fontSize: 16, color: n <= score ? '#f59e0b' : 'var(--border)' }}>★</span>
+                        ))}
+                        <span style={{ fontSize: 12, color: 'var(--text-dimmer)', marginLeft: 4 }}>{score}/5</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+
+            {/* 모바일: 세로 형태 */}
+            <div className="compare-mobile">
               {activeSituations.map((situation, si) => (
                 <div key={situation} style={{
                   borderBottom: si < activeSituations.length - 1 ? '1px solid var(--border-light)' : 'none',
@@ -185,7 +214,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
                       const score = gameScore?.scores?.[si] ?? 0;
                       return (
                         <div key={g.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <span style={{ fontSize: 12, color: 'var(--text-dimmer)', width: 100, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <span style={{ fontSize: 12, color: 'var(--text-dimmer)', width: 90, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                             {g.name}
                           </span>
                           <div style={{ display: 'flex', gap: 2 }}>
@@ -201,16 +230,39 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
                 </div>
               ))}
             </div>
-          </>
-        )}
+          </div>
+        </>
+      )}
 
-        {/* 스펙 비교 */}
-        <h2 style={{ fontSize: 17, fontWeight: 800, marginBottom: 12 }}>스펙 비교</h2>
-        <div style={{
-          background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
-          border: '1px solid var(--border-light)',
-          boxShadow: 'var(--shadow-sm)', overflow: 'hidden',
-        }}>
+      {/* 스펙 비교 */}
+      <h2 style={{ fontSize: 17, fontWeight: 800, marginBottom: 12 }}>스펙 비교</h2>
+      <div style={{
+        background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
+        border: '1px solid var(--border-light)',
+        boxShadow: 'var(--shadow-sm)', overflow: 'hidden',
+      }}>
+        {/* PC: 테이블 형태 */}
+        <div className="compare-desktop">
+          {ROWS.map((row, i) => (
+            <div key={row.label} style={{
+              display: 'grid',
+              gridTemplateColumns: `180px repeat(${gameCount}, 1fr)`,
+              borderBottom: i < ROWS.length - 1 ? '1px solid var(--border-light)' : 'none',
+            }}>
+              <div style={{ padding: '14px 16px', fontSize: 13, color: 'var(--text-dim)', fontWeight: 600, background: 'var(--bg)' }}>
+                {row.label}
+              </div>
+              {games.map((g: any) => (
+                <div key={g.id} style={{ padding: '14px 16px', fontSize: 14, color: 'var(--text)', fontWeight: 500, borderLeft: '1px solid var(--border-light)' }}>
+                  {row.render ? row.render(g) : (g[row.key!] || '-')}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* 모바일: 세로 형태 */}
+        <div className="compare-mobile">
           {ROWS.map((row, i) => (
             <div key={row.label} style={{
               borderBottom: i < ROWS.length - 1 ? '1px solid var(--border-light)' : 'none',
@@ -224,8 +276,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
                   <div key={g.id} style={{
                     flex: 1, minWidth: 100,
                     background: 'var(--bg)', borderRadius: 8,
-                    padding: '8px 10px', fontSize: 13,
-                    color: 'var(--text)', fontWeight: 500,
+                    padding: '8px 10px', fontSize: 13, color: 'var(--text)', fontWeight: 500,
                   }}>
                     <div style={{ fontSize: 11, color: 'var(--text-dimmer)', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {g.name}
@@ -237,36 +288,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
             </div>
           ))}
         </div>
-      </main>
-
-      {/* 플로팅 하단 바 */}
-      <div style={{
-        position: 'fixed', bottom: 0, left: 0, right: 0,
-        background: 'var(--bg-nav)', color: '#fff',
-        padding: '12px 20px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        boxShadow: '0 -4px 16px rgba(0,0,0,0.2)',
-        zIndex: 100,
-      }}>
-        <div style={{ display: 'flex', gap: 6, overflow: 'hidden' }}>
-          {games.map((g: any) => (
-            <span key={g.id} style={{
-              fontSize: 12, background: 'rgba(255,255,255,0.15)',
-              padding: '4px 10px', borderRadius: 100,
-              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 120,
-            }}>
-              {g.name}
-            </span>
-          ))}
-        </div>
-        <Link href="/" style={{
-          background: 'var(--accent)', color: '#fff',
-          padding: '8px 16px', borderRadius: 100,
-          fontSize: 13, fontWeight: 700, textDecoration: 'none', flexShrink: 0,
-        }}>
-          돌아가기
-        </Link>
       </div>
-    </>
+    </main>
   );
 }

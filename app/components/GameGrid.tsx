@@ -32,25 +32,25 @@ export default function GameGrid({ games }: { games: any[] }) {
   const [query, setQuery] = useState('');
   const [compareMode, setCompareMode] = useState(false);
   const [compareList, setCompareList] = useState<any[]>([]);
-  const tagPanelRef = useRef<HTMLDivElement>(null);
   const [compareError, setCompareError] = useState('');
+  const tagPanelRef = useRef<HTMLDivElement>(null);
+
   const toggleCompare = (game: any) => {
-  setCompareList(prev => {
-    if (prev.find(g => g.id === game.id)) return prev.filter(g => g.id !== game.id);
-    if (prev.length >= 3) return prev;
-    // 첫 게임 기준으로 타입 맞추기
-    if (prev.length > 0) {
-      const firstIsSolo = prev[0].max_players === 1;
-      const newIsSolo = game.max_players === 1;
-      if (firstIsSolo !== newIsSolo) {
-        setCompareError(firstIsSolo ? '싱글 게임끼리만 비교할 수 있어요' : '멀티 게임끼리만 비교할 수 있어요');
-        setTimeout(() => setCompareError(''), 2000);
-        return prev;
+    setCompareList(prev => {
+      if (prev.find(g => g.id === game.id)) return prev.filter(g => g.id !== game.id);
+      if (prev.length >= 3) return prev;
+      if (prev.length > 0) {
+        const firstIsSolo = prev[0].max_players === 1;
+        const newIsSolo = game.max_players === 1;
+        if (firstIsSolo !== newIsSolo) {
+          setCompareError(firstIsSolo ? '싱글 게임끼리만 비교할 수 있어요' : '멀티 게임끼리만 비교할 수 있어요');
+          setTimeout(() => setCompareError(''), 2000);
+          return prev;
+        }
       }
-    }
-    return [...prev, game];
-  });
-};
+      return [...prev, game];
+    });
+  };
 
   const featured = games.find((g) => g.featured);
   const bannerPool = games.filter((g) => g.is_casual_party && !g.featured);
@@ -105,36 +105,13 @@ export default function GameGrid({ games }: { games: any[] }) {
             color: compareMode ? '#fff' : 'var(--text)',
             border: '1.5px solid var(--border)',
           }}
-          onClick={() => { setCompareMode(v => !v); setCompareList([]); }}
+          onClick={() => { setCompareMode(v => !v); setCompareList([]); setCompareError(''); }}
         >
-          {compareMode ? '취소' : '⚖️ 비교'}
+          {compareMode ? '취소' : '비교'}
         </button>
         <AIRecommend />
       </div>
 
-            {compareMode && (
-        <div style={{
-          background: 'var(--accent-soft)', border: '1.5px solid var(--accent)',
-          borderRadius: 'var(--radius-md)', padding: '12px 16px',
-          marginBottom: 16, fontSize: 14, color: 'var(--accent)', fontWeight: 600,
-          display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
-        }}>
-          <span>비교할 게임을 클릭해서 선택하세요 (최대 3개) — {compareList.length}개 선택됨</span>
-          {compareList.length >= 2 && (
-            <a
-              href={`/compare?ids=${compareList.map(g => g.id).join(',')}`}
-              style={{
-                background: 'var(--accent)', color: '#fff',
-                padding: '6px 16px', borderRadius: 100,
-                fontSize: 13, fontWeight: 700, textDecoration: 'none',
-                display: 'inline-block',
-              }}
-            >
-              비교하기 ({compareList.length}개) →
-            </a>
-          )}
-        </div>
-      )}
       <div className="category-pills">
         {CATEGORIES.map((c) => (
           <button key={c} className={`pill ${category === c ? 'pill-active' : ''}`} onClick={() => setCategory(c)}>
@@ -251,9 +228,6 @@ export default function GameGrid({ games }: { games: any[] }) {
           )}
         </>
       )}
-      {compareError && (
-  <span style={{ color: 'var(--danger)', fontSize: 13 }}>{compareError}</span>
-)}
 
       {filtered.length === 0 ? (
         <div className="empty-state">검색/필터 조건에 맞는 게임이 없어요.</div>
@@ -282,7 +256,7 @@ export default function GameGrid({ games }: { games: any[] }) {
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
                       <span style={{ background: 'var(--accent)', color: '#fff', borderRadius: 100, padding: '6px 16px', fontWeight: 700, fontSize: 14 }}>
-                        ✓ 선택됨
+                        선택됨
                       </span>
                     </div>
                   )}
@@ -358,6 +332,52 @@ export default function GameGrid({ games }: { games: any[] }) {
               </Link>
             );
           })}
+        </div>
+      )}
+
+      {/* 하단 플로팅 비교 바 */}
+      {compareMode && (
+        <div style={{
+          position: 'fixed', bottom: 0, left: 0, right: 0,
+          background: 'var(--bg-nav)', color: '#fff',
+          padding: '12px 20px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          boxShadow: '0 -4px 16px rgba(0,0,0,0.2)',
+          zIndex: 100, gap: 12,
+        }}>
+          <div style={{ display: 'flex', gap: 6, overflow: 'hidden', flex: 1, alignItems: 'center' }}>
+            {compareError ? (
+              <span style={{ fontSize: 13, color: '#ff6b6b' }}>{compareError}</span>
+            ) : compareList.length === 0 ? (
+              <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>게임을 선택하세요 (최대 3개)</span>
+            ) : (
+              compareList.map(g => (
+                <span key={g.id} style={{
+                  fontSize: 12, background: 'rgba(255,255,255,0.15)',
+                  padding: '4px 10px', borderRadius: 100,
+                  whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 130,
+                }}>
+                  {g.name}
+                </span>
+              ))
+            )}
+          </div>
+          {compareList.length >= 2 ? (
+            
+              href={`/compare?ids=${compareList.map(g => g.id).join(',')}`}
+              style={{
+                background: 'var(--accent)', color: '#fff',
+                padding: '8px 18px', borderRadius: 100,
+                fontSize: 13, fontWeight: 700, textDecoration: 'none', flexShrink: 0,
+              }}
+            >
+              비교하기 ({compareList.length}개)
+            </a>
+          ) : (
+            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', flexShrink: 0 }}>
+              2개 이상 선택
+            </span>
+          )}
         </div>
       )}
     </>
