@@ -105,7 +105,7 @@ img { display: block; }
 
 .hero-card {
   display: grid;
-  grid-template-columns: 55% 45%;
+  grid-template-columns: 50% 50%;
   gap: 0;
   border-radius: var(--radius-xl);
   overflow: hidden;
@@ -143,7 +143,7 @@ img { display: block; }
 }
 
 .hero-content {
-  padding: 24px;
+  padding: 20px 20px 20px 24px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -212,8 +212,8 @@ img { display: block; }
   border-radius: var(--radius-xl);
   overflow: hidden;
   margin-bottom: 32px;
-  min-height: 180px;
-  max-height: 200px;
+   min-height: 160px;
+  max-height: 180px;
   box-shadow: var(--shadow-lg);
 }
 
