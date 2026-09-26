@@ -3,14 +3,18 @@ import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
+const SITUATIONS = [
+  '처음 만나는 친구들과',
+  '빡세게 도전하고 싶을 때',
+  '느긋하게 쉬고 싶을 때',
+  '술자리에서',
+  '경쟁하고 싶을 때',
+  '오래 같이 하고 싶을 때',
+];
+
 const MULTIPLAYER_SITUATIONS = ['처음 만나는 친구들과', '술자리에서', '오래 같이 하고 싶을 때'];
 
-const activeSituations = SITUATIONS.filter(s => {
-  if (MULTIPLAYER_SITUATIONS.includes(s)) return hasMultiGame;
-  return true;
-});
-const hasMultiGame = games.some(g => g.max_players > 1);
-async function getSituationScores(games: any[]) {
+async function getSituationScores(games: any[], activeSituations: string[]) {
   const gameList = games.map(g =>
     `이름: ${g.name} | 태그: ${(g.tags || []).join(', ')} | 난이도: ${g.difficulty} | 인원: ${g.min_players}-${g.max_players} | 카테고리: ${g.category} | 솔로: ${g.solo_playable}`
   ).join('\n');
@@ -21,13 +25,13 @@ async function getSituationScores(games: any[]) {
 ${gameList}
 
 상황:
-${SITUATIONS.map((s, i) => `${i + 1}. ${s}`).join('\n')}
+${activeSituations.map((s, i) => `${i + 1}. ${s}`).join('\n')}
 
 JSON 형식으로만 출력:
 [
   {
     "game": "게임이름",
-    "scores": [상황1점수, 상황2점수, 상황3점수, 상황4점수, 상황5점수, 상황6점수]
+    "scores": [${activeSituations.map((_, i) => `상황${i + 1}점수`).join(', ')}]
   }
 ]`;
 
@@ -84,7 +88,13 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
     );
   }
 
-  const situationScores = await getSituationScores(games);
+  const hasMultiGame = games.some(g => g.max_players > 1);
+  const activeSituations = SITUATIONS.filter(s => {
+    if (MULTIPLAYER_SITUATIONS.includes(s)) return hasMultiGame;
+    return true;
+  });
+
+  const situationScores = await getSituationScores(games, activeSituations);
 
   type Row = {
     label: string;
@@ -95,19 +105,19 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
   const ROWS: Row[] = [
     { label: '카테고리', key: 'category' },
     { label: '인원수', render: (g: any) => {
-  if (g.min_players === 1 && g.max_players === 1) return '1인';
-  if (g.min_players && g.max_players) return `${g.min_players}-${g.max_players}인`;
-  return '-';
-}},
-{ label: '솔로 플레이', render: (g: any) =>
-  g.solo_playable === true && g.max_players === 1
-    ? <span style={{ color: '#4a9e3a', fontWeight: 700 }}>싱글 플레이 게임</span>
-    : g.solo_playable === true
-    ? <span style={{ color: '#4a9e3a', fontWeight: 700 }}>솔로 가능</span>
-    : g.solo_playable === false
-    ? '멀티 필수'
-    : '-'
-},
+      if (g.min_players === 1 && g.max_players === 1) return '1인';
+      if (g.min_players && g.max_players) return `${g.min_players}-${g.max_players}인`;
+      return '-';
+    }},
+    { label: '솔로 플레이', render: (g: any) =>
+      g.solo_playable === true && g.max_players === 1
+        ? <span style={{ color: '#4a9e3a', fontWeight: 700 }}>싱글 플레이 게임</span>
+        : g.solo_playable === true
+        ? <span style={{ color: '#4a9e3a', fontWeight: 700 }}>솔로 가능</span>
+        : g.solo_playable === false
+        ? '멀티 필수'
+        : '-'
+    },
     { label: '난이도', key: 'difficulty' },
     { label: '한국어', key: 'korean_support' },
     { label: '필요 용량', render: (g: any) => g.storage_gb ? `${g.storage_gb}GB` : '-' },
@@ -153,50 +163,51 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
       </div>
 
       {/* 상황별 추천도 */}
-      <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16, letterSpacing: '-0.02em' }}>
-        상황별 추천도
-      </h2>
-      <div style={{
-        background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
-        border: '1px solid var(--border-light)', overflow: 'hidden',
-        boxShadow: 'var(--shadow-sm)', marginBottom: 32,
-      }}>
-        {SITUATIONS.map((situation, si) => (
-          <div key={situation} style={{
-            display: 'grid', gridTemplateColumns: cols,
-            borderBottom: si < SITUATIONS.length - 1 ? '1px solid var(--border-light)' : 'none',
+      {activeSituations.length > 0 && (
+        <>
+          <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16, letterSpacing: '-0.02em' }}>
+            상황별 추천도
+          </h2>
+          <div style={{
+            background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
+            border: '1px solid var(--border-light)', overflow: 'hidden',
+            boxShadow: 'var(--shadow-sm)', marginBottom: 32,
           }}>
-            <div style={{
-              padding: '14px 16px', fontSize: 13,
-              color: 'var(--text-dim)', fontWeight: 600,
-              background: 'var(--bg)',
-            }}>
-              {situation}
-            </div>
-            {games.map(g => {
-              const gameScore = situationScores.find((s: any) => s.game === g.name);
-              const score = gameScore?.scores?.[si] ?? 0;
-              return (
-                <div key={g.id} style={{
-                  padding: '14px 16px',
-                  borderLeft: '1px solid var(--border-light)',
-                  display: 'flex', alignItems: 'center', gap: 6,
+            {activeSituations.map((situation, si) => (
+              <div key={situation} style={{
+                display: 'grid', gridTemplateColumns: cols,
+                borderBottom: si < activeSituations.length - 1 ? '1px solid var(--border-light)' : 'none',
+              }}>
+                <div style={{
+                  padding: '14px 16px', fontSize: 13,
+                  color: 'var(--text-dim)', fontWeight: 600,
+                  background: 'var(--bg)',
                 }}>
-                  {[1,2,3,4,5].map(n => (
-                    <span key={n} style={{
-                      fontSize: 16,
-                      color: n <= score ? '#f59e0b' : 'var(--border)',
-                    }}>★</span>
-                  ))}
-                  <span style={{ fontSize: 12, color: 'var(--text-dimmer)', marginLeft: 2 }}>
-                    {score}/5
-                  </span>
+                  {situation}
                 </div>
-              );
-            })}
+                {games.map(g => {
+                  const gameScore = situationScores.find((s: any) => s.game === g.name);
+                  const score = gameScore?.scores?.[si] ?? 0;
+                  return (
+                    <div key={g.id} style={{
+                      padding: '14px 16px',
+                      borderLeft: '1px solid var(--border-light)',
+                      display: 'flex', alignItems: 'center', gap: 4,
+                    }}>
+                      {[1,2,3,4,5].map(n => (
+                        <span key={n} style={{ fontSize: 16, color: n <= score ? '#f59e0b' : 'var(--border)' }}>★</span>
+                      ))}
+                      <span style={{ fontSize: 12, color: 'var(--text-dimmer)', marginLeft: 4 }}>
+                        {score}/5
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
 
       {/* 스펙 비교 */}
       <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16, letterSpacing: '-0.02em' }}>
