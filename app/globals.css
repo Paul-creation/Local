@@ -106,7 +106,7 @@ img { display: block; }
 
 .hero-card {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 3fr 2fr;
   gap: 0;
   border-radius: var(--radius-xl);
   overflow: hidden;
@@ -126,6 +126,7 @@ img { display: block; }
   position: relative;
   aspect-ratio: 16/9;
   overflow: hidden;
+  align-self: stretch;
 }
 
 .hero-image-wrap img {
@@ -140,11 +141,11 @@ img { display: block; }
 }
 
 .hero-content {
-  padding: 28px 28px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   background: var(--bg-card);
 }
 
@@ -160,7 +161,7 @@ img { display: block; }
 }
 
 .hero-content h2 {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 800;
   color: var(--text);
   margin: 0;
@@ -169,29 +170,27 @@ img { display: block; }
 }
 
 .hero-tagline {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-dim);
   margin: 0;
   line-height: 1.5;
 }
 
 .hero-meta {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-dimmer);
   font-weight: 500;
 }
+
+.hero-content .price-final { color: var(--text); font-size: 16px; font-weight: 800; }
+.hero-content .price-original { color: var(--text-dimmer); }
 
 @media (max-width: 640px) {
   .hero-card {
     grid-template-columns: 1fr;
   }
-
-  .hero-image-wrap {
-    aspect-ratio: 16/9;
-  }
-
   .hero-content {
-    padding: 20px;
+    padding: 16px;
   }
 }
 
@@ -215,19 +214,24 @@ img { display: block; }
 
 .banner-slide {
   display: block !important;
-  grid-template-columns: unset !important;
   position: relative !important;
-  min-height: 300px;
+  min-height: 260px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
 }
 
 .banner-slide .hero-image-wrap {
-  aspect-ratio: unset !important;
   position: absolute !important;
   inset: 0 !important;
+  aspect-ratio: unset !important;
+  height: 100% !important;
 }
 
 .banner-slide .hero-overlay {
   display: block !important;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 60%);
 }
 
 .banner-slide .hero-content {
@@ -235,30 +239,21 @@ img { display: block; }
   bottom: 0 !important;
   left: 0 !important;
   right: 0 !important;
-  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent) !important;
-  color: #fff !important;
-  padding: 24px !important;
+  background: none !important;
+  padding: 20px 24px !important;
 }
 
 .banner-slide .hero-content h2 {
   color: #fff !important;
+  font-size: 20px !important;
 }
 
-.banner-slide .hero-tagline,
 .banner-slide .hero-meta {
   color: rgba(255,255,255,0.8) !important;
 }
-.banner-slide {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity 0.7s ease;
-  pointer-events: none;
-}
 
-.banner-slide.active {
-  opacity: 1;
-  pointer-events: auto;
+.banner-slide .price-row {
+  margin-top: 6px;
 }
 
 .banner-dots {
