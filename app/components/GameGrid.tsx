@@ -446,7 +446,7 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
                   <Link href={`/games/${game.id}`} key={game.id} className="card">
                     <div className="card-image-wrap">
                       <img src={game.cover_image_url} alt={game.name} />
-                      {game.steam_appid && <span className="platform-badge">Steam</span>}
+                      <span className="platform-badge">{game.steam_appid ? 'Steam' : (({ epic: 'Epic', battlenet: 'Battle.net', riot: 'Riot' } as Record<string, string>)[game.source] ?? 'PC') /* STORE_BADGE */}</span>
                       {(() => {
                         const timing = getPriceTiming(game);
                         if (!timing) return null;

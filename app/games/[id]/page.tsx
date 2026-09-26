@@ -58,7 +58,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   }
 
   const price = getPriceInfo(game);
-  const steamUrl = `https://store.steampowered.com/app/${game.steam_appid}`;
+  const STORE_LABEL: Record<string, string> = { epic: '에픽 게임즈', battlenet: 'Battle.net', riot: '라이엇' };
+  const buyUrl = game.steam_appid ? `https://store.steampowered.com/app/${game.steam_appid}` : game.store_url;
+  const buyLabel = game.steam_appid ? 'Steam' : STORE_LABEL[game.source] ?? '공식 사이트';
   const subGenres = Array.from(
     new Set(translateGenres([...(game.genres || []), ...(game.themes || [])]))
   ).slice(0, 10);
@@ -133,9 +135,11 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               </span>
             </div>
           </div>
-          <a href={steamUrl} target="_blank" rel="noopener noreferrer" className="buy-cta">
-            Steam에서 구매하기 →
-          </a>
+          {buyUrl && (
+            <a href={buyUrl} target="_blank" rel="noopener noreferrer" className="buy-cta">
+              {buyLabel}에서 {game.is_free ? '플레이하기' : '구매하기'} →
+            </a>
+          )}
         </div>
       </div>
 
