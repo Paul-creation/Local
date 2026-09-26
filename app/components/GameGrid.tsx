@@ -21,15 +21,21 @@ function getPriceTiming(game: any) {
   return null;
 }
 
-const CATEGORIES = ['전체', '파티', '협동', '퍼즐', '서바이벌'];
+const CATEGORIES = ['파티', '협동', '퍼즐', '서바이벌'];
+const PLAYER_OPTIONS = ['1인', '2인', '3-4인', '5인 이상'];
+const DIFFICULTY_OPTIONS = ['쉬움', '보통', '어려움'];
 const GROUP_COLORS = ['#e6742e', '#0f9b8e', '#5b6ef5', '#c0392b', '#9b59b6', '#d4a017'];
 
 export default function GameGrid({ games, hideHero = false }: { games: any[], hideHero?: boolean }) {
-  const [category, setCategory] = useState('전체');
-  const [browseOpen, setBrowseOpen] = useState(false);
-  const [allTagsOpen, setAllTagsOpen] = useState(false);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [showResults, setShowResults] = useState(false);
   const [query, setQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedPlayers, setSelectedPlayers] = useState('');
+  const [selectedDifficulty, setSelectedDifficulty] = useState('');
+  const [freeOnly, setFreeOnly] = useState(false);
+  const [browseOpen, setBrowseOpen] = useState(false);
+  const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
   const [compareMode, setCompareMode] = useState(false);
   const [compareList, setCompareList] = useState<any[]>([]);
   const [compareError, setCompareError] = useState('');
@@ -55,46 +61,63 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
   const featured = games.find((g) => g.featured);
   const bannerPool = games.filter((g) => g.is_casual_party && !g.featured);
   const freeGames = games.filter((g) => g.is_free);
+  const hotGames = [...games]
+    .filter(g => g.heat_rank)
+    .sort((a, b) => a.heat_rank - b.heat_rank)
+    .slice(0, 6);
 
   const presentTags = new Set(games.flatMap((g) => g.tags || []));
-  const groupedTags = Object.entries(TAG_GROUPS)
-    .map(([group, tags]) => [group, tags.filter((t) => presentTags.has(t))] as [string, string[]])
-    .filter(([, tags]) => tags.length > 0);
-
-  const knownTags = new Set(Object.values(TAG_GROUPS).flat());
-  const ungrouped = Array.from(presentTags).filter((t) => !knownTags.has(t));
-  if (ungrouped.length > 0) groupedTags.push(['기타', ungrouped]);
-
-  const allTagsSorted = Array.from(presentTags).sort((a, b) => a.localeCompare(b, 'ko'));
 
   const toggleTag = (tag: string) =>
     setSelectedTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
 
+  const toggleGroup = (group: string) =>
+    setExpandedGroups(prev => prev.includes(group) ? prev.filter(g => g !== group) : [...prev, group]);
+
   const normalizedQuery = query.trim().toLowerCase();
-  const isFreeQuery = ['무료', '무료플레이', '무료 플레이', 'free'].includes(normalizedQuery);
+  const hasFilters = normalizedQuery || selectedCategory || selectedTags.length > 0 || selectedPlayers || selectedDifficulty || freeOnly;
 
   const filtered = games.filter((g) => {
-    if (isFreeQuery) return g.is_free;
-    const categoryMatch = category === '전체' || g.category === category;
-    const tagMatch = selectedTags.length === 0 || selectedTags.some((t) => g.tags?.includes(t));
-    const queryMatch =
-      normalizedQuery === '' ||
-      g.name.toLowerCase().includes(normalizedQuery) ||
-      g.tags?.some((t: string) => t.toLowerCase().includes(normalizedQuery));
-    return categoryMatch && tagMatch && queryMatch;
+    if (freeOnly && !g.is_free) return false;
+    if (selectedCategory && g.category !== selectedCategory) return false;
+    if (selectedTags.length > 0 && !selectedTags.some(t => g.tags?.includes(t))) return false;
+    if (selectedDifficulty && g.difficulty !== selectedDifficulty) return false;
+    if (selectedPlayers) {
+      if (selectedPlayers === '1인' && !(g.min_players === 1 && g.max_players === 1)) return false;
+      if (selectedPlayers === '2인' && !(g.min_players <= 2 && g.max_players >= 2)) return false;
+      if (selectedPlayers === '3-4인' && !(g.max_players >= 3)) return false;
+      if (selectedPlayers === '5인 이상' && !(g.max_players >= 5)) return false;
+    }
+    if (normalizedQuery) {
+      return g.name.toLowerCase().includes(normalizedQuery) ||
+        g.tags?.some((t: string) => t.toLowerCase().includes(normalizedQuery));
+    }
+    return true;
   });
+
+  const resetFilters = () => {
+    setQuery('');
+    setSelectedCategory('');
+    setSelectedTags([]);
+    setSelectedPlayers('');
+    setSelectedDifficulty('');
+    setFreeOnly(false);
+    setShowResults(false);
+  };
 
   const featuredPrice = featured ? getPriceInfo(featured) : null;
 
   return (
     <>
+      {/* 검색창 + 버튼 */}
       <div className="search-row">
         <div className="search-bar-clean">
           <input
             type="text"
-            placeholder="게임 이름 또는 태그로 검색 (무료 플레이 검색 가능)"
+            placeholder="게임 이름으로 검색..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') setShowResults(true); }}
           />
           {query && <button className="search-clear" onClick={() => setQuery('')}>✕</button>}
         </div>
@@ -112,65 +135,8 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
         <AIRecommend />
       </div>
 
-      <div className="category-pills">
-        {CATEGORIES.map((c) => (
-          <button key={c} className={`pill ${category === c ? 'pill-active' : ''}`} onClick={() => setCategory(c)}>
-            {c}
-          </button>
-        ))}
-        <button
-          className={`pill ${browseOpen ? 'pill-active' : ''}`}
-          onClick={() => {
-            setBrowseOpen((v) => {
-              if (!v) setTimeout(() => tagPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
-              return !v;
-            });
-          }}
-        >
-          태그로 찾기 {browseOpen ? '▴' : '▾'}
-        </button>
-        {selectedTags.length > 0 && (
-          <span style={{ color: 'var(--text-dimmer)', fontSize: 13 }}>
-            {selectedTags.length}개 선택됨
-            <button onClick={() => setSelectedTags([])} style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', fontSize: 13, marginLeft: 4 }}>
-              초기화
-            </button>
-          </span>
-        )}
-      </div>
-
-      {browseOpen && (
-        <div className="browse-panel" ref={tagPanelRef}>
-          <div className="browse-groups">
-            {groupedTags.map(([group, tags], i) => (
-              <div className="browse-group-card" key={group} style={{ '--group-color': GROUP_COLORS[i % GROUP_COLORS.length] } as React.CSSProperties}>
-                <div className="browse-group-title">{group}</div>
-                <div className="browse-group-tags">
-                  {tags.map((tag) => (
-                    <button key={tag} className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`} onClick={() => toggleTag(tag)}>
-                      {translateTag(tag)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-          <button className="all-tags-toggle" onClick={() => setAllTagsOpen((v) => !v)}>
-            세부 태그 설정 보기 {allTagsOpen ? '▴' : '▾'}
-          </button>
-          {allTagsOpen && (
-            <div className="all-tags-cloud">
-              {allTagsSorted.map((tag) => (
-                <button key={tag} className={`tag-chip ${selectedTags.includes(tag) ? 'selected' : ''}`} onClick={() => toggleTag(tag)}>
-                  {translateTag(tag)}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {!hideHero && !normalizedQuery && category === '전체' && selectedTags.length === 0 && !compareMode && (
+      {/* 히어로/섹션 — 결과 없을 때만 */}
+      {!hideHero && !showResults && !normalizedQuery && (
         <>
           {featured && (
             <Link href={`/games/${featured.id}`} className="hero-card">
@@ -226,113 +192,271 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
               </div>
             </section>
           )}
+
+          {/* 인기 급상승 */}
+          {hotGames.length > 0 && (
+            <div style={{ marginBottom: 32 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>인기 급상승</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
+                {hotGames.map((game, i) => (
+                  <Link href={`/games/${game.id}`} key={game.id} style={{ textDecoration: 'none' }}>
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: 12,
+                      background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
+                      padding: '14px 16px', border: '1px solid var(--border-light)',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+                    }}>
+                      <span style={{ fontSize: 20, fontWeight: 900, color: 'var(--text-dimmer)', width: 28, flexShrink: 0, textAlign: 'center' }}>
+                        {i + 1}
+                      </span>
+                      <img src={game.cover_image_url} alt={game.name} style={{ width: 64, height: 36, objectFit: 'cover', borderRadius: 6, flexShrink: 0 }} />
+                      <div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>{game.name}</div>
+                        <div style={{ fontSize: 12, color: 'var(--text-dimmer)' }}>
+                          {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : ''}
+                          {game.difficulty ? ` · ${game.difficulty}` : ''}
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 게임 찾기 필터 */}
+          <div style={{
+            background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
+            border: '1px solid var(--border-light)', padding: 24,
+            marginBottom: 32, boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>게임 찾기</h2>
+              {hasFilters && (
+                <button onClick={resetFilters} style={{ background: 'none', border: 'none', color: 'var(--accent)', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+                  초기화
+                </button>
+              )}
+            </div>
+
+            {/* 카테고리 */}
+            <div style={{ marginBottom: 16 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 8 }}>카테고리</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {CATEGORIES.map(c => (
+                  <button key={c} onClick={() => setSelectedCategory(selectedCategory === c ? '' : c)} style={{
+                    padding: '6px 14px', borderRadius: 100, fontSize: 13, fontWeight: 600,
+                    border: `1.5px solid ${selectedCategory === c ? 'var(--accent)' : 'var(--border)'}`,
+                    background: selectedCategory === c ? 'var(--accent)' : 'var(--bg)',
+                    color: selectedCategory === c ? '#fff' : 'var(--text)', cursor: 'pointer',
+                  }}>{c}</button>
+                ))}
+              </div>
+            </div>
+
+            {/* 인원수 */}
+            <div style={{ marginBottom: 16 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 8 }}>인원수</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {PLAYER_OPTIONS.map(p => (
+                  <button key={p} onClick={() => setSelectedPlayers(selectedPlayers === p ? '' : p)} style={{
+                    padding: '6px 14px', borderRadius: 100, fontSize: 13, fontWeight: 600,
+                    border: `1.5px solid ${selectedPlayers === p ? 'var(--accent)' : 'var(--border)'}`,
+                    background: selectedPlayers === p ? 'var(--accent)' : 'var(--bg)',
+                    color: selectedPlayers === p ? '#fff' : 'var(--text)', cursor: 'pointer',
+                  }}>{p}</button>
+                ))}
+              </div>
+            </div>
+
+            {/* 난이도 */}
+            <div style={{ marginBottom: 16 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 8 }}>난이도</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {DIFFICULTY_OPTIONS.map(d => (
+                  <button key={d} onClick={() => setSelectedDifficulty(selectedDifficulty === d ? '' : d)} style={{
+                    padding: '6px 14px', borderRadius: 100, fontSize: 13, fontWeight: 600,
+                    border: `1.5px solid ${selectedDifficulty === d ? 'var(--accent)' : 'var(--border)'}`,
+                    background: selectedDifficulty === d ? 'var(--accent)' : 'var(--bg)',
+                    color: selectedDifficulty === d ? '#fff' : 'var(--text)', cursor: 'pointer',
+                  }}>{d}</button>
+                ))}
+              </div>
+            </div>
+
+            {/* 무료만 */}
+            <div style={{ marginBottom: 20 }}>
+              <button onClick={() => setFreeOnly(v => !v)} style={{
+                padding: '6px 14px', borderRadius: 100, fontSize: 13, fontWeight: 600,
+                border: `1.5px solid ${freeOnly ? 'var(--accent)' : 'var(--border)'}`,
+                background: freeOnly ? 'var(--accent)' : 'var(--bg)',
+                color: freeOnly ? '#fff' : 'var(--text)', cursor: 'pointer',
+              }}>무료 게임만</button>
+            </div>
+
+            {/* 태그 그룹 */}
+            <div style={{ marginBottom: 20 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 12 }}>태그로 찾기</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {Object.entries(TAG_GROUPS).map(([group, tags]) => {
+                  const availableTags = tags.filter(t => presentTags.has(t));
+                  if (availableTags.length === 0) return null;
+                  const selectedInGroup = availableTags.filter(t => selectedTags.includes(t)).length;
+                  return (
+                    <div key={group}>
+                      <button onClick={() => toggleGroup(group)} style={{
+                        background: 'none', border: 'none', cursor: 'pointer',
+                        fontSize: 13, fontWeight: 700, color: 'var(--text)',
+                        padding: '4px 0', display: 'flex', alignItems: 'center', gap: 6,
+                      }}>
+                        {group} {expandedGroups.includes(group) ? '▴' : '▾'}
+                        {selectedInGroup > 0 && (
+                          <span style={{ background: 'var(--accent)', color: '#fff', borderRadius: 100, fontSize: 11, padding: '1px 7px' }}>
+                            {selectedInGroup}
+                          </span>
+                        )}
+                      </button>
+                      {expandedGroups.includes(group) && (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8, paddingLeft: 4 }}>
+                          {availableTags.map(tag => (
+                            <button key={tag} onClick={() => toggleTag(tag)} style={{
+                              padding: '4px 12px', borderRadius: 100, fontSize: 12, fontWeight: 600,
+                              border: `1.5px solid ${selectedTags.includes(tag) ? 'var(--accent)' : 'var(--border)'}`,
+                              background: selectedTags.includes(tag) ? 'rgba(0,113,227,0.1)' : 'var(--bg)',
+                              color: selectedTags.includes(tag) ? 'var(--accent)' : 'var(--text-dim)',
+                              cursor: 'pointer',
+                            }}>{translateTag(tag)}</button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 찾기 버튼 */}
+            <button
+              onClick={() => setShowResults(true)}
+              style={{
+                width: '100%', padding: '14px',
+                background: 'var(--accent)', border: 'none',
+                borderRadius: 'var(--radius-md)',
+                fontSize: 15, fontWeight: 800, color: '#fff',
+                cursor: 'pointer',
+                boxShadow: '0 4px 16px rgba(0,113,227,0.3)',
+              }}
+            >
+              {hasFilters ? '필터 적용해서 찾기 →' : '전체 게임 보기 →'}
+            </button>
+          </div>
         </>
       )}
 
-      {filtered.length === 0 ? (
-        <div className="empty-state">검색/필터 조건에 맞는 게임이 없어요.</div>
-      ) : (
-        <div className="grid">
-          {filtered.map((game) => {
-            const price = getPriceInfo(game);
-            const isSelected = compareList.find(g => g.id === game.id);
-            return compareMode ? (
-              <div
-                key={game.id}
-                className="card"
-                onClick={() => toggleCompare(game)}
-                style={{
-                  cursor: 'pointer',
-                  outline: isSelected ? '3px solid var(--accent)' : '3px solid transparent',
-                  outlineOffset: 2,
-                }}
-              >
-                <div className="card-image-wrap">
-                  <img src={game.cover_image_url} alt={game.name} />
-                  {isSelected && (
-                    <div style={{
-                      position: 'absolute', inset: 0,
-                      background: 'rgba(0,113,227,0.15)',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}>
-                      <span style={{ background: 'var(--accent)', color: '#fff', borderRadius: 100, padding: '6px 16px', fontWeight: 700, fontSize: 14 }}>
-                        선택됨
-                      </span>
+      {/* 결과 */}
+      {(showResults || normalizedQuery) && (
+        <>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <div style={{ fontSize: 14, color: 'var(--text-dim)' }}>
+              <strong style={{ color: 'var(--text)' }}>{filtered.length}개</strong> 게임
+              {hasFilters && ' · 필터 적용됨'}
+            </div>
+            <button onClick={resetFilters} style={{ background: 'none', border: 'none', color: 'var(--accent)', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+              ← 홈으로
+            </button>
+          </div>
+
+          {filtered.length === 0 ? (
+            <div className="empty-state">조건에 맞는 게임이 없어요.</div>
+          ) : (
+            <div className="grid">
+              {filtered.map((game) => {
+                const price = getPriceInfo(game);
+                const isSelected = compareList.find(g => g.id === game.id);
+                return compareMode ? (
+                  <div key={game.id} className="card" onClick={() => toggleCompare(game)} style={{
+                    cursor: 'pointer',
+                    outline: isSelected ? '3px solid var(--accent)' : '3px solid transparent',
+                    outlineOffset: 2,
+                  }}>
+                    <div className="card-image-wrap">
+                      <img src={game.cover_image_url} alt={game.name} />
+                      {isSelected && (
+                        <div style={{
+                          position: 'absolute', inset: 0,
+                          background: 'rgba(0,113,227,0.15)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}>
+                          <span style={{ background: 'var(--accent)', color: '#fff', borderRadius: 100, padding: '6px 16px', fontWeight: 700, fontSize: 14 }}>
+                            선택됨
+                          </span>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <div className="card-body">
-                  <h3>{game.name}</h3>
-                  <p className="card-meta">
-                    {game.recommended_players
-                      ? `추천 ${game.recommended_players}`
-                      : game.min_players && game.max_players
-                      ? `${game.min_players}-${game.max_players}인`
-                      : ''}
-                    {game.difficulty ? ` · ${game.difficulty}` : ''}
-                  </p>
-                  {game.tags?.slice(0, 3).map((tag: string) => (
-                    <span key={tag} className="category-tag">{translateTag(tag)}</span>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <Link href={`/games/${game.id}`} key={game.id} className="card">
-                <div className="card-image-wrap">
-                  <img src={game.cover_image_url} alt={game.name} />
-                  {game.steam_appid && <span className="platform-badge">Steam</span>}
-                  {(() => {
-                    const timing = getPriceTiming(game);
-                    if (!timing) return null;
-                    return (
-                      <span className={`timing-badge ${timing}`}>
-                        {timing === 'best' ? '🔥 역대 최저가' : '💰 최저가 근접'}
-                      </span>
-                    );
-                  })()}
-                </div>
-                <div className="card-body">
-                  <h3>{game.name}</h3>
-                  <p className="card-meta">
-                    {game.recommended_players
-                      ? `추천 ${game.recommended_players}`
-                      : game.min_players && game.max_players
-                      ? `${game.min_players}-${game.max_players}인`
-                      : ''}
-                    {game.difficulty ? ` · ${game.difficulty}` : ''}
-                    {game.solo_playable === false && (
-                      <span style={{ marginLeft: 6, color: 'var(--danger)', fontSize: 11, fontWeight: 700 }}>
-                        멀티필수
-                      </span>
-                    )}
-                  </p>
-                  {game.tags?.slice(0, 3).map((tag: string) => (
-                    <span key={tag} className="category-tag">{translateTag(tag)}</span>
-                  ))}
-                  {game.is_free ? (
-                    <div className="price-row">
-                      <span className="price-final" style={{ color: '#4a9e3a', fontWeight: 800 }}>무료 플레이</span>
+                    <div className="card-body">
+                      <h3>{game.name}</h3>
+                      <p className="card-meta">
+                        {game.recommended_players ? `추천 ${game.recommended_players}` : game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : ''}
+                        {game.difficulty ? ` · ${game.difficulty}` : ''}
+                      </p>
+                      {game.tags?.slice(0, 3).map((tag: string) => (
+                        <span key={tag} className="category-tag">{translateTag(tag)}</span>
+                      ))}
                     </div>
-                  ) : (
-                    price && (
-                      <div className="price-row">
-                        {price.discount > 0 && (
-                          <>
-                            <span className="discount-badge">-{price.discount}%</span>
-                            <span className="price-original">{price.formattedOriginal}</span>
-                          </>
+                  </div>
+                ) : (
+                  <Link href={`/games/${game.id}`} key={game.id} className="card">
+                    <div className="card-image-wrap">
+                      <img src={game.cover_image_url} alt={game.name} />
+                      {game.steam_appid && <span className="platform-badge">Steam</span>}
+                      {(() => {
+                        const timing = getPriceTiming(game);
+                        if (!timing) return null;
+                        return (
+                          <span className={`timing-badge ${timing}`}>
+                            {timing === 'best' ? '🔥 역대 최저가' : '💰 최저가 근접'}
+                          </span>
+                        );
+                      })()}
+                    </div>
+                    <div className="card-body">
+                      <h3>{game.name}</h3>
+                      <p className="card-meta">
+                        {game.recommended_players ? `추천 ${game.recommended_players}` : game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : ''}
+                        {game.difficulty ? ` · ${game.difficulty}` : ''}
+                        {game.solo_playable === false && (
+                          <span style={{ marginLeft: 6, color: 'var(--danger)', fontSize: 11, fontWeight: 700 }}>멀티필수</span>
                         )}
-                        <span className={`price-final ${price.discount === 0 ? 'no-discount' : ''}`}>
-                          {price.formattedFinal}
-                        </span>
-                      </div>
-                    )
-                  )}
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+                      </p>
+                      {game.tags?.slice(0, 3).map((tag: string) => (
+                        <span key={tag} className="category-tag">{translateTag(tag)}</span>
+                      ))}
+                      {game.is_free ? (
+                        <div className="price-row">
+                          <span className="price-final" style={{ color: '#4a9e3a', fontWeight: 800 }}>무료 플레이</span>
+                        </div>
+                      ) : (
+                        price && (
+                          <div className="price-row">
+                            {price.discount > 0 && (
+                              <>
+                                <span className="discount-badge">-{price.discount}%</span>
+                                <span className="price-original">{price.formattedOriginal}</span>
+                              </>
+                            )}
+                            <span className={`price-final ${price.discount === 0 ? 'no-discount' : ''}`}>
+                              {price.formattedFinal}
+                            </span>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </>
       )}
 
       {compareMode && (
@@ -355,27 +479,20 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
                   fontSize: 12, background: 'rgba(255,255,255,0.15)',
                   padding: '4px 10px', borderRadius: 100,
                   whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 130,
-                }}>
-                  {g.name}
-                </span>
+                }}>{g.name}</span>
               ))
             )}
           </div>
           {compareList.length >= 2 ? (
-            <a
-              href={`/compare?ids=${compareList.map(g => g.id).join(',')}`}
-              style={{
-                background: 'var(--accent)', color: '#fff',
-                padding: '8px 18px', borderRadius: 100,
-                fontSize: 13, fontWeight: 700, textDecoration: 'none', flexShrink: 0,
-              }}
-            >
+            <a href={`/compare?ids=${compareList.map(g => g.id).join(',')}`} style={{
+              background: 'var(--accent)', color: '#fff',
+              padding: '8px 18px', borderRadius: 100,
+              fontSize: 13, fontWeight: 700, textDecoration: 'none', flexShrink: 0,
+            }}>
               비교하기 ({compareList.length}개)
             </a>
           ) : (
-            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', flexShrink: 0 }}>
-              2개 이상 선택
-            </span>
+            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', flexShrink: 0 }}>2개 이상 선택</span>
           )}
         </div>
       )}

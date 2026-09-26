@@ -130,18 +130,46 @@ async function main() {
     .select('id, name, steam_appid, tags');
   if (!games) return;
 
+  // 1인 게임 solo_playable 자동 수정 (루프 전에 한 번만)
+  await supabase
+    .from('games')
+    .update({ solo_playable: true })
+    .eq('min_players', 1)
+    .eq('max_players', 1)
+    .eq('solo_playable', false);
+  console.log('✅ 1인 게임 solo_playable 자동 수정 완료');
+
   for (const game of games) {
     const res = await fetch(
       `https://store.steampowered.com/api/appdetails?appids=${game.steam_appid}&cc=kr&l=korean`
     );
     const json = await res.json();
-        if (!json || !json[game.steam_appid]?.success) {
+    if (!json || !json[game.steam_appid]?.success) {
       console.log(`실패: ${game.name}`);
       await new Promise((r) => setTimeout(r, 600));
       continue;
     }
     const data = json[game.steam_appid].data;
     const categoryIds = (data.categories || []).map((c) => c.id);
+
+    // 멀티플레이어 여부 판단
+    const isMultiplayer = categoryIds.some(id => [1, 9, 27, 36, 38].includes(id));
+    const isSinglePlayer = categoryIds.includes(2);
+
+    let minPlayers = null;
+    let maxPlayers = null;
+    let soloPlayable = null;
+
+    if (isSinglePlayer && !isMultiplayer) {
+      minPlayers = 1;
+      maxPlayers = 1;
+      soloPlayable = true;
+    } else if (isMultiplayer && isSinglePlayer) {
+      minPlayers = 1;
+      soloPlayable = true;
+    } else if (isMultiplayer && !isSinglePlayer) {
+      soloPlayable = false;
+    }
 
     const [releaseDate, reviews, achievements, lowestPriceData] = await Promise.all([
       getEnglishReleaseDate(game.steam_appid),
@@ -152,7 +180,6 @@ async function main() {
 
     const minSpec = parseMinSpecOnly(data.pc_requirements?.minimum);
 
-    // 저사양 태그 자동 추가
     const currentTags = game.tags || [];
     const lowSpec = isLowSpec(minSpec);
     let updatedTags = [...currentTags];
@@ -173,6 +200,9 @@ async function main() {
       has_workshop: categoryIds.includes(30),
       is_esports: categoryIds.includes(24),
       tags: updatedTags,
+      ...(minPlayers !== null && { min_players: minPlayers }),
+      ...(maxPlayers !== null && { max_players: maxPlayers }),
+      ...(soloPlayable !== null && { solo_playable: soloPlayable }),
       ...(reviews && {
         review_positive_percent: reviews.percent,
         review_total: reviews.total,
@@ -182,16 +212,6 @@ async function main() {
         lowest_price_date: lowestPriceData.date,
       }),
     };
-    
-// 먼저 1인 게임 solo_playable 자동 수정
-await supabase
-  .from('games')
-  .update({ solo_playable: true })
-  .eq('min_players', 1)
-  .eq('max_players', 1)
-  .eq('solo_playable', false);
-
-console.log('✅ 1인 게임 solo_playable 자동 수정 완료');
 
     const { error } = await supabase.from('games').update(update).eq('id', game.id);
 
@@ -199,7 +219,7 @@ console.log('✅ 1인 게임 solo_playable 자동 수정 완료');
       console.error(`실패 (${game.name}):`, error.message);
     } else {
       console.log(
-        `✅ ${game.name}: 출시일 ${releaseDate ?? 'null'} | 한국어 ${update.korean_support} | 용량 ${update.storage_gb ?? '?'}GB | Workshop ${update.has_workshop} | e스포츠 ${update.is_esports}`
+        `✅ ${game.name}: 출시일 ${releaseDate ?? 'null'} | 한국어 ${update.korean_support} | 용량 ${update.storage_gb ?? '?'}GB | 솔로 ${soloPlayable}`
       );
     }
 
