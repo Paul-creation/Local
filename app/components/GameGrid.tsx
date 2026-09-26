@@ -392,8 +392,8 @@ export default function GameGrid({ games }: { games: any[] }) {
               ))
             )}
           </div>
-          {compareList.length >= 2 ? (
-            
+                    {compareList.length >= 2 ? (
+            <a
               href={`/compare?ids=${compareList.map(g => g.id).join(',')}`}
               style={{
                 background: 'var(--accent)', color: '#fff',
