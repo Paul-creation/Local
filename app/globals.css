@@ -1235,3 +1235,18 @@ img { display: block; }
   }
   .compare-header > div:first-child { display: none; }
 }
+.card-body {
+  position: relative;
+}
+
+.wishlist-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}

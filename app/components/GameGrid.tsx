@@ -246,7 +246,7 @@ export default function GameGrid({ games }: { games: any[] }) {
         <div className="empty-state">찜한 게임이 없어요. 카드의 하트를 눌러 추가해봐요!</div>
       )}
 
-      {filtered.length === 0 && category !== '찜한 게임' ? (
+            {filtered.length === 0 && category !== '찜한 게임' ? (
         <div className="empty-state">검색/필터 조건에 맞는 게임이 없어요.</div>
       ) : (
         <div className="grid">
@@ -279,21 +279,15 @@ export default function GameGrid({ games }: { games: any[] }) {
                     </div>
                   )}
                 </div>
-                                <div className="card-body">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <h3 style={{ margin: 0 }}>{game.name}</h3>
-                    <button
-                      onClick={(e) => { e.preventDefault(); toggleWishlist(game.id); }}
-                      style={{
-                        background: 'none', border: 'none',
-                        fontSize: 18, cursor: 'pointer',
-                        padding: '0 0 0 8px', flexShrink: 0,
-                        color: isWished ? '#e53e3e' : 'var(--text-dimmer)',
-                      }}
-                    >
-                      {isWished ? '♥' : '♡'}
-                    </button>
-                  </div>
+                <div className="card-body">
+                  <button
+                    className="wishlist-btn"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleWishlist(game.id); }}
+                    style={{ color: isWished ? '#e53e3e' : 'var(--text-dimmer)' }}
+                  >
+                    {isWished ? '♥' : '♡'}
+                  </button>
+                  <h3>{game.name}</h3>
                   <p className="card-meta">
                     {game.recommended_players
                       ? `추천 ${game.recommended_players}`
@@ -323,21 +317,15 @@ export default function GameGrid({ games }: { games: any[] }) {
                   })()}
                 </div>
                 <div className="card-body">
-  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-    <h3 style={{ margin: 0 }}>{game.name}</h3>
-    <button
-      onClick={(e) => { e.preventDefault(); toggleWishlist(game.id); }}
-      style={{
-        background: 'none', border: 'none',
-        fontSize: 18, cursor: 'pointer',
-        padding: '0 0 0 8px', flexShrink: 0,
-        color: isWished ? '#e53e3e' : 'var(--text-dimmer)',
-      }}
-    >
-      {isWished ? '♥' : '♡'}
-    </button>
-  </div>
-  <p className="card-meta">
+                  <button
+                    className="wishlist-btn"
+                    onClick={(e) => { e.preventDefault(); toggleWishlist(game.id); }}
+                    style={{ color: isWished ? '#e53e3e' : 'var(--text-dimmer)' }}
+                  >
+                    {isWished ? '♥' : '♡'}
+                  </button>
+                  <h3>{game.name}</h3>
+                  <p className="card-meta">
                     {game.recommended_players
                       ? `추천 ${game.recommended_players}`
                       : game.min_players && game.max_players
