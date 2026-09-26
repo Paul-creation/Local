@@ -110,11 +110,14 @@ img { display: block; }
   border-radius: var(--radius-xl);
   overflow: hidden;
   margin-bottom: 32px;
+  margin-left: 0;
+  margin-right: 0;
   box-shadow: 0 4px 20px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06);
   background: #fff;
   border: 1px solid var(--border-light);
   text-decoration: none;
   transition: box-shadow 0.3s ease;
+  width: 100%;
 }
 
 .hero-card:hover {
@@ -204,20 +207,22 @@ img { display: block; }
   border-radius: var(--radius-xl);
   overflow: hidden;
   margin-bottom: 32px;
-  min-height: 160px;
-  max-height: 200px;
+  height: 180px;
   box-shadow: var(--shadow-lg);
 }
 
 .banner-slide {
   display: block !important;
-  position: relative !important;
-  min-height: 160px;
-  max-height: 200px;
+  position: absolute !important;
+  inset: 0 !important;
   border-radius: var(--radius-xl);
   overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
-
+.banner-slide.active {
+  opacity: 1;
+}
 .banner-slide .hero-image-wrap {
   position: absolute !important;
   inset: 0 !important;
