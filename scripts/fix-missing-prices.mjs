@@ -8,7 +8,7 @@ const supabase = createClient(
 async function main() {
   const { data: games } = await supabase
     .from('games')
-    .select('id, name, steam_appid, is_free');
+    .select('id, name, steam_appid, is_free').not('steam_appid', 'is', null);
 
   if (!games) return;
 

@@ -31,7 +31,7 @@ const TAG_KO = {
 async function main() {
   const { data: games, error } = await supabase
     .from('games')
-    .select('id, name, steam_appid, tags');
+    .select('id, name, steam_appid, tags').not('steam_appid', 'is', null);
 
   if (error) {
     console.error('조회 실패:', error.message);

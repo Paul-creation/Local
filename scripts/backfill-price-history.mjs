@@ -31,7 +31,7 @@ async function getPriceHistory(itadId) {
 async function main() {
   const { data: games, error } = await supabase
     .from('games')
-    .select('id, name, steam_appid, is_free, price_history(id, price)');
+    .select('id, name, steam_appid, is_free, price_history(id, price)').not('steam_appid', 'is', null);
 
   if (error) {
     console.error('조회 실패:', error.message);

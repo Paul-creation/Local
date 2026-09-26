@@ -28,7 +28,7 @@ async function getHeatRank(steamAppid) {
 
 async function main() {
   // Supabase에 heat_rank 컬럼 없으면 먼저 추가 필요
-  const { data: games } = await supabase.from('games').select('id, name, steam_appid');
+  const { data: games } = await supabase.from('games').select('id, name, steam_appid').not('steam_appid', 'is', null);
   if (!games) return;
 
   for (const game of games) {

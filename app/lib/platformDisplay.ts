@@ -2,6 +2,9 @@ export type PlatformCategory = 'pc' | 'playstation' | 'xbox' | 'switch' | 'vr';
 
 const CATEGORY_MAP: Record<string, PlatformCategory> = {
   steam: 'pc',
+  epic: 'pc',
+  battlenet: 'pc',
+  riot: 'pc',
   pc: 'pc',
   ps4: 'playstation',
   ps5: 'playstation',

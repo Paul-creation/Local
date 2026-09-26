@@ -17,7 +17,7 @@ function guessCategory(genres = [], name = '') {
 async function main() {
   const { data: games, error } = await supabase
     .from('games')
-    .select('id, name, steam_appid, category, min_players, max_players, difficulty, genres');
+    .select('id, name, steam_appid, category, min_players, max_players, difficulty, genres').not('steam_appid', 'is', null);
 
   if (error) {
     console.error('조회 실패:', error.message);

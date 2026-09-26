@@ -110,7 +110,11 @@ async function main() {
     const isDefaultPlatform = !game.platform || (game.platform.length === 1 && game.platform[0] === 'steam');
     if (isDefaultPlatform) {
       const detected = mapPlatforms(igdbGame.platforms);
-      if (detected.length > 0) update.platform = detected;
+      if (detected.length > 0) {
+        const stores = (game.platform || []).filter((c) => ['epic', 'battlenet', 'riot'].includes(c));
+        const mapped = game.steam_appid ? detected : detected.filter((c) => c !== 'steam');
+        update.platform = Array.from(new Set([...stores, ...mapped]));
+      }
     }
 
     // 인원수 — 아직 안 채워진 게임만

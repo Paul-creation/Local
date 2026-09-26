@@ -20,7 +20,7 @@ async function isDelisted(appid) {
 }
 
 async function main() {
-  const { data: games, error } = await supabase.from('games').select('id, name, steam_appid');
+  const { data: games, error } = await supabase.from('games').select('id, name, steam_appid').not('steam_appid', 'is', null);
   if (error) {
     console.error('조회 실패:', error.message);
     return;

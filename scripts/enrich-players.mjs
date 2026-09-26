@@ -34,7 +34,7 @@ async function getAccurateReviews(appid) {
 }
 
 async function main() {
-  const { data: games } = await supabase.from('games').select('id, name, steam_appid');
+  const { data: games } = await supabase.from('games').select('id, name, steam_appid').not('steam_appid', 'is', null);
   if (!games) return;
 
   for (const game of games) {
