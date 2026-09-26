@@ -106,13 +106,13 @@ img { display: block; }
 
 .hero-card {
   display: grid;
-  grid-template-columns: 3fr 2fr;
+  grid-template-columns: 55% 45%;
   gap: 0;
   border-radius: var(--radius-xl);
   overflow: hidden;
   margin-bottom: 32px;
-  box-shadow: var(--shadow-lg);
-  background: var(--bg-card);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  background: #fff;
   border: 1px solid var(--border-light);
   text-decoration: none;
   transition: box-shadow 0.3s ease;
@@ -209,9 +209,9 @@ img { display: block; }
   position: relative;
   border-radius: var(--radius-xl);
   overflow: hidden;
-  margin-bottom: 48px;
-  min-height: 220px;
-  max-height: 260px;
+  margin-bottom: 32px;
+  min-height: 180px;
+  max-height: 200px;
   box-shadow: var(--shadow-lg);
 }
 
