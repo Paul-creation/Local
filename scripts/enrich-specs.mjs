@@ -182,6 +182,16 @@ async function main() {
         lowest_price_date: lowestPriceData.date,
       }),
     };
+    
+// 먼저 1인 게임 solo_playable 자동 수정
+await supabase
+  .from('games')
+  .update({ solo_playable: true })
+  .eq('min_players', 1)
+  .eq('max_players', 1)
+  .eq('solo_playable', false);
+
+console.log('✅ 1인 게임 solo_playable 자동 수정 완료');
 
     const { error } = await supabase.from('games').update(update).eq('id', game.id);
 
