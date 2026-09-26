@@ -102,20 +102,22 @@ export default function GameGrid({ games }: { games: any[] }) {
         <AIRecommend />
       </div>
 
-      {compareMode && (
+            {compareMode && (
         <div style={{
           background: 'var(--accent-soft)', border: '1.5px solid var(--accent)',
           borderRadius: 'var(--radius-md)', padding: '12px 16px',
           marginBottom: 16, fontSize: 14, color: 'var(--accent)', fontWeight: 600,
+          display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap',
         }}>
-          비교할 게임을 클릭해서 선택하세요 (최대 3개)
+          <span>비교할 게임을 클릭해서 선택하세요 (최대 3개) — {compareList.length}개 선택됨</span>
           {compareList.length >= 2 && (
-            
             <a
+              href={`/compare?ids=${compareList.map(g => g.id).join(',')}`}
               style={{
-                marginLeft: 16, background: 'var(--accent)', color: '#fff',
+                background: 'var(--accent)', color: '#fff',
                 padding: '6px 16px', borderRadius: 100,
                 fontSize: 13, fontWeight: 700, textDecoration: 'none',
+                display: 'inline-block',
               }}
             >
               비교하기 ({compareList.length}개) →
@@ -123,7 +125,6 @@ export default function GameGrid({ games }: { games: any[] }) {
           )}
         </div>
       )}
-
       <div className="category-pills">
         {CATEGORIES.map((c) => (
           <button key={c} className={`pill ${category === c ? 'pill-active' : ''}`} onClick={() => setCategory(c)}>
