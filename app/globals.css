@@ -214,6 +214,41 @@ img { display: block; }
 }
 
 .banner-slide {
+  display: block !important;
+  grid-template-columns: unset !important;
+  position: relative !important;
+  min-height: 300px;
+}
+
+.banner-slide .hero-image-wrap {
+  aspect-ratio: unset !important;
+  position: absolute !important;
+  inset: 0 !important;
+}
+
+.banner-slide .hero-overlay {
+  display: block !important;
+}
+
+.banner-slide .hero-content {
+  position: absolute !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent) !important;
+  color: #fff !important;
+  padding: 24px !important;
+}
+
+.banner-slide .hero-content h2 {
+  color: #fff !important;
+}
+
+.banner-slide .hero-tagline,
+.banner-slide .hero-meta {
+  color: rgba(255,255,255,0.8) !important;
+}
+.banner-slide {
   position: absolute;
   inset: 0;
   opacity: 0;

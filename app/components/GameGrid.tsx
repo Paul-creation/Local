@@ -148,7 +148,6 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
             cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           }}
         >
-          // 버튼 텍스트
 <span>
   태그 선택
   {selectedCount > 0 && (
@@ -292,11 +291,10 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
       {/* 히어로/섹션 — 결과 없을 때만 */}
       {!hideHero && !showResults && !normalizedQuery && (
         <>
-          {featured && (
+                    {featured && (
             <Link href={`/games/${featured.id}`} className="hero-card">
               <div className="hero-image-wrap">
                 <img src={featured.cover_image_url} alt={featured.name} />
-                <div className="hero-overlay" />
               </div>
               <div className="hero-content">
                 <span className="hero-badge">🔥 이번주의 게임</span>
@@ -306,6 +304,18 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
                   {featured.min_players && featured.max_players ? `${featured.min_players}-${featured.max_players}인` : ''}
                   {featured.difficulty ? ` · ${featured.difficulty}` : ''}
                 </div>
+                {featured.tags?.length > 0 && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                    {featured.tags.slice(0, 4).map((tag: string) => (
+                      <span key={tag} className="category-tag">{tag}</span>
+                    ))}
+                  </div>
+                )}
+                {featured.description && (
+                  <p style={{ fontSize: 13, color: 'var(--text-dim)', lineHeight: 1.6, margin: 0 }}>
+                    {featured.description.slice(0, 100)}...
+                  </p>
+                )}
                 {featuredPrice && (
                   <div className="price-row">
                     {featuredPrice.discount > 0 && (
