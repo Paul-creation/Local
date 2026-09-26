@@ -24,7 +24,7 @@ function getPriceTiming(game: any) {
 const CATEGORIES = ['전체', '파티', '협동', '퍼즐', '서바이벌'];
 const GROUP_COLORS = ['#e6742e', '#0f9b8e', '#5b6ef5', '#c0392b', '#9b59b6', '#d4a017'];
 
-export default function GameGrid({ games, hideHero = false }: { games: any[], hideHero?: boolean }) {
+export default function GameGrid({ games }: { games: any[] }) {
   const [category, setCategory] = useState('전체');
   const [browseOpen, setBrowseOpen] = useState(false);
   const [allTagsOpen, setAllTagsOpen] = useState(false);
@@ -170,7 +170,7 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
         </div>
       )}
 
-      {!hideHero && !normalizedQuery && category === '전체' && selectedTags.length === 0 && !compareMode && (
+      {!normalizedQuery && category === '전체' && selectedTags.length === 0 && !compareMode && (
         <>
           {featured && (
             <Link href={`/games/${featured.id}`} className="hero-card">

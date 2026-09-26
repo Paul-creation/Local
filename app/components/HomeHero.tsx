@@ -1,12 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import BannerCarousel from './BannerCarousel';
 import DiscountSection from './DiscountSection';
 import AIRecommend from './AIRecommend';
+import GameGrid from './GameGrid';
 import { getPriceInfo } from '../lib/price';
 
 export default function HomeHero({ games }: { games: any[] }) {
+  const [showGrid, setShowGrid] = useState(false);
+
   const featured = games.find((g) => g.featured);
   const bannerPool = games.filter((g) => g.is_casual_party && !g.featured);
   const freeGames = games.filter((g) => g.is_free);
@@ -16,6 +20,25 @@ export default function HomeHero({ games }: { games: any[] }) {
     .slice(0, 6);
   const featuredPrice = featured ? getPriceInfo(featured) : null;
 
+  if (showGrid) {
+    return (
+      <>
+        <button
+          onClick={() => setShowGrid(false)}
+          style={{
+            background: 'none', border: 'none',
+            color: 'var(--accent)', fontSize: 14,
+            fontWeight: 700, cursor: 'pointer', padding: 0,
+            marginBottom: 20, display: 'block',
+          }}
+        >
+          ← 홈으로
+        </button>
+        <GameGrid games={games} hideHero={true} />
+      </>
+    );
+  }
+
   return (
     <>
       {/* 검색 + AI 추천 */}
@@ -23,7 +46,7 @@ export default function HomeHero({ games }: { games: any[] }) {
         <input
           type="text"
           placeholder="게임 이름으로 검색..."
-          onClick={() => window.location.href = '/browse'}
+          onClick={() => setShowGrid(true)}
           style={{
             flex: 1, height: 48, padding: '0 18px',
             border: '1.5px solid var(--border)',
@@ -83,7 +106,7 @@ export default function HomeHero({ games }: { games: any[] }) {
       {/* 인기 급상승 */}
       {hotGames.length > 0 && (
         <div style={{ marginBottom: 40 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <div style={{ marginBottom: 16 }}>
             <h2 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>인기 급상승</h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
@@ -132,7 +155,7 @@ export default function HomeHero({ games }: { games: any[] }) {
 
       {/* 전체 게임 탐색 버튼 */}
       <button
-        onClick={() => window.location.href = '/browse'}
+        onClick={() => setShowGrid(true)}
         style={{
           width: '100%', padding: '20px',
           background: 'var(--accent)',
