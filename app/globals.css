@@ -1207,3 +1207,19 @@ img { display: block; }
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+@media (max-width: 480px) {
+  .search-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .search-bar-clean {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .ai-trigger-clean {
+    flex: 1;
+    justify-content: center;
+  }
+}
