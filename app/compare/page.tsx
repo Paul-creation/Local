@@ -42,9 +42,19 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
 
 const ROWS: Row[] = [
     { label: '카테고리', key: 'category' },
-    { label: '인원수', render: (g: any) => g.min_players && g.max_players ? `${g.min_players}-${g.max_players}인` : '정보 없음' },
+    { label: '인원수', render: (g: any) => {
+  if (g.min_players === 1 && g.max_players === 1) return '1인';
+  if (g.min_players && g.max_players) return `${g.min_players}-${g.max_players}인`;
+  return '정보 없음';
+}},
     { label: '추천 인원', key: 'recommended_players' },
-    { label: '솔로 플레이', render: (g: any) => g.solo_playable === true ? '✅ 가능' : g.solo_playable === false ? '❌ 불가' : '-' },
+   { label: '솔로 플레이', render: (g: any) => 
+  g.solo_playable === true 
+    ? <span style={{ color: '#4a9e3a', fontWeight: 700 }}>솔로 플레이</span>
+    : g.solo_playable === false 
+    ? '멀티 필수' 
+    : '-'
+},
     { label: '난이도', key: 'difficulty' },
     { label: '한국어', key: 'korean_support' },
     { label: '필요 용량', render: (g: any) => g.storage_gb ? `${g.storage_gb}GB` : '-' },
