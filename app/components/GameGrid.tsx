@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import BannerCarousel from './BannerCarousel';
 import AIRecommend from './AIRecommend';
 import { getPriceInfo } from '../lib/price';
@@ -24,22 +24,20 @@ function getPriceTiming(game: any) {
 const CATEGORIES = ['파티', '협동', '퍼즐', '서바이벌'];
 const PLAYER_OPTIONS = ['1인', '2인', '3-4인', '5인 이상'];
 const DIFFICULTY_OPTIONS = ['쉬움', '보통', '어려움'];
-const GROUP_COLORS = ['#e6742e', '#0f9b8e', '#5b6ef5', '#c0392b', '#9b59b6', '#d4a017'];
 
 export default function GameGrid({ games, hideHero = false }: { games: any[], hideHero?: boolean }) {
   const [showResults, setShowResults] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedPlayers, setSelectedPlayers] = useState('');
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const [freeOnly, setFreeOnly] = useState(false);
-  const [browseOpen, setBrowseOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
   const [compareMode, setCompareMode] = useState(false);
   const [compareList, setCompareList] = useState<any[]>([]);
   const [compareError, setCompareError] = useState('');
-  const tagPanelRef = useRef<HTMLDivElement>(null);
 
   const toggleCompare = (game: any) => {
     setCompareList(prev => {
@@ -69,13 +67,14 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
   const presentTags = new Set(games.flatMap((g) => g.tags || []));
 
   const toggleTag = (tag: string) =>
-    setSelectedTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));
+    setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
 
   const toggleGroup = (group: string) =>
     setExpandedGroups(prev => prev.includes(group) ? prev.filter(g => g !== group) : [...prev, group]);
 
   const normalizedQuery = query.trim().toLowerCase();
-  const hasFilters = normalizedQuery || selectedCategory || selectedTags.length > 0 || selectedPlayers || selectedDifficulty || freeOnly;
+  const selectedCount = [selectedCategory, selectedPlayers, selectedDifficulty, freeOnly ? '무료' : '', ...selectedTags].filter(Boolean).length;
+  const hasFilters = !!(normalizedQuery || selectedCategory || selectedTags.length > 0 || selectedPlayers || selectedDifficulty || freeOnly);
 
   const filtered = games.filter((g) => {
     if (freeOnly && !g.is_free) return false;
@@ -103,13 +102,14 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
     setSelectedDifficulty('');
     setFreeOnly(false);
     setShowResults(false);
+    setFilterOpen(false);
   };
 
   const featuredPrice = featured ? getPriceInfo(featured) : null;
 
   return (
     <>
-      {/* 검색창 + 버튼 */}
+      {/* 검색창 */}
       <div className="search-row">
         <div className="search-bar-clean">
           <input
@@ -133,6 +133,159 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
           {compareMode ? '취소' : '비교'}
         </button>
         <AIRecommend />
+      </div>
+
+      {/* 게임 찾기 아코디언 */}
+      <div style={{ marginBottom: 24 }}>
+        <button
+          onClick={() => setFilterOpen(v => !v)}
+          style={{
+            width: '100%', padding: '12px 16px',
+            background: 'var(--bg-card)',
+            border: '1.5px solid var(--border)',
+            borderRadius: filterOpen ? 'var(--radius-md) var(--radius-md) 0 0' : 'var(--radius-md)',
+            fontSize: 14, fontWeight: 700, color: 'var(--text)',
+            cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          }}
+        >
+          <span>
+            게임 찾기
+            {selectedCount > 0 && (
+              <span style={{ marginLeft: 8, background: 'var(--accent)', color: '#fff', borderRadius: 100, fontSize: 12, padding: '2px 8px' }}>
+                {selectedCount}개 선택됨
+              </span>
+            )}
+          </span>
+          <span>{filterOpen ? '▴' : '▾'}</span>
+        </button>
+
+        {filterOpen && (
+          <div style={{
+            background: 'var(--bg-card)',
+            border: '1.5px solid var(--border)', borderTop: 'none',
+            borderRadius: '0 0 var(--radius-md) var(--radius-md)',
+            padding: 20,
+          }}>
+            {/* 카테고리 */}
+            <div style={{ marginBottom: 16 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 8 }}>카테고리</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {CATEGORIES.map(c => (
+                  <button key={c} onClick={() => setSelectedCategory(selectedCategory === c ? '' : c)} style={{
+                    padding: '6px 14px', borderRadius: 100, fontSize: 13, fontWeight: 600,
+                    border: `1.5px solid ${selectedCategory === c ? 'var(--accent)' : 'var(--border)'}`,
+                    background: selectedCategory === c ? 'var(--accent)' : 'var(--bg)',
+                    color: selectedCategory === c ? '#fff' : 'var(--text)', cursor: 'pointer',
+                  }}>{c}</button>
+                ))}
+              </div>
+            </div>
+
+            {/* 인원수 */}
+            <div style={{ marginBottom: 16 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 8 }}>인원수</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {PLAYER_OPTIONS.map(p => (
+                  <button key={p} onClick={() => setSelectedPlayers(selectedPlayers === p ? '' : p)} style={{
+                    padding: '6px 14px', borderRadius: 100, fontSize: 13, fontWeight: 600,
+                    border: `1.5px solid ${selectedPlayers === p ? 'var(--accent)' : 'var(--border)'}`,
+                    background: selectedPlayers === p ? 'var(--accent)' : 'var(--bg)',
+                    color: selectedPlayers === p ? '#fff' : 'var(--text)', cursor: 'pointer',
+                  }}>{p}</button>
+                ))}
+              </div>
+            </div>
+
+            {/* 난이도 */}
+            <div style={{ marginBottom: 16 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 8 }}>난이도</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {DIFFICULTY_OPTIONS.map(d => (
+                  <button key={d} onClick={() => setSelectedDifficulty(selectedDifficulty === d ? '' : d)} style={{
+                    padding: '6px 14px', borderRadius: 100, fontSize: 13, fontWeight: 600,
+                    border: `1.5px solid ${selectedDifficulty === d ? 'var(--accent)' : 'var(--border)'}`,
+                    background: selectedDifficulty === d ? 'var(--accent)' : 'var(--bg)',
+                    color: selectedDifficulty === d ? '#fff' : 'var(--text)', cursor: 'pointer',
+                  }}>{d}</button>
+                ))}
+              </div>
+            </div>
+
+            {/* 무료만 */}
+            <div style={{ marginBottom: 16 }}>
+              <button onClick={() => setFreeOnly(v => !v)} style={{
+                padding: '6px 14px', borderRadius: 100, fontSize: 13, fontWeight: 600,
+                border: `1.5px solid ${freeOnly ? 'var(--accent)' : 'var(--border)'}`,
+                background: freeOnly ? 'var(--accent)' : 'var(--bg)',
+                color: freeOnly ? '#fff' : 'var(--text)', cursor: 'pointer',
+              }}>무료 게임만</button>
+            </div>
+
+            {/* 태그 그룹 */}
+            <div style={{ marginBottom: 20 }}>
+              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 12 }}>태그로 찾기</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {Object.entries(TAG_GROUPS).map(([group, tags]) => {
+                  const availableTags = tags.filter(t => presentTags.has(t));
+                  if (availableTags.length === 0) return null;
+                  const selectedInGroup = availableTags.filter(t => selectedTags.includes(t)).length;
+                  return (
+                    <div key={group}>
+                      <button onClick={() => toggleGroup(group)} style={{
+                        background: 'none', border: 'none', cursor: 'pointer',
+                        fontSize: 13, fontWeight: 700, color: 'var(--text)',
+                        padding: '4px 0', display: 'flex', alignItems: 'center', gap: 6,
+                      }}>
+                        {group} {expandedGroups.includes(group) ? '▴' : '▾'}
+                        {selectedInGroup > 0 && (
+                          <span style={{ background: 'var(--accent)', color: '#fff', borderRadius: 100, fontSize: 11, padding: '1px 7px' }}>
+                            {selectedInGroup}
+                          </span>
+                        )}
+                      </button>
+                      {expandedGroups.includes(group) && (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8, paddingLeft: 4 }}>
+                          {availableTags.map(tag => (
+                            <button key={tag} onClick={() => toggleTag(tag)} style={{
+                              padding: '4px 12px', borderRadius: 100, fontSize: 12, fontWeight: 600,
+                              border: `1.5px solid ${selectedTags.includes(tag) ? 'var(--accent)' : 'var(--border)'}`,
+                              background: selectedTags.includes(tag) ? 'rgba(0,113,227,0.1)' : 'var(--bg)',
+                              color: selectedTags.includes(tag) ? 'var(--accent)' : 'var(--text-dim)',
+                              cursor: 'pointer',
+                            }}>{translateTag(tag)}</button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* 버튼들 */}
+            <div style={{ display: 'flex', gap: 8 }}>
+              {hasFilters && (
+                <button onClick={resetFilters} style={{
+                  padding: '12px 16px', borderRadius: 'var(--radius-md)',
+                  border: '1.5px solid var(--border)', background: 'var(--bg)',
+                  fontSize: 14, fontWeight: 700, color: 'var(--text-dim)', cursor: 'pointer',
+                }}>초기화</button>
+              )}
+              <button
+                onClick={() => { setShowResults(true); setFilterOpen(false); }}
+                style={{
+                  flex: 1, padding: '12px',
+                  background: 'var(--accent)', border: 'none',
+                  borderRadius: 'var(--radius-md)',
+                  fontSize: 14, fontWeight: 800, color: '#fff',
+                  cursor: 'pointer',
+                }}
+              >
+                {hasFilters ? '필터 적용해서 찾기 →' : '전체 게임 보기 →'}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 히어로/섹션 — 결과 없을 때만 */}
@@ -193,7 +346,6 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
             </section>
           )}
 
-          {/* 인기 급상승 */}
           {hotGames.length > 0 && (
             <div style={{ marginBottom: 32 }}>
               <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>인기 급상승</h2>
@@ -223,133 +375,6 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
               </div>
             </div>
           )}
-
-          {/* 게임 찾기 필터 */}
-          <div style={{
-            background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
-            border: '1px solid var(--border-light)', padding: 24,
-            marginBottom: 32, boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-              <h2 style={{ fontSize: 18, fontWeight: 800, margin: 0 }}>게임 찾기</h2>
-              {hasFilters && (
-                <button onClick={resetFilters} style={{ background: 'none', border: 'none', color: 'var(--accent)', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
-                  초기화
-                </button>
-              )}
-            </div>
-
-            {/* 카테고리 */}
-            <div style={{ marginBottom: 16 }}>
-              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 8 }}>카테고리</p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                {CATEGORIES.map(c => (
-                  <button key={c} onClick={() => setSelectedCategory(selectedCategory === c ? '' : c)} style={{
-                    padding: '6px 14px', borderRadius: 100, fontSize: 13, fontWeight: 600,
-                    border: `1.5px solid ${selectedCategory === c ? 'var(--accent)' : 'var(--border)'}`,
-                    background: selectedCategory === c ? 'var(--accent)' : 'var(--bg)',
-                    color: selectedCategory === c ? '#fff' : 'var(--text)', cursor: 'pointer',
-                  }}>{c}</button>
-                ))}
-              </div>
-            </div>
-
-            {/* 인원수 */}
-            <div style={{ marginBottom: 16 }}>
-              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 8 }}>인원수</p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                {PLAYER_OPTIONS.map(p => (
-                  <button key={p} onClick={() => setSelectedPlayers(selectedPlayers === p ? '' : p)} style={{
-                    padding: '6px 14px', borderRadius: 100, fontSize: 13, fontWeight: 600,
-                    border: `1.5px solid ${selectedPlayers === p ? 'var(--accent)' : 'var(--border)'}`,
-                    background: selectedPlayers === p ? 'var(--accent)' : 'var(--bg)',
-                    color: selectedPlayers === p ? '#fff' : 'var(--text)', cursor: 'pointer',
-                  }}>{p}</button>
-                ))}
-              </div>
-            </div>
-
-            {/* 난이도 */}
-            <div style={{ marginBottom: 16 }}>
-              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 8 }}>난이도</p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                {DIFFICULTY_OPTIONS.map(d => (
-                  <button key={d} onClick={() => setSelectedDifficulty(selectedDifficulty === d ? '' : d)} style={{
-                    padding: '6px 14px', borderRadius: 100, fontSize: 13, fontWeight: 600,
-                    border: `1.5px solid ${selectedDifficulty === d ? 'var(--accent)' : 'var(--border)'}`,
-                    background: selectedDifficulty === d ? 'var(--accent)' : 'var(--bg)',
-                    color: selectedDifficulty === d ? '#fff' : 'var(--text)', cursor: 'pointer',
-                  }}>{d}</button>
-                ))}
-              </div>
-            </div>
-
-            {/* 무료만 */}
-            <div style={{ marginBottom: 20 }}>
-              <button onClick={() => setFreeOnly(v => !v)} style={{
-                padding: '6px 14px', borderRadius: 100, fontSize: 13, fontWeight: 600,
-                border: `1.5px solid ${freeOnly ? 'var(--accent)' : 'var(--border)'}`,
-                background: freeOnly ? 'var(--accent)' : 'var(--bg)',
-                color: freeOnly ? '#fff' : 'var(--text)', cursor: 'pointer',
-              }}>무료 게임만</button>
-            </div>
-
-            {/* 태그 그룹 */}
-            <div style={{ marginBottom: 20 }}>
-              <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 12 }}>태그로 찾기</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {Object.entries(TAG_GROUPS).map(([group, tags]) => {
-                  const availableTags = tags.filter(t => presentTags.has(t));
-                  if (availableTags.length === 0) return null;
-                  const selectedInGroup = availableTags.filter(t => selectedTags.includes(t)).length;
-                  return (
-                    <div key={group}>
-                      <button onClick={() => toggleGroup(group)} style={{
-                        background: 'none', border: 'none', cursor: 'pointer',
-                        fontSize: 13, fontWeight: 700, color: 'var(--text)',
-                        padding: '4px 0', display: 'flex', alignItems: 'center', gap: 6,
-                      }}>
-                        {group} {expandedGroups.includes(group) ? '▴' : '▾'}
-                        {selectedInGroup > 0 && (
-                          <span style={{ background: 'var(--accent)', color: '#fff', borderRadius: 100, fontSize: 11, padding: '1px 7px' }}>
-                            {selectedInGroup}
-                          </span>
-                        )}
-                      </button>
-                      {expandedGroups.includes(group) && (
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8, paddingLeft: 4 }}>
-                          {availableTags.map(tag => (
-                            <button key={tag} onClick={() => toggleTag(tag)} style={{
-                              padding: '4px 12px', borderRadius: 100, fontSize: 12, fontWeight: 600,
-                              border: `1.5px solid ${selectedTags.includes(tag) ? 'var(--accent)' : 'var(--border)'}`,
-                              background: selectedTags.includes(tag) ? 'rgba(0,113,227,0.1)' : 'var(--bg)',
-                              color: selectedTags.includes(tag) ? 'var(--accent)' : 'var(--text-dim)',
-                              cursor: 'pointer',
-                            }}>{translateTag(tag)}</button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* 찾기 버튼 */}
-            <button
-              onClick={() => setShowResults(true)}
-              style={{
-                width: '100%', padding: '14px',
-                background: 'var(--accent)', border: 'none',
-                borderRadius: 'var(--radius-md)',
-                fontSize: 15, fontWeight: 800, color: '#fff',
-                cursor: 'pointer',
-                boxShadow: '0 4px 16px rgba(0,113,227,0.3)',
-              }}
-            >
-              {hasFilters ? '필터 적용해서 찾기 →' : '전체 게임 보기 →'}
-            </button>
-          </div>
         </>
       )}
 
