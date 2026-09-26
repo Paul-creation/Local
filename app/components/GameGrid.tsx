@@ -312,10 +312,10 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
                   </div>
                 )}
                 {featured.description && (
-                  <p style={{ fontSize: 13, color: 'var(--text-dim)', lineHeight: 1.6, margin: 0 }}>
-                    {featured.description.slice(0, 100)}...
-                  </p>
-                )}
+  <p style={{ fontSize: 13, color: 'var(--text-dim)', lineHeight: 1.6, margin: 0 }}>
+    {featured.description.replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&#39;/g, "'").slice(0, 120)}...
+  </p>
+)}
                 {featuredPrice && (
                   <div className="price-row">
                     {featuredPrice.discount > 0 && (
