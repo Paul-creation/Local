@@ -363,24 +363,24 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
                 {hotGames.map((game, i) => (
                   <Link href={`/games/${game.id}`} key={game.id} style={{ textDecoration: 'none' }}>
-                    <div style={{
-                      display: 'flex', alignItems: 'center', gap: 12,
-                      background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
-                      padding: '14px 16px', border: '1px solid var(--border-light)',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
-                    }}>
-                      <span style={{ fontSize: 20, fontWeight: 900, color: 'var(--text-dimmer)', width: 28, flexShrink: 0, textAlign: 'center' }}>
-                        {i + 1}
-                      </span>
-                      <img src={game.cover_image_url} alt={game.name} style={{ width: 64, height: 36, objectFit: 'cover', borderRadius: 6, flexShrink: 0 }} />
-                      <div>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>{game.name}</div>
-                        <div style={{ fontSize: 12, color: 'var(--text-dimmer)' }}>
-                          {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : ''}
-                          {game.difficulty ? ` · ${game.difficulty}` : ''}
-                        </div>
-                      </div>
-                    </div>
+                   <div style={{
+  display: 'flex', alignItems: 'center', gap: 16,
+  background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
+  padding: '18px 20px', border: '1px solid var(--border-light)',
+  boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+}}>
+                      <span style={{ fontSize: 24, fontWeight: 900, color: 'var(--text-dimmer)', width: 32, flexShrink: 0, textAlign: 'center' }}>
+    {i + 1}
+  </span>
+  <img src={game.cover_image_url} alt={game.name} style={{ width: 96, aspectRatio: '460 / 215', objectFit: 'cover', borderRadius: 8, flexShrink: 0 }} />
+  <div style={{ minWidth: 0 }}>
+    <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{game.name}</div>
+    <div style={{ fontSize: 13, color: 'var(--text-dimmer)' }}>
+      {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : ''}
+      {game.difficulty ? ` · ${game.difficulty}` : ''}
+    </div>
+  </div>
+</div>
                   </Link>
                 ))}
               </div>
