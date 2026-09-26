@@ -323,8 +323,21 @@ export default function GameGrid({ games }: { games: any[] }) {
                   })()}
                 </div>
                 <div className="card-body">
-                  <h3>{game.name}</h3>
-                  <p className="card-meta">
+  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+    <h3 style={{ margin: 0 }}>{game.name}</h3>
+    <button
+      onClick={(e) => { e.preventDefault(); toggleWishlist(game.id); }}
+      style={{
+        background: 'none', border: 'none',
+        fontSize: 18, cursor: 'pointer',
+        padding: '0 0 0 8px', flexShrink: 0,
+        color: isWished ? '#e53e3e' : 'var(--text-dimmer)',
+      }}
+    >
+      {isWished ? '♥' : '♡'}
+    </button>
+  </div>
+  <p className="card-meta">
                     {game.recommended_players
                       ? `추천 ${game.recommended_players}`
                       : game.min_players && game.max_players
