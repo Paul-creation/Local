@@ -3,15 +3,13 @@ import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
-const SITUATIONS = [
-  '처음 만나는 친구들과',
-  '빡세게 도전하고 싶을 때',
-  '느긋하게 쉬고 싶을 때',
-  '술자리에서',
-  '경쟁하고 싶을 때',
-  '오래 같이 하고 싶을 때',
-];
+const MULTIPLAYER_SITUATIONS = ['처음 만나는 친구들과', '술자리에서', '오래 같이 하고 싶을 때'];
 
+const activeSituations = SITUATIONS.filter(s => {
+  if (MULTIPLAYER_SITUATIONS.includes(s)) return hasMultiGame;
+  return true;
+});
+const hasMultiGame = games.some(g => g.max_players > 1);
 async function getSituationScores(games: any[]) {
   const gameList = games.map(g =>
     `이름: ${g.name} | 태그: ${(g.tags || []).join(', ')} | 난이도: ${g.difficulty} | 인원: ${g.min_players}-${g.max_players} | 카테고리: ${g.category} | 솔로: ${g.solo_playable}`
@@ -46,7 +44,6 @@ JSON 형식으로만 출력:
       messages: [{ role: 'user', content: prompt }],
     }),
   });
-
   const data = await res.json();
   const text = data.content?.[0]?.text || '[]';
   try {
@@ -98,18 +95,19 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
   const ROWS: Row[] = [
     { label: '카테고리', key: 'category' },
     { label: '인원수', render: (g: any) => {
-      if (g.min_players === 1 && g.max_players === 1) return '1인';
-      if (g.min_players && g.max_players) return `${g.min_players}-${g.max_players}인`;
-      return '-';
-    }},
-    { label: '추천 인원', key: 'recommended_players' },
-    { label: '솔로 플레이', render: (g: any) =>
-      g.solo_playable === true
-        ? <span style={{ color: '#4a9e3a', fontWeight: 700 }}>솔로 플레이</span>
-        : g.solo_playable === false
-        ? '멀티 필수'
-        : '-'
-    },
+  if (g.min_players === 1 && g.max_players === 1) return '1인';
+  if (g.min_players && g.max_players) return `${g.min_players}-${g.max_players}인`;
+  return '-';
+}},
+{ label: '솔로 플레이', render: (g: any) =>
+  g.solo_playable === true && g.max_players === 1
+    ? <span style={{ color: '#4a9e3a', fontWeight: 700 }}>싱글 플레이 게임</span>
+    : g.solo_playable === true
+    ? <span style={{ color: '#4a9e3a', fontWeight: 700 }}>솔로 가능</span>
+    : g.solo_playable === false
+    ? '멀티 필수'
+    : '-'
+},
     { label: '난이도', key: 'difficulty' },
     { label: '한국어', key: 'korean_support' },
     { label: '필요 용량', render: (g: any) => g.storage_gb ? `${g.storage_gb}GB` : '-' },
