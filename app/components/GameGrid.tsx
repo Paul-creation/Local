@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import BannerCarousel from './BannerCarousel';
 import AIRecommend from './AIRecommend';
 import { getPriceInfo } from '../lib/price';
@@ -37,6 +37,54 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
   const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
   const [compareList, setCompareList] = useState<any[]>([]);
   const [compareError, setCompareError] = useState('');
+
+  // LIST_RESTORE — 게임 상세·비교 페이지에 갔다가 돌아오면 필터·결과·비교 선택·스크롤 복원
+  const LIST_KEY = 'grid_state_v1';
+  const restoredRef = useRef(false);
+
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem(LIST_KEY);
+      if (raw && sessionStorage.getItem('grid_restore') === '1') {
+        const st = JSON.parse(raw);
+        setQuery(st.query || '');
+        setSelectedCategory(st.selectedCategory || '');
+        setSelectedTags(st.selectedTags || []);
+        setSelectedPlayers(st.selectedPlayers || '');
+        setSelectedDifficulty(st.selectedDifficulty || '');
+        setFreeOnly(!!st.freeOnly);
+        setExpandedGroups(st.expandedGroups || []);
+        setShowResults(!!st.showResults);
+        const ids: string[] = st.compareIds || [];
+        setCompareList(games.filter((g: any) => ids.includes(g.id)));
+        const y = st.scrollY || 0;
+        setTimeout(() => window.scrollTo(0, y), 60);
+      }
+      sessionStorage.removeItem('grid_restore');
+    } catch {}
+    restoredRef.current = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!restoredRef.current) return;
+    try {
+      sessionStorage.setItem(LIST_KEY, JSON.stringify({
+        query, selectedCategory, selectedTags, selectedPlayers, selectedDifficulty, freeOnly,
+        expandedGroups, showResults, compareIds: compareList.map((g: any) => g.id), scrollY: window.scrollY,
+      }));
+    } catch {}
+  }, [query, selectedCategory, selectedTags, selectedPlayers, selectedDifficulty, freeOnly, expandedGroups, showResults, compareList]);
+
+  // 카드나 비교하기를 누를 때 현재 스크롤 위치와 "돌아오면 복원" 표시를 남김
+  const rememberList = () => {
+    try {
+      const st = JSON.parse(sessionStorage.getItem(LIST_KEY) || '{}');
+      st.scrollY = window.scrollY;
+      sessionStorage.setItem(LIST_KEY, JSON.stringify(st));
+      sessionStorage.setItem('grid_restore', '1');
+    } catch {}
+  };
 
   const toggleCompare = (game: any) => {
     setCompareList(prev => {
@@ -406,7 +454,7 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
                 const price = getPriceInfo(game);
                 const isSelected = compareList.find(g => g.id === game.id);
                 return (
-                  <Link href={`/games/${game.id}`} key={game.id} className="card" style={isSelected ? { outline: '3px solid var(--accent)', outlineOffset: 2 } : undefined}>
+                  <Link href={`/games/${game.id}`} key={game.id} className="card" onClick={rememberList} style={isSelected ? { outline: '3px solid var(--accent)', outlineOffset: 2 } : undefined}>
                     <div className="card-image-wrap">
                       <img src={game.cover_image_url} alt={game.name} />
                       {/* COMPARE_V2 */}
@@ -506,7 +554,7 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
             초기화
           </button>
           {compareList.length >= 2 ? (
-            <a href={`/compare?ids=${compareList.map(g => g.id).join(',')}`} style={{
+            <a href={`/compare?ids=${compareList.map(g => g.id).join(',')}`} onClick={rememberList} style={{
               background: 'var(--accent)', color: '#fff',
               padding: '8px 18px', borderRadius: 100,
               fontSize: 15, fontWeight: 700, textDecoration: 'none', flexShrink: 0,

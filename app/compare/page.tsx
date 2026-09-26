@@ -7,6 +7,7 @@ import { headers } from 'next/headers';
 import { guardedClaudeFetch, getIp } from '../lib/aiGuard';
 import Link from 'next/link';
 import CompareChat from '../components/CompareChat';
+import ScrollToTop from '../components/ScrollToTop';
 
 export const dynamic = 'force-dynamic';
 
@@ -191,6 +192,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
 
   return (
     <main className="page" style={{ paddingBottom: 32 }}>
+      <ScrollToTop />
       <nav className="topnav"><span className="logo">게임정보허브</span></nav>
 
       <Link href="/" className="back-link">← 돌아가기</Link>
