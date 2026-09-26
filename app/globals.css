@@ -338,7 +338,7 @@ img { display: block; }
   letter-spacing: 0.05em;
 }
 
-.card-body { padding: 16px 18px 18px; }
+.card-body { padding: 16px 18px 18px; position: relative; }
 
 .card-body h3 {
   font-size: 15px;
