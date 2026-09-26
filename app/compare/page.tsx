@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import Link from 'next/link';
+import CompareChat from '../components/CompareChat';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,6 +16,20 @@ const SITUATIONS = [
 const MULTIPLAYER_SITUATIONS = ['처음 만나는 친구들과', '술자리에서', '오래 같이 하고 싶을 때'];
 
 async function getSituationScores(games: any[], activeSituations: string[]) {
+  const gameIds = games.map(g => g.id).sort().join(',');
+
+  // 캐시 확인
+  const { data: cached } = await supabase
+    .from('compare_cache')
+    .select('situation_scores')
+    .eq('game_ids', gameIds)
+    .single();
+
+  if (cached) {
+    return cached.situation_scores;
+  }
+
+  // 캐시 없으면 AI 호출
   const gameList = games.map(g =>
     `이름: ${g.name} | 태그: ${(g.tags || []).join(', ')} | 난이도: ${g.difficulty} | 인원: ${g.min_players}-${g.max_players} | 카테고리: ${g.category} | 솔로: ${g.solo_playable}`
   ).join('\n');
@@ -48,13 +63,23 @@ JSON 형식으로만 출력:
       messages: [{ role: 'user', content: prompt }],
     }),
   });
+
   const data = await res.json();
   const text = data.content?.[0]?.text || '[]';
+
+  let scores;
   try {
-    return JSON.parse(text.replace(/```json|```/g, '').trim());
+    scores = JSON.parse(text.replace(/```json|```/g, '').trim());
   } catch {
     return [];
   }
+
+  // 캐시 저장
+  await supabase
+    .from('compare_cache')
+    .upsert({ game_ids: gameIds, situation_scores: scores });
+
+  return scores;
 }
 
 export default async function ComparePage({ searchParams }: { searchParams: Promise<{ ids?: string }> }) {
@@ -289,6 +314,8 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
           ))}
         </div>
       </div>
+            {/* AI 분석 채팅 */}
+      <CompareChat games={games} />
     </main>
   );
 }
