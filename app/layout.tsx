@@ -10,6 +10,13 @@ export const metadata: Metadata = {
   openGraph: { siteName: SITE_NAME, locale: 'ko_KR', type: 'website', title: SITE_NAME, description: SITE_DESCRIPTION, url: '/' },
   twitter: { card: 'summary_large_image' },
   alternates: { canonical: '/' },
+  // 구글·네이버 소유 확인 코드 (Vercel 환경변수에 넣으면 자동 적용)
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || undefined,
+    other: process.env.NEXT_PUBLIC_NAVER_VERIFICATION
+      ? { 'naver-site-verification': process.env.NEXT_PUBLIC_NAVER_VERIFICATION }
+      : undefined,
+  },
 };
 
 export default function RootLayout({
