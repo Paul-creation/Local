@@ -25,14 +25,11 @@ export default function CompareChat({ games }: { games: any[] }) {
     setLoading(true);
 
     try {
-      const gameInfo = games.map(g =>
-        `게임: ${g.name} | 태그: ${(g.tags || []).join(', ')} | 난이도: ${g.difficulty} | 인원: ${g.min_players}-${g.max_players}인 | 한국어: ${g.korean_support} | 솔로: ${g.solo_playable} | 평점: ${g.review_positive_percent}% | 설명: ${g.description || ''}`
-      ).join('\n\n');
 
       const res = await fetch('/api/compare-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question, gameInfo, history: messages }),
+        body: JSON.stringify({ question, gameIds: games.map((g: any) => g.id), history: messages }),
       });
       const data = await res.json();
       setMessages([...newMessages, { role: 'ai', text: data.answer }]);

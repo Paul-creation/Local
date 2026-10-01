@@ -183,6 +183,9 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
     render?: (g: any) => any;
   };
 
+  // STEAM_ONLY — 스팀에서만 의미 있는 항목은 다른 스토어 게임에 "해당 없음"
+  const steamOnly = (fn: (g: any) => any) => (g: any) => (g.steam_appid ? fn(g) : '해당 없음');
+
   const ROWS: Row[] = [
     { label: '카테고리', key: 'category' },
     { label: '인원수', render: (g: any) => {
@@ -201,11 +204,11 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
     { label: '한국어', key: 'korean_support' },
     { label: '필요 용량', render: (g: any) => g.storage_gb ? `${g.storage_gb}GB` : '-' },
     { label: '출시일', render: (g: any) => g.release_date ? new Date(g.release_date).toLocaleDateString('ko-KR') : '-' },
-    { label: '가족 공유', render: (g: any) => g.family_sharing ? '가능' : '불가' },
-    { label: '도전과제', render: (g: any) => g.achievement_count ? `${g.achievement_count}개` : '-' },
-    { label: 'DLC', render: (g: any) => g.has_dlc ? '있음' : '없음' },
-    { label: 'Steam 평점', render: (g: any) => g.review_positive_percent ? `${g.review_positive_percent}% (${g.review_total?.toLocaleString('ko-KR')}개)` : '-' },
-    { label: '현재 접속자', render: (g: any) => g.current_players ? `${g.current_players.toLocaleString('ko-KR')}명` : '-' },
+    { label: '가족 공유', render: steamOnly((g: any) => g.family_sharing ? '가능' : '불가') },
+    { label: '도전과제', render: steamOnly((g: any) => g.achievement_count ? `${g.achievement_count}개` : '-') },
+    { label: 'DLC', render: steamOnly((g: any) => g.has_dlc ? '있음' : '없음') },
+    { label: 'Steam 평점', render: steamOnly((g: any) => g.review_positive_percent ? `${g.review_positive_percent}% (${g.review_total?.toLocaleString('ko-KR')}개)` : '-') },
+    { label: '현재 접속자', render: steamOnly((g: any) => g.current_players ? `${g.current_players.toLocaleString('ko-KR')}명` : '-') },
     { label: '역대 최저가', render: (g: any) => g.lowest_price ? `₩${g.lowest_price.toLocaleString('ko-KR')}` : '-' },
   ];
 
@@ -248,7 +251,12 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
       </div>
 
       {/* 상황별 추천도 */}
-      {activeSituations.length > 0 && (
+      {activeSituations.length > 0 && situationScores.length === 0 && (
+        <p style={{ padding: '18px 20px', marginBottom: 32, borderRadius: 'var(--radius-lg)', background: 'var(--bg-card)', border: '1px solid var(--border-light)', color: 'var(--text-dim)', fontSize: 15 }}>
+          상황별 추천도를 불러오지 못했어요. 잠시 후 새로고침해 주세요.
+        </p>
+      )}
+      {activeSituations.length > 0 && situationScores.length > 0 && (
         <>
           <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 12 }}>상황별 추천도</h2>
           <div style={{
