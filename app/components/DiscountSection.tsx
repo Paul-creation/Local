@@ -23,7 +23,7 @@ export default function DiscountSection({ games }: { games: any[] }) {
           return (
             <Link href={`/games/${game.id}`} key={game.id} className="card">
                             <div className="card-image-wrap">
-                <img src={game.cover_image_url} alt={game.name} />
+                <img src={(game.card_image_url || game.cover_image_url)} alt={game.name} />
                 <span className="platform-badge">{game.steam_appid ? 'Steam' : (({ epic: 'Epic', battlenet: 'Battle.net', riot: 'Riot' } as Record<string, string>)[game.source] ?? 'PC') /* STORE_BADGE */}</span>
                 {(() => {
                   if (!price || price.discount === 0 || !game.lowest_price || game.is_free) return null;

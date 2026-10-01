@@ -1303,3 +1303,18 @@ img { display: block; }
   padding: 0;
   line-height: 1;
 }
+
+/* IMG_FIT_V1 — 큰 카드 이미지가 잘리지 않게 */
+.hero-image-wrap { background: #1a1a1a; }
+.hero-image-wrap .img-backdrop {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover !important;
+  filter: blur(24px) brightness(0.7) saturate(1.2);
+  transform: scale(1.2);
+}
+.hero-image-wrap img:not(.img-backdrop) {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: contain !important;
+  object-position: center !important;
+  z-index: 1;
+}

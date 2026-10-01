@@ -25,7 +25,8 @@ export default function BannerCarousel({ games }: { games: any[] }) {
     <div style={{ marginBottom: 32 }}>
       <Link href={`/games/${game.id}`} className="hero-card" style={{ marginBottom: 0 }}>
         <div className="hero-image-wrap">
-          <img src={game.cover_image_url} alt={game.name} />
+          <img src={(game.card_image_url || game.cover_image_url)} alt="" aria-hidden="true" className="img-backdrop" />
+          <img src={(game.card_image_url || game.cover_image_url)} alt={game.name} />
         </div>
         <div className="hero-content">
           <h2>{game.name}</h2>

@@ -8,6 +8,8 @@ import { guardedClaudeFetch, getIp } from '../lib/aiGuard';
 import Link from 'next/link';
 import CompareChat from '../components/CompareChat';
 import ScrollToTop from '../components/ScrollToTop';
+import BackToList from '../components/BackToList';
+import CopyLinkButton from '../components/CopyLinkButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -195,10 +197,13 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
       <ScrollToTop />
       <nav className="topnav"><span className="logo">게임정보허브</span></nav>
 
-      <Link href="/" className="back-link">← 돌아가기</Link>
-      <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 24, letterSpacing: '-0.02em' }}>
-        게임 비교
-      </h1>
+      <BackToList />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 24 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em' }}>
+          게임 비교
+        </h1>
+        <CopyLinkButton label="🔗 비교 링크 복사" />
+      </div>
 
       {/* 게임 헤더 */}
       <div className="compare-header" style={{
@@ -214,7 +219,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
               overflow: 'hidden', border: '1px solid var(--border-light)',
               boxShadow: 'var(--shadow-sm)',
             }}>
-              <img src={g.cover_image_url} alt={g.name} style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover' }} />
+              <img src={(g.card_image_url || g.cover_image_url)} alt={g.name} style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover' }} />
               <div style={{ padding: '10px 12px' }}>
                 <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3 }}>{g.name}</div>
               </div>

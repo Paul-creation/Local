@@ -73,7 +73,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
 
       {/* 히어로 이미지 */}
       <div className="detail-hero">
-        <img src={game.cover_image_url} alt={game.name} />
+        <img src={(game.card_image_url || game.cover_image_url)} alt={game.name} />
       </div>
       {/* 게임 영상 */}
       {game.video_url && (

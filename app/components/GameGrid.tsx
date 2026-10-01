@@ -334,7 +334,8 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
                     {featured && (
             <Link href={`/games/${featured.id}`} className="hero-card">
               <div className="hero-image-wrap">
-                <img src={featured.cover_image_url} alt={featured.name} />
+                <img src={(featured.card_image_url || featured.cover_image_url)} alt="" aria-hidden="true" className="img-backdrop" />
+                <img src={(featured.card_image_url || featured.cover_image_url)} alt={featured.name} />
               </div>
               <div className="hero-content">
                 <span className="hero-badge">🔥 이번주의 게임</span>
@@ -464,7 +465,7 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
                 return (
                   <Link href={`/games/${game.id}`} key={game.id} className="card" onClick={rememberList} style={isSelected ? { outline: '3px solid var(--accent)', outlineOffset: 2 } : undefined}>
                     <div className="card-image-wrap">
-                      <img src={game.cover_image_url} alt={game.name} />
+                      <img src={(game.card_image_url || game.cover_image_url)} alt={game.name} />
                       {/* COMPARE_V2 */}
                       <button
                         type="button"
