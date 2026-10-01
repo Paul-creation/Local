@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { supabase } from '../lib/supabase';
 import { createClient } from '@supabase/supabase-js';
 
@@ -117,6 +118,24 @@ ${activeSituations.map((s, i) => `${i + 1}. ${s}`).join('\n')}
     console.error('상황별 추천도 생성 실패:', err);
     return [];
   }
+}
+
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ ids?: string }> }): Promise<Metadata> {
+  const { ids: idsParam } = await searchParams;
+  const ids = idsParam?.split(',').slice(0, 3) || [];
+  if (ids.length < 2) return { title: '게임 비교' };
+  const { data } = await supabase.from('games').select('id, name, card_image_url, cover_image_url').in('id', ids);
+  const games = ids.map((id) => (data || []).find((g) => g.id === id)).filter(Boolean) as any[];
+  const title = games.map((g) => g.name).join(' vs ');
+  const desc = '우리 이 중에 뭐 할래? 상황별 추천도·인원·가격을 한눈에 비교해보세요';
+  const image = games[0] ? games[0].card_image_url || games[0].cover_image_url : undefined;
+  return {
+    title: `${title} 비교`,
+    description: desc,
+    robots: { index: false }, // 조합이 무한해서 검색 결과에는 안 올림 (공유 미리보기만)
+    openGraph: { title: `🎮 ${title}`, description: desc, images: image ? [{ url: image }] : undefined },
+    twitter: { card: 'summary_large_image', title: `🎮 ${title}`, description: desc, images: image ? [image] : undefined },
+  };
 }
 
 export default async function ComparePage({ searchParams }: { searchParams: Promise<{ ids?: string }> }) {

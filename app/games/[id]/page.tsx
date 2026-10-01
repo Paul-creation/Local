@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { supabase } from '../../lib/supabase';
 import BackToList from '../../components/BackToList';
 import DiscountChart from '../../components/DiscountChart';
@@ -43,6 +44,34 @@ function parseMinSpec(raw: string | null) {
     result.push({ label, value });
   }
   return result.length > 0 ? result : null;
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const { data: game } = await supabase
+    .from('games')
+    .select('name, description, min_players, max_players, difficulty, tags, is_free, card_image_url, cover_image_url, price_history(price, discount_percent, checked_at)')
+    .eq('id', id)
+    .maybeSingle();
+  if (!game) return { title: '게임을 찾을 수 없어요' };
+
+  const players = game.min_players && game.max_players
+    ? (game.min_players === game.max_players ? `${game.min_players}인` : `${game.min_players}-${game.max_players}인`)
+    : '';
+  const price = getPriceInfo(game);
+  const priceText = game.is_free ? '무료' : price ? (price.discount > 0 ? `${price.formattedFinal} (-${price.discount}%)` : price.formattedFinal) : '';
+  const summary = [players, game.difficulty, priceText].filter(Boolean).join(' · ');
+  const tags = (game.tags || []).slice(0, 3).map((t: string) => '#' + translateTag(t)).join(' ');
+  const desc = [summary, tags, (game.description || '').replace(/\s+/g, ' ').slice(0, 90)].filter(Boolean).join(' | ');
+  const image = game.card_image_url || game.cover_image_url;
+
+  return {
+    title: summary ? `${game.name} — ${summary}` : game.name,
+    description: desc,
+    alternates: { canonical: `/games/${id}` },
+    openGraph: { title: game.name, description: desc, url: `/games/${id}`, type: 'website', images: image ? [{ url: image }] : undefined },
+    twitter: { card: 'summary_large_image', title: game.name, description: desc, images: image ? [image] : undefined },
+  };
 }
 
 export default async function GameDetail({ params }: { params: Promise<{ id: string }> }) {
