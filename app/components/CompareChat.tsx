@@ -46,8 +46,9 @@ export default function CompareChat({ games }: { games: any[] }) {
 
   return (
     <div style={{ marginTop: 32 }}>
-      <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 4 }}>AI에게 물어보기</h2>
-      <p style={{ fontSize: 15, color: 'var(--text-dimmer)', marginBottom: 16 }}>
+      {/* CHAT_SIZE_V2 */}
+      <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 6 }}>AI에게 물어보기</h2>
+      <p style={{ fontSize: 16, color: 'var(--text-dimmer)', marginBottom: 16 }}>
         이 게임들에 대해 뭐든 물어봐 (세션당 최대 5회)
       </p>
 
@@ -60,8 +61,8 @@ export default function CompareChat({ games }: { games: any[] }) {
               onClick={() => ask(q)}
               style={{
                 background: 'var(--bg-card)', border: '1.5px solid var(--border)',
-                borderRadius: 100, padding: '8px 14px',
-                fontSize: 15, color: 'var(--text)', cursor: 'pointer',
+                borderRadius: 100, padding: '10px 18px',
+                fontSize: 16, color: 'var(--text)', cursor: 'pointer',
               }}
             >
               {q}
@@ -74,7 +75,7 @@ export default function CompareChat({ games }: { games: any[] }) {
       {messages.length > 0 && (
         <div style={{
           background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
-          border: '1px solid var(--border-light)', padding: 16,
+          border: '1px solid var(--border-light)', padding: 22,
           marginBottom: 12, display: 'flex', flexDirection: 'column', gap: 12,
         }}>
           {messages.map((m, i) => (
@@ -83,8 +84,8 @@ export default function CompareChat({ games }: { games: any[] }) {
               justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start',
             }}>
               <div style={{
-                maxWidth: '80%', padding: '10px 14px', borderRadius: 12,
-                fontSize: 15, lineHeight: 1.6,
+                maxWidth: '85%', padding: '14px 18px', borderRadius: 16,
+                fontSize: 17, lineHeight: 1.7,
                 background: m.role === 'user' ? 'var(--accent)' : 'var(--bg)',
                 color: m.role === 'user' ? '#fff' : 'var(--text)',
               }}>
@@ -93,7 +94,7 @@ export default function CompareChat({ games }: { games: any[] }) {
             </div>
           ))}
           {loading && (
-            <div style={{ color: 'var(--text-dimmer)', fontSize: 15 }}>생각 중...</div>
+            <div style={{ color: 'var(--text-dimmer)', fontSize: 16 }}>생각 중...</div>
           )}
         </div>
       )}
@@ -108,9 +109,9 @@ export default function CompareChat({ games }: { games: any[] }) {
             onKeyDown={e => e.key === 'Enter' && ask(input)}
             placeholder="궁금한 거 물어봐..."
             style={{
-              flex: 1, padding: '10px 14px', borderRadius: 100,
+              flex: 1, padding: '15px 22px', borderRadius: 100,
               border: '1.5px solid var(--border)', background: 'var(--bg-card)',
-              fontSize: 15, color: 'var(--text)', outline: 'none',
+              fontSize: 17, color: 'var(--text)', outline: 'none',
             }}
           />
           <button
@@ -119,7 +120,7 @@ export default function CompareChat({ games }: { games: any[] }) {
             style={{
               background: 'var(--accent)', color: '#fff',
               border: 'none', borderRadius: 100,
-              padding: '10px 18px', fontSize: 15, fontWeight: 700,
+              padding: '15px 26px', fontSize: 17, fontWeight: 700,
               cursor: loading ? 'not-allowed' : 'pointer',
               opacity: loading ? 0.6 : 1,
             }}
@@ -128,7 +129,7 @@ export default function CompareChat({ games }: { games: any[] }) {
           </button>
         </div>
       ) : (
-        <p style={{ fontSize: 15, color: 'var(--text-dimmer)', textAlign: 'center' }}>
+        <p style={{ fontSize: 16, color: 'var(--text-dimmer)', textAlign: 'center' }}>
           세션당 최대 5회까지 질문할 수 있어요.
         </p>
       )}
