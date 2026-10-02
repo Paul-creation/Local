@@ -133,6 +133,15 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             ))}
           </div>
         )}
+        {game.fun_description && (
+          <p style={{
+            margin: '14px 0 4px', padding: '12px 16px',
+            borderLeft: '4px solid var(--accent)', borderRadius: 8,
+            background: 'var(--bg-card)', fontSize: 17, fontWeight: 600, lineHeight: 1.6,
+          }}>
+            {game.fun_description}
+          </p>
+        )}
         {game.description && <p className="detail-description-v2">{game.description}</p>}
       </div>
 
@@ -194,8 +203,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         )}
         <div className="spec-row">
           <span className="spec-label">솔로 플레이</span>
-          <span className="spec-value" style={{ color: game.solo_playable ? '#4a9e3a' : 'var(--danger)', fontWeight: 700 }}>
-            {game.solo_playable && game.max_players === 1 ? '싱글 플레이 게임' : game.solo_playable ? '솔로 가능' : '멀티 필수'}
+          <span className="spec-value" style={{ color: game.solo_playable == null ? 'var(--text-dim)' : game.solo_playable ? '#4a9e3a' : 'var(--danger)', fontWeight: 700 }}>
+            {game.solo_playable == null ? '정보 없음' : game.solo_playable && game.max_players === 1 ? '싱글 플레이 게임' : game.solo_playable ? '솔로 가능' : '멀티 필수'}
           </span>
         </div>
         <div className="spec-row">
