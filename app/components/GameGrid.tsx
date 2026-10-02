@@ -352,7 +352,9 @@ export default function GameGrid({ games, hideHero = false }: { games: any[], hi
                     ))}
                   </div>
                 )}
-                {featured.description && (
+                {featured.fun_description ? (
+  <p style={{ fontSize: 16, color: 'var(--text)', fontWeight: 600, lineHeight: 1.6, margin: 0 }}>{featured.fun_description}</p>
+) : featured.description && (
   <p style={{ fontSize: 15, color: 'var(--text-dim)', lineHeight: 1.6, margin: 0 }}>
     {featured.description.replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&#39;/g, "'").slice(0, 120)}...
   </p>
