@@ -27,6 +27,7 @@ const GROUPS = {
     'enrich-other-stores',
     'enrich-ai-other',
     'enrich-card-images',
+    'write-fun-descriptions 300',
     'enrich-videos',
     'enrich-update-date',
   ],
@@ -42,13 +43,14 @@ if (!steps) {
 
 const envArgs = fs.existsSync('.env.local') ? ['--env-file=.env.local'] : [];
 
-function run(name) {
+function run(step) {
+  const [name, ...args] = step.split(' ');
   return new Promise((resolve) => {
     const file = `scripts/${name}.mjs`;
     if (!fs.existsSync(file)) return resolve({ name, status: '건너뜀 (파일 없음)', ok: true, sec: 0 });
     const started = Date.now();
     console.log(`\n━━━━━━━━ ▶ ${name} ━━━━━━━━`);
-    const child = spawn('node', [...envArgs, file], { stdio: 'inherit' });
+    const child = spawn('node', [...envArgs, file, ...args], { stdio: 'inherit' });
     const timer = setTimeout(() => child.kill('SIGTERM'), STEP_TIMEOUT_MIN * 60 * 1000);
     child.on('exit', (code, signal) => {
       clearTimeout(timer);
