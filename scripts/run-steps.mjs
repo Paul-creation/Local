@@ -24,6 +24,7 @@ const GROUPS = {
     'enrich-tags',
     'fix-data-gaps',
     'fill-tags-desc',
+    'normalize-tags',
     'enrich-other-stores',
     'enrich-ai-other',
     'enrich-card-images',
