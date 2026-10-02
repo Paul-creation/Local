@@ -50,7 +50,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const { data: game } = await supabase
     .from('games')
-    .select('name, description, min_players, max_players, difficulty, tags, is_free, card_image_url, cover_image_url, price_history(price, discount_percent, checked_at)')
+    .select('name, description, fun_description, min_players, max_players, difficulty, tags, is_free, card_image_url, cover_image_url, price_history(price, discount_percent, checked_at)')
     .eq('id', id)
     .maybeSingle();
   if (!game) return { title: '게임을 찾을 수 없어요' };
@@ -62,7 +62,10 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const priceText = game.is_free ? '무료' : price ? (price.discount > 0 ? `${price.formattedFinal} (-${price.discount}%)` : price.formattedFinal) : '';
   const summary = [players, game.difficulty, priceText].filter(Boolean).join(' · ');
   const tags = (game.tags || []).slice(0, 3).map((t: string) => '#' + translateTag(t)).join(' ');
-  const desc = [summary, tags, (game.description || '').replace(/\s+/g, ' ').slice(0, 90)].filter(Boolean).join(' | ');
+  // 한 줄 소개가 있으면 그걸 맨 앞에 (카톡 미리보기에서 제일 먼저 보이는 문장)
+  const desc = game.fun_description
+    ? [game.fun_description, summary].filter(Boolean).join(' | ')
+    : [summary, tags, (game.description || '').replace(/\s+/g, ' ').slice(0, 90)].filter(Boolean).join(' | ');
   const image = game.card_image_url || game.cover_image_url;
 
   return {
