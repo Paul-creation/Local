@@ -28,6 +28,7 @@ const GROUPS = {
     'normalize-tags',
     'enrich-other-stores',
     'enrich-ai-other',
+    'fill-game-details',
     'enrich-card-images',
     'enrich-hero-images',
     'write-fun-descriptions 300',
