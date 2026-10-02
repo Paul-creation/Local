@@ -1352,3 +1352,10 @@ img { display: block; }
   .spec-row, .spec-row:first-child { padding: 12px; }
   .spec-value { font-size: 15px; }
 }
+
+
+/* SPEC_GROUPS_CSS — 스펙 묶음 제목 */
+.spec-group { margin-bottom: 8px; }
+.spec-group-title { font-size: 17px; font-weight: 800; margin: 18px 0 10px; letter-spacing: -0.01em; }
+.spec-group .spec-list { margin-bottom: 12px; }
+.spec-group:not(:has(.spec-row)) { display: none; }

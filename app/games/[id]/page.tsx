@@ -189,7 +189,10 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       )}
 
       {/* 스펙 리스트 */}
-      <div className="spec-list">
+      {/* SPEC_GROUPS — 플레이 / 게임 정보 / 스팀·가격 (항목이 없는 묶음은 CSS로 숨김) */}
+      <section className="spec-group">
+        <h3 className="spec-group-title">🎮 플레이 정보</h3>
+        <div className="spec-list">
         <div className="spec-row">
           <span className="spec-label">인원수</span>
           <span className="spec-value">
@@ -220,6 +223,19 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             <span className="spec-value">{game.story_length}</span>
           </div>
         )}
+        {game.is_esports && (
+  <div className="spec-row">
+    <span className="spec-label">e스포츠</span>
+    <span className="spec-value" style={{ color: '#4a9e3a', fontWeight: 700 }}>
+      공식 대회 있음
+    </span>
+  </div>
+)}
+        </div>
+      </section>
+      <section className="spec-group">
+        <h3 className="spec-group-title">📋 게임 정보</h3>
+        <div className="spec-list">
         {game.release_date && (
           <div className="spec-row">
             <span className="spec-label">출시일</span>
@@ -228,7 +244,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             </span>
           </div>
         )}
-                {game.last_updated && (
+        {game.last_updated && (
           <div className="spec-row">
             <span className="spec-label">마지막 업데이트</span>
             <span className="spec-value" style={{
@@ -266,42 +282,33 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             <span className="spec-value">{game.storage_gb} GB</span>
           </div>
         )}
-        {game.has_workshop && (
-  <div className="spec-row">
-    <span className="spec-label">모드 지원</span>
-    <span className="spec-value" style={{ color: '#4a9e3a', fontWeight: 700 }}>
-      Steam 창작마당 지원
-    </span>
-  </div>
-)}
-{game.is_esports && (
-  <div className="spec-row">
-    <span className="spec-label">e스포츠</span>
-    <span className="spec-value" style={{ color: '#4a9e3a', fontWeight: 700 }}>
-      공식 대회 있음
-    </span>
-  </div>
-)}
-        {game.steam_appid && game.family_sharing !== null && game.family_sharing !== undefined && (
+        {game.developer && (
           <div className="spec-row">
-            <span className="spec-label">Steam 가족 공유</span>
-            <span className="spec-value" style={{ color: game.family_sharing ? '#4a9e3a' : 'var(--danger)' }}>
-              {game.family_sharing ? '공유 가능' : '공유 불가'}
+            <span className="spec-label">개발사</span>
+            <span className="spec-value">{game.developer}</span>
+          </div>
+        )}
+        {game.critic_score && (
+          <div className="spec-row">
+            <span className="spec-label">평론가 점수</span>
+            <span className="spec-value">{game.critic_score}점</span>
+          </div>
+        )}
+        {subGenres.length > 0 && (
+          <div className="spec-row">
+            <span className="spec-label">장르</span>
+            <span className="spec-value spec-tags">
+              {subGenres.map((g) => (
+                <span key={g} className="badge-neutral">{g}</span>
+              ))}
             </span>
           </div>
         )}
-        {game.achievement_count && (
-          <div className="spec-row">
-            <span className="spec-label">도전과제</span>
-            <span className="spec-value">{game.achievement_count.toLocaleString('ko-KR')}개</span>
-          </div>
-        )}
-        {game.has_dlc && (
-          <div className="spec-row">
-            <span className="spec-label">DLC</span>
-            <span className="spec-value">있음</span>
-          </div>
-        )}
+        </div>
+      </section>
+      <section className="spec-group">
+        <h3 className="spec-group-title">💰 스팀 · 가격</h3>
+        <div className="spec-list">
         {!game.is_free && game.lowest_price && (
           <div className="spec-row">
             <span className="spec-label">역대 최저가</span>
@@ -315,29 +322,37 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             </span>
           </div>
         )}
-        {game.critic_score && (
+        {game.steam_appid && game.family_sharing !== null && game.family_sharing !== undefined && (
           <div className="spec-row">
-            <span className="spec-label">평론가 점수</span>
-            <span className="spec-value">{game.critic_score}점</span>
-          </div>
-        )}
-        {game.developer && (
-          <div className="spec-row">
-            <span className="spec-label">개발사</span>
-            <span className="spec-value">{game.developer}</span>
-          </div>
-        )}
-        {subGenres.length > 0 && (
-          <div className="spec-row">
-            <span className="spec-label">장르</span>
-            <span className="spec-value spec-tags">
-              {subGenres.map((g) => (
-                <span key={g} className="badge-neutral">{g}</span>
-              ))}
+            <span className="spec-label">Steam 가족 공유</span>
+            <span className="spec-value" style={{ color: game.family_sharing ? '#4a9e3a' : 'var(--danger)' }}>
+              {game.family_sharing ? '공유 가능' : '공유 불가'}
             </span>
           </div>
         )}
-      </div>
+        {game.has_workshop && (
+  <div className="spec-row">
+    <span className="spec-label">모드 지원</span>
+    <span className="spec-value" style={{ color: '#4a9e3a', fontWeight: 700 }}>
+      Steam 창작마당 지원
+    </span>
+  </div>
+)}
+        {game.achievement_count && (
+          <div className="spec-row">
+            <span className="spec-label">도전과제</span>
+            <span className="spec-value">{game.achievement_count.toLocaleString('ko-KR')}개</span>
+          </div>
+        )}
+        {game.has_dlc && (
+          <div className="spec-row">
+            <span className="spec-label">DLC</span>
+            <span className="spec-value">있음</span>
+          </div>
+        )}
+        </div>
+      </section>
+
 
       {/* 리뷰 패널 */}
       {(game.review_positive_percent || game.critic_score || game.heat_rank) && (
