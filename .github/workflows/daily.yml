@@ -1,0 +1,27 @@
+name: 매일 갱신 (가격·할인·접속자)
+
+on:
+  schedule:
+    - cron: '0 18 * * *'   # 매일 한국 시간 새벽 3시
+  workflow_dispatch:        # Actions 탭에서 직접 실행 가능
+
+concurrency:
+  group: data-jobs          # 매일·매주 작업이 겹치지 않게 순서대로
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: 환경변수 파일 만들기
+        run: printf '%s\n' "$ENV_FILE" > .env.local
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+      - run: node scripts/run-steps.mjs daily

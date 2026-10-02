@@ -1,0 +1,27 @@
+name: 매주 갱신 (새 게임·정보 보강)
+
+on:
+  schedule:
+    - cron: '0 17 * * 4'    # 매주 금요일 한국 시간 새벽 2시 (에픽 무료 게임 바뀐 직후)
+  workflow_dispatch:        # Actions 탭에서 직접 실행 가능
+
+concurrency:
+  group: data-jobs
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: 환경변수 파일 만들기
+        run: printf '%s\n' "$ENV_FILE" > .env.local
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+      - run: node scripts/run-steps.mjs weekly
