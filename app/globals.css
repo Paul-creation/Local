@@ -1318,3 +1318,37 @@ img { display: block; }
   object-position: center !important;
   z-index: 1;
 }
+
+
+/* SPEC_GRID_V1 — 상세 스펙을 카드 타일로 (이름 바로 아래 값) */
+.spec-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 8px 0 28px;
+}
+.spec-row, .spec-row:first-child {
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  background: var(--bg-card);
+}
+.spec-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--text) 62%, transparent);
+}
+.spec-value { font-size: 17px; font-weight: 700; text-align: left; line-height: 1.4; }
+.spec-row:has(.spec-tags) { grid-column: 1 / -1; }
+.spec-value.spec-tags { justify-content: flex-start; }
+.detail-accordion .spec-list { margin-bottom: 0; }
+
+@media (max-width: 640px) {
+  .spec-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .spec-row, .spec-row:first-child { padding: 12px; }
+  .spec-value { font-size: 15px; }
+}
