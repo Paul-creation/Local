@@ -18,6 +18,7 @@ const GROUPS = {
     'bulk-import',
     'import-other-stores',
     'check-delisted',
+    'find-non-games',
     'enrich-fallback',
     'enrich-igdb',
     'enrich-specs',
