@@ -12,11 +12,16 @@ function getVideoId(url: string | null): string | null {
 // 고화질부터 시도하고, 없으면 다음 단계로
 const THUMB_SIZES = ['maxresdefault', 'sddefault', 'hqdefault'];
 
-export default function YouTubeLite({ url, title }: { url: string | null; title: string }) {
+export default function YouTubeLite({ url, title, fallbackImage }: { url: string | null; title: string; fallbackImage?: string }) {
   const [playing, setPlaying] = useState(false);
   const [thumbIndex, setThumbIndex] = useState(0);
   const id = getVideoId(url);
-  if (!id || thumbIndex >= THUMB_SIZES.length) return null;
+  // 영상이 없거나 삭제됐으면 사진으로 대신 (사진도 없으면 아무것도 안 보여줌)
+  if (!id || thumbIndex >= THUMB_SIZES.length) {
+    return fallbackImage
+      ? <img src={fallbackImage} alt={title} style={{ width: '100%', display: 'block', borderRadius: 12 }} />
+      : null;
+  }
 
   const nextThumb = () => setThumbIndex((i) => i + 1);
 

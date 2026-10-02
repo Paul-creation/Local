@@ -29,6 +29,7 @@ const GROUPS = {
     'enrich-other-stores',
     'enrich-ai-other',
     'enrich-card-images',
+    'enrich-hero-images',
     'write-fun-descriptions 300',
     'enrich-videos',
     'enrich-update-date',

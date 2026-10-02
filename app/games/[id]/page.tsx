@@ -103,14 +103,14 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
     <main className="page">
       <BackToList />
 
-      {/* 히어로 이미지 */}
-      <div className="detail-hero">
-        <img src={(game.card_image_url || game.cover_image_url)} alt={game.name} />
-      </div>
-      {/* 게임 영상 */}
-      {game.video_url && (
+      {/* TOP_MEDIA — 영상이 있으면 영상만, 없으면 사진만 */}
+      {game.video_url ? (
         <div className="video-section">
-          <YouTubeLite url={game.video_url} title={`${game.name} 트레일러`} />
+          <YouTubeLite url={game.video_url} title={`${game.name} 트레일러`} fallbackImage={game.hero_image_url || game.card_image_url || game.cover_image_url} />
+        </div>
+      ) : (
+        <div className="detail-hero">
+          <img src={game.hero_image_url || game.card_image_url || game.cover_image_url} alt={game.name} />
         </div>
       )}
       {/* 제목 + 평가 배지 + 태그 + 설명 */}
