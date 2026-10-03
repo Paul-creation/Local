@@ -6,6 +6,7 @@ import BannerCarousel from '../BannerCarousel';
 import HotChart from './HotChart';
 import type { HotTab } from '../../lib/hotChart';
 import { getPriceInfo } from '../../lib/price';
+import { playersText } from '../../lib/players';
 import type { PostListItem } from '../../lib/community';
 import PopularPosts from './PopularPosts';
 
@@ -32,7 +33,7 @@ export default function HomeSections({ games, hotTabs, weekly, popularPosts = []
                 <h2>{featured.name}</h2>
                 <p className="hero-tagline">이번주에 가장 인기있던 작품, 친구들하고 어때요?</p>
                 <div className="hero-meta">
-                  {featured.min_players && featured.max_players ? `${featured.min_players}-${featured.max_players}인` : ''}
+                  {playersText(featured)}
                   {featured.difficulty ? ` · ${featured.difficulty}` : ''}
                 </div>
                 {featured.tags?.length > 0 && (

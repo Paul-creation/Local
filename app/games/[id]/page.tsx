@@ -14,6 +14,7 @@ import GameVotes from '../../components/GameVotes';
 import VideoPreviewSection, { type CoopVideo } from '../../components/VideoPreviewSection';
 import ShareButton from '../../components/ShareButton';
 import { getTop10Ids } from '../../lib/hotChart';
+import { playersText } from '../../lib/players';
 import GameOpinions from '../../components/community/GameOpinions';
 
 export const dynamic = 'force-dynamic';
@@ -60,9 +61,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     .maybeSingle();
   if (!game) return { title: '게임을 찾을 수 없어요' };
 
-  const players = game.min_players && game.max_players
-    ? (game.min_players === game.max_players ? `${game.min_players}인` : `${game.min_players}-${game.max_players}인`)
-    : '';
+  const players = playersText(game);
   const price = getPriceInfo(game);
   const priceText = game.is_free ? '무료' : price ? (price.discount > 0 ? `${price.formattedFinal} (-${price.discount}%)` : price.formattedFinal) : '';
   const summary = [players, game.difficulty, priceText].filter(Boolean).join(' · ');
@@ -221,7 +220,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         <div className="spec-row">
           <span className="spec-label">인원수</span>
           <span className="spec-value">
-            {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : '인원 정보 확인 중'}
+            {playersText(game) || '인원 정보 확인 중'}
           </span>
         </div>
         {game.recommended_players && (
