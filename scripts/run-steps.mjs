@@ -37,6 +37,7 @@ const GROUPS = {
     'fill-search-names', // 합방 영상 검색용 한국어 이름 (새 대상만, Haiku 1번)
     'fetch-coop-videos', // 인기 멀티 게임 50개의 합방 영상 (YouTube 게임당 101~202 사용)
     'enrich-update-date',
+    'pick-weekly-featured', // 메인 "이번주의 게임" 선정 (이번 주 기록이 이미 있으면 건너뜀)
   ],
 };
 
