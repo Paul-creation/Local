@@ -4,18 +4,13 @@
 //       node --env-file=.env.local scripts/find-non-games.mjs --all      (게임 전체 찾기, 약 15분)
 //       node --env-file=.env.local scripts/find-non-games.mjs --delete   (찾은 것 삭제, --all과 같이 써도 됨)
 import { createClient } from '@supabase/supabase-js';
+import { isNonGame } from './lib/non-game.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const DELETE = process.argv.includes('--delete');
 const ALL = process.argv.includes('--all');
 const RECENT_DAYS = 14;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-const SOFTWARE = ['Utilities', 'Design & Illustration', 'Animation & Modeling', 'Audio Production',
-  'Video Production', 'Photo Editing', 'Web Publishing', 'Education', 'Software Training',
-  'Accounting', 'Game Development'];
-const GAME = ['Action', 'Adventure', 'Casual', 'RPG', 'Simulation', 'Strategy', 'Sports',
-  'Racing', 'Massively Multiplayer', 'Indie'];
 
 // 매주 갱신에서는 새로 들어온 게임만 보면 충분하다. 전체를 다시 보려면 --all
 let query = supabase.from('games').select('id, name, steam_appid').not('steam_appid', 'is', null);
@@ -33,9 +28,7 @@ for (const g of games) {
   try {
     const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${g.steam_appid}&cc=kr&l=english&filters=genres`);
     const genres = ((await res.json())?.[g.steam_appid]?.data?.genres || []).map((x) => x.description);
-    const soft = genres.filter((x) => SOFTWARE.includes(x));
-    const isGame = genres.some((x) => GAME.includes(x));
-    if (soft.length && !isGame) {
+    if (isNonGame(genres)) {
       found.push(g);
       console.log(`🔧 ${g.name} — ${genres.join(', ')}`);
     }

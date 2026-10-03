@@ -5,12 +5,14 @@
 // - 결과는 scripts/.cache/verify-players.json에 쌓아서, 이미 확인한 게임은 다시 묻지 않음
 // 실행: node --env-file=.env.local scripts/verify-players-web.mjs            (상위 10개)
 //       node --env-file=.env.local scripts/verify-players-web.mjs --limit 200
+//       node --env-file=.env.local scripts/verify-players-web.mjs --ids <id>,<id>   (지정한 게임만, 인기·인원 조건 없이)
 // 비용: 게임당 약 $0.05~0.12 (Sonnet 토큰 + 웹 검색 최대 2회, 회당 $0.01)
 import fs from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const LIMIT = Number(process.argv[process.argv.indexOf('--limit') + 1]) || 10;
+const IDS = process.argv.includes('--ids') ? process.argv[process.argv.indexOf('--ids') + 1].split(',') : null;
 const CACHE = 'scripts/.cache/verify-players.json';
 const MODEL = 'claude-sonnet-5-5';
 // 1M 토큰당 가격 (입력 $2, 출력 $10, 캐시 쓰기 1.25배, 캐시 읽기 $0.20) + 웹 검색 1회 $0.01
@@ -19,9 +21,15 @@ const costOf = (u) =>
   + (u.server_tool_use?.web_search_requests || 0) * 0.01;
 
 async function getTargets() {
+  const cols = 'id, name, release_date, developer, heat_rank, current_players, min_players, max_players, solo_playable, tags';
+  if (IDS) {
+    const { data, error } = await supabase.from('games').select(cols).in('id', IDS);
+    if (error) throw new Error(`게임 목록을 못 불러옴: ${error.message}`);
+    return data;
+  }
   const { data, error } = await supabase
     .from('games')
-    .select('id, name, release_date, developer, heat_rank, current_players, min_players, max_players, solo_playable, tags')
+    .select(cols)
     .gte('max_players', 2);
   if (error) throw new Error(`게임 목록을 못 불러옴: ${error.message}`);
   return data

@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { isNonGame } from './lib/non-game.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -54,11 +55,13 @@ async function main() {
       if (existingAppids.has(appid)) continue;
       if (delistedAppids.has(appid)) continue;
 
-      // 영어로 출시일 확인
+      // 영어로 출시일·장르 확인 (한국어 응답은 장르 이름도 한국어라 영어 기준 비교가 안 됨)
       let releaseYear = null;
+      let enGenres = [];
       try {
         const enRes = await fetch(`https://store.steampowered.com/api/appdetails?appids=${appid}&cc=kr&l=english`);
         const enJson = await enRes.json();
+        enGenres = (enJson[appid]?.data?.genres || []).map((g) => g.description);
         const dateStr = enJson[appid]?.data?.release_date?.date;
         if (dateStr) {
           const year = new Date(dateStr).getFullYear();
@@ -89,8 +92,8 @@ async function main() {
         continue;
       }
 
-      const genres = (data.genres || []).map(g => g.description);
-      if (EXCLUDE_GENRES.some(e => genres.includes(e))) {
+      // 성인·영상 편집 등 제외 장르, 그리고 게임 장르 없이 소프트웨어 장르만 있는 프로그램 (find-non-games와 같은 기준)
+      if (EXCLUDE_GENRES.some(e => enGenres.includes(e)) || isNonGame(enGenres)) {
         await new Promise((r) => setTimeout(r, 300));
         continue;
       }

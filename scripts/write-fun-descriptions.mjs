@@ -2,13 +2,15 @@
 // 인기 게임에 "한 줄 소개"(퀘스트 문구 느낌의 재미있는 설명) 쓰기 — 원래 설명은 그대로 두고 fun_description에 따로 저장
 // 실행: node --env-file=.env.local scripts/write-fun-descriptions.mjs        (기본 20개)
 //       node --env-file=.env.local scripts/write-fun-descriptions.mjs 50     (개수 지정)
+//       node --env-file=.env.local scripts/write-fun-descriptions.mjs --ids <id>,<id>   (지정한 게임만, 이미 있어도 다시 씀)
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
-const LIMIT = Number(process.argv[2]) || 20;
+const IDS = process.argv.includes('--ids') ? process.argv[process.argv.indexOf('--ids') + 1].split(',') : null;
+const LIMIT = (!IDS && Number(process.argv[2])) || 20;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const STYLE = `너는 게임 소개 문구 작가야. 해적 게임 퀘스트 문구처럼, 플레이어에게 임무를 건네는 말투로 한국어 한 줄 소개를 써.
@@ -55,9 +57,12 @@ async function write(game) {
 async function main() {
   if (!process.env.ANTHROPIC_API_KEY) return console.error('.env.local에 ANTHROPIC_API_KEY가 없어요');
 
-  const { data: games, error } = await supabase
+  const cols = 'id, name, tags, min_players, max_players, recommended_players, solo_playable, difficulty, activities, description, heat_rank, current_players';
+  const { data: games, error } = IDS
+    ? await supabase.from('games').select(cols).in('id', IDS)
+    : await supabase
     .from('games')
-    .select('id, name, tags, min_players, max_players, recommended_players, solo_playable, difficulty, activities, description, heat_rank, current_players')
+    .select(cols)
     .is('fun_description', null)
     .order('heat_rank', { ascending: true, nullsFirst: false })
     .order('current_players', { ascending: false, nullsFirst: false })
