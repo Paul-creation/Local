@@ -1,4 +1,8 @@
+// scripts/enrich-specs.mjs
+// 스팀 상점 정보(사양·출시일·한국어·용량 등)로 정보가 빈 게임만 채우기 — 이미 있는 값은 덮어쓰지 않음
+// 실행: node --env-file=.env.local scripts/enrich-specs.mjs
 import { createClient } from '@supabase/supabase-js';
+import { steamGet, appdetailsUrl, SteamLimitError } from './lib/steam.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -65,12 +69,16 @@ function parseStorage(html) {
   return num;
 }
 
+// 한국어 상점의 "2020년 3월 5일" 형식. 못 읽으면 null
+function parseKoreanDate(dateStr) {
+  const m = dateStr?.match(/(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/);
+  if (!m) return null;
+  return `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`;
+}
+
 async function getEnglishReleaseDate(appid) {
   try {
-    const res = await fetch(
-      `https://store.steampowered.com/api/appdetails?appids=${appid}&cc=kr&l=english`
-    );
-    const json = await res.json();
+    const json = await steamGet(appdetailsUrl(appid, 'english'));
     const dateStr = json[appid]?.data?.release_date?.date;
     if (!dateStr) return null;
     const d = new Date(dateStr);
@@ -124,11 +132,18 @@ async function getLowestPrice(gameId) {
   } catch { return null; }
 }
 
+// 이 칸들이 비어 있으면 아직 스팀 정보를 못 채운 게임으로 본다
+const EMPTY_FILTER = 'min_spec.is.null,release_date.is.null';
+// 스팀 정보를 처음 채울 때만 정해지는 값 (추가할 때 기본값 false라서 빈 게임이면 스팀 값으로 바꾼다)
+const STEAM_FLAGS = ['has_dlc', 'family_sharing', 'is_early_access', 'has_workshop', 'is_esports'];
+
 async function main() {
-  const { data: games } = await supabase
+  const { data: games, error: loadError } = await supabase
     .from('games')
-    .select('id, name, steam_appid, tags');
-  if (!games) return;
+    .select('id, name, steam_appid, tags, min_spec, recommended_spec, release_date, korean_support, storage_gb, achievement_count, min_players, max_players, solo_playable, review_positive_percent, review_total, lowest_price, lowest_price_date')
+    .not('steam_appid', 'is', null)
+    .or(EMPTY_FILTER);
+  if (loadError) return console.error(`❌ 게임 목록을 못 불러옴: ${loadError.message}`);
 
   // 1인 게임 solo_playable 자동 수정 (루프 전에 한 번만)
   await supabase
@@ -138,15 +153,31 @@ async function main() {
     .eq('max_players', 1)
     .eq('solo_playable', false);
   console.log('✅ 1인 게임 solo_playable 자동 수정 완료');
+  console.log(`정보가 빈 스팀 게임 ${games.length}개 (약 ${Math.ceil(games.length * 2.5 / 60)}분)\n`);
+
+  let ok = 0;
+  let noInfo = 0;
+  let limited = 0;
+  let failed = 0;
 
   for (const game of games) {
-    const res = await fetch(
-      `https://store.steampowered.com/api/appdetails?appids=${game.steam_appid}&cc=kr&l=korean`
-    );
-    const json = await res.json();
-    if (!json || !json[game.steam_appid]?.success) {
-      console.log(`실패: ${game.name}`);
-      await new Promise((r) => setTimeout(r, 600));
+    let json;
+    try {
+      json = await steamGet(appdetailsUrl(game.steam_appid));
+    } catch (e) {
+      if (e instanceof SteamLimitError) {
+        console.log(`⏳ 요청 제한: ${game.name} — ${e.message}`);
+        limited++;
+      } else {
+        console.log(`❌ 실패: ${game.name} — ${e.message}`);
+        failed++;
+      }
+      continue;
+    }
+    if (!json?.[game.steam_appid]?.success) {
+      // HTTP 200인데 정보가 없음 (판매 중단·지역 제한 등)
+      console.log(`➖ 스팀에 정보 없음: ${game.name} (${game.steam_appid})`);
+      noInfo++;
       continue;
     }
     const data = json[game.steam_appid].data;
@@ -171,8 +202,9 @@ async function main() {
       soloPlayable = false;
     }
 
-    const [releaseDate, reviews, achievements, lowestPriceData] = await Promise.all([
-      getEnglishReleaseDate(game.steam_appid),
+    // 출시일은 한국어 응답에서 먼저 읽고, 못 읽을 때만 영어로 한 번 더 요청
+    const releaseDate = parseKoreanDate(data.release_date?.date) ?? await getEnglishReleaseDate(game.steam_appid);
+    const [reviews, achievements, lowestPriceData] = await Promise.all([
       getReviewStats(game.steam_appid),
       getAchievementCount(game.steam_appid),
       getLowestPrice(game.id),
@@ -182,49 +214,49 @@ async function main() {
 
     const currentTags = game.tags || [];
     const lowSpec = isLowSpec(minSpec);
-    let updatedTags = [...currentTags];
-    if (lowSpec && !updatedTags.includes('저사양')) {
-      updatedTags = [...updatedTags, '저사양'];
-    }
 
-    const update = {
+    const found = {
       min_spec: minSpec,
       recommended_spec: parseMinSpecOnly(data.pc_requirements?.recommended),
       release_date: releaseDate,
       korean_support: parseKoreanSupport(data.supported_languages, data.full_audio_languages),
       storage_gb: parseStorage(data.pc_requirements?.minimum),
+      achievement_count: achievements,
+      min_players: minPlayers,
+      max_players: maxPlayers,
+      solo_playable: soloPlayable,
+      review_positive_percent: reviews?.percent ?? null,
+      review_total: reviews?.total ?? null,
+      lowest_price: lowestPriceData?.price ?? null,
+      lowest_price_date: lowestPriceData?.date ?? null,
+    };
+    // 빈 칸만 채운다 (다른 스크립트나 직접 넣은 값은 그대로)
+    const update = Object.fromEntries(
+      Object.entries(found).filter(([k, v]) => v !== null && v !== undefined && game[k] == null)
+    );
+    Object.assign(update, {
       has_dlc: (data.dlc?.length ?? 0) > 0,
       family_sharing: parseFamilySharing(data.categories),
       is_early_access: data.genres?.some((g) => g.id === '70') ?? false,
-      achievement_count: achievements,
       has_workshop: categoryIds.includes(30),
       is_esports: categoryIds.includes(24),
-      tags: updatedTags,
-      ...(minPlayers !== null && { min_players: minPlayers }),
-      ...(maxPlayers !== null && { max_players: maxPlayers }),
-      ...(soloPlayable !== null && { solo_playable: soloPlayable }),
-      ...(reviews && {
-        review_positive_percent: reviews.percent,
-        review_total: reviews.total,
-      }),
-      ...(lowestPriceData && {
-        lowest_price: lowestPriceData.price,
-        lowest_price_date: lowestPriceData.date,
-      }),
-    };
+    });
+    if (lowSpec && !currentTags.includes('저사양')) update.tags = [...currentTags, '저사양'];
 
     const { error } = await supabase.from('games').update(update).eq('id', game.id);
 
     if (error) {
-      console.error(`실패 (${game.name}):`, error.message);
+      console.log(`❌ 저장 실패 (${game.name}): ${error.message}`);
+      failed++;
     } else {
+      ok++;
       console.log(
-        `✅ ${game.name}: 출시일 ${releaseDate ?? 'null'} | 한국어 ${update.korean_support} | 용량 ${update.storage_gb ?? '?'}GB | 솔로 ${soloPlayable}`
+        `✅ ${game.name}: 출시일 ${releaseDate ?? 'null'} | 한국어 ${found.korean_support} | 용량 ${found.storage_gb ?? '?'}GB | 솔로 ${soloPlayable} | 채운 칸 ${Object.keys(update).filter((k) => !STEAM_FLAGS.includes(k)).length}개`
       );
     }
-
-    await new Promise((r) => setTimeout(r, 1200));
   }
+
+  console.log(`\n완료 — 성공 ${ok}개 · 스팀에 정보 없음 ${noInfo}개 · 요청 제한 ${limited}개 · 기타 실패 ${failed}개`);
 }
 
 main();

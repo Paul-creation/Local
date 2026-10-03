@@ -12,6 +12,7 @@ const GROUPS = {
     'backfill-price-history-other',
     'enrich-players',
     'enrich-itad-heat',
+    'enrich-videos 90', // YouTube 하루 한도 안에서 매일 조금씩
   ],
   // 매주: 새 게임 수집 + 게임 정보 보강
   weekly: [
@@ -32,7 +33,6 @@ const GROUPS = {
     'enrich-card-images',
     'enrich-hero-images',
     'write-fun-descriptions 300',
-    'enrich-videos',
     'enrich-update-date',
   ],
 };
