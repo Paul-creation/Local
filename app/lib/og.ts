@@ -28,3 +28,6 @@ export function playersText(g: { min_players?: number | null; max_players?: numb
   if (!g.min_players || !g.max_players) return '';
   return g.min_players === g.max_players ? `${g.min_players}인` : `${g.min_players}-${g.max_players}인`;
 }
+
+// 메시지 앱마다 미리보기를 정사각형·4:3 등으로 가운데만 잘라 보여줘서, 핵심 내용은 가운데 600x600 안에만 둔다
+export const OG_SAFE = 600;
