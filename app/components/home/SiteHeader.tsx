@@ -6,6 +6,7 @@ import { SITE_NAME } from '../../lib/site';
 const MENU = [
   { href: '/', label: '홈' },
   { href: '/compare', label: '비교' },
+  { href: '/community', label: '커뮤니티' },
 ];
 
 export default function SiteHeader() {

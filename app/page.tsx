@@ -3,6 +3,7 @@ import GameGrid from './components/GameGrid';
 import { Suspense } from 'react';
 import { getHotChart } from './lib/hotChart';
 import { getWeeklyFeatured } from './lib/weeklyFeatured';
+import { getPopularPosts } from './lib/community';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,7 +13,8 @@ export default async function Home() {
   // 긴 설명은 이번주의 게임·추천 배너에만 쓰므로 그 게임들만 따로 가져와 합친다.
   // 🔥 지금 뜨는 게임은 메인 select를 늘리지 않고 필요한 게임·기록만 따로 (lib/hotChart)
   // 이번주의 게임도 featured_games에서 그 게임 1개만 따로 (lib/weeklyFeatured). 기록이 없으면 featured 칸으로
-  const [{ data: list }, { data: descs }, hot, weekly] = await Promise.all([
+  // 인기 게시물: 최근 7일 추천+댓글 순 5개 (5개 미만이면 빈 배열 → 섹션 숨김)
+  const [{ data: list }, { data: descs }, hot, weekly, popularPosts] = await Promise.all([
     supabase
       .from('games')
       .select(`
@@ -32,6 +34,7 @@ export default async function Home() {
       .or('featured.eq.true,is_casual_party.eq.true'),
     getHotChart().catch(() => ({ tabs: [], top10Ids: [] as string[] })),
     getWeeklyFeatured().catch(() => null),
+    getPopularPosts().catch(() => []),
   ]);
   const descById = new Map((descs || []).map((d) => [d.id, d]));
   const games = (list || []).map((g) => ({ ...g, ...descById.get(g.id) }));
@@ -39,11 +42,12 @@ export default async function Home() {
   return (
     <main className="page">
       <Suspense>
-        <GameGrid games={games} hotTabs={hot.tabs} top10Ids={hot.top10Ids} weekly={weekly} />
+        <GameGrid games={games} hotTabs={hot.tabs} top10Ids={hot.top10Ids} weekly={weekly} popularPosts={popularPosts} />
       </Suspense>
       <footer style={{ textAlign: 'center', padding: '40px 0 20px', color: 'var(--text-dimmer)', fontSize: '13px' }}>
         <p style={{ marginBottom: 4, fontWeight: 700, color: 'var(--text-dim)' }}>사이트 이름 미정</p>
         <p>© 2026 The Circles. All rights reserved.</p>
+        <p style={{ marginTop: 6 }}><a href="/community/policy" style={{ color: 'inherit', textDecoration: 'underline' }}>커뮤니티 운영정책</a></p>
       </footer>
     </main>
   );

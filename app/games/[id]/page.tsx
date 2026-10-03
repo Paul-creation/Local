@@ -14,6 +14,7 @@ import GameVotes from '../../components/GameVotes';
 import VideoPreviewSection, { type CoopVideo } from '../../components/VideoPreviewSection';
 import ShareButton from '../../components/ShareButton';
 import { getTop10Ids } from '../../lib/hotChart';
+import GamePosts from '../../components/community/GamePosts';
 
 export const dynamic = 'force-dynamic';
 
@@ -522,6 +523,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </section>
       )}
 <GameVotes gameId={game.id} />
+      <GamePosts gameId={game.id} />
             {/* 할인 전적 */}
       {!game.is_free && priceHistory.length === 1 && price && (
         <section className="detail-section-v2">

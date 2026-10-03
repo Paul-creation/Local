@@ -33,6 +33,20 @@ function checkCode() {
     read(p).includes(mark) ? ok(label) : bad(`${label} (${p})`, fix);
   }
 
+  // 게시판: 쓰기는 서버 API(service role)로만, 브라우저 코드는 Supabase에 직접 쓰지 않음
+  read('app/lib/community.ts').includes('SUPABASE_SERVICE_ROLE_KEY') ? ok('게시판 서버 모듈이 service role 사용') : bad('게시판 서버 모듈 없음 (app/lib/community.ts)');
+  read('app/api/admin/community/route.ts').match(/isAdmin\(req\)/g)?.length >= 3 ? ok('게시판 관리자 API 인증') : bad('게시판 관리자 API에 인증 누락 (app/api/admin/community/route.ts)');
+  const clientFiles = execSync("grep -rlE \"^'use client'|^\\\"use client\\\"\" app --include=*.ts --include=*.tsx || true").toString().trim().split('\n').filter(Boolean);
+  const leaky = clientFiles.filter((f) => {
+    const src = read(f);
+    return /\.from\(['"](posts|post_comments|post_likes|post_reports)['"]\)/.test(src) ||
+      /^import\s+(?!type\b)[^;]*from\s+['"][./]*(lib\/)?community['"]/m.test(src);
+  });
+  leaky.length === 0 ? ok('브라우저 코드에서 게시판 표 직접 접근 없음') : bad(`브라우저 코드가 게시판 표/서버 모듈에 직접 접근: ${leaky.join(', ')}`);
+  const html = execSync('grep -rl dangerouslySetInnerHTML app/community app/components/community app/components/home/PopularPosts.tsx 2>/dev/null || true').toString().trim();
+  html ? bad(`게시판에서 HTML 그대로 출력: ${html}`) : ok('게시판 본문을 글자 그대로 출력 (HTML 해석 없음)');
+  /PUBLIC_POST\b/.test(read('app/community/post/[id]/page.tsx')) && !/select\(['"]\*/.test(read('app/lib/community.ts')) ? ok('게시판 읽기는 공개 칸만 선택') : bad('게시판 읽기에서 select * 사용 중 (해시 노출 위험)');
+
   const authRoute = read('app/api/admin/auth/route.ts');
   /console\.log\([^)]*(password|ADMIN_PASSWORD)/i.test(authRoute)
     ? bad('관리자 로그인에서 비밀번호를 로그로 출력 중', '관리자 인증 패치')
@@ -78,6 +92,33 @@ async function checkDb() {
       const key = Object.keys(row)[0];
       await admin.from(table).delete().eq(key, row[key]);
     }
+  }
+
+  // 게시판: 브라우저 키로 쓰기·수정·삭제·해시 읽기 모두 막혀 있어야 함
+  const anyPost = (await admin.from('posts').select('id').limit(1)).data?.[0]?.id ?? 1;
+  const cmRows = [
+    ['posts', { board: 'free', title: '__security_test__', body: '__security_test__', nickname: '점검', password_hash: 'x', ip_hash: 'x' }],
+    ['post_comments', { post_id: anyPost, body: '__security_test__', nickname: '점검', password_hash: 'x', ip_hash: 'x' }],
+    ['post_likes', { post_id: anyPost, voter_hash: '__security_test__' }],
+    ['post_reports', { target_type: 'post', target_id: anyPost, reporter_hash: '__security_test__' }],
+  ];
+  for (const [table, row] of cmRows) {
+    const { error } = await anon.from(table).insert(row);
+    if (error?.code === '42501') ok(`브라우저 키로 ${table} 쓰기 차단됨`);
+    else if (error) note(`브라우저 키로 ${table} 쓰기 시도 → 권한이 아닌 다른 이유로 실패 (${error.message})`);
+    else {
+      bad(`브라우저 키로 ${table}에 쓸 수 있음!`, `${table}의 INSERT 정책 삭제`);
+      const key = Object.keys(row).find((k) => String(row[k]).includes('__security_test__'));
+      await admin.from(table).delete().eq(key, row[key]);
+    }
+  }
+  const upd = await anon.from('posts').update({ title: '__security_test__' }).gte('id', 0).select('id');
+  upd.error || (upd.data || []).length === 0 ? ok('브라우저 키로 posts 수정 차단됨') : bad(`브라우저 키로 posts ${upd.data.length}개 수정됨!`, 'posts의 UPDATE 정책 삭제');
+  const del = await anon.from('posts').delete().gte('id', 0).select('id');
+  del.error || (del.data || []).length === 0 ? ok('브라우저 키로 posts 삭제 차단됨') : bad(`브라우저 키로 posts ${del.data.length}개 삭제됨!`, 'posts의 DELETE 정책 삭제');
+  for (const table of ['posts', 'post_comments']) {
+    const { error } = await anon.from(table).select('password_hash, ip_hash').limit(1);
+    error ? ok(`브라우저 키로 ${table}의 password_hash·ip_hash 읽기 차단됨`) : bad(`브라우저 키로 ${table}의 password_hash·ip_hash를 읽을 수 있음!`, 'revoke all on posts, post_comments, post_likes, post_reports from anon, authenticated; 실행');
   }
 
   const { count } = await admin.from('compare_cache').select('game_ids', { count: 'exact', head: true });
@@ -128,9 +169,65 @@ async function checkSite() {
   r = await call('/api/compare-chat', json('POST', { question: '', gameInfo: '', history: [] }));
   r.body?.answer === '질문을 입력해주세요.' ? ok('비교 채팅 입력 검증 동작 (AI 호출 없음)') : bad('비교 채팅 입력 검증이 배포에 없음', 'aiGuard 패치 후 푸시');
 
+  await checkCommunity(call, json);
+
   for (const path of ['/.env', '/.env.local']) {
     const res = await fetch(SITE + path).catch(() => null);
     !res || res.status === 404 ? ok(`${path} 외부 접근 불가`) : bad(`${path} 응답 ${res.status}`);
+  }
+}
+
+// 게시판 실제 동작: 읽기 응답에 해시 없음, 입력 검증, 도배 제한
+// 도배 제한 점검용 글·댓글은 '__security_test__' 제목으로 만들고 바로 숨긴 뒤 점검 끝에 지운다
+async function checkCommunity(call, json) {
+  const HASH = /password_hash|ip_hash|scrypt\$/;
+  const latest = (await admin.from('posts').select('id').eq('hidden', false).order('id', { ascending: false }).limit(1)).data?.[0];
+  const pages = ['/community', '/community/free', '/', ...(latest ? [`/community/post/${latest.id}`] : [])];
+  for (const path of pages) {
+    const res = await fetch(SITE + path).catch(() => null);
+    const text = res ? await res.text() : '';
+    if (!res || res.status !== 200) note(`${path} 응답 ${res?.status ?? '없음'} — 게시판이 아직 배포 안 됐을 수 있어요`);
+    else HASH.test(text) ? bad(`${path} 응답에 password_hash·ip_hash가 들어 있음!`) : ok(`${path} 응답에 해시 없음`);
+  }
+  if (!latest) note('공개 글이 없어 글 상세 응답 점검은 건너뜀');
+
+  const post = (b) => call('/api/community/posts', json('POST', { board: 'free', nickname: '보안점검', password: 'check1234', ...b }));
+  let r = await post({ title: '__security_test__ 링크', body: 'https://a.com https://b.com https://c.com' });
+  r.status === 400 ? ok('링크 3개 글 거절') : bad(`링크 3개 글 응답 ${r.status}`);
+  if (r.body?.id) await admin.from('posts').delete().eq('id', r.body.id);
+  r = await post({ title: '__security_test__ 금지어', body: '카지노 바카라 홍보' });
+  r.status === 400 ? ok('금지어 글 거절') : bad(`금지어 글 응답 ${r.status}`);
+  if (r.body?.id) await admin.from('posts').delete().eq('id', r.body.id);
+  r = await post({ board: '__hack__', title: '__security_test__', body: '__security_test__' });
+  r.status === 400 ? ok('없는 게시판 거절') : bad(`없는 게시판 응답 ${r.status}`);
+
+  const created = [];
+  try {
+    let limited = false;
+    for (let i = 0; i < 12 && !limited; i++) {
+      r = await post({ title: `__security_test__ 도배 ${i}`, body: '도배 제한 점검용 글이에요' });
+      if (r.status === 429) limited = true;
+      else if (r.body?.id) { created.push(r.body.id); await admin.from('posts').update({ hidden: true }).eq('id', r.body.id); }
+      else break;
+    }
+    limited ? ok(`글 도배 제한 동작 (하루 10개 넘으면 429)`) : bad(`글 도배 제한 없음 (${created.length}개까지 저장됨)`);
+
+    const { data: tmp } = await admin.from('posts')
+      .insert({ board: 'free', title: '__security_test__ 댓글 점검', body: '__security_test__', nickname: '보안점검', password_hash: 'x', ip_hash: 'x' })
+      .select('id').single();
+    if (tmp) {
+      created.push(tmp.id);
+      let cLimited = false, n = 0;
+      for (let i = 0; i < 32 && !cLimited; i++) {
+        r = await call(`/api/community/posts/${tmp.id}/comments`, json('POST', { body: `점검 ${i}`, nickname: '보안점검', password: 'check1234' }));
+        if (r.status === 429) cLimited = true;
+        else if (r.status === 200) { n++; if (HASH.test(JSON.stringify(r.body))) { bad('댓글 쓰기 응답에 해시가 들어 있음!'); break; } }
+        else break;
+      }
+      cLimited ? ok('댓글 도배 제한 동작 (하루 30개 넘으면 429)') : bad(`댓글 도배 제한 없음 (${n}개까지 저장됨)`);
+    }
+  } finally {
+    if (created.length) await admin.from('posts').delete().in('id', created);
   }
 }
 

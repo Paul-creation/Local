@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import HiddenPosts from '../components/admin/HiddenPosts';
 
 export default function AdminPage() {
   const [password, setPassword] = useState('');
@@ -10,6 +11,7 @@ export default function AdminPage() {
   const [selected, setSelected] = useState<any>(null);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
+  const [tab, setTab] = useState<'games' | 'community'>('games');
 
   const login = async () => {
     const res = await fetch('/api/admin/auth', {
@@ -82,7 +84,32 @@ export default function AdminPage() {
     );
   }
 
+  const tabBar = (
+    <div style={{ display: 'flex', gap: 8, padding: '12px 16px', background: '#fff', borderBottom: '1px solid #e5e3dc' }}>
+      {([['games', '게임 편집'], ['community', '커뮤니티 숨김 글']] as const).map(([k, label]) => (
+        <button
+          key={k}
+          onClick={() => setTab(k)}
+          style={{ padding: '8px 16px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 15, fontWeight: 700, background: tab === k ? '#16202b' : '#f0efe9', color: tab === k ? '#fff' : '#16202b' }}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
+
+  if (tab === 'community') {
+    return (
+      <div style={{ minHeight: '100vh', background: '#f4f2ec' }}>
+        {tabBar}
+        <div style={{ padding: 32 }}><HiddenPosts /></div>
+      </div>
+    );
+  }
+
   return (
+    <>
+    {tabBar}
     <div style={{ display: 'flex', minHeight: '100vh', background: '#f4f2ec' }}>
       {/* 게임 목록 */}
       <div style={{ width: 280, background: '#fff', borderRight: '1px solid #e5e3dc', overflowY: 'auto', padding: 16 }}>
@@ -206,6 +233,7 @@ export default function AdminPage() {
         )}
       </div>
     </div>
+    </>
   );
 }
 

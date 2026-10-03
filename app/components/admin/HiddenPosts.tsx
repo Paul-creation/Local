@@ -1,0 +1,63 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
+type Item = { id: number; board?: string; post_id?: number; title?: string; body: string; nickname: string; report_count: number; created_at: string };
+type Data = { posts: Item[]; comments: Item[]; reported: Item[] };
+
+// 관리자: 신고로 숨겨진 글·댓글 복구·삭제
+export default function HiddenPosts() {
+  const [data, setData] = useState<Data | null>(null);
+  const [msg, setMsg] = useState('');
+
+  const load = async () => {
+    const res = await fetch('/api/admin/community');
+    setData(res.ok ? await res.json() : null);
+  };
+  useEffect(() => { load(); }, []);
+
+  const act = async (method: 'PATCH' | 'DELETE', type: 'post' | 'comment', id: number) => {
+    if (method === 'DELETE' && !confirm('완전히 삭제할까요? 되돌릴 수 없어요.')) return;
+    const res = await fetch('/api/admin/community', {
+      method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type, id }),
+    });
+    setMsg(res.ok ? (method === 'PATCH' ? '복구했어요 ✅' : '삭제했어요 🗑️') : '실패했어요 ❌');
+    setTimeout(() => setMsg(''), 2000);
+    load();
+  };
+
+  if (!data) return <p style={{ color: '#888' }}>불러오는 중...</p>;
+
+  const list = (title: string, items: Item[], type: 'post' | 'comment', canRestore: boolean) => (
+    <section style={{ marginBottom: 32 }}>
+      <h3 style={{ fontWeight: 800, fontSize: 17, marginBottom: 12 }}>{title} ({items.length})</h3>
+      {items.length === 0 && <p style={{ color: '#888', fontSize: 15 }}>없어요</p>}
+      {items.map((it) => (
+        <div key={it.id} style={card}>
+          <div style={{ fontSize: 13, color: '#888', marginBottom: 6 }}>
+            #{it.id} · {it.board || `글 #${it.post_id}의 댓글`} · {it.nickname} · 신고 {it.report_count}회 · {new Date(it.created_at).toLocaleString('ko-KR')}
+          </div>
+          {it.title && <div style={{ fontWeight: 700, marginBottom: 4 }}>{it.title}</div>}
+          <div style={{ fontSize: 15, whiteSpace: 'pre-wrap', maxHeight: 160, overflow: 'auto', color: '#333' }}>{it.body}</div>
+          <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+            {type === 'post' && <a href={`/community/post/${it.id}`} target="_blank" rel="noreferrer" style={{ ...btn, background: '#eee', color: '#16202b', textDecoration: 'none' }}>보기</a>}
+            {canRestore && <button onClick={() => act('PATCH', type, it.id)} style={{ ...btn, background: '#16202b' }}>복구</button>}
+            <button onClick={() => act('DELETE', type, it.id)} style={{ ...btn, background: '#d64545' }}>삭제</button>
+          </div>
+        </div>
+      ))}
+    </section>
+  );
+
+  return (
+    <div style={{ maxWidth: 760 }}>
+      {msg && <p style={{ fontWeight: 700, marginBottom: 12 }}>{msg}</p>}
+      {list('숨겨진 글', data.posts, 'post', true)}
+      {list('숨겨진 댓글', data.comments, 'comment', true)}
+      {list('신고 접수된 글 (아직 공개 중)', data.reported, 'post', false)}
+    </div>
+  );
+}
+
+const card: React.CSSProperties = { background: '#fff', borderRadius: 12, padding: 16, marginBottom: 10, border: '1px solid #e5e3dc' };
+const btn: React.CSSProperties = { padding: '8px 16px', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: 14 };

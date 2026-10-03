@@ -6,8 +6,10 @@ import BannerCarousel from '../BannerCarousel';
 import HotChart from './HotChart';
 import type { HotTab } from '../../lib/hotChart';
 import { getPriceInfo } from '../../lib/price';
+import type { PostListItem } from '../../lib/community';
+import PopularPosts from './PopularPosts';
 
-export default function HomeSections({ games, hotTabs, weekly }: { games: any[]; hotTabs: HotTab[]; weekly?: any }) {
+export default function HomeSections({ games, hotTabs, weekly, popularPosts = [] }: { games: any[]; hotTabs: HotTab[]; weekly?: any; popularPosts?: PostListItem[] }) {
   // featured_games에서 뽑힌 이번 주 게임, 기록이 없으면 예전처럼 featured 칸
   const featured = weekly || games.find((g) => g.featured);
   const bannerPool = games.filter((g) => g.is_casual_party && !g.featured && g.id !== featured?.id);
@@ -73,6 +75,9 @@ export default function HomeSections({ games, hotTabs, weekly }: { games: any[];
 
           {/* 🔥 지금 뜨는 게임 — 데이터는 page.tsx에서 따로 가져옴 (lib/hotChart) */}
           {hotTabs.length > 0 && <HotChart tabs={hotTabs} />}
+
+          {/* 💬 인기 게시물 — 5개 미만이면 page.tsx에서 빈 배열이 와서 숨김 */}
+          {popularPosts.length >= 5 && <PopularPosts posts={popularPosts} />}
 
         </>
   );
