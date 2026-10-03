@@ -5,11 +5,11 @@
 // - coop_videos_at이 30일 이내면 건너뜀 (YouTube 정책상 저장한 정보는 30일마다 갱신)
 // - 검색어: 한국어 이름(search_name_ko, fill-search-names로 채움)을 먼저, 3개가 안 차면 영어 이름(™ ® © 뺀 것)으로 한 번 더
 //   search_name_ko는 쉼표로 여러 개 가능 → 영상 검색에는 첫 번째 이름만 씀
-// - 제목이나 설명에 협동 단어(합방·멀티·같이·친구·듀오·N인 등)가 있는 영상만 고름. 없으면 0개
+// - 제목이나 설명 앞부분에 게임 이름(한국어·영어)과 협동 단어(합방·멀티·같이·친구·듀오·N인·져스 등)가 둘 다 있는 영상만 고름. 없으면 0개
 // - YouTube 사용량: 검색 1번당 약 101 (검색 100 + 영상 정보 1), 게임당 최대 2번. 하루 한도 10,000
 // - 한도 초과면 그 게임은 기록하지 않고 바로 멈춤 → 다음 실행 때 그 게임부터 이어서
 import { createClient } from '@supabase/supabase-js';
-import { getCoopTargets, isCoopVideo, koNames } from './lib/coop-targets.mjs';
+import { getCoopTargets, isCoopVideoFor, koNames } from './lib/coop-targets.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
@@ -47,8 +47,8 @@ function parseDuration(iso) {
 const cleanName = (name) => String(name || '').replace(/[™®©]/g, '').replace(/\s+/g, ' ').trim();
 
 // 이름(여러 개면 묶어서) 하나의 검색으로 찾아서 조건에 맞는 영상만
-// noCoop: 다른 조건은 맞는데 협동 단어가 없어서 빠진 영상 수
-async function searchOnce(names) {
+// noCoop: 다른 조건은 맞는데 게임 이름이나 협동 단어가 없어서 빠진 영상 수
+async function searchOnce(names, game) {
   const since = new Date(Date.now() - RECENT_YEARS * 365 * 24 * 3600 * 1000).toISOString();
   const search = await youtube('search', {
     part: 'id',
@@ -75,7 +75,7 @@ async function searchOnce(names) {
     }))
     .filter((v) => /[가-힣]/.test(v.title) && v.view_count >= MIN_VIEWS && v.duration_sec >= MIN_SEC && v.duration_sec <= MAX_SEC);
   const videos = passed
-    .filter((v) => isCoopVideo(v.title) || isCoopVideo(v.description))
+    .filter((v) => isCoopVideoFor(v, game))
     .map(({ description, ...v }) => v); // 설명은 판단에만 쓰고 저장하지 않음
   return { videos, noCoop: passed.length - videos.length };
 }
@@ -88,7 +88,7 @@ async function findCoopVideos(game) {
   const found = new Map();
   let noCoop = 0;
   for (const names of groups) {
-    const r = await searchOnce(names);
+    const r = await searchOnce(names, game);
     noCoop += r.noCoop;
     for (const v of r.videos) found.set(v.video_id, v);
     if (found.size >= MAX_SAVE) break;
@@ -164,7 +164,7 @@ async function main() {
     const qText = queries.map((q) => `"${q}"`).join(' → ');
     console.log(videos.length
       ? `✅ ${g.name} (검색: ${qText})`
-      : `➖ ${g.name}: ${noCoop ? `협동 단어가 있는 영상 없음 (빠진 영상 ${noCoop}개)` : '조건에 맞는 영상 없음'} (검색: ${qText})`);
+      : `➖ ${g.name}: ${noCoop ? `게임 이름·협동 단어가 있는 영상 없음 (빠진 영상 ${noCoop}개)` : '조건에 맞는 영상 없음'} (검색: ${qText})`);
     for (const v of videos) {
       console.log(`   · ${v.title} — ${v.channel_title} (조회수 ${v.view_count.toLocaleString('ko-KR')}, ${Math.round(v.duration_sec / 60)}분)`);
     }
@@ -172,7 +172,7 @@ async function main() {
   }
 
   console.log(`\n완료 — 처리한 게임 ${done}개 · 저장한 영상 ${saved}개 · 결과 0개인 게임 ${emptyNames.length + noCoopNames.length}개${failed ? ` · 오류 ${failed}개` : ''}`);
-  if (noCoopNames.length) console.log(`협동 단어 기준 때문에 0개: ${noCoopNames.join(', ')}`);
+  if (noCoopNames.length) console.log(`게임 이름·협동 단어 기준 때문에 0개: ${noCoopNames.join(', ')}`);
   if (emptyNames.length) console.log(`검색 결과 자체가 없어서 0개: ${emptyNames.join(', ')}`);
 }
 
