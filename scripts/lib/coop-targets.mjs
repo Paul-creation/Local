@@ -19,3 +19,11 @@ export async function getCoopTargets(supabase, fields) {
     })
     .slice(0, COOP_TOP_N);
 }
+
+// 협동(여럿이 같이 하는) 영상인지 — 제목이나 설명에 이 단어가 있어야 "친구랑 하는 영상"으로 고른다
+// "개같이"(비속어 강조)는 제외, "11명이", "4인" 같은 인원 표현은 포함
+export const COOP_WORDS = /합방|멀티|(?<!개)같이|친구|협동|듀오|스쿼드|트리오|\d+\s*인(?![가-힣])|\d+\s*명(이서|이|에서)|다같이|함께|코옵|co-?op/i;
+export const isCoopVideo = (text) => COOP_WORDS.test(String(text || ''));
+
+// search_name_ko는 쉼표로 여러 이름을 넣을 수 있음 (예: "파스모포비아, 파즈모포비아")
+export const koNames = (value) => String(value || '').split(',').map((s) => s.replace(/[™®©]/g, '').replace(/\s+/g, ' ').trim()).filter(Boolean);
