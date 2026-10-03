@@ -4,7 +4,7 @@
 // - 대상: max_players 2 이상 중 인기 상위 50개 (heat_rank 순, 없으면 current_players 순)
 // - coop_videos_at이 30일 이내면 건너뜀 (YouTube 정책상 저장한 정보는 30일마다 갱신)
 // - 검색어: 한국어 이름(search_name_ko, fill-search-names로 채움)을 먼저, 3개가 안 차면 영어 이름(™ ® © 뺀 것)으로 한 번 더
-//   search_name_ko는 쉼표로 여러 개 가능 → 한 번의 검색에 묶어서 찾음
+//   search_name_ko는 쉼표로 여러 개 가능 → 영상 검색에는 첫 번째 이름만 씀
 // - 제목이나 설명에 협동 단어(합방·멀티·같이·친구·듀오·N인 등)가 있는 영상만 고름. 없으면 0개
 // - YouTube 사용량: 검색 1번당 약 101 (검색 100 + 영상 정보 1), 게임당 최대 2번. 하루 한도 10,000
 // - 한도 초과면 그 게임은 기록하지 않고 바로 멈춤 → 다음 실행 때 그 게임부터 이어서
@@ -82,7 +82,7 @@ async function searchOnce(names) {
 
 // 한국어 이름으로 먼저, 3개가 안 차면 영어 이름으로 한 번 더 (게임당 최대 2번)
 async function findCoopVideos(game) {
-  const ko = koNames(game.search_name_ko);
+  const ko = koNames(game.search_name_ko).slice(0, 1); // 첫 번째 이름만
   const en = cleanName(game.name);
   const groups = [ko, ko.includes(en) ? [] : [en]].filter((g) => g.length);
   const found = new Map();

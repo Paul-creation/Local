@@ -4,6 +4,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { compareBlockReason, MAX_COMPARE, COMPARE_PICK_KEY } from './compareRule';
+import { matchesGame, normalizeSearch } from './searchMatch';
 
 // 검색 결과는 처음 이만큼만 그리고, 더 보기로 이만큼씩 늘린다
 export const PAGE_SIZE = 24;
@@ -114,8 +115,10 @@ export function useGameFilters(games: any[]) {
       if (selectedPlayers === '5인 이상' && !(g.max_players >= 5)) return false;
     }
     if (normalizedQuery) {
-      return g.name.toLowerCase().includes(normalizedQuery) ||
-        g.tags?.some((t: string) => t.toLowerCase().includes(normalizedQuery));
+      // 영어 이름·한국어 이름·별명 (띄어쓰기·대소문자·기호 무시) 또는 태그
+      const tagQuery = normalizeSearch(normalizedQuery);
+      return matchesGame(g, normalizedQuery) ||
+        (!!tagQuery && g.tags?.some((t: string) => normalizeSearch(t).includes(tagQuery)));
     }
     return true;
   });

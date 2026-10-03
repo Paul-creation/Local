@@ -12,7 +12,7 @@ export default async function Home() {
     supabase
       .from('games')
       .select(`
-        id, name, tags, category, difficulty,
+        id, name, search_name_ko, tags, category, difficulty,
         min_players, max_players, recommended_players, solo_playable,
         is_free, lowest_price, steam_appid, source, cover_image_url, card_image_url,
         featured, is_casual_party, heat_rank,

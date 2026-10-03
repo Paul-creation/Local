@@ -19,4 +19,4 @@ export function compareBlockReason(list: { id: string; max_players?: number | nu
 export const COMPARE_PICK_KEY = 'compare_pick';
 
 // 비교 만들기 화면에서 게임마다 가져오는 칸
-export const BUILDER_FIELDS = 'id, name, card_image_url, cover_image_url, min_players, max_players';
+export const BUILDER_FIELDS = 'id, name, search_name_ko, card_image_url, cover_image_url, min_players, max_players';

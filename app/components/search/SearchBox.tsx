@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { GameFilters } from '../../lib/useGameFilters';
+import { matchRank } from '../../lib/searchMatch';
 
 const MAX_SUGGESTIONS = 6;
 
@@ -21,13 +22,15 @@ export default function SearchBox({ games, filters }: { games: any[], filters: G
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
 
-  const q = input.trim().toLowerCase();
-  // 이름이 검색어로 시작하는 게임을 먼저, 그다음 이름에 포함된 게임
+  const q = input.trim();
+  // 이름(영어·한국어·별명 중 하나)이 검색어로 시작하는 게임을 먼저, 그다음 이름에 포함된 게임
   const suggestions = q
     ? games
-        .filter((g) => g.name?.toLowerCase().includes(q))
-        .sort((a, b) => Number(!a.name.toLowerCase().startsWith(q)) - Number(!b.name.toLowerCase().startsWith(q)))
+        .map((g) => ({ g, rank: matchRank(g, q) }))
+        .filter((x) => x.rank >= 0)
+        .sort((a, b) => a.rank - b.rank)
         .slice(0, MAX_SUGGESTIONS)
+        .map((x) => x.g)
     : [];
   const showList = open && suggestions.length > 0;
 

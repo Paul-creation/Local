@@ -5,10 +5,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../lib/supabase';
 import { compareBlockReason, MAX_COMPARE, COMPARE_PICK_KEY, BUILDER_FIELDS } from '../lib/compareRule';
+import { matchRank, looseIlikePattern } from '../lib/searchMatch';
 
 const MAX_SUGGESTIONS = 6;
 
-type Pick = { id: string; name: string; card_image_url?: string | null; cover_image_url?: string | null; min_players?: number | null; max_players?: number | null };
+type Pick = { id: string; name: string; search_name_ko?: string | null; card_image_url?: string | null; cover_image_url?: string | null; min_players?: number | null; max_players?: number | null };
 
 function playersLabel(g: Pick) {
   if (!g.min_players || !g.max_players) return '';
@@ -61,14 +62,22 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
     let cancelled = false;
     setSearching(true);
     const t = setTimeout(async () => {
-      const pattern = `%${q.replace(/[\\%_]/g, (c) => '\\' + c)}%`;
+      // 영어 이름·한국어 이름 둘 다 느슨하게 넉넉히 받아온 뒤, 공통 규칙(searchMatch)으로 다시 거르고 정렬
+      const pattern = looseIlikePattern(q);
+      if (!pattern) { if (!cancelled) { setResults([]); setSearching(false); } return; }
       const { data } = await supabase
         .from('games')
         .select(BUILDER_FIELDS)
-        .ilike('name', pattern)
+        .or(`name.ilike.${pattern},search_name_ko.ilike.${pattern}`)
         .order('heat_rank', { ascending: true, nullsFirst: false })
-        .limit(MAX_SUGGESTIONS);
-      if (!cancelled) { setResults(data || []); setActive(-1); setSearching(false); }
+        .limit(40);
+      const ranked = (data || [])
+        .map((g) => ({ g, rank: matchRank(g, q) }))
+        .filter((x) => x.rank >= 0)
+        .sort((a, b) => a.rank - b.rank) // 같은 순위끼리는 인기순 유지
+        .slice(0, MAX_SUGGESTIONS)
+        .map((x) => x.g);
+      if (!cancelled) { setResults(ranked); setActive(-1); setSearching(false); }
     }, 250);
     return () => { cancelled = true; clearTimeout(t); };
   }, [q]);
