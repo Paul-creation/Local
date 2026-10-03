@@ -3,19 +3,23 @@
 // 실행: node --env-file=.env.local scripts/fetch-coop-videos.mjs [최대 처리 개수, 기본 50]
 // - 대상: max_players 2 이상 중 인기 상위 50개 (heat_rank 순, 없으면 current_players 순)
 // - coop_videos_at이 30일 이내면 건너뜀 (YouTube 정책상 저장한 정보는 30일마다 갱신)
-// - YouTube 사용량: 게임당 약 101 (검색 100 + 영상 정보 1). 하루 한도 10,000
-// - 한도 초과면 바로 멈추고 정상 종료 → 다음 실행 때 남은 게임부터 이어서
+// - 검색어: 한국어 이름(search_name_ko, fill-search-names로 채움)을 먼저, 3개가 안 차면 영어 이름(™ ® © 뺀 것)으로 한 번 더
+// - YouTube 사용량: 검색 1번당 약 101 (검색 100 + 영상 정보 1), 게임당 최대 2번. 하루 한도 10,000
+// - 한도 초과면 그 게임은 기록하지 않고 바로 멈춤 → 다음 실행 때 그 게임부터 이어서
 import { createClient } from '@supabase/supabase-js';
+import { getCoopTargets } from './lib/coop-targets.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 const LIMIT = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a))) || 50;
-const TOP_N = 50;
 const REFRESH_DAYS = 30;
 const MAX_SAVE = 3;
 const MIN_VIEWS = 1000;
-const MIN_SEC = 4 * 60;
-const MAX_SEC = 60 * 60;
+const MIN_SEC = 3 * 60;
+const MAX_SEC = 120 * 60;
+const RECENT_YEARS = 5;
+// 시험 실행용: --names="Lethal Company,Among Us" 로 특정 게임만 (30일 기준 무시)
+const ONLY_NAMES = (process.argv.find((a) => a.startsWith('--names=')) || '').slice(8).split(',').map((s) => s.trim()).filter(Boolean);
 
 class QuotaError extends Error {}
 
@@ -38,15 +42,18 @@ function parseDuration(iso) {
   return m ? (Number(m[1] || 0) * 3600 + Number(m[2] || 0) * 60 + Number(m[3] || 0)) : 0;
 }
 
-async function findCoopVideos(name) {
-  const twoYearsAgo = new Date(Date.now() - 2 * 365 * 24 * 3600 * 1000).toISOString();
+const cleanName = (name) => String(name || '').replace(/[™®©]/g, '').replace(/\s+/g, ' ').trim();
+
+// 검색어 하나로 찾아서 조건에 맞는 영상만
+async function searchOnce(name) {
+  const since = new Date(Date.now() - RECENT_YEARS * 365 * 24 * 3600 * 1000).toISOString();
   const search = await youtube('search', {
     part: 'id',
     q: `${name} 합방 | ${name} 멀티 | ${name} 같이`,
     type: 'video',
     regionCode: 'KR',
     relevanceLanguage: 'ko',
-    publishedAfter: twoYearsAgo,
+    publishedAfter: since,
     maxResults: '15',
   });
   const ids = (search.items || []).map((it) => it.id?.videoId).filter(Boolean);
@@ -62,9 +69,20 @@ async function findCoopVideos(name) {
       view_count: Number(v.statistics?.viewCount || 0),
       duration_sec: parseDuration(v.contentDetails?.duration),
     }))
-    .filter((v) => /[가-힣]/.test(v.title) && v.view_count >= MIN_VIEWS && v.duration_sec >= MIN_SEC && v.duration_sec <= MAX_SEC)
-    .sort((a, b) => b.view_count - a.view_count)
-    .slice(0, MAX_SAVE);
+    .filter((v) => /[가-힣]/.test(v.title) && v.view_count >= MIN_VIEWS && v.duration_sec >= MIN_SEC && v.duration_sec <= MAX_SEC);
+}
+
+// 한국어 이름으로 먼저, 3개가 안 차면 영어 이름으로 한 번 더 (게임당 최대 2번)
+async function findCoopVideos(game) {
+  const ko = cleanName(game.search_name_ko);
+  const en = cleanName(game.name);
+  const queries = [...new Set([ko, en].filter(Boolean))];
+  const found = new Map();
+  for (const q of queries) {
+    for (const v of await searchOnce(q)) found.set(v.video_id, v);
+    if (found.size >= MAX_SAVE) break;
+  }
+  return { queries, videos: [...found.values()].sort((a, b) => b.view_count - a.view_count).slice(0, MAX_SAVE) };
 }
 
 // 새 결과를 먼저 넣고, 성공하면 그 게임의 예전 coop 기록만 지움 (중간에 실패해도 영상이 비지 않게)
@@ -89,34 +107,28 @@ async function saveVideos(gameId, videos) {
 async function main() {
   if (!YOUTUBE_API_KEY) return console.error('.env.local에 YOUTUBE_API_KEY가 없어요');
 
-  const { data: games, error } = await supabase
-    .from('games')
-    .select('id, name, heat_rank, current_players, coop_videos_at')
-    .gte('max_players', 2);
-  if (error) return console.error(`❌ 게임 목록을 못 불러옴: ${error.message}`);
-
-  // 인기 순: heat_rank 있는 게임(순위 낮을수록 위) → 없으면 current_players 많은 순
-  const top = games
-    .filter((g) => g.heat_rank || g.current_players)
-    .sort((a, b) => {
-      if (a.heat_rank && b.heat_rank) return a.heat_rank - b.heat_rank;
-      if (a.heat_rank) return -1;
-      if (b.heat_rank) return 1;
-      return (b.current_players || 0) - (a.current_players || 0);
-    })
-    .slice(0, TOP_N);
+  let top;
+  try {
+    top = await getCoopTargets(supabase, 'search_name_ko, coop_videos_at');
+  } catch (e) {
+    return console.error(`❌ ${e.message}`);
+  }
   const cutoff = Date.now() - REFRESH_DAYS * 24 * 3600 * 1000;
-  const todo = top.filter((g) => !g.coop_videos_at || new Date(g.coop_videos_at).getTime() < cutoff).slice(0, LIMIT);
-  console.log(`인기 멀티 게임 ${top.length}개 중 갱신할 게임 ${todo.length}개 처리 (최대 ${LIMIT}개)\n`);
+  const todo = ONLY_NAMES.length
+    ? top.filter((g) => ONLY_NAMES.includes(g.name))
+    : top.filter((g) => !g.coop_videos_at || new Date(g.coop_videos_at).getTime() < cutoff).slice(0, LIMIT);
+  console.log(`인기 멀티 게임 ${top.length}개 중 갱신할 게임 ${todo.length}개 처리${ONLY_NAMES.length ? ' (이름 지정)' : ` (최대 ${LIMIT}개)`}\n`);
 
-  let done = 0, saved = 0, empty = 0, failed = 0;
+  let done = 0, saved = 0, failed = 0;
+  const emptyNames = [];
   for (const g of todo) {
-    let videos;
+    let videos, queries;
     try {
-      videos = await findCoopVideos(g.name);
+      ({ videos, queries } = await findCoopVideos(g));
     } catch (e) {
+      // 한도 초과는 "결과 없음"이 아니므로 coop_videos_at을 기록하지 않고 멈춤
       if (e instanceof QuotaError) {
-        console.log(`⏳ YouTube 한도 초과로 중단, 다음 실행 때 이어서 (${e.message})`);
+        console.log(`⏳ YouTube 한도 초과로 중단, 다음 실행 때 이어서 — ${g.name}부터 (${e.message})`);
         break;
       }
       console.log(`⚠️ YouTube 오류: ${g.name} — ${e.message}`);
@@ -132,15 +144,17 @@ async function main() {
     }
     done++;
     saved += videos.length;
-    if (!videos.length) empty++;
-    console.log(videos.length ? `✅ ${g.name}` : `➖ ${g.name}: 조건에 맞는 영상 없음`);
+    if (!videos.length) emptyNames.push(g.name);
+    const qText = queries.map((q) => `"${q}"`).join(' → ');
+    console.log(videos.length ? `✅ ${g.name} (검색: ${qText})` : `➖ ${g.name}: 조건에 맞는 영상 없음 (검색: ${qText})`);
     for (const v of videos) {
       console.log(`   · ${v.title} — ${v.channel_title} (조회수 ${v.view_count.toLocaleString('ko-KR')}, ${Math.round(v.duration_sec / 60)}분)`);
     }
     await new Promise((r) => setTimeout(r, 500));
   }
 
-  console.log(`\n완료 — 처리한 게임 ${done}개 · 저장한 영상 ${saved}개 · 결과 0개인 게임 ${empty}개${failed ? ` · 오류 ${failed}개` : ''}`);
+  console.log(`\n완료 — 처리한 게임 ${done}개 · 저장한 영상 ${saved}개 · 결과 0개인 게임 ${emptyNames.length}개${failed ? ` · 오류 ${failed}개` : ''}`);
+  if (emptyNames.length) console.log(`결과 0개: ${emptyNames.join(', ')}`);
 }
 
 main();

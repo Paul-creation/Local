@@ -33,7 +33,8 @@ const GROUPS = {
     'enrich-card-images',
     'enrich-hero-images',
     'write-fun-descriptions 300',
-    'fetch-coop-videos', // 인기 멀티 게임 50개의 합방 영상 (YouTube 약 5,000 사용)
+    'fill-search-names', // 합방 영상 검색용 한국어 이름 (새 대상만, Haiku 1번)
+    'fetch-coop-videos', // 인기 멀티 게임 50개의 합방 영상 (YouTube 게임당 101~202 사용)
     'enrich-update-date',
   ],
 };
