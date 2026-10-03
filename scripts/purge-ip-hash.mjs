@@ -8,6 +8,7 @@
 // 사전 조건: supabase/migrations/20261005090000_ip_hash_nullable.sql 실행 (NOT NULL 해제)
 import { createClient } from '@supabase/supabase-js';
 import { randomUUID } from 'crypto';
+import { recordPurge } from './lib/privacy-purge.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const KEEP_DAYS = 90;
@@ -26,6 +27,7 @@ const NULLABLE = [
 const EXPIRED = 'expired:';
 
 let failed = false;
+let cleared = 0;
 
 for (const [table, col] of NULLABLE) {
   const { error, count } = await supabase
@@ -37,6 +39,7 @@ for (const [table, col] of NULLABLE) {
     failed = true;
     console.error(`❌ ${table}.${col}: ${error.message}`);
   } else {
+    cleared += count ?? 0;
     console.log(`${table}.${col}: ${count ?? 0}개 비움`);
   }
 }
@@ -72,4 +75,5 @@ for (;;) {
 console.log(`post_likes.voter_hash: ${likes}개 교체`);
 console.log(`기준: ${cutoff} 이전 (${KEEP_DAYS}일)`);
 
+recordPurge({ ipCleared: cleared + likes, ipFailed: failed });
 process.exit(failed ? 1 : 0);

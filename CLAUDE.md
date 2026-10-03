@@ -5,6 +5,7 @@
 - AI(Anthropic) 호출은 반드시 `app/lib/aiGuard.ts`의 `guardedClaudeFetch`로만 한다. `fetch`로 `api.anthropic.com`을 직접 부르지 않는다. (`scripts/` 폴더는 예외)
 - AI 모델은 기본으로 Haiku를 쓰고, 웹 검색 도구는 꼭 필요할 때만 쓴다. 비용이 드는 작업은 실행 전에 예상 비용을 먼저 알려준다.
 - `price_history` 같은 기록 테이블의 데이터를 지우는 코드는 만들지 않는다. 필요하면 먼저 물어본다.
+  - 기록 테이블 삭제 금지의 예외 — 개인정보처리방침에 따른 post_reports·feedback 1년 경과분 삭제(`scripts/purge-old-records.mjs`), ip_hash 90일 경과분 비우기(`scripts/purge-ip-hash.mjs`). 그 외 삭제는 여전히 금지
 - 데이터를 채우는 스크립트는 이미 있는 값을 덮어쓰지 않고, 한 번 처리한 항목은 다시 처리하지 않게 만든다.
 - 새 영어 태그는 Supabase `tag_map` 표에 번역을 추가한다. 매주 갱신 때 자동 반영되고, 바로 반영하려면 Supabase에서 `select normalize_tags();` 를 실행한다.
 - 화면에 보이는 문구는 한국어로 쓴다.
