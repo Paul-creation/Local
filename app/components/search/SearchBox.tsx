@@ -6,13 +6,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { GameFilters } from '../../lib/useGameFilters';
 import { matchRank } from '../../lib/searchMatch';
+import { playersText } from '../../lib/players';
 
 const MAX_SUGGESTIONS = 6;
 
-function playersLabel(g: any) {
-  if (!g.min_players || !g.max_players) return '';
-  return g.min_players === g.max_players ? `${g.min_players}인` : `${g.min_players}-${g.max_players}인`;
-}
+const playersLabel = (g: any) => playersText(g);
 
 // 검색창 + 자동완성. 입력 중에는 결과 화면으로 넘어가지 않고, 이름이 맞는 게임만 아래에 보여준다.
 export default function SearchBox({ games, filters }: { games: any[], filters: GameFilters }) {

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { getPriceInfo, getLowestTiming } from '../lib/price';
 import LowestPriceBadge from './LowestPriceBadge';
+import { playersText } from '../lib/players';
 
 export default function DiscountSection({ games }: { games: any[] }) {
   const discounted = games
@@ -31,7 +32,7 @@ export default function DiscountSection({ games }: { games: any[] }) {
               <div className="card-body">
                 <h3>{game.name}</h3>
                 <p className="card-meta">
-                  {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : ''}
+                  {playersText(game)}
                   {game.difficulty ? ` · ${game.difficulty}` : ''}
                 </p>
                 {game.tags?.slice(0, 3).map((tag: string) => (

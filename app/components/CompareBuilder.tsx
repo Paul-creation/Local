@@ -6,15 +6,13 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '../lib/supabase';
 import { compareBlockReason, MAX_COMPARE, COMPARE_PICK_KEY, BUILDER_FIELDS } from '../lib/compareRule';
 import { matchRank, looseIlikePattern } from '../lib/searchMatch';
+import { playersText } from '../lib/players';
 
 const MAX_SUGGESTIONS = 6;
 
 type Pick = { id: string; name: string; search_name_ko?: string | null; card_image_url?: string | null; cover_image_url?: string | null; min_players?: number | null; max_players?: number | null };
 
-function playersLabel(g: Pick) {
-  if (!g.min_players || !g.max_players) return '';
-  return g.min_players === g.max_players ? `${g.min_players}인` : `${g.min_players}-${g.max_players}인`;
-}
+const playersLabel = (g: Pick) => playersText(g);
 
 // ids를 받은 순서대로 정렬
 function inOrder(ids: string[], rows: Pick[]) {

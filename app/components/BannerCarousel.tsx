@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { getPriceInfo } from '../lib/price';
 import { translateTag } from '../lib/tagTranslate';
+import { playersText } from '../lib/players';
 
 export default function BannerCarousel({ games }: { games: any[] }) {
   const [index, setIndex] = useState(0);
@@ -31,7 +32,7 @@ export default function BannerCarousel({ games }: { games: any[] }) {
         <div className="hero-content">
           <h2>{game.name}</h2>
           <div className="hero-meta">
-            {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : ''}
+            {playersText(game)}
             {game.difficulty ? ` · ${game.difficulty}` : ''}
           </div>
           {game.tags?.length > 0 && (

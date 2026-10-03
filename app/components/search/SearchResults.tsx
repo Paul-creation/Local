@@ -7,6 +7,7 @@ import { getPriceInfo, getLowestTiming } from '../../lib/price';
 import LowestPriceBadge from '../LowestPriceBadge';
 import { translateTag } from '../../lib/tagTranslate';
 import type { GameFilters } from '../../lib/useGameFilters';
+import { playersText } from '../../lib/players';
 
 export default function SearchResults({ filters, top10Ids = [] }: { filters: GameFilters; top10Ids?: string[] }) {
   const {
@@ -72,7 +73,7 @@ export default function SearchResults({ filters, top10Ids = [] }: { filters: Gam
                     <div className="card-body">
                       <h3>{top10Ids.includes(game.id) && <span className="top10-badge" style={{ marginRight: 6 }}>TOP 10</span>}{game.name}</h3>
                       <p className="card-meta">
-                        {game.recommended_players ? `추천 ${game.recommended_players}` : game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : ''}
+                        {game.recommended_players ? `추천 ${game.recommended_players}` : playersText(game)}
                         {game.difficulty ? ` · ${game.difficulty}` : ''}
                         {game.solo_playable === false && (
                           <span style={{ marginLeft: 6, color: 'var(--danger)', fontSize: 13, fontWeight: 700 }}>멀티필수</span>

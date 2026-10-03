@@ -24,10 +24,7 @@ export const OG_SIZE = { width: 1200, height: 630 };
 // 하루 동안 캐시 (CDN도 같이)
 export const OG_CACHE = 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=86400';
 
-export function playersText(g: { min_players?: number | null; max_players?: number | null }) {
-  if (!g.min_players || !g.max_players) return '';
-  return g.min_players === g.max_players ? `${g.min_players}인` : `${g.min_players}-${g.max_players}인`;
-}
+export { playersText } from './players';
 
 // 메시지 앱마다 미리보기를 정사각형·4:3 등으로 가운데만 잘라 보여줘서, 핵심 내용은 가운데 600x600 안에만 둔다
 export const OG_SAFE = 600;

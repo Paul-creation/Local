@@ -13,6 +13,7 @@ import BackToList from '../components/BackToList';
 import ShareButton from '../components/ShareButton';
 import CompareBuilder from '../components/CompareBuilder';
 import { BUILDER_FIELDS } from '../lib/compareRule';
+import { playersText } from '../lib/players';
 
 export const dynamic = 'force-dynamic';
 
@@ -194,9 +195,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
   const ROWS: Row[] = [
     { label: '카테고리', key: 'category' },
     { label: '인원수', render: (g: any) => {
-      if (g.min_players === 1 && g.max_players === 1) return '1인';
-      if (g.min_players && g.max_players) return `${g.min_players}-${g.max_players}인`;
-      return '인원 정보 확인 중';
+      return playersText(g) || '인원 정보 확인 중';
     }},
     { label: '솔로 플레이', render: (g: any) =>
       g.solo_playable === true && g.max_players === 1

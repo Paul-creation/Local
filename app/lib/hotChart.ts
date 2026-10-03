@@ -2,6 +2,7 @@
 // 메인 "🔥 지금 뜨는 게임" 데이터 — 메인 select와 따로, 필요한 게임과 기록만 가져온다
 // 순위는 scripts/snapshot-hot-rank.mjs가 매일 hot_rank_history에 남긴 heat_rank 순위(상위 50)를 쓴다
 import { supabase } from './supabase';
+import { playersText } from './players';
 import { getPriceInfo, getLowestTiming, type LowestTiming } from './price';
 import { translateTag } from './tagTranslate';
 
@@ -44,10 +45,6 @@ async function ranksOn(date: string | null) {
   return new Map((data || []).map((r) => [r.game_id as string, r.rank as number]));
 }
 
-function playersText(g: any) {
-  if (!g.min_players || !g.max_players) return '';
-  return g.min_players === g.max_players ? `${g.min_players}인` : `${g.min_players}-${g.max_players}인`;
-}
 
 // 오늘(가장 최근 기록) 상위 10위 게임 id — 검색 결과·상세 페이지 "TOP 10" 배지용
 export async function getTop10Ids(): Promise<string[]> {

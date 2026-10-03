@@ -9,7 +9,7 @@ import { translateTag } from '../../lib/tagTranslate';
 import type { GameFilters } from '../../lib/useGameFilters';
 
 const CATEGORIES = ['파티', '협동', '퍼즐', '서바이벌'];
-const PLAYER_OPTIONS = ['1인', '2인', '3-4인', '5인 이상'];
+const PLAYER_OPTIONS = ['1인', '2인', '3-4인', '5인 이상', '16명 이상'];
 const DIFFICULTY_OPTIONS = ['쉬움', '보통', '어려움'];
 
 export default function SearchPanel({ games, filters }: { games: any[], filters: GameFilters }) {
