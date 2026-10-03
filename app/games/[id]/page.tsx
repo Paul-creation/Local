@@ -10,6 +10,7 @@ import PlayerChart from '../../components/PlayerChart';
 import YouTubeLite from '../../components/YouTubeLite';
 import { translateTag } from '../../lib/tagTranslate';
 import GameVotes from '../../components/GameVotes';
+import ShareButton from '../../components/ShareButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -50,7 +51,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const { data: game } = await supabase
     .from('games')
-    .select('name, description, fun_description, min_players, max_players, difficulty, tags, is_free, card_image_url, cover_image_url, price_history(price, discount_percent, checked_at)')
+    .select('name, description, fun_description, min_players, max_players, difficulty, tags, is_free, price_history(price, discount_percent, checked_at)')
     .eq('id', id)
     .maybeSingle();
   if (!game) return { title: '게임을 찾을 수 없어요' };
@@ -66,14 +67,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const desc = game.fun_description
     ? [game.fun_description, summary].filter(Boolean).join(' | ')
     : [summary, tags, (game.description || '').replace(/\s+/g, ' ').slice(0, 90)].filter(Boolean).join(' | ');
-  const image = game.card_image_url || game.cover_image_url;
+  const image = `/api/og/game/${id}`;
 
   return {
     title: summary ? `${game.name} — ${summary}` : game.name,
     description: desc,
     alternates: { canonical: `/games/${id}` },
-    openGraph: { title: game.name, description: desc, url: `/games/${id}`, type: 'website', images: image ? [{ url: image }] : undefined },
-    twitter: { card: 'summary_large_image', title: game.name, description: desc, images: image ? [image] : undefined },
+    openGraph: { title: game.name, description: desc, url: `/games/${id}`, type: 'website', images: [{ url: image, width: 1200, height: 630 }] },
+    twitter: { card: 'summary_large_image', title: game.name, description: desc, images: [image] },
   };
 }
 
@@ -117,7 +118,13 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       )}
       {/* 제목 + 평가 배지 + 태그 + 설명 */}
       <div className="detail-header">
-        <h1 className="detail-title-v2">{game.name}</h1>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+          <h1 className="detail-title-v2">{game.name}</h1>
+          <ShareButton
+            title={game.name}
+            text={game.fun_description || `${game.name} 같이 할래?`}
+          />
+        </div>
         <div className="detail-meta-line">
           {game.review_summary && (
             <span className={`review-badge ${getReviewClass(game.review_summary)}`}>

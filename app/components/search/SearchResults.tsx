@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import ShareButton from '../ShareButton';
 import { getPriceInfo } from '../../lib/price';
 import { translateTag } from '../../lib/tagTranslate';
 import type { GameFilters } from '../../lib/useGameFilters';
@@ -25,14 +25,6 @@ export default function SearchResults({ filters }: { filters: GameFilters }) {
     compareList, setCompareList, compareError, toggleCompare,
     rememberList, resetFilters,
   } = filters;
-  const [copied, setCopied] = useState(false);
-  const copyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {}
-  };
 
   return (
     <>
@@ -50,9 +42,7 @@ export default function SearchResults({ filters }: { filters: GameFilters }) {
               )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0 }}>
-              <button onClick={copyLink} style={{ background: 'none', border: 'none', color: copied ? '#4a9e3a' : 'var(--text-dim)', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
-                {copied ? '✓ 복사됨' : '🔗 링크 복사'}
-              </button>
+              <ShareButton variant="text" label="🔗 공유하기" title="게임 검색 결과" text="이 조건으로 찾은 게임들 같이 보자!" />
               <button onClick={resetFilters} style={{ background: 'none', border: 'none', color: 'var(--accent)', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
                 ← 홈으로
               </button>
