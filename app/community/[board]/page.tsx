@@ -12,7 +12,7 @@ type Props = { params: Promise<{ board: string }>; searchParams: Promise<{ page?
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { board } = await params;
   if (!isBoard(board)) return { title: '게시판을 찾을 수 없어요' };
-  return { title: `${BOARDS[board].label} 게시판`, description: BOARDS[board].desc };
+  return { title: `${BOARDS[board].label} 게시판`, description: BOARDS[board].desc, alternates: { canonical: `/community/${board}` } };
 }
 
 export default async function BoardPage({ params, searchParams }: Props) {

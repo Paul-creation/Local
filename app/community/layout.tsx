@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { BOARD_KEYS, BOARDS } from '../lib/communityBoards';
+import WriteLink from '../components/community/WriteLink';
 
 export default function CommunityLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -9,7 +10,7 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
         {BOARD_KEYS.map((b) => (
           <Link key={b} href={`/community/${b}`}>{BOARDS[b].emoji} {BOARDS[b].label}</Link>
         ))}
-        <Link href="/community/write" className="cm-write-btn">✏️ 글쓰기</Link>
+        <WriteLink />
       </nav>
       {children}
       <footer className="cm-footer">

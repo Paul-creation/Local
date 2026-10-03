@@ -76,8 +76,8 @@ export default function HomeSections({ games, hotTabs, weekly, popularPosts = []
           {/* 🔥 지금 뜨는 게임 — 데이터는 page.tsx에서 따로 가져옴 (lib/hotChart) */}
           {hotTabs.length > 0 && <HotChart tabs={hotTabs} />}
 
-          {/* 💬 인기 게시물 — 5개 미만이면 page.tsx에서 빈 배열이 와서 숨김 */}
-          {popularPosts.length >= 5 && <PopularPosts posts={popularPosts} />}
+          {/* 💬 인기 게시물 — 글이 하나도 없을 때만 숨김 (적으면 최근 글로 채움, lib/community) */}
+          {popularPosts.length > 0 && <PopularPosts posts={popularPosts} />}
 
         </>
   );

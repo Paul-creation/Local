@@ -6,7 +6,7 @@ import { LIMITS, timeAgo } from '../../lib/communityBoards';
 import { send, loadNickname, saveNickname } from './api';
 import ReportButton from './ReportButton';
 
-type Comment = { id: number; body: string; nickname: string; hidden: boolean; created_at: string };
+export type Comment = { id: number; body: string; nickname: string; hidden: boolean; created_at: string };
 
 export default function Comments({ postId, initial }: { postId: number; initial: Comment[] }) {
   const router = useRouter();
@@ -42,6 +42,8 @@ export default function Comments({ postId, initial }: { postId: number; initial:
             <CommentItem
               key={c.id}
               c={c}
+              api="/api/community/comments"
+              reportType="comment"
               onChange={(next) => setComments((all) => (next ? all.map((x) => (x.id === c.id ? next : x)) : all.filter((x) => x.id !== c.id)))}
             />
           ))}
@@ -60,19 +62,22 @@ export default function Comments({ postId, initial }: { postId: number; initial:
   );
 }
 
-function CommentItem({ c, onChange }: { c: Comment; onChange: (next: Comment | null) => void }) {
+// 댓글 한 줄 (게시글 댓글·게임 의견 공용). api: 수정·삭제 경로, reportType: 신고 종류
+export function CommentItem({ c, api, reportType, max = LIMITS.comment[1], onChange }: {
+  c: Comment; api: string; reportType: 'comment' | 'game_comment'; max?: number; onChange: (next: Comment | null) => void;
+}) {
   const [mode, setMode] = useState<'' | 'edit' | 'delete'>('');
   const [body, setBody] = useState(c.body);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  if (c.hidden) return <li className="cm-comment cm-comment-hidden">신고로 숨겨진 댓글이에요.</li>;
+  if (c.hidden) return <li className="cm-comment cm-comment-hidden">신고로 숨겨진 {reportType === 'comment' ? '댓글' : '의견'}이에요.</li>;
 
   const submit = async () => {
     setError('');
     const r = mode === 'edit'
-      ? await send(`/api/community/comments/${c.id}`, 'PATCH', { password, body })
-      : await send(`/api/community/comments/${c.id}`, 'DELETE', { password });
+      ? await send(`${api}/${c.id}`, 'PATCH', { password, body })
+      : await send(`${api}/${c.id}`, 'DELETE', { password });
     if (!r.ok) return setError(r.error);
     onChange(mode === 'edit' ? { ...c, body: r.data.body } : null);
     setMode('');
@@ -87,15 +92,15 @@ function CommentItem({ c, onChange }: { c: Comment; onChange: (next: Comment | n
         <span className="cm-actions-right">
           <button type="button" className="cm-link-btn" onClick={() => setMode(mode === 'edit' ? '' : 'edit')}>수정</button>
           <button type="button" className="cm-link-btn" onClick={() => setMode(mode === 'delete' ? '' : 'delete')}>삭제</button>
-          <ReportButton type="comment" id={c.id} onHidden={() => onChange({ ...c, hidden: true })} />
+          <ReportButton type={reportType} id={c.id} onHidden={() => onChange({ ...c, hidden: true })} />
         </span>
       </div>
       {mode === 'edit'
-        ? <textarea className="cm-input cm-textarea-sm" value={body} maxLength={LIMITS.comment[1]} onChange={(e) => setBody(e.target.value)} aria-label="댓글 수정" />
+        ? <textarea className="cm-input cm-textarea-sm" value={body} maxLength={max} onChange={(e) => setBody(e.target.value)} aria-label="수정할 내용" />
         : <p className="cm-comment-body">{c.body}</p>}
       {mode && (
         <form className="cm-inline-row" onSubmit={(e) => { e.preventDefault(); submit(); }}>
-          <input className="cm-input" type="password" placeholder="댓글 비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="off" aria-label="댓글 비밀번호" />
+          <input className="cm-input" type="password" placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="off" aria-label="비밀번호" />
           <button className={`cm-btn ${mode === 'delete' ? 'cm-btn-danger' : 'cm-btn-primary'}`} disabled={!password}>{mode === 'edit' ? '수정 완료' : '삭제하기'}</button>
         </form>
       )}

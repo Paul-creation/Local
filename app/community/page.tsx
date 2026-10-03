@@ -5,7 +5,7 @@ import { listPosts } from '../lib/community';
 import PostList from '../components/community/PostList';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: '커뮤니티', description: '같이 게임할 사람 찾기, 뭐 할지 물어보기, 자유 게시판' };
+export const metadata: Metadata = { title: '커뮤니티', description: '같이 게임할 사람 찾기, 뭐 할지 물어보기, 자유 게시판', alternates: { canonical: '/community' } };
 
 export default async function CommunityHome() {
   const [all, ...boards] = await Promise.all([listPosts(null), ...BOARD_KEYS.map((b) => listPosts(b))]);

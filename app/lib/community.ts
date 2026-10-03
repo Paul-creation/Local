@@ -14,9 +14,12 @@ export const db = createClient(
 export const PUBLIC_POST_LIST = 'id, board, title, nickname, game_id, like_count, comment_count, created_at, games(id, name)';
 export const PUBLIC_POST = 'id, board, title, body, nickname, game_id, like_count, comment_count, hidden, created_at, updated_at, games(id, name)';
 export const PUBLIC_COMMENT = 'id, post_id, body, nickname, hidden, created_at';
+// 게임별 의견(game_comments) — 게임 상세에서만 보이고 게시판 목록에는 안 나온다
+export const PUBLIC_GAME_COMMENT = 'id, game_id, body, nickname, created_at';
 
 export const DAILY_POSTS_PER_IP = 10;
 export const DAILY_COMMENTS_PER_IP = 30;
+export const DAILY_GAME_COMMENTS_PER_IP = 30;
 export const MAX_LINKS = 2;
 export const HIDE_AT_REPORTS = 3;
 export const PAGE_SIZE = 20;
@@ -116,19 +119,17 @@ export async function listPosts(board: BoardKey | null, page = 1) {
   return { posts: (data || []) as unknown as PostListItem[], total: count ?? 0 };
 }
 
-// 메인 인기 게시물: 최근 7일, 추천+댓글 많은 순 5개. 5개 미만이면 빈 배열(섹션 숨김)
+// 메인 인기 게시물: 최근 7일 글을 추천+댓글 많은 순으로, 5개가 안 되면 그 전 최근 글로 채운다 (숨김 글 제외)
 export async function getPopularPosts(): Promise<PostListItem[]> {
   const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-  const { data } = await db.from('posts').select(PUBLIC_POST_LIST).eq('hidden', false).gte('created_at', since)
-    .order('created_at', { ascending: false }).limit(300);
-  const posts = ((data || []) as unknown as PostListItem[])
+  const [{ data: week }, { data: recent }] = await Promise.all([
+    db.from('posts').select(PUBLIC_POST_LIST).eq('hidden', false).gte('created_at', since)
+      .order('created_at', { ascending: false }).limit(300),
+    db.from('posts').select(PUBLIC_POST_LIST).eq('hidden', false).order('created_at', { ascending: false }).limit(5),
+  ]);
+  const top = ((week || []) as unknown as PostListItem[])
     .sort((a, b) => (b.like_count + b.comment_count) - (a.like_count + a.comment_count))
     .slice(0, 5);
-  return posts.length < 5 ? [] : posts;
-}
-
-export async function getGamePosts(gameId: string): Promise<PostListItem[]> {
-  const { data } = await db.from('posts').select(PUBLIC_POST_LIST).eq('hidden', false).eq('game_id', gameId)
-    .order('created_at', { ascending: false }).limit(3);
-  return (data || []) as unknown as PostListItem[];
+  const fill = ((recent || []) as unknown as PostListItem[]).filter((p) => !top.some((t) => t.id === p.id));
+  return [...top, ...fill].slice(0, 5);
 }

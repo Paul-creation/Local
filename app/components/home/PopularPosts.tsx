@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { BOARDS } from '../../lib/communityBoards';
 import type { PostListItem } from '../../lib/community';
 
-// 메인 "인기 게시물" — 최근 7일 추천+댓글 많은 글 5개 (데이터는 page.tsx → lib/community)
+// 메인 "인기 게시물" — 최근 7일 추천+댓글 많은 글 5개, 모자라면 최근 글 (데이터는 page.tsx → lib/community)
 export default function PopularPosts({ posts }: { posts: PostListItem[] }) {
   return (
     <>

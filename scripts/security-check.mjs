@@ -39,7 +39,7 @@ function checkCode() {
   const clientFiles = execSync("grep -rlE \"^'use client'|^\\\"use client\\\"\" app --include=*.ts --include=*.tsx || true").toString().trim().split('\n').filter(Boolean);
   const leaky = clientFiles.filter((f) => {
     const src = read(f);
-    return /\.from\(['"](posts|post_comments|post_likes|post_reports)['"]\)/.test(src) ||
+    return /\.from\(['"](posts|post_comments|post_likes|post_reports|game_comments)['"]\)/.test(src) ||
       /^import\s+(?!type\b)[^;]*from\s+['"][./]*(lib\/)?community['"]/m.test(src);
   });
   leaky.length === 0 ? ok('브라우저 코드에서 게시판 표 직접 접근 없음') : bad(`브라우저 코드가 게시판 표/서버 모듈에 직접 접근: ${leaky.join(', ')}`);
@@ -96,11 +96,13 @@ async function checkDb() {
 
   // 게시판: 브라우저 키로 쓰기·수정·삭제·해시 읽기 모두 막혀 있어야 함
   const anyPost = (await admin.from('posts').select('id').limit(1)).data?.[0]?.id ?? 1;
+  const anyGame = (await admin.from('games').select('id').limit(1)).data?.[0]?.id;
   const cmRows = [
     ['posts', { board: 'free', title: '__security_test__', body: '__security_test__', nickname: '점검', password_hash: 'x', ip_hash: 'x' }],
     ['post_comments', { post_id: anyPost, body: '__security_test__', nickname: '점검', password_hash: 'x', ip_hash: 'x' }],
     ['post_likes', { post_id: anyPost, voter_hash: '__security_test__' }],
     ['post_reports', { target_type: 'post', target_id: anyPost, reporter_hash: '__security_test__' }],
+    ['game_comments', { game_id: anyGame, body: '__security_test__', nickname: '점검', password_hash: 'x', ip_hash: 'x' }],
   ];
   for (const [table, row] of cmRows) {
     const { error } = await anon.from(table).insert(row);
@@ -116,10 +118,12 @@ async function checkDb() {
   upd.error || (upd.data || []).length === 0 ? ok('브라우저 키로 posts 수정 차단됨') : bad(`브라우저 키로 posts ${upd.data.length}개 수정됨!`, 'posts의 UPDATE 정책 삭제');
   const del = await anon.from('posts').delete().gte('id', 0).select('id');
   del.error || (del.data || []).length === 0 ? ok('브라우저 키로 posts 삭제 차단됨') : bad(`브라우저 키로 posts ${del.data.length}개 삭제됨!`, 'posts의 DELETE 정책 삭제');
-  for (const table of ['posts', 'post_comments']) {
+  for (const table of ['posts', 'post_comments', 'game_comments']) {
     const { error } = await anon.from(table).select('password_hash, ip_hash').limit(1);
     error ? ok(`브라우저 키로 ${table}의 password_hash·ip_hash 읽기 차단됨`) : bad(`브라우저 키로 ${table}의 password_hash·ip_hash를 읽을 수 있음!`, 'revoke all on posts, post_comments, post_likes, post_reports from anon, authenticated; 실행');
   }
+
+  await checkGameCommentsDb(anyGame);
 
   const { count } = await admin.from('compare_cache').select('game_ids', { count: 'exact', head: true });
   count > 0 ? ok(`비교 캐시 저장 중 (${count}개 조합)`) : note('비교 캐시 0개 — 배포 후 비교 페이지를 한 번 열어보고 다시 점검');
@@ -177,6 +181,32 @@ async function checkSite() {
   }
 }
 
+// 게임 의견(game_comments) DB: 브라우저는 숨김 아닌 의견의 공개 칸만 읽기, 신고 1인 1회, cascade 삭제 시 신고 행 오류 없음
+async function checkGameCommentsDb(gameId) {
+  const { error: tblErr } = await admin.from('game_comments').select('id, game_id, body, nickname, password_hash, ip_hash, report_count, hidden, created_at').limit(1);
+  if (tblErr) return bad('game_comments 테이블 없음', 'game_comments SQL 실행');
+  ok('game_comments 테이블');
+  const { data: rows } = await admin.from('game_comments').insert([
+    { game_id: gameId, body: '__security_test__ 공개', nickname: '점검', password_hash: 'x', ip_hash: 'x', hidden: false },
+    { game_id: gameId, body: '__security_test__ 숨김', nickname: '점검', password_hash: 'x', ip_hash: 'x', hidden: true },
+  ]).select('id, hidden');
+  if (!rows?.length) return bad('game_comments 점검용 행을 만들지 못함');
+  try {
+    const seen = (await anon.from('game_comments').select('id, body').like('body', '__security_test__%')).data || [];
+    const shown = rows.find((r) => !r.hidden), hiddenRow = rows.find((r) => r.hidden);
+    seen.some((r) => r.id === shown.id) ? ok('브라우저 키로 공개 의견 읽기 가능 (공개 칸만)') : note('브라우저 키로 공개 의견을 못 읽음 (서버로만 읽어서 사이트 동작엔 문제없음)');
+    seen.some((r) => r.id === hiddenRow.id) ? bad('브라우저 키로 숨김 의견이 보임!', 'game_comments select 정책에 hidden = false 조건') : ok('브라우저 키로 숨김 의견 안 보임');
+
+    const rep = (h) => admin.from('post_reports').insert({ target_type: 'game_comment', target_id: shown.id, reporter_hash: h });
+    const r1 = await rep('__security_test__'), r2 = await rep('__security_test__');
+    !r1.error && r2.error?.code === '23505' ? ok('같은 사람의 게임 의견 중복 신고는 1번만 기록') : bad(`게임 의견 신고 중복 처리 이상 (${r1.error?.message || r2.error?.message || '중복 허용'})`, 'post_reports target_type 제약에 game_comment 추가');
+  } finally {
+    const { error } = await admin.from('game_comments').delete().in('id', rows.map((r) => r.id));
+    error ? bad(`신고가 달린 의견 삭제 오류: ${error.message}`) : ok('신고가 달린 의견을 지워도 오류 없음 (cascade 대비)');
+    await admin.from('post_reports').delete().eq('reporter_hash', '__security_test__');
+  }
+}
+
 // 게시판 실제 동작: 읽기 응답에 해시 없음, 입력 검증, 도배 제한
 // 도배 제한 점검용 글·댓글은 '__security_test__' 제목으로 만들고 바로 숨긴 뒤 점검 끝에 지운다
 async function checkCommunity(call, json) {
@@ -200,6 +230,36 @@ async function checkCommunity(call, json) {
   if (r.body?.id) await admin.from('posts').delete().eq('id', r.body.id);
   r = await post({ board: '__hack__', title: '__security_test__', body: '__security_test__' });
   r.status === 400 ? ok('없는 게시판 거절') : bad(`없는 게시판 응답 ${r.status}`);
+
+  // 게임 의견: 게임 페이지 응답에 해시 없음 + 도배 제한(하루 30개). 점검용 의견은 바로 숨기고 끝에 지운다
+  const game = (await admin.from('games').select('id').limit(1)).data?.[0];
+  if (game) {
+    const gp = await fetch(`${SITE}/games/${game.id}`).catch(() => null);
+    const gt = gp ? await gp.text() : '';
+    gp?.status === 200 && !HASH.test(gt) ? ok('게임 페이지 응답에 해시 없음') : bad(`게임 페이지 응답 이상 (${gp?.status ?? '없음'}${HASH.test(gt) ? ', 해시 포함!' : ''})`);
+    gt.includes('의견 달기') ? ok('게임 페이지에 의견 달기 섹션') : note('게임 페이지에 의견 달기가 아직 없음 — 배포 전일 수 있어요');
+    const opinion = (b) => call('/api/game-comments', json('POST', { gameId: game.id, nickname: '보안점검', password: 'check1234', ...b }));
+    r = await opinion({ body: '__security_test__ https://a.com https://b.com https://c.com' });
+    r.status === 400 ? ok('링크 3개 의견 거절') : bad(`링크 3개 의견 응답 ${r.status}`);
+    r = await opinion({ body: '__security_test__' + '가'.repeat(200) });
+    r.status === 400 ? ok('200자 넘는 의견 거절') : bad(`200자 넘는 의견 응답 ${r.status}`);
+    const ids = [];
+    try {
+      let limited = false;
+      for (let i = 0; i < 32 && !limited; i++) {
+        r = await opinion({ body: `__security_test__ ${i}` });
+        if (r.status === 429) limited = true;
+        else if (r.body?.comment?.id) {
+          ids.push(r.body.comment.id);
+          await admin.from('game_comments').update({ hidden: true }).eq('id', r.body.comment.id);
+          if (HASH.test(JSON.stringify(r.body))) { bad('의견 쓰기 응답에 해시가 들어 있음!'); break; }
+        } else break;
+      }
+      limited ? ok('게임 의견 도배 제한 동작 (하루 30개 넘으면 429)') : bad(`게임 의견 도배 제한 없음 (${ids.length}개까지 저장됨)`);
+    } finally {
+      if (ids.length) await admin.from('game_comments').delete().in('id', ids);
+    }
+  }
 
   const created = [];
   try {

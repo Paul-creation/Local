@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { getIp } from '../../../lib/aiGuard';
+import { BASE_OG } from '../../../lib/site';
 import { BOARDS, boardTitle, timeAgo, type BoardKey } from '../../../lib/communityBoards';
 import { db, ipHash, parseId, PUBLIC_POST, PUBLIC_COMMENT } from '../../../lib/community';
 import PostActions from '../../../components/community/PostActions';
@@ -27,7 +28,9 @@ async function getPost(raw: string) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await getPost((await params).id);
   if (!post || post.hidden) return { title: '커뮤니티', robots: { index: false } };
-  return { title: post.title, description: post.body.replace(/\s+/g, ' ').slice(0, 100) };
+  const description = post.body.replace(/\s+/g, ' ').slice(0, 100);
+  const url = `/community/post/${post.id}`;
+  return { title: post.title, description, alternates: { canonical: url }, openGraph: { ...BASE_OG, title: post.title, description, url } };
 }
 
 export default async function PostPage({ params }: Props) {

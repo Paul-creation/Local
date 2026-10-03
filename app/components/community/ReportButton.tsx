@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { REPORT_REASONS } from '../../lib/communityBoards';
 import { send } from './api';
 
-export default function ReportButton({ type, id, onHidden }: { type: 'post' | 'comment'; id: number; onHidden?: () => void }) {
+export default function ReportButton({ type, id, onHidden }: { type: 'post' | 'comment' | 'game_comment'; id: number; onHidden?: () => void }) {
   const [open, setOpen] = useState(false);
   const [msg, setMsg] = useState('');
 

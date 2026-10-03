@@ -16,6 +16,7 @@ export const LIMITS = {
   title: [2, 80],
   body: [2, 3000],
   comment: [1, 1000],
+  gameComment: [1, 200],
   nickname: [2, 12],
   password: [4, 64],
 } as const;

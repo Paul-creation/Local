@@ -1883,3 +1883,5 @@ a.hc-row:hover { background: var(--bg-card-hover); }
   .cm-card { padding: 18px; }
   .cm-home-row .cm-board-chip { display: none; }
 }
+.cm-textarea-xs { min-height: 60px; resize: vertical; line-height: 1.6; }
+.cm-opinion-form { margin-bottom: 4px; }

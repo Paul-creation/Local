@@ -1,11 +1,17 @@
 import { supabase } from './lib/supabase';
 import GameGrid from './components/GameGrid';
 import { Suspense } from 'react';
+import type { Metadata } from 'next';
+import { BASE_OG, SITE_NAME, SITE_DESCRIPTION } from './lib/site';
 import { getHotChart } from './lib/hotChart';
 import { getWeeklyFeatured } from './lib/weeklyFeatured';
 import { getPopularPosts } from './lib/community';
 
 export const dynamic = 'force-dynamic';
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+  openGraph: { ...BASE_OG, title: SITE_NAME, description: SITE_DESCRIPTION, url: '/' },
+};
 
 export default async function Home() {
   // 메인(섹션·검색 결과·자동완성·비교 선택·태그 필터)에서 쓰는 칸만 가져온다. 칸을 새로 쓰면 여기에 추가.
@@ -13,7 +19,7 @@ export default async function Home() {
   // 긴 설명은 이번주의 게임·추천 배너에만 쓰므로 그 게임들만 따로 가져와 합친다.
   // 🔥 지금 뜨는 게임은 메인 select를 늘리지 않고 필요한 게임·기록만 따로 (lib/hotChart)
   // 이번주의 게임도 featured_games에서 그 게임 1개만 따로 (lib/weeklyFeatured). 기록이 없으면 featured 칸으로
-  // 인기 게시물: 최근 7일 추천+댓글 순 5개 (5개 미만이면 빈 배열 → 섹션 숨김)
+  // 인기 게시물: 최근 7일 추천+댓글 순 5개, 모자라면 최근 글로 채움
   const [{ data: list }, { data: descs }, hot, weekly, popularPosts] = await Promise.all([
     supabase
       .from('games')
