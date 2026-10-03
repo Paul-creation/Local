@@ -1,7 +1,7 @@
 // scripts/lib/coop-judge.mjs
-// 규칙을 통과한 후보 영상 제목들을 Haiku에 한 번에 보내서 "이 게임을 여러 명이 같이 플레이하는 영상"만 번호로 받는다
-// 게임당 1번 호출 (후보 최대 15개, 약 $0.001)
-import { koNames } from './coop-targets.mjs';
+// 규칙을 통과한 후보 영상(제목 + 설명 앞부분)을 Haiku에 한 번에 보내서 "이 게임을 여러 명이 같이 플레이하는 영상"만 번호로 받는다
+// 게임당 1번 호출 (후보 최대 15개, 설명 포함 약 $0.003)
+import { koNames, DESC_HEAD } from './coop-targets.mjs';
 
 export const JUDGE_MAX = 15;
 
@@ -11,16 +11,20 @@ export async function judgeCoopVideos(game, candidates) {
   const names = [game.name, ...koNames(game.search_name_ko)].join(' / ');
   const prompt = `게임: ${names}
 
-아래는 이 게임을 검색해서 나온 유튜브 영상 제목들이야. "이 게임을 여러 명이 같이 플레이하는 영상"(합방, 친구들과 멀티, 협동 플레이)만 골라줘.
+아래는 이 게임을 검색해서 나온 유튜브 영상의 제목과 설명 앞부분이야. "이 게임을 여러 명이 같이 플레이하는 영상"(합방, 친구들과 멀티, 협동 플레이)만 골라줘.
+제목에 게임 이름이 없어도 설명이나 내용으로 이 게임을 여럿이 하는 영상이 확실하면 골라도 돼.
 제외할 것:
 - 다른 게임 영상, 게임과 상관없는 영상 (이름만 비슷한 사람·회사·물건 포함)
 - 혼자 플레이하는 영상
-- 같은 시리즈라도 번호나 부제가 다른 작품 영상 (예: 1편을 찾는데 3편 영상)
+- 같은 시리즈의 다른 작품 영상: 제목이나 설명에 전작·후속작·번호가 다른 작품 이름이 보이면 제외 (예: The Forest를 찾는데 Sons Of The Forest / 선즈 오브 더 포레스트, 1편을 찾는데 3편)
 - 리뷰, 추천, 공략, 정보 영상
 확실하지 않으면 제외해.
 
 영상 목록:
-${list.map((v, i) => `${i + 1}. ${v.title} (채널: ${v.channel_title || '?'})`).join('\n')}
+${list.map((v, i) => {
+  const desc = String(v.description || '').replace(/\s+/g, ' ').trim().slice(0, DESC_HEAD);
+  return `${i + 1}. 제목: ${v.title} (채널: ${v.channel_title || '?'})${desc ? `\n   설명: ${desc}` : ''}`;
+}).join('\n')}
 
 JSON으로만 답해. 설명이나 코드블록은 쓰지 마. 고를 게 없으면 빈 배열.
 {"keep": [1, 3]}`;
@@ -34,7 +38,7 @@ JSON으로만 답해. 설명이나 코드블록은 쓰지 마. 고를 게 없으
     },
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 200,
+      max_tokens: 300,
       messages: [{ role: 'user', content: prompt }],
     }),
   });
