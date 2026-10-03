@@ -514,14 +514,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       {!game.is_free && priceHistory.length >= 2 && (
         <section className="detail-section-v2">
           <h3>할인 전적</h3>
-          <DiscountChart
-            data={[...priceHistory]
-              .sort((a: any, b: any) => new Date(a.checked_at).getTime() - new Date(b.checked_at).getTime())
-              .map((p: any) => ({
-                date: new Date(p.checked_at).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }),
-                discount: p.discount_percent,
-              }))}
-          />
+          {/* 기간 기준 시각은 서버에서 정해 넘긴다 (서버·브라우저 계산이 어긋나지 않게) */}
+          <DiscountChart history={priceHistory} now={Date.now()} />
         </section>
       )}
 
