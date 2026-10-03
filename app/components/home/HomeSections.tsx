@@ -3,7 +3,6 @@
 
 import Link from 'next/link';
 import BannerCarousel from '../BannerCarousel';
-import DiscountSection from '../DiscountSection';
 import { getPriceInfo } from '../../lib/price';
 
 export default function HomeSections({ games }: { games: any[] }) {
@@ -118,7 +117,6 @@ export default function HomeSections({ games }: { games: any[] }) {
             </div>
                     )}
 
-          <DiscountSection games={games} />
         </>
   );
 }

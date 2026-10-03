@@ -8,6 +8,8 @@ export function useGameFilters(games: any[]) {
   const sp = useSearchParams();
   const [showResults, setShowResults] = useState(sp.get('r') === '1');
   const [filterOpen, setFilterOpen] = useState(false);
+  // OP.GG처럼 입력 중인 글자(input)와 엔터로 확정한 검색어(query)를 나눈다. 결과·주소의 q는 query만 따른다.
+  const [input, setInput] = useState(sp.get('q') || '');
   const [query, setQuery] = useState(sp.get('q') || '');
   const [selectedCategory, setSelectedCategory] = useState(sp.get('cat') || '');
   const [selectedTags, setSelectedTags] = useState<string[]>((sp.get('tags') || '').split(',').filter(Boolean));
@@ -100,7 +102,15 @@ export function useGameFilters(games: any[]) {
     return true;
   });
 
+  // 엔터(또는 결과 보기)로 지금 입력한 글자를 검색어로 확정하고 결과 화면 맨 위로
+  const submitSearch = () => {
+    setQuery(input);
+    setShowResults(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const resetFilters = () => {
+    setInput('');
     setQuery('');
     setSelectedCategory('');
     setSelectedTags([]);
@@ -115,7 +125,8 @@ export function useGameFilters(games: any[]) {
   return {
     showResults, setShowResults,
     filterOpen, setFilterOpen,
-    query, setQuery,
+    input, setInput,
+    query, submitSearch,
     selectedCategory, setSelectedCategory,
     selectedTags, toggleTag,
     selectedPlayers, setSelectedPlayers,

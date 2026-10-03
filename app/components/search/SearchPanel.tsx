@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import AIRecommend from '../AIRecommend';
+import SearchBox from './SearchBox';
 import { TAG_GROUPS } from '../../lib/tagGroups';
 import { translateTag } from '../../lib/tagTranslate';
 import type { GameFilters } from '../../lib/useGameFilters';
@@ -13,7 +14,7 @@ const DIFFICULTY_OPTIONS = ['쉬움', '보통', '어려움'];
 
 export default function SearchPanel({ games, filters }: { games: any[], filters: GameFilters }) {
   const {
-    query, setQuery, setShowResults,
+    submitSearch,
     filterOpen, setFilterOpen,
     selectedCategory, setSelectedCategory,
     selectedTags, toggleTag,
@@ -33,16 +34,7 @@ export default function SearchPanel({ games, filters }: { games: any[], filters:
     <>
       {/* 검색창 */}
       <div className="search-row">
-        <div className="search-bar-clean">
-          <input
-            type="text"
-            placeholder="게임 이름으로 검색..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter') { setShowResults(true); window.scrollTo({ top: 0, behavior: 'smooth' }); } }}
-          />
-          {query && <button className="search-clear" onClick={() => setQuery('')}>✕</button>}
-        </div>
+        <SearchBox games={games} filters={filters} />
         <AIRecommend />
       </div>
 
@@ -183,7 +175,7 @@ export default function SearchPanel({ games, filters }: { games: any[], filters:
                 }}>초기화</button>
               )}
               <button
-                onClick={() => { setShowResults(true); setFilterOpen(false); window.scrollTo({ top: 0, behavior: 'smooth' }); /* SHOW_TOP */ }}
+                onClick={() => { submitSearch(); setFilterOpen(false); /* SHOW_TOP — 입력해 둔 검색어도 함께 적용 */ }}
                 style={{
                   flex: 1, padding: '12px',
                   background: 'var(--accent)', border: 'none',

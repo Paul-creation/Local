@@ -552,8 +552,13 @@ img { display: block; }
   margin-bottom: 20px;
 }
 
-.search-bar-clean {
+.search-box {
+  position: relative;
   flex: 1;
+  min-width: 0;
+}
+
+.search-bar-clean {
   display: flex;
   align-items: center;
   background: var(--bg-card);
@@ -587,6 +592,60 @@ img { display: block; }
   color: var(--text-dimmer);
   font-size: 16px;
   padding: 0 0 0 8px;
+}
+
+/* 자동완성 목록 — 검색창 바로 아래 */
+.search-suggest {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.search-suggest-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.search-suggest-item.is-active { background: var(--bg); }
+
+.search-suggest-item img,
+.search-suggest-noimg {
+  width: 64px;
+  aspect-ratio: 460 / 215;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+  background: var(--bg);
+}
+
+.search-suggest-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-suggest-players {
+  flex-shrink: 0;
+  font-size: 14px;
+  color: var(--text-dimmer);
 }
 
 .ai-trigger-clean {
@@ -1303,9 +1362,13 @@ img { display: block; }
     gap: 8px;
   }
 
-  .search-bar-clean {
+  .search-box {
     width: 100%;
   }
+
+  .search-suggest-item { gap: 10px; padding: 8px; }
+  .search-suggest-item img,
+  .search-suggest-noimg { width: 52px; }
 
   .ai-trigger-clean {
     width: 100%;
