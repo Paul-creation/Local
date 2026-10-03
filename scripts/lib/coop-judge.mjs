@@ -9,14 +9,17 @@ export async function judgeCoopVideos(game, candidates) {
   const list = candidates.slice(0, JUDGE_MAX);
   if (!list.length) return { keep: [], usage: null };
   const names = [game.name, ...koNames(game.search_name_ko)].join(' / ');
-  const prompt = `게임: ${names}
+  const year = /^\d{4}/.exec(String(game.release_date || ''))?.[0];
+  const info = [year ? `출시 ${year}년` : '', game.developer ? `개발사 ${game.developer}` : ''].filter(Boolean).join(', ');
+  const prompt = `게임: ${names}${info ? ` (${info})` : ''}
 
 아래는 이 게임을 검색해서 나온 유튜브 영상의 제목과 설명 앞부분이야. "이 게임을 여러 명이 같이 플레이하는 영상"(합방, 친구들과 멀티, 협동 플레이)만 골라줘.
 제목에 게임 이름이 없어도 설명이나 내용으로 이 게임을 여럿이 하는 영상이 확실하면 골라도 돼.
 제외할 것:
 - 다른 게임 영상, 게임과 상관없는 영상 (이름만 비슷한 사람·회사·물건 포함)
 - 혼자 플레이하는 영상
-- 같은 시리즈의 다른 작품 영상: 제목이나 설명에 전작·후속작·번호가 다른 작품 이름이 보이면 제외 (예: The Forest를 찾는데 Sons Of The Forest / 선즈 오브 더 포레스트, 1편을 찾는데 3편)
+- 이름이 같거나 비슷해도 위 출시 연도·개발사의 이 작품이 아닌 영상: 리메이크·리마스터, 속편·전작, 로블록스나 모바일 게임 등
+  (예: The Forest를 찾는데 Sons Of The Forest / 선즈 오브 더 포레스트, 로블록스 "99 Nights in the Forest" / 99나이트 인 더 포레스트, ARK: Survival Evolved를 찾는데 아크 어센디드)
 - 리뷰, 추천, 공략, 정보 영상
 확실하지 않으면 제외해.
 

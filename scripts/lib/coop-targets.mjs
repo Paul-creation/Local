@@ -48,8 +48,24 @@ export const mentionsGame = (text, game) => {
 // (게임 이름이 제목에 없거나 "리뷰 5만개"처럼 단어가 섞인 진짜 합방도 있어서, 나머지 판단은 Haiku가 제목+설명을 보고 함)
 export const EXCLUDE_TITLE_WORDS = /top\s*\d+|\d+\s*top|추천\s*top|트레일러|같이\s*보기|뉴스|패치/i;
 
-export function isCoopVideoFor(video) {
-  return !EXCLUDE_TITLE_WORDS.test(video.title || '');
+// 게임별 제외어 (games.video_exclude_terms, 쉼표로 여러 개) — 검색어에서 빼고(-단어), 제목에 있으면 제외
+export const excludeTerms = (game) => String(game?.video_exclude_terms || '').split(',').map((s) => s.trim()).filter(Boolean);
+
+// 모든 게임 공통으로 검색에서 빼는 단어 (같은 이름의 로블록스·모바일 게임이 섞이지 않게)
+export const COMMON_SEARCH_EXCLUDES = ['로블록스', 'roblox', '모바일'];
+
+export function isCoopVideoFor(video, game) {
+  const title = video.title || '';
+  if (EXCLUDE_TITLE_WORDS.test(title)) return false;
+  const t = norm(title);
+  return !excludeTerms(game).some((w) => norm(w) && t.includes(norm(w)));
+}
+
+// YouTube 검색어 끝에 붙일 제외 부분: -로블록스 -roblox -모바일 + 게임별 제외어 (띄어쓰기 있으면 따옴표)
+export function searchExcludeSuffix(game) {
+  return [...COMMON_SEARCH_EXCLUDES, ...excludeTerms(game)]
+    .map((w) => (/\s/.test(w) ? `-"${w.replace(/"/g, '')}"` : `-${w}`))
+    .join(' ');
 }
 
 // 영상 검색어로 쓸 이름: 한국어 첫 번째 이름. 두 글자 이하로 짧으면(인왕·아크 등) 다른 뜻과 섞이지 않게 "게임"을 붙임

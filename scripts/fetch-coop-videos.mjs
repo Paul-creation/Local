@@ -5,13 +5,15 @@
 // - coop_videos_at이 30일 이내면 건너뜀 (YouTube 정책상 저장한 정보는 30일마다 갱신)
 // - 검색어: 한국어 이름(search_name_ko, fill-search-names로 채움)을 먼저, 3개가 안 차면 영어 이름(™ ® © 뺀 것)으로 한 번 더
 //   search_name_ko는 쉼표로 여러 개 가능 → 영상 검색에는 첫 번째 이름만 씀 (두 글자 이하면 "게임"을 붙임)
-// - 1차 규칙(확실한 것만 제외): 제목에 "TOP 숫자"·"추천 TOP"·트레일러·같이보기·뉴스·패치
-// - 2차 Haiku: 남은 후보(조회수 순 최대 15개)의 제목+설명 앞부분을 게임당 한 번에 보내 "여러 명이 같이 플레이하는 영상"만 고름 (게임당 약 $0.003)
+// - 검색어 끝에 -로블록스 -roblox -모바일 과 게임별 제외어(games.video_exclude_terms, 쉼표로 여러 개)를 붙여 처음부터 뺌
+// - 1차 규칙(확실한 것만 제외): 제목에 "TOP 숫자"·"추천 TOP"·트레일러·같이보기·뉴스·패치, 또는 게임별 제외어
+// - 2차 Haiku: 남은 후보(조회수 순 최대 15개)의 제목+설명 앞부분을 출시 연도·개발사와 함께 게임당 한 번에 보내
+//   "이 작품을 여러 명이 같이 플레이하는 영상"만 고름 (리메이크·속편·로블록스·모바일 등 다른 작품 제외, 게임당 약 $0.003)
 // - 고른 것 중 조회수 순 최대 3개. 없으면 0개
 // - YouTube 사용량: 검색 1번당 약 101 (검색 100 + 영상 정보 1), 게임당 최대 2번. 하루 한도 10,000
 // - 한도 초과면 그 게임은 기록하지 않고 바로 멈춤 → 다음 실행 때 그 게임부터 이어서
 import { createClient } from '@supabase/supabase-js';
-import { getCoopTargets, isCoopVideoFor, searchKeyword } from './lib/coop-targets.mjs';
+import { getCoopTargets, isCoopVideoFor, searchKeyword, searchExcludeSuffix } from './lib/coop-targets.mjs';
 import { judgeCoopVideos, haikuCost, JUDGE_MAX } from './lib/coop-judge.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
@@ -55,7 +57,7 @@ async function searchOnce(names, game) {
   const since = new Date(Date.now() - RECENT_YEARS * 365 * 24 * 3600 * 1000).toISOString();
   const search = await youtube('search', {
     part: 'id',
-    q: names.flatMap((n) => [`${n} 합방`, `${n} 멀티`, `${n} 같이`]).join(' | '),
+    q: `${names.flatMap((n) => [`${n} 합방`, `${n} 멀티`, `${n} 같이`]).join(' | ')} ${searchExcludeSuffix(game)}`,
     type: 'video',
     regionCode: 'KR',
     relevanceLanguage: 'ko',
@@ -78,7 +80,7 @@ async function searchOnce(names, game) {
     }))
     .filter((v) => /[가-힣]/.test(v.title) && v.view_count >= MIN_VIEWS && v.duration_sec >= MIN_SEC && v.duration_sec <= MAX_SEC);
   const videos = passed
-    .filter((v) => isCoopVideoFor(v)); // 설명은 Haiku 판단에만 쓰고, 저장할 때 뺌
+    .filter((v) => isCoopVideoFor(v, game)); // 설명은 Haiku 판단에만 쓰고, 저장할 때 뺌
   return { videos, noCoop: passed.length - videos.length };
 }
 
@@ -134,7 +136,7 @@ async function main() {
 
   let top;
   try {
-    top = await getCoopTargets(supabase, 'search_name_ko, coop_videos_at');
+    top = await getCoopTargets(supabase, 'search_name_ko, coop_videos_at, release_date, developer, video_exclude_terms');
   } catch (e) {
     return console.error(`❌ ${e.message}`);
   }
