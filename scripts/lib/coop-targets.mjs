@@ -44,10 +44,21 @@ export const mentionsGame = (text, game) => {
   return gameNameKeys(game).some((k) => t.includes(k));
 };
 
-// "친구랑 하는 영상"으로 고를지: 게임 이름 + 협동 단어 둘 다 (제목 또는 설명 앞부분에서)
+// 제목에 이 단어가 있으면 친구랑 노는 영상이 아니라 추천·리뷰·정보 영상으로 보고 제외
+export const EXCLUDE_TITLE_WORDS = /추천|(^|[^a-z])top($|[^a-z])|리뷰|후기|트레일러|공략|방법|순위|비교|같이\s*보기|뉴스|패치/i;
+
+// 규칙 1차 거르기: 게임 이름은 제목에, 협동 단어는 제목이나 설명 앞부분에, 제외 단어는 제목에 없어야
 export function isCoopVideoFor(video, game) {
-  const text = `${video.title || ''}\n${String(video.description || '').slice(0, DESC_HEAD)}`;
-  return mentionsGame(text, game) && isCoopVideo(text);
+  const title = video.title || '';
+  const text = `${title}\n${String(video.description || '').slice(0, DESC_HEAD)}`;
+  return mentionsGame(title, game) && !EXCLUDE_TITLE_WORDS.test(title) && isCoopVideo(text);
+}
+
+// 영상 검색어로 쓸 이름: 한국어 첫 번째 이름. 두 글자 이하로 짧으면(인왕·아크 등) 다른 뜻과 섞이지 않게 "게임"을 붙임
+export function searchKeyword(game) {
+  const ko = koNames(game.search_name_ko)[0];
+  if (!ko) return '';
+  return norm(ko).length <= 2 ? `${ko} 게임` : ko;
 }
 
 // search_name_ko는 쉼표로 여러 이름을 넣을 수 있음 (예: "파스모포비아, 파즈모포비아")
