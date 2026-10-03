@@ -3,6 +3,7 @@
 // 순위는 scripts/snapshot-hot-rank.mjs가 매일 hot_rank_history에 남긴 heat_rank 순위(상위 50)를 쓴다
 import { supabase } from './supabase';
 import { getPriceInfo } from './price';
+import { translateTag } from './tagTranslate';
 
 export type RankChange = { type: 'up' | 'down'; n: number } | { type: 'same' } | { type: 'new' } | null;
 
@@ -15,11 +16,12 @@ export type HotItem = {
   image: string | null;   // 큰 카드 배경 (hero → card)
   thumb: string | null;   // 줄 썸네일 (card → cover)
   fun: string | null;
+  tags: string[];         // 한국어 태그 앞 2개
   players: string;        // "1-4인"
   currentPlayers: number | null;
   price: string | null;   // "₩8,250" / "무료"
   discount: number;
-  spark: number[];        // 최근 7일 동접자 (1~3위만)
+  spark: number[];        // 최근 7일 동접자 (1~3위만, 기록이 3일 이상인 게임만)
 };
 
 export type HotTab = { key: 'all' | 'friends' | 'rising'; label: string; items: HotItem[] };
@@ -86,7 +88,7 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
   const [{ data: games }, { data: weeksRows }, { data: playerRows }] = await Promise.all([
     supabase
       .from('games')
-      .select('id, name, hero_image_url, card_image_url, cover_image_url, fun_description, min_players, max_players, current_players, is_free, price_history(price, discount_percent, checked_at, currency)')
+      .select('id, name, hero_image_url, card_image_url, cover_image_url, fun_description, tags, min_players, max_players, current_players, is_free, price_history(price, discount_percent, checked_at, currency)')
       .in('id', ids)
       .gte('price_history.price', 100)
       .order('checked_at', { referencedTable: 'price_history', ascending: false })
@@ -115,10 +117,14 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
     return n;
   };
   const spark = new Map<string, number[]>();
+  const sparkDays = new Map<string, Set<string>>();
   for (const r of playerRows || []) {
-    if (!spark.has(r.game_id)) spark.set(r.game_id, []);
+    if (!spark.has(r.game_id)) { spark.set(r.game_id, []); sparkDays.set(r.game_id, new Set()); }
     spark.get(r.game_id)!.push(r.player_count);
+    sparkDays.get(r.game_id)!.add(String(r.recorded_at).slice(0, 10));
   }
+  // 그래프는 기록이 3일 이상 쌓인 게임만 (하루 이틀치는 선이 의미 없음)
+  for (const [id, days] of sparkDays) if (days.size < 3) spark.delete(id);
 
   const changeOf = (id: string): RankChange => {
     if (!prevDate) return null; // 비교할 어제 기록이 없으면 표시 안 함
@@ -142,6 +148,7 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
         image: g.hero_image_url || g.card_image_url || g.cover_image_url || null,
         thumb: g.card_image_url || g.cover_image_url || null,
         fun: g.fun_description || null,
+        tags: (g.tags || []).slice(0, 2).map((t: string) => translateTag(t)),
         players: playersText(g),
         currentPlayers: g.current_players ?? null,
         price: g.is_free ? '무료' : price ? price.formattedFinal : null,
@@ -151,8 +158,8 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
     });
 
   const tabs: HotTab[] = [
+    { key: 'friends' as const, label: '친구랑 하기 좋은', items: toItems(friendIds) }, // 기본 탭
     { key: 'all' as const, label: '전체', items: toItems(allIds) },
-    { key: 'friends' as const, label: '친구랑 하기 좋은', items: toItems(friendIds) },
     { key: 'rising' as const, label: '이번 주 급상승', items: toItems(risingIds, true) },
   ].filter((t) => t.items.length > 0);
 
