@@ -221,7 +221,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         <div className="spec-row">
           <span className="spec-label">인원수</span>
           <span className="spec-value">
-            {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : '정보 없음'}
+            {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : '인원 정보 확인 중'}
           </span>
         </div>
         {game.recommended_players && (

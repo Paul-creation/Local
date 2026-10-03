@@ -183,8 +183,9 @@ async function main() {
     const data = json[game.steam_appid].data;
     const categoryIds = (data.categories || []).map((c) => c.id);
 
-    // 멀티플레이어 여부 판단
-    const isMultiplayer = categoryIds.some(id => [1, 9, 27, 36, 38].includes(id));
+    // 멀티플레이어 여부 판단 (1 멀티, 9 협동, 20 MMO, 24 화면 공유, 27 크로스플랫폼, 36 온라인 대전, 37 화면 공유 대전,
+    // 38 온라인 협동, 39 화면 공유 협동, 47 LAN 대전, 48 LAN 협동, 49 대전) — 하나라도 있으면 1인으로 확정하지 않음
+    const isMultiplayer = categoryIds.some(id => [1, 9, 20, 24, 27, 36, 37, 38, 39, 47, 48, 49].includes(id));
     const isSinglePlayer = categoryIds.includes(2);
 
     let minPlayers = null;

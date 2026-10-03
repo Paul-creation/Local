@@ -1,7 +1,9 @@
 // scripts/fill-steam-categories.mjs
 // 스팀 상점 공식 카테고리로 has_online_coop / has_local_coop / has_pvp 채우기 (무료, AI 안 씀)
 // - Online Co-op 또는 LAN Co-op → has_online_coop
-// - Shared/Split Screen Co-op → has_local_coop
+// - Shared/Split Screen Co-op(39) → has_local_coop
+//   화면 공유(Shared/Split Screen, 24)만 있고 협동 카테고리(Co-op 9 / Shared/Split Screen Co-op 39)가 없으면 켜지 않음
+//   (24는 한 화면 대전 게임에도 붙음)
 // - Online PvP · LAN PvP · Shared/Split Screen PvP → has_pvp
 // - 카테고리가 있는데 해당 항목이 없으면 false, 스팀이 카테고리를 안 주면 건드리지 않음
 // - 이미 값이 있는 칸은 덮어쓰지 않고, 세 칸이 다 채워진 게임은 다시 요청하지 않음
@@ -17,7 +19,7 @@ const CACHE = 'scripts/.cache/steam-categories.json';
 const FIELDS = ['has_online_coop', 'has_local_coop', 'has_pvp'];
 const RULES = {
   has_online_coop: ['Online Co-op', 'LAN Co-op'],
-  has_local_coop: ['Shared/Split Screen Co-op'],
+  has_local_coop: ['Shared/Split Screen Co-op'], // 'Shared/Split Screen'은 일부러 넣지 않음
   has_pvp: ['Online PvP', 'LAN PvP', 'Shared/Split Screen PvP'],
 };
 

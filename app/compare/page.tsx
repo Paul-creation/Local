@@ -64,7 +64,7 @@ async function getSituationScores(games: any[], activeSituations: string[]) {
 
   const gameList = games
     .map((g, i) =>
-      `${i + 1}번. ${g.name} | 태그: ${(g.tags || []).join(', ')} | 난이도: ${g.difficulty} | 인원: ${g.min_players}-${g.max_players} | 카테고리: ${g.category} | 솔로: ${g.solo_playable}`
+      `${i + 1}번. ${g.name} | 태그: ${(g.tags || []).join(', ')} | 난이도: ${g.difficulty} | 인원: ${g.min_players ?? '?'}-${g.max_players ?? '?'} | 카테고리: ${g.category} | 솔로: ${g.solo_playable}`
     )
     .join('\n');
 
@@ -196,7 +196,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
     { label: '인원수', render: (g: any) => {
       if (g.min_players === 1 && g.max_players === 1) return '1인';
       if (g.min_players && g.max_players) return `${g.min_players}-${g.max_players}인`;
-      return '-';
+      return '인원 정보 확인 중';
     }},
     { label: '솔로 플레이', render: (g: any) =>
       g.solo_playable === true && g.max_players === 1

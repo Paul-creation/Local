@@ -32,7 +32,7 @@ async function main() {
       continue;
     }
 
-        const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${game.steam_appid}`);
+    const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${game.steam_appid}&l=english`);
     const json = await res.json();
     if (!json || !json[game.steam_appid]?.success) {
       await new Promise((r) => setTimeout(r, 600));
@@ -41,13 +41,15 @@ async function main() {
 
     const data = json[game.steam_appid].data;
     const categories = (data.categories || []).map((c) => c.description);
-    const hasCoop = categories.some((c) => /co-op/i.test(c));
+    // 멀티·협동·대전 카테고리가 하나도 없고 싱글만 있을 때만 1인으로 확정. 그 밖에는 인원을 모르므로 null (1로 넣으면 1인용으로 보임)
+    const isMulti = categories.some((c) => /multi|co-op|pvp|split screen|mmo/i.test(c));
+    const isSingleOnly = categories.includes('Single-player') && !isMulti;
 
     const update = {};
     if (!game.category) update.category = guessCategory(game.genres, game.name);
-    if (!game.min_players) {
-      update.min_players = hasCoop ? 2 : 1;
-      update.max_players = hasCoop ? 4 : 1;
+    if (!game.min_players && isSingleOnly) {
+      update.min_players = 1;
+      update.max_players = 1;
     }
     if (!game.difficulty) update.difficulty = '보통';
 

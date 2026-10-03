@@ -120,9 +120,12 @@ async function main() {
       }
       if (!game.min_players) {
         const m = ig?.multiplayer_modes || [];
-        const max = Math.max(1, ...m.flatMap((x) => [x.onlinecoopmax, x.onlinemax, x.offlinecoopmax, x.offlinemax]).filter(Boolean));
-        update.min_players = 1;
-        update.max_players = max;
+        const counts = m.flatMap((x) => [x.onlinecoopmax, x.onlinemax, x.offlinecoopmax, x.offlinemax]).filter(Boolean);
+        // 숫자가 없으면 인원을 모르는 것 — 1로 넣으면 1인용으로 보이므로 비워 둠
+        if (counts.length) {
+          update.min_players = 1;
+          update.max_players = Math.max(...counts);
+        }
       }
       if (!game.difficulty) update.difficulty = '보통';
       if (!game.category) update.category = guessCategory(update.tags || game.tags || [], update.genres || game.genres || []);
