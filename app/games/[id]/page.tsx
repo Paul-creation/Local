@@ -91,6 +91,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   }
 
   const price = getPriceInfo(game);
+  // 100원 미만은 잘못 들어온 기록이라 할인 전적에서 제외
+  const priceHistory = (game.price_history || []).filter((p: any) => p.price >= 100);
   const STORE_LABEL: Record<string, string> = { epic: '에픽 게임즈', battlenet: 'Battle.net', riot: '라이엇' };
   const buyUrl = game.steam_appid ? `https://store.steampowered.com/app/${game.steam_appid}` : game.store_url;
   const buyLabel = game.steam_appid ? 'Steam' : STORE_LABEL[game.source] ?? '공식 사이트';
@@ -499,11 +501,21 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       )}
 <GameVotes gameId={game.id} />
             {/* 할인 전적 */}
-      {!game.is_free && game.price_history?.length >= 2 && (
+      {!game.is_free && priceHistory.length === 1 && price && (
+        <section className="detail-section-v2">
+          <h3>할인 전적</h3>
+          <p style={{ fontSize: 15, color: 'var(--text-dimmer)' }}>
+            {price.discount > 0
+              ? `지금 ${price.discount}% 할인 중 · ${price.formattedFinal}`
+              : `아직 할인한 적 없어요 · ${price.formattedFinal}`}
+          </p>
+        </section>
+      )}
+      {!game.is_free && priceHistory.length >= 2 && (
         <section className="detail-section-v2">
           <h3>할인 전적</h3>
           <DiscountChart
-            data={[...game.price_history]
+            data={[...priceHistory]
               .sort((a: any, b: any) => new Date(a.checked_at).getTime() - new Date(b.checked_at).getTime())
               .map((p: any) => ({
                 date: new Date(p.checked_at).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }),

@@ -82,10 +82,6 @@ async function main() {
         checked_at: h.timestamp,
       }));
 
-    if ((game.price_history || []).some((p) => p.price < 100)) {
-      await supabase.from('price_history').delete().eq('game_id', game.id).lt('price', 100);
-    }
-
     if (rows.length > 0) {
       const { error: insErr } = await supabase.from('price_history').insert(rows);
       if (insErr) {
