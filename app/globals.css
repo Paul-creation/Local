@@ -26,6 +26,7 @@
   --accent: #0071e3;
   --accent-soft: #e8f1fd;
   --accent-hover: #0077ed;
+  --accent-deep: #0a4fae;  /* 상단 바 — 액센트보다 진한 파랑 */
 
   /* 기능색 */
   --teal: #0f9b8e;
@@ -75,29 +76,65 @@ img { display: block; }
 }
 
 /* ============================================================
-   TOP NAV
+   TOP NAV — 모든 페이지 공통 브랜드 바 (SiteHeader)
    ============================================================ */
 
-.topnav {
+.site-header {
   position: sticky;
   top: 0;
   z-index: 100;
-  display: flex;
-  align-items: center;
-  padding: 0 24px;
-  height: 52px;
-  margin: 0 -24px 40px;
-  background: rgba(29, 29, 31, 0.92);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: var(--accent-deep);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.12);
+  margin-bottom: 24px;
 }
 
-.logo {
+.site-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.site-logo {
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: -0.02em;
-  color: #f5f5f7;
+  color: #fff;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.site-menu {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.site-menu::-webkit-scrollbar { display: none; }
+
+.site-menu a {
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.site-menu a:hover { background: rgba(255,255,255,0.14); color: #fff; }
+
+/* 상단 바로 이동할 때 섹션 제목이 바에 가려지지 않게 */
+#free, #discount { scroll-margin-top: 72px; }
+
+@media (max-width: 480px) {
+  .site-header-inner { padding: 0 16px; height: 52px; gap: 8px; }
+  .site-logo { font-size: 16px; }
+  .site-menu a { padding: 6px 8px; font-size: 14px; }
 }
 
 /* ============================================================
@@ -1359,3 +1396,83 @@ img { display: block; }
 .spec-group-title { font-size: 17px; font-weight: 800; margin: 18px 0 10px; letter-spacing: -0.01em; }
 .spec-group .spec-list { margin-bottom: 12px; }
 .spec-group:not(:has(.spec-row)) { display: none; }
+
+/* ============================================================
+   HOME HERO — 월별 이벤트 + 가운데 큰 검색창 (HomeHero)
+   ============================================================ */
+
+.home-hero.is-home {
+  margin-bottom: 40px;
+}
+
+.home-event {
+  text-align: center;
+  padding: 36px 20px 28px;
+}
+
+.home-event-emoji {
+  font-size: 72px;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+
+.home-event-title {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 8px;
+  word-break: keep-all;
+}
+
+.home-event-desc {
+  font-size: 17px;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+  word-break: keep-all;
+}
+
+.home-event-cta {
+  display: inline-block;
+  padding: 10px 22px;
+  border-radius: 100px;
+  background: var(--accent-deep);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+.home-event-cta:hover { background: var(--accent); transform: translateY(-1px); }
+
+/* 홈에서는 검색창을 가운데에 크게, 결과를 볼 때는 기존 크기 그대로 */
+.home-hero.is-home .home-search {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.home-hero.is-home .search-bar-clean {
+  border-width: 2px;
+  border-color: var(--accent-deep);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 0 22px;
+}
+
+.home-hero.is-home .search-bar-clean input {
+  height: 60px;
+  font-size: 18px;
+}
+
+.home-hero.is-home .ai-trigger-clean {
+  height: 64px;
+  border-radius: var(--radius-lg);
+}
+
+@media (max-width: 480px) {
+  .home-event { padding: 20px 4px 20px; }
+  .home-event-emoji { font-size: 56px; }
+  .home-event-title { font-size: 23px; }
+  .home-event-desc { font-size: 15px; }
+  .home-hero.is-home .search-bar-clean input { height: 52px; font-size: 16px; }
+  .home-hero.is-home .ai-trigger-clean { height: 52px; }
+}

@@ -72,7 +72,7 @@ export default function HomeSections({ games }: { games: any[] }) {
 
 
           {freeGames.length > 0 && (
-            <section className="free-section">
+            <section id="free" className="free-section">
               <div className="section-header">
                 <h2 className="section-title">🆓 지금 무료로 즐길 수 있는 게임</h2>
                 <span className="section-sub">설치만 하면 바로 친구랑 시작 가능</span>

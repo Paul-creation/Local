@@ -145,7 +145,6 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
   if (ids.length < 2) {
     return (
       <main className="page">
-        <nav className="topnav"><span className="logo">게임정보허브</span></nav>
         <p style={{ textAlign: 'center', marginTop: 60, color: 'var(--text-dim)' }}>
           비교할 게임을 2개 이상 선택해줘요.
         </p>
@@ -161,7 +160,6 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
   if (!games || games.length < 2) {
     return (
       <main className="page">
-        <nav className="topnav"><span className="logo">게임정보허브</span></nav>
         <p style={{ textAlign: 'center', marginTop: 60, color: 'var(--text-dim)' }}>
           게임을 불러오지 못했어요. 다시 시도해줘요.
         </p>
@@ -217,7 +215,6 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
   return (
     <main className="page" style={{ paddingBottom: 32 }}>
       <ScrollToTop />
-      <nav className="topnav"><span className="logo">게임정보허브</span></nav>
 
       <BackToList />
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 24 }}>

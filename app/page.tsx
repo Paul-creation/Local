@@ -12,9 +12,6 @@ export default async function Home() {
 
   return (
     <main className="page">
-      <nav className="topnav">
-        <span className="logo">게임정보허브</span>
-      </nav>
       <Suspense>
         <GameGrid games={games || []} />
       </Suspense>
