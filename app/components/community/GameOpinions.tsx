@@ -5,6 +5,6 @@ import OpinionBox from './OpinionBox';
 export default async function GameOpinions({ gameId }: { gameId: string }) {
   const { data } = await db.from('game_comments').select(PUBLIC_GAME_COMMENT)
     .eq('game_id', gameId).eq('hidden', false).order('created_at', { ascending: false }).limit(50);
-  const initial = (data || []).map((c) => ({ id: c.id, body: c.body, nickname: c.nickname, created_at: c.created_at, hidden: false }));
+  const initial = (data || []).map((c) => ({ id: c.id, body: c.body, nickname: c.nickname, is_admin: c.is_admin, created_at: c.created_at, hidden: false }));
   return <OpinionBox gameId={gameId} initial={initial} />;
 }

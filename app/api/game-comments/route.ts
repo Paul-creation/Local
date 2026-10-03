@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isAdmin } from '../../lib/adminAuth';
 import { getIp } from '../../lib/aiGuard';
 import { LIMITS } from '../../lib/communityBoards';
 import {
@@ -16,8 +17,9 @@ export async function POST(req: NextRequest) {
   const gameId = String(body.gameId || '');
   const text = clean(body.body);
   const nickname = clean(body.nickname).replace(/\s+/g, ' ');
+  const asAdmin = isAdmin(req); // 관리자 로그인 상태면 운영자 닉네임 허용 + "운영자" 배지
   if (!UUID.test(gameId)) return fail('게임이 올바르지 않아요.');
-  const problem = checkLength('의견', text, LIMITS.gameComment) || checkAuthor(nickname, body.password) || checkText(text);
+  const problem = checkLength('의견', text, LIMITS.gameComment) || checkAuthor(nickname, body.password, asAdmin) || checkText(text);
   if (problem) return fail(problem);
 
   const ip_hash = ipHash(getIp(req.headers));
@@ -29,7 +31,7 @@ export async function POST(req: NextRequest) {
   if ((count ?? 0) >= DAILY_GAME_COMMENTS_PER_IP) return fail('오늘은 의견을 충분히 남겼어요. 내일 다시 남겨주세요.', 429);
 
   const { data, error } = await db.from('game_comments').insert({
-    game_id: gameId, body: text, nickname, password_hash: await hashPassword(body.password), ip_hash,
+    game_id: gameId, body: text, nickname, password_hash: await hashPassword(body.password), ip_hash, is_admin: asAdmin,
   }).select(PUBLIC_GAME_COMMENT).single();
   if (error || !data) return fail('저장하지 못했어요. 잠시 후 다시 시도해주세요.', 500);
   return NextResponse.json({ comment: { ...data, hidden: false } });

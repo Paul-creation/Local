@@ -6,7 +6,7 @@ import { LIMITS, timeAgo } from '../../lib/communityBoards';
 import { send, loadNickname, saveNickname } from './api';
 import ReportButton from './ReportButton';
 
-export type Comment = { id: number; body: string; nickname: string; hidden: boolean; created_at: string };
+export type Comment = { id: number; body: string; nickname: string; is_admin?: boolean; hidden: boolean; created_at: string };
 
 export default function Comments({ postId, initial }: { postId: number; initial: Comment[] }) {
   const router = useRouter();
@@ -88,6 +88,7 @@ export function CommentItem({ c, api, reportType, max = LIMITS.comment[1], onCha
     <li className="cm-comment">
       <div className="cm-row-meta">
         <strong>{c.nickname}</strong>
+        {c.is_admin && <span className="cm-admin-badge">운영자</span>}
         <span>· {timeAgo(c.created_at)}</span>
         <span className="cm-actions-right">
           <button type="button" className="cm-link-btn" onClick={() => setMode(mode === 'edit' ? '' : 'edit')}>수정</button>

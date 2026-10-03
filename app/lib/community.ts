@@ -1,21 +1,22 @@
 // 커뮤니티 서버 전용 모듈 — 브라우저 컴포넌트('use client')에서 import 금지 (service role 키 사용)
 // 읽기·쓰기 모두 여기 db로 처리하고, 응답에는 PUBLIC_* 칸만 담는다 (password_hash·ip_hash 절대 노출 금지).
 import { createClient } from '@supabase/supabase-js';
-import { createHash, randomBytes, scrypt, timingSafeEqual } from 'crypto';
+import { randomBytes, scrypt, timingSafeEqual } from 'crypto';
 import { promisify } from 'util';
 import { NextResponse } from 'next/server';
 import { LIMITS, type BoardKey } from './communityBoards';
+import { SITE_NAME } from './site';
 
 export const db = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-export const PUBLIC_POST_LIST = 'id, board, title, nickname, game_id, like_count, comment_count, created_at, games(id, name)';
-export const PUBLIC_POST = 'id, board, title, body, nickname, game_id, like_count, comment_count, hidden, created_at, updated_at, games(id, name)';
-export const PUBLIC_COMMENT = 'id, post_id, body, nickname, hidden, created_at';
+export const PUBLIC_POST_LIST = 'id, board, title, nickname, is_admin, game_id, like_count, comment_count, created_at, games(id, name)';
+export const PUBLIC_POST = 'id, board, title, body, nickname, is_admin, game_id, like_count, comment_count, hidden, created_at, updated_at, games(id, name)';
+export const PUBLIC_COMMENT = 'id, post_id, body, nickname, is_admin, hidden, created_at';
 // 게임별 의견(game_comments) — 게임 상세에서만 보이고 게시판 목록에는 안 나온다
-export const PUBLIC_GAME_COMMENT = 'id, game_id, body, nickname, created_at';
+export const PUBLIC_GAME_COMMENT = 'id, game_id, body, nickname, is_admin, created_at';
 
 export const DAILY_POSTS_PER_IP = 10;
 export const DAILY_COMMENTS_PER_IP = 30;
@@ -25,7 +26,7 @@ export const HIDE_AT_REPORTS = 3;
 export const PAGE_SIZE = 20;
 
 export type PostListItem = {
-  id: number; board: BoardKey; title: string; nickname: string; game_id: string | null;
+  id: number; board: BoardKey; title: string; nickname: string; is_admin: boolean; game_id: string | null;
   like_count: number; comment_count: number; created_at: string;
   games: { id: string; name: string } | null;
 };
@@ -34,9 +35,8 @@ export const fail = (error: string, status = 400) => NextResponse.json({ error }
 export const since24h = () => new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 export const parseId = (v: string) => (/^\d{1,18}$/.test(v) ? Number(v) : null);
 
-// IP는 투표 API와 같은 방식으로 해시만 저장
-export const ipHash = (ip: string) =>
-  createHash('sha256').update(ip + (process.env.SUPABASE_SERVICE_ROLE_KEY || '')).digest('hex').slice(0, 32);
+// IP는 해시만 저장 (aiGuard·투표 API와 같은 방식)
+export { ipHash } from './aiGuard';
 
 // 비밀번호: scrypt(느린 비밀번호 전용 해시) + 글마다 다른 salt. 형식 scrypt$salt$hash
 const scryptAsync = promisify(scrypt) as (pw: string, salt: string, len: number) => Promise<Buffer>;
@@ -93,11 +93,19 @@ export function checkText(text: string) {
   return null;
 }
 
-export function checkAuthor(nickname: string, password: unknown) {
+// 운영자 사칭 방지: 운영자·관리자·admin·사이트 이름이 들어간 닉네임은 관리자 로그인 상태에서만 허용
+const RESERVED_NICK = ['운영자', '운영진', '관리자', 'admin', squash(SITE_NAME)];
+export const isReservedNickname = (nickname: string) => {
+  const t = squash(nickname);
+  return RESERVED_NICK.some((w) => w && t.includes(w));
+};
+
+// asAdmin: 관리자 쿠키로 로그인한 상태 → 예약 닉네임 허용 (글에 "운영자" 배지가 붙음)
+export function checkAuthor(nickname: string, password: unknown, asAdmin = false) {
   const pw = typeof password === 'string' ? password : '';
   return (
     checkLength('닉네임', nickname, LIMITS.nickname) ||
-    (/관리자|운영자|admin/i.test(nickname) ? '사용할 수 없는 닉네임이에요.' : null) ||
+    (!asAdmin && isReservedNickname(nickname) ? '사용할 수 없는 닉네임이에요.' : null) ||
     (hasBanned(nickname) ? '사용할 수 없는 닉네임이에요.' : null) ||
     checkLength('비밀번호', pw, LIMITS.password)
   );

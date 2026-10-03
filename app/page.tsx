@@ -50,11 +50,6 @@ export default async function Home() {
       <Suspense>
         <GameGrid games={games} hotTabs={hot.tabs} top10Ids={hot.top10Ids} weekly={weekly} popularPosts={popularPosts} />
       </Suspense>
-      <footer style={{ textAlign: 'center', padding: '40px 0 20px', color: 'var(--text-dimmer)', fontSize: '13px' }}>
-        <p style={{ marginBottom: 4, fontWeight: 700, color: 'var(--text-dim)' }}>사이트 이름 미정</p>
-        <p>© 2026 The Circles. All rights reserved.</p>
-        <p style={{ marginTop: 6 }}><a href="/community/policy" style={{ color: 'inherit', textDecoration: 'underline' }}>커뮤니티 운영정책</a></p>
-      </footer>
     </main>
   );
 }

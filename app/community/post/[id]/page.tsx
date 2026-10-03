@@ -7,13 +7,13 @@ import { BASE_OG } from '../../../lib/site';
 import { BOARDS, boardTitle, timeAgo, type BoardKey } from '../../../lib/communityBoards';
 import { db, ipHash, parseId, PUBLIC_POST, PUBLIC_COMMENT } from '../../../lib/community';
 import PostActions from '../../../components/community/PostActions';
-import Comments from '../../../components/community/Comments';
+import Comments, { type Comment } from '../../../components/community/Comments';
 
 export const dynamic = 'force-dynamic';
 
 type Props = { params: Promise<{ id: string }> };
 type Post = {
-  id: number; board: BoardKey; title: string; body: string; nickname: string; game_id: string | null;
+  id: number; board: BoardKey; title: string; body: string; nickname: string; is_admin: boolean; game_id: string | null;
   like_count: number; comment_count: number; hidden: boolean; created_at: string; updated_at: string | null;
   games: { id: string; name: string } | null;
 };
@@ -58,6 +58,7 @@ export default async function PostPage({ params }: Props) {
         <h1 className="cm-post-title">{post.title}</h1>
         <div className="cm-row-meta">
           <span>{post.nickname}</span>
+          {post.is_admin && <span className="cm-admin-badge">운영자</span>}
           <span>· {timeAgo(post.created_at)}</span>
           {post.updated_at && <span>· 수정됨</span>}
         </div>
@@ -69,7 +70,7 @@ export default async function PostPage({ params }: Props) {
         <PostActions post={{ id: post.id, title: post.title, body: post.body, board: post.board, likeCount: post.like_count }} initialLiked={!!liked} />
       </article>
       {/* 숨겨진 댓글은 내용을 내려보내지 않는다 */}
-      <Comments postId={post.id} initial={((comments || []) as { id: number; body: string; nickname: string; hidden: boolean; created_at: string }[]).map((c) => (c.hidden ? { ...c, body: '', nickname: '' } : c))} />
+      <Comments postId={post.id} initial={((comments || []) as Comment[]).map((c) => (c.hidden ? { ...c, body: '', nickname: '', is_admin: false } : c))} />
       <p style={{ marginTop: 16 }}>
         <Link href={`/community/${post.board}`} className="cm-btn">← {BOARDS[post.board].label} 목록</Link>
       </p>

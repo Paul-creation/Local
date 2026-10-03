@@ -9,6 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { data: games } = await supabase.from('games').select('id, created_at');
   return [
     { url: SITE_URL, changeFrequency: 'daily', priority: 1 },
+    ...['/privacy', '/terms'].map((p) => ({ url: `${SITE_URL}${p}`, changeFrequency: 'yearly' as const, priority: 0.1 })),
     ...['', ...BOARD_KEYS.map((b) => `/${b}`)].map((p) => ({ url: `${SITE_URL}/community${p}`, changeFrequency: 'daily' as const, priority: 0.6 })),
     ...(games || []).map((g) => ({
       url: `${SITE_URL}/games/${g.id}`,

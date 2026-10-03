@@ -1885,3 +1885,22 @@ a.hc-row:hover { background: var(--bg-card-hover); }
 }
 .cm-textarea-xs { min-height: 60px; resize: vertical; line-height: 1.6; }
 .cm-opinion-form { margin-bottom: 4px; }
+
+/* 공통 푸터 (layout) */
+.site-footer { max-width: 960px; margin: 48px auto 0; padding: 24px 16px 32px; border-top: 1px solid rgba(0,0,0,0.08); text-align: center; color: var(--text-dimmer); font-size: 12px; line-height: 1.7; }
+.site-footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; margin-bottom: 10px; font-size: 13px; color: var(--text-dim); }
+.site-footer a { color: var(--text-dim); }
+.site-footer-copy { margin-top: 8px; }
+
+/* 개인정보처리방침·이용약관 */
+.legal p { font-size: 15px; line-height: 1.7; color: var(--text); margin-bottom: 10px; }
+.legal ul { margin-bottom: 10px; }
+.legal a { color: var(--accent); }
+.legal-table-wrap { overflow-x: auto; margin-bottom: 12px; }
+.legal-table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.5; min-width: 520px; }
+.legal-table th, .legal-table td { border: 1px solid rgba(0,0,0,0.1); padding: 8px 10px; text-align: left; vertical-align: top; color: var(--text); }
+.legal-table th { background: rgba(0,0,0,0.03); font-weight: 700; white-space: nowrap; }
+.legal-date { margin-top: 24px; color: var(--text-dim) !important; font-size: 14px !important; }
+
+/* 관리자 로그인 상태로 쓴 글·댓글·의견 */
+.cm-admin-badge { display: inline-block; font-size: 11px; font-weight: 800; color: #fff; background: var(--accent); border-radius: 5px; padding: 1px 6px; margin-left: 2px; line-height: 1.5; }

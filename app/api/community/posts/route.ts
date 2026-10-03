@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isAdmin } from '../../../lib/adminAuth';
 import { getIp } from '../../../lib/aiGuard';
 import { isBoard, LIMITS } from '../../../lib/communityBoards';
 import {
@@ -16,13 +17,14 @@ export async function POST(req: NextRequest) {
   const title = clean(body.title).replace(/\s+/g, ' ');
   const text = clean(body.body);
   const nickname = clean(body.nickname).replace(/\s+/g, ' ');
+  const asAdmin = isAdmin(req); // 관리자 로그인 상태면 운영자 닉네임 허용 + "운영자" 배지
   const gameId = body.gameId ? String(body.gameId) : null;
 
   if (!isBoard(board)) return fail('게시판을 골라주세요.');
   const problem =
     checkLength('제목', title, LIMITS.title) ||
     checkLength('본문', text, LIMITS.body) ||
-    checkAuthor(nickname, body.password) ||
+    checkAuthor(nickname, body.password, asAdmin) ||
     checkText(`${title}\n${text}`) ||
     (gameId && !UUID.test(gameId) ? '관련 게임이 올바르지 않아요.' : null);
   if (problem) return fail(problem);
@@ -37,7 +39,7 @@ export async function POST(req: NextRequest) {
 
   const { data, error } = await db.from('posts').insert({
     board, title, body: text, nickname, game_id: gameId,
-    password_hash: await hashPassword(body.password), ip_hash,
+    password_hash: await hashPassword(body.password), ip_hash, is_admin: asAdmin,
   }).select('id').single();
   if (error || !data) return fail('저장하지 못했어요. 잠시 후 다시 시도해주세요.', 500);
   return NextResponse.json({ id: data.id });

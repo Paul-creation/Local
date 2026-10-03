@@ -3,6 +3,7 @@ import "pretendard/dist/web/static/pretendard.css";
 import "./globals.css";
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, BASE_OG } from "./lib/site";
 import SiteHeader from "./components/home/SiteHeader";
+import SiteFooter from "./components/SiteFooter";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -28,6 +29,7 @@ export default function RootLayout({
       <body>
         <SiteHeader />
         {children}
+        <SiteFooter />
       </body>
     </html>
   );

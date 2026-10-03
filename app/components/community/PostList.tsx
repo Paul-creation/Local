@@ -19,6 +19,7 @@ export default function PostList({ posts, showBoard = false, empty = '아직 글
             <span className="cm-row-meta">
               {p.games?.name && <span className="cm-game-chip">{p.games.name}</span>}
               <span>{p.nickname}</span>
+              {p.is_admin && <span className="cm-admin-badge">운영자</span>}
               <span>· {timeAgo(p.created_at, now)}</span>
               {p.like_count > 0 && <span>· 👍 {p.like_count}</span>}
             </span>

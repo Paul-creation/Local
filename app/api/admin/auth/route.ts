@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
-    path: '/api/admin',
+    path: '/api', // 커뮤니티 글쓰기 API도 관리자 여부를 알아야 해서 /api 전체 (운영자 배지)
     maxAge: SESSION_HOURS * 60 * 60,
   });
   return res;
