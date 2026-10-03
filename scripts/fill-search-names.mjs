@@ -3,15 +3,19 @@
 // - 쉼표로 최대 3개 (예: "레데리2, 레드 데드 리뎀션 2, RDR2"). 첫 번째 이름은 영상 검색에, 전부는 메인 검색에 씀
 // 실행: node --env-file=.env.local scripts/fill-search-names.mjs            (비어 있는 게임만)
 //       node --env-file=.env.local scripts/fill-search-names.mjs --expand   (이름이 1개뿐인 게임에 별명 덧붙이기)
+//       node --env-file=.env.local scripts/fill-search-names.mjs --all      (영상 대상뿐 아니라 이름이 비어 있는 전체 게임)
 // - 이미 있는 이름은 지우거나 바꾸지 않고, 첫 번째 자리도 그대로 둔 채 뒤에만 덧붙임
 // - 이름이 한국어인 게임은 그 이름이 첫 번째
-// - 대상 전체를 Haiku 한 번에 물어봄 (50개 기준 약 1센트)
+// - Haiku에 50개씩 묶어서 물어봄 (50개 기준 약 1센트)
 import { createClient } from '@supabase/supabase-js';
 import { getCoopTargets } from './lib/coop-targets.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const EXPAND = process.argv.includes('--expand');
+const ALL = process.argv.includes('--all');
 const MAX_NAMES = 3;
+const BATCH = 50;
+let totalCost = 0;
 
 // app/lib/searchMatch.ts의 normalizeSearch와 같은 기준 (같은 이름이 두 번 들어가지 않게 비교할 때)
 const norm = (s) => String(s || '').toLowerCase().replace(/[\s\p{P}\p{S}]/gu, '');
@@ -40,16 +44,19 @@ ${list}
     },
     body: JSON.stringify({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 2000,
+      max_tokens: 4000,
       messages: [{ role: 'user', content: prompt }],
     }),
   });
   const json = await res.json();
   if (json.error) throw new Error(`HTTP ${res.status} ${json.error.message}`);
   const text = (json.content || []).map((c) => c.text || '').join('');
+  if (json.stop_reason === 'max_tokens') throw new Error('답이 중간에 잘림 (max_tokens)');
   const parsed = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1));
   const u = json.usage || {};
-  console.log(`Haiku 사용: 입력 ${u.input_tokens} · 출력 ${u.output_tokens} 토큰 (약 $${((u.input_tokens || 0) / 1e6 + (u.output_tokens || 0) * 5 / 1e6).toFixed(4)})\n`);
+  const cost = (u.input_tokens || 0) / 1e6 + (u.output_tokens || 0) * 5 / 1e6;
+  totalCost += cost;
+  console.log(`Haiku 사용: 입력 ${u.input_tokens} · 출력 ${u.output_tokens} 토큰 (약 $${cost.toFixed(4)})\n`);
   return games.map((g, i) => {
     const row = parsed.names?.find((n) => Number(n.index) === i + 1);
     return (Array.isArray(row?.names) ? row.names : [row?.name]).map(clean).filter(Boolean);
@@ -70,14 +77,33 @@ function merge(existing, extra, gameName) {
   return out.slice(0, Math.max(MAX_NAMES, existing.length));
 }
 
+async function getAllGames() {
+  const { data, error } = await supabase.from('games').select('id, name, search_name_ko').order('id');
+  if (error) throw new Error(`게임 목록을 못 불러옴: ${error.message}`);
+  return data;
+}
+
 async function main() {
-  const targets = await getCoopTargets(supabase, 'search_name_ko');
+  const targets = ALL ? await getAllGames() : await getCoopTargets(supabase, 'search_name_ko');
   const todo = targets.filter((g) => !g.search_name_ko || (EXPAND && !g.search_name_ko.includes(',')));
   console.log(`대상 ${targets.length}개 중 ${EXPAND ? '이름이 없거나 1개뿐인' : '한국어 이름이 없는'} 게임 ${todo.length}개 처리\n`);
   if (!todo.length) return;
   if (!process.env.ANTHROPIC_API_KEY) return console.error('.env.local에 ANTHROPIC_API_KEY가 없어요');
 
-  const suggested = await askKoreanNames(todo);
+  let saved = 0, same = 0, failed = 0;
+  for (let b = 0; b < todo.length; b += BATCH) {
+    const chunk = todo.slice(b, b + BATCH);
+    console.log(`--- ${b + 1}~${b + chunk.length} / ${todo.length} ---`);
+    let suggested;
+    try { suggested = await askKoreanNames(chunk); }
+    catch (e) { console.log(`❌ 이 묶음 실패 (다음 실행 때 다시 처리): ${e.message}\n`); failed += chunk.length; continue; }
+    const r = await saveNames(chunk, suggested);
+    saved += r.saved; same += r.same;
+  }
+  console.log(`\n완료 — 저장 ${saved}개 · 그대로 ${same}개${failed ? ` · 실패 ${failed}개` : ''} · Haiku 비용 약 $${totalCost.toFixed(4)}`);
+}
+
+async function saveNames(todo, suggested) {
   let saved = 0, same = 0;
   for (const [i, g] of todo.entries()) {
     const existing = g.search_name_ko
@@ -94,7 +120,7 @@ async function main() {
     saved++;
     console.log(`✅ ${g.name}: ${g.search_name_ko || '(없음)'} → ${value}`);
   }
-  console.log(`\n완료 — 저장 ${saved}개 · 그대로 ${same}개`);
+  return { saved, same };
 }
 
 main().catch((e) => { console.error(`❌ ${e.message}`); process.exit(1); });
