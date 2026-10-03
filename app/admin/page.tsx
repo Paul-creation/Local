@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import HiddenPosts from '../components/admin/HiddenPosts';
+import Moderation, { type ModTab } from '../components/admin/Moderation';
 
 export default function AdminPage() {
   const [password, setPassword] = useState('');
@@ -12,6 +12,13 @@ export default function AdminPage() {
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
   const [tab, setTab] = useState<'games' | 'community'>('games');
+  const [modTab, setModTab] = useState<ModTab>('reports');
+
+  // 디스코드 알림 링크(/admin?tab=feedback 등)로 들어오면 운영 탭의 해당 목록부터
+  useEffect(() => {
+    const t = new URLSearchParams(window.location.search).get('tab');
+    if (t === 'reports' || t === 'hidden' || t === 'feedback') { setTab('community'); setModTab(t); }
+  }, []);
 
   const login = async () => {
     const res = await fetch('/api/admin/auth', {
@@ -86,7 +93,7 @@ export default function AdminPage() {
 
   const tabBar = (
     <div style={{ display: 'flex', gap: 8, padding: '12px 16px', background: '#fff', borderBottom: '1px solid #e5e3dc' }}>
-      {([['games', '게임 편집'], ['community', '커뮤니티 숨김 글']] as const).map(([k, label]) => (
+      {([['games', '게임 편집'], ['community', '신고·숨김·의견함']] as const).map(([k, label]) => (
         <button
           key={k}
           onClick={() => setTab(k)}
@@ -102,7 +109,7 @@ export default function AdminPage() {
     return (
       <div style={{ minHeight: '100vh', background: '#f4f2ec' }}>
         {tabBar}
-        <div style={{ padding: 32 }}><HiddenPosts /></div>
+        <div style={{ padding: 32 }}><Moderation initial={modTab} /></div>
       </div>
     );
   }

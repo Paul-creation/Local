@@ -21,6 +21,7 @@ export default function SearchPanel({ games, filters }: { games: any[], filters:
     selectedPlayers, setSelectedPlayers,
     selectedDifficulty, setSelectedDifficulty,
     freeOnly, setFreeOnly,
+    saleOnly, setSaleOnly,
     selectedCount, hasFilters, resetFilters,
   } = filters;
   const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
@@ -122,6 +123,12 @@ export default function SearchPanel({ games, filters }: { games: any[], filters:
                 background: freeOnly ? 'var(--accent)' : 'var(--bg)',
                 color: freeOnly ? '#fff' : 'var(--text)', cursor: 'pointer',
               }}>무료 게임만</button>
+              <button onClick={() => setSaleOnly(v => !v)} style={{
+                padding: '6px 14px', borderRadius: 100, fontSize: 15, fontWeight: 600, marginLeft: 8,
+                border: `1.5px solid ${saleOnly ? 'var(--accent)' : 'var(--border)'}`,
+                background: saleOnly ? 'var(--accent)' : 'var(--bg)',
+                color: saleOnly ? '#fff' : 'var(--text)', cursor: 'pointer',
+              }}>지금 할인 중</button>
             </div>
 
             {/* 태그 그룹 */}

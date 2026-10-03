@@ -14,6 +14,8 @@ const GROUPS = {
     'enrich-itad-heat',
     'enrich-videos 90', // YouTube 하루 한도 안에서 매일 조금씩
     'snapshot-hot-rank', // 메인 "지금 뜨는 게임" 순위 기록 (heat_rank 갱신 뒤)
+    'purge-ip-hash', // 90일 지난 IP 해시 칸 비우기 (개인정보처리방침, 행은 지우지 않음)
+    'daily-summary', // 디스코드 일일 요약 (웹후크 없으면 출력만)
   ],
   // 매주: 새 게임 수집 + 게임 정보 보강
   weekly: [

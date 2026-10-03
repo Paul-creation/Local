@@ -42,7 +42,7 @@ export default function ShareButton({
 
   if (variant === 'text') {
     return (
-      <button onClick={share} style={{ background: 'none', border: 'none', color: copied ? '#4a9e3a' : 'var(--text-dim)', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
+      <button onClick={share} style={{ background: 'none', border: 'none', color: copied ? '#4a9e3a' : 'var(--text-dim)', fontSize: 15, fontWeight: 700, cursor: 'pointer', minHeight: 44, padding: '0 4px' }}>
         {copied ? '✓ 복사됨' : label}
       </button>
     );

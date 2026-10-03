@@ -33,7 +33,7 @@ export default function SearchResults({ filters, top10Ids = [] }: { filters: Gam
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0 }}>
               <ShareButton variant="text" label="🔗 공유하기" title="게임 검색 결과" text="이 조건으로 찾은 게임들 같이 보자!" />
-              <button onClick={resetFilters} style={{ background: 'none', border: 'none', color: 'var(--accent)', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
+              <button onClick={resetFilters} style={{ background: 'none', border: 'none', color: 'var(--accent)', fontSize: 15, fontWeight: 700, cursor: 'pointer', minHeight: 44, padding: '0 4px' }}>
                 ← 홈으로
               </button>
             </div>
@@ -58,7 +58,7 @@ export default function SearchResults({ filters, top10Ids = [] }: { filters: Gam
                         aria-pressed={!!isSelected}
                         style={{
                           position: 'absolute', top: 10, right: 10, zIndex: 2,
-                          padding: '5px 11px', borderRadius: 100, fontSize: 14, fontWeight: 700,
+                          padding: '8px 12px', minHeight: 36, borderRadius: 100, fontSize: 14, fontWeight: 700,
                           border: 'none', cursor: 'pointer',
                           background: isSelected ? 'var(--accent)' : 'rgba(0,0,0,0.6)',
                           color: '#fff',
@@ -145,7 +145,7 @@ export default function SearchResults({ filters, top10Ids = [] }: { filters: Gam
               ))
             )}
           </div>
-          <button onClick={() => setCompareList([])} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', fontSize: 15, cursor: 'pointer', flexShrink: 0 }}>
+          <button onClick={() => setCompareList([])} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', fontSize: 15, cursor: 'pointer', flexShrink: 0, minHeight: 44, padding: '0 4px' }}>
             초기화
           </button>
           {compareList.length >= 2 ? (

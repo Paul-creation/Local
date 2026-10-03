@@ -6,7 +6,7 @@ type Item = { id: number; board?: string; post_id?: number; game_id?: string; ga
 type Data = { posts: Item[]; comments: Item[]; reported: Item[]; gameComments: Item[] };
 type Kind = 'post' | 'comment' | 'game_comment';
 
-// 관리자: 신고로 숨겨진 글·댓글·게임 의견 복구·삭제
+// 관리자: 신고로 숨겨진 글·댓글·게임 의견 복구·삭제 (공개 중인 신고 대상은 Moderation의 신고 목록에서)
 export default function HiddenPosts() {
   const [data, setData] = useState<Data | null>(null);
   const [msg, setMsg] = useState('');
@@ -29,7 +29,7 @@ export default function HiddenPosts() {
 
   if (!data) return <p style={{ color: '#888' }}>불러오는 중...</p>;
 
-  const list = (title: string, items: Item[], type: Kind, canRestore: boolean) => (
+  const list = (title: string, items: Item[], type: Kind) => (
     <section style={{ marginBottom: 32 }}>
       <h3 style={{ fontWeight: 800, fontSize: 17, marginBottom: 12 }}>{title} ({items.length})</h3>
       {items.length === 0 && <p style={{ color: '#888', fontSize: 15 }}>없어요</p>}
@@ -43,7 +43,7 @@ export default function HiddenPosts() {
           <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
             {type === 'game_comment' && <a href={`/games/${it.game_id}`} target="_blank" rel="noreferrer" style={{ ...btn, background: '#eee', color: '#16202b', textDecoration: 'none' }}>게임 보기</a>}
             {type === 'post' && <a href={`/community/post/${it.id}`} target="_blank" rel="noreferrer" style={{ ...btn, background: '#eee', color: '#16202b', textDecoration: 'none' }}>보기</a>}
-            {canRestore && <button onClick={() => act('PATCH', type, it.id)} style={{ ...btn, background: '#16202b' }}>복구</button>}
+            <button onClick={() => act('PATCH', type, it.id)} style={{ ...btn, background: '#16202b' }}>복구</button>
             <button onClick={() => act('DELETE', type, it.id)} style={{ ...btn, background: '#d64545' }}>삭제</button>
           </div>
         </div>
@@ -54,10 +54,9 @@ export default function HiddenPosts() {
   return (
     <div style={{ maxWidth: 760 }}>
       {msg && <p style={{ fontWeight: 700, marginBottom: 12 }}>{msg}</p>}
-      {list('숨겨진 글', data.posts, 'post', true)}
-      {list('숨겨진 댓글', data.comments, 'comment', true)}
-      {list('숨겨진 게임 의견', data.gameComments || [], 'game_comment', true)}
-      {list('신고 접수된 글 (아직 공개 중)', data.reported, 'post', false)}
+      {list('숨겨진 글', data.posts, 'post')}
+      {list('숨겨진 댓글', data.comments, 'comment')}
+      {list('숨겨진 게임 의견', data.gameComments || [], 'game_comment')}
     </div>
   );
 }

@@ -147,6 +147,7 @@ export default function DiscountChart({ history, now }: { history: PriceRecord[]
               aria-pressed={period === p.key}
               className={period === p.key ? 'is-on' : ''}
               onClick={() => { setPeriod(p.key); setActive(null); }}
+              style={{ minHeight: 40 }}
             >{p.label}</button>
           ))}
         </div>

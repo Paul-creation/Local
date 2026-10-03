@@ -5,23 +5,26 @@ import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { compareBlockReason, MAX_COMPARE, COMPARE_PICK_KEY } from './compareRule';
 import { matchesGame, normalizeSearch } from './searchMatch';
-import { LARGE_LOBBY } from './players';
+import { LARGE_LOBBY, playersBucket } from './players';
+import { getPriceInfo } from './price';
 
 // 검색 결과는 처음 이만큼만 그리고, 더 보기로 이만큼씩 늘린다
 export const PAGE_SIZE = 24;
 
 export function useGameFilters(games: any[]) {
   const sp = useSearchParams();
-  const [showResults, setShowResults] = useState(sp.get('r') === '1');
+  // players·sale로 바로 들어오면(바로가기·공유 링크) 결과 화면부터
+  const [showResults, setShowResults] = useState(sp.get('r') === '1' || sp.has('players') || sp.get('sale') === '1');
   const [filterOpen, setFilterOpen] = useState(false);
   // OP.GG처럼 입력 중인 글자(input)와 엔터로 확정한 검색어(query)를 나눈다. 결과·주소의 q는 query만 따른다.
   const [input, setInput] = useState(sp.get('q') || '');
   const [query, setQuery] = useState(sp.get('q') || '');
   const [selectedCategory, setSelectedCategory] = useState(sp.get('cat') || '');
   const [selectedTags, setSelectedTags] = useState<string[]>((sp.get('tags') || '').split(',').filter(Boolean));
-  const [selectedPlayers, setSelectedPlayers] = useState(sp.get('p') || '');
+  const [selectedPlayers, setSelectedPlayers] = useState(sp.get('p') || playersBucket(Number(sp.get('players'))));
   const [selectedDifficulty, setSelectedDifficulty] = useState(sp.get('d') || '');
   const [freeOnly, setFreeOnly] = useState(sp.get('free') === '1');
+  const [saleOnly, setSaleOnly] = useState(sp.get('sale') === '1');
   const [compareList, setCompareList] = useState<any[]>(() => {
     const ids = (sp.get('cmp') || '').split(',').filter(Boolean);
     return games.filter((g: any) => ids.includes(g.id));
@@ -39,6 +42,7 @@ export function useGameFilters(games: any[]) {
     if (selectedPlayers) q.set('p', selectedPlayers);
     if (selectedDifficulty) q.set('d', selectedDifficulty);
     if (freeOnly) q.set('free', '1');
+    if (saleOnly) q.set('sale', '1');
     if (compareList.length) q.set('cmp', compareList.map((g: any) => g.id).join(','));
     const qs = q.toString();
     const url = qs ? `/?${qs}` : '/';
@@ -47,7 +51,7 @@ export function useGameFilters(games: any[]) {
     if (window.location.pathname === '/' && window.location.pathname + window.location.search !== url) {
       window.history.replaceState(null, '', url);
     }
-  }, [showResults, query, selectedCategory, selectedTags, selectedPlayers, selectedDifficulty, freeOnly, compareList]);
+  }, [showResults, query, selectedCategory, selectedTags, selectedPlayers, selectedDifficulty, freeOnly, saleOnly, compareList]);
 
   // 돌아왔을 때 보던 스크롤 위치로
   useEffect(() => {
@@ -101,11 +105,12 @@ export function useGameFilters(games: any[]) {
     setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
 
   const normalizedQuery = query.trim().toLowerCase();
-  const selectedCount = [selectedCategory, selectedPlayers, selectedDifficulty, freeOnly ? '무료' : '', ...selectedTags].filter(Boolean).length;
-  const hasFilters = !!(normalizedQuery || selectedCategory || selectedTags.length > 0 || selectedPlayers || selectedDifficulty || freeOnly);
+  const selectedCount = [selectedCategory, selectedPlayers, selectedDifficulty, freeOnly ? '무료' : '', saleOnly ? '할인' : '', ...selectedTags].filter(Boolean).length;
+  const hasFilters = !!(normalizedQuery || selectedCategory || selectedTags.length > 0 || selectedPlayers || selectedDifficulty || freeOnly || saleOnly);
 
   const filtered = games.filter((g) => {
     if (freeOnly && !g.is_free) return false;
+    if (saleOnly && !((getPriceInfo(g)?.discount ?? 0) > 0)) return false;
     if (selectedCategory && g.category !== selectedCategory) return false;
     if (selectedTags.length > 0 && !selectedTags.some(t => g.tags?.includes(t))) return false;
     if (selectedDifficulty && g.difficulty !== selectedDifficulty) return false;
@@ -126,7 +131,7 @@ export function useGameFilters(games: any[]) {
   });
 
   // 검색어·필터가 바뀌면 다시 처음 24개부터 (처음 열 때는 그대로)
-  const filterKey = [query, selectedCategory, selectedTags.join(','), selectedPlayers, selectedDifficulty, freeOnly].join('|');
+  const filterKey = [query, selectedCategory, selectedTags.join(','), selectedPlayers, selectedDifficulty, freeOnly, saleOnly].join('|');
   const prevFilterKey = useRef<string | null>(null);
   useEffect(() => {
     if (prevFilterKey.current !== null && prevFilterKey.current !== filterKey) setVisibleCount(PAGE_SIZE);
@@ -149,6 +154,7 @@ export function useGameFilters(games: any[]) {
     setSelectedPlayers('');
     setSelectedDifficulty('');
     setFreeOnly(false);
+    setSaleOnly(false);
     setShowResults(false);
     setFilterOpen(false);
     setCompareList([]);
@@ -164,6 +170,7 @@ export function useGameFilters(games: any[]) {
     selectedPlayers, setSelectedPlayers,
     selectedDifficulty, setSelectedDifficulty,
     freeOnly, setFreeOnly,
+    saleOnly, setSaleOnly,
     compareList, setCompareList, compareError, toggleCompare,
     rememberList,
     normalizedQuery, selectedCount, hasFilters,

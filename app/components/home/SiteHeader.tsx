@@ -7,6 +7,7 @@ const MENU = [
   { href: '/', label: '홈' },
   { href: '/compare', label: '비교' },
   { href: '/community', label: '커뮤니티' },
+  { href: '/feedback', label: '의견 보내기' },
 ];
 
 export default function SiteHeader() {

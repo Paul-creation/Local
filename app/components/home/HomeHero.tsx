@@ -2,6 +2,7 @@
 'use client';
 
 import SearchPanel from '../search/SearchPanel';
+import QuickLinks from './QuickLinks';
 import { getCurrentEvent, eventHref } from '../../lib/event';
 import type { GameFilters } from '../../lib/useGameFilters';
 
@@ -25,6 +26,7 @@ export default function HomeHero({ games, filters, showEvent }: { games: any[], 
       <div className="home-search">
         <SearchPanel games={games} filters={filters} />
       </div>
+      {showEvent && <QuickLinks filters={filters} />}
     </div>
   );
 }

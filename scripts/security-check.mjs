@@ -36,12 +36,15 @@ function checkCode() {
   // 게시판: 쓰기는 서버 API(service role)로만, 브라우저 코드는 Supabase에 직접 쓰지 않음
   read('app/lib/community.ts').includes('SUPABASE_SERVICE_ROLE_KEY') ? ok('게시판 서버 모듈이 service role 사용') : bad('게시판 서버 모듈 없음 (app/lib/community.ts)');
   read('app/api/admin/community/route.ts').match(/isAdmin\(req\)/g)?.length >= 3 ? ok('게시판 관리자 API 인증') : bad('게시판 관리자 API에 인증 누락 (app/api/admin/community/route.ts)');
+  read('app/api/admin/feedback/route.ts').match(/isAdmin\(req\)/g)?.length >= 2 ? ok('의견함 관리자 API 인증') : bad('의견함 관리자 API에 인증 누락 (app/api/admin/feedback/route.ts)');
+  read('app/api/admin/reports/route.ts').match(/isAdmin\(req\)/g)?.length >= 2 ? ok('신고 목록 관리자 API 인증') : bad('신고 목록 관리자 API에 인증 누락 (app/api/admin/reports/route.ts)');
   const clientFiles = execSync("grep -rlE \"^'use client'|^\\\"use client\\\"\" app --include=*.ts --include=*.tsx || true").toString().trim().split('\n').filter(Boolean);
   const leaky = clientFiles.filter((f) => {
     const src = read(f);
-    return /\.from\(['"](posts|post_comments|post_likes|post_reports|game_comments)['"]\)/.test(src) ||
+    return /\.from\(['"](posts|post_comments|post_likes|post_reports|game_comments|feedback)['"]\)/.test(src) ||
       /^import\s+(?!type\b)[^;]*from\s+['"][./]*(lib\/)?community['"]/m.test(src);
   });
+  checkWebhook(clientFiles);
   leaky.length === 0 ? ok('브라우저 코드에서 게시판 표 직접 접근 없음') : bad(`브라우저 코드가 게시판 표/서버 모듈에 직접 접근: ${leaky.join(', ')}`);
   const html = execSync('grep -rl dangerouslySetInnerHTML app/community app/components/community app/components/home/PopularPosts.tsx 2>/dev/null || true').toString().trim();
   html ? bad(`게시판에서 HTML 그대로 출력: ${html}`) : ok('게시판 본문을 글자 그대로 출력 (HTML 해석 없음)');
@@ -65,6 +68,20 @@ function checkCode() {
     const pending = execSync('git status --porcelain app scripts').toString().trim();
     pending ? note('아직 커밋·푸시 안 된 변경이 있어요 → 배포 사이트에는 반영 안 됨') : ok('변경 사항 모두 커밋됨');
   } catch {}
+}
+
+// 디스코드 웹후크 주소는 서버에서만: NEXT_PUBLIC_ 이름 금지, 브라우저 코드에서 안 읽음, 빌드된 브라우저 번들에 없음
+function checkWebhook(clientFiles) {
+  const pub = execSync("grep -rlE 'NEXT_PUBLIC_[A-Z_]*(DISCORD|WEBHOOK)' app scripts proxy.ts next.config.ts .env.local 2>/dev/null || true").toString().trim();
+  pub ? bad(`웹후크 주소를 NEXT_PUBLIC_ 이름으로 사용 중: ${pub.replace(/\n/g, ', ')}`, 'DISCORD_WEBHOOK_URL (NEXT_PUBLIC_ 없이)로 바꾸기') : ok('웹후크 환경변수가 NEXT_PUBLIC_이 아님');
+  const usedInClient = clientFiles.filter((f) => /DISCORD_WEBHOOK_URL|discord(app)?\.com\/api\/webhooks|lib\/notify['"]/.test(read(f)));
+  usedInClient.length === 0 ? ok('브라우저 코드에서 웹후크 사용 없음') : bad(`브라우저 코드가 웹후크/알림 모듈 사용: ${usedInClient.join(', ')}`);
+  read('app/lib/notify.ts').includes("import 'server-only'") ? ok('알림 모듈이 server-only (브라우저에서 import하면 빌드 실패)') : bad('app/lib/notify.ts에 server-only 표시 없음');
+  // 빌드 결과가 있으면 브라우저 번들(.next/static)을 직접 검색
+  if (!fs.existsSync('.next/static')) return note('빌드 결과(.next/static)가 없어 번들 검사는 건너뜀 — npm run build 후 다시 실행하면 확인해요');
+  const needles = ['discord.com/api/webhooks', 'discordapp.com/api/webhooks', 'DISCORD_WEBHOOK_URL', process.env.DISCORD_WEBHOOK_URL].filter(Boolean);
+  const hits = execSync('grep -rlF ' + needles.map((n) => `-e '${n.replace(/'/g, '')}'`).join(' ') + ' .next/static 2>/dev/null || true').toString().trim();
+  hits ? bad(`웹후크 URL이 브라우저 번들에 들어 있음: ${hits.split('\n').slice(0, 3).join(', ')}`, '웹후크는 서버 코드(app/lib/notify.ts)에서만 사용') : ok('웹후크 URL이 클라이언트 번들에 없음 (.next/static)');
 }
 
 async function checkDb() {
@@ -123,6 +140,14 @@ async function checkDb() {
     error ? ok(`브라우저 키로 ${table}의 password_hash·ip_hash 읽기 차단됨`) : bad(`브라우저 키로 ${table}의 password_hash·ip_hash를 읽을 수 있음!`, 'revoke all on posts, post_comments, post_likes, post_reports from anon, authenticated; 실행');
   }
 
+  // 의견함: 브라우저 키로 쓰기·읽기 전부 차단 (서버 API로만)
+  const fb = await anon.from('feedback').insert({ kind: 'etc', body: '__security_test__', ip_hash: 'x' });
+  if (fb.error?.code === '42501') ok('브라우저 키로 feedback 쓰기 차단됨');
+  else if (fb.error) note(`브라우저 키로 feedback 쓰기 시도 → 권한이 아닌 다른 이유로 실패 (${fb.error.message})`);
+  else { bad('브라우저 키로 feedback에 쓸 수 있음!', 'feedback SQL(RLS·revoke) 실행'); await admin.from('feedback').delete().eq('body', '__security_test__'); }
+  const fr = await anon.from('feedback').select('id, contact, ip_hash').limit(1);
+  fr.error ? ok('브라우저 키로 feedback 읽기 차단됨 (연락처·IP 해시 비공개)') : bad('브라우저 키로 feedback을 읽을 수 있음!', 'revoke all on public.feedback from anon, authenticated; 실행');
+
   await checkGameCommentsDb(anyGame);
 
   const { count } = await admin.from('compare_cache').select('game_ids', { count: 'exact', head: true });
@@ -173,12 +198,39 @@ async function checkSite() {
   r = await call('/api/compare-chat', json('POST', { question: '', gameInfo: '', history: [] }));
   r.body?.answer === '질문을 입력해주세요.' ? ok('비교 채팅 입력 검증 동작 (AI 호출 없음)') : bad('비교 채팅 입력 검증이 배포에 없음', 'aiGuard 패치 후 푸시');
 
+  for (const path of ['/api/admin/feedback', '/api/admin/reports']) {
+    r = await call(path);
+    r.status === 401 ? ok(`로그인 없이 ${path} 조회 차단`) : bad(`로그인 없이 ${path} 응답 ${r.status}`, '관리자 API에 isAdmin 확인');
+  }
+  r = await call('/api/feedback', json('POST', { kind: '__hack__', body: '__security_test__' }));
+  r.status === 400 ? ok('의견함: 이상한 유형 거절') : bad(`의견함 이상한 유형 응답 ${r.status}`);
+  r = await call('/api/feedback', json('POST', { kind: 'etc', body: '가'.repeat(1001) }));
+  r.status === 400 ? ok('의견함: 1000자 넘는 본문 거절') : bad(`의견함 1000자 초과 응답 ${r.status}`);
+  await checkSiteBundle();
+
   await checkCommunity(call, json);
 
   for (const path of ['/.env', '/.env.local']) {
     const res = await fetch(SITE + path).catch(() => null);
     !res || res.status === 404 ? ok(`${path} 외부 접근 불가`) : bad(`${path} 응답 ${res.status}`);
   }
+}
+
+// 배포 사이트의 브라우저 JS에 웹후크 주소가 없는지 (메인·의견함 페이지가 불러오는 /_next/static 파일 전부)
+async function checkSiteBundle() {
+  const scripts = new Set();
+  for (const path of ['/', '/feedback']) {
+    const html = await fetch(SITE + path).then((r) => r.text()).catch(() => '');
+    for (const m of html.matchAll(/\/_next\/static\/[^"'\s)]+\.js/g)) scripts.add(m[0]);
+  }
+  if (!scripts.size) return note('배포 사이트에서 JS 파일을 찾지 못해 번들 검사는 건너뜀');
+  const needles = ['discord.com/api/webhooks', 'discordapp.com/api/webhooks', process.env.DISCORD_WEBHOOK_URL].filter(Boolean);
+  const leaked = [];
+  for (const s of scripts) {
+    const js = await fetch(SITE + s).then((r) => r.text()).catch(() => '');
+    if (needles.some((n) => js.includes(n))) leaked.push(s);
+  }
+  leaked.length ? bad(`배포 사이트 JS에 웹후크 URL이 들어 있음: ${leaked.slice(0, 3).join(', ')}`, '웹후크 재발급 후 서버 코드에서만 사용') : ok(`웹후크 URL이 배포 사이트 클라이언트 번들에 없음 (JS ${scripts.size}개 검사)`);
 }
 
 // 게임 의견(game_comments) DB: 브라우저는 숨김 아닌 의견의 공개 칸만 읽기, 신고 1인 1회, cascade 삭제 시 신고 행 오류 없음

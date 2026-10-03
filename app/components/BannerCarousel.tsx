@@ -64,20 +64,25 @@ export default function BannerCarousel({ games }: { games: any[] }) {
       </Link>
 
       {/* 점 네비게이션 */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: 12 }}>
+      {/* 보이는 점은 작게, 누르는 영역은 28px 높이로 넉넉하게 */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
         {games.map((_, i) => (
           <button
             key={i}
             onClick={() => setIndex(i)}
-            style={{
+            aria-label={`${i + 1}번째 추천 게임`}
+            aria-current={i === index}
+            style={{ minWidth: 24, height: 28, padding: '0 4px', border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <span style={{
+              display: 'block',
               width: i === index ? 22 : 6,
               height: 6,
               borderRadius: 3,
               background: i === index ? 'var(--accent)' : 'var(--border)',
-              border: 'none', padding: 0, cursor: 'pointer',
               transition: 'all 0.25s ease',
-            }}
-          />
+            }} />
+          </button>
         ))}
       </div>
     </div>

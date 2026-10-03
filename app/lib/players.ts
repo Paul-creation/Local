@@ -7,3 +7,13 @@ export function playersText(g: { min_players?: number | null; max_players?: numb
   if (g.max_players > LARGE_LOBBY) return `${LARGE_LOBBY}명+`;
   return g.min_players === g.max_players ? `${g.min_players}인` : `${g.min_players}-${g.max_players}인`;
 }
+
+// 주소의 players=5 같은 숫자를 인원 필터 칸(1인·2인·3-4인·5인 이상·16명 이상)으로 바꾼다
+export function playersBucket(n: number) {
+  if (!Number.isFinite(n) || n < 1) return '';
+  if (n === 1) return '1인';
+  if (n === 2) return '2인';
+  if (n <= 4) return '3-4인';
+  if (n < LARGE_LOBBY) return '5인 이상';
+  return '16명 이상';
+}
