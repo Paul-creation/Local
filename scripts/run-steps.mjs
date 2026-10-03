@@ -33,6 +33,7 @@ const GROUPS = {
     'enrich-card-images',
     'enrich-hero-images',
     'write-fun-descriptions 300',
+    'fetch-coop-videos', // 인기 멀티 게임 50개의 합방 영상 (YouTube 약 5,000 사용)
     'enrich-update-date',
   ],
 };

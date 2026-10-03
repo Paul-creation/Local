@@ -10,6 +10,7 @@ import PlayerChart from '../../components/PlayerChart';
 import YouTubeLite from '../../components/YouTubeLite';
 import { translateTag } from '../../lib/tagTranslate';
 import GameVotes from '../../components/GameVotes';
+import VideoPreviewSection, { type CoopVideo } from '../../components/VideoPreviewSection';
 import ShareButton from '../../components/ShareButton';
 
 export const dynamic = 'force-dynamic';
@@ -83,7 +84,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
 
     const { data: game, error } = await supabase
     .from('games')
-    .select('*, price_history(price, discount_percent, checked_at), player_history(player_count, recorded_at), game_streamers(streamer_id, streamers(id, name, platform, handle))')
+    .select('*, price_history(price, discount_percent, checked_at), player_history(player_count, recorded_at), game_streamers(streamer_id, streamers(id, name, platform, handle)), game_videos(kind, video_id, title, channel_title, published_at, view_count)')
     .eq('id', id)
     .single();
 
@@ -526,10 +527,15 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </section>
       )}
 
-          {/* 스트리머 */}
-      {game.game_streamers?.length > 0 && (
-        <section className="detail-section-v2">
-          <h3>이 게임을 플레이한 스트리머</h3>
+      {/* 영상으로 미리 보기 — 친구랑 하는 영상(멀티 게임만) + 스트리머 */}
+      <VideoPreviewSection
+        videos={game.max_players > 1
+          ? ((game.game_videos || []) as (CoopVideo & { kind: string })[])
+              .filter((v) => v.kind === 'coop')
+              .sort((a, b) => (b.view_count || 0) - (a.view_count || 0))
+              .slice(0, 3)
+          : []}
+        streamers={game.game_streamers?.length > 0 ? (
           <div className="streamer-list">
             {game.game_streamers.map((gs: any) => {
               const s = gs.streamers;
@@ -545,8 +551,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               );
             })}
           </div>
-        </section>
-      )}
+        ) : null}
+      />
     </main>
   );
 }
