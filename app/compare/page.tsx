@@ -11,6 +11,8 @@ import CompareChat from '../components/CompareChat';
 import ScrollToTop from '../components/ScrollToTop';
 import BackToList from '../components/BackToList';
 import ShareButton from '../components/ShareButton';
+import CompareBuilder from '../components/CompareBuilder';
+import { BUILDER_FIELDS } from '../lib/compareRule';
 
 export const dynamic = 'force-dynamic';
 
@@ -123,7 +125,7 @@ ${activeSituations.map((s, i) => `${i + 1}. ${s}`).join('\n')}
 export async function generateMetadata({ searchParams }: { searchParams: Promise<{ ids?: string }> }): Promise<Metadata> {
   const { ids: idsParam } = await searchParams;
   const ids = idsParam?.split(',').slice(0, 3) || [];
-  if (ids.length < 2) return { title: '게임 비교' };
+  if (ids.length < 2) return { title: '게임 비교 만들기' };
   const { data } = await supabase.from('games').select('id, name').in('id', ids);
   const games = ids.map((id) => (data || []).find((g) => g.id === id)).filter(Boolean) as any[];
   const names = games.map((g) => g.name).join(' vs ');
@@ -143,12 +145,16 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
   const { ids: idsParam } = await searchParams;
   const ids = idsParam?.split(',').slice(0, 3) || [];
 
+  // ids가 없거나 1개면 비교 만들기 화면 (1개면 그 게임을 첫 칸에)
   if (ids.length < 2) {
+    const [{ data: popular }, { data: initial }] = await Promise.all([
+      supabase.from('games').select(BUILDER_FIELDS).not('heat_rank', 'is', null).order('heat_rank', { ascending: true }).limit(8),
+      ids.length ? supabase.from('games').select(BUILDER_FIELDS).in('id', ids) : Promise.resolve({ data: [] as any[] }),
+    ]);
     return (
       <main className="page">
-        <p style={{ textAlign: 'center', marginTop: 60, color: 'var(--text-dim)' }}>
-          비교할 게임을 2개 이상 선택해줘요.
-        </p>
+        <BackToList />
+        <CompareBuilder initial={initial || []} popular={popular || []} />
       </main>
     );
   }

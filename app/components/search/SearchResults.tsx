@@ -23,7 +23,7 @@ export default function SearchResults({ filters }: { filters: GameFilters }) {
   const {
     showResults, normalizedQuery, hasFilters, filtered,
     compareList, setCompareList, compareError, toggleCompare,
-    rememberList, resetFilters,
+    rememberList, resetFilters, visibleCount, showMore,
   } = filters;
 
   return (
@@ -52,14 +52,15 @@ export default function SearchResults({ filters }: { filters: GameFilters }) {
           {filtered.length === 0 ? (
             <div className="empty-state">조건에 맞는 게임이 없어요.</div>
           ) : (
+            <>
             <div className="grid">
-              {filtered.map((game) => {
+              {filtered.slice(0, visibleCount).map((game) => {
                 const price = getPriceInfo(game);
                 const isSelected = compareList.find(g => g.id === game.id);
                 return (
                   <Link href={`/games/${game.id}`} key={game.id} className="card" onClick={rememberList} style={isSelected ? { outline: '3px solid var(--accent)', outlineOffset: 2 } : undefined}>
                     <div className="card-image-wrap">
-                      <img src={(game.card_image_url || game.cover_image_url)} alt={game.name} />
+                      <img src={(game.card_image_url || game.cover_image_url)} alt={game.name} loading="lazy" />
                       {/* COMPARE_V2 */}
                       <button
                         type="button"
@@ -123,6 +124,15 @@ export default function SearchResults({ filters }: { filters: GameFilters }) {
                 );
               })}
             </div>
+            {/* 한 번에 다 그리면 느려서 24개씩 나눠 보기 */}
+            {filtered.length > visibleCount && (
+              <div style={{ textAlign: 'center', marginTop: 24 }}>
+                <button onClick={showMore} style={{ background: 'var(--bg-card)', color: 'var(--text)', border: '1px solid var(--border-light)', borderRadius: 100, padding: '12px 28px', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
+                  더 보기 ({visibleCount}/{filtered.length})
+                </button>
+              </div>
+            )}
+            </>
           )}
         </>
       )}

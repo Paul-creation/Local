@@ -1575,3 +1575,60 @@ img { display: block; }
   .home-hero.is-home .search-bar-clean input { height: 52px; font-size: 16px; }
   .home-hero.is-home .ai-trigger-clean { height: 52px; }
 }
+
+/* 비교 만들기 화면 (/compare, ids 없을 때) */
+.compare-builder { max-width: 760px; margin: 0 auto; padding-bottom: 40px; }
+.cb-slots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
+.cb-slot {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 150px;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--text-dimmer); font-size: 15px; font-weight: 600;
+  overflow: hidden;
+}
+.cb-slot.is-filled {
+  justify-content: flex-start;
+  border: 1px solid var(--border-light);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-sm);
+}
+.cb-slot img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+.cb-slot-name {
+  width: 100%; padding: 10px 12px;
+  font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.3;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.cb-slot-remove {
+  position: absolute; top: 8px; right: 8px;
+  width: 30px; height: 30px; border-radius: 50%;
+  border: none; background: rgba(0,0,0,0.65); color: #fff;
+  font-size: 15px; cursor: pointer;
+}
+.cb-search { width: 100%; }
+.cb-search .search-bar-clean input { min-width: 0; }
+.cb-suggest-item { width: 100%; border: none; background: none; font-family: inherit; text-align: left; cursor: pointer; }
+.cb-quick { display: flex; flex-wrap: wrap; gap: 8px; }
+.cb-quick-btn {
+  max-width: 100%;
+  padding: 8px 14px; border-radius: 100px;
+  border: 1px solid var(--border-light); background: var(--bg-card); color: var(--text);
+  font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cb-quick-btn:disabled { opacity: 0.5; cursor: default; }
+.cb-go {
+  min-width: 240px; padding: 14px 28px; border-radius: 100px; border: none;
+  background: var(--accent); color: #fff;
+  font-family: inherit; font-size: 16px; font-weight: 800; cursor: pointer;
+}
+.cb-go:disabled { background: var(--border); color: var(--text-dim); cursor: default; }
+
+@media (max-width: 480px) {
+  .cb-slots { gap: 8px; }
+  .cb-slot { min-height: 110px; font-size: 13px; }
+  .cb-slot-name { padding: 8px; font-size: 13px; }
+  .cb-slot-remove { width: 26px; height: 26px; font-size: 13px; top: 6px; right: 6px; }
+  .cb-go { width: 100%; min-width: 0; }
+}

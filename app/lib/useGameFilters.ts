@@ -1,8 +1,12 @@
 // 담당: 친구(검색·태그·비교)
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { compareBlockReason, MAX_COMPARE, COMPARE_PICK_KEY } from './compareRule';
+
+// 검색 결과는 처음 이만큼만 그리고, 더 보기로 이만큼씩 늘린다
+export const PAGE_SIZE = 24;
 
 export function useGameFilters(games: any[]) {
   const sp = useSearchParams();
@@ -21,6 +25,7 @@ export function useGameFilters(games: any[]) {
     return games.filter((g: any) => ids.includes(g.id));
   });
   const [compareError, setCompareError] = useState('');
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   // URL_STATE — 필터·결과·비교 선택을 주소에 담아서, 뒤로가기·목록으로 시 그대로 보이게
   useEffect(() => {
@@ -46,7 +51,11 @@ export function useGameFilters(games: any[]) {
   useEffect(() => {
     try {
       const y = Number(sessionStorage.getItem('list_scroll') || 0);
+      const count = Number(sessionStorage.getItem('list_count') || 0);
       sessionStorage.removeItem('list_scroll');
+      sessionStorage.removeItem('list_count');
+      // 더 보기로 늘려둔 개수까지 먼저 그린 다음 스크롤
+      if (count > PAGE_SIZE && showResults) setVisibleCount(count);
       if (y > 0 && showResults) setTimeout(() => window.scrollTo(0, y), 80);
     } catch {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -57,21 +66,30 @@ export function useGameFilters(games: any[]) {
     try {
       sessionStorage.setItem('list_url', window.location.pathname + window.location.search);
       sessionStorage.setItem('list_scroll', String(window.scrollY));
+      sessionStorage.setItem('list_count', String(visibleCount));
     } catch {}
   };
+
+  // 메인에서 골라둔 비교 게임을 비교 만들기 화면(/compare)에 넘겨주려고 기억 (처음 열 때 빈 목록으로 지우지는 않음)
+  const prevPick = useRef<string | null>(null);
+  useEffect(() => {
+    const ids = compareList.map((g: any) => g.id).join(',');
+    try {
+      if (ids) sessionStorage.setItem(COMPARE_PICK_KEY, ids);
+      else if (prevPick.current) sessionStorage.removeItem(COMPARE_PICK_KEY);
+    } catch {}
+    prevPick.current = ids;
+  }, [compareList]);
 
   const toggleCompare = (game: any) => {
     setCompareList(prev => {
       if (prev.find(g => g.id === game.id)) return prev.filter(g => g.id !== game.id);
-      if (prev.length >= 3) return prev;
-      if (prev.length > 0) {
-        const firstIsSolo = prev[0].max_players === 1;
-        const newIsSolo = game.max_players === 1;
-        if (firstIsSolo !== newIsSolo) {
-          setCompareError(firstIsSolo ? '싱글 게임끼리만 비교할 수 있어요' : '멀티 게임끼리만 비교할 수 있어요');
-          setTimeout(() => setCompareError(''), 2000);
-          return prev;
-        }
+      if (prev.length >= MAX_COMPARE) return prev;
+      const reason = compareBlockReason(prev, game);
+      if (reason) {
+        setCompareError(reason);
+        setTimeout(() => setCompareError(''), 2000);
+        return prev;
       }
       return [...prev, game];
     });
@@ -101,6 +119,15 @@ export function useGameFilters(games: any[]) {
     }
     return true;
   });
+
+  // 검색어·필터가 바뀌면 다시 처음 24개부터 (처음 열 때는 그대로)
+  const filterKey = [query, selectedCategory, selectedTags.join(','), selectedPlayers, selectedDifficulty, freeOnly].join('|');
+  const prevFilterKey = useRef<string | null>(null);
+  useEffect(() => {
+    if (prevFilterKey.current !== null && prevFilterKey.current !== filterKey) setVisibleCount(PAGE_SIZE);
+    prevFilterKey.current = filterKey;
+  }, [filterKey]);
+  const showMore = () => setVisibleCount((n) => n + PAGE_SIZE);
 
   // 엔터(또는 결과 보기)로 지금 입력한 글자를 검색어로 확정하고 결과 화면 맨 위로
   const submitSearch = () => {
@@ -135,7 +162,7 @@ export function useGameFilters(games: any[]) {
     compareList, setCompareList, compareError, toggleCompare,
     rememberList,
     normalizedQuery, selectedCount, hasFilters,
-    filtered,
+    filtered, visibleCount, showMore,
     resetFilters,
   };
 }

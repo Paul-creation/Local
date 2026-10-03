@@ -6,7 +6,7 @@ import { SITE_NAME } from '../../lib/site';
 const MENU = [
   { href: '/', label: '홈' },
   { href: '/#free', label: '무료 게임' },
-  { href: '/?r=1', label: '비교' },
+  { href: '/compare', label: '비교' },
 ];
 
 export default function SiteHeader() {
