@@ -2,7 +2,7 @@
 // 메인 "🔥 지금 뜨는 게임" 데이터 — 메인 select와 따로, 필요한 게임과 기록만 가져온다
 // 순위는 scripts/snapshot-hot-rank.mjs가 매일 hot_rank_history에 남긴 heat_rank 순위(상위 50)를 쓴다
 import { supabase } from './supabase';
-import { getPriceInfo } from './price';
+import { getPriceInfo, getLowestTiming, type LowestTiming } from './price';
 import { translateTag } from './tagTranslate';
 
 export type RankChange = { type: 'up' | 'down'; n: number } | { type: 'same' } | { type: 'new' } | null;
@@ -21,6 +21,7 @@ export type HotItem = {
   currentPlayers: number | null;
   price: string | null;   // "₩8,250" / "무료"
   discount: number;
+  lowest: LowestTiming;   // 역대 최저가 / 최저가 근접
   spark: number[];        // 최근 7일 동접자 (1~3위만, 기록이 3일 이상인 게임만)
 };
 
@@ -88,7 +89,7 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
   const [{ data: games }, { data: weeksRows }, { data: playerRows }] = await Promise.all([
     supabase
       .from('games')
-      .select('id, name, hero_image_url, card_image_url, cover_image_url, fun_description, tags, min_players, max_players, current_players, is_free, price_history(price, discount_percent, checked_at, currency)')
+      .select('id, name, hero_image_url, card_image_url, cover_image_url, fun_description, tags, min_players, max_players, current_players, is_free, lowest_price, price_history(price, discount_percent, checked_at, currency)')
       .in('id', ids)
       .gte('price_history.price', 100)
       .order('checked_at', { referencedTable: 'price_history', ascending: false })
@@ -153,6 +154,7 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
         currentPlayers: g.current_players ?? null,
         price: g.is_free ? '무료' : price ? price.formattedFinal : null,
         discount: !g.is_free && price ? price.discount : 0,
+        lowest: getLowestTiming(g, price),
         spark: i < 3 ? (spark.get(id) || []) : [],
       }];
     });

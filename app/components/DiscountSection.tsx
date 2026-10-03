@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { getPriceInfo } from '../lib/price';
+import { getPriceInfo, getLowestTiming } from '../lib/price';
+import LowestPriceBadge from './LowestPriceBadge';
 
 export default function DiscountSection({ games }: { games: any[] }) {
   const discounted = games
@@ -25,14 +26,7 @@ export default function DiscountSection({ games }: { games: any[] }) {
                             <div className="card-image-wrap">
                 <img src={(game.card_image_url || game.cover_image_url)} alt={game.name} />
                 <span className="platform-badge">{game.steam_appid ? 'Steam' : (({ epic: 'Epic', battlenet: 'Battle.net', riot: 'Riot' } as Record<string, string>)[game.source] ?? 'PC') /* STORE_BADGE */}</span>
-                {(() => {
-                  if (!price || price.discount === 0 || !game.lowest_price || game.is_free) return null;
-                  if (price.final < 100 || game.lowest_price < 100) return null;
-                  const ratio = price.final / game.lowest_price;
-                  if (ratio <= 1.05) return <span className="timing-badge best">🔥 역대 최저가</span>;
-                  if (ratio <= 1.15) return <span className="timing-badge near">💰 최저가 근접</span>;
-                  return null;
-                })()}
+                <LowestPriceBadge timing={getLowestTiming(game, price)} overlay />
               </div>
               <div className="card-body">
                 <h3>{game.name}</h3>

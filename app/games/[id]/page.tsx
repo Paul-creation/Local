@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { supabase } from '../../lib/supabase';
 import BackToList from '../../components/BackToList';
 import DiscountChart from '../../components/DiscountChart';
-import { getPriceInfo } from '../../lib/price';
+import { getPriceInfo, getLowestTiming, formatLowestDate } from '../../lib/price';
+import LowestPriceBadge from '../../components/LowestPriceBadge';
 import { translateGenres } from '../../lib/genreTranslate';
 import { getPlatformCategories, CATEGORY_LABEL, PlatformCategory } from '../../lib/platformDisplay';
 import { FaPlaystation, FaXbox, FaDesktop, FaVrCardboard } from 'react-icons/fa';
@@ -179,7 +180,14 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               <span className="buy-price-final">
                 {game.is_free ? '무료' : price ? price.formattedFinal : '가격 정보 없음'}
               </span>
+              <LowestPriceBadge timing={getLowestTiming(game, price)} />
             </div>
+            {!game.is_free && game.lowest_price >= 100 && (
+              <span className="buy-lowest">
+                역대 최저 ₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}
+                {formatLowestDate(game.lowest_price_date) && ` (${formatLowestDate(game.lowest_price_date)})`}
+              </span>
+            )}
           </div>
           {buyUrl && (
             <a href={buyUrl} target="_blank" rel="noopener noreferrer" className="buy-cta">

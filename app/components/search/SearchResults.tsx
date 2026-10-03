@@ -3,21 +3,10 @@
 
 import Link from 'next/link';
 import ShareButton from '../ShareButton';
-import { getPriceInfo } from '../../lib/price';
+import { getPriceInfo, getLowestTiming } from '../../lib/price';
+import LowestPriceBadge from '../LowestPriceBadge';
 import { translateTag } from '../../lib/tagTranslate';
 import type { GameFilters } from '../../lib/useGameFilters';
-
-function getPriceTiming(game: any) {
-  const price = getPriceInfo(game);
-  if (!price || !game.lowest_price || game.is_free) return null;
-  if (price.discount === 0) return null;
-  if (price.final < 100) return null;
-  if (game.lowest_price < 100) return null;
-  const ratio = price.final / game.lowest_price;
-  if (ratio <= 1.05) return 'best';
-  if (ratio <= 1.15) return 'near';
-  return null;
-}
 
 export default function SearchResults({ filters, top10Ids = [] }: { filters: GameFilters; top10Ids?: string[] }) {
   const {
@@ -78,15 +67,7 @@ export default function SearchResults({ filters, top10Ids = [] }: { filters: Gam
                         {isSelected ? '✓ 비교' : '+ 비교'}
                       </button>
                       <span className="platform-badge">{game.steam_appid ? 'Steam' : (({ epic: 'Epic', battlenet: 'Battle.net', riot: 'Riot' } as Record<string, string>)[game.source] ?? 'PC') /* STORE_BADGE */}</span>
-                      {(() => {
-                        const timing = getPriceTiming(game);
-                        if (!timing) return null;
-                        return (
-                          <span className={`timing-badge ${timing}`}>
-                            {timing === 'best' ? '🔥 역대 최저가' : '💰 최저가 근접'}
-                          </span>
-                        );
-                      })()}
+                      <LowestPriceBadge timing={getLowestTiming(game, price)} overlay />
                     </div>
                     <div className="card-body">
                       <h3>{top10Ids.includes(game.id) && <span className="top10-badge" style={{ marginRight: 6 }}>TOP 10</span>}{game.name}</h3>

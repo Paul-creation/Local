@@ -507,15 +507,18 @@ img { display: block; }
 }
 
 .timing-badge {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
   font-size: 12px;
   font-weight: 800;
   padding: 3px 8px;
   border-radius: 5px;
   letter-spacing: 0.02em;
+  white-space: nowrap;
+  line-height: 1.3;
 }
+.timing-badge.is-overlay { position: absolute; bottom: 8px; right: 8px; }
 
 .timing-badge.best { background: #d64545; color: #fff; }
 .timing-badge.near { background: #d4a017; color: #fff; }
@@ -1054,7 +1057,8 @@ img { display: block; }
 
 .buy-price-block { display: flex; flex-direction: column; gap: 6px; }
 .buy-label { color: #8a8a8e; font-size: 14px; letter-spacing: 0.02em; }
-.buy-price-row { display: flex; align-items: center; gap: 10px; }
+.buy-price-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.buy-lowest { color: #8a8a8e; font-size: 13px; }
 .buy-price-original { color: #636366; font-size: 15px; text-decoration: line-through; }
 .buy-price-final { color: #fff; font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
 .buy-discount-badge {
@@ -1748,6 +1752,9 @@ a.hc-row:hover { background: var(--bg-card-hover); }
 .hc-row-ccu small { margin-left: 2px; font-size: 12px; font-weight: 600; color: var(--text-dimmer); }
 .hc-row-price { display: flex; justify-content: flex-end; text-align: right; font-size: 15px; }
 .hc-price-final { font-variant-numeric: tabular-nums; }
+/* 목록에서는 역대 최저가 배지를 가격 아래 줄로 (칸 너비 고정이라 옆에 두면 동접 칸을 침범) */
+.hc-row-price .hc-price { flex-wrap: wrap; justify-content: flex-end; row-gap: 4px; max-width: 100%; }
+.hc-row-price .timing-badge { margin-left: auto; }
 
 /* TOP 10 배지 (검색 결과 카드·상세 페이지) */
 .top10-badge {
@@ -1767,7 +1774,8 @@ a.hc-row:hover { background: var(--bg-card-hover); }
   .hc-rank-big { font-size: 80px; }
   .hc-card-name { padding-left: 56px; font-size: 17px; }
   /* 폰: 동접 칸을 숨기고 한 줄에. 할인 배지는 가격 위로 */
-  .hc-row { grid-template-columns: 28px 72px minmax(0, 1fr) 70px; column-gap: 10px; padding: 8px 12px; }
+  .hc-row { grid-template-columns: 28px 72px minmax(0, 1fr) 84px; column-gap: 10px; padding: 8px 12px; }
+  .hc-row-price .timing-badge { font-size: 10px; padding: 2px 5px; }
   .hc-row-ccu { display: none; }
   .hc-row-rank-n { font-size: 17px; }
   .hc-row-thumb { width: 72px; }

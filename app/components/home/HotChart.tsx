@@ -4,6 +4,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import type { HotItem, HotTab, RankChange } from '../../lib/hotChart';
+import LowestPriceBadge from '../LowestPriceBadge';
 
 // 44396 → 4.4만
 function formatCount(n: number) {
@@ -28,6 +29,7 @@ function Price({ item }: { item: HotItem }) {
     <span className="hc-price">
       {item.discount > 0 && <span className="hc-discount">-{item.discount}%</span>}
       <span className="hc-price-final">{item.price}</span>
+      <LowestPriceBadge timing={item.lowest} />
     </span>
   );
 }
