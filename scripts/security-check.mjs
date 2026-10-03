@@ -231,6 +231,22 @@ async function checkCommunity(call, json) {
   r = await post({ board: '__hack__', title: '__security_test__', body: '__security_test__' });
   r.status === 400 ? ok('없는 게시판 거절') : bad(`없는 게시판 응답 ${r.status}`);
 
+  // 신고: 없는 대상·숨김 대상은 저장 전에 404로 거절 (신고 기록이 쌓이지 않아야 함)
+  for (const type of ['post', 'comment', 'game_comment']) {
+    r = await call('/api/community/report', json('POST', { type, id: 999999999, reason: '기타' }));
+    r.status === 404 ? ok(`없는 ${type} id 신고 거절`) : bad(`없는 ${type} id 신고 응답 ${r.status}`, '신고 API에서 대상 존재 확인');
+  }
+  const { data: hiddenPost } = await admin.from('posts')
+    .insert({ board: 'free', title: '__security_test__ 숨김 신고', body: '__security_test__', nickname: '보안점검', password_hash: 'x', ip_hash: 'x', hidden: true })
+    .select('id').single();
+  if (hiddenPost) {
+    r = await call('/api/community/report', json('POST', { type: 'post', id: hiddenPost.id }));
+    r.status === 404 ? ok('숨김 글 신고 거절') : bad(`숨김 글 신고 응답 ${r.status}`, '신고 API에서 숨김 여부 확인');
+    await admin.from('posts').delete().eq('id', hiddenPost.id);
+  }
+  const { count: strayReports } = await admin.from('post_reports').select('id', { count: 'exact', head: true }).eq('target_id', 999999999);
+  !strayReports ? ok('없는 대상 신고 기록 0건') : bad(`없는 대상 신고 기록 ${strayReports}건 저장됨`);
+
   // 게임 의견: 게임 페이지 응답에 해시 없음 + 도배 제한(하루 30개). 점검용 의견은 바로 숨기고 끝에 지운다
   const game = (await admin.from('games').select('id').limit(1)).data?.[0];
   if (game) {
