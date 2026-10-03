@@ -19,7 +19,7 @@ function getPriceTiming(game: any) {
   return null;
 }
 
-export default function SearchResults({ filters }: { filters: GameFilters }) {
+export default function SearchResults({ filters, top10Ids = [] }: { filters: GameFilters; top10Ids?: string[] }) {
   const {
     showResults, normalizedQuery, hasFilters, filtered,
     compareList, setCompareList, compareError, toggleCompare,
@@ -89,7 +89,7 @@ export default function SearchResults({ filters }: { filters: GameFilters }) {
                       })()}
                     </div>
                     <div className="card-body">
-                      <h3>{game.name}</h3>
+                      <h3>{top10Ids.includes(game.id) && <span className="top10-badge" style={{ marginRight: 6 }}>TOP 10</span>}{game.name}</h3>
                       <p className="card-meta">
                         {game.recommended_players ? `추천 ${game.recommended_players}` : game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : ''}
                         {game.difficulty ? ` · ${game.difficulty}` : ''}

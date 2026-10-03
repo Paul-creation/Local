@@ -1660,3 +1660,106 @@ img { display: block; }
   .coop-videos::-webkit-scrollbar { display: none; }
   .coop-video-card { flex: 0 0 78%; scroll-snap-align: start; }
 }
+
+/* ============================================================
+   메인 — 🔥 지금 뜨는 게임 (넷플릭스 Top 10 + 스팀 차트)
+   ============================================================ */
+.hc { margin-bottom: 40px; }
+.hc-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.hc-head .section-title { margin: 0; }
+.hc-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.hc-tab {
+  padding: 7px 14px; border-radius: 100px;
+  border: 1px solid var(--border-light); background: var(--bg-card); color: var(--text-dim);
+  font-size: 14px; font-weight: 700;
+}
+.hc-tab.is-active { background: var(--text); border-color: var(--text); color: var(--bg-card); }
+.hc-note { margin: -6px 0 14px; font-size: 14px; color: var(--text-dim); }
+
+/* 순위 변동: 오르면 빨강, 내리면 파랑 */
+.hc-change { display: inline-flex; align-items: center; font-size: 13px; font-weight: 800; line-height: 1; white-space: nowrap; }
+.hc-change.is-up { color: #e5383b; }
+.hc-change.is-down { color: #2f6fed; }
+.hc-change.is-same { color: var(--text-dimmer); }
+.hc-change.is-new { color: #fff; background: #ff6b00; padding: 3px 6px; border-radius: 4px; font-size: 11px; letter-spacing: 0.03em; }
+
+.hc-price { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; white-space: nowrap; }
+.hc-discount { background: var(--green); color: #fff; font-size: 12px; font-weight: 800; padding: 2px 6px; border-radius: 4px; }
+
+/* 1~3위 큰 카드 */
+.hc-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.hc-card {
+  position: relative; display: flex; min-height: 250px; overflow: hidden;
+  border-radius: var(--radius-lg); background: #15151d; color: #fff;
+  box-shadow: var(--shadow-md);
+}
+.hc-card-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+.hc-card:hover .hc-card-bg { transform: scale(1.04); }
+.hc-card-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10,10,18,0.92) 0%, rgba(10,10,18,0.75) 45%, rgba(10,10,18,0.35) 100%), linear-gradient(0deg, rgba(10,10,18,0.85) 0%, rgba(10,10,18,0) 60%); }
+.hc-rank-big {
+  position: absolute; left: 6px; bottom: -18px; z-index: 1;
+  font-size: 150px; font-weight: 900; line-height: 1; letter-spacing: -0.06em;
+  color: rgba(10,10,18,0.55); -webkit-text-stroke: 4px #fff;
+  font-variant-numeric: tabular-nums; pointer-events: none;
+}
+.hc-card-body { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 6px; justify-content: flex-end; width: 100%; padding: 18px 18px 16px 104px; }
+.hc-card-top { display: flex; align-items: center; gap: 8px; min-height: 18px; }
+.hc-weeks { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.14); padding: 3px 8px; border-radius: 100px; }
+.hc-card .hc-change.is-up { color: #ff6b6e; }
+.hc-card .hc-change.is-down { color: #7aa7ff; }
+.hc-card .hc-change.is-same { color: rgba(255,255,255,0.6); }
+.hc-card-name { font-size: 20px; font-weight: 800; line-height: 1.25; letter-spacing: -0.02em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.hc-card-fun { font-size: 14px; line-height: 1.45; color: rgba(255,255,255,0.82); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.hc-card-meta { display: flex; align-items: center; gap: 10px; font-size: 14px; color: rgba(255,255,255,0.9); flex-wrap: wrap; }
+.hc-spark { display: inline-flex; align-items: center; gap: 8px; color: #7ee0a1; margin-top: 2px; }
+.hc-spark-label { font-size: 12px; color: rgba(255,255,255,0.6); }
+
+/* 4~10위 줄 */
+.hc-rows { margin-top: 14px; background: var(--bg-card); border: 1px solid var(--border-light); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden; }
+.hc-row {
+  display: grid; grid-template-columns: 48px 120px minmax(0, 1fr) auto; grid-template-areas: "rank thumb main right";
+  align-items: center; gap: 16px; padding: 12px 18px; color: var(--text);
+}
+.hc-row + .hc-row { border-top: 1px solid var(--border-light); }
+.hc-row:hover { background: var(--bg-card-hover); }
+.hc-row-rank { grid-area: rank; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 22px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+.hc-row-thumb { grid-area: thumb; width: 120px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 8px; background: var(--bg); }
+.hc-row-main { grid-area: main; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.hc-row-name { font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hc-row-sub { font-size: 14px; color: var(--text-dim); }
+.hc-row-right { grid-area: right; display: flex; align-items: center; gap: 18px; font-size: 15px; }
+.hc-row-ccu { font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.hc-row-ccu small { margin-left: 3px; font-size: 12px; font-weight: 600; color: var(--text-dimmer); }
+
+/* TOP 10 배지 (검색 결과 카드·상세 페이지) */
+.top10-badge {
+  display: inline-flex; align-items: center; flex-shrink: 0;
+  padding: 3px 7px; border-radius: 4px; background: #e50914; color: #fff;
+  font-size: 11px; font-weight: 900; letter-spacing: 0.04em; line-height: 1.2; vertical-align: middle;
+}
+
+.hc-row-sub-ccu { display: none; }
+@media (max-width: 900px) {
+  .hc-row-ccu { display: none; }
+  .hc-row-sub-ccu { display: inline; }
+}
+@media (max-width: 640px) {
+  .hc-cards {
+    display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+    margin: 0 -24px; padding: 0 24px 6px; scroll-padding-left: 24px; gap: 12px;
+    scrollbar-width: none;
+  }
+  .hc-cards::-webkit-scrollbar { display: none; }
+  .hc-card { flex: 0 0 86%; scroll-snap-align: start; min-height: 230px; }
+  .hc-rank-big { font-size: 130px; }
+  .hc-card-body { padding-left: 88px; }
+  /* 폰: 가격을 이름 아래 줄로 내림 */
+  .hc-row { grid-template-columns: 30px 96px minmax(0, 1fr); grid-template-areas: "rank thumb main" "rank thumb right"; row-gap: 4px; column-gap: 12px; padding: 10px 12px; }
+  .hc-row-main { align-self: end; }
+  .hc-row-right { align-self: start; }
+  .hc-row-rank { font-size: 18px; }
+  .hc-row-thumb { width: 96px; }
+  .hc-row-name { font-size: 15px; }
+  .hc-row-sub { font-size: 13px; }
+  .hc-row-right { font-size: 14px; }
+}

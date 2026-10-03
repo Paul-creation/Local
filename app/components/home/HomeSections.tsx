@@ -3,16 +3,13 @@
 
 import Link from 'next/link';
 import BannerCarousel from '../BannerCarousel';
+import HotChart from './HotChart';
+import type { HotTab } from '../../lib/hotChart';
 import { getPriceInfo } from '../../lib/price';
 
-export default function HomeSections({ games }: { games: any[] }) {
+export default function HomeSections({ games, hotTabs }: { games: any[]; hotTabs: HotTab[] }) {
   const featured = games.find((g) => g.featured);
   const bannerPool = games.filter((g) => g.is_casual_party && !g.featured);
-  const freeGames = games.filter((g) => g.is_free);
-  const hotGames = [...games]
-    .filter(g => g.heat_rank)
-    .sort((a, b) => a.heat_rank - b.heat_rank)
-    .slice(0, 6);
 
   const featuredPrice = featured ? getPriceInfo(featured) : null;
 
@@ -70,52 +67,8 @@ export default function HomeSections({ games }: { games: any[] }) {
 
 
 
-          {freeGames.length > 0 && (
-            <section id="free" className="free-section">
-              <div className="section-header">
-                <h2 className="section-title">🆓 지금 무료로 즐길 수 있는 게임</h2>
-                <span className="section-sub">설치만 하면 바로 친구랑 시작 가능</span>
-              </div>
-              <div className="free-strip">
-                {freeGames.map((g) => (
-                  <a href={`/games/${g.id}`} key={g.id} className="free-chip">
-                    <img src={g.cover_image_url} alt={g.name} />
-                    <span>{g.name}</span>
-                  </a>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {hotGames.length > 0 && (
-            <div style={{ marginBottom: 32 }}>
-              <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 16 }}>인기 급상승</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 12 }}>
-                {hotGames.map((game, i) => (
-                  <Link href={`/games/${game.id}`} key={game.id} style={{ textDecoration: 'none' }}>
-                   <div style={{
-  display: 'flex', alignItems: 'center', gap: 16,
-  background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
-  padding: '18px 20px', border: '1px solid var(--border-light)',
-  boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
-}}>
-                      <span style={{ fontSize: 24, fontWeight: 900, color: 'var(--text-dimmer)', width: 32, flexShrink: 0, textAlign: 'center' }}>
-    {i + 1}
-  </span>
-  <img src={game.cover_image_url} alt={game.name} style={{ width: 96, aspectRatio: '460 / 215', objectFit: 'cover', borderRadius: 8, flexShrink: 0 }} />
-  <div style={{ minWidth: 0 }}>
-    <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{game.name}</div>
-    <div style={{ fontSize: 15, color: 'var(--text-dimmer)' }}>
-      {game.min_players && game.max_players ? `${game.min_players}-${game.max_players}인` : ''}
-      {game.difficulty ? ` · ${game.difficulty}` : ''}
-    </div>
-  </div>
-</div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-                    )}
+          {/* 🔥 지금 뜨는 게임 — 데이터는 page.tsx에서 따로 가져옴 (lib/hotChart) */}
+          {hotTabs.length > 0 && <HotChart tabs={hotTabs} />}
 
         </>
   );

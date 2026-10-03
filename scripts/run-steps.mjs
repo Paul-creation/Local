@@ -13,6 +13,7 @@ const GROUPS = {
     'enrich-players',
     'enrich-itad-heat',
     'enrich-videos 90', // YouTube 하루 한도 안에서 매일 조금씩
+    'snapshot-hot-rank', // 메인 "지금 뜨는 게임" 순위 기록 (heat_rank 갱신 뒤)
   ],
   // 매주: 새 게임 수집 + 게임 정보 보강
   weekly: [

@@ -12,6 +12,7 @@ import { translateTag } from '../../lib/tagTranslate';
 import GameVotes from '../../components/GameVotes';
 import VideoPreviewSection, { type CoopVideo } from '../../components/VideoPreviewSection';
 import ShareButton from '../../components/ShareButton';
+import { getTop10Ids } from '../../lib/hotChart';
 
 export const dynamic = 'force-dynamic';
 
@@ -82,6 +83,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 export default async function GameDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
+  const top10Promise = getTop10Ids().catch(() => [] as string[]);
     const { data: game, error } = await supabase
     .from('games')
     .select('*, price_history(price, discount_percent, checked_at), player_history(player_count, recorded_at), game_streamers(streamer_id, streamers(id, name, platform, handle)), game_videos(kind, video_id, title, channel_title, published_at, view_count)')
@@ -91,6 +93,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   if (error || !game) {
     return <div className="page">게임을 찾을 수 없어요.</div>;
   }
+  const isTop10 = (await top10Promise).includes(game.id);
 
   const price = getPriceInfo(game);
   // 100원 미만은 잘못 들어온 기록이라 할인 전적에서 제외
@@ -120,7 +123,10 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       {/* 제목 + 평가 배지 + 태그 + 설명 */}
       <div className="detail-header">
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
-          <h1 className="detail-title-v2">{game.name}</h1>
+          <h1 className="detail-title-v2">
+            {game.name}
+            {isTop10 && <span className="top10-badge" style={{ marginLeft: 10, fontSize: 13, position: 'relative', top: -4 }}>TOP 10</span>}
+          </h1>
           <ShareButton
             title={game.name}
             text={game.fun_description || `${game.name} 같이 할래?`}

@@ -5,7 +5,6 @@ import { SITE_NAME } from '../../lib/site';
 // 메인의 필터 상태는 처음 열 때 주소에서 읽으므로, 같은 페이지 안 이동도 새로 불러오게 Link 대신 a를 쓴다.
 const MENU = [
   { href: '/', label: '홈' },
-  { href: '/#free', label: '무료 게임' },
   { href: '/compare', label: '비교' },
 ];
 
