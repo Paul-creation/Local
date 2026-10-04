@@ -1,0 +1,1014 @@
+{
+  "exported_at": "2026-10-04",
+  "count": 252,
+  "tags": [
+    {
+      "tag": "저사양",
+      "game_count": 231
+    },
+    {
+      "tag": "시뮬레이션",
+      "game_count": 94
+    },
+    {
+      "tag": "RPG",
+      "game_count": 82
+    },
+    {
+      "tag": "온라인 협동",
+      "game_count": 74
+    },
+    {
+      "tag": "액션",
+      "game_count": 68
+    },
+    {
+      "tag": "어드벤처",
+      "game_count": 65
+    },
+    {
+      "tag": "오픈월드",
+      "game_count": 60
+    },
+    {
+      "tag": "전략",
+      "game_count": 58
+    },
+    {
+      "tag": "캐주얼",
+      "game_count": 58
+    },
+    {
+      "tag": "호러",
+      "game_count": 38
+    },
+    {
+      "tag": "FPS",
+      "game_count": 36
+    },
+    {
+      "tag": "생존",
+      "game_count": 34
+    },
+    {
+      "tag": "스토리 풍부",
+      "game_count": 32
+    },
+    {
+      "tag": "퍼즐",
+      "game_count": 28
+    },
+    {
+      "tag": "온라인 대전",
+      "game_count": 27
+    },
+    {
+      "tag": "애니메이션풍",
+      "game_count": 26
+    },
+    {
+      "tag": "슈팅",
+      "game_count": 24
+    },
+    {
+      "tag": "심리 공포",
+      "game_count": 24
+    },
+    {
+      "tag": "JRPG",
+      "game_count": 22
+    },
+    {
+      "tag": "픽셀 그래픽",
+      "game_count": 20
+    },
+    {
+      "tag": "전술",
+      "game_count": 19
+    },
+    {
+      "tag": "오픈월드 생존",
+      "game_count": 17
+    },
+    {
+      "tag": "샌드박스",
+      "game_count": 16
+    },
+    {
+      "tag": "성인",
+      "game_count": 16
+    },
+    {
+      "tag": "액션 RPG",
+      "game_count": 16
+    },
+    {
+      "tag": "소울라이크",
+      "game_count": 15
+    },
+    {
+      "tag": "코미디",
+      "game_count": 15
+    },
+    {
+      "tag": "탐험",
+      "game_count": 15
+    },
+    {
+      "tag": "플랫포머",
+      "game_count": 15
+    },
+    {
+      "tag": "경영",
+      "game_count": 14
+    },
+    {
+      "tag": "액션 로그라이크",
+      "game_count": 14
+    },
+    {
+      "tag": "서바이벌 호러",
+      "game_count": 13
+    },
+    {
+      "tag": "액션 어드벤처",
+      "game_count": 13
+    },
+    {
+      "tag": "핵앤슬래시",
+      "game_count": 13
+    },
+    {
+      "tag": "1인칭",
+      "game_count": 12
+    },
+    {
+      "tag": "다크 판타지",
+      "game_count": 12
+    },
+    {
+      "tag": "미스터리",
+      "game_count": 12
+    },
+    {
+      "tag": "비주얼 노벨",
+      "game_count": 12
+    },
+    {
+      "tag": "건축",
+      "game_count": 10
+    },
+    {
+      "tag": "격투",
+      "game_count": 10
+    },
+    {
+      "tag": "경쟁",
+      "game_count": 10
+    },
+    {
+      "tag": "레이싱",
+      "game_count": 10
+    },
+    {
+      "tag": "스포츠",
+      "game_count": 10
+    },
+    {
+      "tag": "기지 건설",
+      "game_count": 9
+    },
+    {
+      "tag": "로컬 협동",
+      "game_count": 9
+    },
+    {
+      "tag": "좀비",
+      "game_count": 9
+    },
+    {
+      "tag": "캐릭터 커스터마이징",
+      "game_count": 9
+    },
+    {
+      "tag": "고난도",
+      "game_count": 8
+    },
+    {
+      "tag": "귀여운",
+      "game_count": 8
+    },
+    {
+      "tag": "로그라이트",
+      "game_count": 8
+    },
+    {
+      "tag": "물리엔진",
+      "game_count": 8
+    },
+    {
+      "tag": "운전",
+      "game_count": 8
+    },
+    {
+      "tag": "탄막",
+      "game_count": 8
+    },
+    {
+      "tag": "탐정",
+      "game_count": 8
+    },
+    {
+      "tag": "포스트아포칼립스",
+      "game_count": 8
+    },
+    {
+      "tag": "e스포츠",
+      "game_count": 8
+    },
+    {
+      "tag": "3인칭 슈팅",
+      "game_count": 7
+    },
+    {
+      "tag": "도시건설",
+      "game_count": 7
+    },
+    {
+      "tag": "차량시뮬",
+      "game_count": 7
+    },
+    {
+      "tag": "크래프팅",
+      "game_count": 7
+    },
+    {
+      "tag": "포인트 앤 클릭",
+      "game_count": 7
+    },
+    {
+      "tag": "MMO",
+      "game_count": 7
+    },
+    {
+      "tag": "농장 시뮬레이션",
+      "game_count": 6
+    },
+    {
+      "tag": "리듬",
+      "game_count": 6
+    },
+    {
+      "tag": "리얼리즘",
+      "game_count": 6
+    },
+    {
+      "tag": "생활 시뮬레이션",
+      "game_count": 6
+    },
+    {
+      "tag": "선택이 중요한",
+      "game_count": 6
+    },
+    {
+      "tag": "여성 주인공",
+      "game_count": 6
+    },
+    {
+      "tag": "우주",
+      "game_count": 6
+    },
+    {
+      "tag": "타워 디펜스",
+      "game_count": 6
+    },
+    {
+      "tag": "턴제 전략",
+      "game_count": 6
+    },
+    {
+      "tag": "턴제 전투",
+      "game_count": 6
+    },
+    {
+      "tag": "Rogue-like",
+      "game_count": 6
+    },
+    {
+      "tag": "3인칭",
+      "game_count": 5
+    },
+    {
+      "tag": "고어",
+      "game_count": 5
+    },
+    {
+      "tag": "고전",
+      "game_count": 5
+    },
+    {
+      "tag": "멀티 엔딩",
+      "game_count": 5
+    },
+    {
+      "tag": "메트로배니아",
+      "game_count": 5
+    },
+    {
+      "tag": "밀리터리",
+      "game_count": 5
+    },
+    {
+      "tag": "배틀로얄",
+      "game_count": 5
+    },
+    {
+      "tag": "범죄",
+      "game_count": 5
+    },
+    {
+      "tag": "턴제 전술",
+      "game_count": 5
+    },
+    {
+      "tag": "Card Game",
+      "game_count": 5
+    },
+    {
+      "tag": "Grand Strategy",
+      "game_count": 5
+    },
+    {
+      "tag": "Historical",
+      "game_count": 5
+    },
+    {
+      "tag": "Medieval",
+      "game_count": 5
+    },
+    {
+      "tag": "SF",
+      "game_count": 5
+    },
+    {
+      "tag": "VR",
+      "game_count": 5
+    },
+    {
+      "tag": "2차 세계대전",
+      "game_count": 4
+    },
+    {
+      "tag": "경제",
+      "game_count": 4
+    },
+    {
+      "tag": "로컬 대전",
+      "game_count": 4
+    },
+    {
+      "tag": "루터슈팅",
+      "game_count": 4
+    },
+    {
+      "tag": "벨트스크롤 액션",
+      "game_count": 4
+    },
+    {
+      "tag": "분할 화면",
+      "game_count": 4
+    },
+    {
+      "tag": "아케이드",
+      "game_count": 4
+    },
+    {
+      "tag": "Music",
+      "game_count": 4
+    },
+    {
+      "tag": "Stealth",
+      "game_count": 4
+    },
+    {
+      "tag": "Superhero",
+      "game_count": 4
+    },
+    {
+      "tag": "검술",
+      "game_count": 3
+    },
+    {
+      "tag": "던전 탐험",
+      "game_count": 3
+    },
+    {
+      "tag": "로봇",
+      "game_count": 3
+    },
+    {
+      "tag": "루팅",
+      "game_count": 3
+    },
+    {
+      "tag": "비행",
+      "game_count": 3
+    },
+    {
+      "tag": "신화",
+      "game_count": 3
+    },
+    {
+      "tag": "어두운 분위기",
+      "game_count": 3
+    },
+    {
+      "tag": "캐릭터 커스텀",
+      "game_count": 3
+    },
+    {
+      "tag": "판타지",
+      "game_count": 3
+    },
+    {
+      "tag": "퍼즐 플랫포머",
+      "game_count": 3
+    },
+    {
+      "tag": "Cozy",
+      "game_count": 3
+    },
+    {
+      "tag": "MMORPG",
+      "game_count": 3
+    },
+    {
+      "tag": "RTS",
+      "game_count": 3
+    },
+    {
+      "tag": "Wargame",
+      "game_count": 3
+    },
+    {
+      "tag": "3인칭 슈터",
+      "game_count": 2
+    },
+    {
+      "tag": "3D Fighter",
+      "game_count": 2
+    },
+    {
+      "tag": "군락 시뮬레이션",
+      "game_count": 2
+    },
+    {
+      "tag": "도박",
+      "game_count": 2
+    },
+    {
+      "tag": "마법",
+      "game_count": 2
+    },
+    {
+      "tag": "보드게임",
+      "game_count": 2
+    },
+    {
+      "tag": "분위기 있는",
+      "game_count": 2
+    },
+    {
+      "tag": "불릿 타임",
+      "game_count": 2
+    },
+    {
+      "tag": "사이버펑크",
+      "game_count": 2
+    },
+    {
+      "tag": "선택형 어드벤처",
+      "game_count": 2
+    },
+    {
+      "tag": "수사",
+      "game_count": 2
+    },
+    {
+      "tag": "연애 시뮬",
+      "game_count": 2
+    },
+    {
+      "tag": "요리",
+      "game_count": 2
+    },
+    {
+      "tag": "익스트랙션 슈팅",
+      "game_count": 2
+    },
+    {
+      "tag": "전략 RPG",
+      "game_count": 2
+    },
+    {
+      "tag": "전술 RPG",
+      "game_count": 2
+    },
+    {
+      "tag": "전쟁",
+      "game_count": 2
+    },
+    {
+      "tag": "전투 레이싱",
+      "game_count": 2
+    },
+    {
+      "tag": "축구",
+      "game_count": 2
+    },
+    {
+      "tag": "카드 게임",
+      "game_count": 2
+    },
+    {
+      "tag": "턴제",
+      "game_count": 2
+    },
+    {
+      "tag": "파쿠르",
+      "game_count": 2
+    },
+    {
+      "tag": "히어로슈팅",
+      "game_count": 2
+    },
+    {
+      "tag": "Automation",
+      "game_count": 2
+    },
+    {
+      "tag": "Card Battler",
+      "game_count": 2
+    },
+    {
+      "tag": "Dark Comedy",
+      "game_count": 2
+    },
+    {
+      "tag": "Hunting",
+      "game_count": 2
+    },
+    {
+      "tag": "Idler",
+      "game_count": 2
+    },
+    {
+      "tag": "LEGO",
+      "game_count": 2
+    },
+    {
+      "tag": "Mechs",
+      "game_count": 2
+    },
+    {
+      "tag": "MOBA",
+      "game_count": 2
+    },
+    {
+      "tag": "Real Time Tactics",
+      "game_count": 2
+    },
+    {
+      "tag": "Roguelike Deckbuilder",
+      "game_count": 2
+    },
+    {
+      "tag": "Social Deduction",
+      "game_count": 2
+    },
+    {
+      "tag": "Tabletop",
+      "game_count": 2
+    },
+    {
+      "tag": "1990's",
+      "game_count": 1
+    },
+    {
+      "tag": "2D 격투",
+      "game_count": 1
+    },
+    {
+      "tag": "2D 플랫포머",
+      "game_count": 1
+    },
+    {
+      "tag": "4X",
+      "game_count": 1
+    },
+    {
+      "tag": "가족친화",
+      "game_count": 1
+    },
+    {
+      "tag": "가족코미디",
+      "game_count": 1
+    },
+    {
+      "tag": "그림",
+      "game_count": 1
+    },
+    {
+      "tag": "농장 시뮬",
+      "game_count": 1
+    },
+    {
+      "tag": "닌자",
+      "game_count": 1
+    },
+    {
+      "tag": "대규모 멀티",
+      "game_count": 1
+    },
+    {
+      "tag": "대규모인원",
+      "game_count": 1
+    },
+    {
+      "tag": "등반",
+      "game_count": 1
+    },
+    {
+      "tag": "레트로",
+      "game_count": 1
+    },
+    {
+      "tag": "모드 지원",
+      "game_count": 1
+    },
+    {
+      "tag": "무술",
+      "game_count": 1
+    },
+    {
+      "tag": "무역",
+      "game_count": 1
+    },
+    {
+      "tag": "분위기있는",
+      "game_count": 1
+    },
+    {
+      "tag": "비대칭협동",
+      "game_count": 1
+    },
+    {
+      "tag": "사냥",
+      "game_count": 1
+    },
+    {
+      "tag": "생활 시뮬",
+      "game_count": 1
+    },
+    {
+      "tag": "서부",
+      "game_count": 1
+    },
+    {
+      "tag": "선택이 중요",
+      "game_count": 1
+    },
+    {
+      "tag": "소셜 디덕션",
+      "game_count": 1
+    },
+    {
+      "tag": "수리",
+      "game_count": 1
+    },
+    {
+      "tag": "수중",
+      "game_count": 1
+    },
+    {
+      "tag": "숨바꼭질",
+      "game_count": 1
+    },
+    {
+      "tag": "스릴러",
+      "game_count": 1
+    },
+    {
+      "tag": "스트리머친화",
+      "game_count": 1
+    },
+    {
+      "tag": "영화적",
+      "game_count": 1
+    },
+    {
+      "tag": "위장",
+      "game_count": 1
+    },
+    {
+      "tag": "의사소통",
+      "game_count": 1
+    },
+    {
+      "tag": "익스트랙션 슈터",
+      "game_count": 1
+    },
+    {
+      "tag": "자동화",
+      "game_count": 1
+    },
+    {
+      "tag": "점프맵",
+      "game_count": 1
+    },
+    {
+      "tag": "정치 시뮬레이션",
+      "game_count": 1
+    },
+    {
+      "tag": "카오스",
+      "game_count": 1
+    },
+    {
+      "tag": "카툰",
+      "game_count": 1
+    },
+    {
+      "tag": "컨트롤러",
+      "game_count": 1
+    },
+    {
+      "tag": "크리처 수집",
+      "game_count": 1
+    },
+    {
+      "tag": "타임어택",
+      "game_count": 1
+    },
+    {
+      "tag": "탱크",
+      "game_count": 1
+    },
+    {
+      "tag": "파티 게임",
+      "game_count": 1
+    },
+    {
+      "tag": "해전",
+      "game_count": 1
+    },
+    {
+      "tag": "Aliens",
+      "game_count": 1
+    },
+    {
+      "tag": "Assassin",
+      "game_count": 1
+    },
+    {
+      "tag": "Beautiful",
+      "game_count": 1
+    },
+    {
+      "tag": "Cartoony",
+      "game_count": 1
+    },
+    {
+      "tag": "Clicker",
+      "game_count": 1
+    },
+    {
+      "tag": "Colorful",
+      "game_count": 1
+    },
+    {
+      "tag": "Combat",
+      "game_count": 1
+    },
+    {
+      "tag": "Conversation",
+      "game_count": 1
+    },
+    {
+      "tag": "Creature Collector",
+      "game_count": 1
+    },
+    {
+      "tag": "CRPG",
+      "game_count": 1
+    },
+    {
+      "tag": "Dating Sim",
+      "game_count": 1
+    },
+    {
+      "tag": "Demons",
+      "game_count": 1
+    },
+    {
+      "tag": "Design & Illustration",
+      "game_count": 1
+    },
+    {
+      "tag": "Dwarf",
+      "game_count": 1
+    },
+    {
+      "tag": "Episodic",
+      "game_count": 1
+    },
+    {
+      "tag": "Escape Room",
+      "game_count": 1
+    },
+    {
+      "tag": "Faith",
+      "game_count": 1
+    },
+    {
+      "tag": "Fast-Paced",
+      "game_count": 1
+    },
+    {
+      "tag": "Fishing",
+      "game_count": 1
+    },
+    {
+      "tag": "Football (Soccer)",
+      "game_count": 1
+    },
+    {
+      "tag": "Hacking",
+      "game_count": 1
+    },
+    {
+      "tag": "Hand-drawn",
+      "game_count": 1
+    },
+    {
+      "tag": "Heist",
+      "game_count": 1
+    },
+    {
+      "tag": "Immersive Sim",
+      "game_count": 1
+    },
+    {
+      "tag": "Interactive Fiction",
+      "game_count": 1
+    },
+    {
+      "tag": "Inventory Management",
+      "game_count": 1
+    },
+    {
+      "tag": "Jet",
+      "game_count": 1
+    },
+    {
+      "tag": "Jump Scare",
+      "game_count": 1
+    },
+    {
+      "tag": "LGBTQ+",
+      "game_count": 1
+    },
+    {
+      "tag": "Local Co-Op",
+      "game_count": 1
+    },
+    {
+      "tag": "Loot",
+      "game_count": 1
+    },
+    {
+      "tag": "Lovecraftian",
+      "game_count": 1
+    },
+    {
+      "tag": "Massively Multiplayer",
+      "game_count": 1
+    },
+    {
+      "tag": "Musou",
+      "game_count": 1
+    },
+    {
+      "tag": "Naval Combat",
+      "game_count": 1
+    },
+    {
+      "tag": "Outbreak Sim",
+      "game_count": 1
+    },
+    {
+      "tag": "Parody ",
+      "game_count": 1
+    },
+    {
+      "tag": "Party-Based RPG",
+      "game_count": 1
+    },
+    {
+      "tag": "Pirates",
+      "game_count": 1
+    },
+    {
+      "tag": "Political",
+      "game_count": 1
+    },
+    {
+      "tag": "Procedural Generation",
+      "game_count": 1
+    },
+    {
+      "tag": "Psychological",
+      "game_count": 1
+    },
+    {
+      "tag": "Relaxing",
+      "game_count": 1
+    },
+    {
+      "tag": "Resource Management",
+      "game_count": 1
+    },
+    {
+      "tag": "Romance",
+      "game_count": 1
+    },
+    {
+      "tag": "Science",
+      "game_count": 1
+    },
+    {
+      "tag": "Side Scroller",
+      "game_count": 1
+    },
+    {
+      "tag": "Space Sim",
+      "game_count": 1
+    },
+    {
+      "tag": "Spectacle fighter",
+      "game_count": 1
+    },
+    {
+      "tag": "Stylized",
+      "game_count": 1
+    },
+    {
+      "tag": "Tanks",
+      "game_count": 1
+    },
+    {
+      "tag": "Time Manipulation",
+      "game_count": 1
+    },
+    {
+      "tag": "Time Travel",
+      "game_count": 1
+    },
+    {
+      "tag": "Traditional Roguelike",
+      "game_count": 1
+    },
+    {
+      "tag": "Typing",
+      "game_count": 1
+    },
+    {
+      "tag": "Video Production",
+      "game_count": 1
+    },
+    {
+      "tag": "Villain Protagonist",
+      "game_count": 1
+    },
+    {
+      "tag": "Violent",
+      "game_count": 1
+    },
+    {
+      "tag": "Voice Control",
+      "game_count": 1
+    },
+    {
+      "tag": "Walking Simulator",
+      "game_count": 1
+    },
+    {
+      "tag": "Warhammer 40K",
+      "game_count": 1
+    },
+    {
+      "tag": "Western",
+      "game_count": 1
+    }
+  ]
+}

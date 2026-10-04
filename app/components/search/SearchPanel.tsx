@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import AIRecommend from '../AIRecommend';
 import SearchBox from './SearchBox';
+import TagHelp from './TagHelp';
 import { TAG_GROUPS } from '../../lib/tagGroups';
 import { translateTag } from '../../lib/tagTranslate';
 import type { GameFilters } from '../../lib/useGameFilters';
@@ -75,12 +76,15 @@ export default function SearchPanel({ games, filters }: { games: any[], filters:
               <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 8 }}>카테고리</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {CATEGORIES.map(c => (
-                  <button key={c} onClick={() => setSelectedCategory(selectedCategory === c ? '' : c)} style={{
-                    padding: '6px 14px', borderRadius: 100, fontSize: 15, fontWeight: 600,
-                    border: `1.5px solid ${selectedCategory === c ? 'var(--accent)' : 'var(--border)'}`,
-                    background: selectedCategory === c ? 'var(--accent)' : 'var(--bg)',
-                    color: selectedCategory === c ? '#fff' : 'var(--text)', cursor: 'pointer',
-                  }}>{c}</button>
+                  <span key={c} className="tag-chip-wrap">
+                    <button onClick={() => setSelectedCategory(selectedCategory === c ? '' : c)} style={{
+                      padding: '6px 14px', borderRadius: 100, fontSize: 15, fontWeight: 600,
+                      border: `1.5px solid ${selectedCategory === c ? 'var(--accent)' : 'var(--border)'}`,
+                      background: selectedCategory === c ? 'var(--accent)' : 'var(--bg)',
+                      color: selectedCategory === c ? '#fff' : 'var(--text)', cursor: 'pointer',
+                    }}>{c}</button>
+                    <TagHelp tag={c} />
+                  </span>
                 ))}
               </div>
             </div>
@@ -105,12 +109,15 @@ export default function SearchPanel({ games, filters }: { games: any[], filters:
               <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 8 }}>난이도</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {DIFFICULTY_OPTIONS.map(d => (
-                  <button key={d} onClick={() => setSelectedDifficulty(selectedDifficulty === d ? '' : d)} style={{
-                    padding: '6px 14px', borderRadius: 100, fontSize: 15, fontWeight: 600,
-                    border: `1.5px solid ${selectedDifficulty === d ? 'var(--accent)' : 'var(--border)'}`,
-                    background: selectedDifficulty === d ? 'var(--accent)' : 'var(--bg)',
-                    color: selectedDifficulty === d ? '#fff' : 'var(--text)', cursor: 'pointer',
-                  }}>{d}</button>
+                  <span key={d} className="tag-chip-wrap">
+                    <button onClick={() => setSelectedDifficulty(selectedDifficulty === d ? '' : d)} style={{
+                      padding: '6px 14px', borderRadius: 100, fontSize: 15, fontWeight: 600,
+                      border: `1.5px solid ${selectedDifficulty === d ? 'var(--accent)' : 'var(--border)'}`,
+                      background: selectedDifficulty === d ? 'var(--accent)' : 'var(--bg)',
+                      color: selectedDifficulty === d ? '#fff' : 'var(--text)', cursor: 'pointer',
+                    }}>{d}</button>
+                    <TagHelp tag={d} />
+                  </span>
                 ))}
               </div>
             </div>
@@ -154,15 +161,18 @@ export default function SearchPanel({ games, filters }: { games: any[], filters:
                         )}
                       </button>
                       {expandedGroups.includes(group) && (
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8, paddingLeft: 4 }}>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8, paddingLeft: 4 }}>
                           {availableTags.map(tag => (
-                            <button key={tag} onClick={() => toggleTag(tag)} style={{
-                              padding: '4px 12px', borderRadius: 100, fontSize: 14, fontWeight: 600,
-                              border: `1.5px solid ${selectedTags.includes(tag) ? 'var(--accent)' : 'var(--border)'}`,
-                              background: selectedTags.includes(tag) ? 'rgba(0,113,227,0.1)' : 'var(--bg)',
-                              color: selectedTags.includes(tag) ? 'var(--accent)' : 'var(--text-dim)',
-                              cursor: 'pointer',
-                            }}>{translateTag(tag)}</button>
+                            <span key={tag} className="tag-chip-wrap">
+                              <button onClick={() => toggleTag(tag)} style={{
+                                padding: '6px 14px', borderRadius: 100, fontSize: 15, fontWeight: 600,
+                                border: `1.5px solid ${selectedTags.includes(tag) ? 'var(--accent)' : 'var(--border)'}`,
+                                background: selectedTags.includes(tag) ? 'rgba(0,113,227,0.1)' : 'var(--bg)',
+                                color: selectedTags.includes(tag) ? 'var(--accent-deep)' : 'var(--text-dim)',
+                                cursor: 'pointer',
+                              }}>{translateTag(tag)}</button>
+                              <TagHelp tag={tag} />
+                            </span>
                           ))}
                         </div>
                       )}

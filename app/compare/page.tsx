@@ -377,7 +377,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
                     background: 'var(--bg)', borderRadius: 8,
                     padding: '8px 10px', fontSize: 15, color: 'var(--text)', fontWeight: 500,
                   }}>
-                    <div style={{ fontSize: 13, color: 'var(--text-dimmer)', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    <div style={{ fontSize: 'var(--fs-sub)', color: 'var(--text-dimmer)', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {g.name}
                     </div>
                     {row.render ? row.render(g) : (g[row.key!] || '-')}

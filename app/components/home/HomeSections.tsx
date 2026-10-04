@@ -28,7 +28,7 @@ export default function HomeSections({ games, hotTabs, weekly, popularPosts = []
               <div className="hero-content">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span className="hero-badge">🔥 이번주의 게임</span>
-                  {featured.weekLabel && <span style={{ fontSize: 12, color: 'var(--text-dimmer)' }}>{featured.weekLabel}</span>}
+                  {featured.weekLabel && <span style={{ fontSize: 'var(--fs-sub)', color: 'var(--text-dimmer)' }}>{featured.weekLabel}</span>}
                 </div>
                 <h2>{featured.name}</h2>
                 <p className="hero-tagline">이번주에 가장 인기있던 작품, 친구들하고 어때요?</p>

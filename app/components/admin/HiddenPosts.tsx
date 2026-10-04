@@ -27,15 +27,15 @@ export default function HiddenPosts() {
     load();
   };
 
-  if (!data) return <p style={{ color: '#888' }}>불러오는 중...</p>;
+  if (!data) return <p style={{ color: 'var(--text-dim)' }}>불러오는 중...</p>;
 
   const list = (title: string, items: Item[], type: Kind) => (
     <section style={{ marginBottom: 32 }}>
       <h3 style={{ fontWeight: 800, fontSize: 17, marginBottom: 12 }}>{title} ({items.length})</h3>
-      {items.length === 0 && <p style={{ color: '#888', fontSize: 15 }}>없어요</p>}
+      {items.length === 0 && <p style={{ color: 'var(--text-dim)', fontSize: 15 }}>없어요</p>}
       {items.map((it) => (
         <div key={it.id} style={card}>
-          <div style={{ fontSize: 13, color: '#888', marginBottom: 6 }}>
+          <div style={{ fontSize: 'var(--fs-sub)', color: 'var(--text-dim)', marginBottom: 6 }}>
             #{it.id} · {it.board || (it.game_id ? `${it.games?.name || '게임'} 의견` : `글 #${it.post_id}의 댓글`)} · {it.nickname} · 신고 {it.report_count}회 · {new Date(it.created_at).toLocaleString('ko-KR')}
           </div>
           {it.title && <div style={{ fontWeight: 700, marginBottom: 4 }}>{it.title}</div>}

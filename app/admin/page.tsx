@@ -141,7 +141,7 @@ export default function AdminPage() {
       {/* 편집 패널 */}
       <div style={{ flex: 1, padding: 32, overflowY: 'auto' }}>
         {!selected ? (
-          <p style={{ color: '#888' }}>왼쪽에서 게임을 선택하세요</p>
+          <p style={{ color: 'var(--text-dim)' }}>왼쪽에서 게임을 선택하세요</p>
         ) : (
           <div style={{ maxWidth: 600 }}>
             <h2 style={{ fontWeight: 800, marginBottom: 24 }}>{selected.name}</h2>

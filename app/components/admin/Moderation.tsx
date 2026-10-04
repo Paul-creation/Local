@@ -72,13 +72,13 @@ export default function Moderation({ initial = 'reports' }: { initial?: ModTab }
       {tab === 'hidden' && <HiddenPosts />}
 
       {tab === 'reports' && (
-        !reports ? <p style={{ color: '#888' }}>불러오는 중...</p> :
-        reports.length === 0 ? <p style={{ color: '#888', fontSize: 15 }}>처리할 신고가 없어요</p> :
+        !reports ? <p style={{ color: 'var(--text-dim)' }}>불러오는 중...</p> :
+        reports.length === 0 ? <p style={{ color: 'var(--text-dim)', fontSize: 15 }}>처리할 신고가 없어요</p> :
         reports.map((r) => {
           const link = targetLink(r);
           return (
             <div key={`${r.type}:${r.id}`} style={card}>
-              <div style={{ fontSize: 13, color: '#888', marginBottom: 6 }}>
+              <div style={{ fontSize: 'var(--fs-sub)', color: 'var(--text-dim)', marginBottom: 6 }}>
                 {TYPE_LABEL[r.type]} #{r.id} · 신고 {r.count}건 · 최근 {when(r.latest)}
                 {r.target?.hidden && <b style={{ color: '#d64545' }}> · 숨김 중</b>}
                 {!r.target && <b> · 이미 삭제됨</b>}
@@ -98,16 +98,16 @@ export default function Moderation({ initial = 'reports' }: { initial?: ModTab }
       )}
 
       {tab === 'feedback' && (
-        !feedback ? <p style={{ color: '#888' }}>불러오는 중...</p> : (
+        !feedback ? <p style={{ color: 'var(--text-dim)' }}>불러오는 중...</p> : (
           <>
             <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 14, marginBottom: 12 }}>
               <input type="checkbox" checked={showResolved} onChange={(e) => setShowResolved(e.target.checked)} />
               처리 완료한 의견도 보기
             </label>
-            {(showResolved ? feedback : openFeedback).length === 0 && <p style={{ color: '#888', fontSize: 15 }}>새 의견이 없어요</p>}
+            {(showResolved ? feedback : openFeedback).length === 0 && <p style={{ color: 'var(--text-dim)', fontSize: 15 }}>새 의견이 없어요</p>}
             {(showResolved ? feedback : openFeedback).map((f) => (
               <div key={f.id} style={{ ...card, opacity: f.resolved_at ? 0.6 : 1 }}>
-                <div style={{ fontSize: 13, color: '#888', marginBottom: 6 }}>
+                <div style={{ fontSize: 'var(--fs-sub)', color: 'var(--text-dim)', marginBottom: 6 }}>
                   #{f.id} · <b style={{ color: '#16202b' }}>{FEEDBACK_KINDS[f.kind] || f.kind}</b> · {when(f.created_at)}
                   {f.page_url && <> · 보낸 곳 <a href={f.page_url} target="_blank" rel="noreferrer" style={{ color: '#0071e3' }}>{f.page_url}</a></>}
                   {f.resolved_at && <> · 처리 완료 {when(f.resolved_at)}</>}

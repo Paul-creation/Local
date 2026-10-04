@@ -106,6 +106,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
     new Set(translateGenres([...(game.genres || []), ...(game.themes || [])]))
   ).slice(0, 10);
   const platformCategories = getPlatformCategories(game.platform);
+  // 나무위키 검색 이동 — 한국어 이름(search_name_ko의 첫 번째)이 없으면 영문 이름
+  const namuQuery = String(game.search_name_ko || '').split(',')[0].trim() || game.name;
+  const namuUrl = `https://namu.wiki/Go?q=${encodeURIComponent(namuQuery)}`;
 
   return (
     <main className="page">
@@ -145,6 +148,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             </span>
           )}
           {game.category && <span className="badge-neutral">{game.category}</span>}
+          <a href={namuUrl} target="_blank" rel="noopener nofollow" className="namu-link">나무위키 ↗</a>
         </div>
         {game.tags?.length > 0 && (
           <div className="main-tag-row">
