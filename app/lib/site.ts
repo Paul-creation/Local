@@ -1,9 +1,10 @@
 // 사이트 이름·대표 주소·연락처는 여기서만 정한다. 바꿀 땐 Vercel 환경변수만 바꾸고 다시 배포
 // (NEXT_PUBLIC_* 값은 빌드할 때 코드에 박히므로 환경변수를 바꾼 뒤 재배포해야 반영됨)
-// 영어 이름은 화면 헤더·로고에, 한국어 이름은 검색용(<title>·OG·설명·구조화 데이터)에 같이 씀
+// 화면·<title>·OG·설명에는 영어 이름만 씀. 한국어 이름은 발음으로 스스로 알아채게 하려고 화면에 안 보이게 둠
+// SITE_NAME_KO는 구조화 데이터 alternateName(화면에 안 보임)과 커뮤니티 닉네임 금지 목록에만 씀
 export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'JamiDuNow';
 export const SITE_NAME_KO = process.env.NEXT_PUBLIC_SITE_NAME_KO || '재밌드나';
-export const SITE_NAME_FULL = `${SITE_NAME} | ${SITE_NAME_KO}`;
+export const SITE_NAME_FULL = SITE_NAME;
 // 구조화 데이터(WebSite) alternateName — 검색에서 이 이름들로도 사이트를 찾게
 export const SITE_ALT_NAMES = [SITE_NAME_KO, 'JDN'];
 export const SITE_TITLE = `${SITE_NAME_FULL} - 친구랑 할 게임 찾기`;
@@ -16,5 +17,5 @@ export const BASE_OG = { siteName: SITE_NAME_FULL, locale: 'ko_KR', type: 'websi
 export const CONTACT_EMAIL = (process.env.NEXT_PUBLIC_CONTACT_EMAIL || '').trim();
 export const CONTACT_TEXT = CONTACT_EMAIL || '준비 중';
 export const SITE_DESCRIPTION = '친구들이랑 뭐 할지 고민될 때 — 인원·난이도·가격·할인까지 한눈에 비교하는 게임 정보 사이트';
-// <meta description>·OG 설명용 (한국어 이름 포함)
-export const SITE_META_DESCRIPTION = `${SITE_NAME_KO}(${SITE_NAME}): ${SITE_DESCRIPTION}`;
+// <meta description>·OG 설명용
+export const SITE_META_DESCRIPTION = `${SITE_NAME}: ${SITE_DESCRIPTION}`;

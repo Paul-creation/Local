@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { SITE_NAME, SITE_NAME_KO, SITE_NAME_FULL, SITE_ALT_NAMES, SITE_URL, BASE_OG } from '../lib/site';
+import { SITE_NAME, SITE_NAME_FULL, SITE_ALT_NAMES, SITE_URL, BASE_OG } from '../lib/site';
 import { LARGE_LOBBY } from '../lib/players';
 
 export const metadata: Metadata = {
   title: '자주 묻는 질문',
-  description: `${SITE_NAME_KO}(${SITE_NAME})의 인원 기준, 가격 갱신 주기, 역대 최저가 뜻, 커뮤니티 비밀번호 분실, 정보 오류 제보 방법을 정리했어요.`,
+  description: `${SITE_NAME}의 인원 기준, 가격 갱신 주기, 역대 최저가 뜻, 커뮤니티 비밀번호 분실, 정보 오류 제보 방법을 정리했어요.`,
   alternates: { canonical: '/faq' },
   openGraph: { ...BASE_OG, title: `자주 묻는 질문 · ${SITE_NAME_FULL}`, url: '/faq' },
 };
