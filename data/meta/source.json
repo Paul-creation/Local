@@ -1,6 +1,6 @@
 {
   "exported_at": "2026-10-04",
-  "count": 606,
+  "count": 663,
   "games": [
     {
       "id": "00ea1e6e-f526-40b5-8e12-e42c33ec53da",
@@ -241,6 +241,15 @@
         "가족코미디"
       ],
       "heat_rank": 1325
+    },
+    {
+      "id": "079ebccc-0910-474b-9c29-4a9b0f993a26",
+      "name": "REMNANT II®",
+      "name_ko": null,
+      "steam_appid": "1282100",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
     },
     {
       "id": "08774d8d-b8eb-4408-8fd2-a15c11eda535",
@@ -653,6 +662,15 @@
       "heat_rank": null
     },
     {
+      "id": "17f37e06-70f7-4d97-9ec0-877c7e907eab",
+      "name": "Balatro",
+      "name_ko": null,
+      "steam_appid": "2379780",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "18392403-ff9e-4892-bc2e-6ed00f6ca71b",
       "name": "BIOHAZARD RE:3",
       "name_ko": "바이오해저드 RE:3",
@@ -678,6 +696,15 @@
         "물리엔진",
         "저사양"
       ],
+      "heat_rank": null
+    },
+    {
+      "id": "18770660-8785-4b5a-bb72-2218babef428",
+      "name": "Barotrauma",
+      "name_ko": null,
+      "steam_appid": "602960",
+      "release_year": null,
+      "tags": [],
       "heat_rank": null
     },
     {
@@ -866,6 +893,15 @@
       "heat_rank": 73
     },
     {
+      "id": "1c992d46-79b1-4c56-8172-6c068a17515f",
+      "name": "NieR:Automata™",
+      "name_ko": null,
+      "steam_appid": "524220",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "1cef4185-7412-437c-aedd-2377b71de0de",
       "name": "The Elder Scrolls® Online",
       "name_ko": "엘더스크롤 온라인",
@@ -878,6 +914,15 @@
         "저사양"
       ],
       "heat_rank": 626
+    },
+    {
+      "id": "1d5f0be9-33c1-4ae9-a80e-d419aafa0a79",
+      "name": "Devil May Cry 5",
+      "name_ko": null,
+      "steam_appid": "601150",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
     },
     {
       "id": "1d62a733-dd16-4dd5-a8e1-6e29c4f0a147",
@@ -1249,6 +1294,15 @@
         "루터슈팅",
         "3인칭 슈팅"
       ],
+      "heat_rank": null
+    },
+    {
+      "id": "267c9472-52e0-4c1b-ab97-6d904c8fd123",
+      "name": "Grounded",
+      "name_ko": null,
+      "steam_appid": "962130",
+      "release_year": null,
+      "tags": [],
       "heat_rank": null
     },
     {
@@ -1948,6 +2002,24 @@
       "heat_rank": 1987
     },
     {
+      "id": "420c7908-cc5a-40c1-bbe4-b34e3afa4fba",
+      "name": "스타워즈 제다이: 서바이버™",
+      "name_ko": null,
+      "steam_appid": "1774580",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
+      "id": "420ffdae-aae6-4f74-baf0-f944af658b31",
+      "name": "Golf With Your Friends",
+      "name_ko": null,
+      "steam_appid": "431240",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "4228c5f5-38e7-4c6c-b891-b7f12f2733be",
       "name": "DEAD OR ALIVE Xtreme Venus Vacation",
       "name_ko": "데드 오어 얼라이브 익스트림 비너스 바케이션",
@@ -2038,6 +2110,15 @@
         "시뮬레이션",
         "경영"
       ],
+      "heat_rank": null
+    },
+    {
+      "id": "4403144f-f55a-4661-ab5f-300926051e4b",
+      "name": "Hollow Knight",
+      "name_ko": null,
+      "steam_appid": "367520",
+      "release_year": null,
+      "tags": [],
       "heat_rank": null
     },
     {
@@ -2333,6 +2414,15 @@
       "heat_rank": null
     },
     {
+      "id": "4c58938d-179b-4f98-81a4-7446f7557ec9",
+      "name": "플레이트업!",
+      "name_ko": null,
+      "steam_appid": "1599600",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "4c85366b-37bd-475d-b9d9-d1f98ed0d5e2",
       "name": "Soulmask",
       "name_ko": "소울마스크",
@@ -2586,6 +2676,15 @@
       "heat_rank": 3233
     },
     {
+      "id": "5466f838-af36-4ead-bf66-f83c40ddde95",
+      "name": "귀무자（Onimusha: Warlords）",
+      "name_ko": null,
+      "steam_appid": "761600",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "5480b90b-49ce-4dab-95d0-44666cf9b77c",
       "name": "옥토패스 트래블러 II",
       "name_ko": "옥토패스 트래블러 II",
@@ -2635,6 +2734,15 @@
         "시뮬레이션",
         "전략"
       ],
+      "heat_rank": null
+    },
+    {
+      "id": "54f4afa8-b1d8-44e0-a05d-c639962bde29",
+      "name": "HITMAN World of Assassination",
+      "name_ko": null,
+      "steam_appid": "1659040",
+      "release_year": null,
+      "tags": [],
       "heat_rank": null
     },
     {
@@ -3091,6 +3199,15 @@
       "heat_rank": 1274
     },
     {
+      "id": "63581782-1019-4081-a644-2ea3cad092dd",
+      "name": "보더랜드 3",
+      "name_ko": null,
+      "steam_appid": "397540",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "63851d82-e181-429c-b0b3-e2993f5b9fe2",
       "name": "KINGDOM HEARTS -HD 1.5+2.5 ReMIX-",
       "name_ko": "킹덤 하츠 HD",
@@ -3103,6 +3220,15 @@
         "저사양"
       ],
       "heat_rank": 890
+    },
+    {
+      "id": "63ee80e5-fe19-4f22-a40b-b1cf683d902d",
+      "name": "SILENT HILL 2",
+      "name_ko": null,
+      "steam_appid": "2124490",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
     },
     {
       "id": "6415b53f-8386-400e-b69a-8e6bdb7de105",
@@ -3198,6 +3324,15 @@
       "heat_rank": null
     },
     {
+      "id": "67b21756-f674-4f1f-826d-705633ff1b0c",
+      "name": "얼티밋 치킨 호스",
+      "name_ko": null,
+      "steam_appid": "386940",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "6993c4f4-2fcf-4ed9-af78-c95dd15ec625",
       "name": "죠죠의 기묘한 모험 올 스타 배틀 R",
       "name_ko": "죠죠의 기묘한 모험 올 스타 배틀 R",
@@ -3234,6 +3369,15 @@
         "벨트스크롤 액션",
         "샌드박스"
       ],
+      "heat_rank": null
+    },
+    {
+      "id": "6a9de491-e762-4fe2-a50f-c9a25b6e0281",
+      "name": "Gang Beasts",
+      "name_ko": null,
+      "steam_appid": "285900",
+      "release_year": null,
+      "tags": [],
       "heat_rank": null
     },
     {
@@ -3367,6 +3511,24 @@
         "핵앤슬래시",
         "다크 판타지"
       ],
+      "heat_rank": null
+    },
+    {
+      "id": "6ec165c8-c66d-40f8-be28-651713845c45",
+      "name": "Overcooked! All You Can Eat",
+      "name_ko": null,
+      "steam_appid": "1243830",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
+      "id": "6fd162c2-d35f-4791-855a-6ad468e2f073",
+      "name": "Overcooked! 2",
+      "name_ko": null,
+      "steam_appid": "728880",
+      "release_year": null,
+      "tags": [],
       "heat_rank": null
     },
     {
@@ -3579,6 +3741,15 @@
         "저사양"
       ],
       "heat_rank": 1713
+    },
+    {
+      "id": "75e81090-e3b1-46f1-8dc0-abee27429193",
+      "name": "Horizon Zero Dawn™ 리마스터",
+      "name_ko": null,
+      "steam_appid": "2561580",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
     },
     {
       "id": "76883124-2331-44a0-a5d3-6a43f6c26f65",
@@ -3876,6 +4047,15 @@
       "heat_rank": null
     },
     {
+      "id": "803dbf32-98ef-4e4f-8a4d-ae1e65fac8c0",
+      "name": "Disco Elysium - The Final Cut",
+      "name_ko": null,
+      "steam_appid": "632470",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "80b77e18-b468-456a-9692-ef7246fb41f5",
       "name": "위스퍼 오브 더 하우스: 잠꼬대마을 이야기",
       "name_ko": "위스퍼 오브 더 하우스: 잠꼬대마을 이야기",
@@ -4018,6 +4198,15 @@
       "heat_rank": 2169
     },
     {
+      "id": "84d50f3f-83d8-4e91-9269-9cddcf89d516",
+      "name": "Party Animals",
+      "name_ko": null,
+      "steam_appid": "1260320",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "84fe79e5-4e1f-441f-bb32-2cb97c650a41",
       "name": "슈퍼로봇대전 Y",
       "name_ko": "슈퍼로봇대전 Y",
@@ -4111,6 +4300,24 @@
       "heat_rank": 2561
     },
     {
+      "id": "87243963-2403-4eaf-9251-c6d36deb0d92",
+      "name": "Shadow of the Tomb Raider: Definitive Edition",
+      "name_ko": null,
+      "steam_appid": "750920",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
+      "id": "872cffe0-8d18-4355-a337-3801affa3f4d",
+      "name": "페르시아의 왕자: 잃어버린 왕관",
+      "name_ko": null,
+      "steam_appid": "2751000",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "878fe6a2-ae59-4ce2-8e27-88882849ea14",
       "name": "Brotato",
       "name_ko": "브로타토",
@@ -4135,6 +4342,15 @@
         "어드벤처"
       ],
       "heat_rank": 2441
+    },
+    {
+      "id": "87f009ff-cd54-42b3-965c-2bf47334aa0b",
+      "name": "FINAL FANTASY VII REBIRTH",
+      "name_ko": null,
+      "steam_appid": "2909400",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
     },
     {
       "id": "8841f606-19eb-4d38-92ea-0cf2c9e4e51e",
@@ -4204,6 +4420,24 @@
       "heat_rank": null
     },
     {
+      "id": "89a0da47-4f84-4c7f-a218-a3ff08063650",
+      "name": "Warhammer 40,000: Darktide",
+      "name_ko": null,
+      "steam_appid": "1361210",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
+      "id": "89f4e81e-5eb1-4565-8fa5-323c270cdafc",
+      "name": "Hollow Knight: Silksong",
+      "name_ko": null,
+      "steam_appid": "1030300",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "8a227a2b-4aed-4063-b9e6-9eac1218da69",
       "name": "Rocket Rats",
       "name_ko": "로켓 랫츠",
@@ -4227,6 +4461,15 @@
         "시뮬레이션",
         "전략"
       ],
+      "heat_rank": null
+    },
+    {
+      "id": "8aed863e-c320-4859-b02b-317c0bc2d16d",
+      "name": "FINAL FANTASY XVI",
+      "name_ko": null,
+      "steam_appid": "2515020",
+      "release_year": null,
+      "tags": [],
       "heat_rank": null
     },
     {
@@ -4280,6 +4523,15 @@
         "캐주얼"
       ],
       "heat_rank": 2624
+    },
+    {
+      "id": "8d272ae5-865b-45e6-adb7-ae20ee40dd19",
+      "name": "어쌔신 크리드 섀도우스",
+      "name_ko": null,
+      "steam_appid": "3159330",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
     },
     {
       "id": "8d8b426a-58b7-42f8-9350-79ca6572fdef",
@@ -4655,6 +4907,15 @@
       "heat_rank": 780
     },
     {
+      "id": "98727c81-e03f-4782-bc49-da48b9969b55",
+      "name": "Chained Together",
+      "name_ko": null,
+      "steam_appid": "2567870",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "98839188-a8cb-4cdd-bd73-a5c55af9499f",
       "name": "데이브 더 다이버",
       "name_ko": "데이브 더 다이버",
@@ -4733,6 +4994,15 @@
         "전략"
       ],
       "heat_rank": 3188
+    },
+    {
+      "id": "9adf9b2f-26f9-4c94-976c-a1d64f09bef6",
+      "name": "METAL GEAR SOLID Δ: SNAKE EATER",
+      "name_ko": null,
+      "steam_appid": "2417610",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
     },
     {
       "id": "9b4003c0-6f2c-41be-ad5a-2e70e0757c93",
@@ -4890,6 +5160,15 @@
       "heat_rank": null
     },
     {
+      "id": "9ee5b0ac-76ec-49a0-b6df-bedf8d5bd131",
+      "name": "Hades",
+      "name_ko": null,
+      "steam_appid": "1145360",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "9ee6d964-30b7-4159-80b5-17276bfc0aa0",
       "name": "Inside the Backrooms",
       "name_ko": "인사이드 더 백룸스",
@@ -4979,6 +5258,15 @@
         "캐주얼",
         "시뮬레이션"
       ],
+      "heat_rank": null
+    },
+    {
+      "id": "9fef77ac-cc4a-4210-9104-ed821fc1c4e2",
+      "name": "Moving Out",
+      "name_ko": null,
+      "steam_appid": "996770",
+      "release_year": null,
+      "tags": [],
       "heat_rank": null
     },
     {
@@ -5354,6 +5642,15 @@
       "heat_rank": null
     },
     {
+      "id": "b1d379ad-077e-4540-ad87-79dfe7d4a74a",
+      "name": "Stick Fight: The Game",
+      "name_ko": null,
+      "steam_appid": "674940",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "b20e97c4-bda1-498a-ad64-7b33e88aeb54",
       "name": "DOOM Eternal",
       "name_ko": "둠 이터널",
@@ -5528,6 +5825,15 @@
       "heat_rank": null
     },
     {
+      "id": "b8d49271-f1a5-4363-8a69-064b0322febd",
+      "name": "인디아나 존스: 그레이트 서클 ",
+      "name_ko": null,
+      "steam_appid": "2677660",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "b91af7f9-2f46-4ba8-9109-cc53041df387",
       "name": "God of War",
       "name_ko": "갓 오브 워",
@@ -5565,6 +5871,15 @@
         "경쟁",
         "e스포츠"
       ],
+      "heat_rank": null
+    },
+    {
+      "id": "bbbaf28e-fcef-40fd-8f42-8295ed432aa8",
+      "name": "용과 같이8",
+      "name_ko": null,
+      "steam_appid": "2072450",
+      "release_year": null,
+      "tags": [],
       "heat_rank": null
     },
     {
@@ -5616,6 +5931,15 @@
         "시뮬레이션"
       ],
       "heat_rank": 3052
+    },
+    {
+      "id": "bc7fe1a3-1fea-4155-9f61-0d4ad753c8c7",
+      "name": "BIOHAZARD 7 resident evil",
+      "name_ko": null,
+      "steam_appid": "418370",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
     },
     {
       "id": "bd26f056-e4fe-40c0-a95f-b3b8afc004d2",
@@ -5670,6 +5994,15 @@
         "저사양"
       ],
       "heat_rank": 2271
+    },
+    {
+      "id": "befb6ab2-ff65-46be-8d2a-f9f8c30e6edc",
+      "name": "Cuphead",
+      "name_ko": null,
+      "steam_appid": "268910",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
     },
     {
       "id": "befd35f9-638b-4ea9-b35a-f76d0a1cff02",
@@ -6097,6 +6430,15 @@
       "heat_rank": null
     },
     {
+      "id": "c8a4f52f-05e8-4eab-bf18-e7cd07c233be",
+      "name": "인슈라오디드 (Enshrouded)",
+      "name_ko": null,
+      "steam_appid": "1203620",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "c9bcb0bc-8216-4e7c-b8b7-3267d7b868f1",
       "name": "Escape from Duckov 逃离鸭科夫",
       "name_ko": "이스케이프 프롬 덕코프",
@@ -6215,6 +6557,15 @@
         "액션"
       ],
       "heat_rank": 3450
+    },
+    {
+      "id": "cd5d093a-5b29-4c7b-acf8-2c5ba00d3085",
+      "name": "DEATH STRANDING DIRECTOR'S CUT",
+      "name_ko": null,
+      "steam_appid": "1850570",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
     },
     {
       "id": "cd6de27e-fcbc-41c7-a939-bb54c7ea63e5",
@@ -6520,6 +6871,24 @@
       "heat_rank": 3063
     },
     {
+      "id": "d801809a-97af-46dc-aef1-f546388da497",
+      "name": "Hades II",
+      "name_ko": null,
+      "steam_appid": "1145350",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
+      "id": "d811d609-93c1-4888-a319-768c02add3c4",
+      "name": "Pizza Tower",
+      "name_ko": null,
+      "steam_appid": "2231450",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "d99f07f9-0df7-4052-801c-e4432b982ee6",
       "name": "Red Matter",
       "name_ko": "레드 매터",
@@ -6583,6 +6952,15 @@
         "탐정",
         "비주얼 노벨"
       ],
+      "heat_rank": null
+    },
+    {
+      "id": "daeab701-4801-4b29-bd75-e68d336360f0",
+      "name": "Sea of Stars: Sunset Edition",
+      "name_ko": null,
+      "steam_appid": "1244090",
+      "release_year": null,
+      "tags": [],
       "heat_rank": null
     },
     {
@@ -6704,6 +7082,15 @@
       "heat_rank": 3187
     },
     {
+      "id": "deb9dc26-a2aa-4eaa-8425-f9f54852bad0",
+      "name": "Sea of Thieves: 2026 Edition",
+      "name_ko": null,
+      "steam_appid": "1172620",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "decc9a2d-8617-448d-8415-daf0a7cd8029",
       "name": "붉은사막 Enhanced",
       "name_ko": "붉은사막 Enhanced",
@@ -6807,6 +7194,15 @@
       "heat_rank": null
     },
     {
+      "id": "e1e2b35e-1671-4b4f-99f6-20213b27ca6c",
+      "name": "UNCHARTED™: 레거시 오브 시브즈 컬렉션",
+      "name_ko": null,
+      "steam_appid": "1659420",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "e24ae059-3266-4d4c-9ab5-d36670867082",
       "name": "A Way Out",
       "name_ko": "어웨이 아웃",
@@ -6871,6 +7267,15 @@
         "저사양"
       ],
       "heat_rank": 3155
+    },
+    {
+      "id": "e3b980a6-1db5-4265-9f84-f1f87d2970c6",
+      "name": "BIOHAZARD RE:2",
+      "name_ko": null,
+      "steam_appid": "883710",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
     },
     {
       "id": "e3c0f76c-b364-49fe-ba19-a26381225a2e",
@@ -7110,6 +7515,15 @@
       "heat_rank": 591
     },
     {
+      "id": "e9b91f01-d2fc-41fc-a4a3-dcb0d45361c7",
+      "name": "It Takes Two",
+      "name_ko": null,
+      "steam_appid": "1426210",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "ea0b5deb-cf65-477b-9046-6cc32092a79d",
       "name": "Tactics Ogre: Reborn",
       "name_ko": "택틱스 오그레 리본",
@@ -7257,6 +7671,15 @@
       "heat_rank": null
     },
     {
+      "id": "edab7894-c714-4d36-8d67-1ea92581996c",
+      "name": "FINAL FANTASY VII REMAKE INTERGRADE",
+      "name_ko": null,
+      "steam_appid": "1462040",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "ee753035-53f1-4c35-8d4f-974f295ebcc8",
       "name": "Berry Bury Berry",
       "name_ko": "베리 베리 베리",
@@ -7336,6 +7759,15 @@
       "heat_rank": null
     },
     {
+      "id": "f092fe32-8c0d-488c-b758-5517cd5f515f",
+      "name": "Celeste",
+      "name_ko": null,
+      "steam_appid": "504230",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "f0a94612-e40e-4077-b527-244030a802fb",
       "name": "프린세스 메이커 : 예언의 아이들",
       "name_ko": "프린세스 메이커 : 예언의 아이들",
@@ -7346,6 +7778,15 @@
         "시뮬레이션"
       ],
       "heat_rank": 3281
+    },
+    {
+      "id": "f0d8b6a0-8a6f-4c0a-a7a9-bb87835140b6",
+      "name": "Unrailed!",
+      "name_ko": null,
+      "steam_appid": "1016920",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
     },
     {
       "id": "f1022fd9-20bb-48e8-8ff9-89ef8f639390",
@@ -7494,6 +7935,15 @@
       "heat_rank": null
     },
     {
+      "id": "f4577632-695a-4f8f-9478-de91adbc6c3f",
+      "name": "Ori and the Blind Forest: Definitive Edition",
+      "name_ko": null,
+      "steam_appid": "387290",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "f45ca6a3-9890-4f71-8868-941ae102ea90",
       "name": "두 사람의 여름의 소리",
       "name_ko": "두 사람의 여름의 소리",
@@ -7503,6 +7953,24 @@
         "저사양",
         "캐주얼"
       ],
+      "heat_rank": null
+    },
+    {
+      "id": "f47e9272-7b6f-4016-99fa-bc6f9636edec",
+      "name": "DEVOUR",
+      "name_ko": null,
+      "steam_appid": "1274570",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
+      "id": "f547edb5-7eab-48a9-afa6-f16ad97bb86a",
+      "name": "Warhammer: Vermintide 2",
+      "name_ko": null,
+      "steam_appid": "552500",
+      "release_year": null,
+      "tags": [],
       "heat_rank": null
     },
     {
@@ -7529,6 +7997,15 @@
         "액션",
         "시뮬레이션"
       ],
+      "heat_rank": null
+    },
+    {
+      "id": "f5db4d61-d161-469d-9d78-3d0d72674881",
+      "name": "Outer Wilds",
+      "name_ko": null,
+      "steam_appid": "753640",
+      "release_year": null,
+      "tags": [],
       "heat_rank": null
     },
     {
@@ -7612,6 +8089,15 @@
       "heat_rank": 3251
     },
     {
+      "id": "f7587927-b84f-424f-9797-a8e3985cc5c0",
+      "name": "Lovers in a Dangerous Spacetime",
+      "name_ko": null,
+      "steam_appid": "252110",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "f80995d9-dc96-43b0-92e5-945aae36d590",
       "name": "The Planet Crafter",
       "name_ko": "더 플래닛 크래프터",
@@ -7675,6 +8161,15 @@
         "던전 탐험"
       ],
       "heat_rank": 1597
+    },
+    {
+      "id": "f8d58d2a-054a-47b1-9de7-9fc8927354a0",
+      "name": "Portal 2",
+      "name_ko": null,
+      "steam_appid": "620",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
     },
     {
       "id": "f8ed4a93-db39-42db-916f-c5da556776cf",
@@ -7877,6 +8372,15 @@
       "heat_rank": 276
     },
     {
+      "id": "fce3db70-2a91-4d71-a023-8c83a1834acf",
+      "name": "Deep Rock Galactic",
+      "name_ko": null,
+      "steam_appid": "548430",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
+    },
+    {
       "id": "fd4e2d5b-9ae1-4c2b-8cae-36fd1e003f7b",
       "name": "Romance of the Three Kingdoms XI with Power Up Kit",
       "name_ko": "삼국지11",
@@ -7901,6 +8405,15 @@
         "로컬 협동"
       ],
       "heat_rank": 3369
+    },
+    {
+      "id": "fdb1e9de-616a-4cfd-9ce6-13ece59915d7",
+      "name": "메타포: 리판타지오",
+      "name_ko": null,
+      "steam_appid": "2679460",
+      "release_year": null,
+      "tags": [],
+      "heat_rank": null
     },
     {
       "id": "fde27465-4bf6-42a4-800f-06c68edd3335",
