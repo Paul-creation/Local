@@ -20,7 +20,7 @@ export default function YouTubeLite({ url, title, fallbackImage }: { url: string
   // 영상이 없거나 삭제됐으면 사진으로 대신 (사진도 없으면 아무것도 안 보여줌)
   if (!id || thumbFailed) {
     return fallbackImage
-      ? <GameImage src={fallbackImage} sizes="(max-width: 1200px) 100vw, 1200px" fallbackWidth={1280} alt={title} style={{ width: '100%', display: 'block', borderRadius: 12 }} />
+      ? <GameImage src={fallbackImage} fallbackWidth={1280} alt={title} style={{ width: '100%', display: 'block', borderRadius: 12 }} />
       : null;
   }
 

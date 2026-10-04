@@ -139,7 +139,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </div>
       ) : (
         <div className="detail-hero">
-          <GameImage src={game.hero_image_url || game.card_image_url || game.cover_image_url} sizes="(max-width: 1200px) 100vw, 1200px" fallbackWidth={1280} alt={game.name} />
+          <GameImage src={game.hero_image_url || game.card_image_url || game.cover_image_url} fallbackWidth={1280} alt={game.name} />
         </div>
       )}
       {/* 제목 + 평가 배지 + 태그 + 설명 */}
@@ -412,7 +412,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               const current = s.id === game.id;
               const inner = (
                 <>
-                  <GameImage src={s.card_image_url || s.cover_image_url} sizes="240px" loading="lazy" />
+                  <GameImage src={s.card_image_url || s.cover_image_url} steamSize="header_292x136" loading="lazy" />
                   <span className="series-name">{s.name}</span>
                 </>
               );

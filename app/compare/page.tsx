@@ -249,7 +249,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
               overflow: 'hidden', border: '1px solid var(--border-light)',
               boxShadow: 'var(--shadow-sm)',
             }}>
-              <GameImage src={g.card_image_url || g.cover_image_url} sizes="(max-width: 640px) 50vw, 300px" alt={g.name} style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover' }} />
+              <GameImage src={g.card_image_url || g.cover_image_url} alt={g.name} style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover' }} />
               <div style={{ padding: '10px 12px' }}>
                 <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3 }}>{g.name}</div>
               </div>

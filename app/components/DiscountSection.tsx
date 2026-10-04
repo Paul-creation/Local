@@ -26,7 +26,7 @@ export default function DiscountSection({ games }: { games: any[] }) {
           return (
             <Link href={`/games/${game.id}`} key={game.id} className="card">
                             <div className="card-image-wrap">
-                <GameImage src={game.card_image_url || game.cover_image_url} sizes="(max-width: 640px) 50vw, 300px" alt={game.name} />
+                <GameImage src={game.card_image_url || game.cover_image_url} alt={game.name} />
                 <span className="platform-badge">{game.steam_appid ? 'Steam' : (({ epic: 'Epic', battlenet: 'Battle.net', riot: 'Riot' } as Record<string, string>)[game.source] ?? 'PC') /* STORE_BADGE */}</span>
                 <LowestPriceBadge timing={getLowestTiming(game, price)} overlay />
               </div>

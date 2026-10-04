@@ -148,7 +148,7 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
           const g = picks[i];
           return g ? (
             <div key={g.id} className="cb-slot is-filled">
-              <GameImage src={g.card_image_url || g.cover_image_url} sizes="(max-width: 640px) 33vw, 400px" alt={g.name} />
+              <GameImage src={g.card_image_url || g.cover_image_url} alt={g.name} />
               <div className="cb-slot-name">{g.name}</div>
               <button className="cb-slot-remove" aria-label={`${g.name} 빼기`} onClick={() => remove(g.id)}>✕</button>
             </div>
@@ -192,7 +192,7 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
                     onMouseEnter={() => setActive(i)}
                     style={picked ? { opacity: 0.5 } : undefined}
                   >
-                    {g.cover_image_url ? <img src={g.cover_image_url} alt="" /> : <span className="search-suggest-noimg" />}
+                    {g.cover_image_url ? <GameImage src={g.cover_image_url} steamSize="header_292x136" /> : <span className="search-suggest-noimg" />}
                     <span className="search-suggest-name">{g.name}</span>
                     <span className="search-suggest-players">{picked ? '담음' : playersLabel(g)}</span>
                   </button>

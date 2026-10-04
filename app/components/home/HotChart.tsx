@@ -60,7 +60,7 @@ function BigCard({ item }: { item: HotItem }) {
   return (
     <Link href={`/games/${item.id}`} className="hc-card">
       <span className="hc-card-image">
-        <GameImage src={item.image} sizes="(max-width: 640px) 100vw, 400px" fallbackWidth={1280} />
+        <GameImage src={item.image} fallbackWidth={1280} />
         <span className="hc-card-badges">
           <Change change={item.change} />
           {item.weeks >= 2 && <span className="hc-weeks">{item.weeks}주째 순위권</span>}
@@ -88,7 +88,7 @@ function Row({ item }: { item: HotItem }) {
         <span className="hc-row-rank-n">{item.rank}</span>
         <Change change={item.change} />
       </span>
-      {item.thumb ? <GameImage src={item.thumb} sizes="104px" className="hc-row-thumb" loading="lazy" /> : <span className="hc-row-thumb" />}
+      {item.thumb ? <GameImage src={item.thumb} steamSize="header_292x136" className="hc-row-thumb" loading="lazy" /> : <span className="hc-row-thumb" />}
       <span className="hc-row-main">
         <span className="hc-row-name">{item.name}</span>
         <span className="hc-row-sub">

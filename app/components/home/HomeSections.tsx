@@ -23,8 +23,8 @@ export default function HomeSections({ games, hotTabs, weekly, popularPosts = []
                     {featured && (
             <Link href={`/games/${featured.id}`} className="hero-card">
               <div className="hero-image-wrap">
-                <GameImage src={featured.card_image_url || featured.cover_image_url} sizes="(max-width: 640px) 100vw, 660px" fallbackWidth={1280} alt="" aria-hidden="true" className="img-backdrop" />
-                <GameImage src={featured.card_image_url || featured.cover_image_url} sizes="(max-width: 640px) 100vw, 660px" fallbackWidth={1280} alt={featured.name} fetchPriority="high" />
+                <GameImage src={featured.card_image_url || featured.cover_image_url} fallbackWidth={1280} alt="" aria-hidden="true" className="img-backdrop" />
+                <GameImage src={featured.card_image_url || featured.cover_image_url} fallbackWidth={1280} alt={featured.name} fetchPriority="high" />
               </div>
               <div className="hero-content">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

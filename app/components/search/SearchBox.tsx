@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import type { GameFilters } from '../../lib/useGameFilters';
 import { matchRank } from '../../lib/searchMatch';
 import { playersText } from '../../lib/players';
+import GameImage from '../GameImage';
 
 const MAX_SUGGESTIONS = 6;
 
@@ -106,7 +107,7 @@ export default function SearchBox({ games, filters }: { games: any[], filters: G
                 onClick={() => { setOpen(false); rememberList(); }}
                 onMouseEnter={() => setActive(i)}
               >
-                {g.cover_image_url ? <img src={g.cover_image_url} alt="" /> : <span className="search-suggest-noimg" />}
+                {g.cover_image_url ? <GameImage src={g.cover_image_url} steamSize="header_292x136" /> : <span className="search-suggest-noimg" />}
                 <span className="search-suggest-name">{g.name}</span>
                 <span className="search-suggest-players">{playersLabel(g)}</span>
               </Link>

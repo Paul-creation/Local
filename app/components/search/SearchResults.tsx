@@ -52,7 +52,7 @@ export default function SearchResults({ filters, top10Ids = [] }: { filters: Gam
                 return (
                   <Link href={`/games/${game.id}`} key={game.id} className="card" onClick={rememberList} style={isSelected ? { outline: '3px solid var(--accent)', outlineOffset: 2 } : undefined}>
                     <div className="card-image-wrap">
-                      <GameImage src={game.card_image_url || game.cover_image_url} sizes="(max-width: 640px) 50vw, 300px" alt={game.name} loading={i < 4 ? 'eager' : 'lazy'} />
+                      <GameImage src={game.card_image_url || game.cover_image_url} alt={game.name} loading={i < 4 ? 'eager' : 'lazy'} />
                       {/* COMPARE_V2 */}
                       <button
                         type="button"
