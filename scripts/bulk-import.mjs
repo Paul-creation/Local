@@ -5,6 +5,7 @@
 //       node --env-file=.env.local scripts/bulk-import.mjs --appids data/meta/must-have.json         (꼭 넣을 게임 목록만 미리보기)
 //       node --env-file=.env.local scripts/bulk-import.mjs --appids data/meta/must-have.json --apply (꼭 넣을 게임 목록만 추가)
 // - 기준(두 방식 같음): 이미 있는 게임·판매 중단 목록 제외, 스팀 종류가 game, 성인·프로그램 장르 제외, 리뷰 1,000개 이상·긍정 65% 이상
+//   --appids는 손으로 고른 목록이라 긍정 60% 이상까지 받음 (판매 순위 수집은 65% 그대로)
 //   판매 순위 수집만 2013년 이후 출시 조건 추가 (--appids는 손으로 고른 목록이라 연도 무관)
 // - 스팀 요청은 scripts/lib/steam.mjs(요청 간격 + 429 재시도)로 함. 끝까지 실패한 게임은 건너뛰고 마지막에 목록으로 출력
 // - --appids 파일: [{ "steam_appid": "1145350", ... }] 형식의 JSON (name·reason 칸은 출력용)
@@ -33,7 +34,7 @@ const MAX_NEW_GAMES = 200;
 const TIME_BUDGET_MS = 40 * 60 * 1000; // run-steps 단계 시간 제한(45분) 전에 스스로 멈춤
 const MIN_YEAR = 2013;
 const MIN_REVIEWS = 1000;
-const MIN_POSITIVE = 0.65;
+const MIN_POSITIVE = APPIDS_FILE ? 0.6 : 0.65;
 const EXCLUDE_GENRES = ['Sexual Content', 'Adult Only', 'Nudity', 'Video Production', 'Photo Editing', 'Accounting'];
 
 const startedAt = Date.now();
