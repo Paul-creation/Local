@@ -546,8 +546,12 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </section>
       )}
 
-      {/* 영상으로 미리 보기 — 친구랑 하는 영상(멀티 게임만) + 스트리머 */}
+      {/* 영상으로 미리 보기 — 하이라이트 + 친구랑 플레이(멀티 게임만) + 스트리머 */}
       <VideoPreviewSection
+        highlights={((game.game_videos || []) as (CoopVideo & { kind: string })[])
+          .filter((v) => v.kind === 'highlight')
+          .sort((a, b) => (b.view_count || 0) - (a.view_count || 0))
+          .slice(0, 3)}
         videos={game.max_players > 1
           ? ((game.game_videos || []) as (CoopVideo & { kind: string })[])
               .filter((v) => v.kind === 'coop')

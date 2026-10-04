@@ -42,6 +42,10 @@ const GROUPS = {
     'enrich-update-date',
     'pick-weekly-featured', // 메인 "이번주의 게임" 선정 (이번 주 기록이 이미 있으면 건너뜀)
   ],
+  // 매일 17:10 KST: YouTube 한도 초기화(태평양 자정) 직후, 새벽·주간 몫을 남기고 하이라이트 영상 수집 (한도 초과 시 조용히 멈춤)
+  highlight: [
+    'fetch-highlight-videos',
+  ],
 };
 
 const STEP_TIMEOUT_MIN = 45;
@@ -76,7 +80,7 @@ const results = [];
 for (const s of steps) results.push(await run(s));
 
 const lines = [
-  `## ${group === 'daily' ? '매일 갱신' : '매주 갱신'} 결과`,
+  `## ${{ daily: '매일 갱신', weekly: '매주 갱신', highlight: '하이라이트 영상' }[group]} 결과`,
   '',
   '| 단계 | 결과 | 걸린 시간 |',
   '|---|---|---|',

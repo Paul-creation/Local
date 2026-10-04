@@ -25,10 +25,31 @@ function formatMonth(iso: string | null) {
   return `${d.getFullYear()}.${d.getMonth() + 1}`;
 }
 
-// 상세 페이지 "영상으로 미리 보기" — [친구랑 하는 영상] [스트리머] 탭. 내용이 없는 탭은 숨김
-export default function VideoPreviewSection({ videos, streamers }: { videos: CoopVideo[]; streamers: ReactNode }) {
+function VideoCards({ videos }: { videos: CoopVideo[] }) {
+  return (
+    <>
+      <div className="coop-videos" role="tabpanel">
+        {videos.map((v) => (
+          <div key={v.video_id} className="coop-video-card">
+            <YouTubeLite url={`https://www.youtube.com/embed/${v.video_id}`} title={v.title} />
+            <div className="coop-video-title">{v.title}</div>
+            <div className="coop-video-channel">{v.channel_title}</div>
+            <div className="coop-video-meta">
+              {[v.view_count ? `조회수 ${formatViews(v.view_count)}` : '', formatMonth(v.published_at)].filter(Boolean).join(' · ')}
+            </div>
+          </div>
+        ))}
+      </div>
+      <p className="video-source">영상 출처: YouTube</p>
+    </>
+  );
+}
+
+// 상세 페이지 "영상으로 미리 보기" — [하이라이트] [친구랑 플레이] [스트리머] 탭. 내용이 없는 탭은 숨기고, 첫 탭이 기본
+export default function VideoPreviewSection({ highlights, videos, streamers }: { highlights: CoopVideo[]; videos: CoopVideo[]; streamers: ReactNode }) {
   const tabs = [
-    videos.length > 0 && { key: 'coop', label: '친구랑 하는 영상' },
+    highlights.length > 0 && { key: 'highlight', label: '하이라이트' },
+    videos.length > 0 && { key: 'coop', label: '친구랑 플레이' },
     streamers && { key: 'streamers', label: '스트리머' },
   ].filter(Boolean) as { key: string; label: string }[];
   const [tab, setTab] = useState(tabs[0]?.key);
@@ -52,23 +73,8 @@ export default function VideoPreviewSection({ videos, streamers }: { videos: Coo
         ))}
       </div>
 
-      {tab === 'coop' && (
-        <>
-          <div className="coop-videos" role="tabpanel">
-            {videos.map((v) => (
-              <div key={v.video_id} className="coop-video-card">
-                <YouTubeLite url={`https://www.youtube.com/embed/${v.video_id}`} title={v.title} />
-                <div className="coop-video-title">{v.title}</div>
-                <div className="coop-video-channel">{v.channel_title}</div>
-                <div className="coop-video-meta">
-                  {[v.view_count ? `조회수 ${formatViews(v.view_count)}` : '', formatMonth(v.published_at)].filter(Boolean).join(' · ')}
-                </div>
-              </div>
-            ))}
-          </div>
-          <p className="video-source">영상 출처: YouTube</p>
-        </>
-      )}
+      {tab === 'highlight' && <VideoCards videos={highlights} />}
+      {tab === 'coop' && <VideoCards videos={videos} />}
       {tab === 'streamers' && <div role="tabpanel">{streamers}</div>}
     </section>
   );
