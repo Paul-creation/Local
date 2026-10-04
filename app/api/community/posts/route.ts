@@ -5,8 +5,7 @@ import { isBoard, LIMITS } from '../../../lib/communityBoards';
 import {
   db, fail, clean, ipHash, hashPassword, checkLength, checkText, checkAuthor, since24h, DAILY_POSTS_PER_IP,
 } from '../../../lib/community';
-
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+import { UUID, findRelatedGames, isMissingRelatedColumn } from '../../../lib/postLinks';
 
 // 글쓰기
 export async function POST(req: NextRequest) {
@@ -37,10 +36,13 @@ export async function POST(req: NextRequest) {
   if ((count ?? 0) >= DAILY_POSTS_PER_IP) return fail('오늘은 글을 충분히 썼어요. 내일 다시 써주세요.', 429);
   if (gameId && !game.data) return fail('관련 게임을 찾을 수 없어요.');
 
-  const { data, error } = await db.from('posts').insert({
+  const row = {
     board, title, body: text, nickname, game_id: gameId,
     password_hash: await hashPassword(body.password), ip_hash, is_admin: asAdmin,
-  }).select('id').single();
+  };
+  const related_game_ids = await findRelatedGames(title, text, gameId);
+  let { data, error } = await db.from('posts').insert({ ...row, related_game_ids }).select('id').single();
+  if (isMissingRelatedColumn(error)) ({ data, error } = await db.from('posts').insert(row).select('id').single());
   if (error || !data) return fail('저장하지 못했어요. 잠시 후 다시 시도해주세요.', 500);
   return NextResponse.json({ id: data.id });
 }

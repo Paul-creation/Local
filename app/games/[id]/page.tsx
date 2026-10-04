@@ -16,6 +16,7 @@ import ShareButton from '../../components/ShareButton';
 import { getTop10Ids } from '../../lib/hotChart';
 import { playersText } from '../../lib/players';
 import GameOpinions from '../../components/community/GameOpinions';
+import RelatedPosts from '../../components/community/RelatedPosts';
 
 export const dynamic = 'force-dynamic';
 
@@ -527,6 +528,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       )}
 <GameVotes gameId={game.id} />
       <GameOpinions gameId={game.id} />
+      <RelatedPosts gameId={game.id} />
             {/* 할인 전적 */}
       {!game.is_free && priceHistory.length === 1 && price && (
         <section className="detail-section-v2">

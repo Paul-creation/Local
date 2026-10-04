@@ -1935,3 +1935,8 @@ a.hc-row:hover { background: var(--bg-card-hover); }
   border: 1px solid var(--border); padding: 4px 11px; border-radius: 100px; background: var(--bg-card);
 }
 .namu-link:hover { border-color: var(--accent); }
+/* 게시글 "이 글과 관련된 정보" 카드 */
+.cm-related-title { font-size: 16px; font-weight: 800; color: var(--text); margin: 0 0 10px; }
+.cm-related-list { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.cm-related-list a { display: inline-block; padding: 8px 12px; border-radius: 10px; background: var(--accent-soft); color: var(--accent-deep); font-size: 14px; font-weight: 700; text-decoration: none; word-break: break-word; }
+.cm-related-list a:hover { box-shadow: var(--shadow-sm); }
