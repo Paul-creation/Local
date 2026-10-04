@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 // 코드 기준 실제 수집 항목으로 작성 (2026-10-05). 수집 항목이 바뀌면 이 문서도 같이 고친다.
-// 근거: app/lib/community.ts(ipHash·hashPassword), app/api/**(insert), app/lib/aiGuard.ts(ai_calls), scripts/purge-ip-hash.mjs(90일 파기)
+// 근거: app/lib/community.ts(ipHash·hashPassword), app/api/**(insert), app/lib/aiGuard.ts(ai_calls), scripts/purge-ip-hash.mjs(90일 파기), app/layout.tsx(Vercel Analytics)
 const EFFECTIVE_DATE = '2026년 10월 5일';
 
 export default function PrivacyPage() {
@@ -65,6 +65,11 @@ export default function PrivacyPage() {
                 <td>IP 주소, 브라우저 정보, 접속 시각, 요청 주소(서버 접속 기록)</td>
                 <td>사이트 제공, 오류 확인, 보안</td>
               </tr>
+              <tr>
+                <td>방문 통계(쿠키 미사용, 개인 식별 불가)</td>
+                <td>방문한 페이지 주소, 들어온 경로(리퍼러), 기기·운영체제·브라우저 종류, 국가</td>
+                <td>많이 보는 페이지·유입 경로 파악, 사이트 개선</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -82,6 +87,7 @@ export default function PrivacyPage() {
           <li><strong>신고 내역</strong>(대상·사유·처리 시각): 분쟁 대응을 위해 신고일부터 <strong>1년</strong> 보관한 뒤 지워요. 신고자 IP 해시는 위와 같이 90일 뒤 지워요.</li>
           <li><strong>의견 보내기</strong>(내용·연락처): 보낸 날부터 <strong>1년</strong> 보관한 뒤 지워요. IP 해시는 위와 같이 90일 뒤 지워요.</li>
           <li><strong>서버 접속 기록</strong>: 호스팅 업체(Vercel)의 보관 정책에 따라 자동으로 지워져요.</li>
+          <li><strong>방문 통계</strong>: 개인을 알아볼 수 없는 집계 숫자로만 남아요. 같은 방문을 묶는 데 쓰는 임시 값은 하루가 지나면 버려져요.</li>
           <li>파기는 데이터베이스에서 다시 살릴 수 없게 지우는 방식으로 해요. 종이 문서로는 개인정보를 보관하지 않아요.</li>
         </ul>
 
@@ -101,8 +107,8 @@ export default function PrivacyPage() {
               </tr>
               <tr>
                 <td>Vercel Inc.(미국)</td>
-                <td>서버 접속 기록, 요청 내용</td>
-                <td>웹사이트 호스팅</td>
+                <td>서버 접속 기록, 요청 내용, 방문 통계(1번 표)</td>
+                <td>웹사이트 호스팅, 방문 통계(Vercel Web Analytics)</td>
                 <td>Vercel 정책에 따름</td>
               </tr>
               <tr>
@@ -134,7 +140,8 @@ export default function PrivacyPage() {
 
         <h2 className="cm-h2">5. 쿠키와 브라우저 저장소</h2>
         <ul>
-          <li>사이트는 광고·방문 분석용 쿠키나 분석 도구를 쓰지 않아요.</li>
+          <li>사이트는 광고·추적용 쿠키를 쓰지 않아요.</li>
+          <li>방문 통계는 쿠키를 쓰지 않는 Vercel Web Analytics로 집계해요. 기기에 아무것도 저장하지 않고, 다른 사이트에서의 활동을 따라가지 않으며, 개인을 알아볼 수 없어요.</li>
           <li>운영자 로그인용 쿠키 1개(<code>admin_session</code>)만 있고, 일반 이용자에게는 저장되지 않아요.</li>
           <li>편의를 위해 내 기기의 브라우저 저장소에 마지막으로 쓴 닉네임, 내가 누른 투표, 목록 위치·비교 목록을 저장해요. 이 값은 사이트 서버로 전송되지 않으며, 브라우저 설정에서 사이트 데이터를 지우면 삭제돼요.</li>
         </ul>
