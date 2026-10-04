@@ -11,6 +11,7 @@ const GENERIC = new Set([
   'indie', 'singleplayer', 'multiplayer', 'co-op', 'action', 'adventure',
   'early access', 'free to play', 'casual', 'pve', 'pvp', 'great soundtrack',
   '2d', '3d', 'steam achievements', 'steam trading cards', 'steam cloud',
+  'games workshop', // 출판사 이름 (장르 아님)
 ]);
 
 const TAG_KO = {

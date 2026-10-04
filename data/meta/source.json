@@ -328,7 +328,7 @@
       "steam_appid": "1225570",
       "release_year": 2020,
       "tags": [
-        "Local Co-Op",
+        "로컬 협동",
         "퍼즐",
         "분할 화면",
         "저사양"
@@ -714,7 +714,7 @@
       "release_year": 2023,
       "tags": [
         "생존",
-        "Submarine",
+        "잠수함",
         "서바이벌 호러"
       ],
       "heat_rank": null
@@ -939,7 +939,7 @@
       "release_year": 2019,
       "tags": [
         "핵앤슬래시",
-        "Character Action Game",
+        "캐릭터 액션",
         "Demons"
       ],
       "heat_rank": null
@@ -2045,9 +2045,8 @@
       "steam_appid": "431240",
       "release_year": 2020,
       "tags": [
-        "Mini Golf",
-        "스포츠",
-        "Golf"
+        "골프",
+        "스포츠"
       ],
       "heat_rank": null
     },
@@ -3386,7 +3385,7 @@
       "steam_appid": "386940",
       "release_year": 2016,
       "tags": [
-        "Party",
+        "파티 게임",
         "코미디",
         "플랫포머"
       ],
@@ -3585,7 +3584,7 @@
       "release_year": 2021,
       "tags": [
         "온라인 협동",
-        "Local Co-Op",
+        "로컬 협동",
         "요리"
       ],
       "heat_rank": null
@@ -3598,7 +3597,7 @@
       "release_year": 2018,
       "tags": [
         "온라인 협동",
-        "Local Co-Op",
+        "로컬 협동",
         "요리"
       ],
       "heat_rank": null
@@ -4286,7 +4285,7 @@
       "tags": [
         "코미디",
         "귀여운",
-        "Party Game"
+        "파티 게임"
       ],
       "heat_rank": null
     },
@@ -5392,7 +5391,6 @@
       "release_year": 2020,
       "tags": [
         "시뮬레이션",
-        "Local Co-Op",
         "로컬 협동"
       ],
       "heat_rank": null
@@ -7702,7 +7700,7 @@
       "release_year": 2021,
       "tags": [
         "분할 화면",
-        "Local Co-Op",
+        "로컬 협동",
         "퍼즐"
       ],
       "heat_rank": null
@@ -7979,8 +7977,8 @@
       "release_year": 2020,
       "tags": [
         "온라인 협동",
-        "Local Co-Op",
-        "Trains"
+        "로컬 협동",
+        "기차"
       ],
       "heat_rank": null
     },
@@ -8176,7 +8174,6 @@
       "release_year": 2018,
       "tags": [
         "다크 판타지",
-        "Games Workshop",
         "온라인 협동"
       ],
       "heat_rank": null
@@ -8307,7 +8304,6 @@
       "steam_appid": "252110",
       "release_year": 2015,
       "tags": [
-        "Local Co-Op",
         "로컬 협동"
       ],
       "heat_rank": null
