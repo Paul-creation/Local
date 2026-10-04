@@ -1,0 +1,2297 @@
+[
+  {
+    "rank": 1,
+    "game_id": "13ff96f5-e0fd-4c19-b29d-cab15d586736",
+    "name": "Baldur's Gate 3",
+    "old_intro": "친구들과 파티를 이뤄 던전 마스터의 손아귀에서 탈출하라. 누가 너를 배신할지, 누구와 세상을 구할지는 너의 선택에 달렸다.",
+    "description": "당신의 선택 하나가 동료의 등을 칼로 찌르게 될 수도, 세상을 구하게 될 수도 있습니다. 던전 마스터의 손아귀에서 벗어나기 위해 파티를 모으고, 배신하고, 타협하며 살아남는 당신의 이야기—이게 바로 발더스 게이트 3입니다. 당신의 선택이 쓰는 매 순간이 전혀 다른 이야기가 되니까요.",
+    "tags": [
+      "RPG",
+      "캐릭터 커스텀",
+      "선택이 중요"
+    ],
+    "players": "1-4",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "던전 탐험",
+      "캐릭터 커스텀",
+      "전투",
+      "대화와 선택",
+      "파티 관리"
+    ],
+    "heat_rank": 1,
+    "current_players": 61912
+  },
+  {
+    "rank": 2,
+    "game_id": "f1022fd9-20bb-48e8-8ff9-89ef8f639390",
+    "name": "ELDEN RING",
+    "old_intro": "친구들을 불러 모으고 저주받은 땅을 헤쳐나가라. 함께라면 불가능해 보이는 난관도 극복할 수 있고, 혼자라면 친구의 도움이 절실할 것이다.",
+    "description": "본 게임은 본격적인 다크 판타지 세계를 무대로 한 액션 RPG입니다. 드넓은 필드와 던전 탐험을 통해 미지의 것들을 발견해 보세요. 앞길을 막아서는 난관과 그것을 극복했을 때의 달성감, 그리고 등장인물들의 의도가 교착하는 군상극도 즐기실 수 있습니다.",
+    "tags": [
+      "소울라이크",
+      "오픈월드",
+      "다크 판타지"
+    ],
+    "players": "1-3",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "협력 플레이",
+      "보스 토벌",
+      "필드 탐험",
+      "PvP 대전"
+    ],
+    "heat_rank": 3,
+    "current_players": 31268
+  },
+  {
+    "rank": 3,
+    "game_id": "1bb02b73-2195-47e5-a39c-9bc4ced8c557",
+    "name": "Stardew Valley",
+    "old_intro": "할아버지가 남긴 황폐한 농장을 부활시켜라. 친구들과 함께 흙을 파고 씨를 뿌리며 진짜 삶을 일궈내는 경험, 지금 시작하라.",
+    "description": "할아버지가 남긴 황폐한 농장을 물려받았다. 낡은 괭이 하나와 몇 �닢의 동전만 들고 말이다. 이제 손으로 직접 흙을 파고, 씨를 뿌리고, 이웃들과 친해지면서 진짜 '살아가는' 법을 배워야 한다. 당신은 이 버려진 땅을 다시 살아 숨 쉬는 보금자리로 만들 수 있을까?",
+    "tags": [
+      "농장 시뮬",
+      "픽셀 그래픽",
+      "생활 시뮬"
+    ],
+    "players": "1-8",
+    "recommended_players": "2-4인",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "농사 짓기",
+      "광산 탐험",
+      "낚시",
+      "주민과 친해지기",
+      "함께 농장 운영"
+    ],
+    "heat_rank": 4,
+    "current_players": 47788
+  },
+  {
+    "rank": 4,
+    "game_id": "9250f3d5-cd34-46b1-863b-f790bfc944b6",
+    "name": "Red Dead Redemption 2",
+    "old_intro": "아서 모건과 함께 무법자의 삶을 살아내라. 친구들과 함께라면 정부 요원들도 두렵지 않을 것이다.",
+    "description": "아서 모건과 반 더 린드 갱단은 도주 중인 무법자입니다. 정부 요원과 현상금 사냥꾼들에게 추격당하는 그들은 살아남기 위해 강도질과 도둑질, 싸움을 거듭하며 미국의 험난한 심장부를 달려 나갑니다.",
+    "tags": [
+      "오픈월드",
+      "스토리 풍부",
+      "서부"
+    ],
+    "players": "1-32",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "캠프 활동",
+      "협력 미션",
+      "사냥",
+      "강도질",
+      "말 타기"
+    ],
+    "heat_rank": 6,
+    "current_players": 32357
+  },
+  {
+    "rank": 5,
+    "game_id": "9f732dfe-5209-4709-973f-625aab898f77",
+    "name": "Terraria",
+    "old_intro": "픽켈을 들었을 때부터 넌 이미 끝장을 본 거다. 흙을 파고 괴물을 때리다 보면 친구들과 함께 보스에게 깽판 맞을 준비를 하고 있을 테니까.",
+    "description": "픽켈을 들었을 때부터 이미 늦었다. 땅을 파고, 괴물을 때리고, 집을 짓다 보면 어느새 밤이 새 있고, 어느새 보스를 소환하고 있을 거야. 친구 셋까지 데려가서 함께 망하면 더 재밌다!",
+    "tags": [
+      "오픈월드 생존",
+      "샌드박스",
+      "생존"
+    ],
+    "players": "1-16",
+    "recommended_players": "2-4인",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "보스 사냥",
+      "건축",
+      "채광",
+      "탐험",
+      "아이템 수집"
+    ],
+    "heat_rank": 8,
+    "current_players": 34468
+  },
+  {
+    "rank": 6,
+    "game_id": "fffc708e-96c7-41b4-8c29-637d49016c07",
+    "name": "더 위쳐 3: 와일드 헌트 - 컴플리트 에디션",
+    "old_intro": "리비아의 게롤트가 되어 괴물을 사냥하고 시리를 추적하라. 전쟁으로 황폐해진 대륙에서 의뢰를 받고 운명을 맞서는 모험이 시작된다.",
+    "description": "리비아의 게롤트가 되어 의뢰를 받고 괴물을 사냥하세요. 전쟁의 상처가 가득하고 괴물이 들끓는 대륙을 마음껏 탐험해 보세요. 지금 가장 중요한 일은 대륙의 판도를 뒤바꿀 수도 있는 살아 있는 무기이자 예언의 아이, 시리를 추적하는 것입니다.",
+    "tags": [
+      "오픈월드",
+      "RPG",
+      "스토리 풍부"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 9,
+    "current_players": 93911
+  },
+  {
+    "rank": 7,
+    "game_id": "6cf16233-0071-4e70-8632-dc7fbb581dca",
+    "name": "Portal",
+    "old_intro": "애퍼처 사이언스 연구소에서 포털총을 들고 탈출하라. 공간을 뒤틀고 중력을 무시하며 풀어야 할 미스테리한 퍼즐들이 널려있다.",
+    "description": "포털은 Valve의 새로운 싱글플레이 게임입니다. 미스테리한 애퍼처 사이언스 연구소를 배경으로 하고 있는 포털은 특유의 혁신적이고 새로운 스타일로 각광받아왔으며 게이머들에게 또 하나의 독특한 재미를 선사할 것입니다. 이 게임의 특징은 주어진 환경에서 문제를 해결하기 위해 완전히 새로운 방법으로 플레이어를 조작하는 것입니다. 이는 Half-Life® 2에서 새로운 방법으로 물체를 옮겨 주어진 상황을 해결하는 혁신적인 중력건과 비슷한 개념입니다.",
+    "tags": [
+      "퍼즐",
+      "퍼즐 플랫포머",
+      "1인칭"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 10,
+    "current_players": 1116
+  },
+  {
+    "rank": 8,
+    "game_id": "364ff295-1357-4e70-9d30-59b460bc7838",
+    "name": "Left 4 Dead 2",
+    "old_intro": "미국 남부의 좀비 떼를 뚫고 나가려면 친구들과 등을 맞댈 준비를 하라. 협력하지 않으면 당신의 시체가 다음 물결을 이끌 것이다.",
+    "description": "좀비 떼가 몰려오는 미국 남부를 친구들과 함께 뚫고 나가는 게임이야. 사바나부터 뉴올리언스까지 늪지와 묘지를 헤치며 총질하다 보면, 어느새 좀비 무리 속에서 서로 등을 맞대고 싸우는 자신을 발견하게 될 걸? 협력이 생존의 열쇠인 이 미친 좀비 쇼, 함께할 용감한 친구들을 모아보게.",
+    "tags": [
+      "좀비",
+      "FPS",
+      "슈팅"
+    ],
+    "players": "1-4",
+    "recommended_players": "2-4인",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "좀비 무리 격퇴",
+      "협력 전투",
+      "캠페인 클리어",
+      "생존 모드",
+      "대전 플레이"
+    ],
+    "heat_rank": 11,
+    "current_players": 34299
+  },
+  {
+    "rank": 9,
+    "game_id": "79632018-ee00-4e4d-8402-814808ee6f8d",
+    "name": "Sekiro™: Shadows Die Twice - GOTY Edition",
+    "old_intro": "닌자의 칼을 들고 복수의 길에 나서라. 죽음이 두 번 찾아올지라도 무사답게 싸워야 한다.",
+    "description": "Dark Souls 시리즈를 개발한 FromSoftware의 새로운 어드벤처에서 복수를 향한 자신만의 길을 개척해보십시오. 복수하십시오. 명예를 회복하십시오. 무사답게 싸우십시오.",
+    "tags": [
+      "소울라이크",
+      "고난도",
+      "닌자",
+      "저사양"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 13,
+    "current_players": 3980
+  },
+  {
+    "rank": 10,
+    "game_id": "1ac94179-0e06-40e1-a6c6-e4cdd3e0867c",
+    "name": "Half-Life 2",
+    "old_intro": "점령당한 17번 지구에서 깨어나 저항군에 합류하라. 물리 엔진과 짜릿한 전투로 가득한 이 SF 세계에서 고든 프리맨이 되어 압제자들을 격퇴하거라.",
+    "description": "점령당한 대도시인 17번 지구에서 다시 깨어난 고든 프리맨은 알릭스 밴스가 이끄는 저항군에 합류하게 됩니다. 높은 수준의 몰입감 넘치는 게임 세계, 한계를 뛰어넘는 물리적 요소, 짜릿한 전투로 가득한 기념비적인 1인칭 슈팅 게임을 경험하세요.",
+    "tags": [
+      "FPS",
+      "SF",
+      "고전"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "싱글플레이 캠페인",
+      "전투 경험",
+      "퍼즐 해결",
+      "스토리 탐험"
+    ],
+    "heat_rank": 17,
+    "current_players": 2080
+  },
+  {
+    "rank": 11,
+    "game_id": "c1ed8167-fa7e-41ba-b2ab-77bbb6f322ec",
+    "name": "Fallout 4",
+    "old_intro": "핵전쟁으로 황폐해진 세계에서 살아남아라. 오픈월드를 누비며 미스터리를 풀고 운명을 개척하는 포스트아포칼립스 RPG의 진수를 경험하라.",
+    "description": "화려한 수상 경력에 빛나는 Starfield와 The Elder Scrolls V: Skyrim의 제작사인 Bethesda Game Studios가 Fallout 4로 찾아왔습니다. Fallout 4는 오픈 월드 RPG 디자인의 기준을 세운 작품이자 DICE 및 BAFTA 올해의 게임 등 200회 이상의 ‘최우수’ 상을 받은 작품입니다.",
+    "tags": [
+      "오픈월드",
+      "포스트아포칼립스",
+      "탐험"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 19,
+    "current_players": 14535
+  },
+  {
+    "rank": 12,
+    "game_id": "02d19c05-292f-4714-9e25-26595f272e19",
+    "name": "Grand Theft Auto V 레거시",
+    "old_intro": "로스 산토스의 거대한 세상에서 최대 6명의 친구들과 함께 범죄 제국을 구축하거나 혼자 욕망의 도시를 누비어라. 누가 먼저 경찰에 잡힐지는 운명의 몫이다.",
+    "description": "PC용 Grand Theft Auto V는 각종 수상에 빛나는 로스 산토스와 블레인 카운티의 거대한 세상을 최대 4K 이상의 해상도로 둘러볼 수 있는 기회를 플레이어에게 제공하며, 초당 60프레임으로 게임을 실행할 수도 있습니다.",
+    "tags": [
+      "오픈월드",
+      "범죄",
+      "차량시뮬",
+      "저사양"
+    ],
+    "players": "1-30",
+    "recommended_players": "팀플",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "협력 미션",
+      "차량 경주",
+      "격투",
+      "사냥",
+      "낚시"
+    ],
+    "heat_rank": 37,
+    "current_players": 53125
+  },
+  {
+    "rank": 13,
+    "game_id": "b91af7f9-2f46-4ba8-9109-cc53041df387",
+    "name": "God of War",
+    "old_intro": "올림푸스의 복수를 뒤로하고 북유럽의 혹독한 땅에서 아들과 함께 생존하라. 신들과 괴물들이 가로막지만, 아버지의 전투 방식을 물려줄 시간은 지금뿐이다.",
+    "description": "올림푸스 신들을 향한 복수심을 뒤로하고 크레토스는 이제 북유럽 신과 괴물의 땅에 살고 있습니다. 항상 생존을 위해 싸워야 하는 이 혹독하고 가차 없는 세상에서, 그는 생존을 위해 싸우고… 아들에게도 그 방식을 가르쳐야 합니다.",
+    "tags": [
+      "스토리 풍부",
+      "신화",
+      "Combat",
+      "저사양"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 40,
+    "current_players": 3675
+  },
+  {
+    "rank": 14,
+    "game_id": "156dc7b0-f9b3-4c71-9138-4d498db80184",
+    "name": "Garry's Mod",
+    "old_intro": "래그돌 인형을 날려먹고 이상한 기계를 만들어 친구들과 대혼란을 일으켜라. 여기선 목표 따위 없다, 당신이 신이 되어 마음껏 망가뜨리면 된다.",
+    "description": "물리 엔진 앞에서 상식은 무용지물. 래그돌 인형처럼 날려먹고, 이상한 기계 장치를 만들고, 친구들과 함께 대혼란을 일으키면 그게 바로 당신의 게임이 된다. 목표? 그런 건 없다. 여기선 당신이 신이다.",
+    "tags": [
+      "샌드박스",
+      "모드 지원",
+      "물리엔진",
+      "저사양"
+    ],
+    "players": "1-128",
+    "recommended_players": "2-4인",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "물리 장난",
+      "기계 장치 제작",
+      "래그돌 실험",
+      "맞춤 게임 모드"
+    ],
+    "heat_rank": 42,
+    "current_players": 31890
+  },
+  {
+    "rank": 15,
+    "game_id": "ad8ae98d-f9a7-4f08-97c8-4ca74eb2386a",
+    "name": "Satisfactory",
+    "old_intro": "미지의 행성에 떨어졌다면 공장을 지어라. 친구들과 함께 컨베이어 벨트에 중독되다 보면 언제 끝날지 모르는 확장의 악순환에 빠질 것이다.",
+    "description": "미지의 행성에 떨어진 당신은 어느새 컨베이어 벨트의 노예가 되어 있습니다. 친구들과 함께 공장을 지으면서 자동화의 쾌감에 빠져들고, 언제 끝날지 모르는 확장의 악순환에 빠져봅시다. 당신의 생산 라인이 우주 최고의 기계 문명을 이루는 순간까지요.",
+    "tags": [
+      "기지 건설",
+      "자동화",
+      "오픈월드",
+      "저사양"
+    ],
+    "players": "1-4",
+    "recommended_players": "2-4인",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "공장 설계 및 건설",
+      "자동화 라인 구축",
+      "자원 채집 및 생산",
+      "기술 연구",
+      "탐험"
+    ],
+    "heat_rank": 46,
+    "current_players": 24388
+  },
+  {
+    "rank": 16,
+    "game_id": "50c3e7b6-889e-43b7-a8a5-0312a9a47cbf",
+    "name": "Cities: Skylines",
+    "old_intro": "작은 마을에서 시작해 대도시를 일궈내라. 교통 체증, 화재, 적자와 싸우며 당신의 손에 도시 운명을 쥐어보시게.",
+    "description": "당신의 작은 마을이 대도시로 성장하는 걸 지켜보는 건 정말 짜릿합니다. 물론 교통 체증으로 시민들이 난리가 나고, 예산이 자꾸 바닥나고, 갑자기 화재가 터지기도 하지만요. 도시 한 덩어리를 손에 쥐고 흔들어보고 싶은 욕망이 있다면, 지금 바로 시장 자리에 앉아보세요.",
+    "tags": [
+      "도시건설",
+      "시뮬레이션",
+      "건축"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 48,
+    "current_players": 7663
+  },
+  {
+    "rank": 17,
+    "game_id": "ddae6eb1-d431-4319-abe1-b71adb672cb8",
+    "name": "Don't Starve Together",
+    "old_intro": "친구들과 함께 야생에서 굶어 죽지 않으려면 지혜와 담력이 필요하다. 혼자 살아남는 것도 힘든데, 친구까지 챙겨야 하는 이 혹독한 모험에 나서겠는가.",
+    "description": "Don't Starve Together는 혹독한 생존 게임인 Don't Starve의 독립형 멀티플레이어 익스팬션입니다.",
+    "tags": [
+      "생존",
+      "오픈월드 생존",
+      "오픈월드"
+    ],
+    "players": "1-6",
+    "recommended_players": "2-4인",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "생존",
+      "자원 채집",
+      "기지 건설",
+      "협력 탐험",
+      "몬스터 사냥"
+    ],
+    "heat_rank": 52,
+    "current_players": 15952
+  },
+  {
+    "rank": 18,
+    "game_id": "49e1fe99-4672-4002-b3e7-b686baa83946",
+    "name": "ARK: Survival Evolved",
+    "old_intro": "정체 모를 섬에서 공룡을 길들이고 친구들과 함께 생존하라. 배고픔과 추위를 이겨내지 못하면 누군가의 공룡 밥이 될 뿐이다.",
+    "description": "정체 모를 섬에 떨어진 당신. 배고픔과 추위와 싸우다 보니 어느새 공룡 등에 안장을 얹고 있습니다. 이제 당신의 선택은 명확합니다 - 이 미친 섬을 지배하거나, 아니면 누군가의 공룡 밥이 되거나.",
+    "tags": [
+      "오픈월드 생존",
+      "생존",
+      "오픈월드"
+    ],
+    "players": "1-8",
+    "recommended_players": "2-4인",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "공룡 길들이기",
+      "기지 건설",
+      "보스 토벌",
+      "자원 채집",
+      "부족 전쟁"
+    ],
+    "heat_rank": 55,
+    "current_players": 14964
+  },
+  {
+    "rank": 19,
+    "game_id": "6d43e51e-9d93-4e66-ba94-f192863d9311",
+    "name": "검은 신화: 오공",
+    "old_intro": "천명을 지닌 자여, 중국 신화의 비밀을 파헤치러 서역으로 떠나라. 위험과 전설이 교차하는 그곳에서 진정한 영웅이 될 준비가 되었는가.",
+    "description": "《검은 신화: 오공》은 중국 신화를 배경으로 하는 액션 RPG 게임입니다. 당신은 '천명을 지닌 자'가 되어 과거의 전설 속 진실을 밝히기 위해, 위험과 놀라움이 가득한 서역으로의 여정에 나서게 됩니다.",
+    "tags": [
+      "신화",
+      "액션 RPG",
+      "소울라이크"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 55,
+    "current_players": 4910
+  },
+  {
+    "rank": 20,
+    "game_id": "6170fa0c-d192-4fa2-8e2c-6440ba2ddf17",
+    "name": "Sid Meier’s Civilization® VI",
+    "old_intro": "역사 속 위대한 지도자가 되어 나만의 문명을 건설하고 세계를 지배하라. 턴 방식의 전략으로 제국을 확장하고 문화를 발전시키며 영원한 제국의 기초를 다져야 한다.",
+    "description": "문명 VI 에서는 새로운 방식으로 세상과 소통하고, 제국의 영토를 확장시키며, 문화를 발전시키고, 역사속 위대한 지도자들에 맞서 오래도록 지속될 나만의 문명을 건설해볼 수 있습니다. 클레오파트라를 비롯한 20명의 역사 속 지도자들 중 한명으로 플레이 해보세요.",
+    "tags": [
+      "전략",
+      "턴제 전략",
+      "Historical"
+    ],
+    "players": "1-12",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "문명 건설 경쟁",
+      "외교 협상",
+      "전쟁",
+      "문화 발전 경쟁",
+      "기술 연구 경쟁"
+    ],
+    "heat_rank": 57,
+    "current_players": 30015
+  },
+  {
+    "rank": 21,
+    "game_id": "fbd5c360-b3b5-4e68-acc0-bd5737eafa5b",
+    "name": "Papers, Please",
+    "old_intro": "국경검문소의 서류 심사관이 되어 위조 여권을 적발하고 입국자를 심판하라. 급여는 형편없지만 당신의 판단이 누군가의 인생을 바꾼다.",
+    "description": "축하합니다. 10월 노동 복권에 당첨되셨습니다. 그레스틴 국경검문소의 입국관리부로 즉시 출근하세요. 당신의 새로운 직업은 서류 심사관입니다. 급여는 형편없지만, 적어도 당신의 가족은 동그레스틴의 8등급 주택에서 살 수 있을 거예요. 혹시 위조 여권 찾는 데 자신 있으신가요?",
+    "tags": [
+      "Political",
+      "시뮬레이션",
+      "포인트 앤 클릭"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 63,
+    "current_players": 421
+  },
+  {
+    "rank": 22,
+    "game_id": "4d91db9b-aa80-474b-979c-b4c1f120aab4",
+    "name": "Project Zomboid",
+    "old_intro": "좀비 떼가 몰려오는 세상에서 쓰레기를 주우며 집을 요새로 만들고 농사를 지어라. 혼자 또는 친구들과 함께 생존하되, 한 입만 물려도 끝장이다.",
+    "description": "좀비 떼 속에서 살아남기 위해 쓰레기장을 뒤지고, 집을 요새처럼 개조하고, 농장을 일궈야 하는 게임. 혼자든 친구와 함께든 생존 본능을 깨울 준비를 하세요. 물론 한 입 물린 순간, 당신의 생존 계획은 끝입니다.",
+    "tags": [
+      "생존",
+      "좀비",
+      "오픈월드"
+    ],
+    "players": "1-32",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "좀비 생존",
+      "기지 건설",
+      "농사",
+      "협력 생존",
+      "자원 수집"
+    ],
+    "heat_rank": 71,
+    "current_players": 69060
+  },
+  {
+    "rank": 23,
+    "game_id": "1c98104a-4bbb-4b4d-abdd-47129806051f",
+    "name": "Monster Hunter: World",
+    "old_intro": "거대한 몬스터들이 우글거리는 새로운 세계로 떠나 사냥꾼의 본능을 깨워라. 혼자든 최대 4명의 사냥꾼과 함께든 궁극의 사냥 생활을 경험하게 될 것이다.",
+    "description": "새로운 생명의 땅. 사냥하라, 본능에 따라! 'Monster Hunter: World'에서는 새롭게 제작된 다양한 지형과 생태계가 살아 숨쉬는 세계에서 궁극의 사냥 생활을 체험할 수 있습니다.",
+    "tags": [
+      "오픈월드",
+      "RPG",
+      "캐릭터 커스텀"
+    ],
+    "players": "1-4",
+    "recommended_players": "2-4인",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "협력 사냥",
+      "몬스터 토벌",
+      "장비 강화",
+      "퀘스트 클리어"
+    ],
+    "heat_rank": 73,
+    "current_players": 11018
+  },
+  {
+    "rank": 24,
+    "game_id": "b20e97c4-bda1-498a-ad64-7b33e88aeb54",
+    "name": "DOOM Eternal",
+    "old_intro": "지옥의 악마들이 지구를 집어삼키려 한다. 슬레이어가 되어 다양한 차원을 누비며 악마를 도살하고 인류를 구해내거나, 친구와 함께 지옥 난전에 뛰어들어라.",
+    "description": "지옥의 군대가 지구를 침공했습니다. 장엄한 싱글 플레이 캠페인에서 슬레이어가 되어 다양한 차원에서 악마를 처치하고 인류를 파멸을 막으십시오. 그들이 두려워하는 유일한 존재는... 바로 당신입니다.",
+    "tags": [
+      "FPS",
+      "고어",
+      "Fast-Paced",
+      "저사양"
+    ],
+    "players": "1-3",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "캠페인 협력",
+      "멀티플레이 대전",
+      "챌린지 클리어"
+    ],
+    "heat_rank": 77,
+    "current_players": 1197
+  },
+  {
+    "rank": 25,
+    "game_id": "3a4c2b29-e953-4bd5-9ba0-be57a0c83471",
+    "name": "Risk of Rain 2",
+    "old_intro": "괴물들이 들끓는 외계 행성에서 살아남아라. 친구들과 함께 전리품을 주워 모으고 강해져서, 언젠간 이 행성의 공포가 되어 탈출하는 것이다.",
+    "description": "기괴한 괴물들과 싸우며 혼돈스러운 외계 행성을 탈출하세요. 친구들과 함께 해도 되고, 혼자 해도 좋습니다. 전리품들을 놀라운 방식으로 조합하고 각 캐릭터를 마스터하여 처음 불시착할 때 공포스러워했던 바로 그 존재가 되세요.",
+    "tags": [
+      "3인칭 슈터",
+      "액션 로그라이크",
+      "로그라이트",
+      "저사양"
+    ],
+    "players": "1-4",
+    "recommended_players": "2-4인",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "협력 사냥",
+      "아이템 조합",
+      "캐릭터 마스터",
+      "난이도 도전",
+      "보스 격파"
+    ],
+    "heat_rank": 80,
+    "current_players": 9611
+  },
+  {
+    "rank": 26,
+    "game_id": "dbbe5a71-09d8-4b5b-9ee7-3c406dbf5900",
+    "name": "Valheim",
+    "old_intro": "바이킹 전사들이여, 친구들을 모아 자동 생성되는 사후 세계를 정복하라. 함께 전투하고 건설하며 전설을 만들거나, 혼자 오딘의 가호 아래 생존해내거나.",
+    "description": "바이킹 문화를 기반으로 한 자동 생성 사후 세계를 배경으로 하는 1~10인 협동 탐험 및 생존 게임입니다. 전투하고, 건설하고, 정복하며 오딘의 가호 아래 전설을 만들어가세요!",
+    "tags": [
+      "오픈월드 생존",
+      "생존",
+      "온라인 협동"
+    ],
+    "players": "1-10",
+    "recommended_players": "2-4인",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "보스 사냥",
+      "건설",
+      "탐험",
+      "채광",
+      "전투"
+    ],
+    "heat_rank": 81,
+    "current_players": 194985
+  },
+  {
+    "rank": 27,
+    "game_id": "24716631-e005-453b-bff6-644473085279",
+    "name": "Rust",
+    "old_intro": "벌거벗은 상태로 섬에 던져져 살아남아라. 친구들과 함께라면 조금 덜 외로울 것이다.",
+    "description": "Rust에서의 목표는 오직 하나, 바로 살아남는 것입니다. 섬의 야생 동물, 다른 주민, 환경, 다른 생존자 모두가 여러분의 목숨을 노립니다. 하루 더 살아남을 수 있다면 수단과 방법을 가리지 마세요.",
+    "tags": [
+      "생존",
+      "크래프팅",
+      "오픈월드",
+      "저사양"
+    ],
+    "players": "1-8",
+    "recommended_players": "팀플",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "기지 건설",
+      "자원 채집",
+      "생존",
+      "PvP 전투",
+      "협력 크래프팅"
+    ],
+    "heat_rank": 89,
+    "current_players": 139043
+  },
+  {
+    "rank": 28,
+    "game_id": "eae78adb-4f04-4b5a-83f2-96a48b1c2e67",
+    "name": "Dying Light",
+    "old_intro": "좀비 무리가 들끓는 도시에서 살아남아라. 친구들과 함께라면 더 오래, 혼자라면 더 치열하게.",
+    "description": "종말 이후 굶주린 좀비가 넘쳐나는 오픈 월드를 배경으로 펼쳐지는 1인칭 액션 생존 게임을 즐겨보세요. 여러분은 수수께끼의 바이러스 전염에 의해 몰락한 도시를 탐험하며 물자를 찾고, 무기를 제작하여 감염된 생명체 무리들을 상대해야 합니다.",
+    "tags": [
+      "좀비",
+      "서바이벌 호러",
+      "호러",
+      "저사양"
+    ],
+    "players": "1-4",
+    "recommended_players": "2-4인",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "좀비 처치",
+      "물자 수집",
+      "무기 제작",
+      "오픈월드 탐험",
+      "협력 플레이"
+    ],
+    "heat_rank": 91,
+    "current_players": 6017
+  },
+  {
+    "rank": 29,
+    "game_id": "7ade2928-9202-4ddf-a872-e8f5524e9223",
+    "name": "HELLDIVERS™ 2",
+    "old_intro": "친구들과 함께 헬다이버가 되어 적대적인 은하계를 누비며 자유를 위해 싸워라. 빠르고 정신없는 전투에서 팀워크가 무너지면 모두 함께 떨어진다.",
+    "description": "은하계 최고의 공격 부대. 빠르고, 정신없고, 격렬한 3인칭 슈팅 게임에서 헬다이버가 되어 적대적인 은하계 전역을 누비며 자유를 위해 싸우세요.",
+    "tags": [
+      "온라인 협동",
+      "3인칭 슈터",
+      "슈팅",
+      "저사양"
+    ],
+    "players": "1-4",
+    "recommended_players": "2-4인",
+    "solo_playable": false,
+    "difficulty": "보통",
+    "activities": [
+      "협력 미션",
+      "적 격멸",
+      "기지 방어",
+      "함께 생존"
+    ],
+    "heat_rank": 92,
+    "current_players": 52264
+  },
+  {
+    "rank": 30,
+    "game_id": "59514d14-dbcc-4e73-999b-6db117773e7d",
+    "name": "The Forest",
+    "old_intro": "비행기가 추락했다. 숲에서 살아남으려면 집을 짓고, 먹을 것을 찾고, 밤마다 문을 걸어잠가야 한다. 친구들과 함께라면 더 오래 버틸 수 있을 테니까.",
+    "description": "비행기 추락 후 눈 떠보니 온통 나무뿐이고, 주변에선 이상한 것들이 왕왕거리며 돌아다니네요. 여기선 집도 짓고, 뭔가도 먹고, 밤새 문을 잠그는 게 생존의 핵심입니다. 혼자든 친구와 함께든, 이 숲에서 살아남는 게 목표—물론 정신은 잃지 말고요.",
+    "tags": [
+      "오픈월드 생존",
+      "생존",
+      "오픈월드",
+      "저사양"
+    ],
+    "players": "1-8",
+    "recommended_players": "2-4인",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "건축",
+      "사냥",
+      "채집",
+      "생존",
+      "탐험"
+    ],
+    "heat_rank": 100,
+    "current_players": 8562
+  },
+  {
+    "rank": 31,
+    "game_id": "b63b16a6-7c0d-4d63-b77e-8f45196496d9",
+    "name": "DARK SOULS™ II: Scholar of the First Sin",
+    "old_intro": "죽음의 왕국에서 혼자 또는 최대 4명의 동료와 함께 살아남아라. 매 순간이 절망이지만 함께라면 조금 덜 외로울 것이다.",
+    "description": "여러분은 DARK SOULS™ II: Scholar of the First Sin에 크게 놀랄 것입니다. 기존 DARK SOULS™ II를 플레이 하셨다 해도 이 특별한 &quot;디렉터즈 컷&quot; 버전의 게임을 통해 완전히 새로운 경험을 하게 될 것입니다.",
+    "tags": [
+      "소울라이크",
+      "다크 판타지",
+      "RPG",
+      "저사양"
+    ],
+    "players": "1-4",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "협력 플레이",
+      "침입 대전",
+      "스토리 진행",
+      "보스 토벌",
+      "캐릭터 육성"
+    ],
+    "heat_rank": 103,
+    "current_players": 6416
+  },
+  {
+    "rank": 32,
+    "game_id": "e0aa8a6b-06a2-4cc6-a94d-61032ac627dd",
+    "name": "DARK SOULS™: REMASTERED",
+    "old_intro": "불이 꺼지기 전에 로드란을 구하러 가자. 혼자 가기 무섭다면 친구들을 소환해서 함께 죽어보는 것도 나쁘지 않다.",
+    "description": "기억하시나요? 불이 있었습니다. 굉장한 호평을 받으며 장르를 재정립한 게임의 모든 것을 다시 경험해보세요. 아름답게 리마스터되어 60fps로 돌아가는 고해상도로 그려진 로드란으로 돌아가세요. 다크 소울 리마스터에는 본편과 심연의 아르토리우스 DLC가 포함됩니다.",
+    "tags": [
+      "소울라이크",
+      "다크 판타지",
+      "RPG"
+    ],
+    "players": "1-4",
+    "recommended_players": null,
+    "solo_playable": false,
+    "difficulty": "보통",
+    "activities": [
+      "협력 플레이",
+      "대전",
+      "침입",
+      "메시지 남기기"
+    ],
+    "heat_rank": 109,
+    "current_players": 5824
+  },
+  {
+    "rank": 33,
+    "game_id": "248e309e-c740-4a08-bea7-4ac7d739674d",
+    "name": "Rocket League®",
+    "old_intro": "로켓 자동차를 몰아 거대한 공을 골대에 집어넣어라. 팀 친구들과 함께라면 불가능한 골도 가능하다.",
+    "description": "수많은 팬을 거느리는 Supersonic Acrobatic Rocket-Powered Battle-Cars의 물리 기반 게임 속편에서 다시 한번 축구와 드라이빙이 만납니다!",
+    "tags": [
+      "축구",
+      "경쟁",
+      "스포츠",
+      "저사양"
+    ],
+    "players": "1-6",
+    "recommended_players": null,
+    "solo_playable": false,
+    "difficulty": "보통",
+    "activities": [
+      "온라인 대전",
+      "팀 플레이",
+      "랭크 경쟁",
+      "캐주얼 경기"
+    ],
+    "heat_rank": 135,
+    "current_players": 32258
+  },
+  {
+    "rank": 34,
+    "game_id": "5cd6b28f-34dc-4808-a27a-ab409b505102",
+    "name": "Grim Dawn",
+    "old_intro": "멸망한 세상에서 녹슨 쇳조각을 주워 모아 강해져라. 친구 셋까지 함께 절망의 어둠을 헤치다 보면, 어느새 넌 괴물이 되어 있을 것이다.",
+    "description": "인류가 멸망 직전까지 몰린 암흑의 세상에서, 녹슨 쇳조각 하나가 황금보다 귀한 법. 낡은 아이템들을 주워 모아 강해지고, 험한 선택지 앞에서 고민하다 보면 어느새 당신도 이 절망의 세계를 지배하는 괴물이 되어 있을 거야. 친구와 함께라면 조금은 덜 외로울 테니까.",
+    "tags": [
+      "액션 RPG",
+      "핵앤슬래시",
+      "루팅"
+    ],
+    "players": "1-4",
+    "recommended_players": "2-4인",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "협력 던전 클리어",
+      "보스 사냥",
+      "아이템 루팅",
+      "캐릭터 육성"
+    ],
+    "heat_rank": 149,
+    "current_players": 5028
+  },
+  {
+    "rank": 35,
+    "game_id": "c36a74f3-6933-4eb7-9066-f8ff9eb706b3",
+    "name": "Palworld / 팰월드",
+    "old_intro": "신비한 팰들을 잡아 길들이고, 친구들과 함께 공장을 굴려 제국을 건설하라. 생존과 착취의 경계에서 우정이 시험받는다.",
+    "description": "드넓은 세계에 서식하는 신비한 생물 &quot;팰&quot;을 수집하여 전투, 건축, 농업에 투입하거나 공장에서 일을 시키는 등, 전에 없던 새로운 체험을 선사하는 멀티 지원 오픈월드 서바이벌 크래프트 게임입니다.",
+    "tags": [
+      "오픈월드",
+      "생존",
+      "크리처 수집"
+    ],
+    "players": "2-4",
+    "recommended_players": null,
+    "solo_playable": false,
+    "difficulty": "보통",
+    "activities": [
+      "팰 수집",
+      "협력 전투",
+      "함께 건축",
+      "공장 운영",
+      "농업"
+    ],
+    "heat_rank": 150,
+    "current_players": 52829
+  },
+  {
+    "rank": 36,
+    "game_id": "096893f5-67d8-4ac8-af8f-e1905bb15f9f",
+    "name": "호그와트 레거시",
+    "old_intro": "마법 세계의 주인공이 되어 호그와트에서 펼쳐지는 모험을 경험하라. 마법과 오픈월드가 만드는 판타지의 세계에 몸을 던져봐.",
+    "description": "호그와트 레거시는 몰입형 오픈월드 액션 RPG입니다. 이제 여러분도 꿈에 그리던 마법 세계에 직접 영향을 끼칠 수 있습니다. 마법 세계에서 펼쳐지는 모험의 주인공이 되어보세요.",
+    "tags": [
+      "마법",
+      "오픈월드",
+      "판타지",
+      "저사양"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 161,
+    "current_players": 9180
+  },
+  {
+    "rank": 37,
+    "game_id": "382aead2-6a12-4a76-9f89-792974e84bbb",
+    "name": "Team Fortress 2",
+    "old_intro": "9가지 병과의 독특한 능력으로 전장을 누비며 끝없는 전투를 벌여라. 새로운 모드와 맵에서 벌어지는 전술 게임, 지금 바로 시작하라.",
+    "description": "다양한 전술적 능력과 뚜렷한 개성을 갖춘 9가지 병과의 캐릭터를 플레이하세요. 끊임없이 업데이트되는 새로운 게임 모드, 맵, 장비 그리고 가장 중요한 모자까지 지금 바로 즐겨보세요!",
+    "tags": [
+      "히어로슈팅",
+      "FPS",
+      "슈팅"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "팀 대전",
+      "경쟁 매치",
+      "캐주얼 플레이",
+      "장비 수집",
+      "모자 꾸미기"
+    ],
+    "heat_rank": 179,
+    "current_players": 77671
+  },
+  {
+    "rank": 38,
+    "game_id": "8531f28a-1afd-4eb6-93ff-0aa07c5f61b9",
+    "name": "7 Days to Die",
+    "old_intro": "친구들과 황무지를 누비며 집을 지어라. 7일마다 몰려오는 좀비 무리를 함정과 총으로 막지 못하면 당신의 기지는 무너진다.",
+    "description": "좀비들이 7일마다 몰려오는 세상에서 살아남기 위해 집을 짓고, 함정을 파고, 총을 쏘며 버티는 게임입니다. 친구들과 함께 황무지를 헤매며 자원을 모으다 보면, 어느새 당신도 좀비 학살자 타워 빌더가 되어 있을 겁니다. 죽기 전에 7일을 견디고 싶다면, 지금 바로 시작하세요!",
+    "tags": [
+      "생존",
+      "좀비",
+      "오픈월드"
+    ],
+    "players": "1-4",
+    "recommended_players": "2-4인",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "기지 건설",
+      "좀비 처치",
+      "자원 수집",
+      "함정 설치",
+      "협력 생존"
+    ],
+    "heat_rank": 193,
+    "current_players": 25675
+  },
+  {
+    "rank": 39,
+    "game_id": "99990cb7-b662-4831-a282-1babf876edac",
+    "name": "데스티니 가디언즈",
+    "old_intro": "태양계의 미스터리를 풀기 위해 친구들과 함께 출격하라. 강력한 능력과 특별한 장비로 무장한 가디언이 되어 짜릿한 전투를 펼쳐보시게.",
+    "description": "데스티니 가디언즈에서 태양계의 미스터리를 탐험하고 짜릿한 1인칭 슈팅 전투를 경험하세요. 이야기 임무, 협동, PvP 모드에서 강력한 능력을 해제하고 특별한 장비를 수집하세요.",
+    "tags": [
+      "오픈월드",
+      "루터슈팅",
+      "MMORPG",
+      "저사양"
+    ],
+    "players": "2-4",
+    "recommended_players": null,
+    "solo_playable": false,
+    "difficulty": "보통",
+    "activities": [
+      "스토리 임무",
+      "협력 던전",
+      "PvP 전투",
+      "장비 수집",
+      "능력 해제"
+    ],
+    "heat_rank": 202,
+    "current_players": 38144
+  },
+  {
+    "rank": 40,
+    "game_id": "3e6925dd-c4ec-43e0-8ade-d74e2b231499",
+    "name": "Raft",
+    "old_intro": "나뭇조각 하나로 시작하는 뗏목 생존기, 친구들과 함께 바다를 정복하며 상어를 피하고 지평선을 향해 나아가라.",
+    "description": "망망대해에서 떠내려오는 나뭇조각 하나가 당신의 전부입니다. 친구들과 함께 이 조각들을 모아 뗏목을 지어올리고, 상어의 턱에서 벗어나며, 언젠가는 저 지평선 너머로 나아갈 준비를 해야 합니다. 바다가 주는 것과 빼앗는 것의 반복 속에서, 과연 당신의 팀은 살아남을 수 있을까요?",
+    "tags": [
+      "생존",
+      "오픈월드 생존",
+      "크래프팅"
+    ],
+    "players": "1-4",
+    "recommended_players": "2-4인",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "뗏목 건설",
+      "자원 수집",
+      "상어 회피",
+      "협력 생존",
+      "탐험"
+    ],
+    "heat_rank": 203,
+    "current_players": 7935
+  },
+  {
+    "rank": 41,
+    "game_id": "2db3cc9e-628a-4d90-b489-1b985030ccf2",
+    "name": "Counter-Strike 2",
+    "old_intro": "전 세계 수백만 플레이어들과 총을 맞대고 경쟁하라. Counter-Strike 2에서 20년 전설을 이어받은 새로운 시대의 전투사가 되어라.",
+    "description": "Counter-Strike는 20년이 넘는 시간 동안 전 세계 수백만 명의 플레이어가 모여 수준 높은 경쟁을 펼칠 수 있는 플랫폼을 제공해 왔습니다. 그리고 이제 곧 Counter-Strike 2와 함께 새로운 CS 시대의 막이 열립니다.",
+    "tags": [
+      "FPS",
+      "슈팅",
+      "경쟁"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "팀 대전",
+      "경쟁 매칭",
+      "캐주얼 플레이",
+      "커뮤니티 서버"
+    ],
+    "heat_rank": 213,
+    "current_players": 982735
+  },
+  {
+    "rank": 42,
+    "game_id": "300e8847-80c6-48a4-a7e4-63b118887dbe",
+    "name": "페르소나 5 더 로열",
+    "old_intro": "낮에는 평범한 고등학생, 밤에는 사람들의 왜곡된 마음을 바꾸는 괴도가 되어라. 긴 여정 속에서 진정한 인연을 찾아내는 턴제 RPG다.",
+    "description": "낮에는 도쿄의 고등학생, 밤에는 사람들의 마음속 이세계를 누비는 마음의 괴도단이 되는 턴제 RPG. 긴 스토리에 혼자 깊게 몰입하는 게임이야.",
+    "tags": [
+      "JRPG",
+      "스토리 풍부",
+      "턴제 전투"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 222,
+    "current_players": 7386
+  },
+  {
+    "rank": 43,
+    "game_id": "2720fede-6b7c-42c8-9fee-b5cfe7c4fcef",
+    "name": "Manor Lords 매너 로드",
+    "old_intro": "중세 영주가 되어 계절의 변화 속에서 영토를 통치하고 대규모 전투로 패권을 장악하라. 경제와 전략으로 번영하는 영지를 만들거나 망국의 주인이 될지는 전적으로 너의 결정이다.",
+    "description": "Manor Lords는 정밀한 도시 건설, 전술이 필요한 대규모 전투, 정교한 경제 및 사회 시뮬레이션을 특징으로 하는 중세 전략 게임입니다. 시간에 따라 계절이 지나고 날씨가 다채롭게 변화하며 도시가 흥망성쇠를 겪는 가운데 중세 영주가 되어 자신의 영토를 통치해 보세요.",
+    "tags": [
+      "전략",
+      "도시건설",
+      "시뮬레이션"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 242,
+    "current_players": 8166
+  },
+  {
+    "rank": 44,
+    "game_id": "8206d8ec-3257-40e6-aa20-40ddc1ea16ed",
+    "name": "Dead Space",
+    "old_intro": "우주선에 침입한 괴물들을 처단하고 생존하라. 어둠 속에서 울려 퍼지는 비명과 함께, 진짜 공포가 시작된다.",
+    "description": "SF 서바이벌 호러 클래식 게임이 돌아옵니다! 완전히 재구성되어 원작 게임의 스릴 넘치는 세계관을 충실히 구현하는 동시에 개선된 그래픽, 오디오, 게임플레이로 더욱 몰입도 높은 경험을 제공합니다.",
+    "tags": [
+      "호러",
+      "3인칭 슈팅",
+      "SF"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 244,
+    "current_players": 1086
+  },
+  {
+    "rank": 45,
+    "game_id": "20d7952c-7432-45c6-8a5f-07068990b78a",
+    "name": "Mount & Blade II: Bannerlord",
+    "old_intro": "무일푼에서 시작해 거대한 제국을 일으켜라. 외교, 거래, 전쟁이 얽힌 중세 샌드박스에서 군대를 이끌고 대륙을 정복하는 전략 액션 RPG다.",
+    "description": "본 게임은 전략/액션 RPG입니다. 캐릭터를 생성하고, 외교에 참여하고, 제작, 거래를 하고, 방대한 중세풍의 샌드박스에서 새로운 땅을 정복하십시오. 군대를 일으켜 전쟁에 뛰어들고, 깊이가 있으나 직관적인 실력 기반의 전투 시스템을 채용한 대규모 실시간 전투에서 자신의 부대에 명령을 내리고 함께 싸우십시오.",
+    "tags": [
+      "Medieval",
+      "전략",
+      "오픈월드"
+    ],
+    "players": "1-120",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "군대 전쟁",
+      "외교 협상",
+      "상인 거래",
+      "영토 정복",
+      "아이템 제작"
+    ],
+    "heat_rank": 255,
+    "current_players": 24361
+  },
+  {
+    "rank": 46,
+    "game_id": "f8ed4a93-db39-42db-916f-c5da556776cf",
+    "name": "Mass Effect™ Legendary Edition",
+    "old_intro": "은하계를 구할 사령관으로서 선택의 순간마다 역사를 다시 쓰라. 당신의 결정이 우주의 운명을 결정한다.",
+    "description": "Mass Effect™ Legendary Edition은 널리 호평받는 Mass Effect, Mass Effect 2, Mass Effect 3의 모든 싱글 플레이어 기본 콘텐츠와 40가지 이상의 DLC, 프로모션 무기, 아머, 팩 등이 모두 포함되어 있으며 모두 4K UHD에 맞게 리마스터 및 최적화되었습니다.",
+    "tags": [
+      "스토리 풍부",
+      "RPG",
+      "선택이 중요한"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 258,
+    "current_players": 3410
+  },
+  {
+    "rank": 47,
+    "game_id": "90a988ff-0355-42bd-80ff-bbdc5e68e421",
+    "name": "Enter the Gungeon",
+    "old_intro": "전설의 총을 찾아 총알 지옥을 헤쳐나가라. 죄를 씻으려면 피하고, 쏘고, 구르는 것을 반복할 수밖에.",
+    "description": "Enter the Gungeon은 부랑자 무리가 본인의 죄를 면죄 받고자 과거를 지울 수 있다는 전설의 총을 찾아 발사하고, 수집하고, 구르고, 책상을 뒤엎는 총알 지옥 던전 크롤러 게임입니다.",
+    "tags": [
+      "탄막",
+      "액션 로그라이크",
+      "Rogue-like"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "협력 플레이",
+      "던전 탐험",
+      "총기 수집",
+      "보스 격파"
+    ],
+    "heat_rank": 261,
+    "current_players": 988
+  },
+  {
+    "rank": 48,
+    "game_id": "4d450b0f-055a-42f2-8604-5b5787a7a21b",
+    "name": "페르소나4 더 골든",
+    "old_intro": "작은 마을의 연쇄 살인 사건을 풀어라. 친구들과 함께 성장하고, 자신의 어두운 면과 마주하는 모험이 시작된다.",
+    "description": "주인공과 그의 친구들이 연쇄 살인 사건으로 시작되는 모험을 통해 성장하는 이야기 속에서 관심사가 같은 친구를 만나고, 소속감을 느끼며 내면의 어두운 면과 갈등하는 경험을 즐겨보세요.",
+    "tags": [
+      "JRPG",
+      "스토리 풍부",
+      "애니메이션풍"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "스토리 진행",
+      "캐릭터 관계 육성",
+      "던전 탐험",
+      "페르소나 수집"
+    ],
+    "heat_rank": 273,
+    "current_players": 1414
+  },
+  {
+    "rank": 49,
+    "game_id": "fc701353-088b-414a-8ccc-a599d1d948f7",
+    "name": "ANIMAL WELL",
+    "old_intro": "어둠 속 미로에 혼자 내려가 숨겨진 비밀을 파헤쳐라. 귀여우면서도 불안한 생물들과 마주치며 생존을 건 탐험을 시작하자.",
+    "description": "어두컴컴하고, 복잡하게 얽혀있는 미로를 탐험하며 미로 안의 숨겨진 비밀들을 밝혀내세요. 아이템을 수집해 주변 환경을 놀랍고 의미있는 방식으로 활용하세요. 어둠속에 숨어있는 위험으로부터 살아남기 위해 애쓰다보면, 귀엽지만, 마음의 동요를 불러일으키는 생물들도 만나게 됩니다. 눈 앞에 보이는것만 전부가 아닙니다.",
+    "tags": [
+      "메트로배니아",
+      "탐험",
+      "퍼즐",
+      "저사양"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 276,
+    "current_players": 158
+  },
+  {
+    "rank": 50,
+    "game_id": "061f958c-de9e-4841-b848-2d29260ea04e",
+    "name": "Borderlands Game of the Year",
+    "old_intro": "친구 셋을 모아 판도라 행성으로 떠나 미친 듯이 쏘고, 터지고, 약탈하며 성장하는 무기와 캐릭터로 손에 땀나는 전투를 벌여라. 네 자루의 총을 동시에 들 수 있는 손가락이 몇 개나 필요한지 직접 확인해보게 될 테니까.",
+    "description": "총 네 자루를 동시에 들 수 있는 손가락이 몇 개나 필요한지 확인해본 적 있나? 친구 셋을 끌어모아서 판도라 행성에서 미친 듯이 쏘고, 터지고, 약탈하면서 알아보자. RPG처럼 성장하는 무기와 캐릭터, FPS처럼 손에 땀나는 전투—이 모든 게 한 게임에서 벌어진다.",
+    "tags": [
+      "루터슈팅",
+      "FPS",
+      "RPG"
+    ],
+    "players": "1-4",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "협력 미션",
+      "보스 토벌",
+      "무기 수집",
+      "레벨 육성",
+      "약탈"
+    ],
+    "heat_rank": 281,
+    "current_players": 199
+  },
+  {
+    "rank": 51,
+    "game_id": "a32afbc1-3254-4de0-9ea5-db1e8184f70d",
+    "name": "Blasphemous",
+    "old_intro": "어둠에 빠진 Cvstodia를 해방하려면 칼을 들어라. 잔혹한 적들을 무너뜨리고 능력을 키워 영겁의 지옥을 파괴하는 것이 네 숙명이다.",
+    "description": "Blasphemous는 Cvstodia 세계의 악몽 속에서 숙련된 핵 앤 슬레시 전투를 펼치는 잔혹한 액션 플랫폼 게임입니다. 탐험하면서 능력을 업그레이드하고 여러분의 앞을 가로막는 수많은 적들에게 참혹한 처형을 내리고 영겁의 지옥을 파괴하세요.",
+    "tags": [
+      "메트로배니아",
+      "픽셀 그래픽",
+      "소울라이크",
+      "저사양"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 292,
+    "current_players": 1021
+  },
+  {
+    "rank": 52,
+    "game_id": "d3d884c9-e920-4b6f-ab3b-460f0fcd84e2",
+    "name": "Among Us",
+    "old_intro": "우주선에 숨어든 사기꾼을 찾아내거나 당당하게 거짓말을 쳐라. 친구들과의 신뢰 게임, 지금 시작하자.",
+    "description": "4~15명의 플레이어가 즐기는 온라인 및 로컬 파티 게임입니다. 우주에서 서로 협력하거나... 배신하세요!",
+    "tags": [
+      "소셜 디덕션",
+      "온라인 협동",
+      "우주",
+      "저사양"
+    ],
+    "players": "4-15",
+    "recommended_players": null,
+    "solo_playable": false,
+    "difficulty": "보통",
+    "activities": [
+      "용의자 찾기",
+      "토론과 투표",
+      "임무 수행",
+      "배신 계획",
+      "사기 치기"
+    ],
+    "heat_rank": 293,
+    "current_players": 15528
+  },
+  {
+    "rank": 53,
+    "game_id": "9f9f2d1c-7159-4fbb-8f0a-d296a13e02b4",
+    "name": "옥토패스 트래블러",
+    "old_intro": "오르스테라 대륙의 8명 여행가가 들려줄 저마다의 흥미진진한 이야기를 찾아 떠나라. 픽셀 그래픽으로 그려진 광활한 세계에서 8개의 역할을 맡아 8개의 모험을 완성하는 것이 너의 임무다.",
+    "description": "8명의 여행가, 8개의 모험, 8개의 역할. 광활한 Orsterra 세계로 여정을 떠나 여행가 8명 각각의 흥미진진한 이야기와 만나보십시오.",
+    "tags": [
+      "RPG",
+      "JRPG",
+      "픽셀 그래픽",
+      "저사양"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 305,
+    "current_players": 664
+  },
+  {
+    "rank": 54,
+    "game_id": "202e686a-a0f2-41c1-b799-9aaeb3e964d9",
+    "name": "Company of Heroes",
+    "old_intro": "8명까지 함께 제2차 세계 대전 전장을 지휘하라. 전략과 우정이 부딪힐 때, 진정한 영웅이 탄생한다.",
+    "description": "실감 나는 제2차 세계 대전 게임인 Company of Heroes는 영웅적인 병사의 희생과 전쟁으로 파괴된 지역 그리고 역동적인 전장에 생명을 불어넣은 차세대 실시간 전략 게임입니다. 추가 사용자 리뷰는 &quot;Company of Heroes - 레거시 에디션&quot; 페이지에서 확인하십시오.",
+    "tags": [
+      "전략",
+      "2차 세계대전",
+      "RTS"
+    ],
+    "players": "1-8",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "캠페인 플레이",
+      "스킬미시 전투",
+      "멀티플레이 대전",
+      "협력 미션"
+    ],
+    "heat_rank": 308,
+    "current_players": 1322
+  },
+  {
+    "rank": 55,
+    "game_id": "3d395c9a-ea85-4f06-aa4b-681a2db5d120",
+    "name": "Human Fall Flat",
+    "old_intro": "초현실적 세계에서 친구들과 함께 퍼즐을 풀고 장애물을 넘어라. 물리 엔진이 만드는 예측 불가능한 상황에서 웃음과 좌절이 뒤섞인 진정한 협력의 맛을 경험하게 될 것이다.",
+    "description": "Human Fall Flat은 부유하는 초현실적 세계에서 가벼운 마음으로 즐길 수 있는 유쾌한 플랫폼 게임 세트로, 혼자서 플레이하거나 최대 8명의 플레이어와 함께 온라인으로 플레이할 수 있습니다. 무료로 제공되는 새로운 레벨을 통해 더욱 흥미로운 게임과 활기찬 커뮤니티가 계속 유지됩니다.",
+    "tags": [
+      "코미디",
+      "퍼즐",
+      "물리엔진"
+    ],
+    "players": "1-8",
+    "recommended_players": "2-4인",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "협력 퍼즐 풀이",
+      "물리엔진 실험",
+      "레벨 탐험",
+      "코미디 상황 연출"
+    ],
+    "heat_rank": 314,
+    "current_players": 1908
+  },
+  {
+    "rank": 56,
+    "game_id": "947fb1ff-9ad7-4458-b537-1bd7c4f94558",
+    "name": "The Wolf Among Us",
+    "old_intro": "동화 속 악당들이 현대 도시에 숨어 있다. 빅 비 울프 형사가 되어 끔찍한 살인사건을 풀어내되, 당신의 선택 하나가 모두를 망친다는 사실을 명심하라.",
+    "description": "동화 속 악당들이 현대 도시에서 몰래 살고 있다는 걸 아셨나요? 빅비 울프 형사는 그들 사이에서 벌어지는 끔찍한 살인사건을 추적하다가, 한 번의 선택이 모든 것을 뒤바꾼다는 걸 깨닫게 됩니다. 당신의 결정이 누군가의 운명을 좌우하는 이 어두운 추리극에서, 과연 옳은 판단이 무엇일까요?",
+    "tags": [
+      "탐정",
+      "스토리 풍부",
+      "Episodic",
+      "저사양"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 317,
+    "current_players": 122
+  },
+  {
+    "rank": 57,
+    "game_id": "bd26f056-e4fe-40c0-a95f-b3b8afc004d2",
+    "name": "Keep Talking and Nobody Explodes",
+    "old_intro": "시한폭탄 앞에서 친구들과 설명만으로 폭탄을 해체하라. 말 한 마디 잘못하면 모두 함께 날아간다.",
+    "description": "당신은 시한폭탄과 함께 혼자 방에 갇혀 있습니다. 당신의 친구들이 폭탄을 해체할 매뉴얼을 가지고 있으나, 그들은 폭탄을 볼 수 없지요. 그러니 여러분은 오직 대화로 이 상황을 풀어 가야 합니다 - 빠르게요! 이 로컬 협동 게임은 최소한 두 명, 또는 그 이상의 플레이어가 있어야 합니다.",
+    "tags": [
+      "의사소통",
+      "타임어택",
+      "비대칭협동"
+    ],
+    "players": "2-6",
+    "recommended_players": "3-4인",
+    "solo_playable": false,
+    "difficulty": "어려움",
+    "activities": [
+      "폭탄 해체",
+      "의사소통",
+      "타임어택",
+      "난제 풀이",
+      "협력 플레이"
+    ],
+    "heat_rank": 321,
+    "current_players": 247
+  },
+  {
+    "rank": 58,
+    "game_id": "bf1f000b-3739-4732-8fb0-12bbb944ecf9",
+    "name": "마블 스파이더맨 2",
+    "old_intro": "피터 파커와 마일즈 모랄레스가 되어 뉴욕을 누비고 심비오트의 위협을 막아라. 우정과 책임 사이에서 흔들리는 두 영웅의 이야기를 직접 경험하게 될 것이다.",
+    "description": "함께. 더 강해져라. 많은 호평을 받은 스파이더맨 프랜차이즈 신규 챕터의 PC 버전에서는 피터 파커와 마일즈 모랄레스가 삶, 우정, 그리고 수호자의 의무 사이에서 균형을 찾는 사이, 심비오트의 강력한 힘이 그들을 절박한 싸움으로 몰아넣습니다.",
+    "tags": [
+      "Superhero",
+      "오픈월드",
+      "액션 어드벤처"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 326,
+    "current_players": 4279
+  },
+  {
+    "rank": 59,
+    "game_id": "e6b212a8-3c01-44a3-9808-00ee1e28b82d",
+    "name": "Grand Theft Auto IV: Complete Edition",
+    "old_intro": "뉴욕을 닮은 거대한 도시에서 자동차를 훔치고 경찰을 피하며 범죄의 쾌감에 빠져라. 세 명의 주인공으로 펼쳐지는 무법자의 삶, 지금 시작하지 않겠는가.",
+    "description": "자동차를 훔치고, 경찰을 피하고, 도시를 누비는 게 취미라면 당신을 위한 게임이 여기 있습니다. 뉴욕을 닮은 거대한 도시에서 세 명의 주인공이 펼치는 범죄 스토리를 경험해보세요. 총 들고 차 몰고 하늘 높이 나는 느낌, 이 게임에서라면 가능합니다.",
+    "tags": [
+      "오픈월드",
+      "차량시뮬",
+      "범죄"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "싱글플레이 스토리",
+      "멀티플레이 모드",
+      "차량 경주",
+      "미션 플레이"
+    ],
+    "heat_rank": 367,
+    "current_players": null
+  },
+  {
+    "rank": 60,
+    "game_id": "cbc1254a-3704-46ae-8c75-0f17fd1840b7",
+    "name": "BeamNG.drive",
+    "old_intro": "차를 부숴도, 구부려도, 날려도 된다. 현실의 물리법칙을 무시하는 미친 운전 실험을 시작하라.",
+    "description": "뭐든지 할 수 있는 동적 소프트 보디 물리 시뮬레이터입니다.",
+    "tags": [
+      "시뮬레이션",
+      "운전",
+      "물리엔진"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 380,
+    "current_players": 24134
+  },
+  {
+    "rank": 61,
+    "game_id": "406ae5b8-a3d5-4d96-be2a-b95933439143",
+    "name": "The Last of Us™ Part II Remastered",
+    "old_intro": "폐허가 된 세상에서 혼자 살아남아라. 300번 이상 상을 받은 이 여정을 PC의 더욱 아름다운 그래픽으로 다시 경험하거나, 새로운 서바이벌 모드에서 죽음 앞의 긴장감을 맛보라.",
+    "description": "300개가 넘는 GOTY 수상작의 리마스터 버전을 PC에서 경험해 보세요. 그래픽 개선은 물론, 로그라이크 서바이벌 모드 노 리턴과 같은 새로운 게임플레이 모드와 같은 다양한 기능을 포함합니다.",
+    "tags": [
+      "스토리 풍부",
+      "포스트아포칼립스",
+      "3인칭 슈팅"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "싱글플레이 스토리",
+      "서바이벌 모드",
+      "노 리턴 모드"
+    ],
+    "heat_rank": 399,
+    "current_players": 5010
+  },
+  {
+    "rank": 62,
+    "game_id": "fe26c12e-8d78-456c-aa34-d8d7ed616593",
+    "name": "Dead by Daylight",
+    "old_intro": "네 명의 생존자가 피에 굶주린 살인마에게 쫓긴다. 친구들과 함께 이 섬뜩한 악의 영역에서 살아남아라. 혹은 살인마 편에 서서 그들을 사냥하거나.",
+    "description": "10년의 호러. 10년간 돌발적으로 급습한 공포와 아슬아슬한 순간들. 10년의 잔혹한 희생과 짜릿한 탈출. 죽음조차도 피할 수 없는 섬뜩한 악의 영역에 영원히 갇힌 네 명의 생존자는 신경과 재치를 시험하는 잔혹한 게임에서 피에 굶주린 살인마에 맞서 싸워야 합니다. 어느 편에 설지 선택하고 공포 게임 최고의 비대칭 멀티플레이어에서 긴장감과 공포의 세계로 들어가보세요.",
+    "tags": [
+      "호러",
+      "서바이벌 호러",
+      "온라인 협동"
+    ],
+    "players": "1-5",
+    "recommended_players": "팀플",
+    "solo_playable": false,
+    "difficulty": "보통",
+    "activities": [
+      "생존자로 탈출",
+      "킬러로 사냥",
+      "협력 생존",
+      "심문 및 추격",
+      "스킬 숙련"
+    ],
+    "heat_rank": 400,
+    "current_players": 55094
+  },
+  {
+    "rank": 63,
+    "game_id": "0b826b74-1d45-49d1-a002-2084b46de374",
+    "name": "Monster Hunter Wilds",
+    "old_intro": "친구들과 함께 거칠고 역동적인 필드에 뛰어들어 몬스터를 사냥하라. 팀워크가 없으면 너도 먹이가 될 뿐이다.",
+    "description": "거칠고 치열한 자연의 습격. 시시각각 역동적으로 그 모습을 바꾸는 필드. 양면성을 지닌 세계를 살아가는 몬스터와 사람들의 이야기. 더욱더 발전한 헌팅 액션과 끊임없는 몰입감을 추구하는 궁극의 사냥 체험이 당신을 기다리고 있다.",
+    "tags": [
+      "사냥",
+      "온라인 협동",
+      "연애 시뮬"
+    ],
+    "players": "2-4",
+    "recommended_players": null,
+    "solo_playable": false,
+    "difficulty": "보통",
+    "activities": [
+      "몬스터 사냥",
+      "협력 퀘스트",
+      "장비 제작",
+      "연애 이벤트"
+    ],
+    "heat_rank": 400,
+    "current_players": 22623
+  },
+  {
+    "rank": 64,
+    "game_id": "ef18ae98-f0b5-41de-96d2-1a2cf0b67c14",
+    "name": "Unturned",
+    "old_intro": "좀비 떼가 우글거리는 황폐한 세상에서 친구들과 함께 생존하라. 물론 서로를 쏘지 않으면서 말이다.",
+    "description": "좀비가 우글거리는 이 황폐한 세상에서, 당신은 아직도 '살아있는' 몇 안 되는 인간 중 한 명이다. 친구들과 함께 총을 들고 생존의 길을 찾아야 한다 - 물론 서로를 쏘지 않으면서 말이다. 무기를 주우러 가다가 좀비 무리에 깔려 죽을지, 아니면 기적적으로 살아남을지는 오롯이 당신의 손에 달렸다.",
+    "tags": [
+      "생존",
+      "좀비",
+      "오픈월드"
+    ],
+    "players": "1-4",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "좀비 사냥",
+      "무기 수집",
+      "기지 건설",
+      "협력 생존",
+      "PvP 전투"
+    ],
+    "heat_rank": 409,
+    "current_players": 11962
+  },
+  {
+    "rank": 65,
+    "game_id": "f66116bb-541c-4742-92a0-7d90b179b4d1",
+    "name": "Phasmophobia",
+    "old_intro": "유령 사냥꾼이 되어 친구들과 어두운 현장으로 출동하라. 증거를 모으다 갑자기 튀어나오는 유령에 함께 비명을 지르는 경험, 이것이 진정한 협력이다.",
+    "description": "유령 사냥꾼 모집 중! 초자연 현상이 급증하고 있으며, 당신과 팀원들이 온갖 유령 퇴치 장비를 들고 출동해야 합니다. 증거를 모으는 것이 목표지만, 어두운 곳에서 갑자기 나타나는 유령 때문에 비명을 지를 준비는 되어 있으신가요? 함께라면 조금은 덜 무서울 거예요. 아마도요.",
+    "tags": [
+      "호러",
+      "온라인 협동",
+      "심리 공포"
+    ],
+    "players": "1-4",
+    "recommended_players": "3-4인",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "유령 증거 수집",
+      "초자연 현상 조사",
+      "유령 퇴치 장비 사용",
+      "협력 생존"
+    ],
+    "heat_rank": 411,
+    "current_players": 14302
+  },
+  {
+    "rank": 66,
+    "game_id": "789438fb-0583-4f44-b993-dfcb3ce83880",
+    "name": "Nioh: Complete Edition",
+    "old_intro": "도적과 요괴가 우글대는 전국시대에서 사무라이 윌리엄이 되어 죽음의 게임을 헤쳐나가라. 혼자 또는 친구와 함께 치열한 전투를 이겨내고 진정한 성취감을 얻을 수 있다.",
+    "description": "도적이 들끓고 요괴가 우글대는 독특한 정취의 전국시대를 무대로, 실존인물 「미우라 안진」을 모티브로 한 사무라이 윌리엄이 사투를 전개해 나가는 다크 전국 액션 RPG입니다. 전국시대 말기의 역사적 사실을 베이스로, 탄탄한 스토리와, 「전국시대 죽음의 게임」이라고 불릴 만한 긴장감과 높은 성취감을 즐길 수 있는 타이틀입니다.",
+    "tags": [
+      "소울라이크",
+      "RPG",
+      "고난도"
+    ],
+    "players": "1-4",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "협력 플레이",
+      "대전",
+      "비동기 상호작용",
+      "공략 공유"
+    ],
+    "heat_rank": 430,
+    "current_players": 380
+  },
+  {
+    "rank": 67,
+    "game_id": "6c6bf534-ac91-4170-9dee-2bd7c4b2612c",
+    "name": "라스트 에포크",
+    "old_intro": "15개 직업 중 하나를 골라 친구들과 함께 던전을 헤집고 전설 무기를 모아라. 스킬 트리를 마음대로 꾸며 파괴의 쾌감을 맛보는 순간, 넌 이 게임의 노예가 될 것이다.",
+    "description": "과거를 파헤치고 미래를 재건할 여행이 펼쳐집니다. 15개의 직업 중 하나를 택해 전직하고, 위험천만한 던전을 탐험하세요. 엄청난 전리품을 사냥하고, 전설 무기를 제작하세요. 100가지 이상의 변화무쌍한 스킬 트리가 지닌 힘을 마음껏 활용하세요. 열정 넘치는 액션 RPG 매니아들이 라스트 에포크를 개발합니다.",
+    "tags": [
+      "액션 RPG",
+      "루팅",
+      "핵앤슬래시"
+    ],
+    "players": "1-4",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "던전 탐험",
+      "보스 사냥",
+      "아이템 루팅",
+      "전직 빌드 공유",
+      "협력 플레이"
+    ],
+    "heat_rank": 445,
+    "current_players": 32215
+  },
+  {
+    "rank": 68,
+    "game_id": "dfee86ab-df57-443c-ae72-b463fdad6916",
+    "name": "Nioh 2 – The Complete Edition",
+    "old_intro": "도적과 요괴가 판치는 전국시대에서 살아남아라. 최대 3명이 함께 요괴화하며 영암을 무찌르는 손맛 깊은 사투를 경험하게 될 것이다.",
+    "description": "도적이 들끓고 요괴들이 횡행하는 황폐한 전국시대를 무대로 사투를 벌이는 다크 전국 액션 RPG입니다. 새로운 배틀이 가능해지는 &quot;요괴화&quot;, 흉측한 모습으로 공격하는 사악한 요괴들과 그들이 만들어낸 &quot;영암&quot;의 세계 등, 새로운 요소를 더하여 손맛과 달성감이 더욱 깊어졌습니다. 정통 진화한 &quot;전국 하드코어 게임&quot;을 즐겨 주십시오.",
+    "tags": [
+      "RPG",
+      "소울라이크",
+      "캐릭터 커스터마이징"
+    ],
+    "players": "1-3",
+    "recommended_players": null,
+    "solo_playable": false,
+    "difficulty": "보통",
+    "activities": [
+      "협력 플레이",
+      "대전",
+      "레이드",
+      "아이템 거래"
+    ],
+    "heat_rank": 445,
+    "current_players": 691
+  },
+  {
+    "rank": 69,
+    "game_id": "d2ffd8f1-74b1-4e36-bc5f-c2c4354c3a2a",
+    "name": "Sons Of The Forest",
+    "old_intro": "외딴 섬의 식인종 지옥에서 억만장자를 찾아내라. 친구들과 함께라면 생존 확률이 올라간다. 아마도.",
+    "description": "외딴 섬에서 실종된 억만장자를 찾기 위해 파견된 당신은 식인종으로 가득한 지옥을 마주하게 됩니다. 이 무시무시한 오픈 월드 기반의 공포 서바이벌 시뮬레이터에서 혼자 또는 친구들과 함께 무기를 제작하고 건물을 지으며 생존을 위해 고군분투하세요.",
+    "tags": [
+      "생존",
+      "오픈월드",
+      "서바이벌 호러"
+    ],
+    "players": "1-4",
+    "recommended_players": "2-4인",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "무기 제작",
+      "건물 건축",
+      "생존 전략",
+      "괴물 사냥",
+      "자원 채집"
+    ],
+    "heat_rank": 463,
+    "current_players": 15292
+  },
+  {
+    "rank": 70,
+    "game_id": "5480b90b-49ce-4dab-95d0-44666cf9b77c",
+    "name": "옥토패스 트래블러 II",
+    "old_intro": "8명의 여행자가 각자의 사연을 품고 떠난다. 턴제 전투로 펼쳐지는 대륙 곳곳의 모험에서 그들의 이야기를 완성하라.",
+    "description": "2018년 발매 후, 전 세계 출하 및 다운로드 300만 장을 돌파한 「옥토패스 트래블러」의 시리즈 완전 신작 RPG. 도트 그래픽과 3D CG를 융합한 「HD-2D」 그래픽이 한층 더 진화한 모습을 선보인다.",
+    "tags": [
+      "RPG",
+      "턴제",
+      "JRPG",
+      "저사양"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 463,
+    "current_players": 662
+  },
+  {
+    "rank": 71,
+    "game_id": "47d877d6-5e48-4a27-8e49-3c3503a325e2",
+    "name": "Lethal Company",
+    "old_intro": "친구 셋과 함께 버려진 달로 내려가 고철을 줍되, 갑자기 나타나는 정체불명의 것들로부터 살아남아야 한다. 누가 먼저 죽을지는 둘째 치고, 팀의 수익이 우선이다.",
+    "description": "버려진 달들을 헤매며 고철을 주워 모아 '더 컴퍼니'에 팔아먹는 일. 물론 그 과정에서 뭔가 이상한 게 자꾸만 튀어나온다. 친구들과 함께 비명을 지르며 도망치고, 누군가는 죽고, 남은 자들은 웃음을 참으며 다음 달로 향한다. 생존과 수익 사이에서 흔들리는 당신의 선택이 팀의 운명을 결정할 것이다.",
+    "tags": [
+      "온라인 협동",
+      "호러",
+      "1인칭",
+      "저사양"
+    ],
+    "players": "1-4",
+    "recommended_players": null,
+    "solo_playable": false,
+    "difficulty": "보통",
+    "activities": [
+      "고철 수집",
+      "몬스터 회피",
+      "팀 생존",
+      "수익 경쟁",
+      "달 탐험"
+    ],
+    "heat_rank": 469,
+    "current_players": 5097
+  },
+  {
+    "rank": 72,
+    "game_id": "69ff1d3f-93e1-430d-8232-2a1e44c9d9d2",
+    "name": "Warhammer 40,000: Rogue Trader",
+    "old_intro": "친구들과 함께 광활한 우주를 누비며 로그 트레이더의 운명을 개척하라. 당신의 선택이 은하계의 미래를 결정한다.",
+    "description": "Games Workshop과의 긴밀한 파트너십으로 제작된 Warhammer 40,000: Rogue Trader는 비평가들의 찬사를 얻은 Pathfinder: Wrath of the Righteous를 개발한 Owlcat Games가 선보이는 스토리 기반의 클래식 RPG입니다.",
+    "tags": [
+      "캐릭터 커스텀",
+      "영화적",
+      "스토리 풍부",
+      "저사양"
+    ],
+    "players": "2-4",
+    "recommended_players": null,
+    "solo_playable": false,
+    "difficulty": "보통",
+    "activities": [
+      "캐릭터 커스터마이징",
+      "스토리 진행",
+      "턴제 전투",
+      "선택지 결정"
+    ],
+    "heat_rank": 502,
+    "current_players": 7132
+  },
+  {
+    "rank": 73,
+    "game_id": "85b31391-6bbe-4865-9e30-db84edc5bf59",
+    "name": "Grand Theft Auto V 인핸스드",
+    "old_intro": "거대한 도시에서 범죄의 제왕이 되어라. 화려한 비주얼과 빠른 속도로 돌아온 차세대 Grand Theft Auto V에서 너의 범죄 제국을 건설하는 것이다.",
+    "description": "엔터테인먼트 블록버스터인 Grand Theft Auto V와 Grand Theft Auto 온라인을 경험해 보십시오. 이제 환상적인 비주얼과 더욱 빠른 로딩, 3D 오디오 등과 함께 차세대 수준으로 업그레이드되었으며, GTA 온라인 플레이어를 위한 특별 콘텐츠 또한 마련되어 있습니다.",
+    "tags": [
+      "오픈월드",
+      "범죄",
+      "성인",
+      "저사양"
+    ],
+    "players": "1-30",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "협력 미션",
+      "경쟁 대전",
+      "자유 탐험",
+      "차량 레이싱",
+      "해이스트"
+    ],
+    "heat_rank": 510,
+    "current_players": 47085
+  },
+  {
+    "rank": 74,
+    "game_id": "efac2013-433e-461e-9beb-fbab259671e4",
+    "name": "ARC Raiders",
+    "old_intro": "친구들과 함께 아크의 침략으로 황폐해진 지구에 내려가 생존자를 구출하라. 팀워크가 없으면 미지의 머신들에게 당할 뿐이다.",
+    "description": "ARC Raiders는 아크라 불리는 미지의 머신들에게 침공당한 위험천만한 미래 지구를 배경으로 하는 멀티플레이어 구출 어드벤처 게임입니다.",
+    "tags": [
+      "저사양",
+      "온라인 대전",
+      "온라인 협동"
+    ],
+    "players": "2-4",
+    "recommended_players": null,
+    "solo_playable": false,
+    "difficulty": "보통",
+    "activities": [
+      "협력 미션 수행",
+      "아크 토벌",
+      "온라인 대전",
+      "구출 작전"
+    ],
+    "heat_rank": 510,
+    "current_players": 45077
+  },
+  {
+    "rank": 75,
+    "game_id": "bc513b4c-aad4-47ff-b114-bf595a34bc47",
+    "name": "Untitled Goose Game",
+    "old_intro": "한 마리의 말썰아먹는 거위가 되어 조용한 시골 마을을 난장판으로 만들어라. 친구와 함께라면 혼란은 배로 증가한다.",
+    "description": "어느 한적한 시골 마을에서 장난꾸러기 거위 한 마리를 조정해보세요.",
+    "tags": [
+      "코미디",
+      "Villain Protagonist",
+      "귀여운"
+    ],
+    "players": "1-2",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "협력 플레이",
+      "장난 완수",
+      "물건 훔치기",
+      "마을 탐험"
+    ],
+    "heat_rank": 525,
+    "current_players": 239
+  },
+  {
+    "rank": 76,
+    "game_id": "7d29fba1-b266-444f-8539-d75cdc2817d1",
+    "name": "Witchfire",
+    "old_intro": "마녀 사냥꾼으로서 구원의 마지막 임무에 나서라. 어두운 판타지 세계에서 혼자 총을 들고 살아남아야 한다.",
+    "description": "Witchfire는 1인칭 다크 판타지 RPG 슈팅 게임입니다. 과거에 사악한 죄인이었던 마녀 사냥꾼이 되어 구원을 향한 마지막 임무를 수행하세요.",
+    "tags": [
+      "FPS",
+      "익스트랙션 슈팅",
+      "로그라이트",
+      "저사양"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 527,
+    "current_players": 521
+  },
+  {
+    "rank": 77,
+    "game_id": "7cd2a357-86af-46eb-81cc-096fd40f165f",
+    "name": "DayZ",
+    "old_intro": "종말의 땅에서 생존하라. 좀비 무리를 피하고 자원을 확보하며 낯선 생존자들과 협력할지, 배신할지 판단하는 순간이 온다.",
+    "description": "대종말 이후의 세계에서 당신은 과연 얼마나 버틸 수 있을까요? 감염된 ‘좀비’들이 세상을 장악한 땅에서, 제한된 자원을 두고 다른 생존자와 경쟁해야 합니다. 낯선 이들과 손을 잡고 함께 살아남으시겠습니까? 아니면 배신을 피하기 위해 고독한 늑대가 되시겠습니까? 이것이 바로 DayZ, 곧 당신의 이야기입니다.",
+    "tags": [
+      "생존",
+      "오픈월드",
+      "온라인 협동"
+    ],
+    "players": "1-8",
+    "recommended_players": "팀플",
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "자원 수집",
+      "좀비 전투",
+      "기지 건설",
+      "협력 생존",
+      "PvP 대전"
+    ],
+    "heat_rank": 538,
+    "current_players": 46615
+  },
+  {
+    "rank": 78,
+    "game_id": "aa95ac28-ce46-47b4-ba37-60fd0dd0755d",
+    "name": "ELDEN RING 밤의 통치자",
+    "old_intro": "친구들과 함께 밤의 통치자 앞에 서라. 엘든 링의 세계에서 매번 달라진 시련을 헤쳐나갈 준비가 되었는가.",
+    "description": "『ELDEN RING 밤의 통치자』는 ELDEN RING 세계관을 이용해 게임의 핵심 디자인을 재구축하여 플레이어에게 새로운 게임 체험을 전달하고자 하는 신작 어드벤처 게임입니다.",
+    "tags": [
+      "소울라이크",
+      "온라인 협동",
+      "Rogue-like"
+    ],
+    "players": "2-3",
+    "recommended_players": null,
+    "solo_playable": false,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 547,
+    "current_players": 10519
+  },
+  {
+    "rank": 79,
+    "game_id": "9d4abb32-7e5c-49e4-9e48-0e3269c87870",
+    "name": "프로스트펑크2",
+    "old_intro": "얼어붙은 지구에서 도시를 건설하고 파벌들의 눈치를 봐가며 인류를 구원하라. 결정 하나가 모두를 살리거나 망치게 될 것이다.",
+    "description": "눈보라의 재앙이 지구를 덮친 후 30년 뒤를 배경으로 하는 사회 생존 게임에서 도시를 개발하고, 확장하고, 발전시키세요. 프로스트펑크2에서는 끝나지 않는 혹독한 겨울을 견디는 동시에 모든 결정을 주시하는 위원회 파벌들과 조화를 이루어야 합니다.",
+    "tags": [
+      "전략",
+      "도시건설",
+      "생존",
+      "저사양"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 554,
+    "current_players": 954
+  },
+  {
+    "rank": 80,
+    "game_id": "01ac01bc-87cf-4db6-a14e-29b520996b45",
+    "name": "PEAK",
+    "old_intro": "친구들과 함께 신비한 섬의 산을 오르거나 혼자 정상을 노린다. 한 발 잘못 디디면 모두 떨어지니, 로프를 잡고 천천히 올라가자.",
+    "description": "PEAK는 작은 실수 하나가 치명적인 결과를 초래할 수 있는 협동 등반 게임입니다. 혼자서든, 길 잃은 자연 스카우트와 함께든, 신비한 섬에서 구조될 유일한 희망은 중앙에 우뚝 솟은 산을 오르는 것뿐입니다. 당신은 과연 정상에 오를 수 있을까요?",
+    "tags": [
+      "등반",
+      "생존",
+      "물리엔진"
+    ],
+    "players": "1-4",
+    "recommended_players": "3-5인",
+    "solo_playable": true,
+    "difficulty": "쉬움",
+    "activities": [
+      "🧗 등반",
+      "🤝 로프/장비 협동 사용"
+    ],
+    "heat_rank": 568,
+    "current_players": 21804
+  },
+  {
+    "rank": 81,
+    "game_id": "5bcf4bb7-5104-470d-924c-fb7b27c292bf",
+    "name": "Far Cry 3 - Blood Dragon",
+    "old_intro": "사이버 군인 렉스 콜트가 되어 80년대 감성의 형광빛 세계에서 악당들을 무찌르고 세상을 구해라. 친구와 함께 초록 눈의 드래곤들을 상대하며 화려하게 폭발시키는 쾌감을 느껴보자.",
+    "description": "2007년, 사이버 개조 군인 렉스 콜트가 되어 80년대 감성의 미래 세계에 뛰어든다. 형광빛이 흐르는 도시에서 악당들을 무찌르고, 여자를 구하고, 세상을 구원하는 것이 당신의 미션이다. 친구와 함께 초록색 눈의 드래곤들과 싸우며 멋지게 폭발하는 것도 보너스.",
+    "tags": [
+      "FPS",
+      "레트로",
+      "코미디"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "협력 캠페인",
+      "드래곤 사냥",
+      "악당 처치",
+      "미션 수행"
+    ],
+    "heat_rank": 575,
+    "current_players": 93
+  },
+  {
+    "rank": 82,
+    "game_id": "e9a4fe41-4c30-452a-a751-7d0308506914",
+    "name": "Brawlhalla",
+    "old_intro": "최대 8명의 친구들을 무대 위에 모아 서로를 날려버려라. 무술의 향연에서 누가 진정한 레전드인지 증명하는 것은 너의 몫이다.",
+    "description": "최대 8명이 한 무대에서 무술을 펼치는 격투의 향연, 브롤할라! 친구들과 함께 무대 밖으로 날려버리거나, 수천 명의 플레이어들과 랭크 매치에서 자존심을 건다. PlayStation부터 스마트폰까지 어디서나 무료로 즐길 수 있으니, 이제 당신이 60명의 레전드 중 누가 최고인지 증명할 차례다.",
+    "tags": [
+      "격투",
+      "2D 격투",
+      "2D 플랫포머"
+    ],
+    "players": "1-8",
+    "recommended_players": null,
+    "solo_playable": false,
+    "difficulty": "보통",
+    "activities": [
+      "친구와 대전",
+      "랭크 매치",
+      "8인 무한 대전",
+      "레전드 육성"
+    ],
+    "heat_rank": 591,
+    "current_players": 14720
+  },
+  {
+    "rank": 83,
+    "game_id": "1f3ee0f6-6ce5-4e57-9d52-5e284ee88053",
+    "name": "Europa Universalis IV",
+    "old_intro": "친구들과 함께 국가를 이끌고 세계를 정복하거나 외교로 조종해라. 역사를 다시 쓰는 쾌감과 동맹의 배신이 교차하는 제국 건설 게임이다.",
+    "description": "비교할 수 없는 자유도, 깊이 있는 스토리, 정확한 역사적 고증을 즐기며 국토를 다스리고 세계를 정복하세요. 세계 역사를 새롭게 쓰며 시대를 풍미할 제국을 만드세요.",
+    "tags": [
+      "Grand Strategy",
+      "전략",
+      "Historical",
+      "저사양"
+    ],
+    "players": "2-4",
+    "recommended_players": null,
+    "solo_playable": false,
+    "difficulty": "보통",
+    "activities": [
+      "국가 선택 및 통치",
+      "영토 전쟁",
+      "외교 협상",
+      "경제 무역",
+      "연합 플레이"
+    ],
+    "heat_rank": 608,
+    "current_players": 11728
+  },
+  {
+    "rank": 84,
+    "game_id": "1cef4185-7412-437c-aedd-2377b71de0de",
+    "name": "The Elder Scrolls® Online",
+    "old_intro": "친구들과 함께 광활한 세계에 뛰어들어 던전을 탐험하고 보스를 무찌르며 전설이 되어라. 길드를 이루고 PvP 전투까지 벌이다 보면 우정도 깊어지고 레벨도 오른다.",
+    "description": "모든 전설에는 시작이 있으며, The Elder Scrolls Online에서는 당신이 바로 전설의 시작입니다. 수백만 명의 플레이어와 함께 광활하고 생동감 넘치는 Elder Scrolls 세계를 배경으로 하는 온라인 판타지 RPG에 참여하십시오.",
+    "tags": [
+      "RPG",
+      "MMORPG",
+      "오픈월드",
+      "저사양"
+    ],
+    "players": "2-4",
+    "recommended_players": null,
+    "solo_playable": false,
+    "difficulty": "보통",
+    "activities": [
+      "던전 탐험",
+      "PvP 전투",
+      "길드 활동",
+      "보스 레이드",
+      "퀘스트"
+    ],
+    "heat_rank": 626,
+    "current_players": 11237
+  },
+  {
+    "rank": 85,
+    "game_id": "9da521b2-39af-4a4b-9959-dc10f6db61e7",
+    "name": "Salt and Sanctuary",
+    "old_intro": "저주받은 섬에 홀로 내려가 타락한 영주들을 무찌르고 그 비밀을 파헤쳐라. 잔인한 전투와 검은 비밀이 가득한 이곳에서 살아남는 것이 네 유일한 임무다.",
+    "description": "두렵고도 잔혹한 섬의 탐험을 시작합니다… Salt and Sanctuary는 신속하고, 잔인하며, 복잡한 전투 시스템을 지닌 2D RPG입니다. 저주받은 도시의 잊힌 영역이나, 피에 물든 던전이나, 오염된 기념비와 같은 장소를 돌아다니며, 한때 축복을 받았지만 지금은 타락하고 만 영주들을 조우하세요.",
+    "tags": [
+      "소울라이크",
+      "메트로배니아",
+      "다크 판타지"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 633,
+    "current_players": 95
+  },
+  {
+    "rank": 86,
+    "game_id": "90be3c20-9ec6-4242-b9b5-68f8c540e910",
+    "name": "Breathedge",
+    "old_intro": "우주선이 추락했다. 죽지 않는 닭과 함께 잔해를 뒤지며 살아남고, 도구를 만들고, 진실을 파헤쳐라.",
+    "description": "우주에서 살아남으세요! 죽지 않는 닭과 함께 갑작스럽게 일어난 우주선 추락의 진실을 밝혀내세요. 잔해 속을 생존 &amp; 탐험하기 위해 제작 도구를 만들고, 이동수단을 타고, 심지어는 우주 정거장까지 조종하세요.",
+    "tags": [
+      "오픈월드 생존",
+      "우주",
+      "생존"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 641,
+    "current_players": 466
+  },
+  {
+    "rank": 87,
+    "game_id": "702f4e41-a516-4c78-bd1a-1b3b1fb977eb",
+    "name": "Life is Strange 2",
+    "old_intro": "경찰을 피해 멕시코로 달아나는 형 숀이 되어 초능력에 눈뜬 동생을 지켜내라. 당신의 선택이 이 형제의 운명을 결정한다.",
+    "description": "비극적인 사건 이후 형 숀과 동생 다니엘은 집을 떠나 멕시코를 향해 달아난다. 경찰을 피하면서 동시에 갑자기 초능력까지 깨어난 동생을 챙겨야 하는 형의 입장이 되어보자. 여정 곳곳에서 만나는 사람들과의 선택이 모든 것을 바꾸는, 형제의 도망 로드무비 같은 이야기다.",
+    "tags": [
+      "선택이 중요한",
+      "스토리 풍부",
+      "분위기 있는"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 660,
+    "current_players": 320
+  },
+  {
+    "rank": 88,
+    "game_id": "0135c98b-389b-4969-b46a-a451b42d6d6c",
+    "name": "Outlast 2",
+    "old_intro": "문명에서 벗어난 황야의 광신도 마을에서 살아남아라. 친구와 함께라면 정신은 챙길 수 있을 것이다.",
+    "description": "문명에서 벗어난 황야 깊숙이 숨겨진 마을, 템플 게이트. 여기선 설리반 노스와 그의 추종자들이 세상의 종말을 준비 중이고, 당신은 정확히 그 한복판에 떨어져 있습니다. 저사양 PC에서도 즐길 수 있는 이 협력 공포 게임에서, 친구와 함께 정신 나간 광신도들의 광기 속을 헤쳐나가며 살아남으세요 — 혼자라면 미쳤을 테니까요.",
+    "tags": [
+      "호러",
+      "심리 공포",
+      "서바이벌 호러",
+      "저사양"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "협력 생존",
+      "공포 탈출",
+      "광신도 회피",
+      "스토리 진행"
+    ],
+    "heat_rank": 685,
+    "current_players": 327
+  },
+  {
+    "rank": 89,
+    "game_id": "ece18ef7-b443-40de-ae6c-38028aec03da",
+    "name": "Esoteric Ebb",
+    "old_intro": "고블린 동료와 함께 정치 음모를 풀어내고 주사위를 굴려 운명을 결정하라. 전설의 성직자가 될지, 아니면 모든 것을 망칠지는 전적으로 너에게 달렸다.",
+    "description": "Esoteric Ebb is a single-player CRPG inspired by the freedom of tabletop adventures. Unravel a political conspiracy with your goblin sidekick. Roll dice in tense encounters. Become a cleric of legends or completely ruin the campaign.",
+    "tags": [
+      "RPG",
+      "어드벤처",
+      "스토리 풍부",
+      "저사양"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 704,
+    "current_players": 408
+  },
+  {
+    "rank": 90,
+    "game_id": "c8007a33-e33b-4ab0-8a29-c3c27ed34494",
+    "name": "Her Story",
+    "old_intro": "경찰 조사 영상 속 여인의 진실을 파헤쳐라. 수백 개의 영상을 뒤지며 그녀의 이야기를 직접 찾아내는 경험, 지금 시작하자.",
+    "description": "A woman is interviewed seven times by the police. Search the video database and explore hundreds of authentic clips to discover her story in this groundbreaking and award winning narrative game.",
+    "tags": [
+      "수사",
+      "Typing",
+      "선택형 어드벤처"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 719,
+    "current_players": 16
+  },
+  {
+    "rank": 91,
+    "game_id": "57e13d35-7ff0-46ff-af87-fa443d7f8f9d",
+    "name": "Assassin’s Creed® Brotherhood",
+    "old_intro": "로마의 암흑을 밝힐 암살자 조직에 입단하라. 지붕을 누비고, 그림자에 숨고, 형제들과 함께 역사를 바꿔버려.",
+    "description": "It’s time to join the Brotherhood.",
+    "tags": [
+      "오픈월드",
+      "파쿠르",
+      "Stealth"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "협력 미션",
+      "경쟁 멀티",
+      "암살 대전",
+      "약탈"
+    ],
+    "heat_rank": 727,
+    "current_players": 463
+  },
+  {
+    "rank": 92,
+    "game_id": "00f29c76-208f-4a61-9b8c-a7e1a72566d2",
+    "name": "The Outer Worlds 2",
+    "old_intro": "우주의 변방에서 혼자 살아남아라. 총과 재치, 그리고 약간의 운으로 기업의 음모에 맞서는 1인칭 공상 과학 모험이 시작된다.",
+    "description": "The Outer Worlds 2는 Obsidian Entertainment가 선보인, 수상에 빛나는 1인칭 공상 과학 RPG의 속편입니다.",
+    "tags": [
+      "액션",
+      "어드벤처",
+      "RPG"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 737,
+    "current_players": 834
+  },
+  {
+    "rank": 93,
+    "game_id": "6415b53f-8386-400e-b69a-8e6bdb7de105",
+    "name": "GTFO",
+    "old_intro": "친구 3명과 함께 지옥 같은 지하 감옥에 내려가 괴물들을 쏴 죽혀라. 팀워크가 없으면 죽고, 있어도 죽을 수 있다.",
+    "description": "GTFO는 하드코어 협동 호러 슈팅 게임으로, 손에 땀을 쥐게 하는 서스펜스와 심장을 뛰게 하는 폭발적인 액션을 경험할 수 있습니다. 이 치명적인 지하 감옥에서 살아남으려면 은신, 전략, 팀워크를 총동원해야 합니다. 함께 협력하지 못하면, 함께 죽고 말 겁니다.",
+    "tags": [
+      "온라인 협동",
+      "호러",
+      "FPS"
+    ],
+    "players": "2-4",
+    "recommended_players": null,
+    "solo_playable": false,
+    "difficulty": "보통",
+    "activities": [
+      "협력 사냥",
+      "은신 전략",
+      "호러 서바이벌",
+      "팀 전투"
+    ],
+    "heat_rank": 762,
+    "current_players": 836
+  },
+  {
+    "rank": 94,
+    "game_id": "f92b4dd3-95af-4cc8-8569-f733eee643de",
+    "name": "The Sims™ 4",
+    "old_intro": "심들의 인생을 마음대로 창조하고 지배하는 전능한 신이 되어라. 너는 그들의 꿈을 이루게 할 것인가, 아니면 재미로 방해할 것인가.",
+    "description": "아무런 제약 없는 가상 세계에서 심들을 창조하고 지배하는 전능한 힘을 즐기세요. 강력한 권력을 휘두르며 자유롭고 재미있게 인생을 플레이하세요!",
+    "tags": [
+      "생활 시뮬레이션",
+      "캐릭터 커스터마이징",
+      "건축"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 765,
+    "current_players": 30188
+  },
+  {
+    "rank": 95,
+    "game_id": "e2f2d7e2-daeb-4324-b1ca-1678bcfac2bd",
+    "name": "Schedule I",
+    "old_intro": "골목의 노점상에서 시작해 하일랜드 포인트 전역을 장악하는 제국을 건설하라. 친구들과 함께 물류망을 짜고 비즈니스를 일궈야 진짜 주인이 될 수 있다.",
+    "description": "골목의 작은 노점상에서 시작해 하일랜드 포인트 전역을 장악하는 제국을 꿈꿔본 적 있나? 거리의 물류망부터 비즈니스까지 하나하나 손으로 만들어가며 도시의 진짜 주인이 되어보자. 친구와 함께라면 이 험난한 사업의 길도 훨씬 수월할 테니까.",
+    "tags": [
+      "시뮬레이션",
+      "범죄",
+      "오픈월드"
+    ],
+    "players": "2-4",
+    "recommended_players": null,
+    "solo_playable": false,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 772,
+    "current_players": 17212
+  },
+  {
+    "rank": 96,
+    "game_id": "9857d3c1-d01a-48c5-bfe1-12e667b984e4",
+    "name": "Heavy Rain",
+    "old_intro": "종이접기 살인마를 추적하는 네 명의 주인공이 되어라. 너의 선택이 엔딩을 바꾼다.",
+    "description": "셀 수 없는 우여곡절로 가득한 매혹적인 심리 스릴러 극을 체험해 보세요. &quot;종이접기 살인마&quot;로 알려진 범죄자를 잡기 위한 추적이 시작되었습니다. 각자의 단서를 따라온 네 명의 캐릭터는 살인자가 새로운 희생자를 찾는 걸 막기 위한 필사적인 노력에 참여해야 합니다.",
+    "tags": [
+      "선택이 중요한",
+      "스토리 풍부",
+      "멀티 엔딩",
+      "저사양"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 780,
+    "current_players": 533
+  },
+  {
+    "rank": 97,
+    "game_id": "9516c2c4-5458-4b70-a25c-681092a975a0",
+    "name": "Catherine Classic",
+    "old_intro": "사랑과 배신의 악몽에서 벗어나려면 블록을 쌓아 정상에 올라야 한다. 페르소나 팀의 광기어린 퍼즐 액션, 지금 시작하거라.",
+    "description": "Catherine, 사랑과 배신 그리고 약속 너머의 공포에 대한 이야기. 페르소나 시리즈 제작팀이 만든, 성인 취향의 독특한 액션 어드벤처 퍼즐 게임을 즐겨보세요. Classic에서는 PC용으로 성능이 향상되었습니다. 사랑이 끝났나요? 정상에 오르지 못하면 죽음뿐입니다.",
+    "tags": [
+      "성인",
+      "애니메이션풍",
+      "저사양"
+    ],
+    "players": "1-2",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 799,
+    "current_players": 141
+  },
+  {
+    "rank": 98,
+    "game_id": "a69d2df5-0475-4b57-9457-7efb7b454dc1",
+    "name": "Apex 레전드™",
+    "old_intro": "팀을 이루고 전장에 낙하하라. 레전드의 능력을 극대화해 팀 전술로 적들을 제압하고 생존하는 것이 너의 임무다.",
+    "description": "Apex 레전드는 Respawn Entertainment에서 제작한 다양한 수상 경력을 자랑하는 무료 플레이 히어로 슈팅 게임입니다. 게임에 계속해서 추가되는 레전드 캐릭터들의 강력한 능력을 마스터하고 깊이 있는 전술적 분대 플레이, 새롭게 진화하는 게임플레이를 지닌 히어로 슈팅과 배틀 로얄의 혁신을 경험하세요.",
+    "tags": [
+      "배틀로얄",
+      "FPS",
+      "슈팅"
+    ],
+    "players": "2-4",
+    "recommended_players": null,
+    "solo_playable": false,
+    "difficulty": "보통",
+    "activities": [
+      "팀 전투",
+      "배틀로얄",
+      "캐릭터 육성",
+      "랭크 경쟁",
+      "스킨 수집"
+    ],
+    "heat_rank": 800,
+    "current_players": 77422
+  },
+  {
+    "rank": 99,
+    "game_id": "55d07921-b4d1-4ee8-9355-4e666a45dba4",
+    "name": "Halo Infinite",
+    "old_intro": "광활한 오픈 월드에서 외로운 전사로 나서 적들을 격파하라. 혼자지만 결코 약하지 않은 당신의 슈팅 실력이 전장을 결정한다.",
+    "description": "게임 역사상 가장 상징적인 시리즈 중 하나인 Halo가 그 어느 때보다 더 거대해졌습니다. 방대한 오픈 월드 캠페인과 역동적인 무료 멀티플레이어 경험이 특징입니다.",
+    "tags": [
+      "FPS",
+      "슈팅",
+      "1인칭",
+      "저사양"
+    ],
+    "players": "1-24",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [
+      "캠페인 플레이",
+      "멀티플레이어 대전",
+      "협력 플레이",
+      "무기 수집"
+    ],
+    "heat_rank": 807,
+    "current_players": 1969
+  },
+  {
+    "rank": 100,
+    "game_id": "5b6602a8-d54a-41ab-9af5-aa9719b352a9",
+    "name": "드래곤 퀘스트 XI S 지나간 시간을 찾아서 - Definitive Edition",
+    "old_intro": "용사여, 지나간 시간 속에서 세상을 구할 진실을 찾아내라. 턴제 전투와 오케스트라 선율이 어우러진 최고의 모험이 널 기다리고 있다.",
+    "description": "Definitive Edition에는 비평가들의 찬사를 받은 드래곤 퀘스트 XI과 함께 추가 시나리오, 오케스트라 사운드트랙, 2D 모드 등이 포함되어 있습니다! 오랫동안 함께 한 팬 여러분과 새로운 모험가 여러분 모두, 최고의 드래곤 퀘스트 XI과 만나게 될 것입니다.",
+    "tags": [
+      "JRPG",
+      "턴제 전투",
+      "RPG",
+      "저사양"
+    ],
+    "players": "1-1",
+    "recommended_players": null,
+    "solo_playable": true,
+    "difficulty": "보통",
+    "activities": [],
+    "heat_rank": 823,
+    "current_players": 564
+  }
+]
