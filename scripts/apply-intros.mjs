@@ -2,6 +2,7 @@
 // data/intros/top100.json의 새 한 줄 소개(new_intro)를 games.fun_description에 반영
 // 실행: node --env-file=.env.local scripts/apply-intros.mjs           (미리보기 — 바뀔 내용만 출력, DB는 안 건드림)
 //       node --env-file=.env.local scripts/apply-intros.mjs --apply   (실제 반영)
+//       --file data/intros/leftover-9.json 을 붙이면 다른 파일을 반영
 // - 반영 전에 지금 DB 값을 data/intros/backup-<시각>.json으로 저장
 // - DB 값이 파일의 old_intro와 다르면(그 사이 누가 고침) 덮어쓰지 않고 건너뜀
 // - new_intro가 비어 있거나 이미 같은 값이면 건너뜀 → 여러 번 돌려도 안전
@@ -11,7 +12,8 @@ import { readFileSync, writeFileSync } from 'node:fs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const APPLY = process.argv.includes('--apply');
-const FILE = 'data/intros/top100.json';
+const fileArg = process.argv.indexOf('--file');
+const FILE = fileArg > -1 ? process.argv[fileArg + 1] : 'data/intros/top100.json';
 
 async function main() {
   const rows = JSON.parse(readFileSync(FILE, 'utf8'));
