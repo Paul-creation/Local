@@ -1021,11 +1021,14 @@ img { display: block; }
   box-shadow: var(--shadow-lg);
 }
 
-/* 상세 맨 위 사진: 스팀 library_hero(1920×620, 약 3:1) 비율로 고정 → 게임마다 높이가 들쭉날쭉하지 않게
-   library_hero가 없는 게임은 16:9 카드·헤더 이미지라 위아래가 잘림 → 제목·인물이 있는 위쪽 기준(center 25%)으로 자름 */
-.detail-hero { aspect-ratio: 1920 / 620; background: var(--bg); }
-.detail-hero img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 25%; }
-/* 작은 화면에서 3:1은 너무 얇아서(폭 342px이면 높이 110px) 2:1로. library_hero는 좌우가 조금 잘림 */
+/* 상세 맨 위 사진: 칸은 스팀 library_hero(1920×620, 약 3:1) 비율로 고정 → 게임마다 높이가 들쭉날쭉하지 않게
+   이미지는 두 겹: 뒤는 같은 이미지를 cover + 흐림 + 살짝 어둡게로 칸 채우기, 앞은 원본을 contain으로 잘림 없이 가운데에
+   (메인 배너 .hero-image-wrap과 같은 방식. 흐림은 한 번 그려 두는 정적 레이어라 부담이 작고, 같은 주소라 추가 다운로드 없음) */
+.detail-hero { aspect-ratio: 1920 / 620; background: #1a1a1a; position: relative; }
+.detail-hero img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.detail-hero .img-backdrop { object-fit: cover; filter: blur(24px) brightness(0.6) saturate(1.2); transform: scale(1.15); }
+.detail-hero img:not(.img-backdrop) { object-fit: contain; object-position: center; z-index: 1; }
+/* 작은 화면에서 3:1은 너무 얇아서(폭 342px이면 높이 110px) 2:1로 */
 @media (max-width: 640px) {
   .detail-hero { aspect-ratio: 2 / 1; }
 }
