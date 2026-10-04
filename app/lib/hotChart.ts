@@ -5,7 +5,7 @@ import { supabase } from './supabase';
 import { playersText } from './players';
 import { getPriceInfo, getLowestTiming, type LowestTiming } from './price';
 import { translateTag } from './tagTranslate';
-import { selectGames } from './visibleGames';
+import { selectHomeGames } from './visibleGames';
 
 export type RankChange = { type: 'up' | 'down'; n: number } | { type: 'same' } | { type: 'new' } | null;
 
@@ -63,10 +63,13 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
   const [prevDate, weekDate] = await Promise.all([latestDate(latest), latestDate(undefined, addDays(latest, -7))]);
   const weekOk = weekDate && weekDate >= addDays(latest, -13) ? weekDate : null;
   const [today, prev, weekAgo] = await Promise.all([ranksOn(latest), ranksOn(prevDate), ranksOn(weekOk)]);
-  const top50 = [...today.entries()].sort((a, b) => a[1] - b[1]).map(([id]) => id);
+  const ranked50 = [...today.entries()].sort((a, b) => a[1] - b[1]).map(([id]) => id);
 
   // 친구랑 탭을 고르려면 상위 50개의 인원만 필요 (작은 칸 하나)
-  const { data: playersRows } = await selectGames('id, max_players').in('id', top50);
+  // 숨긴 게임·메인 노출 제외 게임은 여기서 빠지고, 그 아래 순위가 한 칸씩 올라온다
+  const { data: playersRows } = await selectHomeGames('id, max_players').in('id', ranked50);
+  const shown = new Set((playersRows || []).map((g) => g.id));
+  const top50 = ranked50.filter((id) => shown.has(id));
   const multi = new Set((playersRows || []).filter((g) => (g.max_players || 0) >= 2).map((g) => g.id));
 
   const allIds = top50.slice(0, 10);
@@ -85,7 +88,7 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
   const since = addDays(latest, -7 * 26);
 
   const [{ data: games }, { data: weeksRows }, { data: playerRows }] = await Promise.all([
-    selectGames('id, name, hero_image_url, card_image_url, cover_image_url, fun_description, tags, min_players, max_players, current_players, is_free, lowest_price, price_history(price, discount_percent, checked_at, currency)')
+    selectHomeGames('id, name, hero_image_url, card_image_url, cover_image_url, fun_description, tags, min_players, max_players, current_players, is_free, lowest_price, price_history(price, discount_percent, checked_at, currency)')
       .in('id', ids)
       .gte('price_history.price', 100)
       .order('checked_at', { referencedTable: 'price_history', ascending: false })

@@ -23,6 +23,7 @@ import { badgeClass } from '../../lib/badge.mjs';
 import GameOpinions from '../../components/community/GameOpinions';
 import RelatedPosts from '../../components/community/RelatedPosts';
 import { selectGames, mergedTargetOf } from '../../lib/visibleGames';
+import ContentNotice from '../../components/ContentNotice';
 import { permanentRedirect } from 'next/navigation';
 
 // 게임마다 처음 열릴 때 만들고 1시간 동안 재사용 (ISR). 가격·접속자는 하루 한 번 갱신되므로 충분
@@ -187,6 +188,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             ))}
           </div>
         )}
+        <ContentNotice ids={game.content_descriptor_ids} />
         {game.fun_description && (
           <p style={{
             margin: '14px 0 4px', padding: '12px 16px',

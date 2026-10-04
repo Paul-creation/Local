@@ -48,7 +48,7 @@ async function main() {
   } else {
     // 기록이 부족하면 오늘 "지금 뜨는 게임" 순위(heat_rank 순)로
     const { data: hot, error: hotErr } = await supabase
-      .from('games').select('id').eq('hidden', false).not('heat_rank', 'is', null).order('heat_rank', { ascending: true }).limit(TODAY_POOL);
+      .from('games').select('id').eq('hidden', false).eq('home_excluded', false).not('heat_rank', 'is', null).order('heat_rank', { ascending: true }).limit(TODAY_POOL);
     if (hotErr) throw new Error(`오늘 순위를 못 불러옴: ${hotErr.message}`);
     ranked = hot.map((g, i) => ({ id: g.id, score: i + 1, reason: `오늘 인기 급상승 ${i + 1}위 (순위 기록 ${days.size}일뿐이라 오늘 순위 기준)` }));
     console.log(`순위 기록이 ${days.size}일뿐이라 오늘 순위로 고름`);
@@ -60,6 +60,7 @@ async function main() {
     supabase
       .from('games')
       .select('id, name').eq('hidden', false)
+      .eq('home_excluded', false) // 메인 노출 제외 게임(docs/home-excluded-games.md)은 뽑지 않음
       .in('id', ranked.map((r) => r.id))
       .gte('max_players', 2)
       .not('fun_description', 'is', null)

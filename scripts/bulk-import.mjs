@@ -106,6 +106,8 @@ async function insert(appid, { data, reviewSummary }) {
       description: data.short_description,
       review_summary: reviewSummary,
       is_casual_party: false,
+      // 스팀 성인 콘텐츠 표기 (없으면 빈 배열 = 확인함). 예전 게임은 fill-content-descriptors.mjs
+      content_descriptor_ids: [...new Set((data.content_descriptors?.ids || []).map(Number))].sort((a, b) => a - b),
     })
     .select()
     .single();

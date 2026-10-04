@@ -22,6 +22,7 @@ export async function getWeeklyFeatured() {
       )
     `)
     .eq('games.hidden', false) // 숨긴 게임이 뽑힌 주는 건너뛰고 그 전 주 게임을 보여줌 (lib/visibleGames.ts 참고)
+    .eq('games.home_excluded', false) // 메인 노출 제외 게임도 같은 방식으로 건너뜀
     .gte('games.price_history.price', 100)
     .order('week_start', { ascending: false })
     .order('checked_at', { referencedTable: 'games.price_history', ascending: false })
