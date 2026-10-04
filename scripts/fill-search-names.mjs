@@ -8,6 +8,7 @@
 // - 이름이 한국어인 게임은 그 이름이 첫 번째
 // - Haiku에 50개씩 묶어서 물어봄 (50개 기준 약 1센트)
 import { createClient } from '@supabase/supabase-js';
+import { onlyIds } from './lib/only-ids.mjs';
 import { getCoopTargets } from './lib/coop-targets.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
@@ -78,7 +79,7 @@ function merge(existing, extra, gameName) {
 }
 
 async function getAllGames() {
-  const { data, error } = await supabase.from('games').select('id, name, search_name_ko').order('id');
+  const { data, error } = await onlyIds(supabase.from('games').select('id, name, search_name_ko').order('id'));
   if (error) throw new Error(`게임 목록을 못 불러옴: ${error.message}`);
   return data;
 }

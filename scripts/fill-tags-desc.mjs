@@ -1,6 +1,7 @@
 // scripts/fill-tags-desc.mjs
 // 남은 빈칸 마무리: ① 짧은 설명은 스팀 한국어 소개로 교체(무료) ② 태그 1개 이하 게임은 Haiku가 "기존 태그 목록 안에서만" 골라 채움
 import { createClient } from '@supabase/supabase-js';
+import { ONLY_IDS } from './lib/only-ids.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -53,12 +54,14 @@ async function main() {
     .select('id, name, steam_appid, tags, description');
   if (error) return console.error('조회 실패:', error.message);
 
+  // 태그 목록(vocab)은 전체 게임으로 만들고, 채우는 대상만 --ids로 좁힘
+  const scope = ONLY_IDS ? games.filter((g) => ONLY_IDS.includes(g.id)) : games;
   const freq = {};
   for (const g of games) for (const t of g.tags || []) freq[t] = (freq[t] || 0) + 1;
   const vocab = Object.keys(freq).filter((t) => freq[t] >= 3).sort((a, b) => freq[b] - freq[a]).slice(0, 150);
   console.log(`태그 후보 ${vocab.length}개\n`);
 
-  for (const g of games.filter((g) => g.steam_appid && (!g.description || g.description.length < 30))) {
+  for (const g of scope.filter((g) => g.steam_appid && (!g.description || g.description.length < 30))) {
     const desc = await steamKoreanDesc(g.steam_appid);
     if (desc && desc.length > (g.description || '').length && desc.length >= 30) {
       await supabase.from('games').update({ description: desc }).eq('id', g.id);
@@ -71,7 +74,7 @@ async function main() {
   }
 
   if (!process.env.ANTHROPIC_API_KEY) return console.log('\nANTHROPIC_API_KEY가 없어서 태그 단계는 건너뜀');
-  for (const g of games.filter((g) => (g.tags || []).length < 2)) {
+  for (const g of scope.filter((g) => (g.tags || []).length < 2)) {
     try {
       const picked = await pickTags(g, vocab);
       const tags = Array.from(new Set([...(g.tags || []), ...picked])).slice(0, 3);
