@@ -1935,3 +1935,44 @@ a.hc-row:hover { background: var(--bg-card-hover); }
   border: 1px solid var(--border); padding: 4px 11px; border-radius: 100px; background: var(--bg-card);
 }
 .namu-link:hover { border-color: var(--accent); }
+
+/* GOTY 배지 — 수상은 금색 채움으로 눈에 띄게, 후보는 테두리만 */
+.goty-row { margin-bottom: 6px; }
+.goty-badge {
+  display: inline-flex; align-items: center; white-space: nowrap;
+  font-size: var(--fs-sub); font-weight: 700; line-height: 1.3;
+  padding: 3px 10px; border-radius: 100px;
+}
+.goty-badge.is-winner {
+  background: linear-gradient(135deg, #ffd95a, #f4b400); color: #3a2a00; font-weight: 800;
+  box-shadow: 0 1px 3px rgba(180,130,0,0.35);
+}
+.goty-badge.is-nominee { background: var(--bg-card); color: #6b4f00; border: 1px solid #c9a227; }
+
+/* 공식 디스코드 버튼 (상세) */
+.discord-link {
+  font-size: var(--fs-sub); font-weight: 700; color: #fff; background: #4752c4;
+  padding: 5px 12px; border-radius: 100px;
+}
+.discord-link:hover { background: #3c45a5; }
+
+/* 같은 시리즈 가로 목록 (상세) */
+.series-section { margin: 8px 0 24px; }
+.series-list {
+  list-style: none; display: flex; gap: 12px; overflow-x: auto;
+  scroll-snap-type: x proximity; padding: 4px 2px 10px; -webkit-overflow-scrolling: touch;
+}
+.series-list li { flex: 0 0 auto; scroll-snap-align: start; }
+.series-item {
+  display: flex; flex-direction: column; width: 150px; border-radius: var(--radius-md);
+  background: var(--bg-card); border: 2px solid transparent; overflow: hidden; box-shadow: var(--shadow-sm);
+}
+a.series-item:hover { border-color: var(--border); }
+.series-item.is-current { border-color: var(--accent); }
+.series-item img { width: 100%; aspect-ratio: 460 / 215; object-fit: cover; background: var(--border-light); }
+.series-name {
+  padding: 8px 10px; font-size: var(--fs-sub); font-weight: 600; line-height: 1.35;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.series-item.is-current .series-name { color: var(--accent-deep); font-weight: 800; }
+@media (max-width: 480px) { .series-item { width: 132px; } }

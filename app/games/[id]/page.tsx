@@ -12,7 +12,9 @@ import YouTubeLite from '../../components/YouTubeLite';
 import { translateTag } from '../../lib/tagTranslate';
 import GameVotes from '../../components/GameVotes';
 import VideoPreviewSection, { type CoopVideo } from '../../components/VideoPreviewSection';
+import Link from 'next/link';
 import ShareButton from '../../components/ShareButton';
+import GotyBadge from '../../components/GotyBadge';
 import { getTop10Ids } from '../../lib/hotChart';
 import { playersText } from '../../lib/players';
 import GameOpinions from '../../components/community/GameOpinions';
@@ -99,6 +101,13 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
     return <div className="page">게임을 찾을 수 없어요.</div>;
   }
   const isTop10 = (await top10Promise).includes(game.id);
+  // 같은 시리즈 (series_id가 있을 때만, 출시순)
+  const { data: seriesGames } = game.series_id
+    ? await supabase.from('games').select('id, name, card_image_url, cover_image_url, series_order').eq('series_id', game.series_id).order('series_order')
+    : { data: null };
+  const { data: series } = game.series_id && (seriesGames?.length ?? 0) > 1
+    ? await supabase.from('series').select('name_ko').eq('id', game.series_id).maybeSingle()
+    : { data: null };
 
   const price = getPriceInfo(game);
   // 100원 미만은 잘못 들어온 기록이라 할인 전적에서 제외
@@ -151,8 +160,12 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               얼리 액세스
             </span>
           )}
+          <GotyBadge awards={game.goty_awards} all />
           {game.category && <span className="badge-neutral">{game.category}</span>}
           <a href={namuUrl} target="_blank" rel="noopener nofollow" className="namu-link">나무위키 ↗</a>
+          {game.discord_url && (
+            <a href={game.discord_url} target="_blank" rel="noopener nofollow" className="discord-link">공식 디스코드 ↗</a>
+          )}
         </div>
         {game.tags?.length > 0 && (
           <div className="main-tag-row">
@@ -385,6 +398,32 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </div>
       </section>
 
+      {/* 같은 시리즈 — 출시순, 지금 게임 강조 */}
+      {seriesGames && seriesGames.length > 1 && (
+        <section className="series-section">
+          <h3 className="spec-group-title">같은 시리즈{series?.name_ko ? ` · ${series.name_ko}` : ''}</h3>
+          <ol className="series-list">
+            {seriesGames.map((s) => {
+              const current = s.id === game.id;
+              const inner = (
+                <>
+                  <img src={s.card_image_url || s.cover_image_url} alt="" loading="lazy" />
+                  <span className="series-name">{s.name}</span>
+                </>
+              );
+              return (
+                <li key={s.id}>
+                  {current ? (
+                    <div className="series-item is-current" aria-current="page">{inner}</div>
+                  ) : (
+                    <Link href={`/games/${s.id}`} className="series-item">{inner}</Link>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </section>
+      )}
 
       {/* 리뷰 패널 */}
       {(game.review_positive_percent || game.critic_score || game.heat_rank) && (

@@ -4,6 +4,7 @@
 import Link from 'next/link';
 import ShareButton from '../ShareButton';
 import { getPriceInfo, getLowestTiming } from '../../lib/price';
+import GotyBadge from '../GotyBadge';
 import LowestPriceBadge from '../LowestPriceBadge';
 import { translateTag } from '../../lib/tagTranslate';
 import type { GameFilters } from '../../lib/useGameFilters';
@@ -71,6 +72,7 @@ export default function SearchResults({ filters, top10Ids = [] }: { filters: Gam
                       <LowestPriceBadge timing={getLowestTiming(game, price)} overlay />
                     </div>
                     <div className="card-body">
+                      {game.goty_awards && <div className="goty-row"><GotyBadge awards={game.goty_awards} /></div>}
                       <h3>{top10Ids.includes(game.id) && <span className="top10-badge" style={{ marginRight: 6 }}>TOP 10</span>}{game.name}</h3>
                       <p className="card-meta">
                         {game.recommended_players ? `추천 ${game.recommended_players}` : playersText(game)}

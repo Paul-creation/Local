@@ -21,7 +21,8 @@ export default async function Home() {
   // 🔥 지금 뜨는 게임은 메인 select를 늘리지 않고 필요한 게임·기록만 따로 (lib/hotChart)
   // 이번주의 게임도 featured_games에서 그 게임 1개만 따로 (lib/weeklyFeatured). 기록이 없으면 featured 칸으로
   // 인기 게시물: 최근 7일 추천+댓글 순 5개, 모자라면 최근 글로 채움
-  const [{ data: list }, { data: descs }, hot, weekly, popularPosts] = await Promise.all([
+  // GOTY 배지(goty_awards)도 기록 있는 게임만 따로 — 칸이 아직 없으면 오류를 무시하고 배지 없이 표시
+  const [{ data: list }, { data: descs }, hot, weekly, popularPosts, { data: goty }] = await Promise.all([
     supabase
       .from('games')
       .select(`
@@ -42,9 +43,11 @@ export default async function Home() {
     getHotChart().catch(() => ({ tabs: [], top10Ids: [] as string[] })),
     getWeeklyFeatured().catch(() => null),
     getPopularPosts().catch(() => []),
+    supabase.from('games').select('id, goty_awards').not('goty_awards', 'is', null),
   ]);
   const descById = new Map((descs || []).map((d) => [d.id, d]));
-  const games = (list || []).map((g) => ({ ...g, ...descById.get(g.id) }));
+  const gotyById = new Map((goty || []).map((g) => [g.id, g.goty_awards]));
+  const games = (list || []).map((g) => ({ ...g, ...descById.get(g.id), goty_awards: gotyById.get(g.id) ?? null }));
 
   return (
     <main className="page">
