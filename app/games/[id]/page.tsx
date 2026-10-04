@@ -140,7 +140,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </div>
       ) : (
         <div className="detail-hero">
-          <GameImage src={game.hero_image_url || game.card_image_url || game.cover_image_url} fallbackWidth={1280} alt={game.name} />
+          {/* 뒤: 같은 이미지를 흐리게 칸 전체에 (같은 주소라 한 번만 받음) / 앞: 원본을 잘림 없이 가운데에 — globals.css .detail-hero */}
+          <GameImage src={game.hero_image_url || game.card_image_url || game.cover_image_url} fallbackWidth={1280} alt="" aria-hidden="true" className="img-backdrop" />
+          <GameImage src={game.hero_image_url || game.card_image_url || game.cover_image_url} fallbackWidth={1280} alt={game.name} fetchPriority="high" />
         </div>
       )}
       {/* 제목 + 평가 배지 + 태그 + 설명 */}
