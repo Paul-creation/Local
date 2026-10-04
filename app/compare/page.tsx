@@ -14,6 +14,7 @@ import ShareButton from '../components/ShareButton';
 import CompareBuilder from '../components/CompareBuilder';
 import { BUILDER_FIELDS } from '../lib/compareRule';
 import { playersText } from '../lib/players';
+import { sizedImage } from '../lib/imageUrl';
 
 export const dynamic = 'force-dynamic';
 
@@ -247,7 +248,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
               overflow: 'hidden', border: '1px solid var(--border-light)',
               boxShadow: 'var(--shadow-sm)',
             }}>
-              <img src={(g.card_image_url || g.cover_image_url)} alt={g.name} style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover' }} />
+              <img src={sizedImage(g.card_image_url || g.cover_image_url)} alt={g.name} style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover' }} />
               <div style={{ padding: '10px 12px' }}>
                 <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3 }}>{g.name}</div>
               </div>

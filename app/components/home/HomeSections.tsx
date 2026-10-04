@@ -9,6 +9,7 @@ import { getPriceInfo } from '../../lib/price';
 import { playersText } from '../../lib/players';
 import type { PostListItem } from '../../lib/community';
 import PopularPosts from './PopularPosts';
+import { sizedImage } from '../../lib/imageUrl';
 
 export default function HomeSections({ games, hotTabs, weekly, popularPosts = [] }: { games: any[]; hotTabs: HotTab[]; weekly?: any; popularPosts?: PostListItem[] }) {
   // featured_games에서 뽑힌 이번 주 게임, 기록이 없으면 예전처럼 featured 칸
@@ -22,8 +23,8 @@ export default function HomeSections({ games, hotTabs, weekly, popularPosts = []
                     {featured && (
             <Link href={`/games/${featured.id}`} className="hero-card">
               <div className="hero-image-wrap">
-                <img src={(featured.card_image_url || featured.cover_image_url)} alt="" aria-hidden="true" className="img-backdrop" />
-                <img src={(featured.card_image_url || featured.cover_image_url)} alt={featured.name} />
+                <img src={sizedImage(featured.card_image_url || featured.cover_image_url, 1280)} alt="" aria-hidden="true" className="img-backdrop" />
+                <img src={sizedImage(featured.card_image_url || featured.cover_image_url, 1280)} alt={featured.name} fetchPriority="high" />
               </div>
               <div className="hero-content">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

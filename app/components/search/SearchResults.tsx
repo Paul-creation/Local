@@ -9,6 +9,7 @@ import LowestPriceBadge from '../LowestPriceBadge';
 import { translateTag } from '../../lib/tagTranslate';
 import type { GameFilters } from '../../lib/useGameFilters';
 import { playersText } from '../../lib/players';
+import { sizedImage } from '../../lib/imageUrl';
 
 export default function SearchResults({ filters, top10Ids = [] }: { filters: GameFilters; top10Ids?: string[] }) {
   const {
@@ -45,13 +46,13 @@ export default function SearchResults({ filters, top10Ids = [] }: { filters: Gam
           ) : (
             <>
             <div className="grid">
-              {filtered.slice(0, visibleCount).map((game) => {
+              {filtered.slice(0, visibleCount).map((game, i) => {
                 const price = getPriceInfo(game);
                 const isSelected = compareList.find(g => g.id === game.id);
                 return (
                   <Link href={`/games/${game.id}`} key={game.id} className="card" onClick={rememberList} style={isSelected ? { outline: '3px solid var(--accent)', outlineOffset: 2 } : undefined}>
                     <div className="card-image-wrap">
-                      <img src={(game.card_image_url || game.cover_image_url)} alt={game.name} loading="lazy" />
+                      <img src={sizedImage(game.card_image_url || game.cover_image_url)} alt={game.name} loading={i < 4 ? 'eager' : 'lazy'} />
                       {/* COMPARE_V2 */}
                       <button
                         type="button"

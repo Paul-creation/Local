@@ -1,6 +1,6 @@
 'use client'; // 에러 화면은 클라이언트 컴포넌트여야 함
 
-import 'pretendard/dist/web/static/pretendard.css';
+import 'pretendard/dist/web/static/pretendard-dynamic-subset.css';
 import './globals.css';
 import './status-pages.css';
 import StatusSearch from './components/status/StatusSearch';

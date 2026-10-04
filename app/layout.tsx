@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
-import "pretendard/dist/web/static/pretendard.css";
+import "pretendard/dist/web/static/pretendard-dynamic-subset.css";
 import "./globals.css";
 import { SITE_NAME, SITE_URL, SITE_DESCRIPTION, BASE_OG } from "./lib/site";
 import SiteHeader from "./components/home/SiteHeader";

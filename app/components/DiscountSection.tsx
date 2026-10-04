@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { getPriceInfo, getLowestTiming } from '../lib/price';
 import LowestPriceBadge from './LowestPriceBadge';
 import { playersText } from '../lib/players';
+import { sizedImage } from '../lib/imageUrl';
 
 export default function DiscountSection({ games }: { games: any[] }) {
   const discounted = games
@@ -25,7 +26,7 @@ export default function DiscountSection({ games }: { games: any[] }) {
           return (
             <Link href={`/games/${game.id}`} key={game.id} className="card">
                             <div className="card-image-wrap">
-                <img src={(game.card_image_url || game.cover_image_url)} alt={game.name} />
+                <img src={sizedImage(game.card_image_url || game.cover_image_url)} alt={game.name} />
                 <span className="platform-badge">{game.steam_appid ? 'Steam' : (({ epic: 'Epic', battlenet: 'Battle.net', riot: 'Riot' } as Record<string, string>)[game.source] ?? 'PC') /* STORE_BADGE */}</span>
                 <LowestPriceBadge timing={getLowestTiming(game, price)} overlay />
               </div>

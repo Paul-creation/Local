@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { getPriceInfo } from '../lib/price';
 import { translateTag } from '../lib/tagTranslate';
 import { playersText } from '../lib/players';
+import { sizedImage } from '../lib/imageUrl';
 
 export default function BannerCarousel({ games }: { games: any[] }) {
   const [index, setIndex] = useState(0);
@@ -26,8 +27,8 @@ export default function BannerCarousel({ games }: { games: any[] }) {
     <div style={{ marginBottom: 32 }}>
       <Link href={`/games/${game.id}`} className="hero-card" style={{ marginBottom: 0 }}>
         <div className="hero-image-wrap">
-          <img src={(game.card_image_url || game.cover_image_url)} alt="" aria-hidden="true" className="img-backdrop" />
-          <img src={(game.card_image_url || game.cover_image_url)} alt={game.name} />
+          <img src={sizedImage(game.card_image_url || game.cover_image_url, 1280)} alt="" aria-hidden="true" className="img-backdrop" />
+          <img src={sizedImage(game.card_image_url || game.cover_image_url, 1280)} alt={game.name} />
         </div>
         <div className="hero-content">
           <h2>{game.name}</h2>
