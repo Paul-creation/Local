@@ -1,5 +1,5 @@
 // 담당: 친구(검색·태그·비교)
-// 검색창에 태그를 직접 입력하는 규칙 — "좀비, 협동" → 좀비+온라인 협동 태그 / "엘든링 협동" → 이름 엘든링 + 온라인 협동 태그
+// 검색창에 태그를 직접 입력하는 규칙 — "좀비, 협동" → 좀비+협동(온라인·로컬) 태그 / "엘든링 협동" → 이름 엘든링 + 협동 태그
 // 입력을 쉼표·공백으로 나누고, 태그 이름(한국어)·영문 이름·별칭과 맞는 단어는 태그로, 나머지는 게임 이름 검색어로
 // 비교는 searchMatch와 같은 규칙(소문자, 띄어쓰기·기호 무시). "온라인 협동"처럼 띄어 쓴 태그도 이어 붙여 맞춰 본다
 import { normalizeSearch } from './searchMatch';
@@ -102,10 +102,22 @@ const TAG_MAP_EN: Record<string, string> = {
   'Hack and Slash': '핵앤슬래시',
 };
 
+// 묶음 태그 — 게임에 붙는 태그는 아니고, 안에 든 태그 중 하나라도 있으면 맞는 것으로 본다
+// "협동"은 온라인·로컬 협동 둘 다, "온라인 협동"·"로컬 협동"을 따로 입력하면 각각만
+export const TAG_ANY: Record<string, string[]> = {
+  '협동': ['온라인 협동', '로컬 협동'],
+  '대전': ['온라인 대전', '로컬 대전'],
+};
+
+// 게임 태그 목록이 고른 태그(묶음 태그 포함)에 맞는지
+export function hasTag(gameTags: string[] | null | undefined, tag: string) {
+  return (TAG_ANY[tag] || [tag]).some((t) => gameTags?.includes(t));
+}
+
 // 사람들이 자주 줄여 쓰거나 다르게 부르는 이름 → 태그
 const EXTRA_ALIASES: Record<string, string> = {
-  '협동': '온라인 협동', '코옵': '온라인 협동', 'coop': '온라인 협동', 'co-op': '온라인 협동',
-  '대전': '온라인 대전', 'pvp': '온라인 대전',
+  '코옵': '협동', 'coop': '협동', 'co-op': '협동',
+  'pvp': '대전', 'versus': '대전',
   '공포': '호러', 'horror': '호러',
   'zombie': '좀비', 'zombies': '좀비',
   'open world': '오픈월드', '오픈 월드': '오픈월드',
@@ -123,6 +135,8 @@ export type TagLookup = Map<string, string>; // 정규화한 이름 → 실제 �
 // tags: DB에 실제로 있는 태그 — 없는 태그로 가는 별칭은 버린다 (결과 0개 방지)
 export function buildTagLookup(tags: Iterable<string>): TagLookup {
   const present = new Set(tags);
+  // 묶음 태그는 안에 든 태그가 하나라도 있을 때만
+  for (const [group, members] of Object.entries(TAG_ANY)) if (members.some((t) => present.has(t))) present.add(group);
   const lookup: TagLookup = new Map();
   const add = (name: string, tag: string) => {
     const key = normalizeSearch(name);

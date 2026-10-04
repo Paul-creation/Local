@@ -4,7 +4,7 @@
 import { useState, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { compareBlockReason, MAX_COMPARE, COMPARE_PICK_KEY } from './compareRule';
 import { matchesGame, normalizeSearch, searchNames } from './searchMatch';
-import { buildTagLookup, parseSearchInput } from './tagSearch';
+import { buildTagLookup, hasTag, parseSearchInput } from './tagSearch';
 import { getPriceInfo } from './price';
 import {
   type Range, PLAYERS_ALL, PRICE_ALL, FREE_ONLY, isAll,
@@ -172,8 +172,8 @@ export function useGameFilters(games: any[] | null) {
     if (!matchesPrice(g, priceRange)) return false;
     if (saleOnly && !((getPriceInfo(g)?.discount ?? 0) > 0)) return false;
     if (selectedCategory && !badgeMatches(g.category, selectedCategory)) return false;
-    // 고른 태그를 전부 가진 게임만 (AND)
-    if (selectedTags.length > 0 && !selectedTags.every(t => g.tags?.includes(t))) return false;
+    // 고른 태그를 전부 가진 게임만 (AND). "협동"·"대전" 같은 묶음 태그는 온라인·로컬 중 하나만 있어도 (app/lib/tagSearch)
+    if (selectedTags.length > 0 && !selectedTags.every(t => hasTag(g.tags, t))) return false;
     if (selectedDifficulty && g.difficulty !== selectedDifficulty) return false;
     if (!matchesPlayers(g, playersRange)) return false;
     // 영어 이름·한국어 이름·별명 (띄어쓰기·대소문자·기호 무시). 태그 단어는 확정할 때 태그 조건으로 옮겨 둠

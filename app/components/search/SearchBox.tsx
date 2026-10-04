@@ -12,7 +12,7 @@ import { translateTag } from '../../lib/tagTranslate';
 import GameImage from '../GameImage';
 
 const MAX_SUGGESTIONS = 6;
-const MAX_TAG_SUGGESTIONS = 3;
+const MAX_TAG_SUGGESTIONS = 4;
 
 const playersLabel = (g: any) => playersText(g);
 
