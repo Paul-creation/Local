@@ -1,8 +1,10 @@
 // scripts/backfill-price-history-other.mjs
 // 스팀 외 유료 게임(에픽·블리자드)의 할인 기록을 ITAD에서 가져오기 — 이미 있는 기록은 건너뛰고 새 기록만 추가
 // 한 번 찾은 ITAD ID는 games.itad_id에 저장해서 다음부터는 lookup을 건너뜀
+// 가격 기록을 못 받은 게임(매칭 실패·상점 기록 없음·오류)은 games.price_check_*에 표시 → daily-summary가 3일 연속 실패를 알림
 import { createClient } from '@supabase/supabase-js';
 import { lookupItadId, getPriceHistory, ItadLimitError } from './lib/itad.mjs';
+import { markPriceStatus, recordPriceCheck } from './lib/price-check.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -31,11 +33,16 @@ async function main() {
   let notFound = 0;
   let limited = 0;
   let failed = 0;
+  let checked = 0;
+  const okIds = [];
+  const missed = [];
+  const miss = (game, note) => missed.push({ id: game.id, name: game.name, note });
   for (const game of games) {
     if (game.is_free) {
       console.log(`건너뜀 (무료): ${game.name}`);
       continue;
     }
+    checked++;
 
     try {
       let itadId = game.itad_id;
@@ -45,6 +52,7 @@ async function main() {
         if (!itadId) {
           console.log(`❌ ITAD 매칭 실패: ${game.name}`);
           notFound++;
+          miss(game, 'ITAD 매칭 실패');
           continue;
         }
         await supabase.from('games').update({ itad_id: itadId }).eq('id', game.id).is('itad_id', null);
@@ -59,8 +67,10 @@ async function main() {
       if (records.length === 0) {
         const shops = [...new Set(history.map((h) => h.shop?.name).filter(Boolean))].join(', ');
         console.log(`기록 없음: ${game.name}${shops ? ` (ITAD에 있는 상점: ${shops})` : ''}`);
+        miss(game, shops ? '이 상점 가격 기록 없음 (다른 상점에만 있음)' : '가격 기록 없음');
         continue;
       }
+      okIds.push(game.id);
 
       const existing = new Set(
         (game.price_history || []).filter((p) => p.checked_at).map((p) => minuteKey(p.checked_at))
@@ -99,15 +109,22 @@ async function main() {
       if (e instanceof ItadLimitError) {
         console.log(`⏳ 요청 제한 (3번 재시도 후 실패): ${game.name} — ${e.message}`);
         limited++;
+        miss(game, '요청 제한');
       } else {
         console.log(`⚠️ ITAD 오류: ${game.name} — ${e.message}`);
         failed++;
+        miss(game, 'ITAD 오류');
       }
     }
   }
 
   console.log(`\n완료 — ${saved}개 게임 할인 기록 저장`);
   console.log(`매칭 실패 ${notFound}개 · 요청 제한 ${limited}개 · 기타 오류 ${failed}개`);
+
+  await markPriceStatus(supabase, { okIds, failed: missed });
+  recordPriceCheck('other', { checked, failed: missed.length });
+  console.log(`가격을 못 받은 게임 ${missed.length}개 (스팀 외 유료 ${checked}개 중)`);
+  for (const m of missed) console.log(`   - ${m.name}: ${m.note}`);
 }
 
 main();

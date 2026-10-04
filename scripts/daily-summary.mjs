@@ -1,9 +1,11 @@
 // scripts/daily-summary.mjs
 // 디스코드 일일 요약: 지난 24시간 새 글·댓글·게임 의견·의견함·신고 수 + 지금 숨김 중인 항목 수
+// + 오늘 가격을 못 받은 게임 수 (3일 연속 실패한 게임은 이름까지)
 // DISCORD_WEBHOOK_URL이 없으면 화면에만 출력. 개인정보(IP 해시·연락처·본문)는 보내지 않고 숫자만 보낸다
 // 사용: node --env-file=.env.local scripts/daily-summary.mjs
 import { createClient } from '@supabase/supabase-js';
 import { readPurge } from './lib/privacy-purge.mjs';
+import { readPriceCheck } from './lib/price-check.mjs';
 
 const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const SITE = (process.env.NEXT_PUBLIC_SITE_URL || 'https://game-info-hub.vercel.app').replace(/\/$/, '');
@@ -37,7 +39,28 @@ const purge = readPurge();
 const purgeLine = purge
   ? `🧹 개인정보 정리: IP 해시 ${purge.ipCleared ?? '-'}개 비움 · 신고 ${purge.reportsDeleted ?? '-'}개 · 의견함 ${purge.feedbackDeleted ?? '-'}개 삭제${purge.ipFailed || purge.recordsFailed ? ' ⚠️ 일부 실패 (Actions 로그 확인)' : ''}`
   : '🧹 개인정보 정리: 오늘 기록 없음 (purge 단계가 안 돌았거나 실패)';
-const message = `${content}\n${purgeLine}`;
+// 가격 수집 결과 (fix-missing-prices·backfill-price-history-other가 오늘 남긴 수)
+const price = readPriceCheck();
+const priceParts = [['스팀', price?.steam], ['스팀 외', price?.other]]
+  .filter(([, v]) => v)
+  .map(([label, v]) => `${label} ${v.failed}/${v.checked}`);
+let priceLine = priceParts.length
+  ? `💸 가격을 못 받은 게임: ${(price.steam?.failed ?? 0) + (price.other?.failed ?? 0)}개 (${priceParts.join(' · ')})`
+  : '💸 가격 수집: 오늘 기록 없음 (가격 단계가 안 돌았거나 실패)';
+// 3일 연속 실패 = 처음 실패한 날의 실행부터 오늘 실행까지 계속 못 받는 중 (매일 1번 실행 기준, 숨긴 게임 제외)
+const streakSince = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000 + 6 * 60 * 60 * 1000).toISOString();
+const streakQuery = () => db.from('games').select('name, price_check_note, price_check_failed_since')
+  .lte('price_check_failed_since', streakSince).order('price_check_failed_since');
+let streak = await streakQuery().eq('hidden', false);
+if (streak.error) streak = await streakQuery(); // hidden 칸이 아직 없을 때
+if (streak.error) {
+  priceLine += '\n   (연속 실패 확인 불가 — 마이그레이션 20261010090000_price_check_status.sql 실행 필요)';
+} else if (streak.data.length) {
+  const MAX = 15;
+  const names = streak.data.slice(0, MAX).map((g) => `${g.name} (${g.price_check_note ?? '이유 모름'})`);
+  priceLine += `\n   ⚠️ 3일 연속 실패 ${streak.data.length}개: ${names.join(', ')}${streak.data.length > MAX ? ` 외 ${streak.data.length - MAX}개` : ''}`;
+}
+const message = `${content}\n${purgeLine}\n${priceLine}`;
 console.log(message);
 
 const url = process.env.DISCORD_WEBHOOK_URL;
