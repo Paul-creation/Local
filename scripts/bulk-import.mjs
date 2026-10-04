@@ -4,7 +4,8 @@
 //       node --env-file=.env.local scripts/bulk-import.mjs --apply                               (판매 순위에서 새 게임 최대 200개 추가 — 매주 갱신이 쓰는 방식)
 //       node --env-file=.env.local scripts/bulk-import.mjs --appids data/meta/must-have.json         (꼭 넣을 게임 목록만 미리보기)
 //       node --env-file=.env.local scripts/bulk-import.mjs --appids data/meta/must-have.json --apply (꼭 넣을 게임 목록만 추가)
-// - 기준(두 방식 같음): 이미 있는 게임·판매 중단 목록 제외, 2013년 이후 출시, 스팀 종류가 game, 성인·프로그램 장르 제외, 리뷰 1,000개 이상·긍정 65% 이상
+// - 기준(두 방식 같음): 이미 있는 게임·판매 중단 목록 제외, 스팀 종류가 game, 성인·프로그램 장르 제외, 리뷰 1,000개 이상·긍정 65% 이상
+//   판매 순위 수집만 2013년 이후 출시 조건 추가 (--appids는 손으로 고른 목록이라 연도 무관)
 // - 스팀 요청은 scripts/lib/steam.mjs(요청 간격 + 429 재시도)로 함. 끝까지 실패한 게임은 건너뛰고 마지막에 목록으로 출력
 // - --appids 파일: [{ "steam_appid": "1145350", ... }] 형식의 JSON (name·reason 칸은 출력용)
 import { createClient } from '@supabase/supabase-js';
@@ -72,7 +73,8 @@ async function check(item) {
     const enData = en.data;
     if (enData.type !== 'game') return skip(`스팀 종류가 game이 아님 (${enData.type})`);
     const year = new Date(enData.release_date?.date || '').getFullYear();
-    if (!isNaN(year) && year < MIN_YEAR) return skip(`${year}년 출시`);
+    // --appids는 손으로 고른 목록이라 출시 연도 조건을 건너뜀 (판매 순위 수집에만 적용)
+    if (!APPIDS_FILE && !isNaN(year) && year < MIN_YEAR) return skip(`${year}년 출시`);
     const enGenres = (enData.genres || []).map((g) => g.description);
     if (EXCLUDE_GENRES.some((e) => enGenres.includes(e)) || isNonGame(enGenres)) return skip(`제외 장르 (${enGenres.join(', ')})`);
 
