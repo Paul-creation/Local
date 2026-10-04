@@ -163,7 +163,7 @@ async function checkSoloInTop() {
     .select('name, heat_rank, max_players, activities, tags, has_online_coop, has_local_coop, has_pvp')
     .not('heat_rank', 'is', null).order('heat_rank').limit(200);
   if (error) return note(`인기 상위 게임 인원 점검 실패 (${error.message})`);
-  const MULTI = /협력|협동|대전|멀티|PvP|팀|파티|친구|함께|온라인/i;
+  const MULTI = /협력|협동|대전|멀티(?! ?엔딩)|PvP|팀|파티|친구|함께|온라인/i; // "멀티 엔딩"은 멀티플레이 아님
   const solo = top.filter((g) => g.max_players === 1);
   const suspect = solo.filter((g) => g.has_online_coop || g.has_local_coop || g.has_pvp ||
     [...(g.activities || []), ...(g.tags || [])].some((t) => MULTI.test(t)));

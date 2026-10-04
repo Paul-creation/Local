@@ -11,3 +11,5 @@
 4. 위 규칙으로도 정할 수 없으면 null로 둔다 (화면에는 "인원 정보 확인 중").
 
 반영 도구: `node --env-file=.env.local scripts/apply-verified-players.mjs <결정 파일>`. 반영 기록은 applied-log.txt에 쌓인다.
+
+기록 위치: 검증 결과 요약(게임·근거·결론)은 `docs/verification/`에 md로 남기고, 결정 파일·원본 데이터만 `data/verification/`(커밋 안 됨)에 둔다.
