@@ -10,6 +10,8 @@ import { getPlatformCategories, CATEGORY_LABEL, PlatformCategory } from '../../l
 import { FaPlaystation, FaXbox, FaDesktop, FaVrCardboard } from 'react-icons/fa';
 import PlayerChart from '../../components/PlayerChart';
 import YouTubeLite from '../../components/YouTubeLite';
+import SteamVideo from '../../components/SteamVideo';
+import { isSteamVideo } from '../../lib/steamVideo';
 import { translateTag } from '../../lib/tagTranslate';
 import GameVotes from '../../components/GameVotes';
 import VideoPreviewSection, { type CoopVideo } from '../../components/VideoPreviewSection';
@@ -144,7 +146,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       {/* TOP_MEDIA — 영상이 있으면 영상만, 없으면 사진만 */}
       {game.video_url ? (
         <div className="video-section">
-          <YouTubeLite url={game.video_url} title={`${game.name} 트레일러`} fallbackImage={game.hero_image_url || game.card_image_url || game.cover_image_url} wide fetchPriority="high" />
+          {isSteamVideo(game.video_url)
+            ? <SteamVideo url={game.video_url} title={`${game.name} 트레일러`} fallbackImage={game.hero_image_url || game.card_image_url || game.cover_image_url} fetchPriority="high" />
+            : <YouTubeLite url={game.video_url} title={`${game.name} 트레일러`} fallbackImage={game.hero_image_url || game.card_image_url || game.cover_image_url} wide fetchPriority="high" />}
         </div>
       ) : (
         <div className="detail-hero">

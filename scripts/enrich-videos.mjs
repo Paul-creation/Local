@@ -1,8 +1,13 @@
 // scripts/enrich-videos.mjs
-// 영상 없는 게임의 유튜브 트레일러 찾기 — 매일 조금씩 (YouTube 검색은 하루 약 100번 한도)
-// 실행: node --env-file=.env.local scripts/enrich-videos.mjs [최대 개수, 기본 90] [--other]
-// 찾아봤는데 영상이 없으면 video_url을 ''로 저장해서 다음부터 다시 찾지 않음
+// 영상 없는 게임의 상단 트레일러 찾기 — 매일 조금씩
+// 실행: node --env-file=.env.local scripts/enrich-videos.mjs [최대 개수, 기본 90] [--other] [--names="Muck,Inside"]
+// - 스팀 게임은 스팀 상점의 공식 영상(appdetails movies, 게임사가 올린 것)을 먼저 씀 → video_url에 HLS 주소(.m3u8) 저장
+// - 스팀 영상이 없거나 스팀 외 게임이면 유튜브 검색으로 대체 (YouTube 검색은 하루 약 100번 한도)
+//   검색 결과 10개 중 제목·채널에 게임 이름과 game·게임·스팀 등이 있고 movie·film·영화가 없는 첫 영상 (lib/video-filter.mjs)
+// - 찾아봤는데 영상이 없으면 video_url을 ''로 저장해서 다음부터 다시 찾지 않음. 이미 값이 있는 게임은 건드리지 않음
 import { createClient } from '@supabase/supabase-js';
+import { gameNameKeys, excludeTerms } from './lib/coop-targets.mjs';
+import { videoRejectReason } from './lib/video-filter.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -12,47 +17,79 @@ const supabase = createClient(
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 const ONLY_OTHER = process.argv.includes('--other');
 const LIMIT = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a))) || 90;
+const ONLY_NAMES = (process.argv.find((a) => a.startsWith('--names=')) || '').slice(8).split(',').map((s) => s.trim()).filter(Boolean);
 
 class QuotaError extends Error {}
 
-// 영상 주소, 검색 결과가 없으면 null. 한도 초과면 QuotaError
-async function searchTrailer(gameName) {
-  const query = encodeURIComponent(`${gameName} official trailer`);
+const norm = (s) => String(s || '').toLowerCase().replace(/[\s\p{P}\p{S}]/gu, '');
+
+// 스팀 공식 영상 HLS 주소, 영상이 없으면 null. 요청 실패면 오류 (다음에 다시 시도)
+async function steamTrailer(appid) {
+  const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${appid}&filters=movies`);
+  if (!res.ok) throw new Error(`스팀 HTTP ${res.status}`);
+  const json = await res.json();
+  const movies = json?.[appid]?.data?.movies || [];
+  const pick = movies.find((m) => m.highlight && m.hls_h264) || movies.find((m) => m.hls_h264);
+  const url = pick?.hls_h264;
+  return url && /^https:\/\/video\.[a-z.]*steamstatic\.com\/.+\.m3u8/.test(url) ? url.replace(/\?.*$/, '') : null;
+}
+
+// 유튜브 영상 주소, 조건에 맞는 결과가 없으면 null. 한도 초과면 QuotaError
+async function youtubeTrailer(game) {
+  const name = String(game.name).replace(/[™®©]/g, '').trim();
+  const query = encodeURIComponent(`${name} game trailer`);
   const res = await fetch(
-    `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&maxResults=1&key=${YOUTUBE_API_KEY}`
+    `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&type=video&maxResults=10&key=${YOUTUBE_API_KEY}`
   );
   const json = await res.json();
   if (json.error) {
     const quota = json.error.errors?.some((e) => /quota/i.test(e.reason)) || /quota/i.test(json.error.message);
     throw quota ? new QuotaError(json.error.message) : new Error(json.error.message);
   }
-  const videoId = json.items?.[0]?.id?.videoId;
-  return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+  const keys = gameNameKeys(game);
+  const terms = excludeTerms(game).map(norm).filter(Boolean);
+  const hit = (json.items || []).find((it) => {
+    const video = { title: it.snippet?.title, channel_title: it.snippet?.channelTitle };
+    return it.id?.videoId && !videoRejectReason(video, keys, { requireGameWord: true }) && !terms.some((w) => norm(video.title).includes(w));
+  });
+  return hit ? `https://www.youtube.com/embed/${hit.id.videoId}` : null;
 }
 
 async function main() {
-  if (!YOUTUBE_API_KEY) return console.error('.env.local에 YOUTUBE_API_KEY가 없어요');
-
-  let q = supabase.from('games').select('id, name', { count: 'exact' }).eq('hidden', false).is('video_url', null)
+  let q = supabase.from('games').select('id, name, steam_appid, search_name_ko, video_exclude_terms', { count: 'exact' }).eq('hidden', false).is('video_url', null)
     .order('created_at', { ascending: false }).limit(LIMIT);
   if (ONLY_OTHER) q = q.is('steam_appid', null);
+  if (ONLY_NAMES.length) q = q.in('name', ONLY_NAMES);
   const { data: games, count, error } = await q;
   if (error) return console.error(`❌ 게임 목록을 못 불러옴: ${error.message}`);
   console.log(`영상 없는 게임 ${count ?? 0}개 중 ${games.length}개 처리\n`);
 
+  let steam = 0;
   let found = 0;
   let none = 0;
   let failed = 0;
   for (const game of games) {
-    let url;
+    let url = null;
+    let source = '';
     try {
-      url = await searchTrailer(game.name);
+      if (game.steam_appid) {
+        url = await steamTrailer(game.steam_appid);
+        source = '스팀';
+      }
+      if (!url) {
+        if (!YOUTUBE_API_KEY) {
+          console.log(`⏭️ ${game.name}: 스팀 영상 없음, YOUTUBE_API_KEY가 없어 유튜브 검색은 건너뜀`);
+          continue;
+        }
+        url = await youtubeTrailer(game);
+        source = '유튜브';
+      }
     } catch (e) {
       if (e instanceof QuotaError) {
         console.log(`⏳ YouTube 하루 한도 초과 — 나머지는 내일 이어서 (${e.message})`);
         break;
       }
-      console.log(`⚠️ YouTube API 오류: ${game.name} — ${e.message}`);
+      console.log(`⚠️ 영상 찾기 오류: ${game.name} — ${e.message}`);
       failed++;
       continue;
     }
@@ -61,8 +98,9 @@ async function main() {
       console.log(`❌ 저장 실패 (${game.name}): ${saveError.message}`);
       failed++;
     } else if (url) {
-      console.log(`✅ ${game.name}: ${url}`);
-      found++;
+      console.log(`✅ ${game.name} (${source}): ${url}`);
+      if (source === '스팀') steam++;
+      else found++;
     } else {
       console.log(`➖ ${game.name}: 영상 없음`);
       none++;
@@ -70,7 +108,7 @@ async function main() {
     await new Promise((r) => setTimeout(r, 1000));
   }
 
-  console.log(`\n완료 — 영상 찾음 ${found}개 · 영상 없음 ${none}개 · 오류 ${failed}개`);
+  console.log(`\n완료 — 스팀 공식 영상 ${steam}개 · 유튜브 ${found}개 · 영상 없음 ${none}개 · 오류 ${failed}개`);
 }
 
 main();

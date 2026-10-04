@@ -6,6 +6,7 @@
 // - 검색어: "<이름> 매드무비 | <이름> 하이라이트 | <이름> 웃긴 장면 | <이름> shorts" (한국어 이름이 있으면 영어 이름과 함께)
 //   videoDuration=short 먼저, 3개가 안 차면 medium으로 한 번 더. order=viewCount, regionCode=KR, relevanceLanguage=ko
 // - videos.list로 임베드 가능·조회수·길이 확인. 임베드 불가·게임 이름 없는 영상·트레일러 등·게임별 제외어(video_exclude_terms) 제외
+// - 제목·채널에 movie·film·영화가 있으면 제외, 이름이 일반 단어인 게임(Muck 등)은 game·게임·스팀 등도 있어야 함 (lib/video-filter.mjs)
 // - 게임당 최대 3개 (짧은 영상 우선, 그다음 조회수 순). 기존 합방 영상(kind='coop')은 건드리지 않음
 // - YouTube 사용량: 검색 1번당 101 (검색 100 + 영상 정보 1), 게임당 최대 202
 // - 하루 사용 상한 (새벽·주간 작업 몫을 먼저 남김):
@@ -16,6 +17,7 @@
 // - 한도 초과면 그 게임은 기록하지 않고 조용히 멈춤 → 다음 실행 때 그 게임부터 이어서
 import { createClient } from '@supabase/supabase-js';
 import { getCoopTargets, gameNameKeys, searchKeyword, searchExcludeSuffix, excludeTerms, EXCLUDE_TITLE_WORDS, DESC_HEAD } from './lib/coop-targets.mjs';
+import { videoRejectReason, isGenericName } from './lib/video-filter.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
@@ -88,8 +90,10 @@ function mentions(video, game) {
   return gameNameKeys(game).some((k) => t.includes(k));
 }
 
-function excluded(title, game) {
+function excluded(video, game) {
+  const title = video.title;
   if (EXCLUDE_TITLE_WORDS.test(title)) return true;
+  if (videoRejectReason(video, gameNameKeys(game), { requireGameWord: isGenericName(game) })) return true;
   const t = norm(title);
   return excludeTerms(game).some((w) => norm(w) && t.includes(norm(w)));
 }
@@ -125,7 +129,7 @@ async function searchOnce(game, duration, skipIds) {
       duration_sec: parseDuration(v.contentDetails?.duration),
     }))
     .filter((v) => v.view_count >= MIN_VIEWS && /[가-힣]/.test(`${v.title} ${v.description.slice(0, DESC_HEAD)}`))
-    .filter((v) => !excluded(v.title, game) && mentions(v, game))
+    .filter((v) => !excluded(v, game) && mentions(v, game))
     .sort((a, b) => b.view_count - a.view_count);
 }
 
