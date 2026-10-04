@@ -1,0 +1,272 @@
+[
+  {
+    "name": "It Takes Two",
+    "steam_appid": "1426210",
+    "reason": "2인 전용 협동 어드벤처, 2021 TGA 올해의 게임"
+  },
+  {
+    "name": "Overcooked! 2",
+    "steam_appid": "728880",
+    "reason": "친구와 주방을 나눠 맡는 대표 파티 협동 게임"
+  },
+  {
+    "name": "Overcooked! All You Can Eat",
+    "steam_appid": "1243830",
+    "reason": "오버쿡 1·2 합본 리마스터, 파티 협동 게임"
+  },
+  {
+    "name": "Deep Rock Galactic",
+    "steam_appid": "548430",
+    "reason": "드워프 광부 협동 FPS, 친구랑 하기 좋은 스테디셀러"
+  },
+  {
+    "name": "Sea of Thieves",
+    "steam_appid": "1172620",
+    "reason": "친구와 해적선을 함께 모는 협동 모험"
+  },
+  {
+    "name": "Portal 2",
+    "steam_appid": "620",
+    "reason": "2인 협동 퍼즐 캠페인이 있는 퍼즐 명작"
+  },
+  {
+    "name": "Golf With Your Friends",
+    "steam_appid": "431240",
+    "reason": "여럿이 가볍게 하는 파티 골프"
+  },
+  {
+    "name": "Ultimate Chicken Horse",
+    "steam_appid": "386940",
+    "reason": "함정을 깔아 서로 방해하는 파티 플랫포머"
+  },
+  {
+    "name": "Moving Out",
+    "steam_appid": "996770",
+    "reason": "친구와 이삿짐을 나르는 물리 파티 협동 게임"
+  },
+  {
+    "name": "Unrailed!",
+    "steam_appid": "1016920",
+    "reason": "선로를 함께 깔아 기차를 지키는 협동 게임"
+  },
+  {
+    "name": "Gang Beasts",
+    "steam_appid": "285900",
+    "reason": "흐물거리는 캐릭터끼리 밀치는 파티 난투"
+  },
+  {
+    "name": "PlateUp!",
+    "steam_appid": "1599600",
+    "reason": "친구와 식당을 꾸리는 협동 로그라이트"
+  },
+  {
+    "name": "Remnant II",
+    "steam_appid": "1282100",
+    "reason": "3인 협동 소울라이크 슈터 (2023)"
+  },
+  {
+    "name": "Grounded",
+    "steam_appid": "962130",
+    "reason": "몸이 작아진 채 뒷마당에서 버티는 협동 생존"
+  },
+  {
+    "name": "Barotrauma",
+    "steam_appid": "602960",
+    "reason": "잠수함 승무원 역할극 협동 생존"
+  },
+  {
+    "name": "Warhammer: Vermintide 2",
+    "steam_appid": "552500",
+    "reason": "4인 협동 근접 액션"
+  },
+  {
+    "name": "Warhammer 40,000: Darktide",
+    "steam_appid": "1361210",
+    "reason": "4인 협동 근접·사격 액션"
+  },
+  {
+    "name": "Borderlands 3",
+    "steam_appid": "397540",
+    "reason": "협동 루터 슈터 시리즈 최신 본편 (1편만 수집됨)"
+  },
+  {
+    "name": "Lovers in a Dangerous Spacetime",
+    "steam_appid": "252110",
+    "reason": "우주선을 함께 조종하는 로컬 협동 게임"
+  },
+  {
+    "name": "Cuphead",
+    "steam_appid": "268910",
+    "reason": "2인 협동 고난도 보스전 액션"
+  },
+  {
+    "name": "DEVOUR",
+    "steam_appid": "1274570",
+    "reason": "4인 협동 공포 탈출 게임"
+  },
+  {
+    "name": "Stick Fight: The Game",
+    "steam_appid": "674940",
+    "reason": "막대 인간 파티 대전"
+  },
+  {
+    "name": "Party Animals",
+    "steam_appid": "1260320",
+    "reason": "동물 캐릭터 물리 파티 난투"
+  },
+  {
+    "name": "Enshrouded",
+    "steam_appid": "1203620",
+    "reason": "협동 생존 크래프팅 액션 RPG"
+  },
+  {
+    "name": "Hades II",
+    "steam_appid": "1145350",
+    "reason": "2025년 정식 출시, 2025 TGA 올해의 게임 후보"
+  },
+  {
+    "name": "Hollow Knight: Silksong",
+    "steam_appid": "1030300",
+    "reason": "2025년 출시, 2025 TGA 올해의 게임 후보"
+  },
+  {
+    "name": "Sea of Stars",
+    "steam_appid": "1244090",
+    "reason": "2023년 인기 턴제 RPG"
+  },
+  {
+    "name": "Pizza Tower",
+    "steam_appid": "2231450",
+    "reason": "2023년 인기 2D 액션 플랫포머"
+  },
+  {
+    "name": "STAR WARS Jedi: Survivor",
+    "steam_appid": "1774580",
+    "reason": "2023년 액션 어드벤처 대작"
+  },
+  {
+    "name": "FINAL FANTASY XVI",
+    "steam_appid": "2515020",
+    "reason": "2023년 출시 파이널 판타지 본편 (2024 PC판)"
+  },
+  {
+    "name": "FINAL FANTASY VII REBIRTH",
+    "steam_appid": "2909400",
+    "reason": "2024 TGA 올해의 게임 후보 (2025 PC판)"
+  },
+  {
+    "name": "Metaphor: ReFantazio",
+    "steam_appid": "2679460",
+    "reason": "2024 TGA 올해의 게임 후보"
+  },
+  {
+    "name": "Like a Dragon: Infinite Wealth",
+    "steam_appid": "2072450",
+    "reason": "2024년 용과 같이 본편"
+  },
+  {
+    "name": "Prince of Persia: The Lost Crown",
+    "steam_appid": "2751000",
+    "reason": "2024년 메트로배니아 액션"
+  },
+  {
+    "name": "Balatro",
+    "steam_appid": "2379780",
+    "reason": "2024 TGA 올해의 게임 후보, 포커 로그라이크"
+  },
+  {
+    "name": "Dragon’s Dogma 2",
+    "steam_appid": "2054970",
+    "reason": "2024년 오픈월드 액션 RPG 대작"
+  },
+  {
+    "name": "SILENT HILL 2",
+    "steam_appid": "2124490",
+    "reason": "2024년 리메이크 호러 대작"
+  },
+  {
+    "name": "Indiana Jones and the Great Circle",
+    "steam_appid": "2677660",
+    "reason": "2024년 액션 어드벤처 대작"
+  },
+  {
+    "name": "Hades",
+    "steam_appid": "1145360",
+    "reason": "액션 로그라이크 대표작, 하데스 2 전작"
+  },
+  {
+    "name": "Hollow Knight",
+    "steam_appid": "367520",
+    "reason": "메트로배니아 대표작, 실크송 전작"
+  },
+  {
+    "name": "Onimusha: Warlords",
+    "steam_appid": "761600",
+    "reason": "귀무자 시리즈 1편 리마스터"
+  },
+  {
+    "name": "Devil May Cry 5",
+    "steam_appid": "601150",
+    "reason": "데빌 메이 크라이 시리즈 최신 본편"
+  },
+  {
+    "name": "Resident Evil 2",
+    "steam_appid": "883710",
+    "reason": "바이오하자드 RE:2, 2019 TGA 올해의 게임 후보 (RE:3·RE:4는 수집됨)"
+  },
+  {
+    "name": "Resident Evil 7 Biohazard",
+    "steam_appid": "418370",
+    "reason": "바이오하자드 7 (빌리지 전작)"
+  },
+  {
+    "name": "Shadow of the Tomb Raider: Definitive Edition",
+    "steam_appid": "750920",
+    "reason": "툼 레이더 리부트 3부작 마지막 편"
+  },
+  {
+    "name": "HITMAN World of Assassination",
+    "steam_appid": "1659040",
+    "reason": "히트맨 3부작 합본, 잠입 암살 시리즈"
+  },
+  {
+    "name": "Ori and the Blind Forest: Definitive Edition",
+    "steam_appid": "387290",
+    "reason": "오리 시리즈 1편 (2편은 수집됨)"
+  },
+  {
+    "name": "NieR:Automata",
+    "steam_appid": "524220",
+    "reason": "인기 싱글 액션 RPG"
+  },
+  {
+    "name": "Celeste",
+    "steam_appid": "504230",
+    "reason": "2018 TGA 올해의 게임 후보, 고난도 플랫포머"
+  },
+  {
+    "name": "Disco Elysium - The Final Cut",
+    "steam_appid": "632470",
+    "reason": "대화 중심 싱글 RPG 대표작"
+  },
+  {
+    "name": "Outer Wilds",
+    "steam_appid": "753640",
+    "reason": "2019 TGA 올해의 게임 후보, 우주 탐험 퍼즐"
+  },
+  {
+    "name": "UNCHARTED: Legacy of Thieves Collection",
+    "steam_appid": "1659420",
+    "reason": "언차티드 4·잃어버린 유산 합본"
+  },
+  {
+    "name": "DEATH STRANDING DIRECTOR’S CUT",
+    "steam_appid": "1850570",
+    "reason": "데스 스트랜딩 1편 (2편은 수집됨)"
+  },
+  {
+    "name": "FINAL FANTASY VII REMAKE INTERGRADE",
+    "steam_appid": "1462040",
+    "reason": "FF7 리메이크 1편 (리버스 전작)"
+  }
+]
