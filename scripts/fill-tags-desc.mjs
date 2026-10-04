@@ -51,7 +51,7 @@ JSON 배열로만 답해. 예: ["호러","온라인 협동","생존"]`,
 async function main() {
   const { data: games, error } = await supabase
     .from('games')
-    .select('id, name, steam_appid, tags, description');
+    .select('id, name, steam_appid, tags, description').eq('hidden', false);
   if (error) return console.error('조회 실패:', error.message);
 
   // 태그 목록(vocab)은 전체 게임으로 만들고, 채우는 대상만 --ids로 좁힘

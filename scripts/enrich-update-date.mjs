@@ -20,7 +20,7 @@ async function getLastUpdateDate(appid) {
 }
 
 async function main() {
-  const { data: games } = await onlyIds(supabase.from('games').select('id, name, steam_appid').not('steam_appid', 'is', null));
+  const { data: games } = await onlyIds(supabase.from('games').select('id, name, steam_appid').eq('hidden', false).not('steam_appid', 'is', null));
   if (!games) return;
 
   for (const game of games) {

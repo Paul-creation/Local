@@ -6,7 +6,7 @@ export const COOP_TOP_N = 50;
 export async function getCoopTargets(supabase, fields) {
   const { data, error } = await supabase
     .from('games')
-    .select(`id, name, heat_rank, current_players, ${fields}`)
+    .select(`id, name, heat_rank, current_players, ${fields}`).eq('hidden', false)
     .gte('max_players', 2);
   if (error) throw new Error(`게임 목록을 못 불러옴: ${error.message}`);
   return data

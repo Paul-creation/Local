@@ -47,7 +47,7 @@ async function candidates(g) {
 
 let query = supabase
   .from('games')
-  .select('id, name, steam_appid, card_image_url, cover_image_url, hero_image_url')
+  .select('id, name, steam_appid, card_image_url, cover_image_url, hero_image_url').eq('hidden', false)
   .not('steam_appid', 'is', null);
 query = RETRY ? query.not('hero_image_url', 'is', null).not('hero_image_url', 'like', '%library_hero%') : query.is('hero_image_url', null);
 const { data: loaded, error } = await onlyIds(query);

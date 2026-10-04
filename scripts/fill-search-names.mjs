@@ -79,7 +79,7 @@ function merge(existing, extra, gameName) {
 }
 
 async function getAllGames() {
-  const { data, error } = await onlyIds(supabase.from('games').select('id, name, search_name_ko').order('id'));
+  const { data, error } = await onlyIds(supabase.from('games').select('id, name, search_name_ko').eq('hidden', false).order('id'));
   if (error) throw new Error(`게임 목록을 못 불러옴: ${error.message}`);
   return data;
 }

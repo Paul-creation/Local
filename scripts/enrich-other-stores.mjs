@@ -70,7 +70,7 @@ async function searchIgdb(query, token) {
 async function main() {
   const { data: games, error } = await supabase
     .from('games')
-    .select('id, name, source, external_id, tags, genres, themes, min_players, max_players, difficulty, category, developer, publisher, critic_score')
+    .select('id, name, source, external_id, tags, genres, themes, min_players, max_players, difficulty, category, developer, publisher, critic_score').eq('hidden', false)
     .is('steam_appid', null);
   if (error) return console.error('조회 실패:', error.message);
 

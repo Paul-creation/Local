@@ -16,6 +16,7 @@ import CompareBuilder from '../components/CompareBuilder';
 import { BUILDER_FIELDS } from '../lib/compareRule';
 import { playersText } from '../lib/players';
 import GameImage from '../components/GameImage';
+import { selectGames } from '../lib/visibleGames';
 
 export const dynamic = 'force-dynamic';
 
@@ -129,7 +130,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
   const { ids: idsParam } = await searchParams;
   const ids = idsParam?.split(',').slice(0, 3) || [];
   if (ids.length < 2) return { title: '게임 비교 만들기' };
-  const { data } = await supabase.from('games').select('id, name').in('id', ids);
+  const { data } = await selectGames('id, name').in('id', ids);
   const games = ids.map((id) => (data || []).find((g) => g.id === id)).filter(Boolean) as any[];
   const names = games.map((g) => g.name).join(' vs ');
   const ogTitle = `🎮 게임 ${games.length}개 비교 — 우리 뭐 할래?`;
@@ -151,8 +152,8 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
   // ids가 없거나 1개면 비교 만들기 화면 (1개면 그 게임을 첫 칸에)
   if (ids.length < 2) {
     const [{ data: popular }, { data: initial }] = await Promise.all([
-      supabase.from('games').select(BUILDER_FIELDS).not('heat_rank', 'is', null).order('heat_rank', { ascending: true }).limit(8),
-      ids.length ? supabase.from('games').select(BUILDER_FIELDS).in('id', ids) : Promise.resolve({ data: [] as any[] }),
+      selectGames(BUILDER_FIELDS).not('heat_rank', 'is', null).order('heat_rank', { ascending: true }).limit(8),
+      ids.length ? selectGames(BUILDER_FIELDS).in('id', ids) : Promise.resolve({ data: [] as any[] }),
     ]);
     return (
       <main className="page">
@@ -162,9 +163,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
     );
   }
 
-  const { data: games } = await supabase
-    .from('games')
-    .select('*, price_history(price, discount_percent, checked_at, currency)')
+  const { data: games } = await selectGames('*, price_history(price, discount_percent, checked_at, currency)')
     .in('id', ids);
 
   if (!games || games.length < 2) {

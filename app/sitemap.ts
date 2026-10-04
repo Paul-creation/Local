@@ -2,11 +2,12 @@ import type { MetadataRoute } from 'next';
 import { supabase } from './lib/supabase';
 import { SITE_URL } from './lib/site';
 import { BOARD_KEYS } from './lib/communityBoards';
+import { selectGames } from './lib/visibleGames';
 
 export const revalidate = 86400; // 하루에 한 번 새로 만들기
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const { data: games } = await supabase.from('games').select('id, created_at');
+  const { data: games } = await selectGames('id, created_at');
   return [
     { url: SITE_URL, changeFrequency: 'daily', priority: 1 },
     ...['/about', '/faq'].map((p) => ({ url: `${SITE_URL}${p}`, changeFrequency: 'monthly' as const, priority: 0.5 })),

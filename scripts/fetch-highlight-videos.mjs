@@ -68,7 +68,7 @@ function pacificNow() {
 }
 
 async function computeBudget() {
-  const { count: pendingTrailers, error } = await supabase.from('games').select('id', { count: 'exact', head: true }).is('video_url', null);
+  const { count: pendingTrailers, error } = await supabase.from('games').select('id', { count: 'exact', head: true }).eq('hidden', false).is('video_url', null);
   if (error) throw new Error(`트레일러 대기 수를 못 불러옴: ${error.message}`);
   const trailer = Math.min(pendingTrailers ?? 0, TRAILER_PER_DAY) * TRAILER_UNIT;
   const { weekday } = pacificNow();
@@ -178,7 +178,7 @@ async function main() {
     budget = await computeBudget();
     const { data, error } = await supabase
       .from('games')
-      .select('id, name, heat_rank, search_name_ko, video_exclude_terms, highlight_videos_at')
+      .select('id, name, heat_rank, search_name_ko, video_exclude_terms, highlight_videos_at').eq('hidden', false)
       .not('heat_rank', 'is', null)
       .order('heat_rank', { ascending: true });
     if (error) throw new Error(`게임 목록을 못 불러옴: ${error.message}`);

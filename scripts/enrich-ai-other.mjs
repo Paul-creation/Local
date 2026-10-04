@@ -96,7 +96,7 @@ async function main() {
 
   const { data: games, error } = await supabase
     .from('games')
-    .select('id, name, source, description, korean_support, release_date, min_spec, recommended_spec, storage_gb, solo_playable, recommended_players, server_type, has_ending, ending_note, story_length, activities, is_esports, ai_enriched_at')
+    .select('id, name, source, description, korean_support, release_date, min_spec, recommended_spec, storage_gb, solo_playable, recommended_players, server_type, has_ending, ending_note, story_length, activities, is_esports, ai_enriched_at').eq('hidden', false)
     .is('steam_appid', null);
   if (error) return console.error('조회 실패:', error.message);
 

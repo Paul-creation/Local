@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { guardedClaudeFetch, AiLimitError } from '../../lib/aiGuard';
 import { supabase } from '../../lib/supabase';
+import { selectGames } from '../../lib/visibleGames';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const STORE: Record<string, string> = { steam: 'Steam', epic: '에픽', battlenet: 'Battle.net', riot: '라이엇' };
@@ -8,9 +9,7 @@ const STORE: Record<string, string> = { steam: 'Steam', epic: '에픽', battlene
 // 브라우저가 보낸 글 대신, 게임 ID로 DB에서 직접 정확한 정보를 만든다
 async function buildGameInfo(ids: string[]) {
   if (!ids.length) return '';
-  const { data } = await supabase
-    .from('games')
-    .select('id, name, source, steam_appid, tags, difficulty, min_players, max_players, recommended_players, solo_playable, korean_support, activities, is_free, description')
+  const { data } = await selectGames('id, name, source, steam_appid, tags, difficulty, min_players, max_players, recommended_players, solo_playable, korean_support, activities, is_free, description')
     .in('id', ids);
   return ids
     .map((id) => (data || []).find((g: any) => g.id === id))

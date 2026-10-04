@@ -4,6 +4,7 @@
 // 브라우저로 보내는 양을 줄이려고 가격 기록은 최신 가격 두 칸으로 펴고 빈 칸은 뺀다 (flattenGame)
 import { supabase } from './supabase';
 import { flattenGame } from './price';
+import { selectGames } from './visibleGames';
 
 export const INDEX_FIELDS = `
   id, name, search_name_ko, tags, category, difficulty,
@@ -16,14 +17,12 @@ export const INDEX_FIELDS = `
 export async function getGameIndex() {
   // GOTY 배지(goty_awards)는 기록 있는 게임만 따로 — 칸이 아직 없으면 오류를 무시하고 배지 없이
   const [{ data: list, error }, { data: goty }] = await Promise.all([
-    supabase
-      .from('games')
-      .select(INDEX_FIELDS)
+    selectGames(INDEX_FIELDS)
       .gte('price_history.price', 100)
       .order('created_at', { ascending: false })
       .order('checked_at', { referencedTable: 'price_history', ascending: false })
       .limit(1, { referencedTable: 'price_history' }),
-    supabase.from('games').select('id, goty_awards').not('goty_awards', 'is', null),
+    selectGames('id, goty_awards').not('goty_awards', 'is', null),
   ]);
   if (error) throw new Error(`게임 목록 조회 실패: ${error.message}`);
   const gotyById = new Map((goty || []).map((g) => [g.id, g.goty_awards]));

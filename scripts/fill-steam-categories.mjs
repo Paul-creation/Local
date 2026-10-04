@@ -33,7 +33,7 @@ async function main() {
 
   const { data, error } = await supabase
     .from('games')
-    .select(`id, name, steam_appid, solo_playable, ${FIELDS.join(', ')}`)
+    .select(`id, name, steam_appid, solo_playable, ${FIELDS.join(', ')}`).eq('hidden', false)
     .not('steam_appid', 'is', null)
     .order('id');
   if (error) throw new Error(`게임 목록을 못 불러옴: ${error.message}`);

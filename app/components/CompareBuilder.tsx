@@ -8,6 +8,7 @@ import { compareBlockReason, MAX_COMPARE, COMPARE_PICK_KEY, BUILDER_FIELDS } fro
 import { matchRank, looseIlikePattern } from '../lib/searchMatch';
 import { playersText } from '../lib/players';
 import GameImage from './GameImage';
+import { selectGames } from '../lib/visibleGames';
 
 const MAX_SUGGESTIONS = 6;
 
@@ -40,7 +41,7 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
     let ids: string[] = [];
     try { ids = (sessionStorage.getItem(COMPARE_PICK_KEY) || '').split(',').filter(Boolean).slice(0, MAX_COMPARE); } catch {}
     if (!ids.length) return;
-    supabase.from('games').select(BUILDER_FIELDS).in('id', ids).then(({ data }) => {
+    selectGames(BUILDER_FIELDS).in('id', ids).then(({ data }) => {
       if (data?.length) setPicks((prev) => (prev.length ? prev : inOrder(ids, data)));
     });
   }, []);
@@ -64,9 +65,7 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
       // 영어 이름·한국어 이름 둘 다 느슨하게 넉넉히 받아온 뒤, 공통 규칙(searchMatch)으로 다시 거르고 정렬
       const pattern = looseIlikePattern(q);
       if (!pattern) { if (!cancelled) { setResults([]); setSearching(false); } return; }
-      const { data } = await supabase
-        .from('games')
-        .select(BUILDER_FIELDS)
+      const { data } = await selectGames(BUILDER_FIELDS)
         .or(`name.ilike.${pattern},search_name_ko.ilike.${pattern}`)
         .order('heat_rank', { ascending: true, nullsFirst: false })
         .limit(40);

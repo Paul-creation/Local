@@ -12,7 +12,7 @@ async function main() {
   const today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul' }).format(new Date()); // YYYY-MM-DD
   const { data: games, error } = await supabase
     .from('games')
-    .select('id, name, heat_rank, current_players')
+    .select('id, name, heat_rank, current_players').eq('hidden', false)
     .not('heat_rank', 'is', null)
     .order('heat_rank', { ascending: true })
     .limit(TOP_N);

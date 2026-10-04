@@ -22,6 +22,8 @@ import { playersText } from '../../lib/players';
 import { badgeClass } from '../../lib/badge.mjs';
 import GameOpinions from '../../components/community/GameOpinions';
 import RelatedPosts from '../../components/community/RelatedPosts';
+import { selectGames, mergedTargetOf } from '../../lib/visibleGames';
+import { permanentRedirect } from 'next/navigation';
 
 // 게임마다 처음 열릴 때 만들고 1시간 동안 재사용 (ISR). 가격·접속자는 하루 한 번 갱신되므로 충분
 // 의견 작성·수정·삭제(api/game-comments)와 신고 자동 숨김(api/community/report)은 그 게임 페이지를 바로 새로 만든다
@@ -66,12 +68,15 @@ function parseMinSpec(raw: string | null) {
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  const { data: game } = await supabase
-    .from('games')
-    .select('name, description, fun_description, min_players, max_players, difficulty, tags, is_free, price_history(price, discount_percent, checked_at)')
+  const { data: game } = await selectGames('name, description, fun_description, min_players, max_players, difficulty, tags, is_free, price_history(price, discount_percent, checked_at)')
     .eq('id', id)
     .maybeSingle();
-  if (!game) return { title: '게임을 찾을 수 없어요' };
+  if (!game) {
+    // 숨긴 중복 게임이면 남긴 게임으로 영구 이동 (메타데이터 단계에서 먼저 처리해야 308 응답이 됨)
+    const target = await mergedTargetOf(id);
+    if (target) permanentRedirect(`/games/${target}`);
+    return { title: '게임을 찾을 수 없어요' };
+  }
 
   const players = playersText(game);
   const price = getPriceInfo(game);
@@ -97,19 +102,19 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const { id } = await params;
 
   const top10Promise = getTop10Ids().catch(() => [] as string[]);
-    const { data: game, error } = await supabase
-    .from('games')
-    .select('*, price_history(price, discount_percent, checked_at), player_history(player_count, recorded_at), game_streamers(streamer_id, streamers(id, name, platform, handle)), game_videos(kind, video_id, title, channel_title, published_at, view_count)')
+    const { data: game, error } = await selectGames('*, price_history(price, discount_percent, checked_at), player_history(player_count, recorded_at), game_streamers(streamer_id, streamers(id, name, platform, handle)), game_videos(kind, video_id, title, channel_title, published_at, view_count)')
     .eq('id', id)
     .single();
 
   if (error || !game) {
+    const target = await mergedTargetOf(id);
+    if (target) permanentRedirect(`/games/${target}`);
     return <div className="page">게임을 찾을 수 없어요.</div>;
   }
   const isTop10 = (await top10Promise).includes(game.id);
   // 같은 시리즈 (series_id가 있을 때만, 출시순)
   const { data: seriesGames } = game.series_id
-    ? await supabase.from('games').select('id, name, card_image_url, cover_image_url, series_order').eq('series_id', game.series_id).order('series_order')
+    ? await selectGames('id, name, card_image_url, cover_image_url, series_order').eq('series_id', game.series_id).order('series_order')
     : { data: null };
   const { data: series } = game.series_id && (seriesGames?.length ?? 0) > 1
     ? await supabase.from('series').select('name_ko').eq('id', game.series_id).maybeSingle()

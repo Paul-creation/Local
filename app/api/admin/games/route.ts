@@ -16,7 +16,8 @@ export async function GET(req: NextRequest) {
   if (!isAdmin(req)) return unauthorized();
   const { data } = await supabase
     .from('games')
-    .select('id, name, tags, difficulty, min_players, max_players, recommended_players, solo_playable, category')
+    // 관리자 화면은 숨긴 게임(중복 정리 등)도 보여줌 — hidden·merged_into로 표시
+    .select('id, name, tags, difficulty, min_players, max_players, recommended_players, solo_playable, category, hidden, merged_into')
     .order('name');
   return NextResponse.json(data || []);
 }

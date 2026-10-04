@@ -3,15 +3,14 @@ import { supabase } from '../../../../lib/supabase';
 import { SITE_NAME } from '../../../../lib/site';
 import { getPriceInfo } from '../../../../lib/price';
 import { loadOgFonts, OG_SIZE, OG_CACHE, OG_SAFE, playersText } from '../../../../lib/og';
+import { selectGames } from '../../../../lib/visibleGames';
 
 // 게임 상세 공유 미리보기
 // 메시지 앱이 가운데만 잘라 보여줘도 다 보이게, 썸네일·이름·인원·난이도·가격은 가운데 600x600 안에만 둔다
 // 바깥 양옆은 게임 이미지를 흐리고 어둡게 깐 장식
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { data: game } = await supabase
-    .from('games')
-    .select('name, fun_description, description, min_players, max_players, difficulty, is_free, card_image_url, cover_image_url, price_history(price, discount_percent, checked_at)')
+  const { data: game } = await selectGames('name, fun_description, description, min_players, max_players, difficulty, is_free, card_image_url, cover_image_url, price_history(price, discount_percent, checked_at)')
     .eq('id', id)
     .maybeSingle();
   if (!game) return new Response('게임을 찾을 수 없어요', { status: 404 });

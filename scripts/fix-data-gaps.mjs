@@ -32,7 +32,7 @@ const CATEGORY_TAG = {
 async function main() {
   const { data: games, error } = await onlyIds(supabase
     .from('games')
-    .select('id, name, steam_appid, tags, korean_support, is_free, price_history(price)')
+    .select('id, name, steam_appid, tags, korean_support, is_free, price_history(price)').eq('hidden', false)
     .not('steam_appid', 'is', null));
   if (error) return console.error('조회 실패:', error.message);
 

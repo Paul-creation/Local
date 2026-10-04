@@ -65,7 +65,7 @@ async function main() {
   if (!process.env.ANTHROPIC_API_KEY) return console.error('.env.local에 ANTHROPIC_API_KEY가 없어요');
   const { data, error } = await onlyIds(supabase
     .from('games')
-    .select('id, name, tags, description, min_players, max_players, solo_playable, has_ending, ending_note, server_type, activities')
+    .select('id, name, tags, description, min_players, max_players, solo_playable, has_ending, ending_note, server_type, activities').eq('hidden', false)
     .is('details_ai_at', null));
   if (error) return console.error('조회 실패:', error.message);
 

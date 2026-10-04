@@ -5,6 +5,7 @@ import { supabase } from './supabase';
 import { playersText } from './players';
 import { getPriceInfo, getLowestTiming, type LowestTiming } from './price';
 import { translateTag } from './tagTranslate';
+import { selectGames } from './visibleGames';
 
 export type RankChange = { type: 'up' | 'down'; n: number } | { type: 'same' } | { type: 'new' } | null;
 
@@ -65,7 +66,7 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
   const top50 = [...today.entries()].sort((a, b) => a[1] - b[1]).map(([id]) => id);
 
   // 친구랑 탭을 고르려면 상위 50개의 인원만 필요 (작은 칸 하나)
-  const { data: playersRows } = await supabase.from('games').select('id, max_players').in('id', top50);
+  const { data: playersRows } = await selectGames('id, max_players').in('id', top50);
   const multi = new Set((playersRows || []).filter((g) => (g.max_players || 0) >= 2).map((g) => g.id));
 
   const allIds = top50.slice(0, 10);
@@ -84,9 +85,7 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
   const since = addDays(latest, -7 * 26);
 
   const [{ data: games }, { data: weeksRows }, { data: playerRows }] = await Promise.all([
-    supabase
-      .from('games')
-      .select('id, name, hero_image_url, card_image_url, cover_image_url, fun_description, tags, min_players, max_players, current_players, is_free, lowest_price, price_history(price, discount_percent, checked_at, currency)')
+    selectGames('id, name, hero_image_url, card_image_url, cover_image_url, fun_description, tags, min_players, max_players, current_players, is_free, lowest_price, price_history(price, discount_percent, checked_at, currency)')
       .in('id', ids)
       .gte('price_history.price', 100)
       .order('checked_at', { referencedTable: 'price_history', ascending: false })

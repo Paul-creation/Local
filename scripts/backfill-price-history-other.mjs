@@ -25,7 +25,7 @@ async function main() {
 
   const { data: games, error } = await supabase
     .from('games')
-    .select('id, name, source, external_id, is_free, itad_id, price_history(price, checked_at)')
+    .select('id, name, source, external_id, is_free, itad_id, price_history(price, checked_at)').eq('hidden', false)
     .is('steam_appid', null);
   if (error) return console.error('조회 실패:', error.message);
 

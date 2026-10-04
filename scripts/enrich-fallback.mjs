@@ -10,7 +10,7 @@ const supabase = createClient(
 async function main() {
   const { data: games, error } = await onlyIds(supabase
     .from('games')
-    .select('id, name, steam_appid, min_players, max_players, difficulty, genres').not('steam_appid', 'is', null));
+    .select('id, name, steam_appid, min_players, max_players, difficulty, genres').eq('hidden', false).not('steam_appid', 'is', null));
 
   if (error) {
     console.error('조회 실패:', error.message);

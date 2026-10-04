@@ -6,6 +6,7 @@ import {
   db, fail, clean, ipHash, hashPassword, checkLength, checkText, checkAuthor, since24h, DAILY_POSTS_PER_IP,
 } from '../../../lib/community';
 import { UUID, findRelatedGames, isMissingRelatedColumn } from '../../../lib/postLinks';
+import { selectGames } from '../../../lib/visibleGames';
 
 // 글쓰기
 export async function POST(req: NextRequest) {
@@ -31,7 +32,7 @@ export async function POST(req: NextRequest) {
   const ip_hash = ipHash(getIp(req.headers));
   const [{ count }, game] = await Promise.all([
     db.from('posts').select('id', { count: 'exact', head: true }).eq('ip_hash', ip_hash).gte('created_at', since24h()),
-    gameId ? db.from('games').select('id').eq('id', gameId).maybeSingle() : Promise.resolve({ data: null }),
+    gameId ? selectGames('id', undefined, db).eq('id', gameId).maybeSingle() : Promise.resolve({ data: null }),
   ]);
   if ((count ?? 0) >= DAILY_POSTS_PER_IP) return fail('오늘은 글을 충분히 썼어요. 내일 다시 써주세요.', 429);
   if (gameId && !game.data) return fail('관련 게임을 찾을 수 없어요.');

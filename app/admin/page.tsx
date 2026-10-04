@@ -133,6 +133,7 @@ export default function AdminPage() {
             }}
           >
             {g.name}
+            {g.hidden && <span style={{ marginLeft: 6, fontSize: 12, fontWeight: 700, color: '#b45309', background: '#fef3c7', borderRadius: 4, padding: '1px 6px' }}>숨김</span>}
           </button>
         ))}
       </div>
@@ -144,6 +145,14 @@ export default function AdminPage() {
         ) : (
           <div style={{ maxWidth: 600 }}>
             <h2 style={{ fontWeight: 800, marginBottom: 24 }}>{selected.name}</h2>
+            {selected.hidden && (
+              <p style={{ margin: '-12px 0 20px', padding: '10px 12px', borderRadius: 8, background: '#fef3c7', color: '#92400e', fontSize: 14 }}>
+                숨긴 게임이에요. 사이트 화면·검색·시리즈·sitemap에 나오지 않아요.
+                {selected.merged_into && (
+                  <> 상세 주소로 들어오면 <a href={`/games/${selected.merged_into}`} target="_blank" rel="noreferrer">{games.find((x) => x.id === selected.merged_into)?.name ?? '남긴 게임'}</a>(으)로 이동해요.</>
+                )}
+              </p>
+            )}
 
             {/* 배지 — 인원·협동/대전 칸에서 자동 계산 (저장하면 다시 계산됨) */}
             <label style={labelStyle}>배지 (자동)</label>

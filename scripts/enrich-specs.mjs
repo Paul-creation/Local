@@ -142,7 +142,7 @@ const STEAM_FLAGS = ['has_dlc', 'family_sharing', 'is_early_access', 'has_worksh
 async function main() {
   const { data: games, error: loadError } = await onlyIds(supabase
     .from('games')
-    .select('id, name, steam_appid, tags, min_spec, recommended_spec, release_date, korean_support, storage_gb, achievement_count, min_players, max_players, solo_playable, review_positive_percent, review_total, lowest_price, lowest_price_date')
+    .select('id, name, steam_appid, tags, min_spec, recommended_spec, release_date, korean_support, storage_gb, achievement_count, min_players, max_players, solo_playable, review_positive_percent, review_total, lowest_price, lowest_price_date').eq('hidden', false)
     .not('steam_appid', 'is', null)
     .or(EMPTY_FILTER));
   if (loadError) return console.error(`❌ 게임 목록을 못 불러옴: ${loadError.message}`);

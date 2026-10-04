@@ -32,7 +32,7 @@ function candidates(game) {
 async function main() {
   const { data: games, error } = await onlyIds(supabase
     .from('games')
-    .select('id, name, steam_appid, cover_image_url')
+    .select('id, name, steam_appid, cover_image_url').eq('hidden', false)
     .not('steam_appid', 'is', null)
     .is('card_image_url', null));
   if (error) return console.error('조회 실패:', error.message);

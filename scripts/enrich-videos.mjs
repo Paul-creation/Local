@@ -33,7 +33,7 @@ async function searchTrailer(gameName) {
 async function main() {
   if (!YOUTUBE_API_KEY) return console.error('.env.local에 YOUTUBE_API_KEY가 없어요');
 
-  let q = supabase.from('games').select('id, name', { count: 'exact' }).is('video_url', null)
+  let q = supabase.from('games').select('id, name', { count: 'exact' }).eq('hidden', false).is('video_url', null)
     .order('created_at', { ascending: false }).limit(LIMIT);
   if (ONLY_OTHER) q = q.is('steam_appid', null);
   const { data: games, count, error } = await q;

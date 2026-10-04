@@ -6,6 +6,7 @@ import { db } from './community';
 import { buildMatchers, matchGames, MAX_RELATED } from './gameMatch.mjs';
 import { MAX_COMPARE } from './compareRule';
 import { LARGE_LOBBY } from './players';
+import { selectGames } from './visibleGames';
 
 export const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -17,7 +18,7 @@ async function getMatchers() {
   if (cache && Date.now() - cache.at < CACHE_MS) return cache.matchers;
   const rows: { id: string; name: string | null; search_name_ko: string | null }[] = [];
   for (let from = 0; ; from += 1000) {
-    const { data, error } = await db.from('games').select('id, name, search_name_ko').order('id').range(from, from + 999);
+    const { data, error } = await selectGames('id, name, search_name_ko', undefined, db).order('id').range(from, from + 999);
     if (error) throw error;
     rows.push(...(data || []));
     if (!data || data.length < 1000) break;

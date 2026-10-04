@@ -7,6 +7,7 @@ import {
   db, fail, clean, ipHash, hashPassword, checkLength, checkText, checkAuthor, since24h,
   DAILY_GAME_COMMENTS_PER_IP, PUBLIC_GAME_COMMENT,
 } from '../../lib/community';
+import { selectGames } from '../../lib/visibleGames';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
 
   const ip_hash = ipHash(getIp(req.headers));
   const [{ data: game }, { count }] = await Promise.all([
-    db.from('games').select('id').eq('id', gameId).maybeSingle(),
+    selectGames('id', undefined, db).eq('id', gameId).maybeSingle(),
     db.from('game_comments').select('id', { count: 'exact', head: true }).eq('ip_hash', ip_hash).gte('created_at', since24h()),
   ]);
   if (!game) return fail('게임을 찾을 수 없어요.', 404);

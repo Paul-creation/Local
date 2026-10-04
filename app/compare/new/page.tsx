@@ -4,6 +4,7 @@ import BackToList from '../../components/BackToList';
 import CompareBuilder from '../../components/CompareBuilder';
 import { BUILDER_FIELDS, MAX_COMPARE, compareBlockReason } from '../../lib/compareRule';
 import { UUID } from '../../lib/postLinks';
+import { selectGames } from '../../lib/visibleGames';
 
 export const metadata: Metadata = { title: '게임 비교 만들기', robots: { index: false } };
 
@@ -15,8 +16,8 @@ export default async function NewComparePage({ searchParams }: { searchParams: P
   const { games } = await searchParams;
   const ids = [...new Set((games || '').split(',').filter((id) => UUID.test(id)))].slice(0, MAX_COMPARE);
   const [{ data: popular }, { data: rows }] = await Promise.all([
-    supabase.from('games').select(BUILDER_FIELDS).not('heat_rank', 'is', null).order('heat_rank', { ascending: true }).limit(8),
-    ids.length ? supabase.from('games').select(BUILDER_FIELDS).in('id', ids) : Promise.resolve({ data: [] as Pick[] }),
+    selectGames(BUILDER_FIELDS).not('heat_rank', 'is', null).order('heat_rank', { ascending: true }).limit(8),
+    ids.length ? selectGames(BUILDER_FIELDS).in('id', ids) : Promise.resolve({ data: [] as Pick[] }),
   ]);
   const initial: Pick[] = [];
   for (const id of ids) {

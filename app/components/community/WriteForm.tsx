@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabase';
 import { BOARD_KEYS, BOARDS, LIMITS, type BoardKey } from '../../lib/communityBoards';
 import { send, loadNickname, saveNickname } from './api';
+import { selectGames } from '../../lib/visibleGames';
 
 type Game = { id: string; name: string };
 
@@ -74,7 +75,7 @@ function GamePicker({ game, onChange }: { game: Game | null; onChange: (g: Game 
     const term = q.replace(/[%,()*\\]/g, '').trim();
     if (term.length < 1) { setResults([]); return; }
     timer.current = setTimeout(async () => {
-      const { data } = await supabase.from('games').select('id, name')
+      const { data } = await selectGames('id, name')
         .or(`name.ilike.%${term}%,search_name_ko.ilike.%${term}%`).limit(8);
       setResults(data || []);
     }, 250);

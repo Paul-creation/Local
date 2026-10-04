@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { createHash } from 'crypto';
 import { getIp } from '../../lib/aiGuard';
 import { VOTE_SITUATIONS } from '../../lib/situations';
+import { selectGames } from '../../lib/visibleGames';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
   const [{ data: game }, { count }] = await Promise.all([
-    supabase.from('games').select('id').eq('id', gameId).maybeSingle(),
+    selectGames('id', undefined, supabase).eq('id', gameId).maybeSingle(),
     supabase.from('game_votes').select('id', { count: 'exact', head: true }).eq('voter_hash', voter).gte('created_at', since),
   ]);
   if (!game) return NextResponse.json({ error: '없는 게임' }, { status: 404 });

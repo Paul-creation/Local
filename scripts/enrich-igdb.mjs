@@ -81,7 +81,7 @@ async function main() {
 
   const { data: games } = await onlyIds(supabase
     .from('games')
-    .select('id, name, steam_appid, platform, min_players'));
+    .select('id, name, steam_appid, platform, min_players').eq('hidden', false));
 
   if (!games) return;
 

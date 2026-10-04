@@ -10,6 +10,7 @@ import { getPopularPosts } from './lib/community';
 import { flattenGame } from './lib/price';
 import { TAG_GROUPS } from './lib/tagGroups';
 import { HOME_FILTER_STYLE_ID } from './lib/homeFilter';
+import { selectGames } from './lib/visibleGames';
 
 // 5분마다 새로 만든 결과를 모두에게 보여준다 (방문마다 DB를 조회하지 않도록). 인기 글·가격도 최대 5분 늦게 반영
 export const revalidate = 300;
@@ -46,15 +47,13 @@ export default async function Home() {
   // 태그 선택 칸은 DB에 실제로 있는 태그만 보여주므로 태그 이름만 모아서 넘긴다
   // 긴 설명(description)은 짧은 소개(fun_description)가 없을 때만 화면에 쓰이므로 그때만 남긴다
   const [{ data: sectionRows }, { data: tagRows }, hot, weekly, popularPosts] = await Promise.all([
-    supabase
-      .from('games')
-      .select(SECTION_FIELDS)
+    selectGames(SECTION_FIELDS)
       .or('featured.eq.true,is_casual_party.eq.true')
       .gte('price_history.price', 100)
       .order('created_at', { ascending: false })
       .order('checked_at', { referencedTable: 'price_history', ascending: false })
       .limit(1, { referencedTable: 'price_history' }),
-    supabase.from('games').select('tags'),
+    selectGames('tags'),
     getHotChart().catch(() => ({ tabs: [], top10Ids: [] as string[] })),
     getWeeklyFeatured().catch(() => null),
     getPopularPosts().catch(() => []),

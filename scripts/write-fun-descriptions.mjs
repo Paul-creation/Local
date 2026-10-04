@@ -195,7 +195,7 @@ async function main() {
   if (!process.env.ANTHROPIC_API_KEY) return console.error('.env.local에 ANTHROPIC_API_KEY가 없어요');
 
   const cols = 'id, name, category, tags, genres, min_players, max_players, solo_playable, has_online_coop, has_local_coop, has_pvp, server_type, story_length, difficulty, activities, description, heat_rank, current_players';
-  const probe = await supabase.from('games').select('fun_description_at').limit(1);
+  const probe = await supabase.from('games').select('fun_description_at').eq('hidden', false).limit(1);
   if (probe.error) {
     hasMarker = false;
     console.log('⚠️  games.fun_description_at 칸이 없어 처리 기록을 남기지 못해요 (비워 둔 게임은 다음 주에 다시 시도). 추가 SQL은 파일 위 주석 참고\n');
@@ -205,12 +205,12 @@ async function main() {
   if (IDS) {
     // id가 많으면 주소가 길어지므로 100개씩 나눠 조회
     for (let i = 0; i < IDS.length; i += 100) {
-      const { data, error } = await supabase.from('games').select(cols).in('id', IDS.slice(i, i + 100));
+      const { data, error } = await supabase.from('games').select(cols).eq('hidden', false).in('id', IDS.slice(i, i + 100));
       if (error) return console.error('조회 실패:', error.message);
       games.push(...data);
     }
   } else {
-    let query = supabase.from('games').select(cols);
+    let query = supabase.from('games').select(cols).eq('hidden', false);
     query = query.is('fun_description', null);
     if (hasMarker) query = query.is('fun_description_at', null);
     query = query

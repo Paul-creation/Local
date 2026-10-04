@@ -15,12 +15,13 @@ export async function getWeeklyFeatured() {
     .from('featured_games')
     .select(`
       week_start,
-      games(
+      games!inner(
         id, name, tags, difficulty, min_players, max_players, is_free, lowest_price,
         card_image_url, cover_image_url, description, fun_description,
         price_history(price, discount_percent, checked_at, currency)
       )
     `)
+    .eq('games.hidden', false) // 숨긴 게임이 뽑힌 주는 건너뛰고 그 전 주 게임을 보여줌 (lib/visibleGames.ts 참고)
     .gte('games.price_history.price', 100)
     .order('week_start', { ascending: false })
     .order('checked_at', { referencedTable: 'games.price_history', ascending: false })

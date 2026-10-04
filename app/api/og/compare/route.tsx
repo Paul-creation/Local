@@ -2,6 +2,7 @@ import { ImageResponse } from 'next/og';
 import { supabase } from '../../../lib/supabase';
 import { SITE_NAME } from '../../../lib/site';
 import { loadOgFonts, OG_SIZE, OG_CACHE, OG_SAFE } from '../../../lib/og';
+import { selectGames } from '../../../lib/visibleGames';
 
 // 비교 링크 공유 미리보기
 // 메시지 앱이 가운데만 잘라 보여줘도 다 보이게, 제목·썸네일·이름은 가운데 600x600 안에만 둔다
@@ -9,7 +10,7 @@ import { loadOgFonts, OG_SIZE, OG_CACHE, OG_SAFE } from '../../../lib/og';
 export async function GET(request: Request) {
   const ids = (new URL(request.url).searchParams.get('ids') || '').split(',').filter(Boolean).slice(0, 3);
   const { data } = ids.length
-    ? await supabase.from('games').select('id, name, card_image_url, cover_image_url').in('id', ids)
+    ? await selectGames('id, name, card_image_url, cover_image_url').in('id', ids)
     : { data: [] };
   const games = ids.map((id) => (data || []).find((g) => g.id === id)).filter(Boolean) as any[];
   const fonts = await loadOgFonts();
