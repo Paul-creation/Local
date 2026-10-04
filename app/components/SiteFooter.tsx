@@ -9,6 +9,8 @@ export default function SiteFooter() {
         <Link href="/privacy"><strong>개인정보처리방침</strong></Link>
         <Link href="/terms">이용약관</Link>
         <Link href="/community/policy">커뮤니티 운영정책</Link>
+        <Link href="/about">사이트 소개</Link>
+        <Link href="/faq">자주 묻는 질문</Link>
         <Link href="/feedback">의견 보내기</Link>
         <span>
           연락처:{' '}
