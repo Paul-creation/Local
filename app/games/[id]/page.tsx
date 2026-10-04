@@ -17,7 +17,11 @@ import { getTop10Ids } from '../../lib/hotChart';
 import { playersText } from '../../lib/players';
 import GameOpinions from '../../components/community/GameOpinions';
 
-export const dynamic = 'force-dynamic';
+// 게임마다 처음 열릴 때 만들고 1분 동안 재사용 (ISR). 의견을 쓰거나 고치면 api/game-comments에서 바로 새로 만든다
+export const revalidate = 60;
+export async function generateStaticParams() {
+  return []; // 빌드 때 미리 만들지 않고, 처음 방문할 때 만든다 (빈 배열이어야 ISR이 켜짐)
+}
 
 const SAMPLE_STREAMERS = ['스트리머 A', '스트리머 B', '스트리머 C'];
 

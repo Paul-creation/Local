@@ -7,7 +7,8 @@ import { getHotChart } from './lib/hotChart';
 import { getWeeklyFeatured } from './lib/weeklyFeatured';
 import { getPopularPosts } from './lib/community';
 
-export const dynamic = 'force-dynamic';
+// 5분마다 새로 만든 결과를 모두에게 보여준다 (방문마다 게임 전체를 DB에서 가져오지 않도록). 인기 글·가격도 최대 5분 늦게 반영
+export const revalidate = 300;
 export const metadata: Metadata = {
   alternates: { canonical: '/' },
   openGraph: { ...BASE_OG, title: SITE_NAME, description: SITE_DESCRIPTION, url: '/' },

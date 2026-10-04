@@ -43,3 +43,4 @@ scripts/.cache/
 
 # 최대 인원 검증 중간 결과 (커밋 안 함)
 data/verification/
+/backup/

@@ -1,0 +1,34 @@
+name: 주간 데이터 백업 (게임·가격 기록)
+
+on:
+  schedule:
+    - cron: '0 20 * * 0'    # 매주 월요일 한국 시간 새벽 5시 (매일 갱신이 끝난 뒤)
+  workflow_dispatch:        # Actions 탭에서 직접 실행 가능
+
+concurrency:
+  group: data-jobs          # 매일·매주 갱신 중에는 기다렸다가 실행 (갱신 도중 값을 내보내지 않게)
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: 환경변수 파일 만들기
+        run: printf '%s\n' "$ENV_FILE" > .env.local
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+      # games·price_history만 내보냄 (개인정보 표는 스크립트에서 제외)
+      - run: node --env-file=.env.local scripts/backup-export.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: data-backup-${{ github.run_number }}
+          path: backup/
+          retention-days: 30
+          if-no-files-found: error
