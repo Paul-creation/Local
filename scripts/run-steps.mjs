@@ -20,7 +20,7 @@ const GROUPS = {
   ],
   // 매주: 새 게임 수집 + 게임 정보 보강
   weekly: [
-    'bulk-import',
+    'bulk-import --apply', // 기본은 미리보기라 --apply로 실제 추가 (판매 순위 새 게임 최대 200개)
     'import-other-stores',
     'check-delisted',
     'find-non-games',
