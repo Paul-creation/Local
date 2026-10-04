@@ -1,6 +1,7 @@
 // scripts/fix-data-gaps.mjs
 // 스팀 게임의 빈칸 채우기: 한국어 지원, 무료 여부·가격, 부족한 태그 (AI 사용 없음, 비용 0)
 import { createClient } from '@supabase/supabase-js';
+import { onlyIds } from './lib/only-ids.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -29,10 +30,10 @@ const CATEGORY_TAG = {
 };
 
 async function main() {
-  const { data: games, error } = await supabase
+  const { data: games, error } = await onlyIds(supabase
     .from('games')
     .select('id, name, steam_appid, tags, korean_support, is_free, price_history(price)')
-    .not('steam_appid', 'is', null);
+    .not('steam_appid', 'is', null));
   if (error) return console.error('조회 실패:', error.message);
 
   const targets = games.filter((g) => {

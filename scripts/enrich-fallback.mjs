@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { onlyIds } from './lib/only-ids.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -15,9 +16,9 @@ function guessCategory(genres = [], name = '') {
 }
 
 async function main() {
-  const { data: games, error } = await supabase
+  const { data: games, error } = await onlyIds(supabase
     .from('games')
-    .select('id, name, steam_appid, category, min_players, max_players, difficulty, genres').not('steam_appid', 'is', null);
+    .select('id, name, steam_appid, category, min_players, max_players, difficulty, genres').not('steam_appid', 'is', null));
 
   if (error) {
     console.error('조회 실패:', error.message);

@@ -2,6 +2,7 @@
 // 스팀 상점 정보(사양·출시일·한국어·용량 등)로 정보가 빈 게임만 채우기 — 이미 있는 값은 덮어쓰지 않음
 // 실행: node --env-file=.env.local scripts/enrich-specs.mjs
 import { createClient } from '@supabase/supabase-js';
+import { onlyIds } from './lib/only-ids.mjs';
 import { steamGet, appdetailsUrl, SteamLimitError } from './lib/steam.mjs';
 
 const supabase = createClient(
@@ -138,20 +139,20 @@ const EMPTY_FILTER = 'min_spec.is.null,release_date.is.null';
 const STEAM_FLAGS = ['has_dlc', 'family_sharing', 'is_early_access', 'has_workshop', 'is_esports'];
 
 async function main() {
-  const { data: games, error: loadError } = await supabase
+  const { data: games, error: loadError } = await onlyIds(supabase
     .from('games')
     .select('id, name, steam_appid, tags, min_spec, recommended_spec, release_date, korean_support, storage_gb, achievement_count, min_players, max_players, solo_playable, review_positive_percent, review_total, lowest_price, lowest_price_date')
     .not('steam_appid', 'is', null)
-    .or(EMPTY_FILTER);
+    .or(EMPTY_FILTER));
   if (loadError) return console.error(`❌ 게임 목록을 못 불러옴: ${loadError.message}`);
 
   // 1인 게임 solo_playable 자동 수정 (루프 전에 한 번만)
-  await supabase
+  await onlyIds(supabase
     .from('games')
     .update({ solo_playable: true })
     .eq('min_players', 1)
     .eq('max_players', 1)
-    .eq('solo_playable', false);
+    .eq('solo_playable', false));
   console.log('✅ 1인 게임 solo_playable 자동 수정 완료');
   console.log(`정보가 빈 스팀 게임 ${games.length}개 (약 ${Math.ceil(games.length * 2.5 / 60)}분)\n`);
 

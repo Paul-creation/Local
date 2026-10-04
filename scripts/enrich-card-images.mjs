@@ -1,6 +1,7 @@
 // scripts/enrich-card-images.mjs
 // 스팀 게임의 고화질 카드 이미지(616x353)를 찾아 card_image_url에 저장
 import { createClient } from '@supabase/supabase-js';
+import { onlyIds } from './lib/only-ids.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -29,11 +30,11 @@ function candidates(game) {
 }
 
 async function main() {
-  const { data: games, error } = await supabase
+  const { data: games, error } = await onlyIds(supabase
     .from('games')
     .select('id, name, steam_appid, cover_image_url')
     .not('steam_appid', 'is', null)
-    .is('card_image_url', null);
+    .is('card_image_url', null));
   if (error) return console.error('조회 실패:', error.message);
   console.log(`카드 이미지 없는 스팀 게임 ${games.length}개 처리\n`);
 

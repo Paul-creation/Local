@@ -1,6 +1,7 @@
 // scripts/enrich-hero-images.mjs
 // 상세 페이지 맨 위용 초고화질 이미지(스팀 library_hero, 3840x1240)를 찾아 hero_image_url에 저장
 import { createClient } from '@supabase/supabase-js';
+import { onlyIds } from './lib/only-ids.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
@@ -24,11 +25,11 @@ function candidates(g) {
   return [...new Set(list)];
 }
 
-const { data: games, error } = await supabase
+const { data: games, error } = await onlyIds(supabase
   .from('games')
   .select('id, name, steam_appid, card_image_url, cover_image_url')
   .not('steam_appid', 'is', null)
-  .is('hero_image_url', null);
+  .is('hero_image_url', null));
 if (error) { console.error('조회 실패:', error.message); process.exit(1); }
 console.log(`상단 이미지 없는 스팀 게임 ${games.length}개 처리\n`);
 
