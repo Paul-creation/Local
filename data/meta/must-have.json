@@ -268,5 +268,25 @@
     "name": "FINAL FANTASY VII REMAKE INTERGRADE",
     "steam_appid": "1462040",
     "reason": "FF7 리메이크 1편 (리버스 전작)"
+  },
+  {
+    "name": "Chained Together",
+    "steam_appid": "2567870",
+    "reason": "앱 번호 확인용"
+  },
+  {
+    "name": "METAL GEAR SOLID Δ",
+    "steam_appid": "2417610",
+    "reason": "앱 번호 확인용"
+  },
+  {
+    "name": "Assassin's Creed Shadows",
+    "steam_appid": "3159330",
+    "reason": "앱 번호 확인용"
+  },
+  {
+    "name": "Horizon Zero Dawn Remastered",
+    "steam_appid": "2561580",
+    "reason": "앱 번호 확인용"
   }
 ]
