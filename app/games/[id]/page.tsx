@@ -135,7 +135,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       {/* TOP_MEDIA — 영상이 있으면 영상만, 없으면 사진만 */}
       {game.video_url ? (
         <div className="video-section">
-          <YouTubeLite url={game.video_url} title={`${game.name} 트레일러`} fallbackImage={game.hero_image_url || game.card_image_url || game.cover_image_url} />
+          <YouTubeLite url={game.video_url} title={`${game.name} 트레일러`} fallbackImage={game.hero_image_url || game.card_image_url || game.cover_image_url} wide fetchPriority="high" />
         </div>
       ) : (
         <div className="detail-hero">
