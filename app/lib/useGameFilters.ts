@@ -1,9 +1,10 @@
 // 담당: 친구(검색·태그·비교)
 'use client';
 
-import { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { compareBlockReason, MAX_COMPARE, COMPARE_PICK_KEY } from './compareRule';
-import { matchesGame, normalizeSearch } from './searchMatch';
+import { matchesGame, normalizeSearch, searchNames } from './searchMatch';
+import { buildTagLookup, parseSearchInput } from './tagSearch';
 import { LARGE_LOBBY, playersBucket } from './players';
 import { getPriceInfo } from './price';
 import { HOME_FILTER_STYLE_ID } from './homeFilter';
@@ -124,6 +125,35 @@ export function useGameFilters(games: any[] | null) {
 
   const toggleTag = (tag: string) =>
     setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
+  const addTags = (tags: string[]) =>
+    setSelectedTags(prev => [...prev, ...tags.filter(t => !prev.includes(t))]);
+
+  // 검색창 태그 입력용 — 게임들에 실제로 붙은 태그 + 영문·별칭 (app/lib/tagSearch)
+  const tagLookup = useMemo(() => buildTagLookup((games || []).flatMap((g) => g.tags || [])), [games]);
+
+  // 입력을 태그와 게임 이름으로 나눈다. 게임 이름과 똑같이 입력했으면(예: "Party Animals") 나누지 않고 이름으로
+  const splitInput = (text: string) => {
+    const key = normalizeSearch(text);
+    if (!key || (games || []).some((g) => searchNames(g).some((n) => normalizeSearch(n) === key))) {
+      return { tags: [] as string[], rest: text.trim() };
+    }
+    return parseSearchInput(text, tagLookup);
+  };
+
+  // 예전 주소(?q=좀비)로 들어온 경우에도 목록이 도착하면 태그 단어를 태그 조건으로 옮긴다
+  const convertedQuery = useRef(false);
+  useEffect(() => {
+    if (convertedQuery.current || !inited || !games) return;
+    convertedQuery.current = true;
+    const { tags, rest } = splitInput(query);
+    if (!tags.length) return;
+    /* eslint-disable react-hooks/set-state-in-effect -- 주소에서 읽은 검색어를 목록 도착 후 한 번 나누는 것 */
+    addTags(tags);
+    setInput(rest);
+    setQuery(rest);
+    /* eslint-enable react-hooks/set-state-in-effect */
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 처음 한 번만
+  }, [inited, games]);
 
   const normalizedQuery = query.trim().toLowerCase();
   const selectedCount = [selectedCategory, selectedPlayers, selectedDifficulty, freeOnly ? '무료' : '', saleOnly ? '할인' : '', ...selectedTags].filter(Boolean).length;
@@ -133,7 +163,8 @@ export function useGameFilters(games: any[] | null) {
     if (freeOnly && !g.is_free) return false;
     if (saleOnly && !((getPriceInfo(g)?.discount ?? 0) > 0)) return false;
     if (selectedCategory && !badgeMatches(g.category, selectedCategory)) return false;
-    if (selectedTags.length > 0 && !selectedTags.some(t => g.tags?.includes(t))) return false;
+    // 고른 태그를 전부 가진 게임만 (AND)
+    if (selectedTags.length > 0 && !selectedTags.every(t => g.tags?.includes(t))) return false;
     if (selectedDifficulty && g.difficulty !== selectedDifficulty) return false;
     if (selectedPlayers) {
       if (selectedPlayers === '1인' && !(g.min_players === 1 && g.max_players === 1)) return false;
@@ -142,12 +173,8 @@ export function useGameFilters(games: any[] | null) {
       if (selectedPlayers === '5인 이상' && !(g.max_players >= 5)) return false;
       if (selectedPlayers === '16명 이상' && !(g.max_players >= LARGE_LOBBY)) return false;
     }
-    if (normalizedQuery) {
-      // 영어 이름·한국어 이름·별명 (띄어쓰기·대소문자·기호 무시) 또는 태그
-      const tagQuery = normalizeSearch(normalizedQuery);
-      return matchesGame(g, normalizedQuery) ||
-        (!!tagQuery && g.tags?.some((t: string) => normalizeSearch(t).includes(tagQuery)));
-    }
+    // 영어 이름·한국어 이름·별명 (띄어쓰기·대소문자·기호 무시). 태그 단어는 확정할 때 태그 조건으로 옮겨 둠
+    if (normalizedQuery) return matchesGame(g, normalizedQuery);
     return true;
   });
 
@@ -179,8 +206,12 @@ export function useGameFilters(games: any[] | null) {
   }, [inited, games, showResults]);
 
   // 엔터(또는 결과 보기)로 지금 입력한 글자를 검색어로 확정하고 결과 화면 맨 위로
+  // 태그로 알아본 단어는 태그 조건(칩)으로 옮기고, 나머지만 이름 검색어로 남긴다
   const submitSearch = () => {
-    setQuery(input);
+    const { tags, rest } = splitInput(input);
+    if (tags.length) addTags(tags);
+    setInput(rest);
+    setQuery(rest);
     setShowResults(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -206,7 +237,7 @@ export function useGameFilters(games: any[] | null) {
     input, setInput,
     query, submitSearch,
     selectedCategory, setSelectedCategory,
-    selectedTags, toggleTag,
+    selectedTags, toggleTag, addTags, tagLookup, splitInput,
     selectedPlayers, setSelectedPlayers,
     selectedDifficulty, setSelectedDifficulty,
     freeOnly, setFreeOnly,
