@@ -47,7 +47,6 @@
     "artstyle": "g:art",
     "assassin": "t:97070",
     "assassins": "t:97070",
-    "atmospheric": "t:4166",
     "atv": "t:129761",
     "autobattler": "t:1084988",
     "automation": "t:255534",
@@ -86,8 +85,8 @@
     "characters": "g:characters",
     "chess": "t:4184",
     "choicesmatter": "t:6426",
+    "choicesstructure": "g:choices",
     "chooseyourownadventure": "t:4486",
-    "chores": "g:chore-sim",
     "cinematic": "t:4145",
     "citybuilder": "t:4328",
     "classbased": "t:4155",
@@ -99,6 +98,7 @@
     "colonysim": "t:220585",
     "colorful": "t:4305",
     "combat": "t:3993",
+    "combatcontrols": "g:combat-control",
     "combatflightsimulator": "t:15045",
     "combatracing": "t:4102",
     "comedy": "t:1719",
@@ -109,7 +109,6 @@
     "cooking": "t:3920",
     "cozy": "t:97376",
     "crafting": "t:1702",
-    "creationmods": "g:creation",
     "creaturecollector": "t:916648",
     "cricket": "t:158638",
     "crime": "t:6378",
@@ -137,6 +136,7 @@
     "dog": "t:1637",
     "dogs": "t:1637",
     "dragons": "t:4046",
+    "drawingstyle": "g:drawing",
     "driving": "t:1644",
     "dungeoncrawler": "t:1720",
     "dwarf": "t:4535",
@@ -170,6 +170,7 @@
     "fox": "t:507423",
     "foxes": "t:507423",
     "fps": "t:1663",
+    "freedomcreation": "g:freedom",
     "funny": "t:1719",
     "futuristic": "t:4295",
     "gambling": "t:16250",
@@ -200,6 +201,7 @@
     "idler": "t:615955",
     "immersivesim": "t:9204",
     "incremental": "t:560542",
+    "individualsports": "g:solo-sports",
     "intentionallyawkwardcontrols": "t:14906",
     "interactivefiction": "t:11014",
     "inventorymanagement": "t:6276",
@@ -216,6 +218,7 @@
     "lifesim": "t:10235",
     "linear": "t:7250",
     "logic": "t:6129",
+    "lookcolor": "g:look",
     "loot": "t:4236",
     "lootershooter": "t:353880",
     "lorerich": "t:3854",
@@ -254,6 +257,7 @@
     "mystery": "t:5716",
     "mysterydungeon": "t:198631",
     "mythology": "t:16094",
+    "narration": "g:narration",
     "narrative": "t:1742",
     "nature": "t:30358",
     "naval": "t:6910",
@@ -271,7 +275,6 @@
     "organizing": "t:1239876",
     "otome": "t:31579",
     "outbreaksim": "t:1100686",
-    "pacing": "g:pace",
     "parkour": "t:4036",
     "parody": "t:4878",
     "party": "t:7178",
@@ -293,6 +296,8 @@
     "precisionplatformer": "t:3877",
     "proceduralgeneration": "t:5125",
     "programming": "t:5432",
+    "progression": "g:pace",
+    "protagonistrelationships": "g:protagonist",
     "psychedelic": "t:1714",
     "psychological": "t:5186",
     "psychologicalhorror": "t:1721",
@@ -356,7 +361,6 @@
     "spectaclefighter": "t:4777",
     "spelling": "t:71389",
     "sports": "t:701",
-    "sportsracing": "g:sports-racing",
     "stealth": "t:1687",
     "steampunk": "t:1777",
     "storyrich": "t:1742",
@@ -369,6 +373,7 @@
     "supernatural": "t:10808",
     "surreal": "t:1710",
     "survival": "t:1662",
+    "survivalcrafting": "g:survival-craft",
     "survivalhorror": "t:3978",
     "swordplay": "t:4608",
     "tabletop": "t:17389",
@@ -376,6 +381,7 @@
     "tacticalrpg": "t:17305",
     "tanks": "t:13276",
     "tcg": "t:9271",
+    "teamballsports": "g:team-sports",
     "tennis": "t:5914",
     "tension": "g:tension",
     "textbased": "t:31275",
@@ -423,8 +429,10 @@
     "werewolves": "t:17015",
     "western": "t:1647",
     "wholesome": "t:552282",
+    "winterextreme": "g:extreme-sports",
     "wolves": "t:20486",
     "wordgame": "t:24003",
+    "worldstructure": "g:world",
     "worldwari": "t:5382",
     "worldwarii": "t:4150",
     "wrestling": "t:47827",
@@ -439,6 +447,7 @@
     "갓게임": "t:5300",
     "강도": "t:1680",
     "개": "t:1637",
+    "개인종목": "g:solo-sports",
     "개척시뮬레이션": "t:220585",
     "거래": "t:4202",
     "건설": "t:1643",
@@ -447,6 +456,7 @@
     "검술": "t:4608",
     "게이밍": "t:150626",
     "게임소재": "t:150626",
+    "겨울익스트림스포츠": "g:extreme-sports",
     "격투": "t:1743",
     "경영": "t:12472",
     "경제": "t:4695",
@@ -469,6 +479,7 @@
     "귀여운": "t:4726",
     "그래픽스타일": "g:art",
     "그리드기반움직임": "t:7569",
+    "그림체": "g:drawing",
     "기계탈것": "g:machines",
     "기지건설": "t:7332",
     "기차": "t:1616",
@@ -588,7 +599,6 @@
     "부머슈터": "t:1023537",
     "부머슈팅": "t:1023537",
     "분위기": "g:mood",
-    "분위기있는": "t:4166",
     "불릿타임": "t:5796",
     "블랙유머": "t:5923",
     "블랙코미디": "t:5923",
@@ -608,22 +618,26 @@
     "사이키델릭": "t:1714",
     "상식퀴즈": "t:10437",
     "새": "t:6214",
+    "색표현": "g:look",
     "샌드박스": "t:3810",
     "생명체수집": "t:916648",
     "생존": "t:1662",
     "생존공포": "t:3978",
+    "생존제작": "g:survival-craft",
     "생활시뮬레이션": "t:10235",
     "서바이벌": "t:1662",
     "서바이벌호러": "t:3978",
     "서부": "t:1647",
     "선정성": "t:12095",
     "선정적콘텐츠": "t:12095",
+    "선택과전개": "g:choices",
     "선택의중요성": "t:6426",
     "선택이중요한": "t:6426",
     "선택형어드벤처": "t:4486",
     "선협": "t:760247",
     "선형": "t:7250",
     "세계관배경": "g:setting",
+    "세계구조": "g:world",
     "소설기반": "t:3796",
     "소설원작": "t:3796",
     "소셜디덕션": "t:745697",
@@ -653,7 +667,6 @@
     "스펙터클액션": "t:4777",
     "스펙터클파이터": "t:4777",
     "스포츠": "t:701",
-    "스포츠레이싱": "g:sports-racing",
     "시간공격": "t:5390",
     "시간관리": "t:16689",
     "시간여행": "t:10679",
@@ -736,6 +749,7 @@
     "의도적으로불편한컨트롤": "t:14906",
     "의학시뮬레이션": "t:1100688",
     "이머시브심": "t:9204",
+    "이야기방식": "g:narration",
     "이용연령표현": "g:content",
     "익스트랙션슈터": "t:1199779",
     "인공지능": "t:7926",
@@ -743,7 +757,6 @@
     "인벤토리관리": "t:6276",
     "인크리멘탈": "t:560542",
     "인터랙티브픽션": "t:11014",
-    "일상작업": "g:chore-sim",
     "일시정지가능한실시간": "t:7107",
     "일직선진행": "t:7250",
     "자동차시뮬레이션": "t:1100687",
@@ -753,6 +766,7 @@
     "자연": "t:30358",
     "자원경제관리": "g:resource",
     "자원관리": "t:8945",
+    "자유도창작": "g:freedom",
     "잠수함": "t:19780",
     "잠입": "t:1687",
     "장르": "g:genre",
@@ -772,6 +786,7 @@
     "전체이용가": "t:5350",
     "전투": "t:3993",
     "전투레이싱": "t:4102",
+    "전투조작": "g:combat-control",
     "절차적생성": "t:5125",
     "점프스케어": "t:42089",
     "정리": "t:1239876",
@@ -784,6 +799,7 @@
     "제트": "t:15045",
     "좀비": "t:1659",
     "주사위": "t:7556",
+    "주인공관계": "g:protagonist",
     "중세": "t:4172",
     "지하": "t:21006",
     "직업시뮬레이션": "t:35079",
@@ -792,7 +808,6 @@
     "짧은플레이": "t:4234",
     "차량전투": "t:11104",
     "창고지기": "t:1730",
-    "창작모드": "g:creation",
     "채광": "t:5981",
     "철학적": "t:15277",
     "첩보활동": "t:1776",
@@ -855,6 +870,7 @@
     "트레이딩카드게임": "t:9271",
     "트윈스틱슈터": "t:4758",
     "트윈스틱슈팅": "t:4758",
+    "팀구기종목": "g:team-sports",
     "파괴": "t:5363",
     "파밍": "t:87918",
     "파밍루팅": "t:4236",
@@ -1021,17 +1037,17 @@
       "group": false,
       "count": 48
     },
-    "t:42804": {
-      "ko": "액션 로그라이크",
-      "en": "Action Roguelike",
-      "group": false,
-      "count": 34
-    },
     "t:11095": {
       "ko": "보스 러시",
       "en": "Boss Rush",
       "group": false,
       "count": 2
+    },
+    "t:42804": {
+      "ko": "액션 로그라이크",
+      "en": "Action Roguelike",
+      "group": false,
+      "count": 34
     },
     "t:1773": {
       "ko": "아케이드",
@@ -1219,7 +1235,7 @@
       "ko": "전략",
       "en": "Strategy",
       "group": false,
-      "count": 191
+      "count": 195
     },
     "t:1676": {
       "ko": "실시간 전략",
@@ -1293,6 +1309,49 @@
       "group": false,
       "count": 19
     },
+    "t:1666": {
+      "ko": "카드 게임",
+      "en": "Card Game",
+      "group": false,
+      "count": 24
+    },
+    "t:32322": {
+      "ko": "덱빌딩",
+      "en": "Deckbuilding",
+      "group": false,
+      "count": 16
+    },
+    "t:1091588": {
+      "ko": "로그라이크 덱빌딩",
+      "en": "Roguelike Deckbuilder",
+      "group": false,
+      "count": 8
+    },
+    "t:791774": {
+      "ko": "카드 배틀러",
+      "en": "Card Battler",
+      "group": false,
+      "count": 10
+    },
+    "t:9271": {
+      "ko": "TCG",
+      "en": "Trading Card Game",
+      "group": false,
+      "count": 5
+    },
+    "t:13070": {
+      "ko": "솔리테어",
+      "en": "Solitaire",
+      "group": false,
+      "count": 1
+    },
+    "t:6835": {
+      "ko": "포커",
+      "en": "Poker",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
     "t:599": {
       "ko": "시뮬레이션",
       "en": "Simulation",
@@ -1303,7 +1362,7 @@
       "ko": "경영",
       "en": "Management",
       "group": false,
-      "count": 66
+      "count": 71
     },
     "t:91114": {
       "ko": "가게 운영",
@@ -1333,7 +1392,25 @@
       "ko": "생활 시뮬레이션",
       "en": "Life Sim",
       "group": false,
-      "count": 34
+      "count": 74
+    },
+    "t:87918": {
+      "ko": "농장 시뮬레이션",
+      "en": "Farming Sim",
+      "group": false,
+      "count": 15
+    },
+    "t:9551": {
+      "ko": "연애 시뮬레이션",
+      "en": "Dating Sim",
+      "group": false,
+      "count": 26
+    },
+    "t:31579": {
+      "ko": "오토메",
+      "en": "Otome",
+      "group": false,
+      "count": 2
     },
     "t:35079": {
       "ko": "직업 시뮬레이션",
@@ -1348,23 +1425,29 @@
       "count": 0,
       "hidden": true
     },
-    "t:9551": {
-      "ko": "연애 시뮬레이션",
-      "en": "Dating Sim",
+    "t:3920": {
+      "ko": "요리",
+      "en": "Cooking",
       "group": false,
-      "count": 26
+      "count": 12
     },
-    "t:31579": {
-      "ko": "오토메",
-      "en": "Otome",
+    "t:23491": {
+      "ko": "청소",
+      "en": "Cleaning",
       "group": false,
-      "count": 2
+      "count": 5
     },
-    "t:87918": {
-      "ko": "농장 시뮬레이션",
-      "en": "Farming Sim",
+    "t:1239876": {
+      "ko": "정리",
+      "en": "Organizing",
       "group": false,
-      "count": 15
+      "count": 4
+    },
+    "t:889937": {
+      "ko": "꾸미기",
+      "en": "Decorating",
+      "group": false,
+      "count": 3
     },
     "g:vehicle-sim": {
       "ko": "탈것 시뮬레이션",
@@ -1413,36 +1496,6 @@
       "en": "Sailing",
       "group": false,
       "count": 4
-    },
-    "g:chore-sim": {
-      "ko": "일상 작업",
-      "en": "Chores",
-      "group": true,
-      "count": 20
-    },
-    "t:3920": {
-      "ko": "요리",
-      "en": "Cooking",
-      "group": false,
-      "count": 12
-    },
-    "t:23491": {
-      "ko": "청소",
-      "en": "Cleaning",
-      "group": false,
-      "count": 5
-    },
-    "t:1239876": {
-      "ko": "정리",
-      "en": "Organizing",
-      "group": false,
-      "count": 4
-    },
-    "t:889937": {
-      "ko": "꾸미기",
-      "en": "Decorating",
-      "group": false,
-      "count": 3
     },
     "t:26921": {
       "ko": "정치 시뮬레이션",
@@ -1634,17 +1687,17 @@
       "group": false,
       "count": 3
     },
-    "g:sports-racing": {
-      "ko": "스포츠·레이싱",
-      "en": "Sports & Racing",
-      "group": true,
-      "count": 36
-    },
     "t:701": {
       "ko": "스포츠",
       "en": "Sports",
       "group": false,
-      "count": 21
+      "count": 36
+    },
+    "g:team-sports": {
+      "ko": "팀 구기 종목",
+      "en": "Team Ball Sports",
+      "group": true,
+      "count": 6
     },
     "t:1254546": {
       "ko": "축구",
@@ -1671,24 +1724,11 @@
       "count": 0,
       "hidden": true
     },
-    "t:5914": {
-      "ko": "테니스",
-      "en": "Tennis",
-      "group": false,
-      "count": 0,
-      "hidden": true
-    },
     "t:847164": {
       "ko": "배구",
       "en": "Volleyball",
       "group": false,
       "count": 1
-    },
-    "t:7038": {
-      "ko": "골프",
-      "en": "Golf",
-      "group": false,
-      "count": 2
     },
     "t:324176": {
       "ko": "하키",
@@ -1711,6 +1751,46 @@
       "count": 0,
       "hidden": true
     },
+    "g:solo-sports": {
+      "ko": "개인 종목",
+      "en": "Individual Sports",
+      "group": true,
+      "count": 2
+    },
+    "t:5914": {
+      "ko": "테니스",
+      "en": "Tennis",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:7038": {
+      "ko": "골프",
+      "en": "Golf",
+      "group": false,
+      "count": 2
+    },
+    "t:7328": {
+      "ko": "볼링",
+      "en": "Bowling",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:4852": {
+      "ko": "당구",
+      "en": "Billiards",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:13382": {
+      "ko": "활쏘기",
+      "en": "Archery",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
     "t:12190": {
       "ko": "복싱",
       "en": "Boxing",
@@ -1724,6 +1804,12 @@
       "group": false,
       "count": 0,
       "hidden": true
+    },
+    "g:extreme-sports": {
+      "ko": "겨울·익스트림 스포츠",
+      "en": "Winter & Extreme",
+      "group": true,
+      "count": 1
     },
     "t:7309": {
       "ko": "스키",
@@ -1754,27 +1840,6 @@
     "t:19568": {
       "ko": "사이클링",
       "en": "Cycling",
-      "group": false,
-      "count": 0,
-      "hidden": true
-    },
-    "t:7328": {
-      "ko": "볼링",
-      "en": "Bowling",
-      "group": false,
-      "count": 0,
-      "hidden": true
-    },
-    "t:4852": {
-      "ko": "당구",
-      "en": "Billiards",
-      "group": false,
-      "count": 0,
-      "hidden": true
-    },
-    "t:13382": {
-      "ko": "활쏘기",
-      "en": "Archery",
       "group": false,
       "count": 0,
       "hidden": true
@@ -1829,7 +1894,7 @@
       "ko": "캐주얼",
       "en": "Casual",
       "group": false,
-      "count": 182
+      "count": 202
     },
     "t:7178": {
       "ko": "파티 게임",
@@ -1890,7 +1955,7 @@
       "ko": "테이블탑",
       "en": "Tabletop",
       "group": false,
-      "count": 42
+      "count": 25
     },
     "t:1770": {
       "ko": "보드게임",
@@ -1918,49 +1983,6 @@
       "group": false,
       "count": 1
     },
-    "t:1666": {
-      "ko": "카드 게임",
-      "en": "Card Game",
-      "group": false,
-      "count": 24
-    },
-    "t:32322": {
-      "ko": "덱빌딩",
-      "en": "Deckbuilding",
-      "group": false,
-      "count": 16
-    },
-    "t:1091588": {
-      "ko": "로그라이크 덱빌딩",
-      "en": "Roguelike Deckbuilder",
-      "group": false,
-      "count": 8
-    },
-    "t:791774": {
-      "ko": "카드 배틀러",
-      "en": "Card Battler",
-      "group": false,
-      "count": 10
-    },
-    "t:9271": {
-      "ko": "TCG",
-      "en": "Trading Card Game",
-      "group": false,
-      "count": 5
-    },
-    "t:13070": {
-      "ko": "솔리테어",
-      "en": "Solitaire",
-      "group": false,
-      "count": 1
-    },
-    "t:6835": {
-      "ko": "포커",
-      "en": "Poker",
-      "group": false,
-      "count": 0,
-      "hidden": true
-    },
     "t:16250": {
       "ko": "도박",
       "en": "Gambling",
@@ -1972,6 +1994,12 @@
       "en": "Gameplay",
       "group": true,
       "count": 615
+    },
+    "g:world": {
+      "ko": "세계 구조",
+      "en": "World Structure",
+      "group": true,
+      "count": 350
     },
     "t:1695": {
       "ko": "오픈월드",
@@ -1989,7 +2017,7 @@
       "ko": "물리 엔진",
       "en": "Physics",
       "group": false,
-      "count": 74
+      "count": 66
     },
     "t:5363": {
       "ko": "파괴",
@@ -1997,23 +2025,29 @@
       "group": false,
       "count": 15
     },
-    "g:creation": {
-      "ko": "창작·모드",
-      "en": "Creation & Mods",
+    "t:3834": {
+      "ko": "탐험",
+      "en": "Exploration",
+      "group": false,
+      "count": 161
+    },
+    "t:5125": {
+      "ko": "절차적 생성",
+      "en": "Procedural Generation",
+      "group": false,
+      "count": 37
+    },
+    "t:8253": {
+      "ko": "음악 기반 절차적 생성",
+      "en": "Music-Based Procedural Generation",
+      "group": false,
+      "count": 2
+    },
+    "g:survival-craft": {
+      "ko": "생존·제작",
+      "en": "Survival & Crafting",
       "group": true,
-      "count": 58
-    },
-    "t:8122": {
-      "ko": "레벨 에디터",
-      "en": "Level Editor",
-      "group": false,
-      "count": 14
-    },
-    "t:1669": {
-      "ko": "모드 지원",
-      "en": "Moddable",
-      "group": false,
-      "count": 49
+      "count": 251
     },
     "t:1662": {
       "ko": "생존",
@@ -2050,252 +2084,6 @@
       "en": "Automation",
       "group": false,
       "count": 18
-    },
-    "t:3834": {
-      "ko": "탐험",
-      "en": "Exploration",
-      "group": false,
-      "count": 161
-    },
-    "t:5125": {
-      "ko": "절차적 생성",
-      "en": "Procedural Generation",
-      "group": false,
-      "count": 37
-    },
-    "t:8253": {
-      "ko": "음악 기반 절차적 생성",
-      "en": "Music-Based Procedural Generation",
-      "group": false,
-      "count": 2
-    },
-    "t:1716": {
-      "ko": "로그라이크",
-      "en": "Roguelike",
-      "group": false,
-      "count": 59
-    },
-    "t:454187": {
-      "ko": "정통 로그라이크",
-      "en": "Traditional Roguelike",
-      "group": false,
-      "count": 1
-    },
-    "t:1759": {
-      "ko": "영구 죽음",
-      "en": "Perma Death",
-      "group": false,
-      "count": 16
-    },
-    "t:3959": {
-      "ko": "로그라이트",
-      "en": "Roguelite",
-      "group": false,
-      "count": 50
-    },
-    "t:1742": {
-      "ko": "스토리 중심",
-      "en": "Story Rich",
-      "group": false,
-      "count": 318
-    },
-    "t:6426": {
-      "ko": "선택이 중요한",
-      "en": "Choices Matter",
-      "group": false,
-      "count": 86
-    },
-    "t:6971": {
-      "ko": "멀티 엔딩",
-      "en": "Multiple Endings",
-      "group": false,
-      "count": 58
-    },
-    "t:6869": {
-      "ko": "비선형",
-      "en": "Nonlinear",
-      "group": false,
-      "count": 12
-    },
-    "t:7250": {
-      "ko": "일직선 진행",
-      "en": "Linear",
-      "group": false,
-      "count": 18
-    },
-    "t:3854": {
-      "ko": "깊은 세계관",
-      "en": "Lore-Rich",
-      "group": false,
-      "count": 31
-    },
-    "t:42152": {
-      "ko": "대화 중심",
-      "en": "Dialogue Heavy",
-      "group": false,
-      "count": 9
-    },
-    "t:9592": {
-      "ko": "다이내믹 내레이션",
-      "en": "Dynamic Narration",
-      "group": false,
-      "count": 4
-    },
-    "t:3796": {
-      "ko": "소설 원작",
-      "en": "Based On A Novel",
-      "group": false,
-      "count": 1
-    },
-    "t:7208": {
-      "ko": "여성 주인공",
-      "en": "Female Protagonist",
-      "group": false,
-      "count": 67
-    },
-    "t:15954": {
-      "ko": "말 없는 주인공",
-      "en": "Silent Protagonist",
-      "group": false,
-      "count": 5
-    },
-    "t:11333": {
-      "ko": "악당 주인공",
-      "en": "Villain Protagonist",
-      "group": false,
-      "count": 6
-    },
-    "t:44868": {
-      "ko": "LGBTQ+",
-      "en": "LGBTQ+",
-      "group": false,
-      "count": 36
-    },
-    "t:4947": {
-      "ko": "로맨스",
-      "en": "Romance",
-      "group": false,
-      "count": 16
-    },
-    "g:pace": {
-      "ko": "진행 방식",
-      "en": "Pacing",
-      "group": true,
-      "count": 71
-    },
-    "t:1677": {
-      "ko": "턴제",
-      "en": "Turn-Based",
-      "group": false,
-      "count": 52
-    },
-    "t:4325": {
-      "ko": "턴제 전투",
-      "en": "Turn-Based Combat",
-      "group": false,
-      "count": 41
-    },
-    "t:4161": {
-      "ko": "실시간",
-      "en": "Real-Time",
-      "group": false,
-      "count": 9
-    },
-    "t:7107": {
-      "ko": "실시간(일시정지 가능)",
-      "en": "Real-Time with Pause",
-      "group": false,
-      "count": 6
-    },
-    "t:1734": {
-      "ko": "빠른 진행",
-      "en": "Fast-Paced",
-      "group": false,
-      "count": 11
-    },
-    "t:7569": {
-      "ko": "칸 단위 이동",
-      "en": "Grid-Based Movement",
-      "group": false,
-      "count": 2
-    },
-    "t:1717": {
-      "ko": "헥스 그리드",
-      "en": "Hex Grid",
-      "group": false,
-      "count": 3
-    },
-    "t:3993": {
-      "ko": "전투",
-      "en": "Combat",
-      "group": false,
-      "count": 126
-    },
-    "t:4608": {
-      "ko": "검술",
-      "en": "Swordplay",
-      "group": false,
-      "count": 14
-    },
-    "t:6915": {
-      "ko": "무술",
-      "en": "Martial Arts",
-      "group": false,
-      "count": 16
-    },
-    "t:11104": {
-      "ko": "차량 전투",
-      "en": "Vehicular Combat",
-      "group": false,
-      "count": 12
-    },
-    "t:4994": {
-      "ko": "해상 전투",
-      "en": "Naval Combat",
-      "group": false,
-      "count": 5
-    },
-    "t:5765": {
-      "ko": "총기 커스터마이즈",
-      "en": "Gun Customization",
-      "group": false,
-      "count": 6
-    },
-    "t:5796": {
-      "ko": "불릿 타임",
-      "en": "Bullet Time",
-      "group": false,
-      "count": 5
-    },
-    "t:4155": {
-      "ko": "직업(클래스) 선택",
-      "en": "Class-Based",
-      "group": false,
-      "count": 10
-    },
-    "t:1687": {
-      "ko": "잠입",
-      "en": "Stealth",
-      "group": false,
-      "count": 52
-    },
-    "t:97070": {
-      "ko": "암살",
-      "en": "Assassins",
-      "group": false,
-      "count": 5
-    },
-    "t:9204": {
-      "ko": "이머시브 심",
-      "en": "Immersive Sim",
-      "group": false,
-      "count": 49
-    },
-    "t:4747": {
-      "ko": "캐릭터 커스터마이징",
-      "en": "Character Customization",
-      "group": false,
-      "count": 94
     },
     "g:resource": {
       "ko": "자원·경제 관리",
@@ -2357,11 +2145,257 @@
       "group": false,
       "count": 27
     },
+    "g:pace": {
+      "ko": "진행 방식",
+      "en": "Progression",
+      "group": true,
+      "count": 135
+    },
+    "t:1716": {
+      "ko": "로그라이크",
+      "en": "Roguelike",
+      "group": false,
+      "count": 59
+    },
+    "t:454187": {
+      "ko": "정통 로그라이크",
+      "en": "Traditional Roguelike",
+      "group": false,
+      "count": 1
+    },
+    "t:1759": {
+      "ko": "영구 죽음",
+      "en": "Perma Death",
+      "group": false,
+      "count": 16
+    },
+    "t:3959": {
+      "ko": "로그라이트",
+      "en": "Roguelite",
+      "group": false,
+      "count": 50
+    },
     "t:4234": {
       "ko": "짧은 플레이",
       "en": "Short",
       "group": false,
       "count": 11
+    },
+    "t:1677": {
+      "ko": "턴제",
+      "en": "Turn-Based",
+      "group": false,
+      "count": 52
+    },
+    "t:4325": {
+      "ko": "턴제 전투",
+      "en": "Turn-Based Combat",
+      "group": false,
+      "count": 41
+    },
+    "t:4161": {
+      "ko": "실시간",
+      "en": "Real-Time",
+      "group": false,
+      "count": 9
+    },
+    "t:7107": {
+      "ko": "실시간(일시정지 가능)",
+      "en": "Real-Time with Pause",
+      "group": false,
+      "count": 6
+    },
+    "t:1734": {
+      "ko": "빠른 진행",
+      "en": "Fast-Paced",
+      "group": false,
+      "count": 11
+    },
+    "t:7569": {
+      "ko": "칸 단위 이동",
+      "en": "Grid-Based Movement",
+      "group": false,
+      "count": 2
+    },
+    "t:1717": {
+      "ko": "헥스 그리드",
+      "en": "Hex Grid",
+      "group": false,
+      "count": 3
+    },
+    "t:1742": {
+      "ko": "스토리 중심",
+      "en": "Story Rich",
+      "group": false,
+      "count": 318
+    },
+    "g:choices": {
+      "ko": "선택과 전개",
+      "en": "Choices & Structure",
+      "group": true,
+      "count": 114
+    },
+    "t:6426": {
+      "ko": "선택이 중요한",
+      "en": "Choices Matter",
+      "group": false,
+      "count": 54
+    },
+    "t:6971": {
+      "ko": "멀티 엔딩",
+      "en": "Multiple Endings",
+      "group": false,
+      "count": 58
+    },
+    "t:6869": {
+      "ko": "비선형",
+      "en": "Nonlinear",
+      "group": false,
+      "count": 12
+    },
+    "t:7250": {
+      "ko": "일직선 진행",
+      "en": "Linear",
+      "group": false,
+      "count": 18
+    },
+    "g:narration": {
+      "ko": "이야기 방식",
+      "en": "Narration",
+      "group": true,
+      "count": 43
+    },
+    "t:3854": {
+      "ko": "깊은 세계관",
+      "en": "Lore-Rich",
+      "group": false,
+      "count": 31
+    },
+    "t:42152": {
+      "ko": "대화 중심",
+      "en": "Dialogue Heavy",
+      "group": false,
+      "count": 9
+    },
+    "t:9592": {
+      "ko": "다이내믹 내레이션",
+      "en": "Dynamic Narration",
+      "group": false,
+      "count": 4
+    },
+    "t:3796": {
+      "ko": "소설 원작",
+      "en": "Based On A Novel",
+      "group": false,
+      "count": 1
+    },
+    "g:protagonist": {
+      "ko": "주인공·관계",
+      "en": "Protagonist & Relationships",
+      "group": true,
+      "count": 110
+    },
+    "t:7208": {
+      "ko": "여성 주인공",
+      "en": "Female Protagonist",
+      "group": false,
+      "count": 67
+    },
+    "t:15954": {
+      "ko": "말 없는 주인공",
+      "en": "Silent Protagonist",
+      "group": false,
+      "count": 5
+    },
+    "t:11333": {
+      "ko": "악당 주인공",
+      "en": "Villain Protagonist",
+      "group": false,
+      "count": 6
+    },
+    "t:44868": {
+      "ko": "LGBTQ+",
+      "en": "LGBTQ+",
+      "group": false,
+      "count": 36
+    },
+    "t:4947": {
+      "ko": "로맨스",
+      "en": "Romance",
+      "group": false,
+      "count": 16
+    },
+    "g:combat-control": {
+      "ko": "전투·조작",
+      "en": "Combat & Controls",
+      "group": true,
+      "count": 252
+    },
+    "t:3993": {
+      "ko": "전투",
+      "en": "Combat",
+      "group": false,
+      "count": 126
+    },
+    "t:4608": {
+      "ko": "검술",
+      "en": "Swordplay",
+      "group": false,
+      "count": 14
+    },
+    "t:6915": {
+      "ko": "무술",
+      "en": "Martial Arts",
+      "group": false,
+      "count": 16
+    },
+    "t:11104": {
+      "ko": "차량 전투",
+      "en": "Vehicular Combat",
+      "group": false,
+      "count": 12
+    },
+    "t:4994": {
+      "ko": "해상 전투",
+      "en": "Naval Combat",
+      "group": false,
+      "count": 5
+    },
+    "t:5765": {
+      "ko": "총기 커스터마이즈",
+      "en": "Gun Customization",
+      "group": false,
+      "count": 6
+    },
+    "t:5796": {
+      "ko": "불릿 타임",
+      "en": "Bullet Time",
+      "group": false,
+      "count": 5
+    },
+    "t:4155": {
+      "ko": "직업(클래스) 선택",
+      "en": "Class-Based",
+      "group": false,
+      "count": 10
+    },
+    "t:1687": {
+      "ko": "잠입",
+      "en": "Stealth",
+      "group": false,
+      "count": 52
+    },
+    "t:97070": {
+      "ko": "암살",
+      "en": "Assassins",
+      "group": false,
+      "count": 5
+    },
+    "t:4036": {
+      "ko": "파쿠르",
+      "en": "Parkour",
+      "group": false,
+      "count": 19
     },
     "t:4026": {
       "ko": "고난도",
@@ -2381,11 +2415,42 @@
       "group": false,
       "count": 3
     },
-    "t:4036": {
-      "ko": "파쿠르",
-      "en": "Parkour",
+    "t:14906": {
+      "ko": "의도적으로 불편한 조작",
+      "en": "Intentionally Awkward Controls",
       "group": false,
-      "count": 19
+      "count": 0,
+      "hidden": true
+    },
+    "g:freedom": {
+      "ko": "자유도·창작",
+      "en": "Freedom & Creation",
+      "group": true,
+      "count": 182
+    },
+    "t:8122": {
+      "ko": "레벨 에디터",
+      "en": "Level Editor",
+      "group": false,
+      "count": 14
+    },
+    "t:1669": {
+      "ko": "모드 지원",
+      "en": "Moddable",
+      "group": false,
+      "count": 49
+    },
+    "t:4747": {
+      "ko": "캐릭터 커스터마이징",
+      "en": "Character Customization",
+      "group": false,
+      "count": 94
+    },
+    "t:9204": {
+      "ko": "이머시브 심",
+      "en": "Immersive Sim",
+      "group": false,
+      "count": 49
     },
     "t:5432": {
       "ko": "코딩",
@@ -2398,13 +2463,6 @@
       "en": "Hacking",
       "group": false,
       "count": 3
-    },
-    "t:14906": {
-      "ko": "의도적으로 불편한 조작",
-      "en": "Intentionally Awkward Controls",
-      "group": false,
-      "count": 0,
-      "hidden": true
     },
     "g:setting": {
       "ko": "세계관·배경",
@@ -2903,7 +2961,7 @@
       "ko": "분위기",
       "en": "Mood",
       "group": true,
-      "count": 465
+      "count": 372
     },
     "t:1654": {
       "ko": "힐링",
@@ -2994,12 +3052,6 @@
       "en": "Mystery",
       "group": false,
       "count": 58
-    },
-    "t:4166": {
-      "ko": "분위기 있는",
-      "en": "Atmospheric",
-      "group": false,
-      "count": 249
     },
     "t:5608": {
       "ko": "감성적",
@@ -3115,6 +3167,12 @@
       "group": true,
       "count": 392
     },
+    "g:drawing": {
+      "ko": "그림체",
+      "en": "Drawing Style",
+      "group": true,
+      "count": 250
+    },
     "t:3964": {
       "ko": "픽셀 그래픽",
       "en": "Pixel Graphics",
@@ -3151,6 +3209,24 @@
       "group": false,
       "count": 25
     },
+    "t:4004": {
+      "ko": "레트로",
+      "en": "Retro",
+      "group": false,
+      "count": 42
+    },
+    "t:3916": {
+      "ko": "올드 스쿨",
+      "en": "Old School",
+      "group": false,
+      "count": 12
+    },
+    "g:look": {
+      "ko": "색·표현",
+      "en": "Look & Color",
+      "group": true,
+      "count": 215
+    },
     "t:4252": {
       "ko": "양식화된",
       "en": "Stylized",
@@ -3180,18 +3256,6 @@
       "en": "Abstract",
       "group": false,
       "count": 2
-    },
-    "t:4004": {
-      "ko": "레트로",
-      "en": "Retro",
-      "group": false,
-      "count": 46
-    },
-    "t:3916": {
-      "ko": "올드 스쿨",
-      "en": "Old School",
-      "group": false,
-      "count": 12
     },
     "t:4145": {
       "ko": "시네마틱",

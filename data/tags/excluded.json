@@ -380,6 +380,13 @@
       "game_count": 3
     },
     {
+      "id": 4166,
+      "en": "Atmospheric",
+      "ko": "분위기 있는",
+      "reason": "평가성 태그 (게임 성격을 나타내지 않음)",
+      "game_count": 249
+    },
+    {
       "id": 61357,
       "en": "Electronic Music",
       "ko": "전자 음악",
