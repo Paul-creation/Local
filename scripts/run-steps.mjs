@@ -11,6 +11,7 @@ const GROUPS = {
     'backfill-price-history',
     'backfill-price-history-other',
     'enrich-players',
+    'enrich-recent-reviews', // 스팀 최근 30일 평가 (상점 페이지, 요청 간격 2초, 숨긴 게임 제외)
     'enrich-itad-heat',
     'enrich-videos 90', // YouTube 하루 한도 안에서 매일 조금씩
     'snapshot-hot-rank', // 메인 "지금 뜨는 게임" 순위 기록 (heat_rank 갱신 뒤)

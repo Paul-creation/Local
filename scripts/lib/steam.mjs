@@ -10,8 +10,8 @@ let lastRequestAt = 0;
 
 export class SteamLimitError extends Error {}
 
-// 성공하면 JSON. 재시도해도 안 되면 SteamLimitError, 다시 시도할 필요 없는 오류면 Error
-export async function steamGet(url) {
+// 성공하면 JSON(text: true면 문자열). 재시도해도 안 되면 SteamLimitError, 다시 시도할 필요 없는 오류면 Error
+export async function steamGet(url, { text = false, headers } = {}) {
   for (let attempt = 0; ; attempt++) {
     const wait = lastRequestAt + REQUEST_GAP_MS - Date.now();
     if (wait > 0) await sleep(wait);
@@ -20,9 +20,9 @@ export async function steamGet(url) {
     let status = 0;
     let retryAfter = 0;
     try {
-      const res = await fetch(url);
+      const res = await fetch(url, headers ? { headers } : undefined);
       status = res.status;
-      if (res.ok) return await res.json();
+      if (res.ok) return text ? await res.text() : await res.json();
       retryAfter = Number(res.headers.get('retry-after')) || 0;
     } catch {
       // 네트워크 오류도 다시 시도
