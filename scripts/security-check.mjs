@@ -152,6 +152,24 @@ async function checkDb() {
 
   const { count } = await admin.from('compare_cache').select('game_ids', { count: 'exact', head: true });
   count > 0 ? ok(`비교 캐시 저장 중 (${count}개 조합)`) : note('비교 캐시 0개 — 배포 후 비교 페이지를 한 번 열어보고 다시 점검');
+
+  await checkSoloInTop();
+}
+
+// 데이터 점검: 인기 상위 200개 중 1인용(max_players=1)인데 멀티 흔적(활동·태그·멀티 칸)이 있으면 경고
+// (TF2·CS2가 1~1에 멀티 칸까지 꺼져 있어 불일치 검사에 안 걸렸음. 진짜 1인용도 많아서 흔적 있는 것만 경고)
+async function checkSoloInTop() {
+  const { data: top, error } = await admin.from('games')
+    .select('name, heat_rank, max_players, activities, tags, has_online_coop, has_local_coop, has_pvp')
+    .not('heat_rank', 'is', null).order('heat_rank').limit(200);
+  if (error) return note(`인기 상위 게임 인원 점검 실패 (${error.message})`);
+  const MULTI = /협력|협동|대전|멀티|PvP|팀|파티|친구|함께|온라인/i;
+  const solo = top.filter((g) => g.max_players === 1);
+  const suspect = solo.filter((g) => g.has_online_coop || g.has_local_coop || g.has_pvp ||
+    [...(g.activities || []), ...(g.tags || [])].some((t) => MULTI.test(t)));
+  suspect.length === 0
+    ? ok(`인기 상위 200개 중 1인용 ${solo.length}개 — 멀티 흔적 있는 게임 없음`)
+    : note(`인기 상위 200개 중 1인용인데 멀티 흔적이 있는 게임 ${suspect.length}개 — 인원 확인 (docs/verification-rules.md): ${suspect.map((g) => `${g.name}(${g.heat_rank}위)`).join(', ')}`);
 }
 
 async function checkSite() {

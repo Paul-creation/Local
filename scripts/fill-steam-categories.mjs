@@ -6,6 +6,8 @@
 //   (24는 한 화면 대전 게임에도 붙음)
 // - Online PvP · LAN PvP · Shared/Split Screen PvP → has_pvp
 // - 카테고리가 있는데 해당 항목이 없으면 false, 스팀이 카테고리를 안 주면 건드리지 않음
+// - 'Multi-player'·'Cross-Platform Multiplayer'·'MMO'처럼 종류 없는 멀티만 있으면 건드리지 않고 목록으로 보여줌
+//   (TF2·CS2처럼 협동/대전 세부 카테고리가 없는 멀티 게임이 세 칸 모두 false가 되는 것을 막음)
 // - 이미 값이 있는 칸은 덮어쓰지 않고, 세 칸이 다 채워진 게임은 다시 요청하지 않음
 // - solo_playable은 바꾸지 않고, 스팀 Single-player와 DB 값이 다른 게임만 목록으로 보여줌
 // - 받은 카테고리는 scripts/.cache/steam-categories.json에 저장 (verify-players-web.mjs 프롬프트에 씀)
@@ -22,6 +24,7 @@ const RULES = {
   has_local_coop: ['Shared/Split Screen Co-op'], // 'Shared/Split Screen'은 일부러 넣지 않음
   has_pvp: ['Online PvP', 'LAN PvP', 'Shared/Split Screen PvP'],
 };
+const VAGUE = ['Multi-player', 'Cross-Platform Multiplayer', 'MMO'];
 
 async function main() {
   const cache = fs.existsSync(CACHE) ? JSON.parse(fs.readFileSync(CACHE, 'utf8')) : {};
@@ -38,6 +41,7 @@ async function main() {
 
   const count = { saved: 0, noCategory: 0, failed: 0 };
   const soloDiff = [];
+  const vague = [];
   for (const [i, g] of todo.entries()) {
     let cats = cache[g.steam_appid]?.categories;
     if (!cats) {
@@ -52,6 +56,8 @@ async function main() {
       if (cats) { cache[g.steam_appid] = { name: g.name, categories: cats }; save(); }
     }
     if (!cats?.length) { count.noCategory++; console.log(`⚪ ${g.name}: 스팀 카테고리 없음`); continue; }
+    const known = Object.values(RULES).flat().some((c) => cats.includes(c));
+    if (!known && cats.some((c) => VAGUE.includes(c))) { vague.push(g.name); console.log(`❔ ${g.name}: 멀티 종류 불명 — 직접 확인`); continue; }
 
     const update = {};
     for (const f of FIELDS) if (g[f] == null) update[f] = RULES[f].some((c) => cats.includes(c));
@@ -68,7 +74,8 @@ async function main() {
     console.log(`✅ [${i + 1}/${todo.length}] ${g.name}: ${on.join(', ') || '(모두 없음)'}`);
   }
 
-  console.log(`\n완료 — 저장 ${count.saved}개 · 카테고리 없음 ${count.noCategory}개 · 실패 ${count.failed}개`);
+  console.log(`\n완료 — 저장 ${count.saved}개 · 카테고리 없음 ${count.noCategory}개 · 멀티 종류 불명 ${vague.length}개 · 실패 ${count.failed}개`);
+  if (vague.length) console.log(`\n## 멀티 종류 불명 (협동·대전 칸을 직접 채워야 함)\n${vague.map((n) => `- ${n}`).join('\n')}`);
   const dbFalse = soloDiff.filter((d) => d.steamSolo);
   const dbTrue = soloDiff.filter((d) => !d.steamSolo);
   console.log(`\n## solo_playable이 스팀과 다른 게임 (바꾸지 않음)\n`);
