@@ -124,6 +124,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const price = getPriceInfo(game);
   // 100원 미만은 잘못 들어온 기록이라 할인 전적에서 제외
   const priceHistory = (game.price_history || []).filter((p: any) => p.price >= 100);
+  // 무료·가격 유형 게임(월 구독·판매처에서 확인)은 역대 최저·할인 그래프를 숨김 (기록은 DB에 그대로)
+  const showPriceRecord = !game.is_free && !game.price_type;
   const STORE_LABEL: Record<string, string> = { epic: '에픽 게임즈', battlenet: 'Battle.net', riot: '라이엇' };
   const buyUrl = game.steam_appid ? `https://store.steampowered.com/app/${game.steam_appid}` : game.store_url;
   const buyLabel = game.steam_appid ? 'Steam' : STORE_LABEL[game.source] ?? '공식 사이트';
@@ -222,7 +224,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               </span>
               <LowestPriceBadge timing={getLowestTiming(game, price)} />
             </div>
-            {!game.is_free && game.lowest_price >= 100 && (
+            {showPriceRecord && game.lowest_price >= 100 && (
               <span className="buy-lowest">
                 역대 최저 ₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}
                 {formatDate(game.lowest_price_date) && ` (${formatDate(game.lowest_price_date)})`}
@@ -373,7 +375,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       <section className="spec-group">
         <h3 className="spec-group-title">💰 스팀 · 가격</h3>
         <div className="spec-list">
-        {!game.is_free && game.lowest_price && (
+        {showPriceRecord && game.lowest_price && (
           <div className="spec-row">
             <span className="spec-label">역대 최저가</span>
             <span className="spec-value">
@@ -591,7 +593,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       <GameOpinions gameId={game.id} />
       <RelatedPosts gameId={game.id} />
             {/* 할인 전적 */}
-      {!game.is_free && priceHistory.length === 1 && price && (
+      {showPriceRecord && priceHistory.length === 1 && price && (
         <section className="detail-section-v2">
           <h3>할인 전적</h3>
           <p style={{ fontSize: 15, color: 'var(--text-dimmer)' }}>
@@ -601,7 +603,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           </p>
         </section>
       )}
-      {!game.is_free && priceHistory.length >= 2 && (
+      {showPriceRecord && priceHistory.length >= 2 && (
         <section className="detail-section-v2">
           <h3>할인 전적</h3>
           {/* 기간 기준 시각은 서버에서 정해 넘긴다 (서버·브라우저 계산이 어긋나지 않게) */}
