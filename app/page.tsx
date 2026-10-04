@@ -3,7 +3,7 @@ import GameGrid from './components/GameGrid';
 import HomeEvent from './components/home/HomeEvent';
 import HomeSections from './components/home/HomeSections';
 import type { Metadata } from 'next';
-import { BASE_OG, SITE_NAME, SITE_DESCRIPTION } from './lib/site';
+import { BASE_OG, SITE_NAME, SITE_ALT_NAMES, SITE_URL, SITE_TITLE, SITE_META_DESCRIPTION } from './lib/site';
 import { getHotChart } from './lib/hotChart';
 import { getWeeklyFeatured } from './lib/weeklyFeatured';
 import { getPopularPosts } from './lib/community';
@@ -15,7 +15,18 @@ import { HOME_FILTER_STYLE_ID } from './lib/homeFilter';
 export const revalidate = 300;
 export const metadata: Metadata = {
   alternates: { canonical: '/' },
-  openGraph: { ...BASE_OG, title: SITE_NAME, description: SITE_DESCRIPTION, url: '/' },
+  openGraph: { ...BASE_OG, title: SITE_TITLE, description: SITE_META_DESCRIPTION, url: '/' },
+};
+
+// 구조화 데이터(WebSite) — 검색 결과의 사이트 이름 표시용
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE_NAME,
+  alternateName: SITE_ALT_NAMES,
+  url: SITE_URL + '/',
+  description: SITE_META_DESCRIPTION,
+  inLanguage: 'ko',
 };
 
 // 이번주의 게임(기록이 없을 때 featured 칸)·추천 배너에 쓰는 칸 — 그 게임들만 가져온다
@@ -59,6 +70,7 @@ export default async function Home() {
   return (
     <main className="page">
       <script dangerouslySetInnerHTML={{ __html: HOME_FILTER_SCRIPT }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd).replace(/</g, '\\u003c') }} />
       <GameGrid
         event={<HomeEvent />}
         sections={<HomeSections featured={featured} bannerPool={bannerPool} hotTabs={hot.tabs} popularPosts={popularPosts} />}

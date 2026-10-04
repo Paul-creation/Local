@@ -1,14 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { SITE_NAME, BASE_OG } from '../lib/site';
+import { SITE_NAME, SITE_NAME_KO, SITE_NAME_FULL, SITE_ALT_NAMES, SITE_URL, BASE_OG } from '../lib/site';
 import { LARGE_LOBBY } from '../lib/players';
 
 export const metadata: Metadata = {
   title: '자주 묻는 질문',
-  description: `${SITE_NAME}의 인원 기준, 가격 갱신 주기, 역대 최저가 뜻, 커뮤니티 비밀번호 분실, 정보 오류 제보 방법을 정리했어요.`,
+  description: `${SITE_NAME_KO}(${SITE_NAME})의 인원 기준, 가격 갱신 주기, 역대 최저가 뜻, 커뮤니티 비밀번호 분실, 정보 오류 제보 방법을 정리했어요.`,
   alternates: { canonical: '/faq' },
-  openGraph: { ...BASE_OG, title: `자주 묻는 질문 · ${SITE_NAME}`, url: '/faq' },
+  openGraph: { ...BASE_OG, title: `자주 묻는 질문 · ${SITE_NAME_FULL}`, url: '/faq' },
 };
 
 // text: 구조화 데이터(FAQPage)에 들어가는 글자 그대로의 답 / body: 화면에 보이는 답 (링크 포함). 둘의 내용은 같게 유지
@@ -66,6 +66,8 @@ const FAQS: Faq[] = [
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
+  name: `자주 묻는 질문 · ${SITE_NAME_FULL}`,
+  isPartOf: { '@type': 'WebSite', name: SITE_NAME, alternateName: SITE_ALT_NAMES, url: SITE_URL + '/' },
   mainEntity: FAQS.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.text } })),
 };
 

@@ -5,7 +5,7 @@ import { randomBytes, scrypt, timingSafeEqual } from 'crypto';
 import { promisify } from 'util';
 import { NextResponse } from 'next/server';
 import { LIMITS, type BoardKey } from './communityBoards';
-import { SITE_NAME } from './site';
+import { SITE_NAME, SITE_NAME_KO } from './site';
 
 export const db = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -94,7 +94,7 @@ export function checkText(text: string) {
 }
 
 // 운영자 사칭 방지: 운영자·관리자·admin·사이트 이름이 들어간 닉네임은 관리자 로그인 상태에서만 허용
-const RESERVED_NICK = ['운영자', '운영진', '관리자', 'admin', squash(SITE_NAME)];
+const RESERVED_NICK = ['운영자', '운영진', '관리자', 'admin', squash(SITE_NAME), squash(SITE_NAME_KO)];
 export const isReservedNickname = (nickname: string) => {
   const t = squash(nickname);
   return RESERVED_NICK.some((w) => w && t.includes(w));

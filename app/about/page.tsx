@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { SITE_NAME, SITE_DESCRIPTION, OPERATOR_NAME, CONTACT_EMAIL, CONTACT_TEXT, BASE_OG } from '../lib/site';
+import { SITE_NAME, SITE_META_DESCRIPTION, SITE_DESCRIPTION, OPERATOR_NAME, CONTACT_EMAIL, CONTACT_TEXT, BASE_OG } from '../lib/site';
 
 export const metadata: Metadata = {
   title: '사이트 소개',
@@ -16,7 +16,7 @@ export default function AboutPage() {
     <main className="page cm-page">
       <article className="cm-card legal">
         <h1 className="cm-h1">{SITE_NAME} 소개</h1>
-        <p className="cm-sub">{SITE_DESCRIPTION}</p>
+        <p className="cm-sub">{SITE_META_DESCRIPTION}</p>
 
         <h2 className="cm-h2">무엇을 해 주나요</h2>
         <ul>
