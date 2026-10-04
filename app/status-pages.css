@@ -22,7 +22,7 @@
 .status-digest { margin-top: 16px; font-size: 13px; color: var(--text-dimmer); }
 
 /* 로딩 화면 — 회색 막대가 은은하게 깜빡임 */
-.status-loading { padding-top: 8px; }
+.status-loading { padding-top: 8px; min-height: 100vh; }
 .skel { background: rgba(0,0,0,0.07); border-radius: var(--radius-sm); animation: skel-pulse 1.4s ease-in-out infinite; }
 .skel-title { width: 40%; height: 28px; margin-bottom: 20px; }
 .skel-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }

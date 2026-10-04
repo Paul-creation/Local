@@ -1,6 +1,7 @@
 import { supabase } from './lib/supabase';
 import GameGrid from './components/GameGrid';
 import { Suspense } from 'react';
+import PageSkeleton from './components/status/PageSkeleton';
 import type { Metadata } from 'next';
 import { BASE_OG, SITE_NAME, SITE_DESCRIPTION } from './lib/site';
 import { getHotChart } from './lib/hotChart';
@@ -51,7 +52,8 @@ export default async function Home() {
 
   return (
     <main className="page">
-      <Suspense>
+      {/* 주소의 검색 조건을 브라우저에서 읽으므로 본문은 브라우저에서 그림 — 그동안 회색 막대로 자리를 채움 (푸터 밀림 방지) */}
+      <Suspense fallback={<PageSkeleton />}>
         <GameGrid games={games} hotTabs={hot.tabs} top10Ids={hot.top10Ids} weekly={weekly} popularPosts={popularPosts} />
       </Suspense>
     </main>
