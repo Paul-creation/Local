@@ -7,8 +7,7 @@ import { useRouter } from 'next/navigation';
 import type { GameFilters } from '../../lib/useGameFilters';
 import { matchRank } from '../../lib/searchMatch';
 import { playersText } from '../../lib/players';
-import { splitWords, suggestTags } from '../../lib/tagSearch';
-import { translateTag } from '../../lib/tagTranslate';
+import { splitWords, suggestTags, tagKeyLabel } from '../../lib/tagSearch';
 import GameImage from '../GameImage';
 
 const MAX_SUGGESTIONS = 6;
@@ -19,7 +18,7 @@ const playersLabel = (g: any) => playersText(g);
 // 검색창 + 자동완성. 입력 중에는 결과 화면으로 넘어가지 않고, 맞는 태그·게임만 아래에 보여준다.
 // 태그 단어(예: "좀비, 협동")는 엔터나 후보 선택으로 태그 조건이 되어 검색창 아래 칩으로 보인다 (app/lib/tagSearch)
 export default function SearchBox({ games, filters }: { games: any[], filters: GameFilters }) {
-  const { input, setInput, submitSearch, rememberList, selectedTags, toggleTag, addTags, tagLookup, splitInput } = filters;
+  const { input, setInput, submitSearch, rememberList, selectedTags, toggleTag, addTags, tagLookup, splitInput, tree } = filters;
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const boxRef = useRef<HTMLDivElement>(null);
@@ -140,7 +139,7 @@ export default function SearchBox({ games, filters }: { games: any[], filters: G
                 onMouseEnter={() => setActive(i)}
               >
                 <span className="search-suggest-tag-mark">태그</span>
-                <span className="search-suggest-name">{translateTag(s.tag)}</span>
+                <span className="search-suggest-name">{tagKeyLabel(s.tag, tree)}</span>
               </button>
             </li>
           ) : (
@@ -165,8 +164,8 @@ export default function SearchBox({ games, filters }: { games: any[], filters: G
       {selectedTags.length > 0 && (
         <div className="search-tag-chips">
           {selectedTags.map((tag) => (
-            <button key={tag} type="button" className="search-tag-chip" onClick={() => toggleTag(tag)} aria-label={`${translateTag(tag)} 태그 지우기`}>
-              {translateTag(tag)} <span aria-hidden="true">✕</span>
+            <button key={tag} type="button" className="search-tag-chip" onClick={() => toggleTag(tag)} aria-label={`${tagKeyLabel(tag, tree)} 태그 지우기`}>
+              {tagKeyLabel(tag, tree)} <span aria-hidden="true">✕</span>
             </button>
           ))}
         </div>

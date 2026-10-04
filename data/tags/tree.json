@@ -1,10 +1,11 @@
 {
   "version": 1,
   "built_at": "2026-10-04",
-  "note": "태그 나무 (최대 4단계). id: t:<스팀 태그 id> 또는 g:<묶음 키>. game_count: 이 태그가 붙은 우리 게임 수(합친 태그 포함, 묶음은 null), subtree_count: 하위 포함 게임 수, hidden_empty: 우리 게임에 안 쓰여 화면에서 숨길 칸",
+  "note": "태그 나무 (최대 4단계). id: t:<스팀 태그 id> 또는 g:<묶음 키>. game_count: 이 태그가 붙은 우리 게임 수(합친 태그 포함, 묶음은 null), subtree_count: 하위 포함 게임 수, hidden_empty: 우리 게임에 안 쓰여 화면에서 숨길 칸 / num: DB tags.id·주소에 쓰는 숫자 (스팀 태그는 스팀 태그 id, 묶음 칸은 10000001부터 — 한 번 정한 번호는 바꾸지 말고, 새 묶음은 가장 큰 번호 다음으로)",
   "nodes": [
     {
       "id": "g:genre",
+      "num": 10000001,
       "steam_tag_id": null,
       "ko": "장르",
       "en": "Genre",
@@ -24,10 +25,12 @@
       ],
       "game_count": null,
       "subtree_count": 634,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": null
     },
     {
       "id": "t:19",
+      "num": 19,
       "steam_tag_id": 19,
       "ko": "액션",
       "en": "Action",
@@ -47,10 +50,12 @@
       ],
       "game_count": 391,
       "subtree_count": 430,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000001
     },
     {
       "id": "t:1646",
+      "num": 1646,
       "steam_tag_id": 1646,
       "ko": "핵앤슬래시",
       "en": "Hack and Slash",
@@ -60,10 +65,12 @@
       "children": [],
       "game_count": 56,
       "subtree_count": 56,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 19
     },
     {
       "id": "t:4106",
+      "num": 4106,
       "steam_tag_id": 4106,
       "ko": "액션 어드벤처",
       "en": "Action-Adventure",
@@ -72,10 +79,12 @@
       "children": [],
       "game_count": 111,
       "subtree_count": 111,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 19
     },
     {
       "id": "t:1743",
+      "num": 1743,
       "steam_tag_id": 1743,
       "ko": "격투",
       "en": "Fighting",
@@ -87,10 +96,12 @@
       ],
       "game_count": 16,
       "subtree_count": 21,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 19
     },
     {
       "id": "t:4736",
+      "num": 4736,
       "steam_tag_id": 4736,
       "ko": "2D 격투",
       "en": "2D Fighter",
@@ -99,10 +110,12 @@
       "children": [],
       "game_count": 11,
       "subtree_count": 11,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1743
     },
     {
       "id": "t:6506",
+      "num": 6506,
       "steam_tag_id": 6506,
       "ko": "3D 격투",
       "en": "3D Fighter",
@@ -111,10 +124,12 @@
       "children": [],
       "game_count": 8,
       "subtree_count": 8,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1743
     },
     {
       "id": "t:4158",
+      "num": 4158,
       "steam_tag_id": 4158,
       "ko": "벨트스크롤 액션",
       "en": "Beat 'em up",
@@ -129,10 +144,12 @@
       ],
       "game_count": 17,
       "subtree_count": 20,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 19
     },
     {
       "id": "t:323922",
+      "num": 323922,
       "steam_tag_id": 323922,
       "ko": "무쌍",
       "en": "Musou",
@@ -141,10 +158,12 @@
       "children": [],
       "game_count": 4,
       "subtree_count": 4,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 4158
     },
     {
       "id": "t:3955",
+      "num": 3955,
       "steam_tag_id": 3955,
       "ko": "캐릭터 액션",
       "en": "Character Action Game",
@@ -156,10 +175,12 @@
       ],
       "game_count": 7,
       "subtree_count": 16,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 19
     },
     {
       "id": "t:4777",
+      "num": 4777,
       "steam_tag_id": 4777,
       "ko": "스펙터클 액션",
       "en": "Spectacle fighter",
@@ -169,10 +190,12 @@
       "children": [],
       "game_count": 14,
       "subtree_count": 14,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3955
     },
     {
       "id": "t:1625",
+      "num": 1625,
       "steam_tag_id": 1625,
       "ko": "플랫포머",
       "en": "Platformer",
@@ -189,10 +212,12 @@
       ],
       "game_count": 47,
       "subtree_count": 75,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 19
     },
     {
       "id": "t:5379",
+      "num": 5379,
       "steam_tag_id": 5379,
       "ko": "2D 플랫포머",
       "en": "2D Platformer",
@@ -202,10 +227,12 @@
       "children": [],
       "game_count": 17,
       "subtree_count": 17,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1625
     },
     {
       "id": "t:5395",
+      "num": 5395,
       "steam_tag_id": 5395,
       "ko": "3D 플랫포머",
       "en": "3D Platformer",
@@ -215,10 +242,12 @@
       "children": [],
       "game_count": 21,
       "subtree_count": 21,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1625
     },
     {
       "id": "t:3877",
+      "num": 3877,
       "steam_tag_id": 3877,
       "ko": "정밀 플랫포머",
       "en": "Precision Platformer",
@@ -228,10 +257,12 @@
       "children": [],
       "game_count": 8,
       "subtree_count": 8,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1625
     },
     {
       "id": "t:5537",
+      "num": 5537,
       "steam_tag_id": 5537,
       "ko": "퍼즐 플랫포머",
       "en": "Puzzle Platformer",
@@ -241,10 +272,12 @@
       "children": [],
       "game_count": 18,
       "subtree_count": 18,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1625
     },
     {
       "id": "t:5652",
+      "num": 5652,
       "steam_tag_id": 5652,
       "ko": "수집형 플랫포머",
       "en": "Collectathon",
@@ -254,10 +287,12 @@
       "children": [],
       "game_count": 12,
       "subtree_count": 12,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1625
     },
     {
       "id": "t:8666",
+      "num": 8666,
       "steam_tag_id": 8666,
       "ko": "러너",
       "en": "Runner",
@@ -266,10 +301,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1625
     },
     {
       "id": "t:1628",
+      "num": 1628,
       "steam_tag_id": 1628,
       "ko": "메트로배니아",
       "en": "Metroidvania",
@@ -278,10 +315,12 @@
       "children": [],
       "game_count": 13,
       "subtree_count": 13,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 19
     },
     {
       "id": "t:29482",
+      "num": 29482,
       "steam_tag_id": 29482,
       "ko": "소울라이크",
       "en": "Souls-like",
@@ -295,10 +334,12 @@
       ],
       "game_count": 48,
       "subtree_count": 48,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 19
     },
     {
       "id": "t:11095",
+      "num": 11095,
       "steam_tag_id": 11095,
       "ko": "보스 러시",
       "en": "Boss Rush",
@@ -307,10 +348,12 @@
       "children": [],
       "game_count": 2,
       "subtree_count": 2,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 29482
     },
     {
       "id": "t:42804",
+      "num": 42804,
       "steam_tag_id": 42804,
       "ko": "액션 로그라이크",
       "en": "Action Roguelike",
@@ -319,10 +362,12 @@
       "children": [],
       "game_count": 34,
       "subtree_count": 34,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 19
     },
     {
       "id": "t:1773",
+      "num": 1773,
       "steam_tag_id": 1773,
       "ko": "아케이드",
       "en": "Arcade",
@@ -335,10 +380,12 @@
       ],
       "game_count": 39,
       "subtree_count": 44,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 19
     },
     {
       "id": "t:5154",
+      "num": 5154,
       "steam_tag_id": 5154,
       "ko": "스코어 어택",
       "en": "Score Attack",
@@ -347,10 +394,12 @@
       "children": [],
       "game_count": 11,
       "subtree_count": 11,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1773
     },
     {
       "id": "t:6621",
+      "num": 6621,
       "steam_tag_id": 6621,
       "ko": "핀볼",
       "en": "Pinball",
@@ -359,10 +408,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1773
     },
     {
       "id": "t:5390",
+      "num": 5390,
       "steam_tag_id": 5390,
       "ko": "타임 어택",
       "en": "Time Attack",
@@ -372,10 +423,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 1773
     },
     {
       "id": "t:1774",
+      "num": 1774,
       "steam_tag_id": 1774,
       "ko": "슈팅",
       "en": "Shooter",
@@ -394,10 +447,12 @@
       ],
       "game_count": 103,
       "subtree_count": 153,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000001
     },
     {
       "id": "t:1663",
+      "num": 1663,
       "steam_tag_id": 1663,
       "ko": "FPS",
       "en": "FPS",
@@ -414,10 +469,12 @@
       ],
       "game_count": 88,
       "subtree_count": 93,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1774
     },
     {
       "id": "t:1023537",
+      "num": 1023537,
       "steam_tag_id": 1023537,
       "ko": "부머 슈터",
       "en": "Boomer Shooter",
@@ -427,10 +484,12 @@
       "children": [],
       "game_count": 4,
       "subtree_count": 4,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1663
     },
     {
       "id": "t:5547",
+      "num": 5547,
       "steam_tag_id": 5547,
       "ko": "아레나 슈터",
       "en": "Arena Shooter",
@@ -440,10 +499,12 @@
       "children": [],
       "game_count": 6,
       "subtree_count": 6,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1663
     },
     {
       "id": "t:620519",
+      "num": 620519,
       "steam_tag_id": 620519,
       "ko": "히어로 슈터",
       "en": "Hero Shooter",
@@ -453,10 +514,12 @@
       "children": [],
       "game_count": 11,
       "subtree_count": 11,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1663
     },
     {
       "id": "t:3814",
+      "num": 3814,
       "steam_tag_id": 3814,
       "ko": "3인칭 슈터",
       "en": "Third-Person Shooter",
@@ -466,10 +529,12 @@
       "children": [],
       "game_count": 41,
       "subtree_count": 41,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1774
     },
     {
       "id": "t:4637",
+      "num": 4637,
       "steam_tag_id": 4637,
       "ko": "탑다운 슈터",
       "en": "Top-Down Shooter",
@@ -481,10 +546,12 @@
       ],
       "game_count": 8,
       "subtree_count": 9,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1774
     },
     {
       "id": "t:4758",
+      "num": 4758,
       "steam_tag_id": 4758,
       "ko": "트윈스틱 슈터",
       "en": "Twin Stick Shooter",
@@ -494,10 +561,12 @@
       "children": [],
       "game_count": 3,
       "subtree_count": 3,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 4637
     },
     {
       "id": "t:4255",
+      "num": 4255,
       "steam_tag_id": 4255,
       "ko": "슛뎀업",
       "en": "Shoot 'Em Up",
@@ -509,10 +578,12 @@
       ],
       "game_count": 9,
       "subtree_count": 19,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1774
     },
     {
       "id": "t:4885",
+      "num": 4885,
       "steam_tag_id": 4885,
       "ko": "탄막",
       "en": "Bullet Hell",
@@ -522,10 +593,12 @@
       "children": [],
       "game_count": 14,
       "subtree_count": 14,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 4255
     },
     {
       "id": "t:723991",
+      "num": 723991,
       "steam_tag_id": 723991,
       "ko": "탄막 천국(뱀서류)",
       "en": "Bullet Heaven",
@@ -539,10 +612,12 @@
       "children": [],
       "game_count": 7,
       "subtree_count": 7,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 4255
     },
     {
       "id": "t:3954",
+      "num": 3954,
       "steam_tag_id": 3954,
       "ko": "레일 슈터",
       "en": "Rail Shooter",
@@ -559,10 +634,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 1774
     },
     {
       "id": "t:353880",
+      "num": 353880,
       "steam_tag_id": 353880,
       "ko": "루터 슈터",
       "en": "Looter Shooter",
@@ -572,10 +649,12 @@
       "children": [],
       "game_count": 15,
       "subtree_count": 15,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1774
     },
     {
       "id": "t:1199779",
+      "num": 1199779,
       "steam_tag_id": 1199779,
       "ko": "익스트랙션 슈터",
       "en": "Extraction Shooter",
@@ -584,10 +663,12 @@
       "children": [],
       "game_count": 10,
       "subtree_count": 10,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1774
     },
     {
       "id": "t:176981",
+      "num": 176981,
       "steam_tag_id": 176981,
       "ko": "배틀로얄",
       "en": "Battle Royale",
@@ -597,10 +678,12 @@
       "children": [],
       "game_count": 10,
       "subtree_count": 10,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1774
     },
     {
       "id": "t:7423",
+      "num": 7423,
       "steam_tag_id": 7423,
       "ko": "저격",
       "en": "Sniper",
@@ -610,10 +693,12 @@
       "children": [],
       "game_count": 3,
       "subtree_count": 3,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1774
     },
     {
       "id": "t:122",
+      "num": 122,
       "steam_tag_id": 122,
       "ko": "RPG",
       "en": "RPG",
@@ -631,10 +716,12 @@
       ],
       "game_count": 200,
       "subtree_count": 227,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000001
     },
     {
       "id": "t:4231",
+      "num": 4231,
       "steam_tag_id": 4231,
       "ko": "액션 RPG",
       "en": "Action RPG",
@@ -643,10 +730,12 @@
       "children": [],
       "game_count": 87,
       "subtree_count": 87,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 122
     },
     {
       "id": "t:4434",
+      "num": 4434,
       "steam_tag_id": 4434,
       "ko": "JRPG",
       "en": "JRPG",
@@ -655,10 +744,12 @@
       "children": [],
       "game_count": 58,
       "subtree_count": 58,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 122
     },
     {
       "id": "t:4474",
+      "num": 4474,
       "steam_tag_id": 4474,
       "ko": "CRPG",
       "en": "CRPG",
@@ -667,10 +758,12 @@
       "children": [],
       "game_count": 8,
       "subtree_count": 8,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 122
     },
     {
       "id": "t:10695",
+      "num": 10695,
       "steam_tag_id": 10695,
       "ko": "파티 기반 RPG",
       "en": "Party-Based RPG",
@@ -679,10 +772,12 @@
       "children": [],
       "game_count": 27,
       "subtree_count": 27,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 122
     },
     {
       "id": "t:17305",
+      "num": 17305,
       "steam_tag_id": 17305,
       "ko": "전략·전술 RPG",
       "en": "Strategy RPG",
@@ -699,10 +794,12 @@
       "children": [],
       "game_count": 21,
       "subtree_count": 21,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 122
     },
     {
       "id": "t:1754",
+      "num": 1754,
       "steam_tag_id": 1754,
       "ko": "MMORPG",
       "en": "MMORPG",
@@ -711,10 +808,12 @@
       "children": [],
       "game_count": 12,
       "subtree_count": 12,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 122
     },
     {
       "id": "t:1720",
+      "num": 1720,
       "steam_tag_id": 1720,
       "ko": "던전 탐험",
       "en": "Dungeon Crawler",
@@ -726,10 +825,12 @@
       ],
       "game_count": 20,
       "subtree_count": 21,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 122
     },
     {
       "id": "t:198631",
+      "num": 198631,
       "steam_tag_id": 198631,
       "ko": "미스터리 던전",
       "en": "Mystery Dungeon",
@@ -738,10 +839,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1720
     },
     {
       "id": "t:916648",
+      "num": 916648,
       "steam_tag_id": 916648,
       "ko": "크리처 수집",
       "en": "Creature Collector",
@@ -751,10 +854,12 @@
       "children": [],
       "game_count": 8,
       "subtree_count": 8,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 122
     },
     {
       "id": "t:9",
+      "num": 9,
       "steam_tag_id": 9,
       "ko": "전략",
       "en": "Strategy",
@@ -773,10 +878,12 @@
       ],
       "game_count": 152,
       "subtree_count": 195,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000001
     },
     {
       "id": "t:1676",
+      "num": 1676,
       "steam_tag_id": 1676,
       "ko": "실시간 전략",
       "en": "RTS",
@@ -787,10 +894,12 @@
       ],
       "game_count": 22,
       "subtree_count": 23,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 9
     },
     {
       "id": "t:1723",
+      "num": 1723,
       "steam_tag_id": 1723,
       "ko": "액션 RTS",
       "en": "Action RTS",
@@ -799,10 +908,12 @@
       "children": [],
       "game_count": 3,
       "subtree_count": 3,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1676
     },
     {
       "id": "t:1741",
+      "num": 1741,
       "steam_tag_id": 1741,
       "ko": "턴제 전략",
       "en": "Turn-Based Strategy",
@@ -813,10 +924,12 @@
       ],
       "game_count": 37,
       "subtree_count": 44,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 9
     },
     {
       "id": "t:1670",
+      "num": 1670,
       "steam_tag_id": 1670,
       "ko": "4X",
       "en": "4X",
@@ -825,10 +938,12 @@
       "children": [],
       "game_count": 11,
       "subtree_count": 11,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1741
     },
     {
       "id": "t:4364",
+      "num": 4364,
       "steam_tag_id": 4364,
       "ko": "대전략",
       "en": "Grand Strategy",
@@ -837,10 +952,12 @@
       "children": [],
       "game_count": 22,
       "subtree_count": 22,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 9
     },
     {
       "id": "t:1708",
+      "num": 1708,
       "steam_tag_id": 1708,
       "ko": "전술",
       "en": "Tactical",
@@ -852,10 +969,12 @@
       ],
       "game_count": 59,
       "subtree_count": 82,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 9
     },
     {
       "id": "t:14139",
+      "num": 14139,
       "steam_tag_id": 14139,
       "ko": "턴제 전술",
       "en": "Turn-Based Tactics",
@@ -864,10 +983,12 @@
       "children": [],
       "game_count": 23,
       "subtree_count": 23,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1708
     },
     {
       "id": "t:3813",
+      "num": 3813,
       "steam_tag_id": 3813,
       "ko": "실시간 전술",
       "en": "Real Time Tactics",
@@ -876,10 +997,12 @@
       "children": [],
       "game_count": 13,
       "subtree_count": 13,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1708
     },
     {
       "id": "t:1645",
+      "num": 1645,
       "steam_tag_id": 1645,
       "ko": "타워 디펜스",
       "en": "Tower Defense",
@@ -888,10 +1011,12 @@
       "children": [],
       "game_count": 9,
       "subtree_count": 9,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 9
     },
     {
       "id": "t:1084988",
+      "num": 1084988,
       "steam_tag_id": 1084988,
       "ko": "오토 배틀러",
       "en": "Auto Battler",
@@ -900,10 +1025,12 @@
       "children": [],
       "game_count": 5,
       "subtree_count": 5,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 9
     },
     {
       "id": "t:1718",
+      "num": 1718,
       "steam_tag_id": 1718,
       "ko": "MOBA",
       "en": "MOBA",
@@ -912,10 +1039,12 @@
       "children": [],
       "game_count": 6,
       "subtree_count": 6,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 9
     },
     {
       "id": "t:4684",
+      "num": 4684,
       "steam_tag_id": 4684,
       "ko": "워게임",
       "en": "Wargame",
@@ -925,10 +1054,12 @@
       "children": [],
       "game_count": 19,
       "subtree_count": 19,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 9
     },
     {
       "id": "t:1666",
+      "num": 1666,
       "steam_tag_id": 1666,
       "ko": "카드 게임",
       "en": "Card Game",
@@ -944,10 +1075,12 @@
       ],
       "game_count": 18,
       "subtree_count": 24,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 9
     },
     {
       "id": "t:32322",
+      "num": 32322,
       "steam_tag_id": 32322,
       "ko": "덱빌딩",
       "en": "Deckbuilding",
@@ -956,10 +1089,12 @@
       "children": [],
       "game_count": 16,
       "subtree_count": 16,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1666
     },
     {
       "id": "t:1091588",
+      "num": 1091588,
       "steam_tag_id": 1091588,
       "ko": "로그라이크 덱빌딩",
       "en": "Roguelike Deckbuilder",
@@ -968,10 +1103,12 @@
       "children": [],
       "game_count": 8,
       "subtree_count": 8,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1666
     },
     {
       "id": "t:791774",
+      "num": 791774,
       "steam_tag_id": 791774,
       "ko": "카드 배틀러",
       "en": "Card Battler",
@@ -981,10 +1118,12 @@
       "children": [],
       "game_count": 10,
       "subtree_count": 10,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1666
     },
     {
       "id": "t:9271",
+      "num": 9271,
       "steam_tag_id": 9271,
       "ko": "TCG",
       "en": "Trading Card Game",
@@ -994,10 +1133,12 @@
       "children": [],
       "game_count": 5,
       "subtree_count": 5,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1666
     },
     {
       "id": "t:13070",
+      "num": 13070,
       "steam_tag_id": 13070,
       "ko": "솔리테어",
       "en": "Solitaire",
@@ -1006,10 +1147,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1666
     },
     {
       "id": "t:6835",
+      "num": 6835,
       "steam_tag_id": 6835,
       "ko": "포커",
       "en": "Poker",
@@ -1018,10 +1161,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 1666
     },
     {
       "id": "t:599",
+      "num": 599,
       "steam_tag_id": 599,
       "ko": "시뮬레이션",
       "en": "Simulation",
@@ -1043,10 +1188,12 @@
       ],
       "game_count": 196,
       "subtree_count": 247,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000001
     },
     {
       "id": "t:12472",
+      "num": 12472,
       "steam_tag_id": 12472,
       "ko": "경영",
       "en": "Management",
@@ -1060,10 +1207,12 @@
       ],
       "game_count": 66,
       "subtree_count": 71,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 599
     },
     {
       "id": "t:91114",
+      "num": 91114,
       "steam_tag_id": 91114,
       "ko": "가게 운영",
       "en": "Shop Keeper",
@@ -1072,10 +1221,12 @@
       "children": [],
       "game_count": 4,
       "subtree_count": 4,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 12472
     },
     {
       "id": "t:46348",
+      "num": 46348,
       "steam_tag_id": 46348,
       "ko": "동물원 경영",
       "en": "Zoo",
@@ -1085,10 +1236,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 12472
     },
     {
       "id": "t:4328",
+      "num": 4328,
       "steam_tag_id": 4328,
       "ko": "도시 건설",
       "en": "City Builder",
@@ -1097,10 +1250,12 @@
       "children": [],
       "game_count": 24,
       "subtree_count": 24,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 12472
     },
     {
       "id": "t:220585",
+      "num": 220585,
       "steam_tag_id": 220585,
       "ko": "군락 시뮬레이션",
       "en": "Colony Sim",
@@ -1110,10 +1265,12 @@
       "children": [],
       "game_count": 12,
       "subtree_count": 12,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 12472
     },
     {
       "id": "t:10235",
+      "num": 10235,
       "steam_tag_id": 10235,
       "ko": "생활 시뮬레이션",
       "en": "Life Sim",
@@ -1132,10 +1289,12 @@
       ],
       "game_count": 29,
       "subtree_count": 74,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 599
     },
     {
       "id": "t:87918",
+      "num": 87918,
       "steam_tag_id": 87918,
       "ko": "농장 시뮬레이션",
       "en": "Farming Sim",
@@ -1156,10 +1315,12 @@
       "children": [],
       "game_count": 15,
       "subtree_count": 15,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10235
     },
     {
       "id": "t:9551",
+      "num": 9551,
       "steam_tag_id": 9551,
       "ko": "연애 시뮬레이션",
       "en": "Dating Sim",
@@ -1168,10 +1329,12 @@
       "children": [],
       "game_count": 26,
       "subtree_count": 26,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10235
     },
     {
       "id": "t:31579",
+      "num": 31579,
       "steam_tag_id": 31579,
       "ko": "오토메",
       "en": "Otome",
@@ -1180,10 +1343,12 @@
       "children": [],
       "game_count": 2,
       "subtree_count": 2,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10235
     },
     {
       "id": "t:35079",
+      "num": 35079,
       "steam_tag_id": 35079,
       "ko": "직업 시뮬레이션",
       "en": "Job Simulator",
@@ -1192,10 +1357,12 @@
       "children": [],
       "game_count": 9,
       "subtree_count": 9,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10235
     },
     {
       "id": "t:1220528",
+      "num": 1220528,
       "steam_tag_id": 1220528,
       "ko": "취미 시뮬레이션",
       "en": "Hobby Sim",
@@ -1204,10 +1371,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 10235
     },
     {
       "id": "t:3920",
+      "num": 3920,
       "steam_tag_id": 3920,
       "ko": "요리",
       "en": "Cooking",
@@ -1216,10 +1385,12 @@
       "children": [],
       "game_count": 12,
       "subtree_count": 12,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10235
     },
     {
       "id": "t:23491",
+      "num": 23491,
       "steam_tag_id": 23491,
       "ko": "청소",
       "en": "Cleaning",
@@ -1228,10 +1399,12 @@
       "children": [],
       "game_count": 5,
       "subtree_count": 5,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10235
     },
     {
       "id": "t:1239876",
+      "num": 1239876,
       "steam_tag_id": 1239876,
       "ko": "정리",
       "en": "Organizing",
@@ -1240,10 +1413,12 @@
       "children": [],
       "game_count": 4,
       "subtree_count": 4,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10235
     },
     {
       "id": "t:889937",
+      "num": 889937,
       "steam_tag_id": 889937,
       "ko": "꾸미기",
       "en": "Decorating",
@@ -1253,10 +1428,12 @@
       "children": [],
       "game_count": 3,
       "subtree_count": 3,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10235
     },
     {
       "id": "g:vehicle-sim",
+      "num": 10000002,
       "steam_tag_id": null,
       "ko": "탈것 시뮬레이션",
       "en": "Vehicle Sim",
@@ -1273,10 +1450,12 @@
       ],
       "game_count": null,
       "subtree_count": 41,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 599
     },
     {
       "id": "t:1644",
+      "num": 1644,
       "steam_tag_id": 1644,
       "ko": "운전",
       "en": "Driving",
@@ -1285,10 +1464,12 @@
       "children": [],
       "game_count": 21,
       "subtree_count": 21,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000002
     },
     {
       "id": "t:1100687",
+      "num": 1100687,
       "steam_tag_id": 1100687,
       "ko": "자동차 시뮬레이션",
       "en": "Automobile Sim",
@@ -1297,10 +1478,12 @@
       "children": [],
       "game_count": 20,
       "subtree_count": 20,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000002
     },
     {
       "id": "t:15045",
+      "num": 15045,
       "steam_tag_id": 15045,
       "ko": "비행",
       "en": "Flight",
@@ -1322,10 +1505,12 @@
       "children": [],
       "game_count": 5,
       "subtree_count": 5,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000002
     },
     {
       "id": "t:16598",
+      "num": 16598,
       "steam_tag_id": 16598,
       "ko": "우주 시뮬레이션",
       "en": "Space Sim",
@@ -1334,10 +1519,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000002
     },
     {
       "id": "t:1616",
+      "num": 1616,
       "steam_tag_id": 1616,
       "ko": "기차",
       "en": "Trains",
@@ -1346,10 +1533,12 @@
       "children": [],
       "game_count": 6,
       "subtree_count": 6,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000002
     },
     {
       "id": "t:10383",
+      "num": 10383,
       "steam_tag_id": 10383,
       "ko": "교통·운송",
       "en": "Transportation",
@@ -1359,10 +1548,12 @@
       "children": [],
       "game_count": 10,
       "subtree_count": 10,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000002
     },
     {
       "id": "t:13577",
+      "num": 13577,
       "steam_tag_id": 13577,
       "ko": "항해",
       "en": "Sailing",
@@ -1371,10 +1562,12 @@
       "children": [],
       "game_count": 4,
       "subtree_count": 4,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000002
     },
     {
       "id": "t:26921",
+      "num": 26921,
       "steam_tag_id": 26921,
       "ko": "정치 시뮬레이션",
       "en": "Political Sim",
@@ -1383,10 +1576,12 @@
       "children": [],
       "game_count": 4,
       "subtree_count": 4,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 599
     },
     {
       "id": "t:5300",
+      "num": 5300,
       "steam_tag_id": 5300,
       "ko": "갓 게임",
       "en": "God Game",
@@ -1396,10 +1591,12 @@
       "children": [],
       "game_count": 3,
       "subtree_count": 3,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 599
     },
     {
       "id": "t:1100688",
+      "num": 1100688,
       "steam_tag_id": 1100688,
       "ko": "의학 시뮬레이션",
       "en": "Medical Sim",
@@ -1408,10 +1605,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 599
     },
     {
       "id": "t:1100686",
+      "num": 1100686,
       "steam_tag_id": 1100686,
       "ko": "전염병 시뮬레이션",
       "en": "Outbreak Sim",
@@ -1421,10 +1620,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 599
     },
     {
       "id": "t:9564",
+      "num": 9564,
       "steam_tag_id": 9564,
       "ko": "사냥",
       "en": "Hunting",
@@ -1433,10 +1634,12 @@
       "children": [],
       "game_count": 5,
       "subtree_count": 5,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 599
     },
     {
       "id": "t:15564",
+      "num": 15564,
       "steam_tag_id": 15564,
       "ko": "낚시",
       "en": "Fishing",
@@ -1445,10 +1648,12 @@
       "children": [],
       "game_count": 11,
       "subtree_count": 11,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 599
     },
     {
       "id": "t:21",
+      "num": 21,
       "steam_tag_id": 21,
       "ko": "어드벤처",
       "en": "Adventure",
@@ -1464,10 +1669,12 @@
       ],
       "game_count": 350,
       "subtree_count": 387,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000001
     },
     {
       "id": "t:3799",
+      "num": 3799,
       "steam_tag_id": 3799,
       "ko": "비주얼 노벨",
       "en": "Visual Novel",
@@ -1476,10 +1683,12 @@
       "children": [],
       "game_count": 51,
       "subtree_count": 51,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 21
     },
     {
       "id": "t:1698",
+      "num": 1698,
       "steam_tag_id": 1698,
       "ko": "포인트 앤 클릭",
       "en": "Point & Click",
@@ -1492,10 +1701,12 @@
       ],
       "game_count": 33,
       "subtree_count": 42,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 21
     },
     {
       "id": "t:1738",
+      "num": 1738,
       "steam_tag_id": 1738,
       "ko": "숨은 그림 찾기",
       "en": "Hidden Object",
@@ -1505,10 +1716,12 @@
       "children": [],
       "game_count": 9,
       "subtree_count": 9,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1698
     },
     {
       "id": "t:769306",
+      "num": 769306,
       "steam_tag_id": 769306,
       "ko": "방 탈출",
       "en": "Escape Room",
@@ -1517,10 +1730,12 @@
       "children": [],
       "game_count": 11,
       "subtree_count": 11,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1698
     },
     {
       "id": "t:11014",
+      "num": 11014,
       "steam_tag_id": 11014,
       "ko": "인터랙티브 픽션",
       "en": "Interactive Fiction",
@@ -1533,10 +1748,12 @@
       ],
       "game_count": 15,
       "subtree_count": 34,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 21
     },
     {
       "id": "t:31275",
+      "num": 31275,
       "steam_tag_id": 31275,
       "ko": "텍스트 기반",
       "en": "Text-Based",
@@ -1545,10 +1762,12 @@
       "children": [],
       "game_count": 7,
       "subtree_count": 7,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 11014
     },
     {
       "id": "t:4486",
+      "num": 4486,
       "steam_tag_id": 4486,
       "ko": "선택형 어드벤처",
       "en": "Choose Your Own Adventure",
@@ -1558,10 +1777,12 @@
       "children": [],
       "game_count": 23,
       "subtree_count": 23,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 11014
     },
     {
       "id": "t:5900",
+      "num": 5900,
       "steam_tag_id": 5900,
       "ko": "걷기 시뮬레이션",
       "en": "Walking Simulator",
@@ -1570,10 +1791,12 @@
       "children": [],
       "game_count": 12,
       "subtree_count": 12,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 21
     },
     {
       "id": "t:5613",
+      "num": 5613,
       "steam_tag_id": 5613,
       "ko": "탐정·추리",
       "en": "Detective",
@@ -1585,10 +1808,12 @@
       ],
       "game_count": 33,
       "subtree_count": 45,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 21
     },
     {
       "id": "t:8369",
+      "num": 8369,
       "steam_tag_id": 8369,
       "ko": "수사",
       "en": "Investigation",
@@ -1597,10 +1822,12 @@
       "children": [],
       "game_count": 27,
       "subtree_count": 27,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 5613
     },
     {
       "id": "t:18594",
+      "num": 18594,
       "steam_tag_id": 18594,
       "ko": "실사 영상(FMV)",
       "en": "FMV",
@@ -1610,10 +1837,12 @@
       "children": [],
       "game_count": 6,
       "subtree_count": 6,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 21
     },
     {
       "id": "t:1664",
+      "num": 1664,
       "steam_tag_id": 1664,
       "ko": "퍼즐",
       "en": "Puzzle",
@@ -1630,10 +1859,12 @@
       ],
       "game_count": 94,
       "subtree_count": 98,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000001
     },
     {
       "id": "t:6129",
+      "num": 6129,
       "steam_tag_id": 6129,
       "ko": "논리",
       "en": "Logic",
@@ -1642,10 +1873,12 @@
       "children": [],
       "game_count": 12,
       "subtree_count": 12,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1664
     },
     {
       "id": "t:1730",
+      "num": 1730,
       "steam_tag_id": 1730,
       "ko": "소코반",
       "en": "Sokoban",
@@ -1655,10 +1888,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1664
     },
     {
       "id": "t:1665",
+      "num": 1665,
       "steam_tag_id": 1665,
       "ko": "매치 3",
       "en": "Match 3",
@@ -1667,10 +1902,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 1664
     },
     {
       "id": "t:37376",
+      "num": 37376,
       "steam_tag_id": 37376,
       "ko": "블록 쌓기",
       "en": "Falling Blocks",
@@ -1680,10 +1917,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1664
     },
     {
       "id": "t:24003",
+      "num": 24003,
       "steam_tag_id": 24003,
       "ko": "단어 게임",
       "en": "Word Game",
@@ -1695,10 +1934,12 @@
       ],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1664
     },
     {
       "id": "t:71389",
+      "num": 71389,
       "steam_tag_id": 71389,
       "ko": "맞춤법",
       "en": "Spelling",
@@ -1707,10 +1948,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 24003
     },
     {
       "id": "t:10437",
+      "num": 10437,
       "steam_tag_id": 10437,
       "ko": "상식 퀴즈",
       "en": "Trivia",
@@ -1719,10 +1962,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 1664
     },
     {
       "id": "t:17337",
+      "num": 17337,
       "steam_tag_id": 17337,
       "ko": "레밍스류",
       "en": "Lemmings",
@@ -1732,10 +1977,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 1664
     },
     {
       "id": "t:1667",
+      "num": 1667,
       "steam_tag_id": 1667,
       "ko": "호러",
       "en": "Horror",
@@ -1752,10 +1999,12 @@
       ],
       "game_count": 126,
       "subtree_count": 157,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000001
     },
     {
       "id": "t:3978",
+      "num": 3978,
       "steam_tag_id": 3978,
       "ko": "서바이벌 호러",
       "en": "Survival Horror",
@@ -1765,10 +2014,12 @@
       "children": [],
       "game_count": 61,
       "subtree_count": 61,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1667
     },
     {
       "id": "t:1721",
+      "num": 1721,
       "steam_tag_id": 1721,
       "ko": "심리 공포",
       "en": "Psychological Horror",
@@ -1778,10 +2029,12 @@
       "children": [],
       "game_count": 95,
       "subtree_count": 95,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1667
     },
     {
       "id": "t:42089",
+      "num": 42089,
       "steam_tag_id": 42089,
       "ko": "점프 스케어",
       "en": "Jump Scare",
@@ -1791,10 +2044,12 @@
       "children": [],
       "game_count": 3,
       "subtree_count": 3,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1667
     },
     {
       "id": "t:701",
+      "num": 701,
       "steam_tag_id": 701,
       "ko": "스포츠",
       "en": "Sports",
@@ -1808,10 +2063,12 @@
       ],
       "game_count": 21,
       "subtree_count": 36,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000001
     },
     {
       "id": "g:team-sports",
+      "num": 10000003,
       "steam_tag_id": null,
       "ko": "팀 구기 종목",
       "en": "Team Ball Sports",
@@ -1829,10 +2086,12 @@
       ],
       "game_count": null,
       "subtree_count": 6,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 701
     },
     {
       "id": "t:1254546",
+      "num": 1254546,
       "steam_tag_id": 1254546,
       "ko": "축구",
       "en": "Football (Soccer)",
@@ -1841,10 +2100,12 @@
       "children": [],
       "game_count": 3,
       "subtree_count": 3,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000003
     },
     {
       "id": "t:1254552",
+      "num": 1254552,
       "steam_tag_id": 1254552,
       "ko": "미식축구",
       "en": "Football (American)",
@@ -1853,10 +2114,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000003
     },
     {
       "id": "t:5727",
+      "num": 5727,
       "steam_tag_id": 5727,
       "ko": "야구",
       "en": "Baseball",
@@ -1865,10 +2128,12 @@
       "children": [],
       "game_count": 2,
       "subtree_count": 2,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000003
     },
     {
       "id": "t:1746",
+      "num": 1746,
       "steam_tag_id": 1746,
       "ko": "농구",
       "en": "Basketball",
@@ -1877,10 +2142,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 10000003
     },
     {
       "id": "t:847164",
+      "num": 847164,
       "steam_tag_id": 847164,
       "ko": "배구",
       "en": "Volleyball",
@@ -1889,10 +2156,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000003
     },
     {
       "id": "t:324176",
+      "num": 324176,
       "steam_tag_id": 324176,
       "ko": "하키",
       "en": "Hockey",
@@ -1901,10 +2170,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 10000003
     },
     {
       "id": "t:49213",
+      "num": 49213,
       "steam_tag_id": 49213,
       "ko": "럭비",
       "en": "Rugby",
@@ -1913,10 +2184,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 10000003
     },
     {
       "id": "t:158638",
+      "num": 158638,
       "steam_tag_id": 158638,
       "ko": "크리켓",
       "en": "Cricket",
@@ -1925,10 +2198,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 10000003
     },
     {
       "id": "g:solo-sports",
+      "num": 10000004,
       "steam_tag_id": null,
       "ko": "개인 종목",
       "en": "Individual Sports",
@@ -1945,10 +2220,12 @@
       ],
       "game_count": null,
       "subtree_count": 2,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 701
     },
     {
       "id": "t:5914",
+      "num": 5914,
       "steam_tag_id": 5914,
       "ko": "테니스",
       "en": "Tennis",
@@ -1957,10 +2234,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 10000004
     },
     {
       "id": "t:7038",
+      "num": 7038,
       "steam_tag_id": 7038,
       "ko": "골프",
       "en": "Golf",
@@ -1976,10 +2255,12 @@
       "children": [],
       "game_count": 2,
       "subtree_count": 2,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000004
     },
     {
       "id": "t:7328",
+      "num": 7328,
       "steam_tag_id": 7328,
       "ko": "볼링",
       "en": "Bowling",
@@ -1988,10 +2269,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 10000004
     },
     {
       "id": "t:4852",
+      "num": 4852,
       "steam_tag_id": 4852,
       "ko": "당구",
       "en": "Billiards",
@@ -2012,10 +2295,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 10000004
     },
     {
       "id": "t:13382",
+      "num": 13382,
       "steam_tag_id": 13382,
       "ko": "활쏘기",
       "en": "Archery",
@@ -2024,10 +2309,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 10000004
     },
     {
       "id": "t:12190",
+      "num": 12190,
       "steam_tag_id": 12190,
       "ko": "복싱",
       "en": "Boxing",
@@ -2036,10 +2323,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 10000004
     },
     {
       "id": "t:47827",
+      "num": 47827,
       "steam_tag_id": 47827,
       "ko": "레슬링",
       "en": "Wrestling",
@@ -2048,10 +2337,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 10000004
     },
     {
       "id": "g:extreme-sports",
+      "num": 10000005,
       "steam_tag_id": null,
       "ko": "겨울·익스트림 스포츠",
       "en": "Winter & Extreme",
@@ -2066,10 +2357,12 @@
       ],
       "game_count": null,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 701
     },
     {
       "id": "t:7309",
+      "num": 7309,
       "steam_tag_id": 7309,
       "ko": "스키",
       "en": "Skiing",
@@ -2078,10 +2371,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000005
     },
     {
       "id": "t:28444",
+      "num": 28444,
       "steam_tag_id": 28444,
       "ko": "스노보딩",
       "en": "Snowboarding",
@@ -2090,10 +2385,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000005
     },
     {
       "id": "t:1753",
+      "num": 1753,
       "steam_tag_id": 1753,
       "ko": "스케이트보딩",
       "en": "Skateboarding",
@@ -2102,10 +2399,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 10000005
     },
     {
       "id": "t:96359",
+      "num": 96359,
       "steam_tag_id": 96359,
       "ko": "스케이팅",
       "en": "Skating",
@@ -2114,10 +2413,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 10000005
     },
     {
       "id": "t:19568",
+      "num": 19568,
       "steam_tag_id": 19568,
       "ko": "사이클링",
       "en": "Cycling",
@@ -2126,10 +2427,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 10000005
     },
     {
       "id": "t:699",
+      "num": 699,
       "steam_tag_id": 699,
       "ko": "레이싱",
       "en": "Racing",
@@ -2145,10 +2448,12 @@
       ],
       "game_count": 24,
       "subtree_count": 25,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 701
     },
     {
       "id": "t:4102",
+      "num": 4102,
       "steam_tag_id": 4102,
       "ko": "전투 레이싱",
       "en": "Combat Racing",
@@ -2157,10 +2462,12 @@
       "children": [],
       "game_count": 4,
       "subtree_count": 4,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 699
     },
     {
       "id": "t:7622",
+      "num": 7622,
       "steam_tag_id": 7622,
       "ko": "오프로드",
       "en": "Offroad",
@@ -2169,10 +2476,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 699
     },
     {
       "id": "t:15868",
+      "num": 15868,
       "steam_tag_id": 15868,
       "ko": "모터크로스",
       "en": "Motocross",
@@ -2181,10 +2490,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 699
     },
     {
       "id": "t:252854",
+      "num": 252854,
       "steam_tag_id": 252854,
       "ko": "BMX",
       "en": "BMX",
@@ -2193,10 +2504,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 699
     },
     {
       "id": "t:129761",
+      "num": 129761,
       "steam_tag_id": 129761,
       "ko": "ATV",
       "en": "ATV",
@@ -2205,10 +2518,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 699
     },
     {
       "id": "t:123332",
+      "num": 123332,
       "steam_tag_id": 123332,
       "ko": "바이크",
       "en": "Bikes",
@@ -2224,10 +2539,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 699
     },
     {
       "id": "t:597",
+      "num": 597,
       "steam_tag_id": 597,
       "ko": "캐주얼",
       "en": "Casual",
@@ -2242,10 +2559,12 @@
       ],
       "game_count": 173,
       "subtree_count": 202,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000001
     },
     {
       "id": "t:7178",
+      "num": 7178,
       "steam_tag_id": 7178,
       "ko": "파티 게임",
       "en": "Party Game",
@@ -2267,10 +2586,12 @@
       ],
       "game_count": 18,
       "subtree_count": 21,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 597
     },
     {
       "id": "t:8093",
+      "num": 8093,
       "steam_tag_id": 8093,
       "ko": "미니게임",
       "en": "Minigames",
@@ -2279,10 +2600,12 @@
       "children": [],
       "game_count": 5,
       "subtree_count": 5,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 7178
     },
     {
       "id": "t:745697",
+      "num": 745697,
       "steam_tag_id": 745697,
       "ko": "소셜 디덕션",
       "en": "Social Deduction",
@@ -2291,10 +2614,12 @@
       "children": [],
       "game_count": 4,
       "subtree_count": 4,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 7178
     },
     {
       "id": "t:560542",
+      "num": 560542,
       "steam_tag_id": 560542,
       "ko": "인크리멘탈",
       "en": "Incremental",
@@ -2306,10 +2631,12 @@
       ],
       "game_count": 21,
       "subtree_count": 24,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 597
     },
     {
       "id": "t:615955",
+      "num": 615955,
       "steam_tag_id": 615955,
       "ko": "방치형",
       "en": "Idler",
@@ -2319,10 +2646,12 @@
       "children": [],
       "game_count": 19,
       "subtree_count": 19,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 560542
     },
     {
       "id": "t:379975",
+      "num": 379975,
       "steam_tag_id": 379975,
       "ko": "클리커",
       "en": "Clicker",
@@ -2332,10 +2661,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 560542
     },
     {
       "id": "t:1674",
+      "num": 1674,
       "steam_tag_id": 1674,
       "ko": "타자 연습",
       "en": "Typing",
@@ -2345,10 +2676,12 @@
       "children": [],
       "game_count": 3,
       "subtree_count": 3,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 597
     },
     {
       "id": "t:1752",
+      "num": 1752,
       "steam_tag_id": 1752,
       "ko": "리듬",
       "en": "Rhythm",
@@ -2359,10 +2692,12 @@
       ],
       "game_count": 9,
       "subtree_count": 11,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 597
     },
     {
       "id": "t:1621",
+      "num": 1621,
       "steam_tag_id": 1621,
       "ko": "음악",
       "en": "Music",
@@ -2371,10 +2706,12 @@
       "children": [],
       "game_count": 9,
       "subtree_count": 9,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1752
     },
     {
       "id": "t:17389",
+      "num": 17389,
       "steam_tag_id": 17389,
       "ko": "테이블탑",
       "en": "Tabletop",
@@ -2389,10 +2726,12 @@
       ],
       "game_count": 12,
       "subtree_count": 25,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 597
     },
     {
       "id": "t:1770",
+      "num": 1770,
       "steam_tag_id": 1770,
       "ko": "보드게임",
       "en": "Board Game",
@@ -2401,10 +2740,12 @@
       "children": [],
       "game_count": 8,
       "subtree_count": 8,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 17389
     },
     {
       "id": "t:4184",
+      "num": 4184,
       "steam_tag_id": 4184,
       "ko": "체스",
       "en": "Chess",
@@ -2413,10 +2754,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 17389
     },
     {
       "id": "t:7556",
+      "num": 7556,
       "steam_tag_id": 7556,
       "ko": "주사위",
       "en": "Dice",
@@ -2425,10 +2768,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 17389
     },
     {
       "id": "t:33572",
+      "num": 33572,
       "steam_tag_id": 33572,
       "ko": "마작",
       "en": "Mahjong",
@@ -2437,10 +2782,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 17389
     },
     {
       "id": "t:16250",
+      "num": 16250,
       "steam_tag_id": 16250,
       "ko": "도박",
       "en": "Gambling",
@@ -2449,10 +2796,12 @@
       "children": [],
       "game_count": 11,
       "subtree_count": 11,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 17389
     },
     {
       "id": "g:play",
+      "num": 10000006,
       "steam_tag_id": null,
       "ko": "플레이 방식",
       "en": "Gameplay",
@@ -2468,10 +2817,12 @@
       ],
       "game_count": null,
       "subtree_count": 615,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": null
     },
     {
       "id": "g:world",
+      "num": 10000007,
       "steam_tag_id": null,
       "ko": "세계 구조",
       "en": "World Structure",
@@ -2485,10 +2836,12 @@
       ],
       "game_count": null,
       "subtree_count": 350,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000006
     },
     {
       "id": "t:1695",
+      "num": 1695,
       "steam_tag_id": 1695,
       "ko": "오픈월드",
       "en": "Open World",
@@ -2501,10 +2854,12 @@
       "children": [],
       "game_count": 179,
       "subtree_count": 179,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000007
     },
     {
       "id": "t:3810",
+      "num": 3810,
       "steam_tag_id": 3810,
       "ko": "샌드박스",
       "en": "Sandbox",
@@ -2516,10 +2871,12 @@
       ],
       "game_count": 132,
       "subtree_count": 182,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000007
     },
     {
       "id": "t:3968",
+      "num": 3968,
       "steam_tag_id": 3968,
       "ko": "물리 엔진",
       "en": "Physics",
@@ -2529,10 +2886,12 @@
       "children": [],
       "game_count": 66,
       "subtree_count": 66,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3810
     },
     {
       "id": "t:5363",
+      "num": 5363,
       "steam_tag_id": 5363,
       "ko": "파괴",
       "en": "Destruction",
@@ -2541,10 +2900,12 @@
       "children": [],
       "game_count": 15,
       "subtree_count": 15,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3810
     },
     {
       "id": "t:3834",
+      "num": 3834,
       "steam_tag_id": 3834,
       "ko": "탐험",
       "en": "Exploration",
@@ -2553,10 +2914,12 @@
       "children": [],
       "game_count": 161,
       "subtree_count": 161,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000007
     },
     {
       "id": "t:5125",
+      "num": 5125,
       "steam_tag_id": 5125,
       "ko": "절차적 생성",
       "en": "Procedural Generation",
@@ -2567,10 +2930,12 @@
       ],
       "game_count": 35,
       "subtree_count": 37,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000007
     },
     {
       "id": "t:8253",
+      "num": 8253,
       "steam_tag_id": 8253,
       "ko": "음악 기반 절차적 생성",
       "en": "Music-Based Procedural Generation",
@@ -2579,10 +2944,12 @@
       "children": [],
       "game_count": 2,
       "subtree_count": 2,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 5125
     },
     {
       "id": "g:survival-craft",
+      "num": 10000008,
       "steam_tag_id": null,
       "ko": "생존·제작",
       "en": "Survival & Crafting",
@@ -2596,10 +2963,12 @@
       ],
       "game_count": null,
       "subtree_count": 251,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000006
     },
     {
       "id": "t:1662",
+      "num": 1662,
       "steam_tag_id": 1662,
       "ko": "생존",
       "en": "Survival",
@@ -2613,10 +2982,12 @@
       ],
       "game_count": 113,
       "subtree_count": 114,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000008
     },
     {
       "id": "t:1100689",
+      "num": 1100689,
       "steam_tag_id": 1100689,
       "ko": "오픈월드 생존 제작",
       "en": "Open World Survival Craft",
@@ -2626,10 +2997,12 @@
       "children": [],
       "game_count": 31,
       "subtree_count": 31,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1662
     },
     {
       "id": "t:1702",
+      "num": 1702,
       "steam_tag_id": 1702,
       "ko": "크래프팅",
       "en": "Crafting",
@@ -2638,10 +3011,12 @@
       "children": [],
       "game_count": 71,
       "subtree_count": 71,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000008
     },
     {
       "id": "t:1643",
+      "num": 1643,
       "steam_tag_id": 1643,
       "ko": "건설",
       "en": "Building",
@@ -2653,10 +3028,12 @@
       ],
       "game_count": 87,
       "subtree_count": 109,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000008
     },
     {
       "id": "t:7332",
+      "num": 7332,
       "steam_tag_id": 7332,
       "ko": "기지 건설",
       "en": "Base Building",
@@ -2665,10 +3042,12 @@
       "children": [],
       "game_count": 63,
       "subtree_count": 63,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1643
     },
     {
       "id": "t:255534",
+      "num": 255534,
       "steam_tag_id": 255534,
       "ko": "자동화",
       "en": "Automation",
@@ -2677,10 +3056,12 @@
       "children": [],
       "game_count": 18,
       "subtree_count": 18,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1643
     },
     {
       "id": "g:resource",
+      "num": 10000009,
       "steam_tag_id": null,
       "ko": "자원·경제 관리",
       "en": "Resources & Economy",
@@ -2699,10 +3080,12 @@
       ],
       "game_count": null,
       "subtree_count": 125,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000008
     },
     {
       "id": "t:8945",
+      "num": 8945,
       "steam_tag_id": 8945,
       "ko": "자원 관리",
       "en": "Resource Management",
@@ -2712,10 +3095,12 @@
       "children": [],
       "game_count": 53,
       "subtree_count": 53,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000009
     },
     {
       "id": "t:4695",
+      "num": 4695,
       "steam_tag_id": 4695,
       "ko": "경제",
       "en": "Economy",
@@ -2724,10 +3109,12 @@
       "children": [],
       "game_count": 38,
       "subtree_count": 38,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000009
     },
     {
       "id": "t:4202",
+      "num": 4202,
       "steam_tag_id": 4202,
       "ko": "무역·거래",
       "en": "Trading",
@@ -2737,10 +3124,12 @@
       "children": [],
       "game_count": 14,
       "subtree_count": 14,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000009
     },
     {
       "id": "t:5981",
+      "num": 5981,
       "steam_tag_id": 5981,
       "ko": "채광",
       "en": "Mining",
@@ -2750,10 +3139,12 @@
       "children": [],
       "game_count": 6,
       "subtree_count": 6,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000009
     },
     {
       "id": "t:16689",
+      "num": 16689,
       "steam_tag_id": 16689,
       "ko": "시간 관리",
       "en": "Time Management",
@@ -2762,10 +3153,12 @@
       "children": [],
       "game_count": 14,
       "subtree_count": 14,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000009
     },
     {
       "id": "t:6276",
+      "num": 6276,
       "steam_tag_id": 6276,
       "ko": "인벤토리 관리",
       "en": "Inventory Management",
@@ -2774,10 +3167,12 @@
       "children": [],
       "game_count": 13,
       "subtree_count": 13,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000009
     },
     {
       "id": "t:6310",
+      "num": 6310,
       "steam_tag_id": 6310,
       "ko": "외교",
       "en": "Diplomacy",
@@ -2786,10 +3181,12 @@
       "children": [],
       "game_count": 9,
       "subtree_count": 9,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000009
     },
     {
       "id": "t:4845",
+      "num": 4845,
       "steam_tag_id": 4845,
       "ko": "자본주의",
       "en": "Capitalism",
@@ -2798,10 +3195,12 @@
       "children": [],
       "game_count": 16,
       "subtree_count": 16,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000009
     },
     {
       "id": "t:4236",
+      "num": 4236,
       "steam_tag_id": 4236,
       "ko": "파밍(루팅)",
       "en": "Loot",
@@ -2811,10 +3210,12 @@
       "children": [],
       "game_count": 27,
       "subtree_count": 27,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000009
     },
     {
       "id": "g:pace",
+      "num": 10000010,
       "steam_tag_id": null,
       "ko": "진행 방식",
       "en": "Progression",
@@ -2832,10 +3233,12 @@
       ],
       "game_count": null,
       "subtree_count": 135,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000006
     },
     {
       "id": "t:1716",
+      "num": 1716,
       "steam_tag_id": 1716,
       "ko": "로그라이크",
       "en": "Roguelike",
@@ -2851,10 +3254,12 @@
       ],
       "game_count": 50,
       "subtree_count": 59,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000010
     },
     {
       "id": "t:454187",
+      "num": 454187,
       "steam_tag_id": 454187,
       "ko": "정통 로그라이크",
       "en": "Traditional Roguelike",
@@ -2863,10 +3268,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1716
     },
     {
       "id": "t:1759",
+      "num": 1759,
       "steam_tag_id": 1759,
       "ko": "영구 죽음",
       "en": "Perma Death",
@@ -2876,10 +3283,12 @@
       "children": [],
       "game_count": 16,
       "subtree_count": 16,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1716
     },
     {
       "id": "t:3959",
+      "num": 3959,
       "steam_tag_id": 3959,
       "ko": "로그라이트",
       "en": "Roguelite",
@@ -2888,10 +3297,12 @@
       "children": [],
       "game_count": 50,
       "subtree_count": 50,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000010
     },
     {
       "id": "t:4234",
+      "num": 4234,
       "steam_tag_id": 4234,
       "ko": "짧은 플레이",
       "en": "Short",
@@ -2901,10 +3312,12 @@
       "children": [],
       "game_count": 11,
       "subtree_count": 11,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000010
     },
     {
       "id": "t:1677",
+      "num": 1677,
       "steam_tag_id": 1677,
       "ko": "턴제",
       "en": "Turn-Based",
@@ -2915,10 +3328,12 @@
       ],
       "game_count": 29,
       "subtree_count": 52,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000010
     },
     {
       "id": "t:4325",
+      "num": 4325,
       "steam_tag_id": 4325,
       "ko": "턴제 전투",
       "en": "Turn-Based Combat",
@@ -2927,10 +3342,12 @@
       "children": [],
       "game_count": 41,
       "subtree_count": 41,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1677
     },
     {
       "id": "t:4161",
+      "num": 4161,
       "steam_tag_id": 4161,
       "ko": "실시간",
       "en": "Real-Time",
@@ -2941,10 +3358,12 @@
       ],
       "game_count": 3,
       "subtree_count": 9,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000010
     },
     {
       "id": "t:7107",
+      "num": 7107,
       "steam_tag_id": 7107,
       "ko": "실시간(일시정지 가능)",
       "en": "Real-Time with Pause",
@@ -2954,10 +3373,12 @@
       "children": [],
       "game_count": 6,
       "subtree_count": 6,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 4161
     },
     {
       "id": "t:1734",
+      "num": 1734,
       "steam_tag_id": 1734,
       "ko": "빠른 진행",
       "en": "Fast-Paced",
@@ -2966,10 +3387,12 @@
       "children": [],
       "game_count": 11,
       "subtree_count": 11,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000010
     },
     {
       "id": "t:7569",
+      "num": 7569,
       "steam_tag_id": 7569,
       "ko": "칸 단위 이동",
       "en": "Grid-Based Movement",
@@ -2979,10 +3402,12 @@
       "children": [],
       "game_count": 2,
       "subtree_count": 2,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000010
     },
     {
       "id": "t:1717",
+      "num": 1717,
       "steam_tag_id": 1717,
       "ko": "헥스 그리드",
       "en": "Hex Grid",
@@ -2992,10 +3417,12 @@
       "children": [],
       "game_count": 3,
       "subtree_count": 3,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000010
     },
     {
       "id": "t:1742",
+      "num": 1742,
       "steam_tag_id": 1742,
       "ko": "스토리 중심",
       "en": "Story Rich",
@@ -3020,10 +3447,12 @@
       ],
       "game_count": 238,
       "subtree_count": 318,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000006
     },
     {
       "id": "g:choices",
+      "num": 10000011,
       "steam_tag_id": null,
       "ko": "선택과 전개",
       "en": "Choices & Structure",
@@ -3037,10 +3466,12 @@
       ],
       "game_count": null,
       "subtree_count": 114,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1742
     },
     {
       "id": "t:6426",
+      "num": 6426,
       "steam_tag_id": 6426,
       "ko": "선택이 중요한",
       "en": "Choices Matter",
@@ -3050,10 +3481,12 @@
       "children": [],
       "game_count": 54,
       "subtree_count": 54,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000011
     },
     {
       "id": "t:6971",
+      "num": 6971,
       "steam_tag_id": 6971,
       "ko": "멀티 엔딩",
       "en": "Multiple Endings",
@@ -3063,10 +3496,12 @@
       "children": [],
       "game_count": 58,
       "subtree_count": 58,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000011
     },
     {
       "id": "t:6869",
+      "num": 6869,
       "steam_tag_id": 6869,
       "ko": "비선형",
       "en": "Nonlinear",
@@ -3075,10 +3510,12 @@
       "children": [],
       "game_count": 12,
       "subtree_count": 12,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000011
     },
     {
       "id": "t:7250",
+      "num": 7250,
       "steam_tag_id": 7250,
       "ko": "일직선 진행",
       "en": "Linear",
@@ -3088,10 +3525,12 @@
       "children": [],
       "game_count": 18,
       "subtree_count": 18,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000011
     },
     {
       "id": "g:narration",
+      "num": 10000012,
       "steam_tag_id": null,
       "ko": "이야기 방식",
       "en": "Narration",
@@ -3105,10 +3544,12 @@
       ],
       "game_count": null,
       "subtree_count": 43,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1742
     },
     {
       "id": "t:3854",
+      "num": 3854,
       "steam_tag_id": 3854,
       "ko": "깊은 세계관",
       "en": "Lore-Rich",
@@ -3117,10 +3558,12 @@
       "children": [],
       "game_count": 31,
       "subtree_count": 31,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000012
     },
     {
       "id": "t:42152",
+      "num": 42152,
       "steam_tag_id": 42152,
       "ko": "대화 중심",
       "en": "Dialogue Heavy",
@@ -3137,10 +3580,12 @@
       "children": [],
       "game_count": 9,
       "subtree_count": 9,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000012
     },
     {
       "id": "t:9592",
+      "num": 9592,
       "steam_tag_id": 9592,
       "ko": "다이내믹 내레이션",
       "en": "Dynamic Narration",
@@ -3149,10 +3594,12 @@
       "children": [],
       "game_count": 4,
       "subtree_count": 4,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000012
     },
     {
       "id": "t:3796",
+      "num": 3796,
       "steam_tag_id": 3796,
       "ko": "소설 원작",
       "en": "Based On A Novel",
@@ -3162,10 +3609,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000012
     },
     {
       "id": "g:protagonist",
+      "num": 10000013,
       "steam_tag_id": null,
       "ko": "주인공·관계",
       "en": "Protagonist & Relationships",
@@ -3180,10 +3629,12 @@
       ],
       "game_count": null,
       "subtree_count": 110,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1742
     },
     {
       "id": "t:7208",
+      "num": 7208,
       "steam_tag_id": 7208,
       "ko": "여성 주인공",
       "en": "Female Protagonist",
@@ -3193,10 +3644,12 @@
       "children": [],
       "game_count": 67,
       "subtree_count": 67,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000013
     },
     {
       "id": "t:15954",
+      "num": 15954,
       "steam_tag_id": 15954,
       "ko": "말 없는 주인공",
       "en": "Silent Protagonist",
@@ -3205,10 +3658,12 @@
       "children": [],
       "game_count": 5,
       "subtree_count": 5,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000013
     },
     {
       "id": "t:11333",
+      "num": 11333,
       "steam_tag_id": 11333,
       "ko": "악당 주인공",
       "en": "Villain Protagonist",
@@ -3217,10 +3672,12 @@
       "children": [],
       "game_count": 6,
       "subtree_count": 6,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000013
     },
     {
       "id": "t:44868",
+      "num": 44868,
       "steam_tag_id": 44868,
       "ko": "LGBTQ+",
       "en": "LGBTQ+",
@@ -3229,10 +3686,12 @@
       "children": [],
       "game_count": 36,
       "subtree_count": 36,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000013
     },
     {
       "id": "t:4947",
+      "num": 4947,
       "steam_tag_id": 4947,
       "ko": "로맨스",
       "en": "Romance",
@@ -3241,10 +3700,12 @@
       "children": [],
       "game_count": 16,
       "subtree_count": 16,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000013
     },
     {
       "id": "g:combat-control",
+      "num": 10000014,
       "steam_tag_id": null,
       "ko": "전투·조작",
       "en": "Combat & Controls",
@@ -3261,10 +3722,12 @@
       ],
       "game_count": null,
       "subtree_count": 252,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000006
     },
     {
       "id": "t:3993",
+      "num": 3993,
       "steam_tag_id": 3993,
       "ko": "전투",
       "en": "Combat",
@@ -3281,10 +3744,12 @@
       ],
       "game_count": 88,
       "subtree_count": 126,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000014
     },
     {
       "id": "t:4608",
+      "num": 4608,
       "steam_tag_id": 4608,
       "ko": "검술",
       "en": "Swordplay",
@@ -3294,10 +3759,12 @@
       "children": [],
       "game_count": 14,
       "subtree_count": 14,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3993
     },
     {
       "id": "t:6915",
+      "num": 6915,
       "steam_tag_id": 6915,
       "ko": "무술",
       "en": "Martial Arts",
@@ -3306,10 +3773,12 @@
       "children": [],
       "game_count": 16,
       "subtree_count": 16,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3993
     },
     {
       "id": "t:11104",
+      "num": 11104,
       "steam_tag_id": 11104,
       "ko": "차량 전투",
       "en": "Vehicular Combat",
@@ -3318,10 +3787,12 @@
       "children": [],
       "game_count": 12,
       "subtree_count": 12,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3993
     },
     {
       "id": "t:4994",
+      "num": 4994,
       "steam_tag_id": 4994,
       "ko": "해상 전투",
       "en": "Naval Combat",
@@ -3330,10 +3801,12 @@
       "children": [],
       "game_count": 5,
       "subtree_count": 5,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3993
     },
     {
       "id": "t:5765",
+      "num": 5765,
       "steam_tag_id": 5765,
       "ko": "총기 커스터마이즈",
       "en": "Gun Customization",
@@ -3343,10 +3816,12 @@
       "children": [],
       "game_count": 6,
       "subtree_count": 6,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3993
     },
     {
       "id": "t:5796",
+      "num": 5796,
       "steam_tag_id": 5796,
       "ko": "불릿 타임",
       "en": "Bullet Time",
@@ -3356,10 +3831,12 @@
       "children": [],
       "game_count": 5,
       "subtree_count": 5,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3993
     },
     {
       "id": "t:4155",
+      "num": 4155,
       "steam_tag_id": 4155,
       "ko": "직업(클래스) 선택",
       "en": "Class-Based",
@@ -3369,10 +3846,12 @@
       "children": [],
       "game_count": 10,
       "subtree_count": 10,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3993
     },
     {
       "id": "t:1687",
+      "num": 1687,
       "steam_tag_id": 1687,
       "ko": "잠입",
       "en": "Stealth",
@@ -3383,10 +3862,12 @@
       ],
       "game_count": 52,
       "subtree_count": 52,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000014
     },
     {
       "id": "t:97070",
+      "num": 97070,
       "steam_tag_id": 97070,
       "ko": "암살",
       "en": "Assassins",
@@ -3402,10 +3883,12 @@
       "children": [],
       "game_count": 5,
       "subtree_count": 5,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1687
     },
     {
       "id": "t:4036",
+      "num": 4036,
       "steam_tag_id": 4036,
       "ko": "파쿠르",
       "en": "Parkour",
@@ -3414,10 +3897,12 @@
       "children": [],
       "game_count": 19,
       "subtree_count": 19,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000014
     },
     {
       "id": "t:4026",
+      "num": 4026,
       "steam_tag_id": 4026,
       "ko": "고난도",
       "en": "Difficult",
@@ -3434,10 +3919,12 @@
       "children": [],
       "game_count": 90,
       "subtree_count": 90,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000014
     },
     {
       "id": "t:4559",
+      "num": 4559,
       "steam_tag_id": 4559,
       "ko": "퀵타임 이벤트",
       "en": "Quick-Time Events",
@@ -3446,10 +3933,12 @@
       "children": [],
       "game_count": 4,
       "subtree_count": 4,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000014
     },
     {
       "id": "t:6625",
+      "num": 6625,
       "steam_tag_id": 6625,
       "ko": "시간 조작",
       "en": "Time Manipulation",
@@ -3458,10 +3947,12 @@
       "children": [],
       "game_count": 3,
       "subtree_count": 3,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000014
     },
     {
       "id": "t:14906",
+      "num": 14906,
       "steam_tag_id": 14906,
       "ko": "의도적으로 불편한 조작",
       "en": "Intentionally Awkward Controls",
@@ -3471,10 +3962,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 10000014
     },
     {
       "id": "g:freedom",
+      "num": 10000015,
       "steam_tag_id": null,
       "ko": "자유도·창작",
       "en": "Freedom & Creation",
@@ -3489,10 +3982,12 @@
       ],
       "game_count": null,
       "subtree_count": 182,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000006
     },
     {
       "id": "t:8122",
+      "num": 8122,
       "steam_tag_id": 8122,
       "ko": "레벨 에디터",
       "en": "Level Editor",
@@ -3501,10 +3996,12 @@
       "children": [],
       "game_count": 14,
       "subtree_count": 14,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000015
     },
     {
       "id": "t:1669",
+      "num": 1669,
       "steam_tag_id": 1669,
       "ko": "모드 지원",
       "en": "Moddable",
@@ -3521,10 +4018,12 @@
       "children": [],
       "game_count": 49,
       "subtree_count": 49,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000015
     },
     {
       "id": "t:4747",
+      "num": 4747,
       "steam_tag_id": 4747,
       "ko": "캐릭터 커스터마이징",
       "en": "Character Customization",
@@ -3534,10 +4033,12 @@
       "children": [],
       "game_count": 94,
       "subtree_count": 94,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000015
     },
     {
       "id": "t:9204",
+      "num": 9204,
       "steam_tag_id": 9204,
       "ko": "이머시브 심",
       "en": "Immersive Sim",
@@ -3547,10 +4048,12 @@
       "children": [],
       "game_count": 49,
       "subtree_count": 49,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000015
     },
     {
       "id": "t:5432",
+      "num": 5432,
       "steam_tag_id": 5432,
       "ko": "코딩",
       "en": "Programming",
@@ -3568,10 +4071,12 @@
       ],
       "game_count": 3,
       "subtree_count": 4,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000015
     },
     {
       "id": "t:5502",
+      "num": 5502,
       "steam_tag_id": 5502,
       "ko": "해킹",
       "en": "Hacking",
@@ -3580,10 +4085,12 @@
       "children": [],
       "game_count": 3,
       "subtree_count": 3,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 5432
     },
     {
       "id": "g:setting",
+      "num": 10000016,
       "steam_tag_id": null,
       "ko": "세계관·배경",
       "en": "Setting",
@@ -3600,10 +4107,12 @@
       ],
       "game_count": null,
       "subtree_count": 370,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": null
     },
     {
       "id": "t:1684",
+      "num": 1684,
       "steam_tag_id": 1684,
       "ko": "판타지",
       "en": "Fantasy",
@@ -3616,10 +4125,12 @@
       ],
       "game_count": 119,
       "subtree_count": 139,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000016
     },
     {
       "id": "t:4604",
+      "num": 4604,
       "steam_tag_id": 4604,
       "ko": "다크 판타지",
       "en": "Dark Fantasy",
@@ -3628,10 +4139,12 @@
       "children": [],
       "game_count": 42,
       "subtree_count": 42,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1684
     },
     {
       "id": "t:25959",
+      "num": 25959,
       "steam_tag_id": 25959,
       "ko": "무협",
       "en": "Wuxia",
@@ -3640,10 +4153,12 @@
       "children": [],
       "game_count": 2,
       "subtree_count": 2,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1684
     },
     {
       "id": "t:760247",
+      "num": 760247,
       "steam_tag_id": 760247,
       "ko": "선협",
       "en": "Xianxia",
@@ -3652,10 +4167,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1684
     },
     {
       "id": "t:3942",
+      "num": 3942,
       "steam_tag_id": 3942,
       "ko": "SF",
       "en": "Sci-fi",
@@ -3674,10 +4191,12 @@
       ],
       "game_count": 93,
       "subtree_count": 111,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000016
     },
     {
       "id": "t:4115",
+      "num": 4115,
       "steam_tag_id": 4115,
       "ko": "사이버펑크",
       "en": "Cyberpunk",
@@ -3686,10 +4205,12 @@
       "children": [],
       "game_count": 13,
       "subtree_count": 13,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3942
     },
     {
       "id": "t:1755",
+      "num": 1755,
       "steam_tag_id": 1755,
       "ko": "우주",
       "en": "Space",
@@ -3700,10 +4221,12 @@
       ],
       "game_count": 33,
       "subtree_count": 33,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3942
     },
     {
       "id": "t:6702",
+      "num": 6702,
       "steam_tag_id": 6702,
       "ko": "화성",
       "en": "Mars",
@@ -3712,10 +4235,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 1755
     },
     {
       "id": "t:4295",
+      "num": 4295,
       "steam_tag_id": 4295,
       "ko": "미래",
       "en": "Futuristic",
@@ -3725,10 +4250,12 @@
       "children": [],
       "game_count": 17,
       "subtree_count": 17,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3942
     },
     {
       "id": "t:1777",
+      "num": 1777,
       "steam_tag_id": 1777,
       "ko": "스팀펑크",
       "en": "Steampunk",
@@ -3737,10 +4264,12 @@
       "children": [],
       "game_count": 3,
       "subtree_count": 3,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3942
     },
     {
       "id": "t:5030",
+      "num": 5030,
       "steam_tag_id": 5030,
       "ko": "디스토피아",
       "en": "Dystopian",
@@ -3750,10 +4279,12 @@
       "children": [],
       "game_count": 13,
       "subtree_count": 13,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000016
     },
     {
       "id": "t:3835",
+      "num": 3835,
       "steam_tag_id": 3835,
       "ko": "포스트아포칼립스",
       "en": "Post-apocalyptic",
@@ -3762,10 +4293,12 @@
       "children": [],
       "game_count": 50,
       "subtree_count": 50,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000016
     },
     {
       "id": "t:3987",
+      "num": 3987,
       "steam_tag_id": 3987,
       "ko": "역사",
       "en": "Historical",
@@ -3782,10 +4315,12 @@
       ],
       "game_count": 48,
       "subtree_count": 81,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000016
     },
     {
       "id": "t:4172",
+      "num": 4172,
       "steam_tag_id": 4172,
       "ko": "중세",
       "en": "Medieval",
@@ -3794,10 +4329,12 @@
       "children": [],
       "game_count": 29,
       "subtree_count": 29,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3987
     },
     {
       "id": "t:6948",
+      "num": 6948,
       "steam_tag_id": 6948,
       "ko": "고대 로마",
       "en": "Rome",
@@ -3807,10 +4344,12 @@
       "children": [],
       "game_count": 2,
       "subtree_count": 2,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3987
     },
     {
       "id": "t:5382",
+      "num": 5382,
       "steam_tag_id": 5382,
       "ko": "1차 세계대전",
       "en": "World War I",
@@ -3820,10 +4359,12 @@
       "children": [],
       "game_count": 2,
       "subtree_count": 2,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3987
     },
     {
       "id": "t:4150",
+      "num": 4150,
       "steam_tag_id": 4150,
       "ko": "2차 세계대전",
       "en": "World War II",
@@ -3833,10 +4374,12 @@
       "children": [],
       "game_count": 10,
       "subtree_count": 10,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3987
     },
     {
       "id": "t:5179",
+      "num": 5179,
       "steam_tag_id": 5179,
       "ko": "냉전",
       "en": "Cold War",
@@ -3845,10 +4388,12 @@
       "children": [],
       "game_count": 4,
       "subtree_count": 4,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3987
     },
     {
       "id": "t:1647",
+      "num": 1647,
       "steam_tag_id": 1647,
       "ko": "서부",
       "en": "Western",
@@ -3858,10 +4403,12 @@
       "children": [],
       "game_count": 5,
       "subtree_count": 5,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3987
     },
     {
       "id": "t:4598",
+      "num": 4598,
       "steam_tag_id": 4598,
       "ko": "대체 역사",
       "en": "Alternate History",
@@ -3870,10 +4417,12 @@
       "children": [],
       "game_count": 9,
       "subtree_count": 9,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 3987
     },
     {
       "id": "t:5673",
+      "num": 5673,
       "steam_tag_id": 5673,
       "ko": "현대",
       "en": "Modern",
@@ -3885,10 +4434,12 @@
       ],
       "game_count": 15,
       "subtree_count": 41,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000016
     },
     {
       "id": "t:7743",
+      "num": 7743,
       "steam_tag_id": 7743,
       "ko": "1980년대",
       "en": "1980s",
@@ -3897,10 +4448,12 @@
       "children": [],
       "game_count": 9,
       "subtree_count": 9,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 5673
     },
     {
       "id": "t:6691",
+      "num": 6691,
       "steam_tag_id": 6691,
       "ko": "1990년대",
       "en": "1990's",
@@ -3909,10 +4462,12 @@
       "children": [],
       "game_count": 20,
       "subtree_count": 20,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 5673
     },
     {
       "id": "g:place",
+      "num": 10000017,
       "steam_tag_id": null,
       "ko": "장소",
       "en": "Places",
@@ -3926,10 +4481,12 @@
       ],
       "game_count": null,
       "subtree_count": 29,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000016
     },
     {
       "id": "t:9157",
+      "num": 9157,
       "steam_tag_id": 9157,
       "ko": "수중",
       "en": "Underwater",
@@ -3938,10 +4495,12 @@
       "children": [],
       "game_count": 8,
       "subtree_count": 8,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000017
     },
     {
       "id": "t:21006",
+      "num": 21006,
       "steam_tag_id": 21006,
       "ko": "지하",
       "en": "Underground",
@@ -3950,10 +4509,12 @@
       "children": [],
       "game_count": 3,
       "subtree_count": 3,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000017
     },
     {
       "id": "t:30358",
+      "num": 30358,
       "steam_tag_id": 30358,
       "ko": "자연",
       "en": "Nature",
@@ -3962,10 +4523,12 @@
       "children": [],
       "game_count": 16,
       "subtree_count": 16,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000017
     },
     {
       "id": "t:9803",
+      "num": 9803,
       "steam_tag_id": 9803,
       "ko": "눈",
       "en": "Snow",
@@ -3974,10 +4537,12 @@
       "children": [],
       "game_count": 3,
       "subtree_count": 3,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000017
     },
     {
       "id": "g:subject",
+      "num": 10000018,
       "steam_tag_id": null,
       "ko": "소재",
       "en": "Subjects",
@@ -3996,10 +4561,12 @@
       ],
       "game_count": null,
       "subtree_count": 266,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": null
     },
     {
       "id": "g:monster",
+      "num": 10000019,
       "steam_tag_id": null,
       "ko": "괴물·초자연",
       "en": "Monsters & Supernatural",
@@ -4017,10 +4584,12 @@
       ],
       "game_count": null,
       "subtree_count": 85,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000018
     },
     {
       "id": "t:1659",
+      "num": 1659,
       "steam_tag_id": 1659,
       "ko": "좀비",
       "en": "Zombies",
@@ -4029,10 +4598,12 @@
       "children": [],
       "game_count": 26,
       "subtree_count": 26,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000019
     },
     {
       "id": "t:9541",
+      "num": 9541,
       "steam_tag_id": 9541,
       "ko": "악마",
       "en": "Demons",
@@ -4042,10 +4613,12 @@
       "children": [],
       "game_count": 14,
       "subtree_count": 14,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000019
     },
     {
       "id": "t:12686",
+      "num": 12686,
       "steam_tag_id": 12686,
       "ko": "뱀파이어",
       "en": "Vampires",
@@ -4054,10 +4627,12 @@
       "children": [],
       "game_count": 6,
       "subtree_count": 6,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000019
     },
     {
       "id": "t:17015",
+      "num": 17015,
       "steam_tag_id": 17015,
       "ko": "늑대 인간",
       "en": "Werewolves",
@@ -4066,10 +4641,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 10000019
     },
     {
       "id": "t:4046",
+      "num": 4046,
       "steam_tag_id": 4046,
       "ko": "용",
       "en": "Dragons",
@@ -4078,10 +4655,12 @@
       "children": [],
       "game_count": 13,
       "subtree_count": 13,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000019
     },
     {
       "id": "t:10808",
+      "num": 10808,
       "steam_tag_id": 10808,
       "ko": "초자연",
       "en": "Supernatural",
@@ -4090,10 +4669,12 @@
       "children": [],
       "game_count": 8,
       "subtree_count": 8,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000019
     },
     {
       "id": "t:7432",
+      "num": 7432,
       "steam_tag_id": 7432,
       "ko": "러브크래프트(크툴루)",
       "en": "Lovecraftian",
@@ -4103,10 +4684,12 @@
       "children": [],
       "game_count": 8,
       "subtree_count": 8,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000019
     },
     {
       "id": "t:1673",
+      "num": 1673,
       "steam_tag_id": 1673,
       "ko": "외계인",
       "en": "Aliens",
@@ -4115,10 +4698,12 @@
       "children": [],
       "game_count": 16,
       "subtree_count": 16,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000019
     },
     {
       "id": "g:characters",
+      "num": 10000020,
       "steam_tag_id": null,
       "ko": "인물",
       "en": "Characters",
@@ -4135,10 +4720,12 @@
       ],
       "game_count": null,
       "subtree_count": 22,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000018
     },
     {
       "id": "t:1688",
+      "num": 1688,
       "steam_tag_id": 1688,
       "ko": "닌자",
       "en": "Ninja",
@@ -4147,10 +4734,12 @@
       "children": [],
       "game_count": 9,
       "subtree_count": 9,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000020
     },
     {
       "id": "t:10617",
+      "num": 10617,
       "steam_tag_id": 10617,
       "ko": "사무라이",
       "en": "Samurai",
@@ -4159,10 +4748,12 @@
       "children": [],
       "game_count": 5,
       "subtree_count": 5,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000020
     },
     {
       "id": "t:1681",
+      "num": 1681,
       "steam_tag_id": 1681,
       "ko": "해적",
       "en": "Pirates",
@@ -4171,10 +4762,12 @@
       "children": [],
       "game_count": 5,
       "subtree_count": 5,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000020
     },
     {
       "id": "t:11634",
+      "num": 11634,
       "steam_tag_id": 11634,
       "ko": "바이킹",
       "en": "Vikings",
@@ -4183,10 +4776,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 10000020
     },
     {
       "id": "t:1671",
+      "num": 1671,
       "steam_tag_id": 1671,
       "ko": "슈퍼 히어로",
       "en": "Superhero",
@@ -4195,10 +4790,12 @@
       "children": [],
       "game_count": 4,
       "subtree_count": 4,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000020
     },
     {
       "id": "t:4535",
+      "num": 4535,
       "steam_tag_id": 4535,
       "ko": "드워프",
       "en": "Dwarves",
@@ -4214,10 +4811,12 @@
       "children": [],
       "game_count": 4,
       "subtree_count": 4,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000020
     },
     {
       "id": "t:6054",
+      "num": 6054,
       "steam_tag_id": 6054,
       "ko": "엘프",
       "en": "Elves",
@@ -4233,10 +4832,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000020
     },
     {
       "id": "t:9626",
+      "num": 9626,
       "steam_tag_id": 9626,
       "ko": "동물",
       "en": "Animals",
@@ -4254,10 +4855,12 @@
       ],
       "game_count": 3,
       "subtree_count": 18,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000018
     },
     {
       "id": "t:1637",
+      "num": 1637,
       "steam_tag_id": 1637,
       "ko": "개",
       "en": "Dogs",
@@ -4273,10 +4876,12 @@
       "children": [],
       "game_count": 2,
       "subtree_count": 2,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 9626
     },
     {
       "id": "t:17894",
+      "num": 17894,
       "steam_tag_id": 17894,
       "ko": "고양이",
       "en": "Cats",
@@ -4285,10 +4890,12 @@
       "children": [],
       "game_count": 5,
       "subtree_count": 5,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 9626
     },
     {
       "id": "t:6041",
+      "num": 6041,
       "steam_tag_id": 6041,
       "ko": "말",
       "en": "Horses",
@@ -4297,10 +4904,12 @@
       "children": [],
       "game_count": 5,
       "subtree_count": 5,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 9626
     },
     {
       "id": "t:6214",
+      "num": 6214,
       "steam_tag_id": 6214,
       "ko": "새",
       "en": "Birds",
@@ -4309,10 +4918,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 9626
     },
     {
       "id": "t:507423",
+      "num": 507423,
       "steam_tag_id": 507423,
       "ko": "여우",
       "en": "Foxes",
@@ -4328,10 +4939,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 9626
     },
     {
       "id": "t:20486",
+      "num": 20486,
       "steam_tag_id": 20486,
       "ko": "늑대",
       "en": "Wolves",
@@ -4340,10 +4953,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 9626
     },
     {
       "id": "t:5160",
+      "num": 5160,
       "steam_tag_id": 5160,
       "ko": "공룡",
       "en": "Dinosaurs",
@@ -4352,10 +4967,12 @@
       "children": [],
       "game_count": 3,
       "subtree_count": 3,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 9626
     },
     {
       "id": "t:1352486",
+      "num": 1352486,
       "steam_tag_id": 1352486,
       "ko": "카피바라",
       "en": "Capybaras",
@@ -4364,10 +4981,12 @@
       "children": [],
       "game_count": 0,
       "subtree_count": 0,
-      "hidden_empty": true
+      "hidden_empty": true,
+      "parent_num": 9626
     },
     {
       "id": "g:machines",
+      "num": 10000021,
       "steam_tag_id": null,
       "ko": "기계·탈것",
       "en": "Machines & Vehicles",
@@ -4382,10 +5001,12 @@
       ],
       "game_count": null,
       "subtree_count": 30,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000018
     },
     {
       "id": "t:5752",
+      "num": 5752,
       "steam_tag_id": 5752,
       "ko": "로봇",
       "en": "Robots",
@@ -4394,10 +5015,12 @@
       "children": [],
       "game_count": 14,
       "subtree_count": 14,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000021
     },
     {
       "id": "t:4821",
+      "num": 4821,
       "steam_tag_id": 4821,
       "ko": "메카",
       "en": "Mechs",
@@ -4407,10 +5030,12 @@
       "children": [],
       "game_count": 9,
       "subtree_count": 9,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000021
     },
     {
       "id": "t:13276",
+      "num": 13276,
       "steam_tag_id": 13276,
       "ko": "탱크",
       "en": "Tanks",
@@ -4419,10 +5044,12 @@
       "children": [],
       "game_count": 5,
       "subtree_count": 5,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000021
     },
     {
       "id": "t:4291",
+      "num": 4291,
       "steam_tag_id": 4291,
       "ko": "우주선",
       "en": "Spaceships",
@@ -4431,10 +5058,12 @@
       "children": [],
       "game_count": 2,
       "subtree_count": 2,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000021
     },
     {
       "id": "t:19780",
+      "num": 19780,
       "steam_tag_id": 19780,
       "ko": "잠수함",
       "en": "Submarine",
@@ -4443,10 +5072,12 @@
       "children": [],
       "game_count": 3,
       "subtree_count": 3,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000021
     },
     {
       "id": "g:war",
+      "num": 10000022,
       "steam_tag_id": null,
       "ko": "전쟁·군사",
       "en": "War & Military",
@@ -4459,10 +5090,12 @@
       ],
       "game_count": null,
       "subtree_count": 56,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000018
     },
     {
       "id": "t:1678",
+      "num": 1678,
       "steam_tag_id": 1678,
       "ko": "전쟁",
       "en": "War",
@@ -4471,10 +5104,12 @@
       "children": [],
       "game_count": 44,
       "subtree_count": 44,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000022
     },
     {
       "id": "t:4168",
+      "num": 4168,
       "steam_tag_id": 4168,
       "ko": "군사",
       "en": "Military",
@@ -4483,10 +5118,12 @@
       "children": [],
       "game_count": 36,
       "subtree_count": 36,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000022
     },
     {
       "id": "t:6910",
+      "num": 6910,
       "steam_tag_id": 6910,
       "ko": "해군",
       "en": "Naval",
@@ -4495,10 +5132,12 @@
       "children": [],
       "game_count": 5,
       "subtree_count": 5,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000022
     },
     {
       "id": "g:crime",
+      "num": 10000023,
       "steam_tag_id": null,
       "ko": "범죄·첩보",
       "en": "Crime & Espionage",
@@ -4512,10 +5151,12 @@
       ],
       "game_count": null,
       "subtree_count": 35,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000018
     },
     {
       "id": "t:6378",
+      "num": 6378,
       "steam_tag_id": 6378,
       "ko": "범죄",
       "en": "Crime",
@@ -4524,10 +5165,12 @@
       "children": [],
       "game_count": 26,
       "subtree_count": 26,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000023
     },
     {
       "id": "t:1680",
+      "num": 1680,
       "steam_tag_id": 1680,
       "ko": "강도",
       "en": "Heist",
@@ -4536,10 +5179,12 @@
       "children": [],
       "game_count": 6,
       "subtree_count": 6,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000023
     },
     {
       "id": "t:1776",
+      "num": 1776,
       "steam_tag_id": 1776,
       "ko": "첩보 활동",
       "en": "Espionage",
@@ -4548,10 +5193,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000023
     },
     {
       "id": "t:5372",
+      "num": 5372,
       "steam_tag_id": 5372,
       "ko": "음모",
       "en": "Conspiracy",
@@ -4560,10 +5207,12 @@
       "children": [],
       "game_count": 6,
       "subtree_count": 6,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000023
     },
     {
       "id": "g:magic",
+      "num": 10000024,
       "steam_tag_id": null,
       "ko": "마법·신화",
       "en": "Magic & Myth",
@@ -4576,10 +5225,12 @@
       ],
       "game_count": null,
       "subtree_count": 39,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000018
     },
     {
       "id": "t:4057",
+      "num": 4057,
       "steam_tag_id": 4057,
       "ko": "마법",
       "en": "Magic",
@@ -4588,10 +5239,12 @@
       "children": [],
       "game_count": 28,
       "subtree_count": 28,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000024
     },
     {
       "id": "t:16094",
+      "num": 16094,
       "steam_tag_id": 16094,
       "ko": "신화",
       "en": "Mythology",
@@ -4600,10 +5253,12 @@
       "children": [],
       "game_count": 11,
       "subtree_count": 11,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000024
     },
     {
       "id": "t:180368",
+      "num": 180368,
       "steam_tag_id": 180368,
       "ko": "신념",
       "en": "Faith",
@@ -4612,10 +5267,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000024
     },
     {
       "id": "g:science",
+      "num": 10000025,
       "steam_tag_id": null,
       "ko": "과학·기술",
       "en": "Science & Tech",
@@ -4629,10 +5286,12 @@
       ],
       "game_count": null,
       "subtree_count": 36,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000018
     },
     {
       "id": "t:5794",
+      "num": 5794,
       "steam_tag_id": 5794,
       "ko": "과학",
       "en": "Science",
@@ -4641,10 +5300,12 @@
       "children": [],
       "game_count": 8,
       "subtree_count": 8,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000025
     },
     {
       "id": "t:7926",
+      "num": 7926,
       "steam_tag_id": 7926,
       "ko": "인공 지능",
       "en": "Artificial Intelligence",
@@ -4653,10 +5314,12 @@
       "children": [],
       "game_count": 21,
       "subtree_count": 21,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000025
     },
     {
       "id": "t:4137",
+      "num": 4137,
       "steam_tag_id": 4137,
       "ko": "트랜스휴머니즘",
       "en": "Transhumanism",
@@ -4665,10 +5328,12 @@
       "children": [],
       "game_count": 1,
       "subtree_count": 1,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000025
     },
     {
       "id": "t:10679",
+      "num": 10679,
       "steam_tag_id": 10679,
       "ko": "시간 여행",
       "en": "Time Travel",
@@ -4677,10 +5342,12 @@
       "children": [],
       "game_count": 7,
       "subtree_count": 7,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000025
     },
     {
       "id": "t:150626",
+      "num": 150626,
       "steam_tag_id": 150626,
       "ko": "게임 소재",
       "en": "Gaming",
@@ -4690,10 +5357,12 @@
       "children": [],
       "game_count": 4,
       "subtree_count": 4,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000018
     },
     {
       "id": "g:mood",
+      "num": 10000026,
       "steam_tag_id": null,
       "ko": "분위기",
       "en": "Mood",
@@ -4712,10 +5381,12 @@
       ],
       "game_count": null,
       "subtree_count": 372,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": null
     },
     {
       "id": "t:1654",
+      "num": 1654,
       "steam_tag_id": 1654,
       "ko": "힐링",
       "en": "Relaxing",
@@ -4732,10 +5403,12 @@
       ],
       "game_count": 61,
       "subtree_count": 66,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000026
     },
     {
       "id": "t:97376",
+      "num": 97376,
       "steam_tag_id": 97376,
       "ko": "아늑함",
       "en": "Cozy",
@@ -4744,10 +5417,12 @@
       "children": [],
       "game_count": 24,
       "subtree_count": 24,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1654
     },
     {
       "id": "t:552282",
+      "num": 552282,
       "steam_tag_id": 552282,
       "ko": "건전함",
       "en": "Wholesome",
@@ -4756,10 +5431,12 @@
       "children": [],
       "game_count": 5,
       "subtree_count": 5,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1654
     },
     {
       "id": "t:4726",
+      "num": 4726,
       "steam_tag_id": 4726,
       "ko": "귀여운",
       "en": "Cute",
@@ -4768,10 +5445,12 @@
       "children": [],
       "game_count": 123,
       "subtree_count": 123,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000026
     },
     {
       "id": "t:1719",
+      "num": 1719,
       "steam_tag_id": 1719,
       "ko": "코미디",
       "en": "Comedy",
@@ -4792,10 +5471,12 @@
       ],
       "game_count": 152,
       "subtree_count": 170,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000026
     },
     {
       "id": "t:5923",
+      "num": 5923,
       "steam_tag_id": 5923,
       "ko": "블랙 유머",
       "en": "Dark Humor",
@@ -4811,10 +5492,12 @@
       "children": [],
       "game_count": 22,
       "subtree_count": 22,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1719
     },
     {
       "id": "t:4878",
+      "num": 4878,
       "steam_tag_id": 4878,
       "ko": "패러디",
       "en": "Parody",
@@ -4823,10 +5506,12 @@
       "children": [],
       "game_count": 3,
       "subtree_count": 3,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1719
     },
     {
       "id": "t:1651",
+      "num": 1651,
       "steam_tag_id": 1651,
       "ko": "풍자",
       "en": "Satire",
@@ -4835,10 +5520,12 @@
       "children": [],
       "game_count": 2,
       "subtree_count": 2,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1719
     },
     {
       "id": "t:10397",
+      "num": 10397,
       "steam_tag_id": 10397,
       "ko": "밈",
       "en": "Memes",
@@ -4847,10 +5534,12 @@
       "children": [],
       "game_count": 21,
       "subtree_count": 21,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1719
     },
     {
       "id": "t:4342",
+      "num": 4342,
       "steam_tag_id": 4342,
       "ko": "어두운",
       "en": "Dark",
@@ -4862,10 +5551,12 @@
       ],
       "game_count": 84,
       "subtree_count": 90,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000026
     },
     {
       "id": "t:3952",
+      "num": 3952,
       "steam_tag_id": 3952,
       "ko": "고딕",
       "en": "Gothic",
@@ -4874,10 +5565,12 @@
       "children": [],
       "game_count": 7,
       "subtree_count": 7,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 4342
     },
     {
       "id": "t:6052",
+      "num": 6052,
       "steam_tag_id": 6052,
       "ko": "누아르",
       "en": "Noir",
@@ -4886,10 +5579,12 @@
       "children": [],
       "game_count": 5,
       "subtree_count": 5,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 4342
     },
     {
       "id": "g:tension",
+      "num": 10000027,
       "steam_tag_id": null,
       "ko": "긴장감",
       "en": "Tension",
@@ -4901,10 +5596,12 @@
       ],
       "game_count": null,
       "subtree_count": 64,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000026
     },
     {
       "id": "t:4064",
+      "num": 4064,
       "steam_tag_id": 4064,
       "ko": "스릴러",
       "en": "Thriller",
@@ -4913,10 +5610,12 @@
       "children": [],
       "game_count": 17,
       "subtree_count": 17,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000027
     },
     {
       "id": "t:5716",
+      "num": 5716,
       "steam_tag_id": 5716,
       "ko": "미스터리",
       "en": "Mystery",
@@ -4925,10 +5624,12 @@
       "children": [],
       "game_count": 58,
       "subtree_count": 58,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000027
     },
     {
       "id": "t:5608",
+      "num": 5608,
       "steam_tag_id": 5608,
       "ko": "감성적",
       "en": "Emotional",
@@ -4937,10 +5638,12 @@
       "children": [],
       "game_count": 39,
       "subtree_count": 39,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000026
     },
     {
       "id": "t:5186",
+      "num": 5186,
       "steam_tag_id": 5186,
       "ko": "심리적",
       "en": "Psychological",
@@ -4951,10 +5654,12 @@
       ],
       "game_count": 19,
       "subtree_count": 20,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000026
     },
     {
       "id": "t:15277",
+      "num": 15277,
       "steam_tag_id": 15277,
       "ko": "철학적",
       "en": "Philosophical",
@@ -4963,10 +5668,12 @@
       "children": [],
       "game_count": 2,
       "subtree_count": 2,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 5186
     },
     {
       "id": "t:1710",
+      "num": 1710,
       "steam_tag_id": 1710,
       "ko": "초현실",
       "en": "Surreal",
@@ -4978,10 +5685,12 @@
       ],
       "game_count": 22,
       "subtree_count": 24,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000026
     },
     {
       "id": "t:1714",
+      "num": 1714,
       "steam_tag_id": 1714,
       "ko": "사이키델릭",
       "en": "Psychedelic",
@@ -4990,10 +5699,12 @@
       "children": [],
       "game_count": 3,
       "subtree_count": 3,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1710
     },
     {
       "id": "t:13782",
+      "num": 13782,
       "steam_tag_id": 13782,
       "ko": "실험적",
       "en": "Experimental",
@@ -5002,10 +5713,12 @@
       "children": [],
       "game_count": 6,
       "subtree_count": 6,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 1710
     },
     {
       "id": "t:14720",
+      "num": 14720,
       "steam_tag_id": 14720,
       "ko": "추억 소환",
       "en": "Nostalgia",
@@ -5014,10 +5727,12 @@
       "children": [],
       "game_count": 9,
       "subtree_count": 9,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000026
     },
     {
       "id": "g:visual",
+      "num": 10000028,
       "steam_tag_id": null,
       "ko": "시점·그래픽",
       "en": "View & Visuals",
@@ -5032,10 +5747,12 @@
       ],
       "game_count": null,
       "subtree_count": 592,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": null
     },
     {
       "id": "g:view",
+      "num": 10000029,
       "steam_tag_id": null,
       "ko": "시점",
       "en": "Camera",
@@ -5050,10 +5767,12 @@
       ],
       "game_count": null,
       "subtree_count": 368,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000028
     },
     {
       "id": "t:3839",
+      "num": 3839,
       "steam_tag_id": 3839,
       "ko": "1인칭",
       "en": "First-Person",
@@ -5062,10 +5781,12 @@
       "children": [],
       "game_count": 178,
       "subtree_count": 178,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000029
     },
     {
       "id": "t:1697",
+      "num": 1697,
       "steam_tag_id": 1697,
       "ko": "3인칭",
       "en": "Third Person",
@@ -5074,10 +5795,12 @@
       "children": [],
       "game_count": 141,
       "subtree_count": 141,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000029
     },
     {
       "id": "t:4791",
+      "num": 4791,
       "steam_tag_id": 4791,
       "ko": "탑다운",
       "en": "Top-Down",
@@ -5086,10 +5809,12 @@
       "children": [],
       "game_count": 33,
       "subtree_count": 33,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000029
     },
     {
       "id": "t:5851",
+      "num": 5851,
       "steam_tag_id": 5851,
       "ko": "아이소메트릭",
       "en": "Isometric",
@@ -5098,10 +5823,12 @@
       "children": [],
       "game_count": 31,
       "subtree_count": 31,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000029
     },
     {
       "id": "t:3798",
+      "num": 3798,
       "steam_tag_id": 3798,
       "ko": "횡스크롤",
       "en": "Side Scroller",
@@ -5110,10 +5837,12 @@
       "children": [],
       "game_count": 19,
       "subtree_count": 19,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000029
     },
     {
       "id": "g:dimension",
+      "num": 10000030,
       "steam_tag_id": null,
       "ko": "2D·3D",
       "en": "Dimensions",
@@ -5126,10 +5855,12 @@
       ],
       "game_count": null,
       "subtree_count": 304,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000028
     },
     {
       "id": "t:3871",
+      "num": 3871,
       "steam_tag_id": 3871,
       "ko": "2D",
       "en": "2D",
@@ -5138,10 +5869,12 @@
       "children": [],
       "game_count": 148,
       "subtree_count": 148,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000030
     },
     {
       "id": "t:4975",
+      "num": 4975,
       "steam_tag_id": 4975,
       "ko": "2.5D",
       "en": "2.5D",
@@ -5150,10 +5883,12 @@
       "children": [],
       "game_count": 17,
       "subtree_count": 17,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000030
     },
     {
       "id": "t:4191",
+      "num": 4191,
       "steam_tag_id": 4191,
       "ko": "3D",
       "en": "3D",
@@ -5162,10 +5897,12 @@
       "children": [],
       "game_count": 156,
       "subtree_count": 156,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000030
     },
     {
       "id": "g:art",
+      "num": 10000031,
       "steam_tag_id": null,
       "ko": "그래픽 스타일",
       "en": "Art Style",
@@ -5177,10 +5914,12 @@
       ],
       "game_count": null,
       "subtree_count": 392,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000028
     },
     {
       "id": "g:drawing",
+      "num": 10000032,
       "steam_tag_id": null,
       "ko": "그림체",
       "en": "Drawing Style",
@@ -5198,10 +5937,12 @@
       ],
       "game_count": null,
       "subtree_count": 250,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000031
     },
     {
       "id": "t:3964",
+      "num": 3964,
       "steam_tag_id": 3964,
       "ko": "픽셀 그래픽",
       "en": "Pixel Graphics",
@@ -5210,10 +5951,12 @@
       "children": [],
       "game_count": 90,
       "subtree_count": 90,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000032
     },
     {
       "id": "t:1732",
+      "num": 1732,
       "steam_tag_id": 1732,
       "ko": "복셀",
       "en": "Voxel",
@@ -5222,10 +5965,12 @@
       "children": [],
       "game_count": 5,
       "subtree_count": 5,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000032
     },
     {
       "id": "t:4085",
+      "num": 4085,
       "steam_tag_id": 4085,
       "ko": "애니메이션풍",
       "en": "Anime",
@@ -5238,10 +5983,12 @@
       "children": [],
       "game_count": 113,
       "subtree_count": 113,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000032
     },
     {
       "id": "t:4195",
+      "num": 4195,
       "steam_tag_id": 4195,
       "ko": "카툰풍",
       "en": "Cartoony",
@@ -5258,10 +6005,12 @@
       "children": [],
       "game_count": 43,
       "subtree_count": 43,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000032
     },
     {
       "id": "t:1751",
+      "num": 1751,
       "steam_tag_id": 1751,
       "ko": "만화책",
       "en": "Comic Book",
@@ -5270,10 +6019,12 @@
       "children": [],
       "game_count": 9,
       "subtree_count": 9,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000032
     },
     {
       "id": "t:6815",
+      "num": 6815,
       "steam_tag_id": 6815,
       "ko": "손으로 그린",
       "en": "Hand-drawn",
@@ -5282,10 +6033,12 @@
       "children": [],
       "game_count": 25,
       "subtree_count": 25,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000032
     },
     {
       "id": "t:4004",
+      "num": 4004,
       "steam_tag_id": 4004,
       "ko": "레트로",
       "en": "Retro",
@@ -5295,10 +6048,12 @@
       "children": [],
       "game_count": 42,
       "subtree_count": 42,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000032
     },
     {
       "id": "t:3916",
+      "num": 3916,
       "steam_tag_id": 3916,
       "ko": "올드 스쿨",
       "en": "Old School",
@@ -5307,10 +6062,12 @@
       "children": [],
       "game_count": 12,
       "subtree_count": 12,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000032
     },
     {
       "id": "g:look",
+      "num": 10000033,
       "steam_tag_id": null,
       "ko": "색·표현",
       "en": "Look & Color",
@@ -5325,10 +6082,12 @@
       ],
       "game_count": null,
       "subtree_count": 215,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000031
     },
     {
       "id": "t:4252",
+      "num": 4252,
       "steam_tag_id": 4252,
       "ko": "양식화된",
       "en": "Stylized",
@@ -5337,10 +6096,12 @@
       "children": [],
       "game_count": 43,
       "subtree_count": 43,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000033
     },
     {
       "id": "t:4305",
+      "num": 4305,
       "steam_tag_id": 4305,
       "ko": "다채로운",
       "en": "Colorful",
@@ -5349,10 +6110,12 @@
       "children": [],
       "game_count": 83,
       "subtree_count": 83,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000033
     },
     {
       "id": "t:4094",
+      "num": 4094,
       "steam_tag_id": 4094,
       "ko": "미니멀리스트",
       "en": "Minimalist",
@@ -5361,10 +6124,12 @@
       "children": [],
       "game_count": 11,
       "subtree_count": 11,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000033
     },
     {
       "id": "t:4175",
+      "num": 4175,
       "steam_tag_id": 4175,
       "ko": "사실적",
       "en": "Realistic",
@@ -5374,10 +6139,12 @@
       "children": [],
       "game_count": 106,
       "subtree_count": 106,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000033
     },
     {
       "id": "t:4400",
+      "num": 4400,
       "steam_tag_id": 4400,
       "ko": "추상적",
       "en": "Abstract",
@@ -5386,10 +6153,12 @@
       "children": [],
       "game_count": 2,
       "subtree_count": 2,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000033
     },
     {
       "id": "t:4145",
+      "num": 4145,
       "steam_tag_id": 4145,
       "ko": "시네마틱",
       "en": "Cinematic",
@@ -5398,10 +6167,12 @@
       "children": [],
       "game_count": 41,
       "subtree_count": 41,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000028
     },
     {
       "id": "t:21978",
+      "num": 21978,
       "steam_tag_id": 21978,
       "ko": "VR",
       "en": "VR",
@@ -5420,10 +6191,12 @@
       "children": [],
       "game_count": 36,
       "subtree_count": 36,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000028
     },
     {
       "id": "g:content",
+      "num": 10000034,
       "steam_tag_id": null,
       "ko": "이용 연령·표현",
       "en": "Content",
@@ -5437,10 +6210,12 @@
       ],
       "game_count": null,
       "subtree_count": 225,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": null
     },
     {
       "id": "t:5350",
+      "num": 5350,
       "steam_tag_id": 5350,
       "ko": "가족 친화",
       "en": "Family Friendly",
@@ -5457,10 +6232,12 @@
       "children": [],
       "game_count": 56,
       "subtree_count": 56,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000034
     },
     {
       "id": "t:12095",
+      "num": 12095,
       "steam_tag_id": 12095,
       "ko": "선정성",
       "en": "Sexual Content",
@@ -5480,10 +6257,12 @@
       ],
       "game_count": 71,
       "subtree_count": 83,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000034
     },
     {
       "id": "t:6650",
+      "num": 6650,
       "steam_tag_id": 6650,
       "ko": "신체 노출",
       "en": "Nudity",
@@ -5492,10 +6271,12 @@
       "children": [],
       "game_count": 42,
       "subtree_count": 42,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 12095
     },
     {
       "id": "t:9130",
+      "num": 9130,
       "steam_tag_id": 9130,
       "ko": "헨타이",
       "en": "Hentai",
@@ -5504,10 +6285,12 @@
       "children": [],
       "game_count": 18,
       "subtree_count": 18,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 12095
     },
     {
       "id": "t:4667",
+      "num": 4667,
       "steam_tag_id": 4667,
       "ko": "폭력",
       "en": "Violent",
@@ -5516,10 +6299,12 @@
       "children": [],
       "game_count": 89,
       "subtree_count": 89,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000034
     },
     {
       "id": "t:4345",
+      "num": 4345,
       "steam_tag_id": 4345,
       "ko": "고어·유혈",
       "en": "Gore",
@@ -5536,7 +6321,8 @@
       "children": [],
       "game_count": 89,
       "subtree_count": 89,
-      "hidden_empty": false
+      "hidden_empty": false,
+      "parent_num": 10000034
     }
   ]
 }

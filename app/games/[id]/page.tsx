@@ -24,6 +24,9 @@ import GameOpinions from '../../components/community/GameOpinions';
 import RelatedPosts from '../../components/community/RelatedPosts';
 import { selectGames, mergedTargetOf } from '../../lib/visibleGames';
 import ContentNotice from '../../components/ContentNotice';
+import TagHelp from '../../components/search/TagHelp';
+import { buildTree, tagName, type TagDict } from '../../lib/tagTree';
+import tagDict from '../../lib/tag-search-dict.json';
 import { permanentRedirect } from 'next/navigation';
 
 // 게임마다 처음 열릴 때 만들고 1시간 동안 재사용 (ISR). 가격·접속자는 하루 한 번 갱신되므로 충분
@@ -32,6 +35,18 @@ import { permanentRedirect } from 'next/navigation';
 export const revalidate = 3600;
 export async function generateStaticParams() {
   return []; // 빌드 때 미리 만들지 않고, 처음 방문할 때 만든다 (빈 배열이어야 ISR이 켜짐)
+}
+
+const TAG_TREE = buildTree(tagDict as unknown as TagDict);
+
+// 혼자 플레이 단계 (data/meta/play-modes.json → games.solo_mode)
+const SOLO_LABEL: Record<string, string> = { story: '혼자서도 꽉 참', possible: '혼자도 가능', none: '멀티 전용' };
+
+// 이 게임의 태그 이름 — game_tags(순위순) + 태그 나무 이름. 표가 아직 없거나 비어 있으면 예전 tags 칸 그대로
+async function getGameTagNames(game: { id: string; tags?: string[] | null }) {
+  const { data, error } = await supabase.from('game_tags').select('tag_id, rank').eq('game_id', game.id).order('rank');
+  const names = !error && data?.length ? data.map((r) => tagName(TAG_TREE, r.tag_id)).filter(Boolean) : [];
+  return names.length ? names : (game.tags || []).map(translateTag);
 }
 
 const SAMPLE_STREAMERS = ['스트리머 A', '스트리머 B', '스트리머 C'];
@@ -112,7 +127,11 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
     if (target) permanentRedirect(`/games/${target}`);
     return <div className="page">게임을 찾을 수 없어요.</div>;
   }
-  const isTop10 = (await top10Promise).includes(game.id);
+  const [top10, tagNames] = await Promise.all([top10Promise, getGameTagNames(game)]);
+  const isTop10 = top10.includes(game.id);
+  // 친구랑: 팀 인원(party_max), 없으면 최대 인원 + 같은 서버 인원(session_max)
+  const friendsMax = game.party_max ?? game.max_players;
+  const friendsText = [friendsMax === 1 ? '같이 하기 없음' : friendsMax ? `최대 ${friendsMax}명` : '', game.session_max ? `같은 서버 ${game.session_max}명` : ''].filter(Boolean).join(' · ');
   // 같은 시리즈 (series_id가 있을 때만, 출시순)
   const { data: seriesGames } = game.series_id
     ? await selectGames('id, name, card_image_url, cover_image_url, series_order').eq('series_id', game.series_id).order('series_order')
@@ -183,10 +202,13 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             <a href={game.discord_url} target="_blank" rel="noopener nofollow" className="discord-link">공식 디스코드 ↗</a>
           )}
         </div>
-        {game.tags?.length > 0 && (
+        {tagNames.length > 0 && (
           <div className="main-tag-row">
-            {game.tags.map((tag: string) => (
-              <span key={tag} className="category-tag">{tag}</span>
+            {tagNames.map((tag: string) => (
+              <span key={tag} className="tag-chip-wrap">
+                <span className="category-tag">{tag}</span>
+                <TagHelp tag={tag} />
+              </span>
             ))}
           </div>
         )}
@@ -273,15 +295,28 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             </span>
           </div>
         )}
+        {game.solo_mode ? (
+          <div className="spec-row">
+            <span className="spec-label">혼자 | 친구랑</span>
+            <span className="spec-value">
+              <span style={{ fontWeight: 700, color: game.solo_mode === 'none' ? 'var(--danger)' : '#4a9e3a' }}>{SOLO_LABEL[game.solo_mode] ?? '정보 없음'}</span>
+              {friendsText && <> <span aria-hidden="true" style={{ color: 'var(--text-dimmer)' }}>|</span> {friendsText}</>}
+            </span>
+          </div>
+        ) : (
         <div className="spec-row">
           <span className="spec-label">솔로 플레이</span>
           <span className="spec-value" style={{ color: game.solo_playable == null ? 'var(--text-dim)' : game.solo_playable ? '#4a9e3a' : 'var(--danger)', fontWeight: 700 }}>
             {game.solo_playable == null ? '정보 없음' : game.solo_playable && game.max_players === 1 ? '싱글 플레이 게임' : game.solo_playable ? '솔로 가능' : '멀티 필수'}
           </span>
         </div>
+        )}
         <div className="spec-row">
-          <span className="spec-label">난이도</span>
-          <span className="spec-value">{game.difficulty || '정보 없음'}</span>
+          <span className="spec-label"><span className="tag-chip-wrap">진입장벽<TagHelp tag="진입장벽" /></span></span>
+          <span className="spec-value">
+            {game.entry_barrier || '정보 없음'}
+            {game.entry_barrier && game.entry_barrier_reason && <small className="spec-sub">{game.entry_barrier_reason}</small>}
+          </span>
         </div>
         {game.story_length && (
           <div className="spec-row">

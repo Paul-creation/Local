@@ -2129,3 +2129,82 @@ a.series-item:hover { border-color: var(--border); }
   line-height: 1.5;
 }
 .content-notice strong { color: var(--text-dim); font-weight: 700; }
+
+/* 필터 패널 (SearchPanel) — 휴대폰(640px 이하)에서는 화면 전체를 덮음. 체크·펼치기 줄은 44px 이상 */
+.filter-wrap { margin-bottom: 24px; }
+.filter-toggle {
+  width: 100%; min-height: 48px; padding: 12px 16px;
+  background: var(--bg-card); border: 1.5px solid var(--border); border-radius: var(--radius-md);
+  font-family: inherit; font-size: 15px; font-weight: 700; color: var(--text);
+  cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+}
+.filter-toggle.open { border-radius: var(--radius-md) var(--radius-md) 0 0; }
+.filter-count { margin-left: 8px; background: var(--accent); color: #fff; border-radius: 100px; font-size: 13px; padding: 2px 8px; font-weight: 700; }
+.filter-panel {
+  background: var(--bg-card); border: 1.5px solid var(--border); border-top: none;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+.filter-head { display: none; }
+.filter-body { padding: 16px 20px 4px; }
+.filter-section { margin-bottom: 18px; }
+.filter-label { font-size: 15px; font-weight: 700; color: var(--text-dim); margin-bottom: 8px; }
+.filter-note { font-size: 14px; color: var(--text-dimmer); }
+.filter-pill { margin-top: 0; min-height: 36px; padding: 6px 14px; font-size: 15px; position: relative; }
+.filter-pill::after { content: ''; position: absolute; inset: -4px -2px; }
+
+.filter-selected { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--border-light); }
+.filter-selected-chip {
+  min-height: 36px; padding: 4px 12px; border-radius: 100px;
+  border: 1.5px solid var(--accent); background: rgba(0,113,227,0.1); color: var(--accent-deep);
+  font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.filter-clear-all { min-height: 36px; padding: 4px 8px; border: none; background: none; color: var(--text-dim); font-family: inherit; font-size: 14px; font-weight: 700; text-decoration: underline; cursor: pointer; }
+
+.filter-accordion { border-top: 1px solid var(--border-light); }
+.filter-acc-item { border-bottom: 1px solid var(--border-light); }
+.filter-acc-head {
+  width: 100%; min-height: 48px; padding: 8px 4px; border: none; background: none;
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: inherit; font-size: 16px; font-weight: 700; color: var(--text); cursor: pointer;
+}
+.tag-tree { list-style: none; margin: 0; padding: 0 0 8px; }
+.tag-tree .tag-tree { padding: 0 0 0 22px; }
+.tag-row { display: flex; align-items: center; gap: 6px; }
+.tag-check { flex: 1; min-height: 44px; display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 0 4px; font-size: 15px; color: var(--text); }
+.tag-check input { width: 20px; height: 20px; margin: 0; accent-color: var(--accent); flex-shrink: 0; }
+.tag-check-name { flex: 0 1 auto; }
+.tag-check-count { color: var(--text-dimmer); font-size: 13px; font-weight: 600; }
+.tag-row .tag-help-btn, .spec-label .tag-help-btn, .filter-label .tag-help-btn { position: relative; top: auto; right: auto; margin-left: 4px; vertical-align: middle; }
+.filter-label { display: flex; align-items: center; }
+.tag-expand {
+  width: 44px; height: 44px; flex-shrink: 0; border: none; background: none; border-radius: var(--radius-sm);
+  font-size: 20px; font-weight: 700; color: var(--text-dim); cursor: pointer;
+}
+.tag-expand:hover { background: var(--bg); }
+
+.filter-foot { display: flex; gap: 8px; padding: 12px 20px 20px; }
+.filter-foot-clear {
+  min-height: 48px; padding: 12px 16px; border-radius: var(--radius-md);
+  border: 1.5px solid var(--border); background: var(--bg);
+  font-family: inherit; font-size: 15px; font-weight: 700; color: var(--text-dim); cursor: pointer;
+}
+.filter-apply {
+  flex: 1; min-height: 48px; padding: 12px; border: none; border-radius: var(--radius-md);
+  background: var(--accent); color: #fff; font-family: inherit; font-size: 15px; font-weight: 800; cursor: pointer;
+}
+.spec-sub { display: block; margin-top: 2px; font-size: 13px; font-weight: 500; color: var(--text-dim); }
+
+@media (max-width: 640px) {
+  .filter-panel {
+    position: fixed; inset: 0; z-index: 900; border: none; border-radius: 0;
+    display: flex; flex-direction: column; background: var(--bg-card);
+  }
+  .filter-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 8px 8px 20px; border-bottom: 1px solid var(--border-light); font-size: 17px;
+  }
+  .filter-close { width: 44px; height: 44px; border: none; background: none; font-size: 20px; color: var(--text); cursor: pointer; }
+  .filter-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 16px 16px 4px; }
+  .filter-foot { padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--border-light); }
+  body.filter-open { overflow: hidden; }
+}
