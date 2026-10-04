@@ -235,5 +235,111 @@
     "name": "Halo Infinite",
     "invite_code": "halo",
     "invite_url": "https://discord.gg/halo"
+  },
+  {
+    "game_id": "fce3db70-2a91-4d71-a023-8c83a1834acf",
+    "name": "Deep Rock Galactic",
+    "invite_code": "deeprockgalactic",
+    "invite_url": "https://discord.gg/deeprockgalactic"
+  },
+  {
+    "game_id": "deb9dc26-a2aa-4eaa-8425-f9f54852bad0",
+    "name": "Sea of Thieves: 2026 Edition",
+    "invite_code": "seaofthieves",
+    "invite_url": "https://discord.gg/seaofthieves"
+  },
+  {
+    "game_id": "d801809a-97af-46dc-aef1-f546388da497",
+    "name": "Hades II",
+    "invite_code": "supergiant",
+    "invite_url": "https://discord.gg/supergiant",
+    "note": "개발사 Supergiant Games 공식 서버 (하데스와 같은 서버)"
+  },
+  {
+    "game_id": "9ee5b0ac-76ec-49a0-b6df-bedf8d5bd131",
+    "name": "Hades",
+    "invite_code": "supergiant",
+    "invite_url": "https://discord.gg/supergiant",
+    "note": "개발사 Supergiant Games 공식 서버 (하데스 2와 같은 서버)"
+  },
+  {
+    "game_id": "18770660-8785-4b5a-bb72-2218babef428",
+    "name": "Barotrauma",
+    "invite_code": "barotrauma",
+    "invite_url": "https://discord.gg/barotrauma"
+  },
+  {
+    "game_id": "89a0da47-4f84-4c7f-a218-a3ff08063650",
+    "name": "Warhammer 40,000: Darktide",
+    "invite_code": "darktide",
+    "invite_url": "https://discord.gg/darktide"
+  },
+  {
+    "game_id": "267c9472-52e0-4c1b-ab97-6d904c8fd123",
+    "name": "Grounded",
+    "invite_code": "groundedgame",
+    "invite_url": "https://discord.gg/groundedgame"
+  },
+  {
+    "game_id": "079ebccc-0910-474b-9c29-4a9b0f993a26",
+    "name": "REMNANT II®",
+    "invite_code": "remnant",
+    "invite_url": "https://discord.gg/remnant"
+  },
+  {
+    "game_id": "c8a4f52f-05e8-4eab-bf18-e7cd07c233be",
+    "name": "인슈라오디드 (Enshrouded)",
+    "invite_code": "enshrouded",
+    "invite_url": "https://discord.gg/enshrouded"
+  },
+  {
+    "game_id": "84d50f3f-83d8-4e91-9269-9cddcf89d516",
+    "name": "Party Animals",
+    "invite_code": "partyanimals",
+    "invite_url": "https://discord.gg/partyanimals"
+  },
+  {
+    "game_id": "17f37e06-70f7-4d97-9ec0-877c7e907eab",
+    "name": "Balatro",
+    "invite_code": "balatro",
+    "invite_url": "https://discord.gg/balatro"
+  },
+  {
+    "game_id": "6a9de491-e762-4fe2-a50f-c9a25b6e0281",
+    "name": "Gang Beasts",
+    "invite_code": "gangbeasts",
+    "invite_url": "https://discord.gg/gangbeasts"
+  },
+  {
+    "game_id": "4c58938d-179b-4f98-81a4-7446f7557ec9",
+    "name": "플레이트업!",
+    "invite_code": "plateup",
+    "invite_url": "https://discord.gg/plateup"
+  },
+  {
+    "game_id": "f47e9272-7b6f-4016-99fa-bc6f9636edec",
+    "name": "DEVOUR",
+    "invite_code": "devour",
+    "invite_url": "https://discord.gg/devour"
+  },
+  {
+    "game_id": "b1d379ad-077e-4540-ad87-79dfe7d4a74a",
+    "name": "Stick Fight: The Game",
+    "invite_code": "landfall",
+    "invite_url": "https://discord.gg/landfall",
+    "note": "개발사 Landfall 공식 서버"
+  },
+  {
+    "game_id": "54f4afa8-b1d8-44e0-a05d-c639962bde29",
+    "name": "HITMAN World of Assassination",
+    "invite_code": "hitman",
+    "invite_url": "https://discord.gg/hitman"
+  },
+  {
+    "game_id": "8d272ae5-865b-45e6-adb7-ae20ee40dd19",
+    "name": "어쌔신 크리드 섀도우스",
+    "invite_code": "assassinscreed",
+    "invite_url": "https://discord.gg/assassinscreed",
+    "note": "유비소프트 어쌔신 크리드 공식 서버"
   }
 ]

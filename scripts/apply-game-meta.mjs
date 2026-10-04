@@ -2,8 +2,10 @@
 // 실행: node --env-file=.env.local scripts/apply-game-meta.mjs                 (미리보기 — DB는 안 바꿈)
 //       node --env-file=.env.local scripts/apply-game-meta.mjs --apply         (반영)
 //       ... --ref=origin/content/game-meta-v2   (파일을 지금 폴더 대신 git 브랜치에서 읽기)
+//       ... --reorder-series                     (같은 시리즈 안에서 순서만 series.json대로 다시 매기기 — 기존 시리즈에 새 게임이 끼었을 때)
 // - 먼저 supabase/migrations/20261007090000_game_meta.sql 실행 필요
 // - 이미 값이 있는 게임은 덮어쓰지 않음 (같으면 조용히 건너뛰고, 다르면 목록으로 보고)
+//   예외: --reorder-series를 주면 이미 같은 시리즈에 있는 게임의 순서(series_order)만 바꿈. 다른 시리즈에 들어 있는 게임은 그대로 두고 보고
 // - 디스코드는 반영 전에 Discord 공개 API로 초대가 살아 있는지, 공식 인증(VERIFIED) 서버인지, 서버 이름이 게임 이름과 맞는지 확인
 //   만료·임시 초대·이름 불일치는 반영하지 않고 목록으로 보고 (직접 확인 후 손으로 넣기)
 import fs from 'node:fs';
@@ -12,6 +14,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const APPLY = process.argv.includes('--apply');
 const REF = process.argv.find((a) => a.startsWith('--ref='))?.slice(6);
+const REORDER = process.argv.includes('--reorder-series');
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -75,6 +78,7 @@ async function applyGoty(games) {
 }
 
 // ── 시리즈 ─────────────────────────────────────────
+let orderMismatch = false; // 같은 시리즈인데 순서만 다른 게임이 있었는지 (--reorder-series 안내용)
 async function seriesId(name) {
   const { data } = await supabase.from('series').select('id').eq('name_ko', name).maybeSingle();
   if (data) return data.id;
@@ -99,7 +103,12 @@ async function applySeries(games, list) {
       const g = games.get(id);
       const label = `시리즈 ${s.series_name_ko} #${i + 1} ${g.name}`;
       if (g.series_id == null) await update(id, { series_id: sid, series_order: i + 1 }, label);
-      else if (sid == null || g.series_id !== sid || g.series_order !== i + 1) report.skipped.push(`${label}: 이미 다른 시리즈/순서 (series_id ${g.series_id}, ${g.series_order})`);
+      else if (REORDER && sid != null && g.series_id === sid && g.series_order !== i + 1) {
+        await update(id, { series_order: i + 1 }, `${label} (순서 ${g.series_order ?? '없음'} → ${i + 1})`);
+      } else if (sid == null || g.series_id !== sid || g.series_order !== i + 1) {
+        if (sid != null && g.series_id === sid) orderMismatch = true;
+        report.skipped.push(`${label}: 이미 다른 시리즈/순서 (series_id ${g.series_id}, ${g.series_order})`);
+      }
     }
   }
 }
@@ -165,6 +174,7 @@ async function applyDiscord(games, seriesList) {
 
 async function main() {
   console.log(APPLY ? '🟢 반영 모드' : '👀 미리보기 (반영하려면 --apply)');
+  if (REORDER) console.log('🔢 시리즈 순서 다시 매기기 켬 (--reorder-series)');
   const games = await loadGames();
   const seriesList = readMeta('series.json');
   await applyGoty(games);
@@ -175,6 +185,7 @@ async function main() {
   print(APPLY ? '✅ 반영함' : '✅ 반영 예정', report.applied);
   print('⏭️  건너뜀 (이미 값 있음 등)', report.skipped);
   print('❌ 반영 안 함 — 직접 확인 필요', report.problems);
+  if (orderMismatch && !REORDER) console.log('\n※ 같은 시리즈 안에서 순서만 다른 게임이 있어요. series.json 순서로 맞추려면 --reorder-series 를 붙여 다시 실행하세요.');
   if (!APPLY && report.applied.length) console.log('\n※ 미리보기에서는 새 시리즈를 만들지 않으므로, 새 시리즈 게임은 반영 때 처음 묶입니다.');
 }
 

@@ -40,9 +40,29 @@
     "result": "nominee"
   },
   {
+    "game_id": "f092fe32-8c0d-488c-b758-5517cd5f515f",
+    "year": 2018,
+    "result": "nominee"
+  },
+  {
     "game_id": "79632018-ee00-4e4d-8402-814808ee6f8d",
     "year": 2019,
     "result": "winner"
+  },
+  {
+    "game_id": "cd5d093a-5b29-4c7b-acf8-2c5ba00d3085",
+    "year": 2019,
+    "result": "nominee"
+  },
+  {
+    "game_id": "e3b980a6-1db5-4265-9f84-f1f87d2970c6",
+    "year": 2019,
+    "result": "nominee"
+  },
+  {
+    "game_id": "f5db4d61-d161-469d-9d78-3d0d72674881",
+    "year": 2019,
+    "result": "nominee"
   },
   {
     "game_id": "b20e97c4-bda1-498a-ad64-7b33e88aeb54",
@@ -53,6 +73,21 @@
     "game_id": "f112b6f8-188e-41bf-89cb-bd95ac607bfd",
     "year": 2020,
     "result": "nominee"
+  },
+  {
+    "game_id": "9ee5b0ac-76ec-49a0-b6df-bedf8d5bd131",
+    "year": 2020,
+    "result": "nominee"
+  },
+  {
+    "game_id": "edab7894-c714-4d36-8d67-1ea92581996c",
+    "year": 2020,
+    "result": "nominee"
+  },
+  {
+    "game_id": "e9b91f01-d2fc-41fc-a4a3-dcb0d45361c7",
+    "year": 2021,
+    "result": "winner"
   },
   {
     "game_id": "61df8479-beb1-437f-b69c-166349695854",
@@ -105,6 +140,21 @@
     "result": "nominee"
   },
   {
+    "game_id": "87f009ff-cd54-42b3-965c-2bf47334aa0b",
+    "year": 2024,
+    "result": "nominee"
+  },
+  {
+    "game_id": "fdb1e9de-616a-4cfd-9ce6-13ece59915d7",
+    "year": 2024,
+    "result": "nominee"
+  },
+  {
+    "game_id": "17f37e06-70f7-4d97-9ec0-877c7e907eab",
+    "year": 2024,
+    "result": "nominee"
+  },
+  {
     "game_id": "e3c0f76c-b364-49fe-ba19-a26381225a2e",
     "year": 2025,
     "result": "winner"
@@ -116,6 +166,16 @@
   },
   {
     "game_id": "eacacf33-d291-402c-b00b-105729ffc201",
+    "year": 2025,
+    "result": "nominee"
+  },
+  {
+    "game_id": "d801809a-97af-46dc-aef1-f546388da497",
+    "year": 2025,
+    "result": "nominee"
+  },
+  {
+    "game_id": "89f4e81e-5eb1-4565-8fa5-323c270cdafc",
     "year": 2025,
     "result": "nominee"
   }
