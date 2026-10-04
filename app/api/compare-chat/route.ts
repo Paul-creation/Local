@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { guardedClaudeFetch, getIp, AiLimitError } from '../../lib/aiGuard';
+import { guardedClaudeFetch, AiLimitError } from '../../lib/aiGuard';
 import { supabase } from '../../lib/supabase';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -38,7 +38,6 @@ async function handlePOST(req: NextRequest) {
     .slice(-6)
     .map((m: any) => ({ role: m?.role, text: String(m?.text || '').slice(0, 500) }));
   if (!question.trim()) return NextResponse.json({ answer: '질문을 입력해주세요.' });
-  const ip = getIp(req.headers);
 
   const historyText = history.map((m: any) =>
     `${m.role === 'user' ? '유저' : 'AI'}: ${m.text}`
@@ -56,7 +55,7 @@ ${historyText || '없음'}
 
 2-3문장으로 핵심만 답해줘. 위 게임 정보를 우선으로 쓰고, 정보에 없는 건 널리 알려진 사실만 말해. 확실하지 않으면 단정하지 마. 텍스트만 출력.`;
 
-  const res = await guardedClaudeFetch(ip, 'compare-chat', {
+  const res = await guardedClaudeFetch(req.headers, 'compare-chat', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

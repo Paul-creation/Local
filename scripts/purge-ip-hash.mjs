@@ -23,6 +23,7 @@ const NULLABLE = [
   ['post_reports', 'reporter_hash'],
   ['game_votes', 'voter_hash'],
   ['ai_calls', 'ip'],
+  ['ai_calls', 'client_id'], // AI 한도용 익명 쿠키 ID 해시
 ];
 const EXPIRED = 'expired:';
 

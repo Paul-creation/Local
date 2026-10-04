@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { guardedClaudeFetch, getIp, AiLimitError } from '../../lib/aiGuard';
+import { guardedClaudeFetch, AiLimitError } from '../../lib/aiGuard';
 import { createClient } from '@supabase/supabase-js';
 import { badgeMatches } from '../../lib/badge.mjs';
 
@@ -105,11 +105,13 @@ function filterGames(games: any[], answers: { question: string; answer: string }
 
 async function handlePOST(req: NextRequest) {
   const body = await req.json();
-  body.__ip = getIp(req.headers);
+  body.__h = req.headers;
 
   if (body.mood) return handleLegacy(body);
 
   const { answers = [] } = body;
+  // 한 번의 추천에서 AI는 질문마다 불리므로 첫 AI 호출(답 1개)만 추천 1회로 셈
+  const kind = answers.length <= 1 ? 'recommend' : 'recommend-step';
 
   const { data: games, error } = await supabase
     .from('games')
@@ -146,7 +148,7 @@ ${gameListText}
 JSON 배열로만 출력:
 [{"game_id":"id","hook":"한 줄 추천 이유"}]`;
 
-    const aiRes = await guardedClaudeFetch(body.__ip, 'recommend', {
+    const aiRes = await guardedClaudeFetch(body.__h, kind, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -208,7 +210,7 @@ ${answersText}
 JSON만 출력:
 {"question":"질문","options":["보기1","보기2","보기3"]}`;
 
-  const aiRes = await guardedClaudeFetch(body.__ip, 'recommend', {
+  const aiRes = await guardedClaudeFetch(body.__h, kind, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -265,7 +267,7 @@ ${gameList}
 아래 JSON 형식으로만 답해:
 {"game_id": "선택한 게임의 id", "reason": "왜 이 게임을 골랐는지, 친근한 반말로 2문장 이내."}`;
 
-  const aiRes = await guardedClaudeFetch(body.__ip, 'recommend', {
+  const aiRes = await guardedClaudeFetch(body.__h, 'recommend', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

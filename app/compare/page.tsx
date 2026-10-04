@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 // compare_cache는 RLS로 막혀 있어서 서버 전용 키로 접근 (이 파일은 서버에서만 실행됨)
 const cacheDb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 import { headers } from 'next/headers';
-import { guardedClaudeFetch, getIp } from '../lib/aiGuard';
+import { guardedClaudeFetch } from '../lib/aiGuard';
 import Link from 'next/link';
 import { formatDate } from '../lib/date';
 import CompareChat from '../components/CompareChat';
@@ -83,7 +83,7 @@ ${activeSituations.map((s, i) => `${i + 1}. ${s}`).join('\n')}
 {"results": [{"index": 1, "scores": [${activeSituations.map(() => '점수').join(', ')}]}]}`;
 
   try {
-    const res = await guardedClaudeFetch(getIp(await headers()), 'compare-scores', {
+    const res = await guardedClaudeFetch(await headers(), 'compare-scores', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
