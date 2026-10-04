@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { supabase } from '../../lib/supabase';
 import BackToList from '../../components/BackToList';
 import DiscountChart from '../../components/DiscountChart';
-import { getPriceInfo, getLowestTiming, formatLowestDate } from '../../lib/price';
+import { getPriceInfo, getLowestTiming } from '../../lib/price';
+import { formatDate } from '../../lib/date';
 import LowestPriceBadge from '../../components/LowestPriceBadge';
 import { translateGenres } from '../../lib/genreTranslate';
 import { getPlatformCategories, CATEGORY_LABEL, PlatformCategory } from '../../lib/platformDisplay';
@@ -208,7 +209,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             {!game.is_free && game.lowest_price >= 100 && (
               <span className="buy-lowest">
                 역대 최저 ₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}
-                {formatLowestDate(game.lowest_price_date) && ` (${formatLowestDate(game.lowest_price_date)})`}
+                {formatDate(game.lowest_price_date) && ` (${formatDate(game.lowest_price_date)})`}
               </span>
             )}
           </div>
@@ -287,7 +288,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           <div className="spec-row">
             <span className="spec-label">출시일</span>
             <span className="spec-value">
-              {new Date(game.release_date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
+              {formatDate(game.release_date)}
             </span>
           </div>
         )}
@@ -300,12 +301,12 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
                 return diff < 30 ? '#4a9e3a' : diff < 180 ? 'var(--text)' : 'var(--text-dimmer)';
               })()
             }}>
-              {new Date(game.last_updated).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}
+              {formatDate(game.last_updated)}
               {(() => {
                 const diff = Math.floor((Date.now() - new Date(game.last_updated).getTime()) / (1000 * 60 * 60 * 24));
-                if (diff < 30) return <span style={{ marginLeft: 8, fontSize: 14, color: '#4a9e3a', fontWeight: 700 }}>활발히 업데이트 중</span>;
-                if (diff < 180) return <span style={{ marginLeft: 8, fontSize: 14, color: 'var(--text-dimmer)' }}>{Math.floor(diff / 30)}개월 전</span>;
-                return <span style={{ marginLeft: 8, fontSize: 14, color: 'var(--danger)' }}>업데이트 없음</span>;
+                if (diff < 30) return <span style={{ display: 'inline-block', marginLeft: 8, fontSize: 14, color: '#4a9e3a', fontWeight: 700 }}>활발히 업데이트 중</span>;
+                if (diff < 180) return <span style={{ display: 'inline-block', marginLeft: 8, fontSize: 14, color: 'var(--text-dimmer)' }}>{Math.floor(diff / 30)}개월 전</span>;
+                return <span style={{ display: 'inline-block', marginLeft: 8, fontSize: 14, color: 'var(--danger)' }}>업데이트 없음</span>;
               })()}
             </span>
           </div>
@@ -361,9 +362,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             <span className="spec-label">역대 최저가</span>
             <span className="spec-value">
               ₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}
-              {game.lowest_price_date && (
-                <span style={{ color: 'var(--text-dimmer)', fontSize: 14, fontWeight: 400, marginLeft: 6 }}>
-                  ({game.lowest_price_date})
+              {formatDate(game.lowest_price_date) && (
+                <span style={{ display: 'inline-block', color: 'var(--text-dimmer)', fontSize: 14, fontWeight: 400, marginLeft: 6 }}>
+                  ({formatDate(game.lowest_price_date)})
                 </span>
               )}
             </span>

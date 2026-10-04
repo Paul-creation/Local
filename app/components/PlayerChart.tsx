@@ -1,3 +1,5 @@
+import { formatMonthDay } from '../lib/date';
+
 export default function PlayerChart({ data }: { data: { player_count: number; recorded_at: string }[] }) {
   const sorted = [...data]
     .sort((a, b) => new Date(a.recorded_at).getTime() - new Date(b.recorded_at).getTime())
@@ -15,7 +17,7 @@ export default function PlayerChart({ data }: { data: { player_count: number; re
     x: pad + i * stepX,
     y: height - pad - ((d.player_count / max) * (height - pad * 2)),
     count: d.player_count,
-    date: new Date(d.recorded_at).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }),
+    date: formatMonthDay(d.recorded_at),
   }));
 
   const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');

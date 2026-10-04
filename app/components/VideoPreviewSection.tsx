@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from 'react';
 import YouTubeLite from './YouTubeLite';
+import { formatYearMonth } from '../lib/date';
 
 export type CoopVideo = {
   video_id: string;
@@ -19,12 +20,6 @@ function formatViews(n: number) {
   return n.toLocaleString('ko-KR');
 }
 
-function formatMonth(iso: string | null) {
-  if (!iso) return '';
-  const d = new Date(iso);
-  return `${d.getFullYear()}.${d.getMonth() + 1}`;
-}
-
 function VideoCards({ videos }: { videos: CoopVideo[] }) {
   return (
     <>
@@ -35,7 +30,7 @@ function VideoCards({ videos }: { videos: CoopVideo[] }) {
             <div className="coop-video-title">{v.title}</div>
             <div className="coop-video-channel">{v.channel_title}</div>
             <div className="coop-video-meta">
-              {[v.view_count ? `조회수 ${formatViews(v.view_count)}` : '', formatMonth(v.published_at)].filter(Boolean).join(' · ')}
+              {[v.view_count ? `조회수 ${formatViews(v.view_count)}` : '', formatYearMonth(v.published_at)].filter(Boolean).join(' · ')}
             </div>
           </div>
         ))}

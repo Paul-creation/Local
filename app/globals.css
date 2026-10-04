@@ -22,6 +22,7 @@
   --text-dim: #545458;
   --text-dimmer: #5e5e63;
   --navy-text: #f5f5f7;
+  --navy-text-dim: #a1a1a6;  /* 어두운 배경(구매 카드 등) 위 보조 글씨 — --bg-nav 대비 6.5:1 */
 
   /* 액센트 — 애플 블루 */
   --accent: #0071e3;
@@ -1060,10 +1061,10 @@ img { display: block; }
 }
 
 .buy-price-block { display: flex; flex-direction: column; gap: 6px; }
-.buy-label { color: var(--text-dim); font-size: 14px; letter-spacing: 0.02em; }
+.buy-label { color: var(--navy-text-dim); font-size: 14px; letter-spacing: 0.02em; }
 .buy-price-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.buy-lowest { color: var(--text-dim); font-size: var(--fs-sub); }
-.buy-price-original { color: #636366; font-size: 15px; text-decoration: line-through; }
+.buy-lowest { color: var(--navy-text-dim); font-size: var(--fs-sub); }
+.buy-price-original { color: var(--navy-text-dim); font-size: 15px; text-decoration: line-through; }
 .buy-price-final { color: #fff; font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
 .buy-discount-badge {
   background: var(--green);
@@ -1976,3 +1977,6 @@ a.series-item:hover { border-color: var(--border); }
 }
 .series-item.is-current .series-name { color: var(--accent-deep); font-weight: 800; }
 @media (max-width: 480px) { .series-item { width: 132px; } }
+
+/* 스펙 값: 좁은 칸(모바일 2열)에서 한국어는 단어 단위로 줄바꿈, 긴 영문·숫자는 칸 안에서 끊김 */
+.spec-value { word-break: keep-all; overflow-wrap: anywhere; }

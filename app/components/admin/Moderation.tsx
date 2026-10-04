@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import HiddenPosts from './HiddenPosts';
+import { formatDateTime } from '../../lib/date';
 import { FEEDBACK_KINDS, type FeedbackKind } from '../../lib/feedback';
 
 export type ModTab = 'reports' | 'hidden' | 'feedback';
@@ -13,7 +14,7 @@ type ReportItem = {
 type FeedbackItem = { id: number; kind: FeedbackKind; body: string; contact: string | null; page_url: string | null; resolved_at: string | null; created_at: string };
 
 const TYPE_LABEL: Record<TargetType, string> = { post: '글', comment: '댓글', game_comment: '게임 의견' };
-const when = (iso: string) => new Date(iso).toLocaleString('ko-KR');
+const when = (iso: string) => formatDateTime(iso);
 
 // 관리자 운영 탭: 신고 목록 · 숨김 항목(글·댓글·게임 의견) · 의견함
 export default function Moderation({ initial = 'reports' }: { initial?: ModTab }) {

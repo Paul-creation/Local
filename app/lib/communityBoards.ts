@@ -1,4 +1,6 @@
 // 커뮤니티 게시판 공통 값 (브라우저·서버 모두에서 import 가능 — 비밀 값 넣지 말 것)
+import { formatDate } from './date';
+
 
 export const BOARDS = {
   party: { emoji: '🎮', label: '같이 할 사람', desc: '같이 게임할 친구를 찾아요' },
@@ -29,6 +31,5 @@ export function timeAgo(iso: string, now = Date.now()) {
   if (s < 3600) return `${Math.floor(s / 60)}분 전`;
   if (s < 86400) return `${Math.floor(s / 3600)}시간 전`;
   if (s < 86400 * 7) return `${Math.floor(s / 86400)}일 전`;
-  const d = new Date(iso);
-  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+  return formatDate(iso);
 }

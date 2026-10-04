@@ -7,6 +7,7 @@ const cacheDb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.
 import { headers } from 'next/headers';
 import { guardedClaudeFetch, getIp } from '../lib/aiGuard';
 import Link from 'next/link';
+import { formatDate } from '../lib/date';
 import CompareChat from '../components/CompareChat';
 import ScrollToTop from '../components/ScrollToTop';
 import BackToList from '../components/BackToList';
@@ -208,7 +209,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
     { label: '난이도', key: 'difficulty' },
     { label: '한국어', key: 'korean_support' },
     { label: '필요 용량', render: (g: any) => g.storage_gb ? `${g.storage_gb}GB` : '-' },
-    { label: '출시일', render: (g: any) => g.release_date ? new Date(g.release_date).toLocaleDateString('ko-KR') : '-' },
+    { label: '출시일', render: (g: any) => formatDate(g.release_date) || '-' },
     { label: '가족 공유', render: steamOnly((g: any) => g.family_sharing ? '가능' : '불가') },
     { label: '도전과제', render: steamOnly((g: any) => g.achievement_count ? `${g.achievement_count}개` : '-') },
     { label: 'DLC', render: steamOnly((g: any) => g.has_dlc ? '있음' : '없음') },

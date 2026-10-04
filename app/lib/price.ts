@@ -37,8 +37,3 @@ export function getLowestTiming(game: { is_free?: boolean | null; lowest_price?:
   return null;
 }
 
-// "2025-11-03" → "2025.11"
-export function formatLowestDate(date: string | null | undefined) {
-  const m = /^(\d{4})-(\d{2})/.exec(date || '');
-  return m ? `${m[1]}.${Number(m[2])}` : '';
-}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { formatDateTime } from '../../lib/date';
 
 type Item = { id: number; board?: string; post_id?: number; game_id?: string; games?: { name: string } | null; title?: string; body: string; nickname: string; report_count: number; created_at: string };
 type Data = { posts: Item[]; comments: Item[]; reported: Item[]; gameComments: Item[] };
@@ -36,7 +37,7 @@ export default function HiddenPosts() {
       {items.map((it) => (
         <div key={it.id} style={card}>
           <div style={{ fontSize: 'var(--fs-sub)', color: 'var(--text-dim)', marginBottom: 6 }}>
-            #{it.id} · {it.board || (it.game_id ? `${it.games?.name || '게임'} 의견` : `글 #${it.post_id}의 댓글`)} · {it.nickname} · 신고 {it.report_count}회 · {new Date(it.created_at).toLocaleString('ko-KR')}
+            #{it.id} · {it.board || (it.game_id ? `${it.games?.name || '게임'} 의견` : `글 #${it.post_id}의 댓글`)} · {it.nickname} · 신고 {it.report_count}회 · {formatDateTime(it.created_at)}
           </div>
           {it.title && <div style={{ fontWeight: 700, marginBottom: 4 }}>{it.title}</div>}
           <div style={{ fontSize: 15, whiteSpace: 'pre-wrap', maxHeight: 160, overflow: 'auto', color: '#333' }}>{it.body}</div>

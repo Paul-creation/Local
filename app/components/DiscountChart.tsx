@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { formatDate } from '../lib/date';
 
 type PriceRecord = { price: number; discount_percent: number | null; checked_at: string };
 type Point = { t: number; price: number; discount: number };
@@ -22,7 +23,6 @@ const kst = (t: number) => {
   return { y: d.getUTCFullYear(), m: d.getUTCMonth() + 1, d: d.getUTCDate() };
 };
 const won = (n: number) => `₩${Math.round(n).toLocaleString('ko-KR')}`;
-const fullDate = (t: number) => { const k = kst(t); return `${k.y}년 ${k.m}월 ${k.d}일`; };
 
 // 실제 값보다 위아래로 튀지 않는 부드러운 곡선 (monotone cubic, d3의 curveMonotoneX와 같은 방식)
 function monotonePath(pts: { x: number; y: number }[]) {
@@ -199,7 +199,7 @@ export default function DiscountChart({ history, now }: { history: PriceRecord[]
                   transform: `translate(-50%, ${tipAbove ? '-100%' : '0'})`,
                 }}
               >
-                <div className="dchart-tip-date">{fullDate(active.t)}</div>
+                <div className="dchart-tip-date">{formatDate(active.t)}</div>
                 <div><strong>{won(active.price)}</strong> <span className="dchart-tip-off">-{active.discount}%</span></div>
               </div>
             )}
