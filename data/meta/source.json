@@ -245,10 +245,14 @@
     {
       "id": "079ebccc-0910-474b-9c29-4a9b0f993a26",
       "name": "REMNANT II®",
-      "name_ko": null,
+      "name_ko": "렘넌트 2",
       "steam_appid": "1282100",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2023,
+      "tags": [
+        "소울라이크",
+        "3인칭 슈팅",
+        "RPG"
+      ],
       "heat_rank": null
     },
     {
@@ -664,10 +668,14 @@
     {
       "id": "17f37e06-70f7-4d97-9ec0-877c7e907eab",
       "name": "Balatro",
-      "name_ko": null,
+      "name_ko": "발라트로",
       "steam_appid": "2379780",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2024,
+      "tags": [
+        "Card Game",
+        "Roguelike Deckbuilder",
+        "Rogue-like"
+      ],
       "heat_rank": null
     },
     {
@@ -701,10 +709,14 @@
     {
       "id": "18770660-8785-4b5a-bb72-2218babef428",
       "name": "Barotrauma",
-      "name_ko": null,
+      "name_ko": "바로트라우마",
       "steam_appid": "602960",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2023,
+      "tags": [
+        "생존",
+        "Submarine",
+        "서바이벌 호러"
+      ],
       "heat_rank": null
     },
     {
@@ -895,10 +907,14 @@
     {
       "id": "1c992d46-79b1-4c56-8172-6c068a17515f",
       "name": "NieR:Automata™",
-      "name_ko": null,
+      "name_ko": "니어 오토마타",
       "steam_appid": "524220",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2017,
+      "tags": [
+        "스토리 풍부",
+        "여성 주인공",
+        "핵앤슬래시"
+      ],
       "heat_rank": null
     },
     {
@@ -918,10 +934,14 @@
     {
       "id": "1d5f0be9-33c1-4ae9-a80e-d419aafa0a79",
       "name": "Devil May Cry 5",
-      "name_ko": null,
+      "name_ko": "데빌 메이 크라이5",
       "steam_appid": "601150",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2019,
+      "tags": [
+        "핵앤슬래시",
+        "Character Action Game",
+        "Demons"
+      ],
       "heat_rank": null
     },
     {
@@ -1299,10 +1319,14 @@
     {
       "id": "267c9472-52e0-4c1b-ab97-6d904c8fd123",
       "name": "Grounded",
-      "name_ko": null,
+      "name_ko": "그라운디드",
       "steam_appid": "962130",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2022,
+      "tags": [
+        "생존",
+        "오픈월드 생존",
+        "기지 건설"
+      ],
       "heat_rank": null
     },
     {
@@ -2004,19 +2028,27 @@
     {
       "id": "420c7908-cc5a-40c1-bbe4-b34e3afa4fba",
       "name": "스타워즈 제다이: 서바이버™",
-      "name_ko": null,
+      "name_ko": "스타워즈 제다이: 서바이버",
       "steam_appid": "1774580",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2023,
+      "tags": [
+        "소울라이크",
+        "3인칭",
+        "오픈월드"
+      ],
       "heat_rank": null
     },
     {
       "id": "420ffdae-aae6-4f74-baf0-f944af658b31",
       "name": "Golf With Your Friends",
-      "name_ko": null,
+      "name_ko": "골프 위드 유어 프렌즈",
       "steam_appid": "431240",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2020,
+      "tags": [
+        "Mini Golf",
+        "스포츠",
+        "Golf"
+      ],
       "heat_rank": null
     },
     {
@@ -2115,10 +2147,14 @@
     {
       "id": "4403144f-f55a-4661-ab5f-300926051e4b",
       "name": "Hollow Knight",
-      "name_ko": null,
+      "name_ko": "할로우 나이트",
       "steam_appid": "367520",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2017,
+      "tags": [
+        "메트로배니아",
+        "소울라이크",
+        "플랫포머"
+      ],
       "heat_rank": null
     },
     {
@@ -2416,10 +2452,14 @@
     {
       "id": "4c58938d-179b-4f98-81a4-7446f7557ec9",
       "name": "플레이트업!",
-      "name_ko": null,
+      "name_ko": "플레이트업!",
       "steam_appid": "1599600",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2022,
+      "tags": [
+        "경영",
+        "요리",
+        "로그라이트"
+      ],
       "heat_rank": null
     },
     {
@@ -2678,10 +2718,14 @@
     {
       "id": "5466f838-af36-4ead-bf66-f83c40ddde95",
       "name": "귀무자（Onimusha: Warlords）",
-      "name_ko": null,
+      "name_ko": "귀무자",
       "steam_appid": "761600",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2019,
+      "tags": [
+        "Violent",
+        "핵앤슬래시",
+        "고전"
+      ],
       "heat_rank": null
     },
     {
@@ -2739,10 +2783,14 @@
     {
       "id": "54f4afa8-b1d8-44e0-a05d-c639962bde29",
       "name": "HITMAN World of Assassination",
-      "name_ko": null,
+      "name_ko": "히트맨",
       "steam_appid": "1659040",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2022,
+      "tags": [
+        "Stealth",
+        "Assassin",
+        "VR"
+      ],
       "heat_rank": null
     },
     {
@@ -3201,10 +3249,14 @@
     {
       "id": "63581782-1019-4081-a644-2ea3cad092dd",
       "name": "보더랜드 3",
-      "name_ko": null,
+      "name_ko": "보더랜드 3",
       "steam_appid": "397540",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2020,
+      "tags": [
+        "RPG",
+        "루터슈팅",
+        "FPS"
+      ],
       "heat_rank": null
     },
     {
@@ -3224,10 +3276,14 @@
     {
       "id": "63ee80e5-fe19-4f22-a40b-b1cf683d902d",
       "name": "SILENT HILL 2",
-      "name_ko": null,
+      "name_ko": "사일런트 힐2",
       "steam_appid": "2124490",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2024,
+      "tags": [
+        "심리 공포",
+        "호러",
+        "서바이벌 호러"
+      ],
       "heat_rank": null
     },
     {
@@ -3326,10 +3382,14 @@
     {
       "id": "67b21756-f674-4f1f-826d-705633ff1b0c",
       "name": "얼티밋 치킨 호스",
-      "name_ko": null,
+      "name_ko": "얼티밋 치킨 호스",
       "steam_appid": "386940",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2016,
+      "tags": [
+        "Party",
+        "코미디",
+        "플랫포머"
+      ],
       "heat_rank": null
     },
     {
@@ -3374,10 +3434,14 @@
     {
       "id": "6a9de491-e762-4fe2-a50f-c9a25b6e0281",
       "name": "Gang Beasts",
-      "name_ko": null,
+      "name_ko": "갱 비스트",
       "steam_appid": "285900",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2017,
+      "tags": [
+        "코미디",
+        "물리엔진",
+        "Colorful"
+      ],
       "heat_rank": null
     },
     {
@@ -3516,19 +3580,27 @@
     {
       "id": "6ec165c8-c66d-40f8-be28-651713845c45",
       "name": "Overcooked! All You Can Eat",
-      "name_ko": null,
+      "name_ko": "오버쿡 올유캔잇",
       "steam_appid": "1243830",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2021,
+      "tags": [
+        "온라인 협동",
+        "Local Co-Op",
+        "요리"
+      ],
       "heat_rank": null
     },
     {
       "id": "6fd162c2-d35f-4791-855a-6ad468e2f073",
       "name": "Overcooked! 2",
-      "name_ko": null,
+      "name_ko": "오버쿡2",
       "steam_appid": "728880",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2018,
+      "tags": [
+        "온라인 협동",
+        "Local Co-Op",
+        "요리"
+      ],
       "heat_rank": null
     },
     {
@@ -3745,10 +3817,14 @@
     {
       "id": "75e81090-e3b1-46f1-8dc0-abee27429193",
       "name": "Horizon Zero Dawn™ 리마스터",
-      "name_ko": null,
+      "name_ko": "Horizon Zero Dawn 리마스터",
       "steam_appid": "2561580",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2024,
+      "tags": [
+        "액션 어드벤처",
+        "여성 주인공",
+        "3인칭"
+      ],
       "heat_rank": null
     },
     {
@@ -4049,10 +4125,14 @@
     {
       "id": "803dbf32-98ef-4e4f-8a4d-ae1e65fac8c0",
       "name": "Disco Elysium - The Final Cut",
-      "name_ko": null,
+      "name_ko": "디스코 엘리시움",
       "steam_appid": "632470",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2019,
+      "tags": [
+        "RPG",
+        "스토리 풍부",
+        "선택이 중요한"
+      ],
       "heat_rank": null
     },
     {
@@ -4200,10 +4280,14 @@
     {
       "id": "84d50f3f-83d8-4e91-9269-9cddcf89d516",
       "name": "Party Animals",
-      "name_ko": null,
+      "name_ko": "파티 애니멀스",
       "steam_appid": "1260320",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2023,
+      "tags": [
+        "코미디",
+        "귀여운",
+        "Party Game"
+      ],
       "heat_rank": null
     },
     {
@@ -4302,19 +4386,27 @@
     {
       "id": "87243963-2403-4eaf-9251-c6d36deb0d92",
       "name": "Shadow of the Tomb Raider: Definitive Edition",
-      "name_ko": null,
+      "name_ko": "섀도우 오브 더 톰 레이더",
       "steam_appid": "750920",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2018,
+      "tags": [
+        "여성 주인공",
+        "오픈월드",
+        "3인칭"
+      ],
       "heat_rank": null
     },
     {
       "id": "872cffe0-8d18-4355-a337-3801affa3f4d",
       "name": "페르시아의 왕자: 잃어버린 왕관",
-      "name_ko": null,
+      "name_ko": "페르시아의 왕자: 잃어버린 왕관",
       "steam_appid": "2751000",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2024,
+      "tags": [
+        "메트로배니아",
+        "탐험",
+        "플랫포머"
+      ],
       "heat_rank": null
     },
     {
@@ -4346,10 +4438,14 @@
     {
       "id": "87f009ff-cd54-42b3-965c-2bf47334aa0b",
       "name": "FINAL FANTASY VII REBIRTH",
-      "name_ko": null,
+      "name_ko": "파이널 판타지7 리버스",
       "steam_appid": "2909400",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2025,
+      "tags": [
+        "RPG",
+        "JRPG",
+        "오픈월드"
+      ],
       "heat_rank": null
     },
     {
@@ -4422,19 +4518,27 @@
     {
       "id": "89a0da47-4f84-4c7f-a218-a3ff08063650",
       "name": "Warhammer 40,000: Darktide",
-      "name_ko": null,
+      "name_ko": "워해머 다크타이드",
       "steam_appid": "1361210",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2022,
+      "tags": [
+        "호러",
+        "팀플레이",
+        "Combat"
+      ],
       "heat_rank": null
     },
     {
       "id": "89f4e81e-5eb1-4565-8fa5-323c270cdafc",
       "name": "Hollow Knight: Silksong",
-      "name_ko": null,
+      "name_ko": "할로우 나이트 실크송",
       "steam_appid": "1030300",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2025,
+      "tags": [
+        "저사양",
+        "액션",
+        "어드벤처"
+      ],
       "heat_rank": null
     },
     {
@@ -4466,10 +4570,14 @@
     {
       "id": "8aed863e-c320-4859-b02b-317c0bc2d16d",
       "name": "FINAL FANTASY XVI",
-      "name_ko": null,
+      "name_ko": "파이널 판타지16",
       "steam_appid": "2515020",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2024,
+      "tags": [
+        "액션 RPG",
+        "Spectacle fighter",
+        "스토리 풍부"
+      ],
       "heat_rank": null
     },
     {
@@ -4527,10 +4635,14 @@
     {
       "id": "8d272ae5-865b-45e6-adb7-ae20ee40dd19",
       "name": "어쌔신 크리드 섀도우스",
-      "name_ko": null,
+      "name_ko": "어쌔신 크리드 섀도우스",
       "steam_appid": "3159330",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2025,
+      "tags": [
+        "액션",
+        "어드벤처",
+        "RPG"
+      ],
       "heat_rank": null
     },
     {
@@ -4909,10 +5021,14 @@
     {
       "id": "98727c81-e03f-4782-bc49-da48b9969b55",
       "name": "Chained Together",
-      "name_ko": null,
+      "name_ko": "체인드 투게더",
       "steam_appid": "2567870",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2024,
+      "tags": [
+        "플랫포머",
+        "퍼즐 플랫포머",
+        "시뮬레이션"
+      ],
       "heat_rank": null
     },
     {
@@ -4998,10 +5114,14 @@
     {
       "id": "9adf9b2f-26f9-4c94-976c-a1d64f09bef6",
       "name": "METAL GEAR SOLID Δ: SNAKE EATER",
-      "name_ko": null,
+      "name_ko": "메탈기어솔리드 스네이크 이터",
       "steam_appid": "2417610",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2025,
+      "tags": [
+        "온라인 대전",
+        "액션",
+        "어드벤처"
+      ],
       "heat_rank": null
     },
     {
@@ -5162,10 +5282,14 @@
     {
       "id": "9ee5b0ac-76ec-49a0-b6df-bedf8d5bd131",
       "name": "Hades",
-      "name_ko": null,
+      "name_ko": "하데스",
       "steam_appid": "1145360",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2020,
+      "tags": [
+        "액션 로그라이크",
+        "로그라이트",
+        "핵앤슬래시"
+      ],
       "heat_rank": null
     },
     {
@@ -5263,10 +5387,14 @@
     {
       "id": "9fef77ac-cc4a-4210-9104-ed821fc1c4e2",
       "name": "Moving Out",
-      "name_ko": null,
+      "name_ko": "무빙 아웃",
       "steam_appid": "996770",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2020,
+      "tags": [
+        "시뮬레이션",
+        "Local Co-Op",
+        "로컬 협동"
+      ],
       "heat_rank": null
     },
     {
@@ -5644,10 +5772,14 @@
     {
       "id": "b1d379ad-077e-4540-ad87-79dfe7d4a74a",
       "name": "Stick Fight: The Game",
-      "name_ko": null,
+      "name_ko": "스틱 파이트",
       "steam_appid": "674940",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2017,
+      "tags": [
+        "코미디",
+        "격투",
+        "로컬 협동"
+      ],
       "heat_rank": null
     },
     {
@@ -5827,10 +5959,14 @@
     {
       "id": "b8d49271-f1a5-4363-8a69-064b0322febd",
       "name": "인디아나 존스: 그레이트 서클 ",
-      "name_ko": null,
+      "name_ko": "인디아나 존스: 그레이트 서클",
       "steam_appid": "2677660",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2024,
+      "tags": [
+        "액션 어드벤처",
+        "1인칭",
+        "스토리 풍부"
+      ],
       "heat_rank": null
     },
     {
@@ -5876,10 +6012,14 @@
     {
       "id": "bbbaf28e-fcef-40fd-8f42-8295ed432aa8",
       "name": "용과 같이8",
-      "name_ko": null,
+      "name_ko": "용과 같이8",
       "steam_appid": "2072450",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2024,
+      "tags": [
+        "JRPG",
+        "턴제 전투",
+        "성인"
+      ],
       "heat_rank": null
     },
     {
@@ -5935,10 +6075,14 @@
     {
       "id": "bc7fe1a3-1fea-4155-9f61-0d4ad753c8c7",
       "name": "BIOHAZARD 7 resident evil",
-      "name_ko": null,
+      "name_ko": "바이오하자드7",
       "steam_appid": "418370",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2017,
+      "tags": [
+        "호러",
+        "서바이벌 호러",
+        "1인칭"
+      ],
       "heat_rank": null
     },
     {
@@ -5998,10 +6142,14 @@
     {
       "id": "befb6ab2-ff65-46be-8d2a-f9f8c30e6edc",
       "name": "Cuphead",
-      "name_ko": null,
+      "name_ko": "컵헤드",
       "steam_appid": "268910",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2017,
+      "tags": [
+        "고난도",
+        "카툰",
+        "플랫포머"
+      ],
       "heat_rank": null
     },
     {
@@ -6432,10 +6580,14 @@
     {
       "id": "c8a4f52f-05e8-4eab-bf18-e7cd07c233be",
       "name": "인슈라오디드 (Enshrouded)",
-      "name_ko": null,
+      "name_ko": "인슈라오디드 (Enshrouded)",
       "steam_appid": "1203620",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2024,
+      "tags": [
+        "오픈월드",
+        "생존",
+        "기지 건설"
+      ],
       "heat_rank": null
     },
     {
@@ -6561,10 +6713,14 @@
     {
       "id": "cd5d093a-5b29-4c7b-acf8-2c5ba00d3085",
       "name": "DEATH STRANDING DIRECTOR'S CUT",
-      "name_ko": null,
+      "name_ko": "데스 스트랜딩",
       "steam_appid": "1850570",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2022,
+      "tags": [
+        "스토리 풍부",
+        "오픈월드",
+        "Walking Simulator"
+      ],
       "heat_rank": null
     },
     {
@@ -6873,19 +7029,27 @@
     {
       "id": "d801809a-97af-46dc-aef1-f546388da497",
       "name": "Hades II",
-      "name_ko": null,
+      "name_ko": "하데스2",
       "steam_appid": "1145350",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2025,
+      "tags": [
+        "Rogue-like",
+        "로그라이트",
+        "핵앤슬래시"
+      ],
       "heat_rank": null
     },
     {
       "id": "d811d609-93c1-4888-a319-768c02add3c4",
       "name": "Pizza Tower",
-      "name_ko": null,
+      "name_ko": "피자 타워",
       "steam_appid": "2231450",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2023,
+      "tags": [
+        "플랫포머",
+        "Fast-Paced",
+        "Cartoony"
+      ],
       "heat_rank": null
     },
     {
@@ -6957,10 +7121,14 @@
     {
       "id": "daeab701-4801-4b29-bd75-e68d336360f0",
       "name": "Sea of Stars: Sunset Edition",
-      "name_ko": null,
+      "name_ko": "씨 오브 스타즈",
       "steam_appid": "1244090",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2023,
+      "tags": [
+        "픽셀 그래픽",
+        "JRPG",
+        "턴제 전투"
+      ],
       "heat_rank": null
     },
     {
@@ -7084,10 +7252,14 @@
     {
       "id": "deb9dc26-a2aa-4eaa-8425-f9f54852bad0",
       "name": "Sea of Thieves: 2026 Edition",
-      "name_ko": null,
+      "name_ko": "씨 오브 시브즈",
       "steam_appid": "1172620",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2020,
+      "tags": [
+        "오픈월드",
+        "Pirates",
+        "온라인 협동"
+      ],
       "heat_rank": null
     },
     {
@@ -7196,10 +7368,14 @@
     {
       "id": "e1e2b35e-1671-4b4f-99f6-20213b27ca6c",
       "name": "UNCHARTED™: 레거시 오브 시브즈 컬렉션",
-      "name_ko": null,
+      "name_ko": "UNCHARTED: 레거시 오브 시브즈 컬렉션",
       "steam_appid": "1659420",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2022,
+      "tags": [
+        "액션 어드벤처",
+        "스토리 풍부",
+        "3인칭"
+      ],
       "heat_rank": null
     },
     {
@@ -7271,10 +7447,14 @@
     {
       "id": "e3b980a6-1db5-4265-9f84-f1f87d2970c6",
       "name": "BIOHAZARD RE:2",
-      "name_ko": null,
+      "name_ko": "바이오하자드 RE2",
       "steam_appid": "883710",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2019,
+      "tags": [
+        "좀비",
+        "서바이벌 호러",
+        "호러"
+      ],
       "heat_rank": null
     },
     {
@@ -7517,10 +7697,14 @@
     {
       "id": "e9b91f01-d2fc-41fc-a4a3-dcb0d45361c7",
       "name": "It Takes Two",
-      "name_ko": null,
+      "name_ko": "잇 테이크 투",
       "steam_appid": "1426210",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2021,
+      "tags": [
+        "분할 화면",
+        "Local Co-Op",
+        "퍼즐"
+      ],
       "heat_rank": null
     },
     {
@@ -7673,10 +7857,14 @@
     {
       "id": "edab7894-c714-4d36-8d67-1ea92581996c",
       "name": "FINAL FANTASY VII REMAKE INTERGRADE",
-      "name_ko": null,
+      "name_ko": "파이널 판타지7 리메이크",
       "steam_appid": "1462040",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2022,
+      "tags": [
+        "RPG",
+        "액션 RPG",
+        "JRPG"
+      ],
       "heat_rank": null
     },
     {
@@ -7761,10 +7949,14 @@
     {
       "id": "f092fe32-8c0d-488c-b758-5517cd5f515f",
       "name": "Celeste",
-      "name_ko": null,
+      "name_ko": "셀레스트",
       "steam_appid": "504230",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2018,
+      "tags": [
+        "플랫포머",
+        "고난도",
+        "픽셀 그래픽"
+      ],
       "heat_rank": null
     },
     {
@@ -7782,10 +7974,14 @@
     {
       "id": "f0d8b6a0-8a6f-4c0a-a7a9-bb87835140b6",
       "name": "Unrailed!",
-      "name_ko": null,
+      "name_ko": "언레일드",
       "steam_appid": "1016920",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2020,
+      "tags": [
+        "온라인 협동",
+        "Local Co-Op",
+        "Trains"
+      ],
       "heat_rank": null
     },
     {
@@ -7937,10 +8133,14 @@
     {
       "id": "f4577632-695a-4f8f-9478-de91adbc6c3f",
       "name": "Ori and the Blind Forest: Definitive Edition",
-      "name_ko": null,
+      "name_ko": "오리 앤 더 블라인드 포레스트",
       "steam_appid": "387290",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2016,
+      "tags": [
+        "분위기 있는",
+        "메트로배니아",
+        "플랫포머"
+      ],
       "heat_rank": null
     },
     {
@@ -7958,19 +8158,27 @@
     {
       "id": "f47e9272-7b6f-4016-99fa-bc6f9636edec",
       "name": "DEVOUR",
-      "name_ko": null,
+      "name_ko": "디바우어",
       "steam_appid": "1274570",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2021,
+      "tags": [
+        "호러",
+        "온라인 협동",
+        "서바이벌 호러"
+      ],
       "heat_rank": null
     },
     {
       "id": "f547edb5-7eab-48a9-afa6-f16ad97bb86a",
       "name": "Warhammer: Vermintide 2",
-      "name_ko": null,
+      "name_ko": "버민타이드 2",
       "steam_appid": "552500",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2018,
+      "tags": [
+        "다크 판타지",
+        "Games Workshop",
+        "온라인 협동"
+      ],
       "heat_rank": null
     },
     {
@@ -8002,10 +8210,14 @@
     {
       "id": "f5db4d61-d161-469d-9d78-3d0d72674881",
       "name": "Outer Wilds",
-      "name_ko": null,
+      "name_ko": "아우터 와일즈",
       "steam_appid": "753640",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2020,
+      "tags": [
+        "탐험",
+        "우주",
+        "미스터리"
+      ],
       "heat_rank": null
     },
     {
@@ -8091,10 +8303,13 @@
     {
       "id": "f7587927-b84f-424f-9797-a8e3985cc5c0",
       "name": "Lovers in a Dangerous Spacetime",
-      "name_ko": null,
+      "name_ko": "러버스 인 어 데인저러스 스페이스타임",
       "steam_appid": "252110",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2015,
+      "tags": [
+        "Local Co-Op",
+        "로컬 협동"
+      ],
       "heat_rank": null
     },
     {
@@ -8165,10 +8380,14 @@
     {
       "id": "f8d58d2a-054a-47b1-9de7-9fc8927354a0",
       "name": "Portal 2",
-      "name_ko": null,
+      "name_ko": "포탈 2",
       "steam_appid": "620",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2011,
+      "tags": [
+        "플랫포머",
+        "퍼즐",
+        "1인칭"
+      ],
       "heat_rank": null
     },
     {
@@ -8374,10 +8593,14 @@
     {
       "id": "fce3db70-2a91-4d71-a023-8c83a1834acf",
       "name": "Deep Rock Galactic",
-      "name_ko": null,
+      "name_ko": "딥 락 갤럭틱",
       "steam_appid": "548430",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2020,
+      "tags": [
+        "Dwarf",
+        "FPS",
+        "Procedural Generation"
+      ],
       "heat_rank": null
     },
     {
@@ -8409,10 +8632,14 @@
     {
       "id": "fdb1e9de-616a-4cfd-9ce6-13ece59915d7",
       "name": "메타포: 리판타지오",
-      "name_ko": null,
+      "name_ko": "메타포: 리판타지오",
       "steam_appid": "2679460",
-      "release_year": null,
-      "tags": [],
+      "release_year": 2024,
+      "tags": [
+        "RPG",
+        "JRPG",
+        "턴제 전투"
+      ],
       "heat_rank": null
     },
     {
