@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { supabase } from '../../lib/supabase';
 import BackToList from '../../components/BackToList';
 import DiscountChart from '../../components/DiscountChart';
-import { getPriceInfo, getLowestTiming } from '../../lib/price';
+import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL } from '../../lib/price';
 import { formatDate } from '../../lib/date';
 import LowestPriceBadge from '../../components/LowestPriceBadge';
 import { translateGenres } from '../../lib/genreTranslate';
@@ -212,7 +212,11 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
                 </>
               )}
               <span className="buy-price-final">
-                {game.is_free ? '무료' : price ? price.formattedFinal : '가격 정보 없음'}
+                {game.is_free ? '무료'
+                  : price ? price.formattedFinal
+                  : game.price_type === 'check_store' && buyUrl
+                    ? <a href={buyUrl} target="_blank" rel="noopener noreferrer">{PRICE_TYPE_LABEL.check_store}</a>
+                    : PRICE_TYPE_LABEL[game.price_type] ?? '가격 정보 없음'}
               </span>
               <LowestPriceBadge timing={getLowestTiming(game, price)} />
             </div>

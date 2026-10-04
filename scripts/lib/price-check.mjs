@@ -25,6 +25,13 @@ export function recordPriceCheck(step, values) {
   }
 }
 
+// 가격 유형이 있는 게임(월 구독·판매처에서 확인)은 일부러 가격이 없으니 수집·실패 알림에서 뺀다
+// 칸(price_type)이 아직 없으면 빈 목록
+export async function noPriceIds(supabase) {
+  const { data, error } = await supabase.from('games').select('id').not('price_type', 'is', null);
+  return new Set(error ? [] : data.map((g) => g.id));
+}
+
 // 게임별 성공·실패를 DB에 표시. 실패가 이어지면 처음 실패한 시각을 유지한다
 export async function markPriceStatus(supabase, { okIds, failed }) {
   const now = new Date().toISOString();

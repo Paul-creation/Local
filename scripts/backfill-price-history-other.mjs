@@ -4,7 +4,7 @@
 // 가격 기록을 못 받은 게임(매칭 실패·상점 기록 없음·오류)은 games.price_check_*에 표시 → daily-summary가 3일 연속 실패를 알림
 import { createClient } from '@supabase/supabase-js';
 import { lookupItadId, getPriceHistory, ItadLimitError } from './lib/itad.mjs';
-import { markPriceStatus, recordPriceCheck } from './lib/price-check.mjs';
+import { markPriceStatus, noPriceIds, recordPriceCheck } from './lib/price-check.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -34,12 +34,17 @@ async function main() {
   let limited = 0;
   let failed = 0;
   let checked = 0;
+  const skip = await noPriceIds(supabase);
   const okIds = [];
   const missed = [];
   const miss = (game, note) => missed.push({ id: game.id, name: game.name, note });
   for (const game of games) {
     if (game.is_free) {
       console.log(`건너뜀 (무료): ${game.name}`);
+      continue;
+    }
+    if (skip.has(game.id)) {
+      console.log(`건너뜀 (가격 유형 있음 — 월 구독·판매처에서 확인): ${game.name}`);
       continue;
     }
     checked++;

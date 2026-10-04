@@ -1,4 +1,12 @@
+// 가격 유형(games.price_type): 일부러 가격 기록을 안 받는 게임 — 가격 대신 이 문구를 보여준다
+export const PRICE_TYPE_LABEL: Record<string, string> = {
+  subscription: '월 구독',
+  check_store: '판매처에서 확인',
+};
+
 export function getPriceInfo(game: any) {
+  // 월 구독·판매처에서 확인 게임은 예전 가격 기록이 남아 있어도 가격으로 보여주지 않는다
+  if (game.price_type) return null;
   // 메인 목록은 flattenGame으로 펴서 보낸 price_final·price_discount를 그대로 쓴다
   if (game.price_final != null) return makePriceInfo(game.price_final, game.price_discount || 0);
   const history = game.price_history;

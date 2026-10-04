@@ -2,10 +2,10 @@
 // 스팀 유료 게임의 "현재 가격"을 매일 확인해서, 지난 기록과 달라졌을 때만 한 줄 추가
 // (기존 기록은 절대 지우지 않음 → 할인 전적이 계속 쌓임)
 // - 가격만 받을 때는 appdetails에 앱 번호 50개를 한 번에 물어볼 수 있어서 요청이 게임 수의 1/50 (요청 제한에 안 걸림)
-// - 가격을 못 받은 게임은 이유와 함께 출력하고 games.price_check_*에 표시 → daily-summary가 3일 연속 실패를 알림
+// - 가격 유형이 있는 게임(월 구독 등)은 건너뜀. 가격을 못 받은 게임은 이유와 함께 출력하고 games.price_check_*에 표시 → daily-summary가 3일 연속 실패를 알림
 import { createClient } from '@supabase/supabase-js';
 import { steamGet } from './lib/steam.mjs';
-import { markPriceStatus, recordPriceCheck } from './lib/price-check.mjs';
+import { markPriceStatus, noPriceIds, recordPriceCheck } from './lib/price-check.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -23,7 +23,8 @@ async function main() {
     process.exit(1);
   }
 
-  const paid = games.filter((g) => !g.is_free);
+  const skip = await noPriceIds(supabase);
+  const paid = games.filter((g) => !g.is_free && !skip.has(g.id));
   let added = 0, same = 0;
   const okIds = [];
   const failed = [];
