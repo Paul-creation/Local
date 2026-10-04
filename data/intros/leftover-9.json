@@ -1,0 +1,186 @@
+[
+  {
+    "game_id": "2c7068dd-be71-431d-bfab-664eb27755ce",
+    "name": "Trove",
+    "old_intro": "친구들을 모아 픽셀 세상으로 뛰어들어 던전을 누비고 보물을 캐라. 누군가는 던전에서 악과 싸우고, 누군가는 여전히 네모난 벽돌로 뭔가를 짓고 있을 테니까.",
+    "new_intro": null,
+    "reason": "생성 후 검사 탈락: 길이 33자",
+    "last_candidate": "친구와 던전을 탐험하고 보물을 캐며 건축하는 협동 RPG다.",
+    "tags": [
+      "오픈월드",
+      "샌드박스",
+      "픽셀 그래픽",
+      "저사양"
+    ],
+    "players": {
+      "min": 2,
+      "max": 4,
+      "online_coop": true,
+      "local_coop": false,
+      "pvp": true
+    },
+    "description_head": "친구들과 함께 픽셀 세상으로 뛰어들어 던전을 누비고, 보물을 캐고, 때론 멋진 성을 지어보세요. 플레이어들이 만든 기상천외한 영역과 아이템들이 끝없이 쏟아져 나오고, 악의 그림자와 맞서는 와중에도 누군가는 여전히 네모난 벽돌로 뭔가를 만들고 있을 겁니다. 낮은 사양으로도 충분하니 이제 바로 시작할 이유는 충분하지 않나요?"
+  },
+  {
+    "game_id": "fde27465-4bf6-42a4-800f-06c68edd3335",
+    "name": "Succumate",
+    "old_intro": "악마 릴림의 기분을 맞춰가며 돌봐야 한다. 시간을 잘못 쓰면 큰일 나니 각오하고 시작하거라.",
+    "new_intro": null,
+    "reason": "AI가 게임 정보만으로 확신이 없다고 답해 비워 둠",
+    "tags": [
+      "성인",
+      "픽셀 그래픽",
+      "RPG",
+      "저사양"
+    ],
+    "players": {
+      "min": 1,
+      "max": 1,
+      "online_coop": false,
+      "local_coop": false,
+      "pvp": false
+    },
+    "description_head": "From the creator of Summer Memories comes a new game where you must look after a demon named Lilim! Now you must juggle your time to keep her happy... or else!"
+  },
+  {
+    "game_id": "f0a94612-e40e-4077-b527-244030a802fb",
+    "name": "프린세스 메이커 : 예언의 아이들",
+    "old_intro": "어린 소녀의 보호자가 되어 그녀의 꿈을 키워내라. 18년 만에 돌아온 육성 시뮬레이션의 정석으로, 당신의 교육이 그녀의 미래를 결정한다.",
+    "new_intro": null,
+    "reason": "생성 후 검사 탈락: 길이 39자",
+    "last_candidate": "혼자 부모가 되어 어린 소녀를 키우고 그녀의 꿈을 이루어주는 게임이다.",
+    "tags": [
+      "저사양",
+      "시뮬레이션"
+    ],
+    "players": {
+      "min": 1,
+      "max": 1,
+      "online_coop": false,
+      "local_coop": false,
+      "pvp": false
+    },
+    "description_head": "『프린세스 메이커: 예언의 아이들』은 약 18년의 세월을 넘어 새롭게 선보이는 「프린세스 메이커」 패키지 시리즈로, 어린 소녀를 성인으로 키우는 육성 시뮬레이션 게임입니다. 원작의 매력적인 그림체와 육성 시스템은 유지하면서, 현대적인 게임으로 재탄생했습니다. 게임 속에서 부모가 되어 어린 소녀의 꿈을 이루어주세요!"
+  },
+  {
+    "game_id": "00ea1e6e-f526-40b5-8e12-e42c33ec53da",
+    "name": "용과 같이 극2",
+    "old_intro": "도지마의 용과 간사이의 용이 맞붙는다. 전설의 사나이들이 펼치는 진정한 용의 싸움에 뛰어들어라.",
+    "new_intro": null,
+    "reason": "AI가 게임 정보만으로 확신이 없다고 답해 비워 둠",
+    "tags": [
+      "액션",
+      "어드벤처",
+      "RPG"
+    ],
+    "players": {
+      "min": 1,
+      "max": 1,
+      "online_coop": false,
+      "local_coop": false,
+      "pvp": false
+    },
+    "description_head": "시리즈 두 번째 타이틀인 &quot;용과 같이2&quot; 를 드래곤 엔진으로 부활시킨 풀 리메이크 작품 &quot;용과 같이 극2&quot; 등장! 일찍이 &quot;도지마의 용&quot;이라 불린 전설의 사나이 키류 카즈마와 &quot;간사이의 용&quot;이라 불리는 최강의 야쿠자 고다 류지,진정한 용을 가리기 위한 사투가 지금 시작된다."
+  },
+  {
+    "game_id": "04eb5eeb-4fbd-4f66-9c9c-bbc588e8e294",
+    "name": "스텔라 블레이드™",
+    "old_intro": "멸종 위기의 인류를 구하기 위해 지구 몰락의 비밀을 풀어라. 맹렬한 전투 속에서 뜻밖의 진실이 기다리고 있다.",
+    "new_intro": null,
+    "reason": "AI가 게임 정보만으로 확신이 없다고 답해 비워 둠",
+    "tags": [
+      "액션",
+      "어드벤처",
+      "RPG"
+    ],
+    "players": {
+      "min": 1,
+      "max": 1,
+      "online_coop": false,
+      "local_coop": false,
+      "pvp": false
+    },
+    "description_head": "포스트 아포칼립스 액션 어드벤처, 스텔라 블레이드™에서 멸종 위기의 인류를 구원하세요. 지구 몰락의 비밀을 풀며 맹렬한 전투와 뜻밖의 스토리를 경험하세요."
+  },
+  {
+    "game_id": "45a53f0e-46f3-4478-b21b-a0166a1bedb4",
+    "name": "Bills Must Be Paid",
+    "old_intro": "빈털터리 신세를 벗기 위해 저금통을 때려 부수고 돈을 모아라. 고지서는 기다려주지 않으니 서둘러야 한다.",
+    "new_intro": null,
+    "reason": "AI가 게임 정보만으로 확신이 없다고 답해 비워 둠",
+    "tags": [
+      "액션",
+      "캐주얼",
+      "시뮬레이션"
+    ],
+    "players": {
+      "min": 1,
+      "max": 1,
+      "online_coop": false,
+      "local_coop": false,
+      "pvp": false
+    },
+    "description_head": "너는 빈털터리다, 저금통을 박살내라, 고지서는 반드시 납부해야 한다. 짧고 액티브한 인크리멘탈 게임. 돈을 모으고, 업그레이드하고, 빚에서 벗어나라!"
+  },
+  {
+    "game_id": "5975c530-2909-4298-82b1-341f7cb61e51",
+    "name": "연운",
+    "old_intro": "고대 강호의 협객이 되어 친구들과 함께 황도를 누비며 무공을 연마하라. 의협심 넘친 영웅이 될지, 난세의 간웅이 될지는 전적으로 너의 선택이다.",
+    "new_intro": null,
+    "reason": "생성 후 검사 탈락: 길이 38자",
+    "last_candidate": "친구와 협력 퀘스트를 하거나 대전으로 겨루는 오픈월드 액션 RPG다.",
+    "tags": [
+      "온라인 대전",
+      "온라인 협동",
+      "액션"
+    ],
+    "players": {
+      "min": 1,
+      "max": 4,
+      "online_coop": true,
+      "local_coop": false,
+      "pvp": true
+    },
+    "description_head": "고대 중국을 배경으로 한 오픈 월드 액션 어드벤처 RPG의 세계로 여러분을 초대합니다. 평범한 마을의 협객에서 시작해, 황도를 호령하는 강호의 고수가 되어보세요, 그리고 그 과정 속에서 당신에게 숨겨진 본능을 깨워보세요. 강호라는 이름의 자유로운 세계에서 무공을 연마하여, 의협심 넘치는 영웅이 되거나 천하에 혼란을 일으키는 난세의 간웅이 되거나. 모든 운명"
+  },
+  {
+    "game_id": "9ba7ec1b-f07a-4453-a76f-c2ec8fd3f484",
+    "name": "DEATH STRANDING 2: ON THE BEACH",
+    "old_intro": "샘이 되어 동료들과 함께 붕괴한 세계를 연결하고 인류를 구해내라. 배달 따위는 잊고, 이번엔 문명 자체를 택배로 보내야 한다.",
+    "new_intro": null,
+    "reason": "AI가 게임 정보만으로 확신이 없다고 답해 비워 둠",
+    "tags": [
+      "액션",
+      "어드벤처"
+    ],
+    "players": {
+      "min": 1,
+      "max": 1,
+      "online_coop": false,
+      "local_coop": false,
+      "pvp": false
+    },
+    "description_head": "샘은 동료들과 함께 다시 한번 인류를 멸종으로부터 구하기 위한 여정을 떠납니다. 이들과 함께 이세계적인 적, 장해물, 그리고 불편한 질문이 존재하는 세상을 탐험하세요. 우리는 과연 연결해야 했을까?"
+  },
+  {
+    "game_id": "b1120b00-948f-4beb-a48e-9531640039e7",
+    "name": "[Chilla's Art] Parasocial | パラソーシャル",
+    "old_intro": "라이브 스트리머의 뒤틀린 팬심 속으로 빨려들어가라. 선택이 현실을 바꾸는 심리 호러 게임, 혼자라도 절대 혼자가 아닐 것 같은 공포를 경험하게 될 것이다.",
+    "new_intro": null,
+    "reason": "AI가 게임 정보만으로 확신이 없다고 답해 비워 둠",
+    "tags": [
+      "호러",
+      "심리 공포",
+      "선택이 중요한",
+      "저사양"
+    ],
+    "players": {
+      "min": 1,
+      "max": 1,
+      "online_coop": false,
+      "local_coop": false,
+      "pvp": false
+    },
+    "description_head": "Parasocial | パラソーシャル is a Japanese horror game about a live streamer."
+  }
+]
