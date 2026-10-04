@@ -19,6 +19,7 @@ import GotyBadge from '../../components/GotyBadge';
 import { getTop10Ids } from '../../lib/hotChart';
 import { playersText } from '../../lib/players';
 import GameOpinions from '../../components/community/GameOpinions';
+import RelatedPosts from '../../components/community/RelatedPosts';
 
 // 게임마다 처음 열릴 때 만들고 1시간 동안 재사용 (ISR). 가격·접속자는 하루 한 번 갱신되므로 충분
 // 의견 작성·수정·삭제(api/game-comments)와 신고 자동 숨김(api/community/report)은 그 게임 페이지를 바로 새로 만든다
@@ -573,6 +574,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       )}
 <GameVotes gameId={game.id} />
       <GameOpinions gameId={game.id} />
+      <RelatedPosts gameId={game.id} />
             {/* 할인 전적 */}
       {!game.is_free && priceHistory.length === 1 && price && (
         <section className="detail-section-v2">

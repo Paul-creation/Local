@@ -8,6 +8,7 @@ import { BOARDS, boardTitle, timeAgo, type BoardKey } from '../../../lib/communi
 import { db, ipHash, parseId, PUBLIC_POST, PUBLIC_COMMENT } from '../../../lib/community';
 import PostActions from '../../../components/community/PostActions';
 import Comments, { type Comment } from '../../../components/community/Comments';
+import PostRelatedCard from '../../../components/community/PostRelatedCard';
 
 export const dynamic = 'force-dynamic';
 
@@ -69,6 +70,7 @@ export default async function PostPage({ params }: Props) {
         <div className="cm-post-body">{post.body}</div>
         <PostActions post={{ id: post.id, title: post.title, body: post.body, board: post.board, likeCount: post.like_count }} initialLiked={!!liked} />
       </article>
+      <PostRelatedCard postId={post.id} title={post.title} body={post.body} pickedGameId={post.game_id} />
       {/* 숨겨진 댓글은 내용을 내려보내지 않는다 */}
       <Comments postId={post.id} initial={((comments || []) as Comment[]).map((c) => (c.hidden ? { ...c, body: '', nickname: '', is_admin: false } : c))} />
       <p style={{ marginTop: 16 }}>
