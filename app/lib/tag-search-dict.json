@@ -1,0 +1,3251 @@
+{
+  "generated_by": "scripts/build-tag-search.mjs (data/tags/tree.json에서 자동 생성 — 직접 고치지 말 것)",
+  "keys": {
+    "1980s": "t:7743",
+    "1980년대": "t:7743",
+    "1990s": "t:6691",
+    "1990년대": "t:6691",
+    "1인칭": "t:3839",
+    "1인칭슈팅": "t:1663",
+    "1차세계대전": "t:5382",
+    "25d": "t:4975",
+    "2d": "t:3871",
+    "2d3d": "g:dimension",
+    "2dfighter": "t:4736",
+    "2dplatformer": "t:5379",
+    "2d격투": "t:4736",
+    "2d플랫포머": "t:5379",
+    "2d플랫폼": "t:5379",
+    "2차세계대전": "t:4150",
+    "3d": "t:4191",
+    "3dfighter": "t:6506",
+    "3dplatformer": "t:5395",
+    "3d격투": "t:6506",
+    "3d플랫포머": "t:5395",
+    "3d플랫폼": "t:5395",
+    "3인칭": "t:1697",
+    "3인칭슈터": "t:3814",
+    "3인칭슈팅": "t:3814",
+    "4x": "t:1670",
+    "6dof": "t:21978",
+    "abstract": "t:4400",
+    "action": "t:19",
+    "actionadventure": "t:4106",
+    "actionroguelike": "t:42804",
+    "actionrpg": "t:4231",
+    "actionrts": "t:1723",
+    "adventure": "t:21",
+    "agriculture": "t:87918",
+    "aliens": "t:1673",
+    "alternatehistory": "t:4598",
+    "animals": "t:9626",
+    "anime": "t:4085",
+    "arcade": "t:1773",
+    "archery": "t:13382",
+    "arenashooter": "t:5547",
+    "artificialintelligence": "t:7926",
+    "artstyle": "g:art",
+    "assassin": "t:97070",
+    "assassins": "t:97070",
+    "atmospheric": "t:4166",
+    "atv": "t:129761",
+    "autobattler": "t:1084988",
+    "automation": "t:255534",
+    "automobilesim": "t:1100687",
+    "baseball": "t:5727",
+    "basebuilding": "t:7332",
+    "basedonanovel": "t:3796",
+    "basketball": "t:1746",
+    "battleroyale": "t:176981",
+    "beatemup": "t:4158",
+    "bikes": "t:123332",
+    "billiards": "t:4852",
+    "birds": "t:6214",
+    "blood": "t:4345",
+    "bmx": "t:252854",
+    "boardgame": "t:1770",
+    "boomershooter": "t:1023537",
+    "bossrush": "t:11095",
+    "bowling": "t:7328",
+    "boxing": "t:12190",
+    "building": "t:1643",
+    "bulletheaven": "t:723991",
+    "bullethell": "t:4885",
+    "bullettime": "t:5796",
+    "camera": "g:view",
+    "capitalism": "t:4845",
+    "capybaras": "t:1352486",
+    "cardbattler": "t:791774",
+    "cardgame": "t:1666",
+    "cartoon": "t:4195",
+    "cartoony": "t:4195",
+    "casual": "t:597",
+    "cats": "t:17894",
+    "characteractiongame": "t:3955",
+    "charactercustomization": "t:4747",
+    "characters": "g:characters",
+    "chess": "t:4184",
+    "choicesmatter": "t:6426",
+    "chooseyourownadventure": "t:4486",
+    "chores": "g:chore-sim",
+    "cinematic": "t:4145",
+    "citybuilder": "t:4328",
+    "classbased": "t:4155",
+    "cleaning": "t:23491",
+    "clicker": "t:379975",
+    "coding": "t:5432",
+    "coldwar": "t:5179",
+    "collectathon": "t:5652",
+    "colonysim": "t:220585",
+    "colorful": "t:4305",
+    "combat": "t:3993",
+    "combatflightsimulator": "t:15045",
+    "combatracing": "t:4102",
+    "comedy": "t:1719",
+    "comicbook": "t:1751",
+    "conspiracy": "t:5372",
+    "content": "g:content",
+    "conversation": "t:42152",
+    "cooking": "t:3920",
+    "cozy": "t:97376",
+    "crafting": "t:1702",
+    "creationmods": "g:creation",
+    "creaturecollector": "t:916648",
+    "cricket": "t:158638",
+    "crime": "t:6378",
+    "crimeespionage": "g:crime",
+    "crpg": "t:4474",
+    "cute": "t:4726",
+    "cyberpunk": "t:4115",
+    "cycling": "t:19568",
+    "dark": "t:4342",
+    "darkcomedy": "t:5923",
+    "darkfantasy": "t:4604",
+    "darkhumor": "t:5923",
+    "datingsim": "t:9551",
+    "deckbuilding": "t:32322",
+    "decorating": "t:889937",
+    "demons": "t:9541",
+    "destruction": "t:5363",
+    "detective": "t:5613",
+    "dialogueheavy": "t:42152",
+    "dice": "t:7556",
+    "difficult": "t:4026",
+    "dimensions": "g:dimension",
+    "dinosaurs": "t:5160",
+    "diplomacy": "t:6310",
+    "dog": "t:1637",
+    "dogs": "t:1637",
+    "dragons": "t:4046",
+    "driving": "t:1644",
+    "dungeoncrawler": "t:1720",
+    "dwarf": "t:4535",
+    "dwarves": "t:4535",
+    "dynamicnarration": "t:9592",
+    "dystopian": "t:5030",
+    "economy": "t:4695",
+    "elf": "t:6054",
+    "elves": "t:6054",
+    "emotional": "t:5608",
+    "escaperoom": "t:769306",
+    "espionage": "t:1776",
+    "experimental": "t:13782",
+    "exploration": "t:3834",
+    "extractionshooter": "t:1199779",
+    "faith": "t:180368",
+    "fallingblocks": "t:37376",
+    "familyfriendly": "t:5350",
+    "fantasy": "t:1684",
+    "farming": "t:87918",
+    "farmingsim": "t:87918",
+    "fastpaced": "t:1734",
+    "femaleprotagonist": "t:7208",
+    "fighting": "t:1743",
+    "firstperson": "t:3839",
+    "fishing": "t:15564",
+    "flight": "t:15045",
+    "fmv": "t:18594",
+    "footballamerican": "t:1254552",
+    "footballsoccer": "t:1254546",
+    "fox": "t:507423",
+    "foxes": "t:507423",
+    "fps": "t:1663",
+    "funny": "t:1719",
+    "futuristic": "t:4295",
+    "gambling": "t:16250",
+    "gameplay": "g:play",
+    "gaming": "t:150626",
+    "genre": "g:genre",
+    "godgame": "t:5300",
+    "golf": "t:7038",
+    "gore": "t:4345",
+    "gothic": "t:3952",
+    "grandstrategy": "t:4364",
+    "gridbasedmovement": "t:7569",
+    "guncustomization": "t:5765",
+    "hackandslash": "t:1646",
+    "hacking": "t:5502",
+    "handdrawn": "t:6815",
+    "heist": "t:1680",
+    "hentai": "t:9130",
+    "heroshooter": "t:620519",
+    "hexgrid": "t:1717",
+    "hiddenobject": "t:1738",
+    "historical": "t:3987",
+    "hobbysim": "t:1220528",
+    "hockey": "t:324176",
+    "horror": "t:1667",
+    "horses": "t:6041",
+    "hunting": "t:9564",
+    "idler": "t:615955",
+    "immersivesim": "t:9204",
+    "incremental": "t:560542",
+    "intentionallyawkwardcontrols": "t:14906",
+    "interactivefiction": "t:11014",
+    "inventorymanagement": "t:6276",
+    "investigation": "t:8369",
+    "isometric": "t:5851",
+    "jet": "t:15045",
+    "jobsimulator": "t:35079",
+    "jrpg": "t:4434",
+    "jumpscare": "t:42089",
+    "kids": "t:5350",
+    "lemmings": "t:17337",
+    "leveleditor": "t:8122",
+    "lgbtq": "t:44868",
+    "lifesim": "t:10235",
+    "linear": "t:7250",
+    "logic": "t:6129",
+    "loot": "t:4236",
+    "lootershooter": "t:353880",
+    "lorerich": "t:3854",
+    "lovecraftian": "t:7432",
+    "machinesvehicles": "g:machines",
+    "magic": "t:4057",
+    "magicmyth": "g:magic",
+    "mahjong": "t:33572",
+    "management": "t:12472",
+    "mars": "t:6702",
+    "martialarts": "t:6915",
+    "match3": "t:1665",
+    "mechs": "t:4821",
+    "medicalsim": "t:1100688",
+    "medieval": "t:4172",
+    "memes": "t:10397",
+    "metroidvania": "t:1628",
+    "military": "t:4168",
+    "minigames": "t:8093",
+    "minigolf": "t:7038",
+    "minimalist": "t:4094",
+    "mining": "t:5981",
+    "mmorpg": "t:1754",
+    "moba": "t:1718",
+    "mod": "t:1669",
+    "moddable": "t:1669",
+    "modern": "t:5673",
+    "monsterssupernatural": "g:monster",
+    "mood": "g:mood",
+    "motocross": "t:15868",
+    "motorbike": "t:123332",
+    "multipleendings": "t:6971",
+    "music": "t:1621",
+    "musicbasedproceduralgeneration": "t:8253",
+    "musou": "t:323922",
+    "mystery": "t:5716",
+    "mysterydungeon": "t:198631",
+    "mythology": "t:16094",
+    "narrative": "t:1742",
+    "nature": "t:30358",
+    "naval": "t:6910",
+    "navalcombat": "t:4994",
+    "ninja": "t:1688",
+    "noir": "t:6052",
+    "nonlinear": "t:6869",
+    "nostalgia": "t:14720",
+    "nudity": "t:6650",
+    "offroad": "t:7622",
+    "oldschool": "t:3916",
+    "onrailsshooter": "t:3954",
+    "openworld": "t:1695",
+    "openworldsurvivalcraft": "t:1100689",
+    "organizing": "t:1239876",
+    "otome": "t:31579",
+    "outbreaksim": "t:1100686",
+    "pacing": "g:pace",
+    "parkour": "t:4036",
+    "parody": "t:4878",
+    "party": "t:7178",
+    "partybasedrpg": "t:10695",
+    "partygame": "t:7178",
+    "permadeath": "t:1759",
+    "philosophical": "t:15277",
+    "physics": "t:3968",
+    "pinball": "t:6621",
+    "pirates": "t:1681",
+    "pixelgraphics": "t:3964",
+    "places": "g:place",
+    "platformer": "t:1625",
+    "pointclick": "t:1698",
+    "poker": "t:6835",
+    "politicalsim": "t:26921",
+    "pool": "t:4852",
+    "postapocalyptic": "t:3835",
+    "precisionplatformer": "t:3877",
+    "proceduralgeneration": "t:5125",
+    "programming": "t:5432",
+    "psychedelic": "t:1714",
+    "psychological": "t:5186",
+    "psychologicalhorror": "t:1721",
+    "puzzle": "t:1664",
+    "puzzleplatformer": "t:5537",
+    "quicktimeevents": "t:4559",
+    "racing": "t:699",
+    "railshooter": "t:3954",
+    "realistic": "t:4175",
+    "realtime": "t:4161",
+    "realtimetactics": "t:3813",
+    "realtimewithpause": "t:7107",
+    "relaxing": "t:1654",
+    "resourcemanagement": "t:8945",
+    "resourceseconomy": "g:resource",
+    "retro": "t:4004",
+    "rhythm": "t:1752",
+    "robots": "t:5752",
+    "roguelike": "t:1716",
+    "roguelikedeckbuilder": "t:1091588",
+    "roguelite": "t:3959",
+    "romance": "t:4947",
+    "rome": "t:6948",
+    "rpg": "t:122",
+    "rts": "t:1676",
+    "rugby": "t:49213",
+    "runner": "t:8666",
+    "sailing": "t:13577",
+    "samurai": "t:10617",
+    "sandbox": "t:3810",
+    "satire": "t:1651",
+    "science": "t:5794",
+    "sciencetech": "g:science",
+    "scifi": "t:3942",
+    "scoreattack": "t:5154",
+    "setting": "g:setting",
+    "sexualcontent": "t:12095",
+    "sexualthemes": "t:12095",
+    "sf": "t:3942",
+    "shootemup": "t:4255",
+    "shooter": "t:1774",
+    "shopkeeper": "t:91114",
+    "short": "t:4234",
+    "sidescroller": "t:3798",
+    "silentprotagonist": "t:15954",
+    "simulation": "t:599",
+    "skateboarding": "t:1753",
+    "skating": "t:96359",
+    "skiing": "t:7309",
+    "sniper": "t:7423",
+    "snooker": "t:4852",
+    "snow": "t:9803",
+    "snowboarding": "t:28444",
+    "socialdeduction": "t:745697",
+    "sokoban": "t:1730",
+    "solitaire": "t:13070",
+    "soulslike": "t:29482",
+    "space": "t:1755",
+    "spaceships": "t:4291",
+    "spacesim": "t:16598",
+    "spectaclefighter": "t:4777",
+    "spelling": "t:71389",
+    "sports": "t:701",
+    "sportsracing": "g:sports-racing",
+    "stealth": "t:1687",
+    "steampunk": "t:1777",
+    "storyrich": "t:1742",
+    "strategy": "t:9",
+    "strategyrpg": "t:17305",
+    "stylized": "t:4252",
+    "subjects": "g:subject",
+    "submarine": "t:19780",
+    "superhero": "t:1671",
+    "supernatural": "t:10808",
+    "surreal": "t:1710",
+    "survival": "t:1662",
+    "survivalhorror": "t:3978",
+    "swordplay": "t:4608",
+    "tabletop": "t:17389",
+    "tactical": "t:1708",
+    "tacticalrpg": "t:17305",
+    "tanks": "t:13276",
+    "tcg": "t:9271",
+    "tennis": "t:5914",
+    "tension": "g:tension",
+    "textbased": "t:31275",
+    "thirdperson": "t:1697",
+    "thirdpersonshooter": "t:3814",
+    "thriller": "t:4064",
+    "timeattack": "t:5390",
+    "timemanagement": "t:16689",
+    "timemanipulation": "t:6625",
+    "timetravel": "t:10679",
+    "topdown": "t:4791",
+    "topdownshooter": "t:4637",
+    "towerdefense": "t:1645",
+    "trading": "t:4202",
+    "tradingcardgame": "t:9271",
+    "traditionalroguelike": "t:454187",
+    "trains": "t:1616",
+    "transhumanism": "t:4137",
+    "transportation": "t:10383",
+    "trivia": "t:10437",
+    "turnbased": "t:1677",
+    "turnbasedcombat": "t:4325",
+    "turnbasedstrategy": "t:1741",
+    "turnbasedtactics": "t:14139",
+    "twinstickshooter": "t:4758",
+    "typing": "t:1674",
+    "underground": "t:21006",
+    "underwater": "t:9157",
+    "unforgiving": "t:4026",
+    "vampires": "t:12686",
+    "vehiclesim": "g:vehicle-sim",
+    "vehicularcombat": "t:11104",
+    "viewvisuals": "g:visual",
+    "vikings": "t:11634",
+    "villainprotagonist": "t:11333",
+    "violent": "t:4667",
+    "visualnovel": "t:3799",
+    "volleyball": "t:847164",
+    "voxel": "t:1732",
+    "vr": "t:21978",
+    "walkingsimulator": "t:5900",
+    "war": "t:1678",
+    "wargame": "t:4684",
+    "warmilitary": "g:war",
+    "werewolves": "t:17015",
+    "western": "t:1647",
+    "wholesome": "t:552282",
+    "wolves": "t:20486",
+    "wordgame": "t:24003",
+    "worldwari": "t:5382",
+    "worldwarii": "t:4150",
+    "wrestling": "t:47827",
+    "wuxia": "t:25959",
+    "xianxia": "t:760247",
+    "zombies": "t:1659",
+    "zoo": "t:46348",
+    "가게운영": "t:91114",
+    "가상현실": "t:21978",
+    "가족친화": "t:5350",
+    "감성적": "t:5608",
+    "갓게임": "t:5300",
+    "강도": "t:1680",
+    "개": "t:1637",
+    "개척시뮬레이션": "t:220585",
+    "거래": "t:4202",
+    "건설": "t:1643",
+    "건전함": "t:552282",
+    "걷기시뮬레이션": "t:5900",
+    "검술": "t:4608",
+    "게이밍": "t:150626",
+    "게임소재": "t:150626",
+    "격투": "t:1743",
+    "경영": "t:12472",
+    "경제": "t:4695",
+    "고난도": "t:4026",
+    "고대로마": "t:6948",
+    "고딕": "t:3952",
+    "고양이": "t:17894",
+    "고어유혈": "t:4345",
+    "골프": "t:7038",
+    "공룡": "t:5160",
+    "공상과학": "t:3942",
+    "공포": "t:1667",
+    "과학": "t:5794",
+    "과학기술": "g:science",
+    "괴물초자연": "g:monster",
+    "교통수단": "t:10383",
+    "교통운송": "t:10383",
+    "군락시뮬레이션": "t:220585",
+    "군사": "t:4168",
+    "귀여운": "t:4726",
+    "그래픽스타일": "g:art",
+    "그리드기반움직임": "t:7569",
+    "기계탈것": "g:machines",
+    "기지건설": "t:7332",
+    "기차": "t:1616",
+    "긴장감": "g:tension",
+    "깊은세계관": "t:3854",
+    "깜놀": "t:42089",
+    "꾸미기": "t:889937",
+    "낚시": "t:15564",
+    "낱말게임": "t:24003",
+    "내러티브": "t:1742",
+    "냉전": "t:5179",
+    "논리": "t:6129",
+    "농구": "t:1746",
+    "농업": "t:87918",
+    "농장시뮬레이션": "t:87918",
+    "누아르": "t:6052",
+    "눈": "t:9803",
+    "늑대": "t:20486",
+    "늑대인간": "t:17015",
+    "닌자": "t:1688",
+    "다이내믹내레이션": "t:9592",
+    "다채로운": "t:4305",
+    "다크판타지": "t:4604",
+    "단어게임": "t:24003",
+    "단편": "t:4234",
+    "당구": "t:4852",
+    "대전략": "t:4364",
+    "대체역사": "t:4598",
+    "대화": "t:42152",
+    "대화중심": "t:42152",
+    "던전크롤러": "t:1720",
+    "던전탐험": "t:1720",
+    "덱빌딩": "t:32322",
+    "도박": "t:16250",
+    "도시건설": "t:4328",
+    "동물": "t:9626",
+    "동물원": "t:46348",
+    "동물원경영": "t:46348",
+    "드워프": "t:4535",
+    "디스토피아": "t:5030",
+    "러너": "t:8666",
+    "러브크래프트": "t:7432",
+    "러브크래프트크툴루": "t:7432",
+    "럭비": "t:49213",
+    "레밍": "t:17337",
+    "레밍스류": "t:17337",
+    "레벨에디터": "t:8122",
+    "레슬링": "t:47827",
+    "레이싱": "t:699",
+    "레일슈터": "t:3954",
+    "레일슈팅": "t:3954",
+    "레트로": "t:4004",
+    "로그라이크": "t:1716",
+    "로그라이크덱빌딩": "t:1091588",
+    "로그라이트": "t:3959",
+    "로마": "t:6948",
+    "로맨스": "t:4947",
+    "로봇": "t:5752",
+    "루터슈터": "t:353880",
+    "리듬": "t:1752",
+    "릴랙싱": "t:1654",
+    "마법": "t:4057",
+    "마법신화": "g:magic",
+    "마이닝": "t:5981",
+    "마작": "t:33572",
+    "만화": "t:4195",
+    "만화같은": "t:4195",
+    "만화책": "t:1751",
+    "말": "t:6041",
+    "말없는주인공": "t:15954",
+    "맞춤법": "t:71389",
+    "매치3": "t:1665",
+    "매크": "t:4821",
+    "멀티엔딩": "t:6971",
+    "메카": "t:4821",
+    "메트로배니아": "t:1628",
+    "모드": "t:1669",
+    "모드가능": "t:1669",
+    "모드지원": "t:1669",
+    "모터크로스": "t:15868",
+    "몰입형시뮬레이션": "t:9204",
+    "무술": "t:6915",
+    "무쌍": "t:323922",
+    "무역거래": "t:4202",
+    "무협": "t:25959",
+    "물리": "t:3968",
+    "물리엔진": "t:3968",
+    "미니게임": "t:8093",
+    "미니골프": "t:7038",
+    "미니멀리스트": "t:4094",
+    "미래": "t:4295",
+    "미래적": "t:4295",
+    "미스터리": "t:5716",
+    "미스터리던전": "t:198631",
+    "미식축구": "t:1254552",
+    "밈": "t:10397",
+    "바이크": "t:123332",
+    "바이킹": "t:11634",
+    "반이상향": "t:5030",
+    "방치형": "t:615955",
+    "방탈출": "t:769306",
+    "배구": "t:847164",
+    "배틀로얄": "t:176981",
+    "뱀서": "t:723991",
+    "뱀서라이크": "t:723991",
+    "뱀파이어": "t:12686",
+    "범죄": "t:6378",
+    "범죄첩보": "g:crime",
+    "벨트스크롤액션": "t:4158",
+    "보드게임": "t:1770",
+    "보스러시": "t:11095",
+    "복고풍": "t:4004",
+    "복셀": "t:1732",
+    "복수결말": "t:6971",
+    "복싱": "t:12190",
+    "볼링": "t:7328",
+    "부머슈터": "t:1023537",
+    "부머슈팅": "t:1023537",
+    "분위기": "g:mood",
+    "분위기있는": "t:4166",
+    "불릿타임": "t:5796",
+    "블랙유머": "t:5923",
+    "블랙코미디": "t:5923",
+    "블렛타임": "t:5796",
+    "블록낙하": "t:37376",
+    "블록쌓기": "t:37376",
+    "비뎀업": "t:4158",
+    "비선형": "t:6869",
+    "비주얼노벨": "t:3799",
+    "비행": "t:15045",
+    "빠른진행": "t:1734",
+    "사냥": "t:9564",
+    "사무라이": "t:10617",
+    "사실적": "t:4175",
+    "사이버펑크": "t:4115",
+    "사이클링": "t:19568",
+    "사이키델릭": "t:1714",
+    "상식퀴즈": "t:10437",
+    "새": "t:6214",
+    "샌드박스": "t:3810",
+    "생명체수집": "t:916648",
+    "생존": "t:1662",
+    "생존공포": "t:3978",
+    "생활시뮬레이션": "t:10235",
+    "서바이벌": "t:1662",
+    "서바이벌호러": "t:3978",
+    "서부": "t:1647",
+    "선정성": "t:12095",
+    "선정적콘텐츠": "t:12095",
+    "선택의중요성": "t:6426",
+    "선택이중요한": "t:6426",
+    "선택형어드벤처": "t:4486",
+    "선협": "t:760247",
+    "선형": "t:7250",
+    "세계관배경": "g:setting",
+    "소설기반": "t:3796",
+    "소설원작": "t:3796",
+    "소셜디덕션": "t:745697",
+    "소울라이크": "t:29482",
+    "소울류": "t:29482",
+    "소재": "g:subject",
+    "소코반": "t:1730",
+    "손으로그린": "t:6815",
+    "솔리테어": "t:13070",
+    "수사": "t:8369",
+    "수중": "t:9157",
+    "수집형플랫포머": "t:5652",
+    "숨은그림및물체": "t:1738",
+    "숨은그림찾기": "t:1738",
+    "슈팅": "t:1774",
+    "슈퍼히어로": "t:1671",
+    "슛뎀업": "t:4255",
+    "스노보딩": "t:28444",
+    "스릴러": "t:4064",
+    "스케이트보딩": "t:1753",
+    "스케이팅": "t:96359",
+    "스코어어택": "t:5154",
+    "스키": "t:7309",
+    "스토리중심": "t:1742",
+    "스토리풍부": "t:1742",
+    "스팀펑크": "t:1777",
+    "스펙터클액션": "t:4777",
+    "스펙터클파이터": "t:4777",
+    "스포츠": "t:701",
+    "스포츠레이싱": "g:sports-racing",
+    "시간공격": "t:5390",
+    "시간관리": "t:16689",
+    "시간여행": "t:10679",
+    "시간조작": "t:6625",
+    "시네마틱": "t:4145",
+    "시뮬": "t:599",
+    "시뮬레이션": "t:599",
+    "시점": "g:view",
+    "시점그래픽": "g:visual",
+    "신게임": "t:5300",
+    "신념": "t:180368",
+    "신체노출": "t:6650",
+    "신화": "t:16094",
+    "실사영상fmv": "t:18594",
+    "실시간": "t:4161",
+    "실시간일시정지가능": "t:7107",
+    "실시간전략": "t:1676",
+    "실시간전술": "t:3813",
+    "실험적": "t:13782",
+    "심리공포": "t:1721",
+    "심리적": "t:5186",
+    "심리적공포": "t:1721",
+    "쌍방향소설": "t:11014",
+    "아늑함": "t:97376",
+    "아레나슈터": "t:5547",
+    "아레나슈팅": "t:5547",
+    "아웃브레이크시뮬레이션": "t:1100686",
+    "아이들러": "t:615955",
+    "아이소메트릭": "t:5851",
+    "아케이드": "t:1773",
+    "악당주인공": "t:11333",
+    "악령": "t:9541",
+    "악마": "t:9541",
+    "암살": "t:97070",
+    "애니": "t:4085",
+    "애니메이션": "t:4085",
+    "애니메이션풍": "t:4085",
+    "액션": "t:19",
+    "액션rpg": "t:4231",
+    "액션rts": "t:1723",
+    "액션로그라이크": "t:42804",
+    "액션어드벤처": "t:4106",
+    "야구": "t:5727",
+    "약탈": "t:4236",
+    "약탈슈팅": "t:353880",
+    "양식화된": "t:4252",
+    "어두운": "t:4342",
+    "어드벤처": "t:21",
+    "엘프": "t:6054",
+    "여성주인공": "t:7208",
+    "여우": "t:507423",
+    "여주인공": "t:7208",
+    "역사": "t:3987",
+    "연애시뮬레이션": "t:9551",
+    "영구죽음": "t:1759",
+    "오토메": "t:31579",
+    "오토바이": "t:123332",
+    "오토배틀러": "t:1084988",
+    "오프로드": "t:7622",
+    "오픈월드": "t:1695",
+    "오픈월드생존제작": "t:1100689",
+    "올드스쿨": "t:3916",
+    "외계인": "t:1673",
+    "외교": "t:6310",
+    "요리": "t:3920",
+    "용": "t:4046",
+    "우주": "t:1755",
+    "우주선": "t:4291",
+    "우주시뮬레이션": "t:16598",
+    "운전": "t:1644",
+    "워게임": "t:4684",
+    "웨스턴": "t:1647",
+    "유머": "t:1719",
+    "유혈": "t:4345",
+    "육각형그리드": "t:1717",
+    "음모": "t:5372",
+    "음악": "t:1621",
+    "음악기반절차적생성": "t:8253",
+    "의도적으로불편한조작": "t:14906",
+    "의도적으로불편한컨트롤": "t:14906",
+    "의학시뮬레이션": "t:1100688",
+    "이머시브심": "t:9204",
+    "이용연령표현": "g:content",
+    "익스트랙션슈터": "t:1199779",
+    "인공지능": "t:7926",
+    "인물": "g:characters",
+    "인벤토리관리": "t:6276",
+    "인크리멘탈": "t:560542",
+    "인터랙티브픽션": "t:11014",
+    "일상작업": "g:chore-sim",
+    "일시정지가능한실시간": "t:7107",
+    "일직선진행": "t:7250",
+    "자동차시뮬레이션": "t:1100687",
+    "자동화": "t:255534",
+    "자본주의": "t:4845",
+    "자신이선택하는모험": "t:4486",
+    "자연": "t:30358",
+    "자원경제관리": "g:resource",
+    "자원관리": "t:8945",
+    "잠수함": "t:19780",
+    "잠입": "t:1687",
+    "장르": "g:genre",
+    "장소": "g:place",
+    "장식": "t:889937",
+    "저격": "t:7423",
+    "저격수": "t:7423",
+    "전략": "t:9",
+    "전략rpg": "t:17305",
+    "전략전술rpg": "t:17305",
+    "전술": "t:1708",
+    "전술rpg": "t:17305",
+    "전염병시뮬레이션": "t:1100686",
+    "전쟁": "t:1678",
+    "전쟁게임": "t:4684",
+    "전쟁군사": "g:war",
+    "전체이용가": "t:5350",
+    "전투": "t:3993",
+    "전투레이싱": "t:4102",
+    "절차적생성": "t:5125",
+    "점프스케어": "t:42089",
+    "정리": "t:1239876",
+    "정밀플랫포머": "t:3877",
+    "정밀플랫폼": "t:3877",
+    "정치시뮬레이션": "t:26921",
+    "정통로그라이크": "t:454187",
+    "제1차세계대전": "t:5382",
+    "제2차세계대전": "t:4150",
+    "제트": "t:15045",
+    "좀비": "t:1659",
+    "주사위": "t:7556",
+    "중세": "t:4172",
+    "지하": "t:21006",
+    "직업시뮬레이션": "t:35079",
+    "직업클래스선택": "t:4155",
+    "진행방식": "g:pace",
+    "짧은플레이": "t:4234",
+    "차량전투": "t:11104",
+    "창고지기": "t:1730",
+    "창작모드": "g:creation",
+    "채광": "t:5981",
+    "철학적": "t:15277",
+    "첩보활동": "t:1776",
+    "청소": "t:23491",
+    "체스": "t:4184",
+    "초고난도": "t:4026",
+    "초자연": "t:10808",
+    "초현실": "t:1710",
+    "총기커스터마이즈": "t:5765",
+    "총커스터마이즈": "t:5765",
+    "추리": "t:5613",
+    "추상적": "t:4400",
+    "추억소환": "t:14720",
+    "축구": "t:1254546",
+    "취미시뮬레이션": "t:1220528",
+    "카드게임": "t:1666",
+    "카드배틀": "t:791774",
+    "카드배틀러": "t:791774",
+    "카툰풍": "t:4195",
+    "카피바라": "t:1352486",
+    "칸단위이동": "t:7569",
+    "칼싸움": "t:4608",
+    "캐릭터액션": "t:3955",
+    "캐릭터액션게임": "t:3955",
+    "캐릭터커스터마이즈": "t:4747",
+    "캐릭터커스터마이징": "t:4747",
+    "캐주얼": "t:597",
+    "컬렉터톤": "t:5652",
+    "코딩": "t:5432",
+    "코미디": "t:1719",
+    "퀵타임이벤트": "t:4559",
+    "크래프팅": "t:1702",
+    "크리처수집": "t:916648",
+    "크리켓": "t:158638",
+    "클래스기반": "t:4155",
+    "클리커": "t:379975",
+    "타워디펜스": "t:1645",
+    "타임어택": "t:5390",
+    "타자": "t:1674",
+    "타자연습": "t:1674",
+    "탄막": "t:4885",
+    "탄막지옥": "t:4885",
+    "탄막천국": "t:723991",
+    "탄막천국뱀서류": "t:723991",
+    "탈것시뮬레이션": "g:vehicle-sim",
+    "탐정추리": "t:5613",
+    "탐험": "t:3834",
+    "탑다운": "t:4791",
+    "탑다운슈터": "t:4637",
+    "탑다운슈팅": "t:4637",
+    "탱크": "t:13276",
+    "턴제": "t:1677",
+    "턴제전략": "t:1741",
+    "턴제전술": "t:14139",
+    "턴제전투": "t:4325",
+    "테니스": "t:5914",
+    "테이블탑": "t:17389",
+    "텍스트기반": "t:31275",
+    "트랜스휴머니즘": "t:4137",
+    "트레이딩카드게임": "t:9271",
+    "트윈스틱슈터": "t:4758",
+    "트윈스틱슈팅": "t:4758",
+    "파괴": "t:5363",
+    "파밍": "t:87918",
+    "파밍루팅": "t:4236",
+    "파쿠르": "t:4036",
+    "파티": "t:7178",
+    "파티게임": "t:7178",
+    "파티기반rpg": "t:10695",
+    "판타지": "t:1684",
+    "패러디": "t:4878",
+    "퍼마데스": "t:1759",
+    "퍼즐": "t:1664",
+    "퍼즐플랫포머": "t:5537",
+    "퍼즐플랫폼": "t:5537",
+    "포스트아포칼립스": "t:3835",
+    "포인트앤드클릭": "t:1698",
+    "포인트앤클릭": "t:1698",
+    "포커": "t:6835",
+    "폭력": "t:4667",
+    "풍부한스토리": "t:1742",
+    "풍자": "t:1651",
+    "플랫포머": "t:1625",
+    "플랫폼": "t:1625",
+    "플레이방식": "g:play",
+    "픽셀그래픽": "t:3964",
+    "핀볼": "t:6621",
+    "하키": "t:324176",
+    "항해": "t:13577",
+    "해군": "t:6910",
+    "해상전투": "t:4994",
+    "해적": "t:1681",
+    "해킹": "t:5502",
+    "핵앤슬래시": "t:1646",
+    "헥스그리드": "t:1717",
+    "헨타이": "t:9130",
+    "현대": "t:5673",
+    "현실적": "t:4175",
+    "호러": "t:1667",
+    "화성": "t:6702",
+    "활쏘기": "t:13382",
+    "횡스크롤": "t:3798",
+    "히어로슈터": "t:620519",
+    "히어로슈팅": "t:620519",
+    "힐링": "t:1654",
+    "힐링게임": "t:1654"
+  },
+  "tags": {
+    "g:genre": {
+      "ko": "장르",
+      "en": "Genre",
+      "group": true,
+      "count": 634
+    },
+    "t:19": {
+      "ko": "액션",
+      "en": "Action",
+      "group": false,
+      "count": 430
+    },
+    "t:1646": {
+      "ko": "핵앤슬래시",
+      "en": "Hack and Slash",
+      "group": false,
+      "count": 56
+    },
+    "t:4106": {
+      "ko": "액션 어드벤처",
+      "en": "Action-Adventure",
+      "group": false,
+      "count": 111
+    },
+    "t:1743": {
+      "ko": "격투",
+      "en": "Fighting",
+      "group": false,
+      "count": 21
+    },
+    "t:4736": {
+      "ko": "2D 격투",
+      "en": "2D Fighter",
+      "group": false,
+      "count": 11
+    },
+    "t:6506": {
+      "ko": "3D 격투",
+      "en": "3D Fighter",
+      "group": false,
+      "count": 8
+    },
+    "t:4158": {
+      "ko": "벨트스크롤 액션",
+      "en": "Beat 'em up",
+      "group": false,
+      "count": 20
+    },
+    "t:323922": {
+      "ko": "무쌍",
+      "en": "Musou",
+      "group": false,
+      "count": 4
+    },
+    "t:3955": {
+      "ko": "캐릭터 액션",
+      "en": "Character Action Game",
+      "group": false,
+      "count": 16
+    },
+    "t:4777": {
+      "ko": "스펙터클 액션",
+      "en": "Spectacle fighter",
+      "group": false,
+      "count": 14
+    },
+    "t:1625": {
+      "ko": "플랫포머",
+      "en": "Platformer",
+      "group": false,
+      "count": 75
+    },
+    "t:5379": {
+      "ko": "2D 플랫포머",
+      "en": "2D Platformer",
+      "group": false,
+      "count": 17
+    },
+    "t:5395": {
+      "ko": "3D 플랫포머",
+      "en": "3D Platformer",
+      "group": false,
+      "count": 21
+    },
+    "t:3877": {
+      "ko": "정밀 플랫포머",
+      "en": "Precision Platformer",
+      "group": false,
+      "count": 8
+    },
+    "t:5537": {
+      "ko": "퍼즐 플랫포머",
+      "en": "Puzzle Platformer",
+      "group": false,
+      "count": 18
+    },
+    "t:5652": {
+      "ko": "수집형 플랫포머",
+      "en": "Collectathon",
+      "group": false,
+      "count": 12
+    },
+    "t:8666": {
+      "ko": "러너",
+      "en": "Runner",
+      "group": false,
+      "count": 1
+    },
+    "t:1628": {
+      "ko": "메트로배니아",
+      "en": "Metroidvania",
+      "group": false,
+      "count": 13
+    },
+    "t:29482": {
+      "ko": "소울라이크",
+      "en": "Souls-like",
+      "group": false,
+      "count": 48
+    },
+    "t:42804": {
+      "ko": "액션 로그라이크",
+      "en": "Action Roguelike",
+      "group": false,
+      "count": 34
+    },
+    "t:11095": {
+      "ko": "보스 러시",
+      "en": "Boss Rush",
+      "group": false,
+      "count": 2
+    },
+    "t:1773": {
+      "ko": "아케이드",
+      "en": "Arcade",
+      "group": false,
+      "count": 44
+    },
+    "t:5154": {
+      "ko": "스코어 어택",
+      "en": "Score Attack",
+      "group": false,
+      "count": 11
+    },
+    "t:6621": {
+      "ko": "핀볼",
+      "en": "Pinball",
+      "group": false,
+      "count": 1
+    },
+    "t:5390": {
+      "ko": "타임 어택",
+      "en": "Time Attack",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:1774": {
+      "ko": "슈팅",
+      "en": "Shooter",
+      "group": false,
+      "count": 153
+    },
+    "t:1663": {
+      "ko": "FPS",
+      "en": "FPS",
+      "group": false,
+      "count": 93
+    },
+    "t:1023537": {
+      "ko": "부머 슈터",
+      "en": "Boomer Shooter",
+      "group": false,
+      "count": 4
+    },
+    "t:5547": {
+      "ko": "아레나 슈터",
+      "en": "Arena Shooter",
+      "group": false,
+      "count": 6
+    },
+    "t:620519": {
+      "ko": "히어로 슈터",
+      "en": "Hero Shooter",
+      "group": false,
+      "count": 11
+    },
+    "t:3814": {
+      "ko": "3인칭 슈터",
+      "en": "Third-Person Shooter",
+      "group": false,
+      "count": 41
+    },
+    "t:4637": {
+      "ko": "탑다운 슈터",
+      "en": "Top-Down Shooter",
+      "group": false,
+      "count": 9
+    },
+    "t:4758": {
+      "ko": "트윈스틱 슈터",
+      "en": "Twin Stick Shooter",
+      "group": false,
+      "count": 3
+    },
+    "t:4255": {
+      "ko": "슛뎀업",
+      "en": "Shoot 'Em Up",
+      "group": false,
+      "count": 19
+    },
+    "t:4885": {
+      "ko": "탄막",
+      "en": "Bullet Hell",
+      "group": false,
+      "count": 14
+    },
+    "t:723991": {
+      "ko": "탄막 천국(뱀서류)",
+      "en": "Bullet Heaven",
+      "group": false,
+      "count": 7
+    },
+    "t:3954": {
+      "ko": "레일 슈터",
+      "en": "Rail Shooter",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:353880": {
+      "ko": "루터 슈터",
+      "en": "Looter Shooter",
+      "group": false,
+      "count": 15
+    },
+    "t:1199779": {
+      "ko": "익스트랙션 슈터",
+      "en": "Extraction Shooter",
+      "group": false,
+      "count": 10
+    },
+    "t:176981": {
+      "ko": "배틀로얄",
+      "en": "Battle Royale",
+      "group": false,
+      "count": 10
+    },
+    "t:7423": {
+      "ko": "저격",
+      "en": "Sniper",
+      "group": false,
+      "count": 3
+    },
+    "t:122": {
+      "ko": "RPG",
+      "en": "RPG",
+      "group": false,
+      "count": 227
+    },
+    "t:4231": {
+      "ko": "액션 RPG",
+      "en": "Action RPG",
+      "group": false,
+      "count": 87
+    },
+    "t:4434": {
+      "ko": "JRPG",
+      "en": "JRPG",
+      "group": false,
+      "count": 58
+    },
+    "t:4474": {
+      "ko": "CRPG",
+      "en": "CRPG",
+      "group": false,
+      "count": 8
+    },
+    "t:10695": {
+      "ko": "파티 기반 RPG",
+      "en": "Party-Based RPG",
+      "group": false,
+      "count": 27
+    },
+    "t:17305": {
+      "ko": "전략·전술 RPG",
+      "en": "Strategy RPG",
+      "group": false,
+      "count": 21
+    },
+    "t:1754": {
+      "ko": "MMORPG",
+      "en": "MMORPG",
+      "group": false,
+      "count": 12
+    },
+    "t:1720": {
+      "ko": "던전 탐험",
+      "en": "Dungeon Crawler",
+      "group": false,
+      "count": 21
+    },
+    "t:198631": {
+      "ko": "미스터리 던전",
+      "en": "Mystery Dungeon",
+      "group": false,
+      "count": 1
+    },
+    "t:916648": {
+      "ko": "크리처 수집",
+      "en": "Creature Collector",
+      "group": false,
+      "count": 8
+    },
+    "t:9": {
+      "ko": "전략",
+      "en": "Strategy",
+      "group": false,
+      "count": 191
+    },
+    "t:1676": {
+      "ko": "실시간 전략",
+      "en": "RTS",
+      "group": false,
+      "count": 23
+    },
+    "t:1723": {
+      "ko": "액션 RTS",
+      "en": "Action RTS",
+      "group": false,
+      "count": 3
+    },
+    "t:1741": {
+      "ko": "턴제 전략",
+      "en": "Turn-Based Strategy",
+      "group": false,
+      "count": 44
+    },
+    "t:1670": {
+      "ko": "4X",
+      "en": "4X",
+      "group": false,
+      "count": 11
+    },
+    "t:4364": {
+      "ko": "대전략",
+      "en": "Grand Strategy",
+      "group": false,
+      "count": 22
+    },
+    "t:1708": {
+      "ko": "전술",
+      "en": "Tactical",
+      "group": false,
+      "count": 82
+    },
+    "t:14139": {
+      "ko": "턴제 전술",
+      "en": "Turn-Based Tactics",
+      "group": false,
+      "count": 23
+    },
+    "t:3813": {
+      "ko": "실시간 전술",
+      "en": "Real Time Tactics",
+      "group": false,
+      "count": 13
+    },
+    "t:1645": {
+      "ko": "타워 디펜스",
+      "en": "Tower Defense",
+      "group": false,
+      "count": 9
+    },
+    "t:1084988": {
+      "ko": "오토 배틀러",
+      "en": "Auto Battler",
+      "group": false,
+      "count": 5
+    },
+    "t:1718": {
+      "ko": "MOBA",
+      "en": "MOBA",
+      "group": false,
+      "count": 6
+    },
+    "t:4684": {
+      "ko": "워게임",
+      "en": "Wargame",
+      "group": false,
+      "count": 19
+    },
+    "t:599": {
+      "ko": "시뮬레이션",
+      "en": "Simulation",
+      "group": false,
+      "count": 247
+    },
+    "t:12472": {
+      "ko": "경영",
+      "en": "Management",
+      "group": false,
+      "count": 66
+    },
+    "t:91114": {
+      "ko": "가게 운영",
+      "en": "Shop Keeper",
+      "group": false,
+      "count": 4
+    },
+    "t:46348": {
+      "ko": "동물원 경영",
+      "en": "Zoo",
+      "group": false,
+      "count": 1
+    },
+    "t:4328": {
+      "ko": "도시 건설",
+      "en": "City Builder",
+      "group": false,
+      "count": 24
+    },
+    "t:220585": {
+      "ko": "군락 시뮬레이션",
+      "en": "Colony Sim",
+      "group": false,
+      "count": 12
+    },
+    "t:10235": {
+      "ko": "생활 시뮬레이션",
+      "en": "Life Sim",
+      "group": false,
+      "count": 34
+    },
+    "t:35079": {
+      "ko": "직업 시뮬레이션",
+      "en": "Job Simulator",
+      "group": false,
+      "count": 9
+    },
+    "t:1220528": {
+      "ko": "취미 시뮬레이션",
+      "en": "Hobby Sim",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:9551": {
+      "ko": "연애 시뮬레이션",
+      "en": "Dating Sim",
+      "group": false,
+      "count": 26
+    },
+    "t:31579": {
+      "ko": "오토메",
+      "en": "Otome",
+      "group": false,
+      "count": 2
+    },
+    "t:87918": {
+      "ko": "농장 시뮬레이션",
+      "en": "Farming Sim",
+      "group": false,
+      "count": 15
+    },
+    "g:vehicle-sim": {
+      "ko": "탈것 시뮬레이션",
+      "en": "Vehicle Sim",
+      "group": true,
+      "count": 41
+    },
+    "t:1644": {
+      "ko": "운전",
+      "en": "Driving",
+      "group": false,
+      "count": 21
+    },
+    "t:1100687": {
+      "ko": "자동차 시뮬레이션",
+      "en": "Automobile Sim",
+      "group": false,
+      "count": 20
+    },
+    "t:15045": {
+      "ko": "비행",
+      "en": "Flight",
+      "group": false,
+      "count": 5
+    },
+    "t:16598": {
+      "ko": "우주 시뮬레이션",
+      "en": "Space Sim",
+      "group": false,
+      "count": 1
+    },
+    "t:1616": {
+      "ko": "기차",
+      "en": "Trains",
+      "group": false,
+      "count": 6
+    },
+    "t:10383": {
+      "ko": "교통·운송",
+      "en": "Transportation",
+      "group": false,
+      "count": 10
+    },
+    "t:13577": {
+      "ko": "항해",
+      "en": "Sailing",
+      "group": false,
+      "count": 4
+    },
+    "g:chore-sim": {
+      "ko": "일상 작업",
+      "en": "Chores",
+      "group": true,
+      "count": 20
+    },
+    "t:3920": {
+      "ko": "요리",
+      "en": "Cooking",
+      "group": false,
+      "count": 12
+    },
+    "t:23491": {
+      "ko": "청소",
+      "en": "Cleaning",
+      "group": false,
+      "count": 5
+    },
+    "t:1239876": {
+      "ko": "정리",
+      "en": "Organizing",
+      "group": false,
+      "count": 4
+    },
+    "t:889937": {
+      "ko": "꾸미기",
+      "en": "Decorating",
+      "group": false,
+      "count": 3
+    },
+    "t:26921": {
+      "ko": "정치 시뮬레이션",
+      "en": "Political Sim",
+      "group": false,
+      "count": 4
+    },
+    "t:5300": {
+      "ko": "갓 게임",
+      "en": "God Game",
+      "group": false,
+      "count": 3
+    },
+    "t:1100688": {
+      "ko": "의학 시뮬레이션",
+      "en": "Medical Sim",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:1100686": {
+      "ko": "전염병 시뮬레이션",
+      "en": "Outbreak Sim",
+      "group": false,
+      "count": 1
+    },
+    "t:9564": {
+      "ko": "사냥",
+      "en": "Hunting",
+      "group": false,
+      "count": 5
+    },
+    "t:15564": {
+      "ko": "낚시",
+      "en": "Fishing",
+      "group": false,
+      "count": 11
+    },
+    "t:21": {
+      "ko": "어드벤처",
+      "en": "Adventure",
+      "group": false,
+      "count": 387
+    },
+    "t:3799": {
+      "ko": "비주얼 노벨",
+      "en": "Visual Novel",
+      "group": false,
+      "count": 51
+    },
+    "t:1698": {
+      "ko": "포인트 앤 클릭",
+      "en": "Point & Click",
+      "group": false,
+      "count": 42
+    },
+    "t:1738": {
+      "ko": "숨은 그림 찾기",
+      "en": "Hidden Object",
+      "group": false,
+      "count": 9
+    },
+    "t:769306": {
+      "ko": "방 탈출",
+      "en": "Escape Room",
+      "group": false,
+      "count": 11
+    },
+    "t:11014": {
+      "ko": "인터랙티브 픽션",
+      "en": "Interactive Fiction",
+      "group": false,
+      "count": 34
+    },
+    "t:31275": {
+      "ko": "텍스트 기반",
+      "en": "Text-Based",
+      "group": false,
+      "count": 7
+    },
+    "t:4486": {
+      "ko": "선택형 어드벤처",
+      "en": "Choose Your Own Adventure",
+      "group": false,
+      "count": 23
+    },
+    "t:5900": {
+      "ko": "걷기 시뮬레이션",
+      "en": "Walking Simulator",
+      "group": false,
+      "count": 12
+    },
+    "t:5613": {
+      "ko": "탐정·추리",
+      "en": "Detective",
+      "group": false,
+      "count": 45
+    },
+    "t:8369": {
+      "ko": "수사",
+      "en": "Investigation",
+      "group": false,
+      "count": 27
+    },
+    "t:18594": {
+      "ko": "실사 영상(FMV)",
+      "en": "FMV",
+      "group": false,
+      "count": 6
+    },
+    "t:1664": {
+      "ko": "퍼즐",
+      "en": "Puzzle",
+      "group": false,
+      "count": 98
+    },
+    "t:6129": {
+      "ko": "논리",
+      "en": "Logic",
+      "group": false,
+      "count": 12
+    },
+    "t:1730": {
+      "ko": "소코반",
+      "en": "Sokoban",
+      "group": false,
+      "count": 1
+    },
+    "t:1665": {
+      "ko": "매치 3",
+      "en": "Match 3",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:37376": {
+      "ko": "블록 쌓기",
+      "en": "Falling Blocks",
+      "group": false,
+      "count": 1
+    },
+    "t:24003": {
+      "ko": "단어 게임",
+      "en": "Word Game",
+      "group": false,
+      "count": 1
+    },
+    "t:71389": {
+      "ko": "맞춤법",
+      "en": "Spelling",
+      "group": false,
+      "count": 1
+    },
+    "t:10437": {
+      "ko": "상식 퀴즈",
+      "en": "Trivia",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:17337": {
+      "ko": "레밍스류",
+      "en": "Lemmings",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:1667": {
+      "ko": "호러",
+      "en": "Horror",
+      "group": false,
+      "count": 157
+    },
+    "t:3978": {
+      "ko": "서바이벌 호러",
+      "en": "Survival Horror",
+      "group": false,
+      "count": 61
+    },
+    "t:1721": {
+      "ko": "심리 공포",
+      "en": "Psychological Horror",
+      "group": false,
+      "count": 95
+    },
+    "t:42089": {
+      "ko": "점프 스케어",
+      "en": "Jump Scare",
+      "group": false,
+      "count": 3
+    },
+    "g:sports-racing": {
+      "ko": "스포츠·레이싱",
+      "en": "Sports & Racing",
+      "group": true,
+      "count": 36
+    },
+    "t:701": {
+      "ko": "스포츠",
+      "en": "Sports",
+      "group": false,
+      "count": 21
+    },
+    "t:1254546": {
+      "ko": "축구",
+      "en": "Football (Soccer)",
+      "group": false,
+      "count": 3
+    },
+    "t:1254552": {
+      "ko": "미식축구",
+      "en": "Football (American)",
+      "group": false,
+      "count": 1
+    },
+    "t:5727": {
+      "ko": "야구",
+      "en": "Baseball",
+      "group": false,
+      "count": 2
+    },
+    "t:1746": {
+      "ko": "농구",
+      "en": "Basketball",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:5914": {
+      "ko": "테니스",
+      "en": "Tennis",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:847164": {
+      "ko": "배구",
+      "en": "Volleyball",
+      "group": false,
+      "count": 1
+    },
+    "t:7038": {
+      "ko": "골프",
+      "en": "Golf",
+      "group": false,
+      "count": 2
+    },
+    "t:324176": {
+      "ko": "하키",
+      "en": "Hockey",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:49213": {
+      "ko": "럭비",
+      "en": "Rugby",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:158638": {
+      "ko": "크리켓",
+      "en": "Cricket",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:12190": {
+      "ko": "복싱",
+      "en": "Boxing",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:47827": {
+      "ko": "레슬링",
+      "en": "Wrestling",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:7309": {
+      "ko": "스키",
+      "en": "Skiing",
+      "group": false,
+      "count": 1
+    },
+    "t:28444": {
+      "ko": "스노보딩",
+      "en": "Snowboarding",
+      "group": false,
+      "count": 1
+    },
+    "t:1753": {
+      "ko": "스케이트보딩",
+      "en": "Skateboarding",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:96359": {
+      "ko": "스케이팅",
+      "en": "Skating",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:19568": {
+      "ko": "사이클링",
+      "en": "Cycling",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:7328": {
+      "ko": "볼링",
+      "en": "Bowling",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:4852": {
+      "ko": "당구",
+      "en": "Billiards",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:13382": {
+      "ko": "활쏘기",
+      "en": "Archery",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:699": {
+      "ko": "레이싱",
+      "en": "Racing",
+      "group": false,
+      "count": 25
+    },
+    "t:4102": {
+      "ko": "전투 레이싱",
+      "en": "Combat Racing",
+      "group": false,
+      "count": 4
+    },
+    "t:7622": {
+      "ko": "오프로드",
+      "en": "Offroad",
+      "group": false,
+      "count": 1
+    },
+    "t:15868": {
+      "ko": "모터크로스",
+      "en": "Motocross",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:252854": {
+      "ko": "BMX",
+      "en": "BMX",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:129761": {
+      "ko": "ATV",
+      "en": "ATV",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:123332": {
+      "ko": "바이크",
+      "en": "Bikes",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:597": {
+      "ko": "캐주얼",
+      "en": "Casual",
+      "group": false,
+      "count": 182
+    },
+    "t:7178": {
+      "ko": "파티 게임",
+      "en": "Party Game",
+      "group": false,
+      "count": 21
+    },
+    "t:8093": {
+      "ko": "미니게임",
+      "en": "Minigames",
+      "group": false,
+      "count": 5
+    },
+    "t:745697": {
+      "ko": "소셜 디덕션",
+      "en": "Social Deduction",
+      "group": false,
+      "count": 4
+    },
+    "t:560542": {
+      "ko": "인크리멘탈",
+      "en": "Incremental",
+      "group": false,
+      "count": 24
+    },
+    "t:615955": {
+      "ko": "방치형",
+      "en": "Idler",
+      "group": false,
+      "count": 19
+    },
+    "t:379975": {
+      "ko": "클리커",
+      "en": "Clicker",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:1674": {
+      "ko": "타자 연습",
+      "en": "Typing",
+      "group": false,
+      "count": 3
+    },
+    "t:1752": {
+      "ko": "리듬",
+      "en": "Rhythm",
+      "group": false,
+      "count": 11
+    },
+    "t:1621": {
+      "ko": "음악",
+      "en": "Music",
+      "group": false,
+      "count": 9
+    },
+    "t:17389": {
+      "ko": "테이블탑",
+      "en": "Tabletop",
+      "group": false,
+      "count": 42
+    },
+    "t:1770": {
+      "ko": "보드게임",
+      "en": "Board Game",
+      "group": false,
+      "count": 8
+    },
+    "t:4184": {
+      "ko": "체스",
+      "en": "Chess",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:7556": {
+      "ko": "주사위",
+      "en": "Dice",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:33572": {
+      "ko": "마작",
+      "en": "Mahjong",
+      "group": false,
+      "count": 1
+    },
+    "t:1666": {
+      "ko": "카드 게임",
+      "en": "Card Game",
+      "group": false,
+      "count": 24
+    },
+    "t:32322": {
+      "ko": "덱빌딩",
+      "en": "Deckbuilding",
+      "group": false,
+      "count": 16
+    },
+    "t:1091588": {
+      "ko": "로그라이크 덱빌딩",
+      "en": "Roguelike Deckbuilder",
+      "group": false,
+      "count": 8
+    },
+    "t:791774": {
+      "ko": "카드 배틀러",
+      "en": "Card Battler",
+      "group": false,
+      "count": 10
+    },
+    "t:9271": {
+      "ko": "TCG",
+      "en": "Trading Card Game",
+      "group": false,
+      "count": 5
+    },
+    "t:13070": {
+      "ko": "솔리테어",
+      "en": "Solitaire",
+      "group": false,
+      "count": 1
+    },
+    "t:6835": {
+      "ko": "포커",
+      "en": "Poker",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:16250": {
+      "ko": "도박",
+      "en": "Gambling",
+      "group": false,
+      "count": 11
+    },
+    "g:play": {
+      "ko": "플레이 방식",
+      "en": "Gameplay",
+      "group": true,
+      "count": 615
+    },
+    "t:1695": {
+      "ko": "오픈월드",
+      "en": "Open World",
+      "group": false,
+      "count": 179
+    },
+    "t:3810": {
+      "ko": "샌드박스",
+      "en": "Sandbox",
+      "group": false,
+      "count": 182
+    },
+    "t:3968": {
+      "ko": "물리 엔진",
+      "en": "Physics",
+      "group": false,
+      "count": 74
+    },
+    "t:5363": {
+      "ko": "파괴",
+      "en": "Destruction",
+      "group": false,
+      "count": 15
+    },
+    "g:creation": {
+      "ko": "창작·모드",
+      "en": "Creation & Mods",
+      "group": true,
+      "count": 58
+    },
+    "t:8122": {
+      "ko": "레벨 에디터",
+      "en": "Level Editor",
+      "group": false,
+      "count": 14
+    },
+    "t:1669": {
+      "ko": "모드 지원",
+      "en": "Moddable",
+      "group": false,
+      "count": 49
+    },
+    "t:1662": {
+      "ko": "생존",
+      "en": "Survival",
+      "group": false,
+      "count": 114
+    },
+    "t:1100689": {
+      "ko": "오픈월드 생존 제작",
+      "en": "Open World Survival Craft",
+      "group": false,
+      "count": 31
+    },
+    "t:1702": {
+      "ko": "크래프팅",
+      "en": "Crafting",
+      "group": false,
+      "count": 71
+    },
+    "t:1643": {
+      "ko": "건설",
+      "en": "Building",
+      "group": false,
+      "count": 109
+    },
+    "t:7332": {
+      "ko": "기지 건설",
+      "en": "Base Building",
+      "group": false,
+      "count": 63
+    },
+    "t:255534": {
+      "ko": "자동화",
+      "en": "Automation",
+      "group": false,
+      "count": 18
+    },
+    "t:3834": {
+      "ko": "탐험",
+      "en": "Exploration",
+      "group": false,
+      "count": 161
+    },
+    "t:5125": {
+      "ko": "절차적 생성",
+      "en": "Procedural Generation",
+      "group": false,
+      "count": 37
+    },
+    "t:8253": {
+      "ko": "음악 기반 절차적 생성",
+      "en": "Music-Based Procedural Generation",
+      "group": false,
+      "count": 2
+    },
+    "t:1716": {
+      "ko": "로그라이크",
+      "en": "Roguelike",
+      "group": false,
+      "count": 59
+    },
+    "t:454187": {
+      "ko": "정통 로그라이크",
+      "en": "Traditional Roguelike",
+      "group": false,
+      "count": 1
+    },
+    "t:1759": {
+      "ko": "영구 죽음",
+      "en": "Perma Death",
+      "group": false,
+      "count": 16
+    },
+    "t:3959": {
+      "ko": "로그라이트",
+      "en": "Roguelite",
+      "group": false,
+      "count": 50
+    },
+    "t:1742": {
+      "ko": "스토리 중심",
+      "en": "Story Rich",
+      "group": false,
+      "count": 318
+    },
+    "t:6426": {
+      "ko": "선택이 중요한",
+      "en": "Choices Matter",
+      "group": false,
+      "count": 86
+    },
+    "t:6971": {
+      "ko": "멀티 엔딩",
+      "en": "Multiple Endings",
+      "group": false,
+      "count": 58
+    },
+    "t:6869": {
+      "ko": "비선형",
+      "en": "Nonlinear",
+      "group": false,
+      "count": 12
+    },
+    "t:7250": {
+      "ko": "일직선 진행",
+      "en": "Linear",
+      "group": false,
+      "count": 18
+    },
+    "t:3854": {
+      "ko": "깊은 세계관",
+      "en": "Lore-Rich",
+      "group": false,
+      "count": 31
+    },
+    "t:42152": {
+      "ko": "대화 중심",
+      "en": "Dialogue Heavy",
+      "group": false,
+      "count": 9
+    },
+    "t:9592": {
+      "ko": "다이내믹 내레이션",
+      "en": "Dynamic Narration",
+      "group": false,
+      "count": 4
+    },
+    "t:3796": {
+      "ko": "소설 원작",
+      "en": "Based On A Novel",
+      "group": false,
+      "count": 1
+    },
+    "t:7208": {
+      "ko": "여성 주인공",
+      "en": "Female Protagonist",
+      "group": false,
+      "count": 67
+    },
+    "t:15954": {
+      "ko": "말 없는 주인공",
+      "en": "Silent Protagonist",
+      "group": false,
+      "count": 5
+    },
+    "t:11333": {
+      "ko": "악당 주인공",
+      "en": "Villain Protagonist",
+      "group": false,
+      "count": 6
+    },
+    "t:44868": {
+      "ko": "LGBTQ+",
+      "en": "LGBTQ+",
+      "group": false,
+      "count": 36
+    },
+    "t:4947": {
+      "ko": "로맨스",
+      "en": "Romance",
+      "group": false,
+      "count": 16
+    },
+    "g:pace": {
+      "ko": "진행 방식",
+      "en": "Pacing",
+      "group": true,
+      "count": 71
+    },
+    "t:1677": {
+      "ko": "턴제",
+      "en": "Turn-Based",
+      "group": false,
+      "count": 52
+    },
+    "t:4325": {
+      "ko": "턴제 전투",
+      "en": "Turn-Based Combat",
+      "group": false,
+      "count": 41
+    },
+    "t:4161": {
+      "ko": "실시간",
+      "en": "Real-Time",
+      "group": false,
+      "count": 9
+    },
+    "t:7107": {
+      "ko": "실시간(일시정지 가능)",
+      "en": "Real-Time with Pause",
+      "group": false,
+      "count": 6
+    },
+    "t:1734": {
+      "ko": "빠른 진행",
+      "en": "Fast-Paced",
+      "group": false,
+      "count": 11
+    },
+    "t:7569": {
+      "ko": "칸 단위 이동",
+      "en": "Grid-Based Movement",
+      "group": false,
+      "count": 2
+    },
+    "t:1717": {
+      "ko": "헥스 그리드",
+      "en": "Hex Grid",
+      "group": false,
+      "count": 3
+    },
+    "t:3993": {
+      "ko": "전투",
+      "en": "Combat",
+      "group": false,
+      "count": 126
+    },
+    "t:4608": {
+      "ko": "검술",
+      "en": "Swordplay",
+      "group": false,
+      "count": 14
+    },
+    "t:6915": {
+      "ko": "무술",
+      "en": "Martial Arts",
+      "group": false,
+      "count": 16
+    },
+    "t:11104": {
+      "ko": "차량 전투",
+      "en": "Vehicular Combat",
+      "group": false,
+      "count": 12
+    },
+    "t:4994": {
+      "ko": "해상 전투",
+      "en": "Naval Combat",
+      "group": false,
+      "count": 5
+    },
+    "t:5765": {
+      "ko": "총기 커스터마이즈",
+      "en": "Gun Customization",
+      "group": false,
+      "count": 6
+    },
+    "t:5796": {
+      "ko": "불릿 타임",
+      "en": "Bullet Time",
+      "group": false,
+      "count": 5
+    },
+    "t:4155": {
+      "ko": "직업(클래스) 선택",
+      "en": "Class-Based",
+      "group": false,
+      "count": 10
+    },
+    "t:1687": {
+      "ko": "잠입",
+      "en": "Stealth",
+      "group": false,
+      "count": 52
+    },
+    "t:97070": {
+      "ko": "암살",
+      "en": "Assassins",
+      "group": false,
+      "count": 5
+    },
+    "t:9204": {
+      "ko": "이머시브 심",
+      "en": "Immersive Sim",
+      "group": false,
+      "count": 49
+    },
+    "t:4747": {
+      "ko": "캐릭터 커스터마이징",
+      "en": "Character Customization",
+      "group": false,
+      "count": 94
+    },
+    "g:resource": {
+      "ko": "자원·경제 관리",
+      "en": "Resources & Economy",
+      "group": true,
+      "count": 125
+    },
+    "t:8945": {
+      "ko": "자원 관리",
+      "en": "Resource Management",
+      "group": false,
+      "count": 53
+    },
+    "t:4695": {
+      "ko": "경제",
+      "en": "Economy",
+      "group": false,
+      "count": 38
+    },
+    "t:4202": {
+      "ko": "무역·거래",
+      "en": "Trading",
+      "group": false,
+      "count": 14
+    },
+    "t:5981": {
+      "ko": "채광",
+      "en": "Mining",
+      "group": false,
+      "count": 6
+    },
+    "t:16689": {
+      "ko": "시간 관리",
+      "en": "Time Management",
+      "group": false,
+      "count": 14
+    },
+    "t:6276": {
+      "ko": "인벤토리 관리",
+      "en": "Inventory Management",
+      "group": false,
+      "count": 13
+    },
+    "t:6310": {
+      "ko": "외교",
+      "en": "Diplomacy",
+      "group": false,
+      "count": 9
+    },
+    "t:4845": {
+      "ko": "자본주의",
+      "en": "Capitalism",
+      "group": false,
+      "count": 16
+    },
+    "t:4236": {
+      "ko": "파밍(루팅)",
+      "en": "Loot",
+      "group": false,
+      "count": 27
+    },
+    "t:4234": {
+      "ko": "짧은 플레이",
+      "en": "Short",
+      "group": false,
+      "count": 11
+    },
+    "t:4026": {
+      "ko": "고난도",
+      "en": "Difficult",
+      "group": false,
+      "count": 90
+    },
+    "t:4559": {
+      "ko": "퀵타임 이벤트",
+      "en": "Quick-Time Events",
+      "group": false,
+      "count": 4
+    },
+    "t:6625": {
+      "ko": "시간 조작",
+      "en": "Time Manipulation",
+      "group": false,
+      "count": 3
+    },
+    "t:4036": {
+      "ko": "파쿠르",
+      "en": "Parkour",
+      "group": false,
+      "count": 19
+    },
+    "t:5432": {
+      "ko": "코딩",
+      "en": "Programming",
+      "group": false,
+      "count": 4
+    },
+    "t:5502": {
+      "ko": "해킹",
+      "en": "Hacking",
+      "group": false,
+      "count": 3
+    },
+    "t:14906": {
+      "ko": "의도적으로 불편한 조작",
+      "en": "Intentionally Awkward Controls",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "g:setting": {
+      "ko": "세계관·배경",
+      "en": "Setting",
+      "group": true,
+      "count": 370
+    },
+    "t:1684": {
+      "ko": "판타지",
+      "en": "Fantasy",
+      "group": false,
+      "count": 139
+    },
+    "t:4604": {
+      "ko": "다크 판타지",
+      "en": "Dark Fantasy",
+      "group": false,
+      "count": 42
+    },
+    "t:25959": {
+      "ko": "무협",
+      "en": "Wuxia",
+      "group": false,
+      "count": 2
+    },
+    "t:760247": {
+      "ko": "선협",
+      "en": "Xianxia",
+      "group": false,
+      "count": 1
+    },
+    "t:3942": {
+      "ko": "SF",
+      "en": "Sci-fi",
+      "group": false,
+      "count": 111
+    },
+    "t:4115": {
+      "ko": "사이버펑크",
+      "en": "Cyberpunk",
+      "group": false,
+      "count": 13
+    },
+    "t:1755": {
+      "ko": "우주",
+      "en": "Space",
+      "group": false,
+      "count": 33
+    },
+    "t:6702": {
+      "ko": "화성",
+      "en": "Mars",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:4295": {
+      "ko": "미래",
+      "en": "Futuristic",
+      "group": false,
+      "count": 17
+    },
+    "t:1777": {
+      "ko": "스팀펑크",
+      "en": "Steampunk",
+      "group": false,
+      "count": 3
+    },
+    "t:5030": {
+      "ko": "디스토피아",
+      "en": "Dystopian",
+      "group": false,
+      "count": 13
+    },
+    "t:3835": {
+      "ko": "포스트아포칼립스",
+      "en": "Post-apocalyptic",
+      "group": false,
+      "count": 50
+    },
+    "t:3987": {
+      "ko": "역사",
+      "en": "Historical",
+      "group": false,
+      "count": 81
+    },
+    "t:4172": {
+      "ko": "중세",
+      "en": "Medieval",
+      "group": false,
+      "count": 29
+    },
+    "t:6948": {
+      "ko": "고대 로마",
+      "en": "Rome",
+      "group": false,
+      "count": 2
+    },
+    "t:5382": {
+      "ko": "1차 세계대전",
+      "en": "World War I",
+      "group": false,
+      "count": 2
+    },
+    "t:4150": {
+      "ko": "2차 세계대전",
+      "en": "World War II",
+      "group": false,
+      "count": 10
+    },
+    "t:5179": {
+      "ko": "냉전",
+      "en": "Cold War",
+      "group": false,
+      "count": 4
+    },
+    "t:1647": {
+      "ko": "서부",
+      "en": "Western",
+      "group": false,
+      "count": 5
+    },
+    "t:4598": {
+      "ko": "대체 역사",
+      "en": "Alternate History",
+      "group": false,
+      "count": 9
+    },
+    "t:5673": {
+      "ko": "현대",
+      "en": "Modern",
+      "group": false,
+      "count": 41
+    },
+    "t:7743": {
+      "ko": "1980년대",
+      "en": "1980s",
+      "group": false,
+      "count": 9
+    },
+    "t:6691": {
+      "ko": "1990년대",
+      "en": "1990's",
+      "group": false,
+      "count": 20
+    },
+    "g:place": {
+      "ko": "장소",
+      "en": "Places",
+      "group": true,
+      "count": 29
+    },
+    "t:9157": {
+      "ko": "수중",
+      "en": "Underwater",
+      "group": false,
+      "count": 8
+    },
+    "t:21006": {
+      "ko": "지하",
+      "en": "Underground",
+      "group": false,
+      "count": 3
+    },
+    "t:30358": {
+      "ko": "자연",
+      "en": "Nature",
+      "group": false,
+      "count": 16
+    },
+    "t:9803": {
+      "ko": "눈",
+      "en": "Snow",
+      "group": false,
+      "count": 3
+    },
+    "g:subject": {
+      "ko": "소재",
+      "en": "Subjects",
+      "group": true,
+      "count": 266
+    },
+    "g:monster": {
+      "ko": "괴물·초자연",
+      "en": "Monsters & Supernatural",
+      "group": true,
+      "count": 85
+    },
+    "t:1659": {
+      "ko": "좀비",
+      "en": "Zombies",
+      "group": false,
+      "count": 26
+    },
+    "t:9541": {
+      "ko": "악마",
+      "en": "Demons",
+      "group": false,
+      "count": 14
+    },
+    "t:12686": {
+      "ko": "뱀파이어",
+      "en": "Vampires",
+      "group": false,
+      "count": 6
+    },
+    "t:17015": {
+      "ko": "늑대 인간",
+      "en": "Werewolves",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:4046": {
+      "ko": "용",
+      "en": "Dragons",
+      "group": false,
+      "count": 13
+    },
+    "t:10808": {
+      "ko": "초자연",
+      "en": "Supernatural",
+      "group": false,
+      "count": 8
+    },
+    "t:7432": {
+      "ko": "러브크래프트(크툴루)",
+      "en": "Lovecraftian",
+      "group": false,
+      "count": 8
+    },
+    "t:1673": {
+      "ko": "외계인",
+      "en": "Aliens",
+      "group": false,
+      "count": 16
+    },
+    "g:characters": {
+      "ko": "인물",
+      "en": "Characters",
+      "group": true,
+      "count": 22
+    },
+    "t:1688": {
+      "ko": "닌자",
+      "en": "Ninja",
+      "group": false,
+      "count": 9
+    },
+    "t:10617": {
+      "ko": "사무라이",
+      "en": "Samurai",
+      "group": false,
+      "count": 5
+    },
+    "t:1681": {
+      "ko": "해적",
+      "en": "Pirates",
+      "group": false,
+      "count": 5
+    },
+    "t:11634": {
+      "ko": "바이킹",
+      "en": "Vikings",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:1671": {
+      "ko": "슈퍼 히어로",
+      "en": "Superhero",
+      "group": false,
+      "count": 4
+    },
+    "t:4535": {
+      "ko": "드워프",
+      "en": "Dwarves",
+      "group": false,
+      "count": 4
+    },
+    "t:6054": {
+      "ko": "엘프",
+      "en": "Elves",
+      "group": false,
+      "count": 1
+    },
+    "t:9626": {
+      "ko": "동물",
+      "en": "Animals",
+      "group": false,
+      "count": 18
+    },
+    "t:1637": {
+      "ko": "개",
+      "en": "Dogs",
+      "group": false,
+      "count": 2
+    },
+    "t:17894": {
+      "ko": "고양이",
+      "en": "Cats",
+      "group": false,
+      "count": 5
+    },
+    "t:6041": {
+      "ko": "말",
+      "en": "Horses",
+      "group": false,
+      "count": 5
+    },
+    "t:6214": {
+      "ko": "새",
+      "en": "Birds",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:507423": {
+      "ko": "여우",
+      "en": "Foxes",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:20486": {
+      "ko": "늑대",
+      "en": "Wolves",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "t:5160": {
+      "ko": "공룡",
+      "en": "Dinosaurs",
+      "group": false,
+      "count": 3
+    },
+    "t:1352486": {
+      "ko": "카피바라",
+      "en": "Capybaras",
+      "group": false,
+      "count": 0,
+      "hidden": true
+    },
+    "g:machines": {
+      "ko": "기계·탈것",
+      "en": "Machines & Vehicles",
+      "group": true,
+      "count": 30
+    },
+    "t:5752": {
+      "ko": "로봇",
+      "en": "Robots",
+      "group": false,
+      "count": 14
+    },
+    "t:4821": {
+      "ko": "메카",
+      "en": "Mechs",
+      "group": false,
+      "count": 9
+    },
+    "t:13276": {
+      "ko": "탱크",
+      "en": "Tanks",
+      "group": false,
+      "count": 5
+    },
+    "t:4291": {
+      "ko": "우주선",
+      "en": "Spaceships",
+      "group": false,
+      "count": 2
+    },
+    "t:19780": {
+      "ko": "잠수함",
+      "en": "Submarine",
+      "group": false,
+      "count": 3
+    },
+    "g:war": {
+      "ko": "전쟁·군사",
+      "en": "War & Military",
+      "group": true,
+      "count": 56
+    },
+    "t:1678": {
+      "ko": "전쟁",
+      "en": "War",
+      "group": false,
+      "count": 44
+    },
+    "t:4168": {
+      "ko": "군사",
+      "en": "Military",
+      "group": false,
+      "count": 36
+    },
+    "t:6910": {
+      "ko": "해군",
+      "en": "Naval",
+      "group": false,
+      "count": 5
+    },
+    "g:crime": {
+      "ko": "범죄·첩보",
+      "en": "Crime & Espionage",
+      "group": true,
+      "count": 35
+    },
+    "t:6378": {
+      "ko": "범죄",
+      "en": "Crime",
+      "group": false,
+      "count": 26
+    },
+    "t:1680": {
+      "ko": "강도",
+      "en": "Heist",
+      "group": false,
+      "count": 6
+    },
+    "t:1776": {
+      "ko": "첩보 활동",
+      "en": "Espionage",
+      "group": false,
+      "count": 1
+    },
+    "t:5372": {
+      "ko": "음모",
+      "en": "Conspiracy",
+      "group": false,
+      "count": 6
+    },
+    "g:magic": {
+      "ko": "마법·신화",
+      "en": "Magic & Myth",
+      "group": true,
+      "count": 39
+    },
+    "t:4057": {
+      "ko": "마법",
+      "en": "Magic",
+      "group": false,
+      "count": 28
+    },
+    "t:16094": {
+      "ko": "신화",
+      "en": "Mythology",
+      "group": false,
+      "count": 11
+    },
+    "t:180368": {
+      "ko": "신념",
+      "en": "Faith",
+      "group": false,
+      "count": 1
+    },
+    "g:science": {
+      "ko": "과학·기술",
+      "en": "Science & Tech",
+      "group": true,
+      "count": 36
+    },
+    "t:5794": {
+      "ko": "과학",
+      "en": "Science",
+      "group": false,
+      "count": 8
+    },
+    "t:7926": {
+      "ko": "인공 지능",
+      "en": "Artificial Intelligence",
+      "group": false,
+      "count": 21
+    },
+    "t:4137": {
+      "ko": "트랜스휴머니즘",
+      "en": "Transhumanism",
+      "group": false,
+      "count": 1
+    },
+    "t:10679": {
+      "ko": "시간 여행",
+      "en": "Time Travel",
+      "group": false,
+      "count": 7
+    },
+    "t:150626": {
+      "ko": "게임 소재",
+      "en": "Gaming",
+      "group": false,
+      "count": 4
+    },
+    "g:mood": {
+      "ko": "분위기",
+      "en": "Mood",
+      "group": true,
+      "count": 465
+    },
+    "t:1654": {
+      "ko": "힐링",
+      "en": "Relaxing",
+      "group": false,
+      "count": 66
+    },
+    "t:97376": {
+      "ko": "아늑함",
+      "en": "Cozy",
+      "group": false,
+      "count": 24
+    },
+    "t:552282": {
+      "ko": "건전함",
+      "en": "Wholesome",
+      "group": false,
+      "count": 5
+    },
+    "t:4726": {
+      "ko": "귀여운",
+      "en": "Cute",
+      "group": false,
+      "count": 123
+    },
+    "t:1719": {
+      "ko": "코미디",
+      "en": "Comedy",
+      "group": false,
+      "count": 170
+    },
+    "t:5923": {
+      "ko": "블랙 유머",
+      "en": "Dark Humor",
+      "group": false,
+      "count": 22
+    },
+    "t:4878": {
+      "ko": "패러디",
+      "en": "Parody",
+      "group": false,
+      "count": 3
+    },
+    "t:1651": {
+      "ko": "풍자",
+      "en": "Satire",
+      "group": false,
+      "count": 2
+    },
+    "t:10397": {
+      "ko": "밈",
+      "en": "Memes",
+      "group": false,
+      "count": 21
+    },
+    "t:4342": {
+      "ko": "어두운",
+      "en": "Dark",
+      "group": false,
+      "count": 90
+    },
+    "t:3952": {
+      "ko": "고딕",
+      "en": "Gothic",
+      "group": false,
+      "count": 7
+    },
+    "t:6052": {
+      "ko": "누아르",
+      "en": "Noir",
+      "group": false,
+      "count": 5
+    },
+    "g:tension": {
+      "ko": "긴장감",
+      "en": "Tension",
+      "group": true,
+      "count": 64
+    },
+    "t:4064": {
+      "ko": "스릴러",
+      "en": "Thriller",
+      "group": false,
+      "count": 17
+    },
+    "t:5716": {
+      "ko": "미스터리",
+      "en": "Mystery",
+      "group": false,
+      "count": 58
+    },
+    "t:4166": {
+      "ko": "분위기 있는",
+      "en": "Atmospheric",
+      "group": false,
+      "count": 249
+    },
+    "t:5608": {
+      "ko": "감성적",
+      "en": "Emotional",
+      "group": false,
+      "count": 39
+    },
+    "t:5186": {
+      "ko": "심리적",
+      "en": "Psychological",
+      "group": false,
+      "count": 20
+    },
+    "t:15277": {
+      "ko": "철학적",
+      "en": "Philosophical",
+      "group": false,
+      "count": 2
+    },
+    "t:1710": {
+      "ko": "초현실",
+      "en": "Surreal",
+      "group": false,
+      "count": 24
+    },
+    "t:1714": {
+      "ko": "사이키델릭",
+      "en": "Psychedelic",
+      "group": false,
+      "count": 3
+    },
+    "t:13782": {
+      "ko": "실험적",
+      "en": "Experimental",
+      "group": false,
+      "count": 6
+    },
+    "t:14720": {
+      "ko": "추억 소환",
+      "en": "Nostalgia",
+      "group": false,
+      "count": 9
+    },
+    "g:visual": {
+      "ko": "시점·그래픽",
+      "en": "View & Visuals",
+      "group": true,
+      "count": 592
+    },
+    "g:view": {
+      "ko": "시점",
+      "en": "Camera",
+      "group": true,
+      "count": 368
+    },
+    "t:3839": {
+      "ko": "1인칭",
+      "en": "First-Person",
+      "group": false,
+      "count": 178
+    },
+    "t:1697": {
+      "ko": "3인칭",
+      "en": "Third Person",
+      "group": false,
+      "count": 141
+    },
+    "t:4791": {
+      "ko": "탑다운",
+      "en": "Top-Down",
+      "group": false,
+      "count": 33
+    },
+    "t:5851": {
+      "ko": "아이소메트릭",
+      "en": "Isometric",
+      "group": false,
+      "count": 31
+    },
+    "t:3798": {
+      "ko": "횡스크롤",
+      "en": "Side Scroller",
+      "group": false,
+      "count": 19
+    },
+    "g:dimension": {
+      "ko": "2D·3D",
+      "en": "Dimensions",
+      "group": true,
+      "count": 304
+    },
+    "t:3871": {
+      "ko": "2D",
+      "en": "2D",
+      "group": false,
+      "count": 148
+    },
+    "t:4975": {
+      "ko": "2.5D",
+      "en": "2.5D",
+      "group": false,
+      "count": 17
+    },
+    "t:4191": {
+      "ko": "3D",
+      "en": "3D",
+      "group": false,
+      "count": 156
+    },
+    "g:art": {
+      "ko": "그래픽 스타일",
+      "en": "Art Style",
+      "group": true,
+      "count": 392
+    },
+    "t:3964": {
+      "ko": "픽셀 그래픽",
+      "en": "Pixel Graphics",
+      "group": false,
+      "count": 90
+    },
+    "t:1732": {
+      "ko": "복셀",
+      "en": "Voxel",
+      "group": false,
+      "count": 5
+    },
+    "t:4085": {
+      "ko": "애니메이션풍",
+      "en": "Anime",
+      "group": false,
+      "count": 113
+    },
+    "t:4195": {
+      "ko": "카툰풍",
+      "en": "Cartoony",
+      "group": false,
+      "count": 43
+    },
+    "t:1751": {
+      "ko": "만화책",
+      "en": "Comic Book",
+      "group": false,
+      "count": 9
+    },
+    "t:6815": {
+      "ko": "손으로 그린",
+      "en": "Hand-drawn",
+      "group": false,
+      "count": 25
+    },
+    "t:4252": {
+      "ko": "양식화된",
+      "en": "Stylized",
+      "group": false,
+      "count": 43
+    },
+    "t:4305": {
+      "ko": "다채로운",
+      "en": "Colorful",
+      "group": false,
+      "count": 83
+    },
+    "t:4094": {
+      "ko": "미니멀리스트",
+      "en": "Minimalist",
+      "group": false,
+      "count": 11
+    },
+    "t:4175": {
+      "ko": "사실적",
+      "en": "Realistic",
+      "group": false,
+      "count": 106
+    },
+    "t:4400": {
+      "ko": "추상적",
+      "en": "Abstract",
+      "group": false,
+      "count": 2
+    },
+    "t:4004": {
+      "ko": "레트로",
+      "en": "Retro",
+      "group": false,
+      "count": 46
+    },
+    "t:3916": {
+      "ko": "올드 스쿨",
+      "en": "Old School",
+      "group": false,
+      "count": 12
+    },
+    "t:4145": {
+      "ko": "시네마틱",
+      "en": "Cinematic",
+      "group": false,
+      "count": 41
+    },
+    "t:21978": {
+      "ko": "VR",
+      "en": "VR",
+      "group": false,
+      "count": 36
+    },
+    "g:content": {
+      "ko": "이용 연령·표현",
+      "en": "Content",
+      "group": true,
+      "count": 225
+    },
+    "t:5350": {
+      "ko": "가족 친화",
+      "en": "Family Friendly",
+      "group": false,
+      "count": 56
+    },
+    "t:12095": {
+      "ko": "선정성",
+      "en": "Sexual Content",
+      "group": false,
+      "count": 83
+    },
+    "t:6650": {
+      "ko": "신체 노출",
+      "en": "Nudity",
+      "group": false,
+      "count": 42
+    },
+    "t:9130": {
+      "ko": "헨타이",
+      "en": "Hentai",
+      "group": false,
+      "count": 18
+    },
+    "t:4667": {
+      "ko": "폭력",
+      "en": "Violent",
+      "group": false,
+      "count": 89
+    },
+    "t:4345": {
+      "ko": "고어·유혈",
+      "en": "Gore",
+      "group": false,
+      "count": 89
+    }
+  }
+}

@@ -1,0 +1,411 @@
+{
+  "note": "필터에 넣지 않는 스팀 태그와 이유",
+  "tags": [
+    {
+      "id": 1685,
+      "en": "Co-op",
+      "ko": "협동",
+      "reason": "인원·협동·대전·멀티 (플래그·인원 슬라이더가 담당)",
+      "game_count": 218
+    },
+    {
+      "id": 3843,
+      "en": "Online Co-Op",
+      "ko": "온라인 협동",
+      "reason": "인원·협동·대전·멀티 (플래그·인원 슬라이더가 담당)",
+      "game_count": 160
+    },
+    {
+      "id": 3841,
+      "en": "Local Co-Op",
+      "ko": "로컬 협동",
+      "reason": "인원·협동·대전·멀티 (플래그·인원 슬라이더가 담당)",
+      "game_count": 47
+    },
+    {
+      "id": 3859,
+      "en": "Multiplayer",
+      "ko": "멀티플레이어",
+      "reason": "인원·협동·대전·멀티 (플래그·인원 슬라이더가 담당)",
+      "game_count": 314
+    },
+    {
+      "id": 1775,
+      "en": "PvP",
+      "ko": "PvP",
+      "reason": "인원·협동·대전·멀티 (플래그·인원 슬라이더가 담당)",
+      "game_count": 97
+    },
+    {
+      "id": 6730,
+      "en": "PvE",
+      "ko": "PvE",
+      "reason": "인원·협동·대전·멀티 (플래그·인원 슬라이더가 담당)",
+      "game_count": 75
+    },
+    {
+      "id": 7368,
+      "en": "Local Multiplayer",
+      "ko": "로컬 멀티플레이어",
+      "reason": "인원·협동·대전·멀티 (플래그·인원 슬라이더가 담당)",
+      "game_count": 41
+    },
+    {
+      "id": 4840,
+      "en": "4 Player Local",
+      "ko": "4인 로컬 플레이",
+      "reason": "인원·협동·대전·멀티 (플래그·인원 슬라이더가 담당)",
+      "game_count": 16
+    },
+    {
+      "id": 4508,
+      "en": "Co-op Campaign",
+      "ko": "협동 캠페인",
+      "reason": "인원·협동·대전·멀티 (플래그·인원 슬라이더가 담당)",
+      "game_count": 16
+    },
+    {
+      "id": 10816,
+      "en": "Split Screen",
+      "ko": "분할 화면",
+      "reason": "인원·협동·대전·멀티 (플래그·인원 슬라이더가 담당)",
+      "game_count": 13
+    },
+    {
+      "id": 17770,
+      "en": "Asynchronous Multiplayer",
+      "ko": "비동기 멀티플레이어",
+      "reason": "인원·협동·대전·멀티 (플래그·인원 슬라이더가 담당)",
+      "game_count": 2
+    },
+    {
+      "id": 128,
+      "en": "Massively Multiplayer",
+      "ko": "MMO",
+      "reason": "인원·협동·대전·멀티 (플래그·인원 슬라이더가 담당)",
+      "game_count": 35
+    },
+    {
+      "id": 4182,
+      "en": "Singleplayer",
+      "ko": "싱글 플레이어",
+      "reason": "인원·협동·대전·멀티 (플래그·인원 슬라이더가 담당)",
+      "game_count": 499
+    },
+    {
+      "id": 5711,
+      "en": "Team-Based",
+      "ko": "팀 기반",
+      "reason": "인원·협동·대전·멀티 (플래그·인원 슬라이더가 담당)",
+      "game_count": 30
+    },
+    {
+      "id": 3878,
+      "en": "Competitive",
+      "ko": "경쟁",
+      "reason": "인원·협동·대전·멀티 (플래그·인원 슬라이더가 담당)",
+      "game_count": 22
+    },
+    {
+      "id": 5055,
+      "en": "eSports",
+      "ko": "e스포츠",
+      "reason": "인원·협동·대전·멀티 (플래그·인원 슬라이더가 담당)",
+      "game_count": 16
+    },
+    {
+      "id": 856791,
+      "en": "Asymmetric VR",
+      "ko": "비대칭 VR",
+      "reason": "인원·협동·대전·멀티 (플래그·인원 슬라이더가 담당)",
+      "game_count": 1
+    },
+    {
+      "id": 113,
+      "en": "Free to Play",
+      "ko": "무료 플레이",
+      "reason": "판매·출시 정보",
+      "game_count": 59
+    },
+    {
+      "id": 493,
+      "en": "Early Access",
+      "ko": "앞서 해보기",
+      "reason": "판매·출시 정보",
+      "game_count": 101
+    },
+    {
+      "id": 492,
+      "en": "Indie",
+      "ko": "인디",
+      "reason": "판매·출시 정보",
+      "game_count": 216
+    },
+    {
+      "id": 5230,
+      "en": "Sequel",
+      "ko": "속편",
+      "reason": "판매·출시 정보",
+      "game_count": 3
+    },
+    {
+      "id": 5708,
+      "en": "Remake",
+      "ko": "리메이크",
+      "reason": "판매·출시 정보",
+      "game_count": 16
+    },
+    {
+      "id": 5941,
+      "en": "Reboot",
+      "ko": "리부트",
+      "reason": "판매·출시 정보",
+      "game_count": 0
+    },
+    {
+      "id": 4242,
+      "en": "Episodic",
+      "ko": "에피소드",
+      "reason": "판매·출시 정보",
+      "game_count": 3
+    },
+    {
+      "id": 84,
+      "en": "Design & Illustration",
+      "ko": "디자인 및 일러스트레이션",
+      "reason": "게임이 아닌 프로그램·소프트웨어 분류",
+      "game_count": 3
+    },
+    {
+      "id": 87,
+      "en": "Utilities",
+      "ko": "유틸리티",
+      "reason": "게임이 아닌 프로그램·소프트웨어 분류",
+      "game_count": 4
+    },
+    {
+      "id": 784,
+      "en": "Video Production",
+      "ko": "동영상 제작",
+      "reason": "게임이 아닌 프로그램·소프트웨어 분류",
+      "game_count": 1
+    },
+    {
+      "id": 809,
+      "en": "Photo Editing",
+      "ko": "사진 편집",
+      "reason": "게임이 아닌 프로그램·소프트웨어 분류",
+      "game_count": 0
+    },
+    {
+      "id": 872,
+      "en": "Animation & Modeling",
+      "ko": "애니메이션 및 모델링",
+      "reason": "게임이 아닌 프로그램·소프트웨어 분류",
+      "game_count": 0
+    },
+    {
+      "id": 1027,
+      "en": "Audio Production",
+      "ko": "오디오 제작",
+      "reason": "게임이 아닌 프로그램·소프트웨어 분류",
+      "game_count": 0
+    },
+    {
+      "id": 1445,
+      "en": "Software Training",
+      "ko": "소프트웨어 교육",
+      "reason": "게임이 아닌 프로그램·소프트웨어 분류",
+      "game_count": 0
+    },
+    {
+      "id": 8013,
+      "en": "Software",
+      "ko": "소프트웨어",
+      "reason": "게임이 아닌 프로그램·소프트웨어 분류",
+      "game_count": 1
+    },
+    {
+      "id": 13906,
+      "en": "Game Development",
+      "ko": "게임 개발",
+      "reason": "게임이 아닌 프로그램·소프트웨어 분류",
+      "game_count": 2
+    },
+    {
+      "id": 603297,
+      "en": "Hardware",
+      "ko": "하드웨어",
+      "reason": "게임이 아닌 프로그램·소프트웨어 분류",
+      "game_count": 2
+    },
+    {
+      "id": 776177,
+      "en": "360 Video",
+      "ko": "360 동영상",
+      "reason": "게임이 아닌 프로그램·소프트웨어 분류",
+      "game_count": 0
+    },
+    {
+      "id": 5407,
+      "en": "Benchmark",
+      "ko": "벤치마크",
+      "reason": "게임이 아닌 프로그램·소프트웨어 분류",
+      "game_count": 0
+    },
+    {
+      "id": 1036,
+      "en": "Education",
+      "ko": "교육",
+      "reason": "게임이 아닌 프로그램·소프트웨어 분류",
+      "game_count": 5
+    },
+    {
+      "id": 21635,
+      "en": "Language Learning",
+      "ko": "언어 학습",
+      "reason": "게임이 아닌 프로그램·소프트웨어 분류",
+      "game_count": 1
+    },
+    {
+      "id": 1320952,
+      "en": "Desktop Companion",
+      "ko": "데스크톱 컴패니언",
+      "reason": "게임이 아닌 프로그램·소프트웨어 분류",
+      "game_count": 3
+    },
+    {
+      "id": 12057,
+      "en": "Tutorial",
+      "ko": "튜토리얼",
+      "reason": "게임이 아닌 프로그램·소프트웨어 분류",
+      "game_count": 3
+    },
+    {
+      "id": 7481,
+      "en": "Controller",
+      "ko": "컨트롤러",
+      "reason": "기기·입력 방식",
+      "game_count": 73
+    },
+    {
+      "id": 8075,
+      "en": "TrackIR",
+      "ko": "TrackIR",
+      "reason": "기기·입력 방식",
+      "game_count": 2
+    },
+    {
+      "id": 11123,
+      "en": "Mouse Only",
+      "ko": "마우스 전용",
+      "reason": "기기·입력 방식",
+      "game_count": 5
+    },
+    {
+      "id": 25085,
+      "en": "Touch-Friendly",
+      "ko": "터치 친화적",
+      "reason": "기기·입력 방식",
+      "game_count": 2
+    },
+    {
+      "id": 27758,
+      "en": "Voice Control",
+      "ko": "보이스 컨트롤",
+      "reason": "기기·입력 방식",
+      "game_count": 1
+    },
+    {
+      "id": 1756,
+      "en": "Great Soundtrack",
+      "ko": "웅장한 사운드트랙",
+      "reason": "평가성 태그 (게임 성격을 나타내지 않음)",
+      "game_count": 138
+    },
+    {
+      "id": 7948,
+      "en": "Soundtrack",
+      "ko": "사운드트랙",
+      "reason": "평가성 태그 (게임 성격을 나타내지 않음)",
+      "game_count": 10
+    },
+    {
+      "id": 5411,
+      "en": "Beautiful",
+      "ko": "아름다운",
+      "reason": "평가성 태그 (게임 성격을 나타내지 않음)",
+      "game_count": 13
+    },
+    {
+      "id": 4190,
+      "en": "Addictive",
+      "ko": "중독성",
+      "reason": "평가성 태그 (게임 성격을 나타내지 않음)",
+      "game_count": 6
+    },
+    {
+      "id": 4711,
+      "en": "Replay Value",
+      "ko": "리플레이 가치",
+      "reason": "평가성 태그 (게임 성격을 나타내지 않음)",
+      "game_count": 46
+    },
+    {
+      "id": 3965,
+      "en": "Epic",
+      "ko": "서사",
+      "reason": "평가성 태그 (게임 성격을 나타내지 않음)",
+      "game_count": 6
+    },
+    {
+      "id": 1693,
+      "en": "Classic",
+      "ko": "클래식",
+      "reason": "평가성 태그 (게임 성격을 나타내지 않음)",
+      "game_count": 28
+    },
+    {
+      "id": 3934,
+      "en": "Immersive",
+      "ko": "몰입형",
+      "reason": "평가성 태그 (게임 성격을 나타내지 않음)",
+      "game_count": 6
+    },
+    {
+      "id": 52406,
+      "en": "Cult",
+      "ko": "컬트",
+      "reason": "평가성 태그 (게임 성격을 나타내지 않음)",
+      "game_count": 3
+    },
+    {
+      "id": 61357,
+      "en": "Electronic Music",
+      "ko": "전자 음악",
+      "reason": "음악 스타일 (사운드트랙 특징)",
+      "game_count": 1
+    },
+    {
+      "id": 337964,
+      "en": "Rock Music",
+      "ko": "락 음악",
+      "reason": "음악 스타일 (사운드트랙 특징)",
+      "game_count": 0
+    },
+    {
+      "id": 189941,
+      "en": "Instrumental Music",
+      "ko": "인스트루멘탈 음악",
+      "reason": "음악 스타일 (사운드트랙 특징)",
+      "game_count": 0
+    },
+    {
+      "id": 117648,
+      "en": "8-bit Music",
+      "ko": "8비트 음악",
+      "reason": "음악 스타일 (사운드트랙 특징)",
+      "game_count": 0
+    }
+  ]
+}
