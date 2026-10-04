@@ -1,0 +1,391 @@
+[
+  {
+    "series_name_ko": "어쌔신 크리드",
+    "game_ids": [
+      "57e13d35-7ff0-46ff-af87-fa443d7f8f9d",
+      "f5f8944a-98b8-4a9f-8d17-5995dff3ac93"
+    ]
+  },
+  {
+    "series_name_ko": "어몽 어스",
+    "game_ids": [
+      "d3d884c9-e920-4b6f-ab3b-460f0fcd84e2",
+      "0c5fcb7f-edc8-4406-87b1-38dc4ccedf7a"
+    ]
+  },
+  {
+    "series_name_ko": "배틀필드",
+    "game_ids": [
+      "619542d2-31e3-4061-ba71-f8437ad04dca",
+      "43b6865e-f5cb-4f74-abc9-450b0894e941"
+    ]
+  },
+  {
+    "series_name_ko": "바이오하자드",
+    "game_ids": [
+      "18392403-ff9e-4892-bc2e-6ed00f6ca71b",
+      "88d80169-dddd-47bd-b6be-2edc911f9b33",
+      "20e83625-6579-4281-8ded-00f3df2610ee",
+      "0d51fdae-320b-4a46-bb26-f38159bc5308"
+    ]
+  },
+  {
+    "series_name_ko": "블랙 소울스",
+    "game_ids": [
+      "d2550046-218f-45c0-89e3-ab24688dc8eb",
+      "3202a455-226a-4421-9dc9-408a45ca74fe"
+    ]
+  },
+  {
+    "series_name_ko": "브레드엣지",
+    "game_ids": [
+      "90be3c20-9ec6-4242-b9b5-68f8c540e910",
+      "c85be9ed-9ac4-45f3-a025-c19ebc8e2b4a"
+    ]
+  },
+  {
+    "series_name_ko": "악마성(캐슬바니아)",
+    "game_ids": [
+      "93ef7af8-d32c-4616-afbd-890efc11cbb2",
+      "5a6d728c-3828-40dc-823b-e1bce4ef8f91"
+    ]
+  },
+  {
+    "series_name_ko": "크라이시스",
+    "game_ids": [
+      "da486b63-6d7e-4345-a896-86a73ef36528",
+      "e7abd35e-ed60-4066-9e5a-81fbca475051"
+    ]
+  },
+  {
+    "series_name_ko": "단간론파",
+    "game_ids": [
+      "c5f8b96b-bc0b-4313-9f03-5a15f4539c9d",
+      "daa39c64-08a6-45a0-80aa-3bd4e8e4c9ea",
+      "a996bff3-cec9-498e-8699-6695ee10a0f7"
+    ]
+  },
+  {
+    "series_name_ko": "다크 소울",
+    "game_ids": [
+      "e0aa8a6b-06a2-4cc6-a94d-61032ac627dd",
+      "b63b16a6-7c0d-4d63-b77e-8f45196496d9",
+      "4a5ec5f0-bcac-446d-9950-da334743566c"
+    ]
+  },
+  {
+    "series_name_ko": "디아블로",
+    "game_ids": [
+      "6e94d231-e194-4f13-bfe6-ba3dd9480195",
+      "aee396c6-5970-4bdd-9626-1bcd4697f5e6",
+      "4724c5b8-a2ee-49ef-9391-6132c066bc3b",
+      "176d658f-b34f-4cf9-a63e-ffce2152e420"
+    ]
+  },
+  {
+    "series_name_ko": "둠",
+    "game_ids": [
+      "53873569-11df-48d8-85d4-580068492ef6",
+      "b20e97c4-bda1-498a-ad64-7b33e88aeb54",
+      "a1534bb2-0ea4-4b20-9fb6-94f3c85a9467"
+    ]
+  },
+  {
+    "series_name_ko": "다잉 라이트",
+    "game_ids": [
+      "eae78adb-4f04-4b5a-83f2-96a48b1c2e67",
+      "cfa38c52-01ea-4906-883f-e40aa773be10"
+    ]
+  },
+  {
+    "series_name_ko": "엘든 링",
+    "game_ids": [
+      "f1022fd9-20bb-48e8-8ff9-89ef8f639390",
+      "aa95ac28-ce46-47b4-ba37-60fd0dd0755d"
+    ]
+  },
+  {
+    "series_name_ko": "폴아웃",
+    "game_ids": [
+      "d20ab9e0-3bc3-406b-9501-db56984322c4",
+      "c1ed8167-fa7e-41ba-b2ab-77bbb6f322ec",
+      "245a5214-9af9-4488-801e-b8ae52441325"
+    ]
+  },
+  {
+    "series_name_ko": "페이트",
+    "game_ids": [
+      "7a04c4b3-097e-47d9-ba49-11d463455b66",
+      "92b1f72d-e287-4fb2-ac4f-2f964aa22775"
+    ]
+  },
+  {
+    "series_name_ko": "파이브 나이츠 앳 프레디스",
+    "game_ids": [
+      "5f1d7362-8dbb-480f-83ee-1be3186050d8",
+      "9f071a5d-7af7-4067-806e-6481e723779e"
+    ]
+  },
+  {
+    "series_name_ko": "포르자 호라이즌",
+    "game_ids": [
+      "4a500ace-62a1-4ac7-9770-c89646d2eaf9",
+      "2bac093c-7e4c-4926-90d7-5b7c7f8a86f6"
+    ]
+  },
+  {
+    "series_name_ko": "갓 오브 워",
+    "game_ids": [
+      "b91af7f9-2f46-4ba8-9109-cc53041df387",
+      "239d8294-7e6c-4447-b162-b3762ae2ae82"
+    ]
+  },
+  {
+    "series_name_ko": "GTA",
+    "game_ids": [
+      "9c876a0f-3997-4e9f-bad2-84734531347e",
+      "e6b212a8-3c01-44a3-9808-00ee1e28b82d",
+      "02d19c05-292f-4714-9e25-26595f272e19",
+      "85b31391-6bbe-4865-9e30-db84edc5bf59"
+    ]
+  },
+  {
+    "series_name_ko": "헤일로",
+    "game_ids": [
+      "f1f75de6-c613-4658-86b9-48451e9735c5",
+      "55d07921-b4d1-4ee8-9355-4e666a45dba4"
+    ]
+  },
+  {
+    "series_name_ko": "허 트리스",
+    "game_ids": [
+      "e316cf6c-6760-45a2-a86e-857093935210",
+      "df224549-39aa-4035-85db-68317e1aff22"
+    ]
+  },
+  {
+    "series_name_ko": "킹덤 러시",
+    "game_ids": [
+      "5fddf6b7-30e0-41c7-ba79-fde043966f09",
+      "49b45ab4-2700-4ae3-8ce9-e312a617a2be",
+      "b7ff63ea-c438-4850-a9c5-937ec642b030"
+    ]
+  },
+  {
+    "series_name_ko": "리그 오브 레전드",
+    "game_ids": [
+      "3ad99a41-8afb-4aaa-afff-8af04c4a0b6d",
+      "a60a9ab3-9e65-463f-9d78-63e409402eda",
+      "f95d086c-66b7-4068-842a-2d445daa5cb7"
+    ]
+  },
+  {
+    "series_name_ko": "라이프 이즈 스트레인지",
+    "game_ids": [
+      "702f4e41-a516-4c78-bd1a-1b3b1fb977eb",
+      "088d93f0-ffc0-43e5-92fa-8af297bb20ec"
+    ]
+  },
+  {
+    "series_name_ko": "라스트 오브 어스",
+    "game_ids": [
+      "15eebb03-4e2f-4330-9eb4-18bb893f5980",
+      "406ae5b8-a3d5-4d96-be2a-b95933439143"
+    ]
+  },
+  {
+    "series_name_ko": "몬스터 헌터",
+    "game_ids": [
+      "1c98104a-4bbb-4b4d-abdd-47129806051f",
+      "6dccb0ac-c331-48a2-9706-c5fd159b96ab",
+      "0b826b74-1d45-49d1-a002-2084b46de374"
+    ]
+  },
+  {
+    "series_name_ko": "마이 썸머 카",
+    "game_ids": [
+      "5c63bb7d-dbc6-4f1d-b3a8-719e3a84bfba",
+      "9b99747d-9cc4-480c-93fc-c01c05d29fdd"
+    ]
+  },
+  {
+    "series_name_ko": "인왕",
+    "game_ids": [
+      "789438fb-0583-4f44-b993-dfcb3ce83880",
+      "dfee86ab-df57-443c-ae72-b463fdad6916"
+    ]
+  },
+  {
+    "series_name_ko": "아웃라스트",
+    "game_ids": [
+      "0135c98b-389b-4969-b46a-a451b42d6d6c",
+      "cec7f873-73c9-416a-ad78-a90e12890df5"
+    ]
+  },
+  {
+    "series_name_ko": "아우터 월즈",
+    "game_ids": [
+      "b99b9257-9d9b-453e-b8f1-9af999088e29",
+      "00f29c76-208f-4a61-9b8c-a7e1a72566d2"
+    ]
+  },
+  {
+    "series_name_ko": "피코 파크",
+    "game_ids": [
+      "ec917512-bd6d-4195-a1a0-95ea02c7c5ac",
+      "b7d84cf7-b254-4803-bc4f-4dabb6ae4d57"
+    ]
+  },
+  {
+    "series_name_ko": "역전재판",
+    "game_ids": [
+      "5b7ab6c0-cd8a-4d46-bb1b-05b4f857559b",
+      "8af4dc4d-1e13-4d30-9675-81b35241851c"
+    ]
+  },
+  {
+    "series_name_ko": "프린세스 메이커",
+    "game_ids": [
+      "47b2f844-2322-437b-8f40-0f27678f584c",
+      "f0a94612-e40e-4077-b527-244030a802fb"
+    ]
+  },
+  {
+    "series_name_ko": "러스티 레이크",
+    "game_ids": [
+      "c396759e-6f0e-469a-9a62-38eb6793eba7",
+      "cec09a0f-3308-400e-8217-99f05a8d3e90",
+      "82f9a99d-3ac4-40f8-aa7a-0cb52a73704a"
+    ]
+  },
+  {
+    "series_name_ko": "스파이더맨",
+    "game_ids": [
+      "c3773795-b37b-4136-9c4d-d3dc34bb9320",
+      "95f6b0a2-24ef-405b-8cc4-9b3705ca09c7",
+      "bf1f000b-3739-4732-8fb0-12bbb944ecf9"
+    ]
+  },
+  {
+    "series_name_ko": "스타크래프트",
+    "game_ids": [
+      "887dfe3f-7990-4350-b048-aac5c96e056d",
+      "0b9fcc69-5324-44c7-a93d-7bfd99926018"
+    ]
+  },
+  {
+    "series_name_ko": "슈퍼핫",
+    "game_ids": [
+      "88f69915-49d0-4765-a7ee-bb70c3ae8e3b",
+      "d3354e47-9388-4ca7-a957-bc10958d572a"
+    ]
+  },
+  {
+    "series_name_ko": "엘더스크롤",
+    "game_ids": [
+      "7f748d36-579d-456d-9441-8003d718eb04",
+      "1cef4185-7412-437c-aedd-2377b71de0de"
+    ]
+  },
+  {
+    "series_name_ko": "더 포레스트",
+    "game_ids": [
+      "59514d14-dbcc-4e73-999b-6db117773e7d",
+      "d2ffd8f1-74b1-4e36-bc5f-c2c4354c3a2a"
+    ]
+  },
+  {
+    "series_name_ko": "심즈",
+    "game_ids": [
+      "fc49f5fc-eb6e-41db-a03b-63001dd77623",
+      "f92b4dd3-95af-4cc8-8569-f733eee643de"
+    ]
+  },
+  {
+    "series_name_ko": "토탈 워",
+    "game_ids": [
+      "063d4c8c-0e68-4e0c-915a-6845da4f2d59",
+      "aadb3d92-baac-47b8-8d3f-314fcbccb65f"
+    ]
+  },
+  {
+    "series_name_ko": "워크래프트",
+    "game_ids": [
+      "bf297e74-591f-4e68-9cd3-d5a9e04dae7e",
+      "5765dffa-f0ac-4e51-b309-da64801a4959",
+      "b51eb4d4-23d6-4813-8a4f-042716ea923d"
+    ]
+  },
+  {
+    "series_name_ko": "워해머 40,000",
+    "game_ids": [
+      "e3c65f2e-a6ac-4f93-8616-9913ae621fb4",
+      "69ff1d3f-93e1-430d-8232-2a1e44c9d9d2",
+      "ef8d9871-fee4-4e0a-af47-a159d59863cd"
+    ]
+  },
+  {
+    "series_name_ko": "유희왕",
+    "game_ids": [
+      "19d97fe9-7166-489e-917d-5a17f5a8e442",
+      "72959ae5-5cfe-48ae-9042-43f0b7f597de"
+    ]
+  },
+  {
+    "series_name_ko": "드래곤 퀘스트",
+    "game_ids": [
+      "4543efdf-5212-40f9-ac71-4e6aac3e3420",
+      "5b6602a8-d54a-41ab-9af5-aa9719b352a9",
+      "49c6e0c7-1473-4964-97a6-64715a0b13dd",
+      "373c3856-e08a-4443-811f-53f576b1609e"
+    ]
+  },
+  {
+    "series_name_ko": "옥토패스 트래블러",
+    "game_ids": [
+      "9f9f2d1c-7159-4fbb-8f0a-d296a13e02b4",
+      "5480b90b-49ce-4dab-95d0-44666cf9b77c",
+      "4e584297-b0dd-4151-8c3f-227dfe20860c"
+    ]
+  },
+  {
+    "series_name_ko": "용과 같이",
+    "game_ids": [
+      "96c90025-8609-4f83-b47f-19451a242f6c",
+      "cff004ef-5006-4dce-87ff-9497bf580d5e",
+      "00ea1e6e-f526-40b5-8e12-e42c33ec53da",
+      "c6586ce8-0474-405e-87e0-ffd2e4718d68"
+    ]
+  },
+  {
+    "series_name_ko": "페르소나",
+    "game_ids": [
+      "a1283942-ca3f-4bc3-af53-5e61ed1480f1",
+      "4d450b0f-055a-42f2-8604-5b5787a7a21b",
+      "dc76211f-04eb-4345-ada1-499faa7f0248",
+      "300e8847-80c6-48a4-a7e4-63b118887dbe",
+      "f3c88963-94ab-433c-aa02-9e7e7c420338"
+    ]
+  },
+  {
+    "series_name_ko": "슈퍼로봇대전",
+    "game_ids": [
+      "1b0348fc-96eb-4f1b-85ca-ebac48e7d5fc",
+      "84fe79e5-4e1f-441f-bb32-2cb97c650a41"
+    ]
+  },
+  {
+    "series_name_ko": "스테퍼 케이스",
+    "game_ids": [
+      "8f58994d-97f1-47f1-985f-4a01ddbebc82",
+      "a1f0d01b-e6e9-4cbe-a1d9-47b84c5ac36f"
+    ]
+  },
+  {
+    "series_name_ko": "진·삼국무쌍",
+    "game_ids": [
+      "b5996e59-d579-4b5c-9b33-d97779ef7f5d",
+      "39ab1f4c-9e7b-4839-bd14-79f55b636d0e"
+    ]
+  }
+]

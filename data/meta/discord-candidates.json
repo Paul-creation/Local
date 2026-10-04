@@ -1,0 +1,239 @@
+[
+  {
+    "game_id": "13ff96f5-e0fd-4c19-b29d-cab15d586736",
+    "name": "Baldur's Gate 3",
+    "invite_code": "larian",
+    "invite_url": "https://discord.gg/larian",
+    "note": "라리안 스튜디오 공식 서버"
+  },
+  {
+    "game_id": "1bb02b73-2195-47e5-a39c-9bc4ced8c557",
+    "name": "Stardew Valley",
+    "invite_code": "stardewvalley",
+    "invite_url": "https://discord.gg/stardewvalley"
+  },
+  {
+    "game_id": "9f732dfe-5209-4709-973f-625aab898f77",
+    "name": "Terraria",
+    "invite_code": "terraria",
+    "invite_url": "https://discord.gg/terraria"
+  },
+  {
+    "game_id": "ad8ae98d-f9a7-4f08-97c8-4ca74eb2386a",
+    "name": "Satisfactory",
+    "invite_code": "satisfactory",
+    "invite_url": "https://discord.gg/satisfactory"
+  },
+  {
+    "game_id": "50c3e7b6-889e-43b7-a8a5-0312a9a47cbf",
+    "name": "Cities: Skylines",
+    "invite_code": "citiesskylines",
+    "invite_url": "https://discord.gg/citiesskylines",
+    "note": "패러독스 공식 서버"
+  },
+  {
+    "game_id": "ddae6eb1-d431-4319-abe1-b71adb672cb8",
+    "name": "Don't Starve Together",
+    "invite_code": "klei",
+    "invite_url": "https://discord.gg/klei",
+    "note": "개발사 Klei 공식 서버"
+  },
+  {
+    "game_id": "49e1fe99-4672-4002-b3e7-b686baa83946",
+    "name": "ARK: Survival Evolved",
+    "invite_code": "playark",
+    "invite_url": "https://discord.gg/playark"
+  },
+  {
+    "game_id": "6170fa0c-d192-4fa2-8e2c-6440ba2ddf17",
+    "name": "Sid Meier’s Civilization® VI",
+    "invite_code": "civilization",
+    "invite_url": "https://discord.gg/civilization"
+  },
+  {
+    "game_id": "4d91db9b-aa80-474b-979c-b4c1f120aab4",
+    "name": "Project Zomboid",
+    "invite_code": "theindiestone",
+    "invite_url": "https://discord.gg/theindiestone",
+    "note": "개발사 The Indie Stone 공식 서버"
+  },
+  {
+    "game_id": "3a4c2b29-e953-4bd5-9ba0-be57a0c83471",
+    "name": "Risk of Rain 2",
+    "invite_code": "riskofrain",
+    "invite_url": "https://discord.gg/riskofrain"
+  },
+  {
+    "game_id": "dbbe5a71-09d8-4b5b-9ee7-3c406dbf5900",
+    "name": "Valheim",
+    "invite_code": "valheim",
+    "invite_url": "https://discord.gg/valheim"
+  },
+  {
+    "game_id": "24716631-e005-453b-bff6-644473085279",
+    "name": "Rust",
+    "invite_code": "playrust",
+    "invite_url": "https://discord.gg/playrust"
+  },
+  {
+    "game_id": "eae78adb-4f04-4b5a-83f2-96a48b1c2e67",
+    "name": "Dying Light",
+    "invite_code": "dyinglight",
+    "invite_url": "https://discord.gg/dyinglight"
+  },
+  {
+    "game_id": "7ade2928-9202-4ddf-a872-e8f5524e9223",
+    "name": "HELLDIVERS™ 2",
+    "invite_code": "helldivers",
+    "invite_url": "https://discord.gg/helldivers"
+  },
+  {
+    "game_id": "248e309e-c740-4a08-bea7-4ac7d739674d",
+    "name": "Rocket League®",
+    "invite_code": "rocketleague",
+    "invite_url": "https://discord.gg/rocketleague"
+  },
+  {
+    "game_id": "c36a74f3-6933-4eb7-9066-f8ff9eb706b3",
+    "name": "Palworld / 팰월드",
+    "invite_code": "palworld",
+    "invite_url": "https://discord.gg/palworld"
+  },
+  {
+    "game_id": "8531f28a-1afd-4eb6-93ff-0aa07c5f61b9",
+    "name": "7 Days to Die",
+    "invite_code": "7daystodie",
+    "invite_url": "https://discord.gg/7daystodie"
+  },
+  {
+    "game_id": "3e6925dd-c4ec-43e0-8ade-d74e2b231499",
+    "name": "Raft",
+    "invite_code": "raft",
+    "invite_url": "https://discord.gg/raft"
+  },
+  {
+    "game_id": "2720fede-6b7c-42c8-9fee-b5cfe7c4fcef",
+    "name": "Manor Lords 매너 로드",
+    "invite_code": "manorlords",
+    "invite_url": "https://discord.gg/manorlords"
+  },
+  {
+    "game_id": "20d7952c-7432-45c6-8a5f-07068990b78a",
+    "name": "Mount & Blade II: Bannerlord",
+    "invite_code": "mountandblade",
+    "invite_url": "https://discord.gg/mountandblade",
+    "note": "개발사 TaleWorlds 공식 서버"
+  },
+  {
+    "game_id": "061f958c-de9e-4841-b848-2d29260ea04e",
+    "name": "Borderlands Game of the Year",
+    "invite_code": "borderlands",
+    "invite_url": "https://discord.gg/borderlands"
+  },
+  {
+    "game_id": "d3d884c9-e920-4b6f-ab3b-460f0fcd84e2",
+    "name": "Among Us",
+    "invite_code": "amongus",
+    "invite_url": "https://discord.gg/amongus"
+  },
+  {
+    "game_id": "cbc1254a-3704-46ae-8c75-0f17fd1840b7",
+    "name": "BeamNG.drive",
+    "invite_code": "beamng",
+    "invite_url": "https://discord.gg/beamng"
+  },
+  {
+    "game_id": "0b826b74-1d45-49d1-a002-2084b46de374",
+    "name": "Monster Hunter Wilds",
+    "invite_code": "monsterhunter",
+    "invite_url": "https://discord.gg/monsterhunter",
+    "note": "캡콤 몬스터 헌터 공식 서버 (월드와 같은 서버)"
+  },
+  {
+    "game_id": "1c98104a-4bbb-4b4d-abdd-47129806051f",
+    "name": "Monster Hunter: World",
+    "invite_code": "monsterhunter",
+    "invite_url": "https://discord.gg/monsterhunter",
+    "note": "캡콤 몬스터 헌터 공식 서버 (와일즈와 같은 서버)"
+  },
+  {
+    "game_id": "fe26c12e-8d78-456c-aa34-d8d7ed616593",
+    "name": "Dead by Daylight",
+    "invite_code": "deadbydaylight",
+    "invite_url": "https://discord.gg/deadbydaylight"
+  },
+  {
+    "game_id": "ef18ae98-f0b5-41de-96d2-1a2cf0b67c14",
+    "name": "Unturned",
+    "invite_code": "unturned",
+    "invite_url": "https://discord.gg/unturned"
+  },
+  {
+    "game_id": "f66116bb-541c-4742-92a0-7d90b179b4d1",
+    "name": "Phasmophobia",
+    "invite_code": "phasmophobia",
+    "invite_url": "https://discord.gg/phasmophobia"
+  },
+  {
+    "game_id": "6c6bf534-ac91-4170-9dee-2bd7c4b2612c",
+    "name": "라스트 에포크",
+    "invite_code": "lastepoch",
+    "invite_url": "https://discord.gg/lastepoch"
+  },
+  {
+    "game_id": "69ff1d3f-93e1-430d-8232-2a1e44c9d9d2",
+    "name": "Warhammer 40,000: Rogue Trader",
+    "invite_code": "owlcat",
+    "invite_url": "https://discord.gg/owlcat",
+    "note": "개발사 Owlcat Games 공식 서버"
+  },
+  {
+    "game_id": "efac2013-433e-461e-9beb-fbab259671e4",
+    "name": "ARC Raiders",
+    "invite_code": "arcraiders",
+    "invite_url": "https://discord.gg/arcraiders"
+  },
+  {
+    "game_id": "7cd2a357-86af-46eb-81cc-096fd40f165f",
+    "name": "DayZ",
+    "invite_code": "dayz",
+    "invite_url": "https://discord.gg/dayz"
+  },
+  {
+    "game_id": "9d4abb32-7e5c-49e4-9e48-0e3269c87870",
+    "name": "프로스트펑크2",
+    "invite_code": "frostpunk",
+    "invite_url": "https://discord.gg/frostpunk"
+  },
+  {
+    "game_id": "e9a4fe41-4c30-452a-a751-7d0308506914",
+    "name": "Brawlhalla",
+    "invite_code": "brawlhalla",
+    "invite_url": "https://discord.gg/brawlhalla"
+  },
+  {
+    "game_id": "1f3ee0f6-6ce5-4e57-9d52-5e284ee88053",
+    "name": "Europa Universalis IV",
+    "invite_code": "paradoxinteractive",
+    "invite_url": "https://discord.gg/paradoxinteractive",
+    "note": "패러독스 공식 서버"
+  },
+  {
+    "game_id": "6415b53f-8386-400e-b69a-8e6bdb7de105",
+    "name": "GTFO",
+    "invite_code": "gtfo",
+    "invite_url": "https://discord.gg/gtfo"
+  },
+  {
+    "game_id": "f92b4dd3-95af-4cc8-8569-f733eee643de",
+    "name": "The Sims™ 4",
+    "invite_code": "thesims",
+    "invite_url": "https://discord.gg/thesims"
+  },
+  {
+    "game_id": "55d07921-b4d1-4ee8-9355-4e666a45dba4",
+    "name": "Halo Infinite",
+    "invite_code": "halo",
+    "invite_url": "https://discord.gg/halo"
+  }
+]
