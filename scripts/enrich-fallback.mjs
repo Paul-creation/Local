@@ -47,7 +47,8 @@ async function main() {
     const isSingleOnly = categories.includes('Single-player') && !isMulti;
 
     const update = {};
-    if (!game.category) update.category = guessCategory(game.genres, game.name);
+    // 싱글만 있는 게임은 '기타' — guessCategory의 기본값 '협동'이 1인 게임에 협동 배지로 붙던 문제
+    if (!game.category) update.category = isSingleOnly ? '기타' : guessCategory(game.genres, game.name);
     if (!game.min_players && isSingleOnly) {
       update.min_players = 1;
       update.max_players = 1;

@@ -14,7 +14,7 @@ export type HotItem = {
   rank: number;           // 탭 안에서의 순위 (1~10)
   change: RankChange;     // 어제 대비 (급상승 탭은 7일 전 대비)
   weeks: number;          // 연속으로 상위 10위 안에 든 주 수
-  image: string | null;   // 큰 카드 배경 (hero → card)
+  image: string | null;   // 큰 카드 배경 (card → hero). 카드 칸이 16:8이라 3:1인 hero는 좌우가 35% 잘려서 16:9 카드 이미지 먼저
   thumb: string | null;   // 줄 썸네일 (card → cover)
   fun: string | null;
   tags: string[];         // 한국어 태그 앞 2개
@@ -143,7 +143,7 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
         rank: i + 1,
         change: rising ? { type: 'up' as const, n: risingDelta.get(id)! } : changeOf(id),
         weeks: weeksOf(id),
-        image: g.hero_image_url || g.card_image_url || g.cover_image_url || null,
+        image: g.card_image_url || g.hero_image_url || g.cover_image_url || null,
         thumb: g.card_image_url || g.cover_image_url || null,
         fun: g.fun_description || null,
         tags: (g.tags || []).slice(0, 2).map((t: string) => translateTag(t)),

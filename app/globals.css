@@ -1017,7 +1017,14 @@ img { display: block; }
   box-shadow: var(--shadow-lg);
 }
 
-.detail-hero img { width: 100%; }
+/* 상세 맨 위 사진: 스팀 library_hero(1920×620, 약 3:1) 비율로 고정 → 게임마다 높이가 들쭉날쭉하지 않게
+   library_hero가 없는 게임은 16:9 카드·헤더 이미지라 위아래가 잘림 → 제목·인물이 있는 위쪽 기준(center 25%)으로 자름 */
+.detail-hero { aspect-ratio: 1920 / 620; background: var(--bg); }
+.detail-hero img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 25%; }
+/* 작은 화면에서 3:1은 너무 얇아서(폭 342px이면 높이 110px) 2:1로. library_hero는 좌우가 조금 잘림 */
+@media (max-width: 640px) {
+  .detail-hero { aspect-ratio: 2 / 1; }
+}
 
 .detail-header { margin-bottom: 32px; }
 
