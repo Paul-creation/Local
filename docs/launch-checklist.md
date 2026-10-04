@@ -27,8 +27,18 @@ npm run build
 
 ### 3. 모바일 자동 점검 재실행
 
-- **확인 필요** — 저장소에 모바일 자동 점검 스크립트(Playwright·Lighthouse 등)가 없다. 이전에 Claude 세션에서 따로 돌린 방식이면 그 방법을 여기에 적어둘 것.
-- 임시 대안: Chrome DevTools → 기기 툴바(Ctrl+Shift+M) → 375px / 390px 폭에서 메인, 게임 상세(`/games/[id]`), 비교(`/compare`), 게시판(`/community`), 관리자(`/admin`) 가로 넘침 확인.
+```bash
+npm ci                                                     # 처음 한 번 (playwright 포함)
+node scripts/mobile-check.mjs                              # 기본: https://game-info-hub.vercel.app
+node scripts/mobile-check.mjs https://새도메인              # 도메인 연결 뒤
+```
+
+- 375×812 · 390×844 · 768×1024에서 메인, 검색 결과, 게임 상세(영상 있음·없음), 비교, 커뮤니티 목록·글·글쓰기, 의견 달기, 의견함, 소개, FAQ를 연다.
+- 출력: 요약 표(가로 스크롤 / 화면 밖 넘침 / 44px 미만 터치 영역 개수) + 자세히 표(요소·크기). 헤더·푸터처럼 반복되는 요소는 화면 크기마다 한 번만 보여준다.
+- 스크린샷: `scripts/.cache/mobile-check/<시각>/` (gitignore 됨)
+- 글쓰기·의견함·의견 달기는 열기만 하고 제출하지 않는다. 비교는 AI 비용을 쓰지 않게 `/compare`(게임 미선택)만 연다.
+- 가로 스크롤이 하나라도 있으면 종료 코드 1. 오픈 전 기준은 **가로 스크롤 ✅, 넘침 0**. 44px 미만은 참고용 (2026-10-04 기준 헤더 메뉴 높이 33px 등 다수).
+- 브라우저가 없다는 오류가 나면: `npx playwright install chromium`
 
 ### 4. 주간 자동화(금요일 새벽) 결과 확인
 
