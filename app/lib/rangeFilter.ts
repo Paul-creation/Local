@@ -55,12 +55,17 @@ export function parsePrice(v: string | null): Range {
 export const formatPlayers = (r: Range) => (isAll(r, PLAYERS_ALL) ? '' : `${r[0]}-${r[1]}`);
 export const formatPrice = (r: Range) => (isAll(r, PRICE_ALL) ? '' : `${r[0] * PRICE_STEP}-${r[1] * PRICE_STEP}`);
 
-// L명부터 H명까지 전부 가능한 게임: 최소 인원 ≤ L(상관없음이면 조건 없음), 최대 인원 ≥ H(16명+면 16 이상)
+// 친구끼리 같이 할 수 있는 최대 인원: 팀·파티 인원(party_max, docs/verification-rules.md)이 있으면 그것, 없으면 최대 인원
+// (서버에는 32명이 들어가도 친구끼리 묶이는 팀은 7명인 게임 — 레데리2 등)
+export const friendsMax = (g: { party_max?: number | null; max_players?: number | null }) => g.party_max ?? g.max_players ?? null;
+
+// L명부터 H명까지 전부 가능한 게임: 최소 인원 ≤ L(상관없음이면 조건 없음), 친구끼리 최대 인원 ≥ H(16명+면 16 이상)
 // 범위를 하나라도 움직이면 인원 정보가 없는 게임은 뺀다
-export function matchesPlayers(g: { min_players?: number | null; max_players?: number | null }, r: Range) {
+export function matchesPlayers(g: { min_players?: number | null; max_players?: number | null; party_max?: number | null }, r: Range) {
   if (isAll(r, PLAYERS_ALL)) return true;
-  if (!g.min_players || !g.max_players) return false;
-  return (r[0] === 0 || g.min_players <= r[0]) && g.max_players >= r[1];
+  const max = friendsMax(g);
+  if (!g.min_players || !max) return false;
+  return (r[0] === 0 || g.min_players <= r[0]) && max >= r[1];
 }
 
 // 가격 판정에 쓰는 칸 (메인 목록은 price_final, 그 밖은 price_history — getPriceInfo가 둘 다 읽는다)

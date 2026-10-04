@@ -6,7 +6,7 @@ import ShareButton from '../ShareButton';
 import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL } from '../../lib/price';
 import GotyBadge from '../GotyBadge';
 import LowestPriceBadge from '../LowestPriceBadge';
-import { translateTag } from '../../lib/tagTranslate';
+import { displayTags } from '../../lib/tagTree';
 import type { GameFilters } from '../../lib/useGameFilters';
 import { playersText } from '../../lib/players';
 import GameImage from '../GameImage';
@@ -16,7 +16,7 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
   const {
     loaded, showResults, normalizedQuery, hasFilters, filtered,
     compareList, setCompareList, compareError, toggleCompare,
-    rememberList, resetFilters, visibleCount, showMore,
+    rememberList, resetFilters, visibleCount, showMore, tree,
   } = filters;
 
   return (
@@ -90,13 +90,13 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
                       <h3>{top10Ids.includes(game.id) && <span className="top10-badge" style={{ marginRight: 6 }}>TOP 10</span>}{game.name}</h3>
                       <p className="card-meta">
                         {game.recommended_players ? `추천 ${game.recommended_players}` : playersText(game)}
-                        {game.difficulty ? ` · ${game.difficulty}` : ''}
+                        {game.entry_barrier ? ` · 진입장벽 ${game.entry_barrier}` : game.difficulty ? ` · ${game.difficulty}` : ''}
                         {game.solo_playable === false && (
                           <span style={{ marginLeft: 6, color: 'var(--danger)', fontSize: 13, fontWeight: 700 }}>멀티필수</span>
                         )}
                       </p>
-                      {game.tags?.slice(0, 3).map((tag: string) => (
-                        <span key={tag} className="category-tag">{translateTag(tag)}</span>
+                      {displayTags(tree, game, 3).map((tag) => (
+                        <span key={tag} className="category-tag">{tag}</span>
                       ))}
                       {game.is_free ? (
                         <div className="price-row">

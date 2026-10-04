@@ -1,0 +1,5987 @@
+[
+  {
+    "game_id": "00ea1e6e-f526-40b5-8e12-e42c33ec53da",
+    "steam_appid": "3717340",
+    "name": "용과 같이 극2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "00f29c76-208f-4a61-9b8c-a7e1a72566d2",
+    "steam_appid": "1449110",
+    "name": "The Outer Worlds 2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "0135c98b-389b-4969-b46a-a451b42d6d6c",
+    "steam_appid": "414700",
+    "name": "Outlast 2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리 호러"
+  },
+  {
+    "game_id": "0178a517-2450-44f2-bb42-e68d7380d5d1",
+    "steam_appid": "4119420",
+    "name": "Evitania Online - Idle RPG",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "방치형 MMO라 판단 보류"
+  },
+  {
+    "game_id": "01ac01bc-87cf-4db6-a14e-29b520996b45",
+    "steam_appid": "3527290",
+    "name": "PEAK",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 오를 수 있지만 협동 등반이 핵심"
+  },
+  {
+    "game_id": "024897f1-787f-4571-a1e5-53406d5b9b8d",
+    "steam_appid": "1188930",
+    "name": "크로노 아크",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "024ad043-a34f-4680-a2b1-d62f51e55285",
+    "steam_appid": "397340",
+    "name": "SimplePlanes",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "02d19c05-292f-4714-9e25-26595f272e19",
+    "steam_appid": "271590",
+    "name": "Grand Theft Auto V 레거시",
+    "solo": "story",
+    "party_max": 8,
+    "session_max": 30,
+    "reason": "스토리 모드가 꽉 찬 오픈월드, 온라인은 별도 / 인원: GTA 온라인 CEO 조직·MC 클럽 최대 8명, 세션 30명"
+  },
+  {
+    "game_id": "03553137-386b-4c11-9c4f-822e97348104",
+    "steam_appid": "2739990",
+    "name": "작혼: 리치 마작",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "온라인 대국이 중심인 마작"
+  },
+  {
+    "game_id": "04eb5eeb-4fbd-4f66-9c9c-bbc588e8e294",
+    "steam_appid": "3489700",
+    "name": "스텔라 블레이드™",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 액션 어드벤처"
+  },
+  {
+    "game_id": "04ee3be2-2051-475f-91f0-566918fd73d0",
+    "steam_appid": "4162040",
+    "name": "젠레스 존 제로",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "054ddadd-7559-4657-bdad-b3fdd55941c2",
+    "steam_appid": "427410",
+    "name": "Abiotic Factor",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동 생존이 중심"
+  },
+  {
+    "game_id": "061f958c-de9e-4841-b848-2d29260ea04e",
+    "steam_appid": "8980",
+    "name": "Borderlands Game of the Year",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인 전체를 혼자 할 수 있는 루터 슈터"
+  },
+  {
+    "game_id": "063d4c8c-0e68-4e0c-915a-6845da4f2d59",
+    "steam_appid": "214950",
+    "name": "토탈워: 로마2 - 엠퍼러 에디션",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인 중심 전략"
+  },
+  {
+    "game_id": "06c55344-1a6d-4a0e-8904-e20347fc301a",
+    "steam_appid": "2689120",
+    "name": "Gladio Mori",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "06ea3a62-dc94-4272-9883-774b572b5b18",
+    "steam_appid": "613830",
+    "name": "CHRONO TRIGGER®",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "07533e13-e7ee-495b-952f-9567f3b39444",
+    "steam_appid": "1066890",
+    "name": "Automobilista 2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "커리어·AI 레이스로 혼자 충분"
+  },
+  {
+    "game_id": "0769c15f-8ea3-47b9-86a9-bdb046c03336",
+    "steam_appid": "3949040",
+    "name": "RV There Yet?",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동 운전이 중심"
+  },
+  {
+    "game_id": "079ebccc-0910-474b-9c29-4a9b0f993a26",
+    "steam_appid": "1282100",
+    "name": "REMNANT II®",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인 전체를 혼자 할 수 있음"
+  },
+  {
+    "game_id": "08774d8d-b8eb-4408-8fd2-a15c11eda535",
+    "steam_appid": "3205380",
+    "name": "오믈렛에 넣을까요?",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "088d93f0-ffc0-43e5-92fa-8af297bb20ec",
+    "steam_appid": "2624870",
+    "name": "Life is Strange: Reunion",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "08e71c25-b72b-426e-82e0-e4d595426932",
+    "steam_appid": "1938090",
+    "name": "콜 오브 듀티®",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인도 있지만 멀티가 핵심"
+  },
+  {
+    "game_id": "096893f5-67d8-4ac8-af8f-e1905bb15f9f",
+    "steam_appid": "990080",
+    "name": "호그와트 레거시",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "0980cde8-ea61-4ab8-8688-1a2e26524dc2",
+    "steam_appid": "4126040",
+    "name": "애니모",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "09e3a0e7-e53f-44e5-8245-93c5ce04a0a8",
+    "steam_appid": "1225570",
+    "name": "Unravel Two",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 둘을 조작할 수 있지만 2인 협동용"
+  },
+  {
+    "game_id": "0b7afa74-6189-407b-ae18-650b728f2417",
+    "steam_appid": "1721470",
+    "name": "Poppy Playtime",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "0b826b74-1d45-49d1-a002-2084b46de374",
+    "steam_appid": "2246340",
+    "name": "Monster Hunter Wilds",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "스토리 사냥을 혼자 끝까지 할 수 있음"
+  },
+  {
+    "game_id": "0b9fcc69-5324-44c7-a93d-7bfd99926018",
+    "steam_appid": null,
+    "name": "StarCraft II",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인이 탄탄한 RTS"
+  },
+  {
+    "game_id": "0c5fcb7f-edc8-4406-87b1-38dc4ccedf7a",
+    "steam_appid": "3168600",
+    "name": "Among Us 3D",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "멀티 전용 마피아 게임"
+  },
+  {
+    "game_id": "0ced0c1e-077a-4375-93ab-727beed37325",
+    "steam_appid": "1477590",
+    "name": "EZ2ON REBOOT : R",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 리듬 게임"
+  },
+  {
+    "game_id": "0d51fdae-320b-4a46-bb26-f38159bc5308",
+    "steam_appid": "3764200",
+    "name": "BIOHAZARD requiem",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "0dce94b7-11a0-48e0-b2a6-60337bd96bfa",
+    "steam_appid": "2436940",
+    "name": "세피리아",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "0e126c2f-3fac-4c94-9db0-2b1acc7ddde3",
+    "steam_appid": "1478500",
+    "name": "Big Walk",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 걸을 수 있지만 함께 걷는 협동이 핵심"
+  },
+  {
+    "game_id": "0f5d67d0-e057-45bc-8bd5-11a00bb1f939",
+    "steam_appid": null,
+    "name": "Alan Wake 2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리 호러"
+  },
+  {
+    "game_id": "1041309e-becd-4f1f-9ced-4e1f3b826813",
+    "steam_appid": "3440070",
+    "name": "Dinoblade",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "12261ac2-07fe-4432-b0b4-f5c5a5a702ef",
+    "steam_appid": "2742830",
+    "name": "Monster Train 2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 덱빌딩"
+  },
+  {
+    "game_id": "124e51ed-0f4d-4ba8-8532-ca62baa45efb",
+    "steam_appid": "2676840",
+    "name": "미제사건은 끝내야 하니까",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "12dad2cb-5c8c-4f62-9c56-869aa7b33d71",
+    "steam_appid": "3060170",
+    "name": "Chained in the Backrooms",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "13f96410-8d44-497e-bf5a-c1708f9e07b5",
+    "steam_appid": "1084160",
+    "name": "Jagged Alliance 3",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 턴제 전술"
+  },
+  {
+    "game_id": "13ff96f5-e0fd-4c19-b29d-cab15d586736",
+    "steam_appid": "1086940",
+    "name": "Baldur's Gate 3",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인 전체를 혼자 할 수 있는 CRPG"
+  },
+  {
+    "game_id": "14bd1b05-2334-4703-b004-fbd5722363b6",
+    "steam_appid": "3731020",
+    "name": "하숙생이 전부 미녀입니다만? 시즌2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "14f5acc3-0054-4a20-a75e-00bac3fdadca",
+    "steam_appid": "411370",
+    "name": "Melty Blood Actress Again Current Code",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "아케이드 모드는 있지만 대전이 핵심"
+  },
+  {
+    "game_id": "156dc7b0-f9b3-4c71-9138-4d498db80184",
+    "steam_appid": "4000",
+    "name": "Garry's Mod",
+    "solo": "possible",
+    "party_max": 128,
+    "session_max": 128,
+    "reason": "혼자 놀 수 있지만 멀티 모드가 핵심 / 인원: 리슨 서버 최대 128명, 팀 개념은 모드마다 다름"
+  },
+  {
+    "game_id": "15a3c5f8-7bc7-48d3-bd38-6b1ab28fef3e",
+    "steam_appid": "2218400",
+    "name": "그리드랜드",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "15df8fb4-33fd-462b-83dc-4209690d3bd7",
+    "steam_appid": "1761390",
+    "name": "하츠네 미쿠 Project DIVA MEGA39’s+",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "15eebb03-4e2f-4330-9eb4-18bb893f5980",
+    "steam_appid": "1888930",
+    "name": "The Last of Us™ Part I",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "1674d087-e944-4add-b0ba-5cbeb2c47196",
+    "steam_appid": null,
+    "name": "Eternal Threads",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 어드벤처"
+  },
+  {
+    "game_id": "170704ea-aa27-468e-a223-f2d2255a5cee",
+    "steam_appid": "589870",
+    "name": "Learn to Fly 3",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "1768f568-b769-4946-9025-13c2dae96825",
+    "steam_appid": "646570",
+    "name": "Slay the Spire",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "176d658f-b34f-4cf9-a63e-ffce2152e420",
+    "steam_appid": "2344520",
+    "name": "디아블로® IV",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인을 혼자 할 수 있는 액션 RPG"
+  },
+  {
+    "game_id": "17f37e06-70f7-4d97-9ec0-877c7e907eab",
+    "steam_appid": "2379780",
+    "name": "Balatro",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "18392403-ff9e-4892-bc2e-6ed00f6ca71b",
+    "steam_appid": "952060",
+    "name": "BIOHAZARD RE:3",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리 호러"
+  },
+  {
+    "game_id": "18626392-3e9c-4bc4-953a-c1bc89ffa34d",
+    "steam_appid": "240720",
+    "name": "Getting Over It with Bennett Foddy",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "18770660-8785-4b5a-bb72-2218babef428",
+    "steam_appid": "602960",
+    "name": "Barotrauma",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "싱글 캠페인 있지만 멀티 승무원 플레이가 핵심"
+  },
+  {
+    "game_id": "18fcabd3-a79b-4242-8101-1be038fe3199",
+    "steam_appid": "4634490",
+    "name": "Master Healer Kale with useless party",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "1957593c-e8d0-450c-bf4a-0a868dbc4b73",
+    "steam_appid": "304390",
+    "name": "포 아너",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "스토리 모드는 짧고 대전이 핵심"
+  },
+  {
+    "game_id": "1961c404-4603-490f-9706-1bdacc336625",
+    "steam_appid": "1888160",
+    "name": "아머드 코어 VI 루비콘의 화염",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 미션 중심"
+  },
+  {
+    "game_id": "19d97fe9-7166-489e-917d-5a17f5a8e442",
+    "steam_appid": "601510",
+    "name": "Yu-Gi-Oh! Duel Links",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 스토리도 있지만 대전이 핵심"
+  },
+  {
+    "game_id": "1a8ba0af-57fc-4cae-8909-f674f461d444",
+    "steam_appid": "4423580",
+    "name": "섀도우 던전",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "1ac038a4-55b4-472a-8f05-c588ac86416a",
+    "steam_appid": "3010850",
+    "name": "Gears of War: E-Day",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인 중심 슈팅"
+  },
+  {
+    "game_id": "1ac94179-0e06-40e1-a6c6-e4cdd3e0867c",
+    "steam_appid": "220",
+    "name": "Half-Life 2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리 FPS"
+  },
+  {
+    "game_id": "1b0348fc-96eb-4f1b-85ca-ebac48e7d5fc",
+    "steam_appid": "898750",
+    "name": "슈퍼로봇대전 30",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "1ba44c14-b098-4002-aac1-fa441c3baa80",
+    "steam_appid": "270880",
+    "name": "American Truck Simulator",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 운송 시뮬"
+  },
+  {
+    "game_id": "1bb02b73-2195-47e5-a39c-9bc4ced8c557",
+    "steam_appid": "413150",
+    "name": "Stardew Valley",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 해도 완성된 농장 생활"
+  },
+  {
+    "game_id": "1bdd0e40-147a-4d15-84a3-67dbc246b91d",
+    "steam_appid": "3241660",
+    "name": "R.E.P.O.",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동이 핵심"
+  },
+  {
+    "game_id": "1c4a67ce-93bb-47ca-92a4-9e89d7c39416",
+    "steam_appid": null,
+    "name": "Luftrausers",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 아케이드 슈팅"
+  },
+  {
+    "game_id": "1c970cda-8e75-47b8-bd07-9eba7ab1d1cb",
+    "steam_appid": "2489330",
+    "name": "Whiskerwood 휘스커우드",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "1c98104a-4bbb-4b4d-abdd-47129806051f",
+    "steam_appid": "582010",
+    "name": "Monster Hunter: World",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "스토리 사냥을 혼자 끝까지 할 수 있음"
+  },
+  {
+    "game_id": "1c992d46-79b1-4c56-8172-6c068a17515f",
+    "steam_appid": "524220",
+    "name": "NieR:Automata™",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "1cef4185-7412-437c-aedd-2377b71de0de",
+    "steam_appid": "306130",
+    "name": "The Elder Scrolls® Online",
+    "solo": "possible",
+    "party_max": 12,
+    "session_max": null,
+    "reason": "혼자 퀘스트를 할 수 있는 MMO / 인원: 트라이얼 그룹 최대 12명, 서버는 메가서버"
+  },
+  {
+    "game_id": "1d5f0be9-33c1-4ae9-a80e-d419aafa0a79",
+    "steam_appid": "601150",
+    "name": "Devil May Cry 5",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 액션"
+  },
+  {
+    "game_id": "1d62a733-dd16-4dd5-a8e1-6e29c4f0a147",
+    "steam_appid": "1591530",
+    "name": "SAMURAI WARRIORS 5",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 무쌍 액션"
+  },
+  {
+    "game_id": "1dd41363-0503-4943-93d2-13c9724d7430",
+    "steam_appid": "415600",
+    "name": "Kart Racing Pro",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 레이싱 시뮬"
+  },
+  {
+    "game_id": "1de002fa-75c4-48fb-96d2-0dbe0919eb07",
+    "steam_appid": "4298880",
+    "name": "Timber Rush",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "1e0d02a5-c835-4689-96e1-cc0121be16dd",
+    "steam_appid": "1127500",
+    "name": "Mini Motorways",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "1e18114b-9024-415d-af63-3082315c2f9b",
+    "steam_appid": "3892270",
+    "name": "Gamble With Your Friends",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "1f3ee0f6-6ce5-4e57-9d52-5e284ee88053",
+    "steam_appid": "236850",
+    "name": "Europa Universalis IV",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 대전략"
+  },
+  {
+    "game_id": "1f5660b3-42e3-4ca6-bb4a-6043facc2030",
+    "steam_appid": "1850510",
+    "name": "TRIANGLE STRATEGY",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "1ff764ab-076a-4780-99bb-74b553be0227",
+    "steam_appid": null,
+    "name": "Fortnite",
+    "solo": "none",
+    "party_max": 4,
+    "session_max": 100,
+    "reason": "멀티 전용 배틀로얄 / 인원: 스쿼드 최대 4명, 한 판 100명"
+  },
+  {
+    "game_id": "1ff91047-35da-4cfc-ae48-1c7c5241a370",
+    "steam_appid": "4018950",
+    "name": "Lost Wiki: Kozlovka",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "202e686a-a0f2-41c1-b799-9aaeb3e964d9",
+    "steam_appid": "228200",
+    "name": "Company of Heroes",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인 중심 RTS"
+  },
+  {
+    "game_id": "20747317-1226-4823-b158-c82de4a6010b",
+    "steam_appid": "3819640",
+    "name": "Megastore Simulator",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "20c8f26b-0c39-4cf2-8622-ff828e8f7c5a",
+    "steam_appid": "2471100",
+    "name": "Unnamed Space Idle",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "20d7952c-7432-45c6-8a5f-07068990b78a",
+    "steam_appid": "261550",
+    "name": "Mount & Blade II: Bannerlord",
+    "solo": "story",
+    "party_max": 6,
+    "session_max": 120,
+    "reason": "싱글 캠페인이 핵심 / 인원: 멀티 파티 최대 6명, 대규모 전투 서버 최대 120명"
+  },
+  {
+    "game_id": "20e83625-6579-4281-8ded-00f3df2610ee",
+    "steam_appid": "2050650",
+    "name": "BIOHAZARD RE:4",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "2190aef3-ce4b-487e-a605-7eb65eeef1fa",
+    "steam_appid": "2903950",
+    "name": "초탐정사건부 레인코드 Plus",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "21de1222-94aa-4a19-a3ee-c9ae014532de",
+    "steam_appid": "1144200",
+    "name": "Ready or Not",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "AI 동료와 혼자 할 수 있지만 협동이 핵심"
+  },
+  {
+    "game_id": "221f8954-4a3c-471e-b782-1967a6514dca",
+    "steam_appid": "1129580",
+    "name": "Medieval Dynasty",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 해도 완성된 생존 경영"
+  },
+  {
+    "game_id": "22dec47d-44e3-429e-90d0-e534ac3fb405",
+    "steam_appid": "3176060",
+    "name": "Emissary Zero",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "239d8294-7e6c-4447-b162-b3762ae2ae82",
+    "steam_appid": "2322010",
+    "name": "갓 오브 워 라그나로크",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리 액션"
+  },
+  {
+    "game_id": "245a5214-9af9-4488-801e-b8ae52441325",
+    "steam_appid": "1151340",
+    "name": "Fallout 76",
+    "solo": "possible",
+    "party_max": 4,
+    "session_max": 24,
+    "reason": "혼자 퀘스트를 할 수 있지만 온라인 전용 / 인원: 팀 최대 4명, 서버 24명"
+  },
+  {
+    "game_id": "24716631-e005-453b-bff6-644473085279",
+    "steam_appid": "252490",
+    "name": "Rust",
+    "solo": "none",
+    "party_max": 8,
+    "session_max": null,
+    "reason": "온라인 서버 생존 PvP / 인원: 기본 팀 최대 8명, 서버 인원은 서버마다 다름"
+  },
+  {
+    "game_id": "248e309e-c740-4a08-bea7-4ac7d739674d",
+    "steam_appid": "252950",
+    "name": "Rocket League®",
+    "solo": "possible",
+    "party_max": 8,
+    "session_max": 8,
+    "reason": "봇 경기도 있지만 온라인 대전이 핵심 / 인원: 사설 매치로 친구끼리 4대4 (양 팀 합계), 같은 판 8명"
+  },
+  {
+    "game_id": "251c326d-177e-44da-bd4d-d6a758162907",
+    "steam_appid": "4080030",
+    "name": "The Message from Deep Space",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "256e5f62-6a63-4639-9594-eee25e69045f",
+    "steam_appid": "2133760",
+    "name": "Tiny Bookshop",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "2587b451-a1fb-4287-b920-eb3727f0a71a",
+    "steam_appid": "2289750",
+    "name": "Super Fantasy Kingdom 슈퍼 판타지 킹덤",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "25dee082-c936-4b30-aea0-41639aa1ae4c",
+    "steam_appid": null,
+    "name": "Monument Valley",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 퍼즐"
+  },
+  {
+    "game_id": "25fec6f4-8047-4521-97bd-b39bad5b9cd8",
+    "steam_appid": "2142790",
+    "name": "Fields of Mistria",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "2651b2fa-b423-48b6-8ff0-f0b46bd242ee",
+    "steam_appid": "230410",
+    "name": "Warframe",
+    "solo": "possible",
+    "party_max": 4,
+    "session_max": null,
+    "reason": "혼자 임무를 할 수 있는 루터 슈터 / 인원: 분대 최대 4명"
+  },
+  {
+    "game_id": "267c9472-52e0-4c1b-ab97-6d904c8fd123",
+    "steam_appid": "962130",
+    "name": "Grounded",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동 생존이 중심"
+  },
+  {
+    "game_id": "2720fede-6b7c-42c8-9fee-b5cfe7c4fcef",
+    "steam_appid": "1363080",
+    "name": "Manor Lords 매너 로드",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "27313551-8fb2-44a8-b4e6-56d3cbef5eaf",
+    "steam_appid": "3618850",
+    "name": "Pronoun Palace",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "27b29d7d-f509-4ab4-a378-919443cea73a",
+    "steam_appid": "578330",
+    "name": "LEGO® City Undercover",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 오픈월드 액션"
+  },
+  {
+    "game_id": "296f824b-ffab-4ebd-9f4c-14cd01e61806",
+    "steam_appid": "1845250",
+    "name": "루비나이트",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "2a0c25e9-c369-41c4-ba0c-6d4e26d1e194",
+    "steam_appid": "326460",
+    "name": "ShellShock Live",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 대전이 핵심"
+  },
+  {
+    "game_id": "2a9e2edd-8ed1-4204-ba0a-4158448786e0",
+    "steam_appid": "2950790",
+    "name": "IRON NEST: Heavy Turret Simulator",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "2abbbbe4-102f-402d-8aaa-779836adf87d",
+    "steam_appid": "2475460",
+    "name": "SOS OPS!",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "2b9c4f50-0dce-4de4-b932-4211f1598753",
+    "steam_appid": "492720",
+    "name": "Tropico 6",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 도시 경영"
+  },
+  {
+    "game_id": "2bac093c-7e4c-4926-90d7-5b7c7f8a86f6",
+    "steam_appid": "2483190",
+    "name": "Forza Horizon 6",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 오픈월드 레이싱"
+  },
+  {
+    "game_id": "2be170ec-e79b-4b29-9612-c7f184d23d97",
+    "steam_appid": "1933660",
+    "name": "Demons Roots",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "2c7068dd-be71-431d-bfab-664eb27755ce",
+    "steam_appid": "304050",
+    "name": "Trove",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 할 수 있는 MMO"
+  },
+  {
+    "game_id": "2db3cc9e-628a-4d90-b489-1b985030ccf2",
+    "steam_appid": "730",
+    "name": "Counter-Strike 2",
+    "solo": "none",
+    "party_max": 10,
+    "session_max": 10,
+    "reason": "온라인 팀 대전 전용 / 인원: 사설 매치·커뮤니티 서버로 친구끼리 5대5 내전 (양 팀 합계), 같은 판 10명"
+  },
+  {
+    "game_id": "2f78e619-8524-468a-bb39-7344bbbd6194",
+    "steam_appid": "4508340",
+    "name": "이환",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "출시 정보 부족으로 판단 보류"
+  },
+  {
+    "game_id": "300e8847-80c6-48a4-a7e4-63b118887dbe",
+    "steam_appid": "1687950",
+    "name": "페르소나 5 더 로열",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "30829082-cf8f-478d-a72f-bf9df24a5429",
+    "steam_appid": "394360",
+    "name": "Hearts of Iron IV",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 대전략"
+  },
+  {
+    "game_id": "319fbb9a-bfaa-4ad9-8abb-581b21e5f46d",
+    "steam_appid": "3768760",
+    "name": "007 퍼스트 라이트",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "31ce1da1-053c-485b-bf36-1a20365a6119",
+    "steam_appid": "460920",
+    "name": "Steep™",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "3202a455-226a-4421-9dc9-408a45ca74fe",
+    "steam_appid": "3855540",
+    "name": "BLACK SOULS II",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "3300e1e9-20c8-4e86-a136-0e37d00ee932",
+    "steam_appid": "2697000",
+    "name": "The Legend of Khiimori",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "3320edb9-4111-4af8-b6bc-14f2de663931",
+    "steam_appid": "418030",
+    "name": "Subsistence",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "3344104f-5976-455f-827e-aa9ee00834a0",
+    "steam_appid": "286160",
+    "name": "Tabletop Simulator",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 함께하는 테이블게임이 핵심"
+  },
+  {
+    "game_id": "340657c7-cc83-41b5-9099-1236627f0989",
+    "steam_appid": "1342330",
+    "name": "Mad Games Tycoon 2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 회사 경영"
+  },
+  {
+    "game_id": "346dc3bc-fd7f-4b4a-95d9-800a9278fe1d",
+    "steam_appid": "702050",
+    "name": "사야의 노래",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "3635f735-2af1-482e-8881-e1c25fea4bae",
+    "steam_appid": "4019220",
+    "name": "Dressmaker",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "364ff295-1357-4e70-9d30-59b460bc7838",
+    "steam_appid": "550",
+    "name": "Left 4 Dead 2",
+    "solo": "possible",
+    "party_max": 4,
+    "session_max": 8,
+    "reason": "봇과 혼자 할 수 있지만 협동이 핵심 / 인원: 캠페인 4명, 대전 4대4"
+  },
+  {
+    "game_id": "3739d1cb-3de9-4e12-beea-749c6fe32c4a",
+    "steam_appid": "2897700",
+    "name": "Arizona Sunshine® VR Remake",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 할 수 있는 VR 캠페인"
+  },
+  {
+    "game_id": "373c3856-e08a-4443-811f-53f576b1609e",
+    "steam_appid": "2175540",
+    "name": "드래곤 퀘스트 몬스터즈 3 마족 왕자와 엘프의 여행",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "37ac9df2-e64a-4891-88d2-8d0684d3d70c",
+    "steam_appid": "4108000",
+    "name": "Machine Party",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "382aead2-6a12-4a76-9f89-792974e84bbb",
+    "steam_appid": "440",
+    "name": "Team Fortress 2",
+    "solo": "none",
+    "party_max": 24,
+    "session_max": 24,
+    "reason": "온라인 팀 대전 전용 / 인원: 커뮤니티 서버로 친구끼리 12대12 내전 (양 팀 합계), 같은 판 24명"
+  },
+  {
+    "game_id": "3839a4b0-5a12-42b5-9017-93a70debd29f",
+    "steam_appid": "3124540",
+    "name": "Far Far West",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "38417128-5385-43ad-a83d-1bf3b25a5b1a",
+    "steam_appid": "1636440",
+    "name": "SILENT HILL: Townfall",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "388bb928-ca80-4a29-891a-e63b2decf74a",
+    "steam_appid": "94400",
+    "name": "Nidhogg",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "아케이드 모드는 있지만 대전이 핵심"
+  },
+  {
+    "game_id": "389823ea-b3d4-4c39-818d-f08ed70c3d69",
+    "steam_appid": "2402680",
+    "name": "딤레이스",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "38e973ae-89a6-47bf-a83a-a41303e446d7",
+    "steam_appid": "2206270",
+    "name": "Vampire Hunters",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "39ab1f4c-9e7b-4839-bd14-79f55b636d0e",
+    "steam_appid": "2384580",
+    "name": "진・삼국무쌍: ORIGINS",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "3a4c2b29-e953-4bd5-9ba0-be57a0c83471",
+    "steam_appid": "632360",
+    "name": "Risk of Rain 2",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동이 핵심"
+  },
+  {
+    "game_id": "3abe12ac-667a-4044-80c5-823e49ae8785",
+    "steam_appid": "4623570",
+    "name": "데스크롤러：방치형 ARPG",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "3ad99a41-8afb-4aaa-afff-8af04c4a0b6d",
+    "steam_appid": null,
+    "name": "League of Legends",
+    "solo": "none",
+    "party_max": 10,
+    "session_max": 10,
+    "reason": "온라인 팀 대전 전용 / 인원: 사용자 설정 게임으로 친구끼리 5대5 내전 (양 팀 합계), 같은 판 10명"
+  },
+  {
+    "game_id": "3c588005-2d6d-41dd-9861-6f194fbb6e45",
+    "steam_appid": "4128400",
+    "name": "eBaseball™: PRO SPIRIT",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "3c9a1409-772c-49d3-a03e-cde5efa76a3f",
+    "steam_appid": "3418570",
+    "name": "Summer Pockets REFLECTION BLUE",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "3d395c9a-ea85-4f06-aa4b-681a2db5d120",
+    "steam_appid": "477160",
+    "name": "Human Fall Flat",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 풀 수 있지만 협동이 핵심"
+  },
+  {
+    "game_id": "3d487ac6-7881-4b9f-ad9a-0bbace3d6922",
+    "steam_appid": "2764460",
+    "name": "Sandustry 샌더스트리",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "3d674169-e171-410d-94ee-b4ca9d364cc0",
+    "steam_appid": "1537830",
+    "name": "디즈니 스피드스톰 -- Disney Speedstorm",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "3da98fd1-7c7a-490c-bc32-ba4816774a9d",
+    "steam_appid": "3263320",
+    "name": "Carry The Glass",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "3e6925dd-c4ec-43e0-8ade-d74e2b231499",
+    "steam_appid": "648800",
+    "name": "Raft",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동 생존이 중심"
+  },
+  {
+    "game_id": "3ee487c6-942b-4249-976a-08d09cec3d18",
+    "steam_appid": "2597080",
+    "name": "Realm of Ink",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "3f025de9-1fe4-4b68-8ee7-56331625b3e7",
+    "steam_appid": "895870",
+    "name": "Project Wingman",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 캠페인 비행 슈팅"
+  },
+  {
+    "game_id": "3f7b6914-08e9-4f9d-8152-5096a99310cf",
+    "steam_appid": "1816300",
+    "name": "HARVESTELLA",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "3ffb746d-9218-4b16-8594-b543433b5036",
+    "steam_appid": "4197610",
+    "name": "Librarian: Tidy Up the Arcane Library!",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "406ae5b8-a3d5-4d96-be2a-b95933439143",
+    "steam_appid": "2531310",
+    "name": "The Last of Us™ Part II Remastered",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "40a057d7-e642-43f9-a3d6-0fca3839ee07",
+    "steam_appid": "1436990",
+    "name": "Feign",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "멀티 전용 마피아 게임"
+  },
+  {
+    "game_id": "4147f8eb-557b-465e-bf6d-2e7941f20e61",
+    "steam_appid": "2231380",
+    "name": "Tom Clancy's Ghost Recon® Breakpoint",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인 전체를 혼자 할 수 있음"
+  },
+  {
+    "game_id": "41ce34ce-bfc8-4931-8f0c-14b4df5fe500",
+    "steam_appid": "3407390",
+    "name": "ENDLESS Legend™ 2 엔들리스 레전드 2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 4X"
+  },
+  {
+    "game_id": "420c7908-cc5a-40c1-bbe4-b34e3afa4fba",
+    "steam_appid": "1774580",
+    "name": "스타워즈 제다이: 서바이버™",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리 액션"
+  },
+  {
+    "game_id": "420ffdae-aae6-4f74-baf0-f944af658b31",
+    "steam_appid": "431240",
+    "name": "Golf With Your Friends",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 칠 수 있지만 함께하는 미니골프"
+  },
+  {
+    "game_id": "4228c5f5-38e7-4c6c-b891-b7f12f2733be",
+    "steam_appid": "958260",
+    "name": "DEAD OR ALIVE Xtreme Venus Vacation",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "42b04338-700a-4c4a-904c-88f3f53c1944",
+    "steam_appid": "1118520",
+    "name": "Paralives",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "42d7a4fc-6095-4659-96fe-8a004867cb99",
+    "steam_appid": "4705510",
+    "name": "Happy Wheels",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 물리 액션"
+  },
+  {
+    "game_id": "433b0dc2-cef9-42b6-9bbf-580f3503e003",
+    "steam_appid": "3097560",
+    "name": "Liar's Bar",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "멀티 전용 파티 게임"
+  },
+  {
+    "game_id": "43b6865e-f5cb-4f74-abc9-450b0894e941",
+    "steam_appid": "1517290",
+    "name": "Battlefield™ 2042",
+    "solo": "none",
+    "party_max": 4,
+    "session_max": 128,
+    "reason": "캠페인 없는 온라인 대전 / 인원: 분대 최대 4명, 한 판 128명"
+  },
+  {
+    "game_id": "43c84076-ea87-44ff-8ffc-97406d7cf767",
+    "steam_appid": "2525380",
+    "name": "Tomb Raider IV-VI Remastered",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "43ffc915-f990-486c-bc34-e0929b45f5c8",
+    "steam_appid": "4286550",
+    "name": "Keep on Mining! - Worlds",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "4403144f-f55a-4661-ab5f-300926051e4b",
+    "steam_appid": "367520",
+    "name": "Hollow Knight",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "44746975-ce8c-4432-8b51-74294d746828",
+    "steam_appid": "1213210",
+    "name": "커맨드 앤 컨커 리마스터 컬렉션",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인 중심 RTS"
+  },
+  {
+    "game_id": "4543efdf-5212-40f9-ac71-4e6aac3e3420",
+    "steam_appid": "2499860",
+    "name": "드래곤 퀘스트 VII Reimagined",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "4581faf9-8038-4670-8ec2-e80b7e3c10cb",
+    "steam_appid": "2172010",
+    "name": "Until Dawn™",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 인터랙티브 드라마"
+  },
+  {
+    "game_id": "45a53f0e-46f3-4478-b21b-a0166a1bedb4",
+    "steam_appid": "4421010",
+    "name": "Bills Must Be Paid",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "45d7ba16-daf5-47d6-8a06-fd09dc7ffb45",
+    "steam_appid": "1718870",
+    "name": "Spaceflight Simulator",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "4724c5b8-a2ee-49ef-9391-6132c066bc3b",
+    "steam_appid": null,
+    "name": "Diablo IV",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인을 혼자 할 수 있는 액션 RPG"
+  },
+  {
+    "game_id": "47296e20-c3c2-451d-8da2-914845927d23",
+    "steam_appid": "1364780",
+    "name": "Street Fighter 6",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "월드 투어 등 혼자 할 거리도 있지만 대전이 핵심"
+  },
+  {
+    "game_id": "47415e16-803d-49b7-b445-4936dd71f3b1",
+    "steam_appid": "1446650",
+    "name": "BRAVELY DEFAULT II",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "47b2f844-2322-437b-8f40-0f27678f584c",
+    "steam_appid": "523000",
+    "name": "Princess Maker 2 Refine",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "47d877d6-5e48-4a27-8e49-3c3503a325e2",
+    "steam_appid": "1966720",
+    "name": "Lethal Company",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동이 핵심"
+  },
+  {
+    "game_id": "4830ff61-2c7d-4e65-a13a-930547ff3dbf",
+    "steam_appid": null,
+    "name": "Astrea Six Sided Oracles",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "4844c39c-3b03-44f2-9d1a-25f43c5b4619",
+    "steam_appid": "1432320",
+    "name": "Liftoff®: Micro Drones",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "49b2729a-eb16-427a-a5f4-d3937273e05d",
+    "steam_appid": "1763250",
+    "name": "SWORN",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동이 중심"
+  },
+  {
+    "game_id": "49b45ab4-2700-4ae3-8ce9-e312a617a2be",
+    "steam_appid": "816340",
+    "name": "Kingdom Rush Origins - Tower Defense",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "49c6e0c7-1473-4964-97a6-64715a0b13dd",
+    "steam_appid": "1072420",
+    "name": "드래곤 퀘스트 빌더즈 2 파괴신 시도와 텅 빈 섬",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 건설 RPG"
+  },
+  {
+    "game_id": "49e1fe99-4672-4002-b3e7-b686baa83946",
+    "steam_appid": "346110",
+    "name": "ARK: Survival Evolved",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 부족 생존이 중심"
+  },
+  {
+    "game_id": "49f441ae-e2ef-4657-bcd9-4ae13b363abb",
+    "steam_appid": "412220",
+    "name": "DDNet",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "협동이 필수인 플랫포머"
+  },
+  {
+    "game_id": "4a500ace-62a1-4ac7-9770-c89646d2eaf9",
+    "steam_appid": "1551360",
+    "name": "Forza Horizon 5",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 오픈월드 레이싱"
+  },
+  {
+    "game_id": "4a5ec5f0-bcac-446d-9950-da334743566c",
+    "steam_appid": "374320",
+    "name": "DARK SOULS™ III",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 끝까지 하는 소울라이크"
+  },
+  {
+    "game_id": "4aa6194d-4cb2-4909-82c2-0df973538ddb",
+    "steam_appid": "1527950",
+    "name": "Wartales",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 용병단 RPG"
+  },
+  {
+    "game_id": "4b296036-1925-479c-aa11-664933c2131d",
+    "steam_appid": "1766060",
+    "name": "HumanitZ",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동 생존이 중심"
+  },
+  {
+    "game_id": "4c529f6a-1f64-46e0-a83d-7d73b210e6ac",
+    "steam_appid": "3014080",
+    "name": "HUNDRED LINE -최종방위학원-",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "4c58938d-179b-4f98-81a4-7446f7557ec9",
+    "steam_appid": "1599600",
+    "name": "플레이트업!",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동 요리가 핵심"
+  },
+  {
+    "game_id": "4c85366b-37bd-475d-b9d9-d1f98ed0d5e2",
+    "steam_appid": "2646460",
+    "name": "Soulmask",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동 생존이 중심"
+  },
+  {
+    "game_id": "4cb3c1a0-fc9f-42be-8711-d1fa5c643320",
+    "steam_appid": "4704690",
+    "name": "MECCHA CHAMELEON",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "멀티 전용 파티 게임"
+  },
+  {
+    "game_id": "4d3dc628-4900-4899-a40b-66db5b342f0f",
+    "steam_appid": "2232880",
+    "name": "灵兽江湖",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "4d450b0f-055a-42f2-8604-5b5787a7a21b",
+    "steam_appid": "1113000",
+    "name": "페르소나4 더 골든",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "4d91db9b-aa80-474b-979c-b4c1f120aab4",
+    "steam_appid": "108600",
+    "name": "Project Zomboid",
+    "solo": "story",
+    "party_max": 32,
+    "session_max": 32,
+    "reason": "혼자 해도 완성된 생존 샌드박스 / 인원: 기본 서버 32명, 팀 구분 없음"
+  },
+  {
+    "game_id": "4e36529f-7faa-4cba-b0d1-3ad88ab635bf",
+    "steam_appid": "436780",
+    "name": "Tavern Keeper 🍻",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "4e584297-b0dd-4151-8c3f-227dfe20860c",
+    "steam_appid": "3014320",
+    "name": "옥토패스 트래블러 0 (OCTOPATH TRAVELER 0)",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "4e701b2e-62d2-4ea9-a3cb-5af998519a44",
+    "steam_appid": "447530",
+    "name": "VA-11 Hall-A: Cyberpunk Bartender Action",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "4e9c4614-d285-4090-8474-fab8d8ad8836",
+    "steam_appid": "335240",
+    "name": "Transformice",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "멀티 전용 플랫포머"
+  },
+  {
+    "game_id": "4ed77613-2877-4f47-9eb8-a021dc3625a5",
+    "steam_appid": "359550",
+    "name": "톰 클랜시의 레인보우식스 시즈",
+    "solo": "none",
+    "party_max": 10,
+    "session_max": 10,
+    "reason": "온라인 팀 대전 전용 / 인원: 커스텀 매치로 친구끼리 5대5 내전 (양 팀 합계), 같은 판 10명"
+  },
+  {
+    "game_id": "4edda79f-1e37-47dc-a60d-503a1369f57b",
+    "steam_appid": "3513350",
+    "name": "Wuthering Waves",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 스토리 액션 RPG"
+  },
+  {
+    "game_id": "4fa842b7-c151-4e94-8b58-79e042a36e05",
+    "steam_appid": "2420110",
+    "name": "호라이즌 포비든 웨스트 컴플리트 에디션",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 오픈월드 액션"
+  },
+  {
+    "game_id": "50c3e7b6-889e-43b7-a8a5-0312a9a47cbf",
+    "steam_appid": "255710",
+    "name": "Cities: Skylines",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "51267b1d-fbae-4309-87b9-e9498e181968",
+    "steam_appid": "1962700",
+    "name": "서브노티카 2",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "앞서 해보기라 판단 보류"
+  },
+  {
+    "game_id": "51986c54-273d-4377-918e-a98b25db2b23",
+    "steam_appid": "1092790",
+    "name": "Inscryption",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "52621a4c-6ba0-4a84-8220-6f6052e6fe80",
+    "steam_appid": "578080",
+    "name": "PUBG: BATTLEGROUNDS",
+    "solo": "none",
+    "party_max": 4,
+    "session_max": 100,
+    "reason": "멀티 전용 배틀로얄 / 인원: 스쿼드 최대 4명, 한 판 100명"
+  },
+  {
+    "game_id": "52b688f4-7ff2-4d63-b0f0-408b2aee3d76",
+    "steam_appid": "594650",
+    "name": "Hunt: Showdown 1896",
+    "solo": "none",
+    "party_max": 3,
+    "session_max": 12,
+    "reason": "멀티 전용 익스트랙션 / 인원: 팀 최대 3명, 한 판 12명"
+  },
+  {
+    "game_id": "53873569-11df-48d8-85d4-580068492ef6",
+    "steam_appid": "2280",
+    "name": "DOOM + DOOM II",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 고전 FPS"
+  },
+  {
+    "game_id": "53bb48a8-9e73-4605-8607-3e81ab1f9833",
+    "steam_appid": "1405470",
+    "name": "Scars of Summer",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "5466f838-af36-4ead-bf66-f83c40ddde95",
+    "steam_appid": "761600",
+    "name": "귀무자（Onimusha: Warlords）",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "5480b90b-49ce-4dab-95d0-44666cf9b77c",
+    "steam_appid": "1971650",
+    "name": "옥토패스 트래블러 II",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "54e1d77b-7975-458f-a499-ee27c465c62a",
+    "steam_appid": "703080",
+    "name": "플래닛 주",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 동물원 경영"
+  },
+  {
+    "game_id": "54ee82c1-94bb-4cbd-a069-7924843b1372",
+    "steam_appid": "1973530",
+    "name": "Limbus Company",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 스토리 게임"
+  },
+  {
+    "game_id": "54f1d1a0-9c13-4ac7-a5bf-0f88cfe1896c",
+    "steam_appid": "1368140",
+    "name": "Corsair Cove 커세어 코브",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "54f4afa8-b1d8-44e0-a05d-c639962bde29",
+    "steam_appid": "1659040",
+    "name": "HITMAN World of Assassination",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 잠입 액션"
+  },
+  {
+    "game_id": "55942ded-36b3-4ab0-8041-2d727d840274",
+    "steam_appid": "3065940",
+    "name": "Gallipoli",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "55a5e2a4-e003-4ed7-a446-4bc607e2d602",
+    "steam_appid": "2768430",
+    "name": "ATLYSS",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 함께하는 RPG"
+  },
+  {
+    "game_id": "55d07921-b4d1-4ee8-9355-4e666a45dba4",
+    "steam_appid": "1240440",
+    "name": "Halo Infinite",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인도 있지만 멀티가 핵심"
+  },
+  {
+    "game_id": "56021540-0837-4d56-ac71-cab141a3eebd",
+    "steam_appid": "208650",
+    "name": "Batman™: Arkham Knight",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 오픈월드 액션"
+  },
+  {
+    "game_id": "5765dffa-f0ac-4e51-b309-da64801a4959",
+    "steam_appid": null,
+    "name": "World of Warcraft",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 퀘스트를 할 수 있는 MMO"
+  },
+  {
+    "game_id": "57e13d35-7ff0-46ff-af87-fa443d7f8f9d",
+    "steam_appid": "48190",
+    "name": "Assassin’s Creed® Brotherhood",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리가 중심"
+  },
+  {
+    "game_id": "588aa5f1-8669-40ed-bdcd-6e25a90cfa27",
+    "steam_appid": "1580780",
+    "name": "NINJA GAIDEN Σ [NINJA GAIDEN: Master Collection]",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "58ff9807-f7d3-415f-9dc5-893856076c66",
+    "steam_appid": "2637940",
+    "name": "Used Cars Simulator",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "59514d14-dbcc-4e73-999b-6db117773e7d",
+    "steam_appid": "242760",
+    "name": "The Forest",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "5975c530-2909-4298-82b1-341f7cb61e51",
+    "steam_appid": "3564740",
+    "name": "연운",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 이야기를 따라가도 되는 무협 오픈월드"
+  },
+  {
+    "game_id": "59f1b233-74de-43dc-8fd0-4b8392ce05cb",
+    "steam_appid": "658850",
+    "name": "Do Not Feed the Monkeys",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "5a0db7e3-d99e-4cfa-8ff3-563ccc08796b",
+    "steam_appid": "386360",
+    "name": "SMITE®",
+    "solo": "none",
+    "party_max": 10,
+    "session_max": 10,
+    "reason": "온라인 팀 대전 전용 / 인원: 커스텀 게임으로 친구끼리 5대5 내전 (양 팀 합계), 같은 판 10명"
+  },
+  {
+    "game_id": "5a6d728c-3828-40dc-823b-e1bce4ef8f91",
+    "steam_appid": "2369900",
+    "name": "Castlevania Dominus Collection",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "5b6602a8-d54a-41ab-9af5-aa9719b352a9",
+    "steam_appid": "1295510",
+    "name": "드래곤 퀘스트 XI S 지나간 시간을 찾아서 - Definitive Edition",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "5b7ab6c0-cd8a-4d46-bb1b-05b4f857559b",
+    "steam_appid": "787480",
+    "name": "Phoenix Wright: Ace Attorney Trilogy",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "5bcf4bb7-5104-470d-924c-fb7b27c292bf",
+    "steam_appid": "233270",
+    "name": "Far Cry 3 - Blood Dragon",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "5be8f01c-3969-4e42-8117-135fa3cc564b",
+    "steam_appid": "937580",
+    "name": "東方紺珠伝 ～ Legacy of Lunatic Kingdom.",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "5c63bb7d-dbc6-4f1d-b3a8-719e3a84bfba",
+    "steam_appid": "516750",
+    "name": "My Summer Car",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 생활 시뮬"
+  },
+  {
+    "game_id": "5cd6b28f-34dc-4808-a27a-ab409b505102",
+    "steam_appid": "219990",
+    "name": "Grim Dawn",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 액션 RPG"
+  },
+  {
+    "game_id": "5d2df545-3c32-4d1d-8120-2ae05454487d",
+    "steam_appid": "4012810",
+    "name": "STEINS;GATE RE:BOOT",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "5dba342b-8d7f-45f2-9f00-4404f885b224",
+    "steam_appid": "2706170",
+    "name": "Get To Work",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "5dd39c3e-4603-4473-a10b-7ce505bed2b0",
+    "steam_appid": "3948120",
+    "name": "Scritchy Scratchy",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "5e13e5ec-cd26-43ea-a500-9a8244b74c3f",
+    "steam_appid": "2754380",
+    "name": "The Roottrees are Dead",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "5f1d7362-8dbb-480f-83ee-1be3186050d8",
+    "steam_appid": "319510",
+    "name": "Five Nights at Freddy's",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "5f3b2eb1-682b-4c1f-bb9f-5f58985ee70a",
+    "steam_appid": "1331550",
+    "name": "Big Ambitions",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "5f50d6e0-6e30-4e06-8713-8116050d1c9f",
+    "steam_appid": "1256670",
+    "name": "Library Of Ruina",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "5fddf6b7-30e0-41c7-ba79-fde043966f09",
+    "steam_appid": "246420",
+    "name": "Kingdom Rush  - Tower Defense",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "60539b14-2bb5-461b-a444-1d464c87447a",
+    "steam_appid": "3199170",
+    "name": "Blood Strike",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "멀티 전용 배틀로얄"
+  },
+  {
+    "game_id": "6151f124-ac11-4935-b8d8-e3231aae6685",
+    "steam_appid": "3511030",
+    "name": "미니 코지 룸 : Lo-Fi",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 켜 두는 방치형"
+  },
+  {
+    "game_id": "6170fa0c-d192-4fa2-8e2c-6440ba2ddf17",
+    "steam_appid": "289070",
+    "name": "Sid Meier’s Civilization® VI",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 4X"
+  },
+  {
+    "game_id": "618d88e1-f9ab-4332-86a4-7b571a2ccea2",
+    "steam_appid": "1754840",
+    "name": "Hacker Simulator",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 시뮬"
+  },
+  {
+    "game_id": "619542d2-31e3-4061-ba71-f8437ad04dca",
+    "steam_appid": "1238810",
+    "name": "Battlefield™ V",
+    "solo": "possible",
+    "party_max": 4,
+    "session_max": 64,
+    "reason": "짧은 캠페인 있지만 멀티가 핵심 / 인원: 분대 최대 4명, 한 판 64명"
+  },
+  {
+    "game_id": "61df8479-beb1-437f-b69c-166349695854",
+    "steam_appid": "1895880",
+    "name": "Ratchet & Clank: Rift Apart",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 액션 어드벤처"
+  },
+  {
+    "game_id": "632012f7-7d25-46e1-937f-26f076c6fe01",
+    "steam_appid": "2406770",
+    "name": "Bodycam",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "온라인 대전 전용"
+  },
+  {
+    "game_id": "63581782-1019-4081-a644-2ea3cad092dd",
+    "steam_appid": "397540",
+    "name": "보더랜드 3",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인 전체를 혼자 할 수 있는 루터 슈터"
+  },
+  {
+    "game_id": "63851d82-e181-429c-b0b3-e2993f5b9fe2",
+    "steam_appid": "2552430",
+    "name": "KINGDOM HEARTS -HD 1.5+2.5 ReMIX-",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "63ee80e5-fe19-4f22-a40b-b1cf683d902d",
+    "steam_appid": "2124490",
+    "name": "SILENT HILL 2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "6415b53f-8386-400e-b69a-8e6bdb7de105",
+    "steam_appid": "493520",
+    "name": "GTFO",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "봇과 혼자도 되지만 4인 협동이 핵심"
+  },
+  {
+    "game_id": "645ee834-ee3d-4fec-abe3-8e91d23f01fe",
+    "steam_appid": "399810",
+    "name": "Call of Cthulhu®",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리 호러"
+  },
+  {
+    "game_id": "65e18cc8-ecf3-4b8f-b0d7-a47a9dde6fa1",
+    "steam_appid": "2288630",
+    "name": "태고의 달인 쿵딱! 원더풀 페스티벌",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 리듬 게임"
+  },
+  {
+    "game_id": "663fa958-9b02-4d44-97e5-0c7cf47d225e",
+    "steam_appid": "552990",
+    "name": "World of Warships",
+    "solo": "none",
+    "party_max": 3,
+    "session_max": 24,
+    "reason": "온라인 해전 전용 / 인원: 분함대 최대 3명, 12대12"
+  },
+  {
+    "game_id": "66fab66f-914a-4558-b271-0b0bc9616775",
+    "steam_appid": "4513480",
+    "name": "Scarlet Skips",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "6789c528-974d-4081-b1b4-52f6524fd545",
+    "steam_appid": "1611600",
+    "name": "WARNO",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "6790e908-2984-48bf-b4aa-8d66130f6f51",
+    "steam_appid": "332570",
+    "name": "Amazing Frog?",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "67b21756-f674-4f1f-826d-705633ff1b0c",
+    "steam_appid": "386940",
+    "name": "얼티밋 치킨 호스",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 연습할 수 있지만 파티 게임"
+  },
+  {
+    "game_id": "6993c4f4-2fcf-4ed9-af78-c95dd15ec625",
+    "steam_appid": "1372110",
+    "name": "죠죠의 기묘한 모험 올 스타 배틀 R",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "스토리 모드는 있지만 대전이 핵심"
+  },
+  {
+    "game_id": "69ff1d3f-93e1-430d-8232-2a1e44c9d9d2",
+    "steam_appid": "2186680",
+    "name": "Warhammer 40,000: Rogue Trader",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인 전체를 혼자 할 수 있는 CRPG"
+  },
+  {
+    "game_id": "6a8529b4-7c75-45b6-9dd2-2a3e6358a7ec",
+    "steam_appid": "1687000",
+    "name": "Fading Afternoon",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "6a9de491-e762-4fe2-a50f-c9a25b6e0281",
+    "steam_appid": "285900",
+    "name": "Gang Beasts",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 놀 수 있지만 파티 난투"
+  },
+  {
+    "game_id": "6abedf3d-15ec-4ea8-8b94-d6f8fbb2bb16",
+    "steam_appid": "2695940",
+    "name": "PANICORE (패니코어)",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "6b481be3-306e-48f0-a495-f6444070af7e",
+    "steam_appid": "444090",
+    "name": "Paladins®",
+    "solo": "none",
+    "party_max": 10,
+    "session_max": 10,
+    "reason": "온라인 팀 대전 전용 / 인원: 커스텀 게임으로 친구끼리 5대5 내전 (양 팀 합계), 같은 판 10명"
+  },
+  {
+    "game_id": "6b797167-2131-4ede-8838-0b9a1315e1c3",
+    "steam_appid": "2957700",
+    "name": "존잘님! 좋아해요!",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "6b8d66ce-0922-445d-b030-8a2d6eb235c8",
+    "steam_appid": "361420",
+    "name": "ASTRONEER",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동 탐사가 중심"
+  },
+  {
+    "game_id": "6c6bf534-ac91-4170-9dee-2bd7c4b2612c",
+    "steam_appid": "899770",
+    "name": "라스트 에포크",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 액션 RPG"
+  },
+  {
+    "game_id": "6cda09cd-9392-454d-9a97-74c9fc16b32f",
+    "steam_appid": "1262540",
+    "name": "Need for Speed™",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 레이싱 캠페인"
+  },
+  {
+    "game_id": "6cf16233-0071-4e70-8632-dc7fbb581dca",
+    "steam_appid": "400",
+    "name": "Portal",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "6d43e51e-9d93-4e66-ba94-f192863d9311",
+    "steam_appid": "2358720",
+    "name": "검은 신화: 오공",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "6dccb0ac-c331-48a2-9706-c5fd159b96ab",
+    "steam_appid": "1446780",
+    "name": "MONSTER HUNTER RISE",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "스토리 사냥을 혼자 끝까지 할 수 있음"
+  },
+  {
+    "game_id": "6e94d231-e194-4f13-bfe6-ba3dd9480195",
+    "steam_appid": null,
+    "name": "Diablo II: Resurrected",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 액션 RPG"
+  },
+  {
+    "game_id": "6ec165c8-c66d-40f8-be28-651713845c45",
+    "steam_appid": "1243830",
+    "name": "Overcooked! All You Can Eat",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 할 수 있지만 협동 요리가 핵심"
+  },
+  {
+    "game_id": "6fd162c2-d35f-4791-855a-6ad468e2f073",
+    "steam_appid": "728880",
+    "name": "Overcooked! 2",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 할 수 있지만 협동 요리가 핵심"
+  },
+  {
+    "game_id": "70265d45-7e03-4a37-a856-8a10eecde380",
+    "steam_appid": "4304930",
+    "name": "Chef Knight",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "702f4e41-a516-4c78-bd1a-1b3b1fb977eb",
+    "steam_appid": "532210",
+    "name": "Life is Strange 2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "70beb304-f248-4cbe-baec-90b9a683e714",
+    "steam_appid": null,
+    "name": "VALORANT",
+    "solo": "none",
+    "party_max": 10,
+    "session_max": 10,
+    "reason": "온라인 팀 대전 전용 / 인원: 사용자 설정 게임으로 친구끼리 5대5 내전 (양 팀 합계), 같은 판 10명"
+  },
+  {
+    "game_id": "70cdb9c5-e821-486c-9ecb-585db6a8d3c7",
+    "steam_appid": "1091500",
+    "name": "Cyberpunk 2077",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "70f17013-eca9-4456-952f-46f57252135d",
+    "steam_appid": "3109580",
+    "name": "나는 군단이다: 스탠드 생존자",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "71107337-5bd0-4d25-b1a1-426e573e9920",
+    "steam_appid": "3198890",
+    "name": "Scale the Depths",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "71d4b692-24b3-4d4b-8aed-71b6ed350ab4",
+    "steam_appid": "1585220",
+    "name": "Melatonin",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "726ad3ce-2c6a-4a18-bb6f-9dbb5a4c447c",
+    "steam_appid": "2835570",
+    "name": "Buckshot Roulette",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 캠페인이 중심"
+  },
+  {
+    "game_id": "72948f2b-7447-4707-95e9-a3c49cfa6a03",
+    "steam_appid": "1127400",
+    "name": "Mindustry",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 자동화 전략"
+  },
+  {
+    "game_id": "72959ae5-5cfe-48ae-9042-43f0b7f597de",
+    "steam_appid": "1449850",
+    "name": "Yu-Gi-Oh! Master Duel",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 모드도 있지만 대전이 핵심"
+  },
+  {
+    "game_id": "73dab000-c5e0-404c-898a-a34ae6944aae",
+    "steam_appid": "3195580",
+    "name": "릴리의 세상 XD",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "740378b1-85ec-4a63-b715-219996e8692b",
+    "steam_appid": "4560660",
+    "name": "Eslabong",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "74411fba-e776-4b07-91d9-20f12fa0881f",
+    "steam_appid": "4570720",
+    "name": "드래곤소드 : 어웨이크닝",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "7448f8ae-2821-4b9f-bb30-fd89d3711b45",
+    "steam_appid": "3213850",
+    "name": "gogh: Focus with Your Avatar",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 쓰는 집중용 게임"
+  },
+  {
+    "game_id": "74d22e4b-8704-49bb-ad4e-53c4de1073af",
+    "steam_appid": "2288340",
+    "name": "에이스 컴뱃 8: 시브의 날개 (ACE COMBAT 8: WINGS OF THEVE)",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 캠페인 비행 슈팅"
+  },
+  {
+    "game_id": "75654b04-48db-46a4-9dc1-9ed7c38bc8b0",
+    "steam_appid": "1857090",
+    "name": "Norland 놀랜드  ",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "75e81090-e3b1-46f1-8dc0-abee27429193",
+    "steam_appid": "2561580",
+    "name": "Horizon Zero Dawn™ 리마스터",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "76883124-2331-44a0-a5d3-6a43f6c26f65",
+    "steam_appid": "3156330",
+    "name": "매파 대통령",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "782f6901-7cf4-4ec6-afa4-960f723e0ae5",
+    "steam_appid": "2950340",
+    "name": "LEGO® Harry Potter™ Collection",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 액션 어드벤처"
+  },
+  {
+    "game_id": "785b44f7-4cb0-4902-bfa3-f0a8105f186d",
+    "steam_appid": "2212330",
+    "name": "Your Only Move Is HUSTLE",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 연습할 수 있지만 대전이 핵심"
+  },
+  {
+    "game_id": "789438fb-0583-4f44-b993-dfcb3ce83880",
+    "steam_appid": "485510",
+    "name": "Nioh: Complete Edition",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 끝까지 하는 액션 RPG"
+  },
+  {
+    "game_id": "78ab31cd-284f-443d-bd43-4742f4487196",
+    "steam_appid": "2749770",
+    "name": "Galaxy Burger",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "78fe0abf-f15d-4aac-84cd-b9b361f8c186",
+    "steam_appid": "637650",
+    "name": "FINAL FANTASY XV WINDOWS EDITION",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리 RPG"
+  },
+  {
+    "game_id": "79632018-ee00-4e4d-8402-814808ee6f8d",
+    "steam_appid": "814380",
+    "name": "Sekiro™: Shadows Die Twice - GOTY Edition",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "7a04c4b3-097e-47d9-ba49-11d463455b66",
+    "steam_appid": "2396980",
+    "name": "Fate/stay night REMASTERED",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "7ade2928-9202-4ddf-a872-e8f5524e9223",
+    "steam_appid": "553850",
+    "name": "HELLDIVERS™ 2",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동이 핵심"
+  },
+  {
+    "game_id": "7cb6dd6f-87a1-47b6-add6-ae51e4189eaf",
+    "steam_appid": "3985950",
+    "name": "윤회 보험사 R.I.P.",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "7cd2a357-86af-46eb-81cc-096fd40f165f",
+    "steam_appid": "221100",
+    "name": "DayZ",
+    "solo": "none",
+    "party_max": 60,
+    "session_max": 60,
+    "reason": "온라인 서버 생존 / 인원: 공식 서버 기본 60명, 팀 구분 없음"
+  },
+  {
+    "game_id": "7cf59424-6121-4657-8e22-afd542277dd3",
+    "steam_appid": "1282270",
+    "name": "Strinova",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "온라인 대전 전용"
+  },
+  {
+    "game_id": "7d29fba1-b266-444f-8539-d75cdc2817d1",
+    "steam_appid": "3156770",
+    "name": "Witchfire",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 FPS"
+  },
+  {
+    "game_id": "7e4b5d46-a6fa-444e-bfee-90448dc67c77",
+    "steam_appid": null,
+    "name": "Heroes of the Storm",
+    "solo": "none",
+    "party_max": 10,
+    "session_max": 10,
+    "reason": "온라인 팀 대전 전용 / 인원: 사용자 설정 게임으로 친구끼리 5대5 내전 (양 팀 합계), 같은 판 10명"
+  },
+  {
+    "game_id": "7e93e0e8-9771-4965-ab3c-987a205fca74",
+    "steam_appid": "262060",
+    "name": "Darkest Dungeon®",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "7f37a56b-bbcb-408f-9e6c-b3ac89ee40a9",
+    "steam_appid": "1382070",
+    "name": "Viewfinder",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "7f3db754-22cd-4b7a-9cf5-4b8324c4529c",
+    "steam_appid": "3907790",
+    "name": "산소 트레인",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "7f47b349-921f-4d73-8140-0c2aa1792870",
+    "steam_appid": "1145960",
+    "name": "The White Door",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "7f657c17-194b-45af-97f0-e0f67f27a910",
+    "steam_appid": "568220",
+    "name": "Lobotomy Corporation | Monster Management Simulation",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "7f748d36-579d-456d-9441-8003d718eb04",
+    "steam_appid": "489830",
+    "name": "The Elder Scrolls V: Skyrim Special Edition",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "7fbee1f1-c2c7-4abc-a892-8f0c45f06b47",
+    "steam_appid": "2321470",
+    "name": "Deep Rock Galactic: Survivor",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 액션 로그라이크"
+  },
+  {
+    "game_id": "7fd9aa2c-0cb6-4fbe-bb7a-42e177972364",
+    "steam_appid": "4125930",
+    "name": "퍼니싱: 그레이 레이븐",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 스토리 액션"
+  },
+  {
+    "game_id": "803dbf32-98ef-4e4f-8a4d-ae1e65fac8c0",
+    "steam_appid": "632470",
+    "name": "Disco Elysium - The Final Cut",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "80b77e18-b468-456a-9692-ef7246fb41f5",
+    "steam_appid": "2589500",
+    "name": "위스퍼 오브 더 하우스: 잠꼬대마을 이야기",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "818ae445-05f2-42fa-84cc-55cca80292ce",
+    "steam_appid": "1203190",
+    "name": "Wreckfest 2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "커리어로 혼자 충분한 레이싱"
+  },
+  {
+    "game_id": "81ce66d0-2b4c-4573-a070-598e44a53b03",
+    "steam_appid": "2569510",
+    "name": "MLB 9이닝스 라이벌 26",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "81e317b0-c822-42d6-af79-df95fedd1060",
+    "steam_appid": "1669000",
+    "name": "Age of Wonders 4",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 4X"
+  },
+  {
+    "game_id": "81f01584-b7a1-4925-9b7b-b5921841fcd1",
+    "steam_appid": "2186990",
+    "name": "Fatekeeper",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "8206d8ec-3257-40e6-aa20-40ddc1ea16ed",
+    "steam_appid": "1693980",
+    "name": "Dead Space",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "82f9a99d-3ac4-40f8-aa7a-0cb52a73704a",
+    "steam_appid": "744190",
+    "name": "Rusty Lake Paradise",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "8399262f-0354-46e1-ad62-e6076f6649ca",
+    "steam_appid": "881020",
+    "name": "Granblue Fantasy: Relink",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "스토리를 혼자 끝까지 할 수 있음"
+  },
+  {
+    "game_id": "83b0fef3-9a06-49cb-afa6-ecbb5cdea6fa",
+    "steam_appid": "1649080",
+    "name": "Two Point Campus",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "84249e13-5351-44b4-af20-d3f0949d399e",
+    "steam_appid": "751780",
+    "name": "Forager",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 생존 제작"
+  },
+  {
+    "game_id": "849d1c95-507a-4ae3-9e33-6710450b9459",
+    "steam_appid": "2378900",
+    "name": "The Coffin of Andy and Leyley",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "84d50f3f-83d8-4e91-9269-9cddcf89d516",
+    "steam_appid": "1260320",
+    "name": "Party Animals",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "멀티 전용 파티 난투"
+  },
+  {
+    "game_id": "84fe79e5-4e1f-441f-bb32-2cb97c650a41",
+    "steam_appid": "1909950",
+    "name": "슈퍼로봇대전 Y",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "8531f28a-1afd-4eb6-93ff-0aa07c5f61b9",
+    "steam_appid": "251570",
+    "name": "7 Days to Die",
+    "solo": "possible",
+    "party_max": 8,
+    "session_max": 8,
+    "reason": "혼자도 되지만 협동 생존이 중심 / 인원: 기본 8명, 팀 구분 없음"
+  },
+  {
+    "game_id": "8538bb60-993f-4a14-9450-f29588947965",
+    "steam_appid": "3339420",
+    "name": "너의 아내",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "85b31391-6bbe-4865-9e30-db84edc5bf59",
+    "steam_appid": "3240220",
+    "name": "Grand Theft Auto V 인핸스드",
+    "solo": "story",
+    "party_max": 8,
+    "session_max": 30,
+    "reason": "스토리 모드가 꽉 찬 오픈월드, 온라인은 별도 / 인원: GTA 온라인 CEO 조직·MC 클럽 최대 8명, 세션 30명"
+  },
+  {
+    "game_id": "85e379ca-9766-4bd2-9212-9b1e31b87293",
+    "steam_appid": "2273430",
+    "name": "BlazBlue Entropy Effect",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "85f9f173-0bcb-46c9-808a-091d6d5349bf",
+    "steam_appid": "1328890",
+    "name": "Succubus Affection",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "86a24f11-9d25-43a9-80b6-dc9c3eb66ba3",
+    "steam_appid": "1951230",
+    "name": "Pizza Possum",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "87243963-2403-4eaf-9251-c6d36deb0d92",
+    "steam_appid": "750920",
+    "name": "Shadow of the Tomb Raider: Definitive Edition",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 액션 어드벤처"
+  },
+  {
+    "game_id": "872cffe0-8d18-4355-a337-3801affa3f4d",
+    "steam_appid": "2751000",
+    "name": "페르시아의 왕자: 잃어버린 왕관",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "878fe6a2-ae59-4ce2-8e27-88882849ea14",
+    "steam_appid": "1942280",
+    "name": "Brotato",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 액션 로그라이크"
+  },
+  {
+    "game_id": "87e472b1-2c60-4e5b-a7c4-f6bac0b2cd20",
+    "steam_appid": "3271280",
+    "name": "Shroom and Gloom",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "87f009ff-cd54-42b3-965c-2bf47334aa0b",
+    "steam_appid": "2909400",
+    "name": "FINAL FANTASY VII REBIRTH",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "8841f606-19eb-4d38-92ea-0cf2c9e4e51e",
+    "steam_appid": "2763740",
+    "name": "Revolution Idle",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "887a956d-acbb-42fa-9bb3-58e73778697a",
+    "steam_appid": "2497900",
+    "name": "DON'T SCREAM",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "887dfe3f-7990-4350-b048-aac5c96e056d",
+    "steam_appid": null,
+    "name": "StarCraft: Remastered",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인이 탄탄한 RTS"
+  },
+  {
+    "game_id": "88d80169-dddd-47bd-b6be-2edc911f9b33",
+    "steam_appid": "1196590",
+    "name": "Biohazard Village",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리 호러"
+  },
+  {
+    "game_id": "88f69915-49d0-4765-a7ee-bb70c3ae8e3b",
+    "steam_appid": "322500",
+    "name": "SUPERHOT",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "89a0da47-4f84-4c7f-a218-a3ff08063650",
+    "steam_appid": "1361210",
+    "name": "Warhammer 40,000: Darktide",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "봇과 혼자도 되지만 협동이 핵심"
+  },
+  {
+    "game_id": "89f4e81e-5eb1-4565-8fa5-323c270cdafc",
+    "steam_appid": "1030300",
+    "name": "Hollow Knight: Silksong",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "8a227a2b-4aed-4063-b9e6-9eac1218da69",
+    "steam_appid": "3069810",
+    "name": "Rocket Rats",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "8a5f7fbd-1a9f-48e2-be20-2bd1366a5365",
+    "steam_appid": "3493540",
+    "name": "Transport Fever 3",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "8aed863e-c320-4859-b02b-317c0bc2d16d",
+    "steam_appid": "2515020",
+    "name": "FINAL FANTASY XVI",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "8af4dc4d-1e13-4d30-9675-81b35241851c",
+    "steam_appid": "2187220",
+    "name": "역전재판 456 오도로키 셀렉션",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "8b7409e8-7839-4542-9a9d-6c9658e10854",
+    "steam_appid": null,
+    "name": "Overwatch 2",
+    "solo": "none",
+    "party_max": 10,
+    "session_max": 10,
+    "reason": "온라인 팀 대전 전용 / 인원: 사용자 지정 게임으로 친구끼리 5대5 내전 (양 팀 합계), 같은 판 10명"
+  },
+  {
+    "game_id": "8c00a9c6-b704-47ab-b80a-d809312cb32c",
+    "steam_appid": "4244510",
+    "name": "프랫폴",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "8c33b654-3182-43de-9f9f-de699d9fe2d0",
+    "steam_appid": "1864000",
+    "name": "아르티스 임팩트 Artis Impact",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "8d272ae5-865b-45e6-adb7-ae20ee40dd19",
+    "steam_appid": "3159330",
+    "name": "어쌔신 크리드 섀도우스",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "8d8b426a-58b7-42f8-9350-79ca6572fdef",
+    "steam_appid": "1237950",
+    "name": "STAR WARS™ Battlefront™ II",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인도 있지만 멀티가 핵심"
+  },
+  {
+    "game_id": "8db7508b-04be-420c-a5e1-71062f223e42",
+    "steam_appid": "2375780",
+    "name": "Beam Eye Tracker",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "게임이 아닌 프로그램"
+  },
+  {
+    "game_id": "8f58994d-97f1-47f1-985f-4a01ddbebc82",
+    "steam_appid": "2128480",
+    "name": "스테퍼 케이스: 초능력 추리 어드벤처",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "906b7173-2040-4286-b539-0151d813118f",
+    "steam_appid": "2383200",
+    "name": "PATAPON 1+2 REPLAY",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 리듬 액션"
+  },
+  {
+    "game_id": "90a988ff-0355-42bd-80ff-bbdc5e68e421",
+    "steam_appid": "311690",
+    "name": "Enter the Gungeon",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 로그라이크"
+  },
+  {
+    "game_id": "90be3c20-9ec6-4242-b9b5-68f8c540e910",
+    "steam_appid": "738520",
+    "name": "Breathedge",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 생존"
+  },
+  {
+    "game_id": "90c9ca94-7ec5-4566-830c-8635af9b74ad",
+    "steam_appid": "429050",
+    "name": "Feed and Grow: Fish",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "9109afc5-9409-4eab-a556-e6013eba418a",
+    "steam_appid": "2916430",
+    "name": "Fast Food Simulator",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "914e1f60-d8ca-4823-997c-207e099cf0ef",
+    "steam_appid": "2346410",
+    "name": "변경의 수호자",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "9250f3d5-cd34-46b1-863b-f790bfc944b6",
+    "steam_appid": "1174180",
+    "name": "Red Dead Redemption 2",
+    "solo": "story",
+    "party_max": 7,
+    "session_max": 32,
+    "reason": "스토리 모드가 꽉 찬 오픈월드, 온라인은 별도 / 인원: 레드 데드 온라인 포스 최대 7명, 세션 32명"
+  },
+  {
+    "game_id": "92b1f72d-e287-4fb2-ac4f-2f964aa22775",
+    "steam_appid": "1902690",
+    "name": "Fate/Samurai Remnant",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "92c28c8d-359a-40e7-9169-f2d9351df02c",
+    "steam_appid": "2345020",
+    "name": "꿀벌 섬",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "9308c14e-aa4f-4a79-b74b-d7b86aec302c",
+    "steam_appid": "1677770",
+    "name": "The Case of the Golden Idol",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "9371eee8-295c-4431-a63c-a46cfb6765fc",
+    "steam_appid": "1057090",
+    "name": "Ori and the Will of the Wisps",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "93bb9c0b-3044-4eef-a769-ac5cffcb00f4",
+    "steam_appid": "1867240",
+    "name": "WARDOGS",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "93ef7af8-d32c-4616-afbd-890efc11cbb2",
+    "steam_appid": "1018010",
+    "name": "Castlevania Anniversary Collection",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "947fb1ff-9ad7-4458-b537-1bd7c4f94558",
+    "steam_appid": "250320",
+    "name": "The Wolf Among Us",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "9516c2c4-5458-4b70-a25c-681092a975a0",
+    "steam_appid": "893180",
+    "name": "Catherine Classic",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리 퍼즐"
+  },
+  {
+    "game_id": "95250b9b-0757-45d3-ac6b-c3c9fe7e86ae",
+    "steam_appid": "1158310",
+    "name": "Crusader Kings III",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 대전략"
+  },
+  {
+    "game_id": "95f6b0a2-24ef-405b-8cc4-9b3705ca09c7",
+    "steam_appid": "1817190",
+    "name": "Marvel’s Spider-Man: Miles Morales",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 오픈월드 액션"
+  },
+  {
+    "game_id": "96394f9e-b6ec-4813-a0f0-7f6b8a47b4a6",
+    "steam_appid": "469820",
+    "name": "Genital Jousting",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "96531f61-1136-4aac-aa39-00e9073bfda8",
+    "steam_appid": "2397300",
+    "name": "Half Sword",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 물리 검술"
+  },
+  {
+    "game_id": "96c90025-8609-4f83-b47f-19451a242f6c",
+    "steam_appid": "1088710",
+    "name": "용과 같이3",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "97486df5-813a-4f25-9569-43014dde0a72",
+    "steam_appid": "1049590",
+    "name": "이터널 리턴",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "온라인 대전 전용"
+  },
+  {
+    "game_id": "97a368c8-a0e0-477b-8c47-d7fffb8a490b",
+    "steam_appid": "1294760",
+    "name": "HARD BULLET",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "98308103-689c-479d-9a01-e2a831b88045",
+    "steam_appid": "3195790",
+    "name": "White Knuckle",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "984a56b7-4884-43ef-b3cc-05b8581660a9",
+    "steam_appid": "2325290",
+    "name": "Sky 빛의 아이들",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 다닐 수 있지만 함께하는 모험이 중심"
+  },
+  {
+    "game_id": "9857d3c1-d01a-48c5-bfe1-12e667b984e4",
+    "steam_appid": "960910",
+    "name": "Heavy Rain",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "98727c81-e03f-4782-bc49-da48b9969b55",
+    "steam_appid": "2567870",
+    "name": "Chained Together",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "98839188-a8cb-4cdd-bd73-a5c55af9499f",
+    "steam_appid": "1868140",
+    "name": "데이브 더 다이버",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "98daad39-599f-445e-9e25-4a6930fcfbf0",
+    "steam_appid": "1782120",
+    "name": "ZERO Sievert",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 익스트랙션"
+  },
+  {
+    "game_id": "991bf265-500d-4165-abe0-f45275b652cf",
+    "steam_appid": "1676840",
+    "name": "For The King II",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동 모험이 중심"
+  },
+  {
+    "game_id": "99990cb7-b662-4831-a282-1babf876edac",
+    "steam_appid": "1085660",
+    "name": "데스티니 가디언즈",
+    "solo": "possible",
+    "party_max": 6,
+    "session_max": null,
+    "reason": "캠페인을 혼자 할 수 있는 온라인 슈터 / 인원: 레이드 화력팀 최대 6명"
+  },
+  {
+    "game_id": "99b62474-3fca-4d6e-9f63-ac9c0384c860",
+    "steam_appid": "1794680",
+    "name": "Vampire Survivors",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 액션 로그라이크"
+  },
+  {
+    "game_id": "9a3e3286-972a-4db0-9b05-7418f96569fc",
+    "steam_appid": "3799100",
+    "name": "SIDE EFFECTS",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "9adf9b2f-26f9-4c94-976c-a1d64f09bef6",
+    "steam_appid": "2417610",
+    "name": "METAL GEAR SOLID Δ: SNAKE EATER",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "9b4003c0-6f2c-41be-ad5a-2e70e0757c93",
+    "steam_appid": "2019620",
+    "name": "GERONIMO",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "9b8c968a-8705-4128-b275-03b8aa211fb7",
+    "steam_appid": "2001120",
+    "name": "Split Fiction",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "2인 협동 전용"
+  },
+  {
+    "game_id": "9b99747d-9cc4-480c-93fc-c01c05d29fdd",
+    "steam_appid": "4164420",
+    "name": "My Winter Car",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "9ba7ec1b-f07a-4453-a76f-c2ec8fd3f484",
+    "steam_appid": "3280350",
+    "name": "DEATH STRANDING 2: ON THE BEACH",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리, 다른 플레이어와는 비동기 연결"
+  },
+  {
+    "game_id": "9bc2055a-6171-4917-a937-e7f384f33325",
+    "steam_appid": "3641000",
+    "name": "The Incident at Galley House",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "9befa087-b29d-484c-95e9-890b6425526d",
+    "steam_appid": "1548850",
+    "name": "Six Days in Fallujah",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인도 있지만 협동이 중심"
+  },
+  {
+    "game_id": "9c4c3cce-cfd7-447f-96ac-120a175129cf",
+    "steam_appid": "1647550",
+    "name": "NEO: The World Ends with You",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "9c876a0f-3997-4e9f-bad2-84734531347e",
+    "steam_appid": "1547000",
+    "name": "Grand Theft Auto: San Andreas – The Definitive Edition",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 오픈월드"
+  },
+  {
+    "game_id": "9cad6a34-3e5c-4c8e-99ef-f33c5f546201",
+    "steam_appid": "1665460",
+    "name": "eFootball™",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 모드도 있지만 온라인 대전이 핵심"
+  },
+  {
+    "game_id": "9d4abb32-7e5c-49e4-9e48-0e3269c87870",
+    "steam_appid": "1601580",
+    "name": "프로스트펑크2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "9da521b2-39af-4a4b-9959-dc10f6db61e7",
+    "steam_appid": "283640",
+    "name": "Salt and Sanctuary",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 끝까지 하는 2D 소울라이크"
+  },
+  {
+    "game_id": "9dacb985-f667-439f-a0ab-c0e801802f33",
+    "steam_appid": "2067780",
+    "name": "Your Turn To Die -Death Game By Majority-",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "9ee5b0ac-76ec-49a0-b6df-bedf8d5bd131",
+    "steam_appid": "1145360",
+    "name": "Hades",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "9ee6d964-30b7-4159-80b5-17276bfc0aa0",
+    "steam_appid": "1987080",
+    "name": "Inside the Backrooms",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "9eff2cff-089e-4497-a4b4-f0d84c56ec63",
+    "steam_appid": "2162800",
+    "name": "shapez 2 - Factory",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "9f071a29-de0a-4ae9-a9b7-6cdd2ce30c50",
+    "steam_appid": "3041230",
+    "name": "Windrose",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "9f071a5d-7af7-4067-806e-6481e723779e",
+    "steam_appid": "332800",
+    "name": "Five Nights at Freddy's 2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "9f732dfe-5209-4709-973f-625aab898f77",
+    "steam_appid": "105600",
+    "name": "Terraria",
+    "solo": "story",
+    "party_max": 16,
+    "session_max": 16,
+    "reason": "혼자 해도 완성된 샌드박스 / 인원: 기본 16명, 한 월드에 다 같이"
+  },
+  {
+    "game_id": "9f9f2d1c-7159-4fbb-8f0a-d296a13e02b4",
+    "steam_appid": "921570",
+    "name": "옥토패스 트래블러",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "9fe78224-8c62-41a9-8e6c-b5f36db177ee",
+    "steam_appid": "4025700",
+    "name": "두근두근타운",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "9fef77ac-cc4a-4210-9104-ed821fc1c4e2",
+    "steam_appid": "996770",
+    "name": "Moving Out",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 할 수 있지만 협동이 핵심"
+  },
+  {
+    "game_id": "a10396a9-3e3d-4648-8e3e-4727460de200",
+    "steam_appid": "2186320",
+    "name": "Ages of Conflict: World War Simulator",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "a1283942-ca3f-4bc3-af53-5e61ed1480f1",
+    "steam_appid": "1809700",
+    "name": "페르소나3 포터블",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "a1534bb2-0ea4-4b20-9fb6-94f3c85a9467",
+    "steam_appid": "3017860",
+    "name": "DOOM: The Dark Ages",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "a181d13b-e645-4777-97a2-4ea00b548ad5",
+    "steam_appid": "790740",
+    "name": "Tick Tock: A Tale for Two",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "2인 협동 전용"
+  },
+  {
+    "game_id": "a1a51011-99cd-4af9-8c04-2b58ff523684",
+    "steam_appid": "1286220",
+    "name": "Sea Power : Naval Combat in the Missile Age",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 해전 시뮬"
+  },
+  {
+    "game_id": "a1d5c310-a0d8-4b81-b551-4fe6edb004f7",
+    "steam_appid": "3844970",
+    "name": "노움 강도단",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "a1f0d01b-e6e9-4cbe-a1d9-47b84c5ac36f",
+    "steam_appid": "3837350",
+    "name": "스테퍼 레트로: 초능력 추리 퀘스트",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "a21a23dd-e32d-4ea7-a49f-1fe70e39cdaf",
+    "steam_appid": "4160210",
+    "name": "The Artisan of Glimmith",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "a32afbc1-3254-4de0-9ea5-db1e8184f70d",
+    "steam_appid": "774361",
+    "name": "Blasphemous",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "a36c1203-7e25-4261-b490-fab1672f2094",
+    "steam_appid": "1817230",
+    "name": "Hi-Fi RUSH",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "a4a850f8-1bdc-4168-8e7c-3b81cdeb05e0",
+    "steam_appid": "1625450",
+    "name": "Muck",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동 생존이 중심"
+  },
+  {
+    "game_id": "a60a9ab3-9e65-463f-9d78-63e409402eda",
+    "steam_appid": null,
+    "name": "Teamfight Tactics",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "온라인 대전 전용"
+  },
+  {
+    "game_id": "a69d2df5-0475-4b57-9457-7efb7b454dc1",
+    "steam_appid": "1172470",
+    "name": "Apex 레전드™",
+    "solo": "none",
+    "party_max": 3,
+    "session_max": 60,
+    "reason": "멀티 전용 배틀로얄 / 인원: 분대 최대 3명, 한 판 60명"
+  },
+  {
+    "game_id": "a7d304ec-9484-42b2-a142-e310cacecb1f",
+    "steam_appid": "1222800",
+    "name": "VALKYRIE CONNECT",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "a7fb7f87-0cd7-45b0-9225-f9126d81ea9a",
+    "steam_appid": "285330",
+    "name": "RollerCoaster Tycoon® 2: Triple Thrill Pack",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 놀이공원 경영"
+  },
+  {
+    "game_id": "a996bff3-cec9-498e-8699-6695ee10a0f7",
+    "steam_appid": "555950",
+    "name": "Danganronpa Another Episode: Ultra Despair Girls",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "a9d75d1a-b965-4a7b-a81a-303cddfca0aa",
+    "steam_appid": "784080",
+    "name": "MechWarrior 5: Mercenaries",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 메카 캠페인"
+  },
+  {
+    "game_id": "aa95ac28-ce46-47b4-ba37-60fd0dd0755d",
+    "steam_appid": "2622380",
+    "name": "ELDEN RING 밤의 통치자",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 3인 협동이 핵심"
+  },
+  {
+    "game_id": "aadb3d92-baac-47b8-8d3f-314fcbccb65f",
+    "steam_appid": "1142710",
+    "name": "토탈워: 워해머 3",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인 중심 전략"
+  },
+  {
+    "game_id": "ac3d2373-d206-40f2-8dcf-62c415c601f9",
+    "steam_appid": "960170",
+    "name": "DJMAX RESPECT V",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 리듬 게임"
+  },
+  {
+    "game_id": "ac52ab00-22d2-492c-ac35-ccb3f946ebf0",
+    "steam_appid": "513710",
+    "name": "SCUM",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "ad768507-813b-4dcf-a6e7-b0b01088638a",
+    "steam_appid": "1929610",
+    "name": "Demonologist",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동 조사가 중심"
+  },
+  {
+    "game_id": "ad8ae98d-f9a7-4f08-97c8-4ca74eb2386a",
+    "steam_appid": "526870",
+    "name": "Satisfactory",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 해도 완성된 공장 자동화"
+  },
+  {
+    "game_id": "aee396c6-5970-4bdd-9626-1bcd4697f5e6",
+    "steam_appid": null,
+    "name": "Diablo III",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 액션 RPG"
+  },
+  {
+    "game_id": "af301023-8e82-4fc3-9cf9-eadccffadbc2",
+    "steam_appid": "2104890",
+    "name": "RoadCraft",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "b0daafc9-a4d5-4e8e-ac89-482a2aedafc5",
+    "steam_appid": "4001890",
+    "name": "낚시 방법",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "b0ee9d9f-d892-4eab-ad91-3af5c5e2e857",
+    "steam_appid": "287390",
+    "name": "메트로: 라스트 라이트 리덕스",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "b1120b00-948f-4beb-a48e-9531640039e7",
+    "steam_appid": "2314720",
+    "name": "[Chilla's Art] Parasocial | パラソーシャル",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "b1d379ad-077e-4540-ad87-79dfe7d4a74a",
+    "steam_appid": "674940",
+    "name": "Stick Fight: The Game",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "멀티 전용 파티 난투"
+  },
+  {
+    "game_id": "b20e97c4-bda1-498a-ad64-7b33e88aeb54",
+    "steam_appid": "782330",
+    "name": "DOOM Eternal",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 캠페인 FPS"
+  },
+  {
+    "game_id": "b2fbc232-8543-43ee-b454-f1fb27c30667",
+    "steam_appid": "444200",
+    "name": "World of Tanks Blitz",
+    "solo": "none",
+    "party_max": 3,
+    "session_max": 14,
+    "reason": "온라인 전차전 전용 / 인원: 소대 최대 3명, 7대7"
+  },
+  {
+    "game_id": "b4ed690a-3abf-4857-90f0-ca5c5772310d",
+    "steam_appid": "977400",
+    "name": "Cell to Singularity - Evolution Never Ends",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 방치형"
+  },
+  {
+    "game_id": "b51eb4d4-23d6-4813-8a4f-042716ea923d",
+    "steam_appid": null,
+    "name": "Hearthstone",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 모험도 있지만 대전이 핵심"
+  },
+  {
+    "game_id": "b5996e59-d579-4b5c-9b33-d97779ef7f5d",
+    "steam_appid": "3841510",
+    "name": "진・삼국무쌍２ with 맹장전 Remastered",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 무쌍 액션"
+  },
+  {
+    "game_id": "b601c791-a002-472c-8f82-62033ecd8515",
+    "steam_appid": "4992070",
+    "name": "Sort Them Ducks",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 캐주얼"
+  },
+  {
+    "game_id": "b63b16a6-7c0d-4d63-b77e-8f45196496d9",
+    "steam_appid": "335300",
+    "name": "DARK SOULS™ II: Scholar of the First Sin",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 끝까지 하는 소울라이크"
+  },
+  {
+    "game_id": "b6f4269b-048a-4137-9496-b991973cc011",
+    "steam_appid": "880940",
+    "name": "Pummel Party",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "봇과도 되지만 파티 게임"
+  },
+  {
+    "game_id": "b7d84cf7-b254-4803-bc4f-4dabb6ae4d57",
+    "steam_appid": "2644470",
+    "name": "PICO PARK 2",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "b7ff63ea-c438-4850-a9c5-937ec642b030",
+    "steam_appid": "1904860",
+    "name": "Legends of Kingdom Rush",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "b823c8e4-f4e1-4467-8fe5-a8470d2c46e3",
+    "steam_appid": "599140",
+    "name": "Graveyard Keeper",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "b8a2838c-4c30-46b1-ab2f-34ab1e8179e9",
+    "steam_appid": "1569580",
+    "name": "Blue Prince",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "b8becdd6-97b0-4d9c-bd39-1f4cdbc5b808",
+    "steam_appid": "391540",
+    "name": "Undertale",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "b8d49271-f1a5-4363-8a69-064b0322febd",
+    "steam_appid": "2677660",
+    "name": "인디아나 존스: 그레이트 서클 ",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "b91af7f9-2f46-4ba8-9109-cc53041df387",
+    "steam_appid": "1593500",
+    "name": "God of War",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리 액션"
+  },
+  {
+    "game_id": "b99b9257-9d9b-453e-b8f1-9af999088e29",
+    "steam_appid": "1920490",
+    "name": "The Outer Worlds: Spacer's Choice Edition",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 RPG"
+  },
+  {
+    "game_id": "bba4cd29-aca7-480c-a4cb-a9cb9fe933b5",
+    "steam_appid": null,
+    "name": "2XKO",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "온라인 대전 중심 격투"
+  },
+  {
+    "game_id": "bbbaf28e-fcef-40fd-8f42-8295ed432aa8",
+    "steam_appid": "2072450",
+    "name": "용과 같이8",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "bbe76337-05a1-4f1f-8c4b-fd8ec2f809c3",
+    "steam_appid": "885810",
+    "name": "The Witch's House MV",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "bc252a38-bcdf-4daf-a898-30766d53ef1c",
+    "steam_appid": "962400",
+    "name": "Granny",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 호러"
+  },
+  {
+    "game_id": "bc513b4c-aad4-47ff-b114-bf595a34bc47",
+    "steam_appid": "837470",
+    "name": "Untitled Goose Game",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 퍼즐"
+  },
+  {
+    "game_id": "bc774087-a5b4-47a5-bbd7-f24863374c44",
+    "steam_appid": "2963800",
+    "name": "DrainSim",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "bc7fe1a3-1fea-4155-9f61-0d4ad753c8c7",
+    "steam_appid": "418370",
+    "name": "BIOHAZARD 7 resident evil",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리 호러"
+  },
+  {
+    "game_id": "bd26f056-e4fe-40c0-a95f-b3b8afc004d2",
+    "steam_appid": "341800",
+    "name": "Keep Talking and Nobody Explodes",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "2인 이상 필수 협동"
+  },
+  {
+    "game_id": "bd9edebc-ad4a-458c-92b1-978f2e2c6dfc",
+    "steam_appid": null,
+    "name": "베리드 스타즈 (BURIED STARS)",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 어드벤처"
+  },
+  {
+    "game_id": "bea81d4e-c40f-4489-a657-667a6b34efe4",
+    "steam_appid": "1580240",
+    "name": "룬 팩토리 4 스페셜",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "bedfdc7a-a47b-4c65-8735-c9200c63d2cb",
+    "steam_appid": "1118200",
+    "name": "People Playground",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "befb6ab2-ff65-46be-8d2a-f9f8c30e6edc",
+    "steam_appid": "268910",
+    "name": "Cuphead",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 할 수 있는 보스전 액션"
+  },
+  {
+    "game_id": "befd35f9-638b-4ea9-b35a-f76d0a1cff02",
+    "steam_appid": "2058180",
+    "name": "저지 아이즈：사신의 유언 Remastered",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "bf1f000b-3739-4732-8fb0-12bbb944ecf9",
+    "steam_appid": "2651280",
+    "name": "마블 스파이더맨 2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 오픈월드 액션"
+  },
+  {
+    "game_id": "bf297e74-591f-4e68-9cd3-d5a9e04dae7e",
+    "steam_appid": null,
+    "name": "Warcraft III: Reforged",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인이 탄탄한 RTS"
+  },
+  {
+    "game_id": "bf29b9a7-836d-4da2-97fd-d39ad1240050",
+    "steam_appid": "2052410",
+    "name": "WITCH ON THE HOLY NIGHT",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "bfb2d26e-0d5c-4e5b-bc8f-dffbd9f023fb",
+    "steam_appid": "2238900",
+    "name": "STAR OCEAN THE SECOND STORY R",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 JRPG"
+  },
+  {
+    "game_id": "c06eace2-d123-4cd9-afa5-177729d9c258",
+    "steam_appid": "2495450",
+    "name": "Winter Memories",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "c0800af3-dc47-4896-9c1e-c8e25195e8ff",
+    "steam_appid": "668580",
+    "name": "아토믹 하트",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "c128e870-3896-478d-be3f-c8c0d711da68",
+    "steam_appid": "2141730",
+    "name": "Backrooms: Escape Together",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동 호러가 중심"
+  },
+  {
+    "game_id": "c1ed8167-fa7e-41ba-b2ab-77bbb6f322ec",
+    "steam_appid": "377160",
+    "name": "Fallout 4",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "c2043443-23fd-469a-8830-99d577753add",
+    "steam_appid": "2139460",
+    "name": "Once Human",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 다닐 수 있는 온라인 생존"
+  },
+  {
+    "game_id": "c2156456-cb3f-4497-bd08-36738d83f6eb",
+    "steam_appid": "3249650",
+    "name": "Little Fighter 2 Remastered",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "c3441dd5-bb19-42a8-9d77-2ff90fc59c17",
+    "steam_appid": null,
+    "name": "고스트러너 2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 액션"
+  },
+  {
+    "game_id": "c36a74f3-6933-4eb7-9066-f8ff9eb706b3",
+    "steam_appid": "1623730",
+    "name": "Palworld / 팰월드",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동이 중심"
+  },
+  {
+    "game_id": "c3773795-b37b-4136-9c4d-d3dc34bb9320",
+    "steam_appid": "1817070",
+    "name": "Marvel’s Spider-Man Remastered",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 오픈월드 액션"
+  },
+  {
+    "game_id": "c396759e-6f0e-469a-9a62-38eb6793eba7",
+    "steam_appid": "1292940",
+    "name": "Cube Escape Collection",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 퍼즐"
+  },
+  {
+    "game_id": "c3d403f5-dafb-4a0c-a95c-00908da0b945",
+    "steam_appid": "294100",
+    "name": "RimWorld",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "c47c3831-a492-44fc-8588-a98026d5e3df",
+    "steam_appid": "4069520",
+    "name": "Super Battle Golf",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "c4d8839b-0191-4ba3-a984-a63972369af3",
+    "steam_appid": "2239710",
+    "name": "Into the Dead: Our Darkest Days",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "c4eeffa8-755e-43d6-b856-b3d8d07697d4",
+    "steam_appid": "3314790",
+    "name": "CloverPit",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "c540b5b1-edb7-4deb-9ec6-f5190d5c8e58",
+    "steam_appid": "1862520",
+    "name": "바둑",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "c5f8b96b-bc0b-4313-9f03-5a15f4539c9d",
+    "steam_appid": "413410",
+    "name": "Danganronpa: Trigger Happy Havoc",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "c61cef76-5723-4925-b466-69024c309344",
+    "steam_appid": "3151380",
+    "name": "Small Spaces",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "c63924c8-c5fd-4127-86d7-cead1c01889c",
+    "steam_appid": "2653790",
+    "name": "The Exit 8",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "c6586ce8-0474-405e-87e0-ffd2e4718d68",
+    "steam_appid": "2375550",
+    "name": "용과 같이7 외전 이름을 지운 자",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "c6e9c5de-22c2-48db-8459-e5727c6f2d3b",
+    "steam_appid": "2503770",
+    "name": "House of Legacy",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "c70ca718-4504-4ea0-8e29-1f1123afa2da",
+    "steam_appid": "2101960",
+    "name": "Cronos: The New Dawn",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "c74a5386-9bdd-4aab-a753-e6bade022d3d",
+    "steam_appid": "1637320",
+    "name": "Dome Keeper 돔 키퍼",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "c7c6ca7f-8f69-4b32-b5ba-d8a23c459eab",
+    "steam_appid": "1341290",
+    "name": "We Were Here Forever",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "2인 협동 전용"
+  },
+  {
+    "game_id": "c7d701d1-3256-400c-83b8-92befbe87b14",
+    "steam_appid": "3020510",
+    "name": "Heroes' Vow: Three Kingdoms",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "c8007a33-e33b-4ab0-8a29-c3c27ed34494",
+    "steam_appid": "368370",
+    "name": "Her Story",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "c80094ee-e390-4f9f-b64b-b399b7f0a8a5",
+    "steam_appid": "2526380",
+    "name": "Sword of Convallaria",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 전술 RPG"
+  },
+  {
+    "game_id": "c85be9ed-9ac4-45f3-a025-c19ebc8e2b4a",
+    "steam_appid": "2412960",
+    "name": "Breathedge 2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "c8a4f52f-05e8-4eab-bf18-e7cd07c233be",
+    "steam_appid": "1203620",
+    "name": "인슈라오디드 (Enshrouded)",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동 생존이 중심"
+  },
+  {
+    "game_id": "c9bcb0bc-8216-4e7c-b8b7-3267d7b868f1",
+    "steam_appid": "3167020",
+    "name": "Escape from Duckov 逃离鸭科夫",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "c9e0c4e2-0d3a-48d3-bccd-331682312c47",
+    "steam_appid": "553420",
+    "name": "TUNIC",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "cb669593-6492-4125-ab7b-53e03ca21584",
+    "steam_appid": "1293820",
+    "name": "당신과 그녀와 그녀의 사랑",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "cb9fefc0-a153-4694-927f-1c606a164610",
+    "steam_appid": "1604030",
+    "name": "V Rising",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 온라인 서버 생존이 중심"
+  },
+  {
+    "game_id": "cbc1254a-3704-46ae-8c75-0f17fd1840b7",
+    "steam_appid": "284160",
+    "name": "BeamNG.drive",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 실험하는 운전 시뮬"
+  },
+  {
+    "game_id": "cc53aa73-b0a0-4eb0-9707-b6782263c26d",
+    "steam_appid": "2977620",
+    "name": "람쥐 어웨이",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "ccb239da-5dd0-4e2c-b075-d8493fe94b0f",
+    "steam_appid": "597760",
+    "name": "여피 사이코: 간부 에디션",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "ccc30920-2d70-4db3-9515-4e9b0e9fc7e4",
+    "steam_appid": "3180150",
+    "name": "Mall Simulator",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "cd42df88-7e76-4e7d-8943-d4a7b133186f",
+    "steam_appid": "1825750",
+    "name": "소울워커",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "cd5d093a-5b29-4c7b-acf8-2c5ba00d3085",
+    "steam_appid": "1850570",
+    "name": "DEATH STRANDING DIRECTOR'S CUT",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리, 다른 플레이어와는 비동기 연결"
+  },
+  {
+    "game_id": "cd6de27e-fcbc-41c7-a939-bb54c7ea63e5",
+    "steam_appid": "2195120",
+    "name": "Go-Go Town!",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "ce3fbffc-9f21-49c7-a88e-ad30bab151f3",
+    "steam_appid": "2479810",
+    "name": "그레이 존 워페어",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "ce9472ff-40c4-40b3-8276-5e78ec8375d5",
+    "steam_appid": "218620",
+    "name": "PAYDAY 2",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "봇과 혼자도 되지만 협동 강도가 핵심"
+  },
+  {
+    "game_id": "cec09a0f-3308-400e-8217-99f05a8d3e90",
+    "steam_appid": "532110",
+    "name": "Rusty Lake: Roots",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "cec7f873-73c9-416a-ad78-a90e12890df5",
+    "steam_appid": "1304930",
+    "name": "The Outlast Trials",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동이 중심"
+  },
+  {
+    "game_id": "cf15170f-f53c-4131-9a8f-c74594210dec",
+    "steam_appid": "485610",
+    "name": "축구 온라인: 볼3D",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "cfa38c52-01ea-4906-883f-e40aa773be10",
+    "steam_appid": "3008130",
+    "name": "Dying Light: The Beast",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리 오픈월드"
+  },
+  {
+    "game_id": "cfcc9709-97d4-4823-8b0a-07dca413d096",
+    "steam_appid": "1468720",
+    "name": "Ultimate Epic Battle Simulator 2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "cfe349bb-f128-472b-ba9d-a198af1439d6",
+    "steam_appid": "287700",
+    "name": "METAL GEAR SOLID V: THE PHANTOM PAIN",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 잠입 액션"
+  },
+  {
+    "game_id": "cff004ef-5006-4dce-87ff-9497bf580d5e",
+    "steam_appid": "2988580",
+    "name": "용과 같이0 맹세의 장소 Director's Cut",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "d0133d99-b822-4f77-8680-2c0290d6cfae",
+    "steam_appid": "2772990",
+    "name": "Ghost Janitors",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "d20ab9e0-3bc3-406b-9501-db56984322c4",
+    "steam_appid": "588430",
+    "name": "Fallout Shelter",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 경영"
+  },
+  {
+    "game_id": "d2519832-7a65-40e5-88c8-7c9f5d99b8ab",
+    "steam_appid": "3035120",
+    "name": "Is This Seat Taken?",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "d2550046-218f-45c0-89e3-ab24688dc8eb",
+    "steam_appid": "3755860",
+    "name": "BLACK SOULS",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "d297e362-fcd1-4b69-b70c-716206cb297d",
+    "steam_appid": "2234150",
+    "name": "BACKROOMS: APPREHENSION",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "d2ceb8fb-fd79-4256-8f42-7e50ee17742a",
+    "steam_appid": "1621690",
+    "name": "Core Keeper",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동 생존이 중심"
+  },
+  {
+    "game_id": "d2ffd8f1-74b1-4e36-bc5f-c2c4354c3a2a",
+    "steam_appid": "1326470",
+    "name": "Sons Of The Forest",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동 생존이 중심"
+  },
+  {
+    "game_id": "d3354e47-9388-4ca7-a957-bc10958d572a",
+    "steam_appid": "617830",
+    "name": "SUPERHOT VR",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 VR 슈팅"
+  },
+  {
+    "game_id": "d3d884c9-e920-4b6f-ab3b-460f0fcd84e2",
+    "steam_appid": "945360",
+    "name": "Among Us",
+    "solo": "none",
+    "party_max": 15,
+    "session_max": 15,
+    "reason": "멀티 전용 마피아 게임 / 인원: 한 판 최대 15명, 팀 구분 없이 함께"
+  },
+  {
+    "game_id": "d4959217-9ad5-4f12-881d-3ae75755c592",
+    "steam_appid": "4630570",
+    "name": "RUNNING TRAIN | 走ル列車！",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "d5401a03-4adb-4f58-b8c6-b431618da825",
+    "steam_appid": "4315040",
+    "name": "영주님은 방치중: 중세 도시 키우기",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "d559a82a-400a-4181-8a28-b1de7a884d7a",
+    "steam_appid": "639490",
+    "name": "Umineko When They Cry - Answer Arcs",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "d620a41b-2389-45f5-baa9-f83c080a6491",
+    "steam_appid": "1535560",
+    "name": "Farmer Against Potatoes Idle",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "d801809a-97af-46dc-aef1-f546388da497",
+    "steam_appid": "1145350",
+    "name": "Hades II",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "d811d609-93c1-4888-a319-768c02add3c4",
+    "steam_appid": "2231450",
+    "name": "Pizza Tower",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "d99f07f9-0df7-4052-801c-e4432b982ee6",
+    "steam_appid": "966680",
+    "name": "Red Matter",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "da183d09-c2d4-4f48-8c4c-664ae9e57f8d",
+    "steam_appid": "3483510",
+    "name": "모험가 엘리엇의 천 년 이야기",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 액션 RPG"
+  },
+  {
+    "game_id": "da486b63-6d7e-4345-a896-86a73ef36528",
+    "steam_appid": "1715130",
+    "name": "Crysis Remastered",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 FPS 캠페인"
+  },
+  {
+    "game_id": "da585553-22b5-4c07-831f-30e9d940005d",
+    "steam_appid": "1437880",
+    "name": "三国群英传7",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 전략"
+  },
+  {
+    "game_id": "daa39c64-08a6-45a0-80aa-3bd4e8e4c9ea",
+    "steam_appid": "413420",
+    "name": "Danganronpa 2: Goodbye Despair",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "daeab701-4801-4b29-bd75-e68d336360f0",
+    "steam_appid": "1244090",
+    "name": "Sea of Stars: Sunset Edition",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 JRPG"
+  },
+  {
+    "game_id": "dbbd9765-dd79-4abd-be8c-9131c737817d",
+    "steam_appid": "3108510",
+    "name": "FlyKnight Enhanced Edition",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "dbbe5a71-09d8-4b5b-9ee7-3c406dbf5900",
+    "steam_appid": "892970",
+    "name": "Valheim",
+    "solo": "possible",
+    "party_max": 10,
+    "session_max": 10,
+    "reason": "혼자도 되지만 협동 생존이 중심 / 인원: 서버 최대 10명, 팀 구분 없음"
+  },
+  {
+    "game_id": "dbc99c60-09a2-4ec0-b011-35cf6ac6f6e9",
+    "steam_appid": "246620",
+    "name": "Plague Inc: Evolved",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 전략"
+  },
+  {
+    "game_id": "dc54c516-0420-498a-8bf7-672e80eb76c4",
+    "steam_appid": null,
+    "name": "Out of Sight",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "dc76211f-04eb-4345-ada1-499faa7f0248",
+    "steam_appid": "1602010",
+    "name": "페르소나4 디 얼티맥스 울트라 수플렉스 홀드",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "스토리 모드는 있지만 대전이 핵심"
+  },
+  {
+    "game_id": "ddae6eb1-d431-4319-abe1-b71adb672cb8",
+    "steam_appid": "322330",
+    "name": "Don't Starve Together",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동 생존이 중심"
+  },
+  {
+    "game_id": "de1834a8-333a-4c3d-9e3e-e7413dd685dd",
+    "steam_appid": "936720",
+    "name": "Wrench",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "de6e058f-0d45-4020-80aa-2ed42356d409",
+    "steam_appid": null,
+    "name": "TerraScape",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "de957594-be93-41d8-8a59-21f14dcd1903",
+    "steam_appid": "1352080",
+    "name": "스매시 레전드",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "온라인 대전 전용"
+  },
+  {
+    "game_id": "deb9dc26-a2aa-4eaa-8425-f9f54852bad0",
+    "steam_appid": "1172620",
+    "name": "Sea of Thieves: 2026 Edition",
+    "solo": "story",
+    "party_max": 4,
+    "session_max": null,
+    "reason": "혼자 항해·스토리 모험도 가능 / 인원: 갤리온 선원 최대 4명"
+  },
+  {
+    "game_id": "decc9a2d-8617-448d-8415-daf0a7cd8029",
+    "steam_appid": "3321460",
+    "name": "붉은사막 Enhanced",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 오픈월드 액션"
+  },
+  {
+    "game_id": "df224549-39aa-4035-85db-68317e1aff22",
+    "steam_appid": "3300800",
+    "name": "HER TREES : PUZZLE DREAM",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "df509cda-5055-448d-b91e-abc819cd88d7",
+    "steam_appid": "3712080",
+    "name": "Funnel Runners",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "dfee86ab-df57-443c-ae72-b463fdad6916",
+    "steam_appid": "1325200",
+    "name": "Nioh 2 – The Complete Edition",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 끝까지 하는 액션 RPG"
+  },
+  {
+    "game_id": "e08cec9f-f917-45cb-a253-23c002f2bbc9",
+    "steam_appid": "873840",
+    "name": "Truck & Logistics Simulator",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "e0aa8a6b-06a2-4cc6-a94d-61032ac627dd",
+    "steam_appid": "570940",
+    "name": "DARK SOULS™: REMASTERED",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 끝까지 하는 소울라이크"
+  },
+  {
+    "game_id": "e15eaf76-dcfa-46d7-ae09-cc3c153a7499",
+    "steam_appid": "3862670",
+    "name": "Shelldiver",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "e161d226-7206-48c5-8f23-481d562dc88e",
+    "steam_appid": "2161440",
+    "name": "风帆纪元 Sailing Era",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "e1e2b35e-1671-4b4f-99f6-20213b27ca6c",
+    "steam_appid": "1659420",
+    "name": "UNCHARTED™: 레거시 오브 시브즈 컬렉션",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 액션 어드벤처"
+  },
+  {
+    "game_id": "e24ae059-3266-4d4c-9ab5-d36670867082",
+    "steam_appid": "1222700",
+    "name": "A Way Out",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "2인 협동 전용"
+  },
+  {
+    "game_id": "e2a0602f-771a-406c-8d73-8c2952cd8706",
+    "steam_appid": "1172710",
+    "name": "Dune: Awakening 듄 ：어웨이크닝",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 다닐 수 있는 온라인 생존"
+  },
+  {
+    "game_id": "e2f2d7e2-daeb-4324-b1ca-1678bcfac2bd",
+    "steam_appid": "3164500",
+    "name": "Schedule I",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동이 중심"
+  },
+  {
+    "game_id": "e316cf6c-6760-45a2-a86e-857093935210",
+    "steam_appid": "2725090",
+    "name": "HER TREES : THE PUZZLE HOUSE",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "e35fa03d-6a36-458e-8f6f-8a752094cb2c",
+    "steam_appid": "2878420",
+    "name": "옛날 재래시장 시뮬레이터",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "e3b980a6-1db5-4265-9f84-f1f87d2970c6",
+    "steam_appid": "883710",
+    "name": "BIOHAZARD RE:2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리 호러"
+  },
+  {
+    "game_id": "e3c0f76c-b364-49fe-ba19-a26381225a2e",
+    "steam_appid": "1903340",
+    "name": "클레르 옵스퀴르: 33 원정대",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "e3c65f2e-a6ac-4f93-8616-9913ae621fb4",
+    "steam_appid": "3556750",
+    "name": "Warhammer 40,000: Dawn of War - Definitive Edition",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인 중심 RTS"
+  },
+  {
+    "game_id": "e43b6cf1-ca24-4fe1-b3e4-9018881cee5a",
+    "steam_appid": "4075620",
+    "name": "Combolands: Roguelike Citybuilder",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "e4c77b6f-5e77-419d-8105-aef48f659bd1",
+    "steam_appid": "2742710",
+    "name": "코지 홈 디자이너",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "e4cbc404-d990-4af7-8641-4f93bf433d86",
+    "steam_appid": "2796180",
+    "name": "SILENT BREATH",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "e5150c7e-0d89-4ca3-9204-a65dd6ea6606",
+    "steam_appid": "3117820",
+    "name": "Sultan's Game",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "e5412454-644c-400d-b6da-7265308a60d5",
+    "steam_appid": "673750",
+    "name": "Super Bunny Man",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동이 핵심"
+  },
+  {
+    "game_id": "e5997251-e63a-434e-b6c9-29339a12af21",
+    "steam_appid": "606800",
+    "name": "Startup Company",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "e5c39c94-c65e-4596-beb0-e52bde96ae16",
+    "steam_appid": "1173220",
+    "name": "Bleak Faith: Forsaken",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 소울라이크"
+  },
+  {
+    "game_id": "e61f6611-aa82-4525-a73d-2e8691cffd5c",
+    "steam_appid": "3981100",
+    "name": "Leaf it Alone",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "e66a8bc2-cb03-4834-a004-556c822b352f",
+    "steam_appid": "2524890",
+    "name": "Pixel Gun 3D: PC Edition",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "e6b212a8-3c01-44a3-9808-00ee1e28b82d",
+    "steam_appid": "901583",
+    "name": "Grand Theft Auto IV: Complete Edition",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리 오픈월드"
+  },
+  {
+    "game_id": "e7abd35e-ed60-4066-9e5a-81fbca475051",
+    "steam_appid": "2096610",
+    "name": "Crysis 3 Remastered",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 FPS 캠페인"
+  },
+  {
+    "game_id": "e871e7ca-0ea1-4fa9-bc8c-9ff61aa9cba7",
+    "steam_appid": "1147560",
+    "name": "Skul: The Hero Slayer",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "e92007eb-9abf-40e9-9350-f4b4e6fb39ef",
+    "steam_appid": "578310",
+    "name": "BRAIN / OUT",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "e93e7c71-33e1-48d9-8a54-b29f32c43c63",
+    "steam_appid": null,
+    "name": "Them's Fightin' Herds",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "스토리 모드는 있지만 대전이 핵심"
+  },
+  {
+    "game_id": "e9847d35-95ea-4138-8c89-e2d7b3faaf1c",
+    "steam_appid": "2300320",
+    "name": "Farming Simulator 25",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 농장 시뮬"
+  },
+  {
+    "game_id": "e9a4fe41-4c30-452a-a751-7d0308506914",
+    "steam_appid": "291550",
+    "name": "Brawlhalla",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "봇 경기도 있지만 대전이 핵심"
+  },
+  {
+    "game_id": "e9b91f01-d2fc-41fc-a4a3-dcb0d45361c7",
+    "steam_appid": "1426210",
+    "name": "It Takes Two",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "2인 협동 전용"
+  },
+  {
+    "game_id": "ea0b5deb-cf65-477b-9046-6cc32092a79d",
+    "steam_appid": "1451090",
+    "name": "Tactics Ogre: Reborn",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "ea50ea1d-e399-4839-9374-01a78fbbfe3b",
+    "steam_appid": "3569500",
+    "name": "Card Shop Simulator Multiplayer",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 함께하는 가게 운영"
+  },
+  {
+    "game_id": "eacacf33-d291-402c-b00b-105729ffc201",
+    "steam_appid": "1771300",
+    "name": "Kingdom Come: Deliverance II",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "eae78adb-4f04-4b5a-83f2-96a48b1c2e67",
+    "steam_appid": "239140",
+    "name": "Dying Light",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리 오픈월드"
+  },
+  {
+    "game_id": "eafd0fba-33b7-4a2d-a200-735adda5b86f",
+    "steam_appid": "1252600",
+    "name": "ANOTHER EDEN",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "ebaabaca-4a29-4d73-92d8-ce4cebe7a1a7",
+    "steam_appid": "2408820",
+    "name": "루마섬",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "ebb71118-325f-4207-8fa8-2cb82a4289e2",
+    "steam_appid": "965230",
+    "name": "DORAEMON  STORY OF SEASONS",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "ec917512-bd6d-4195-a1a0-95ea02c7c5ac",
+    "steam_appid": "1509960",
+    "name": "PICO PARK",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "2인 이상 협동 퍼즐"
+  },
+  {
+    "game_id": "ece18ef7-b443-40de-ae6c-38028aec03da",
+    "steam_appid": "2057760",
+    "name": "Esoteric Ebb",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "ed13ec4f-439f-4b89-aa84-c288c6b22a99",
+    "steam_appid": "3357650",
+    "name": "PRAGMATA",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 액션 어드벤처"
+  },
+  {
+    "game_id": "ed82934a-c050-4ce8-8f72-fd74d6c58cbc",
+    "steam_appid": "1203220",
+    "name": "NARAKA: BLADEPOINT",
+    "solo": "none",
+    "party_max": 3,
+    "session_max": 60,
+    "reason": "멀티 전용 배틀로얄 / 인원: 트리오 최대 3명, 한 판 60명"
+  },
+  {
+    "game_id": "edab7894-c714-4d36-8d67-1ea92581996c",
+    "steam_appid": "1462040",
+    "name": "FINAL FANTASY VII REMAKE INTERGRADE",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "ee753035-53f1-4c35-8d4f-974f295ebcc8",
+    "steam_appid": "3370870",
+    "name": "Berry Bury Berry",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "eef6dc5b-6641-4d9f-9d72-d19b51b86b47",
+    "steam_appid": "3400930",
+    "name": "Guilty as Sock!",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "ef18ae98-f0b5-41de-96d2-1a2cf0b67c14",
+    "steam_appid": "304930",
+    "name": "Unturned",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 서버 생존이 중심"
+  },
+  {
+    "game_id": "ef8d9871-fee4-4e0a-af47-a159d59863cd",
+    "steam_appid": "2183900",
+    "name": "Warhammer 40,000: Space Marine 2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인을 혼자 할 수 있음"
+  },
+  {
+    "game_id": "efac2013-433e-461e-9beb-fbab259671e4",
+    "steam_appid": "1808500",
+    "name": "ARC Raiders",
+    "solo": "none",
+    "party_max": 3,
+    "session_max": null,
+    "reason": "온라인 익스트랙션 전용 / 인원: 분대 최대 3명"
+  },
+  {
+    "game_id": "f0494f37-c6a6-4be8-a3e5-ec303da62bc4",
+    "steam_appid": "2073620",
+    "name": "Arena Breakout: Infinite",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "온라인 익스트랙션 전용"
+  },
+  {
+    "game_id": "f092fe32-8c0d-488c-b758-5517cd5f515f",
+    "steam_appid": "504230",
+    "name": "Celeste",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "f0a94612-e40e-4077-b527-244030a802fb",
+    "steam_appid": "3438810",
+    "name": "프린세스 메이커 : 예언의 아이들",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "f0d8b6a0-8a6f-4c0a-a7a9-bb87835140b6",
+    "steam_appid": "1016920",
+    "name": "Unrailed!",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "봇과 혼자도 되지만 협동이 핵심"
+  },
+  {
+    "game_id": "f1022fd9-20bb-48e8-8ff9-89ef8f639390",
+    "steam_appid": "1245620",
+    "name": "ELDEN RING",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 끝까지 하는 오픈월드 소울라이크"
+  },
+  {
+    "game_id": "f112b6f8-188e-41bf-89cb-bd95ac607bfd",
+    "steam_appid": "2215430",
+    "name": "Ghost of Tsushima 디렉터스 컷",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 오픈월드 액션"
+  },
+  {
+    "game_id": "f1ca345e-ecc2-4f97-9fc7-83ef14a7f307",
+    "steam_appid": "1696770",
+    "name": "The Mermaid Mask",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "f1d660be-7928-4ebb-b710-f65421e6aa34",
+    "steam_appid": "2459550",
+    "name": "Emberward",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "f1f6643a-55fb-4fff-9163-c0473635f7c6",
+    "steam_appid": "1568590",
+    "name": "Goose Goose Duck",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "멀티 전용 마피아 게임"
+  },
+  {
+    "game_id": "f1f75de6-c613-4658-86b9-48451e9735c5",
+    "steam_appid": "459220",
+    "name": "Halo Wars: Definitive Edition",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "캠페인 중심 RTS"
+  },
+  {
+    "game_id": "f33282e7-c469-4da3-9bc4-30400fa407a2",
+    "steam_appid": null,
+    "name": "Fall Guys",
+    "solo": "none",
+    "party_max": 4,
+    "session_max": null,
+    "reason": "멀티 전용 파티 게임 / 인원: 스쿼드 최대 4명"
+  },
+  {
+    "game_id": "f356c1fc-cee3-4ea4-a5ca-9ec293149724",
+    "steam_appid": "1974050",
+    "name": "토치라이트:인피니트",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "f3815724-4a99-45e1-9011-59ffbadf67e0",
+    "steam_appid": "3070070",
+    "name": "TCG Card Shop Simulator",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "f3c88963-94ab-433c-aa02-9e7e7c420338",
+    "steam_appid": "2161700",
+    "name": "페르소나3 리로드",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "f4476920-1300-4b7c-80cd-470e30a18ee2",
+    "steam_appid": "1627720",
+    "name": "P의 거짓 (Lies of P)",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "f4577632-695a-4f8f-9478-de91adbc6c3f",
+    "steam_appid": "387290",
+    "name": "Ori and the Blind Forest: Definitive Edition",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "f45ca6a3-9890-4f71-8868-941ae102ea90",
+    "steam_appid": "3682050",
+    "name": "두 사람의 여름의 소리",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "f47e9272-7b6f-4016-99fa-bc6f9636edec",
+    "steam_appid": "1274570",
+    "name": "DEVOUR",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동 호러가 중심"
+  },
+  {
+    "game_id": "f547edb5-7eab-48a9-afa6-f16ad97bb86a",
+    "steam_appid": "552500",
+    "name": "Warhammer: Vermintide 2",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "봇과 혼자도 되지만 4인 협동이 핵심"
+  },
+  {
+    "game_id": "f5a441e7-f3de-4de7-a6dc-babcb75f19c7",
+    "steam_appid": "2679100",
+    "name": "Witchspire",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "f5d38ed0-bb85-4e8d-b46a-626f507a6d83",
+    "steam_appid": "4450620",
+    "name": "GRAIN ROT",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "f5db4d61-d161-469d-9d78-3d0d72674881",
+    "steam_appid": "753640",
+    "name": "Outer Wilds",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "f5f3870b-279e-4fd5-b7b3-8810be86561c",
+    "steam_appid": "3146520",
+    "name": "WEBFISHING",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 낚시할 수 있지만 함께 노는 게임"
+  },
+  {
+    "game_id": "f5f8944a-98b8-4a9f-8d17-5995dff3ac93",
+    "steam_appid": "277590",
+    "name": "Assassin's Creed Freedom Cry",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 액션 어드벤처"
+  },
+  {
+    "game_id": "f66116bb-541c-4742-92a0-7d90b179b4d1",
+    "steam_appid": "739630",
+    "name": "Phasmophobia",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동 조사가 중심"
+  },
+  {
+    "game_id": "f6d16536-bfa1-4a41-81a3-6f3a6ff2df9e",
+    "steam_appid": "1169040",
+    "name": "Necesse: 네세스",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "f6e8d17b-1041-4bf2-a3da-7b6526af7d3c",
+    "steam_appid": "4656000",
+    "name": "BOMBANANA!",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "f754faef-8960-406f-bf11-4ae44a5ecce6",
+    "steam_appid": "1517340",
+    "name": "From The Darkness",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "f7587927-b84f-424f-9797-a8e3985cc5c0",
+    "steam_appid": "252110",
+    "name": "Lovers in a Dangerous Spacetime",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "AI 동료와 혼자도 되지만 협동이 핵심"
+  },
+  {
+    "game_id": "f80995d9-dc96-43b0-92e5-945aae36d590",
+    "steam_appid": "1284190",
+    "name": "The Planet Crafter",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 해도 완성된 생존 제작"
+  },
+  {
+    "game_id": "f8173db9-c9a5-4d51-85fc-d40974da250e",
+    "steam_appid": "2914150",
+    "name": "융융 전파 신드롬",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "f8461df4-5701-4c47-bf0a-b647ae3f10da",
+    "steam_appid": "1481080",
+    "name": "DRAMAtical Murder",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "f86df592-acdb-434b-9dc1-0a05d4cbcb5d",
+    "steam_appid": "1067360",
+    "name": "Pax Autocratica",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "f87d6401-696b-48b1-b369-ed3c586cfcda",
+    "steam_appid": "333300",
+    "name": "ADOM (Ancient Domains Of Mystery)",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "f8d58d2a-054a-47b1-9de7-9fc8927354a0",
+    "steam_appid": "620",
+    "name": "Portal 2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 캠페인이 꽉 찬 퍼즐 (2인 협동 별도)"
+  },
+  {
+    "game_id": "f8ed4a93-db39-42db-916f-c5da556776cf",
+    "steam_appid": "1328670",
+    "name": "Mass Effect™ Legendary Edition",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "f92b4dd3-95af-4cc8-8569-f733eee643de",
+    "steam_appid": "1222670",
+    "name": "The Sims™ 4",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "f95d086c-66b7-4068-842a-2d445daa5cb7",
+    "steam_appid": null,
+    "name": "Legends of Runeterra",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 모험도 있지만 대전이 핵심"
+  },
+  {
+    "game_id": "fa4579ae-d199-43e8-9414-9cba447644f9",
+    "steam_appid": "985810",
+    "name": "GrandChase",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 함께하는 액션 RPG"
+  },
+  {
+    "game_id": "fa5ce793-8a7c-482d-92d6-c7405cc3edb8",
+    "steam_appid": "244210",
+    "name": "아세토 코르사 Assetto Corsa",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 레이싱 시뮬"
+  },
+  {
+    "game_id": "fa7231b0-ec8e-4c7e-b12f-5b4f4ebbb283",
+    "steam_appid": "3105440",
+    "name": "Heroes of Might and Magic: Olden Era 히어로즈 오브 마이트 앤 매직: 올든 에라",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 전략"
+  },
+  {
+    "game_id": "fb379b6b-06a6-4eac-8d22-cd6af38a55cc",
+    "steam_appid": "2881650",
+    "name": "Content Warning",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동이 핵심"
+  },
+  {
+    "game_id": "fb8c5395-1dc2-4fb6-82a4-7e58ae2581f8",
+    "steam_appid": "2441270",
+    "name": "Kill The Crows",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "fba08a07-c711-4379-8fe5-76ec3f26f1a6",
+    "steam_appid": "2879840",
+    "name": "방 탈출 시뮬레이터2",
+    "solo": null,
+    "party_max": null,
+    "session_max": null,
+    "reason": "판단 보류"
+  },
+  {
+    "game_id": "fbd5c360-b3b5-4e68-acc0-bd5737eafa5b",
+    "steam_appid": "239030",
+    "name": "Papers, Please",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "fbf855d3-bf94-41c0-82c9-722204b7ab44",
+    "steam_appid": "3699590",
+    "name": "Well Dweller",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "fc119c2d-574b-46a5-811b-d838b62d5a11",
+    "steam_appid": "2099110",
+    "name": "The Classrooms",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "fc49f5fc-eb6e-41db-a03b-63001dd77623",
+    "steam_appid": "3314070",
+    "name": "The Sims™ 2 레거시 컬렉션",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "fc5f9df5-e19d-4b03-979a-2a3c0f69b3c9",
+    "steam_appid": "4731620",
+    "name": "포춘 밀",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "fc701353-088b-414a-8ccc-a599d1d948f7",
+    "steam_appid": "813230",
+    "name": "ANIMAL WELL",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "fce3db70-2a91-4d71-a023-8c83a1834acf",
+    "steam_appid": "548430",
+    "name": "Deep Rock Galactic",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자도 되지만 협동이 핵심"
+  },
+  {
+    "game_id": "fd4e2d5b-9ae1-4c2b-8cae-36fd1e003f7b",
+    "steam_appid": "628070",
+    "name": "Romance of the Three Kingdoms XI with Power Up Kit",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 역사 전략"
+  },
+  {
+    "game_id": "fd832bd1-f1e1-427b-ab23-2a4c1ed7ff6f",
+    "steam_appid": "3983810",
+    "name": "더 스파이크 크로스",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리 게임"
+  },
+  {
+    "game_id": "fdb1e9de-616a-4cfd-9ce6-13ece59915d7",
+    "steam_appid": "2679460",
+    "name": "메타포: 리판타지오",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "fde27465-4bf6-42a4-800f-06c68edd3335",
+    "steam_appid": "1278390",
+    "name": "Succumate",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "fe26c12e-8d78-456c-aa34-d8d7ed616593",
+    "steam_appid": "381210",
+    "name": "Dead by Daylight",
+    "solo": "none",
+    "party_max": 5,
+    "session_max": 5,
+    "reason": "온라인 비대칭 대전 전용 / 인원: 커스텀 매치로 생존자 4명 + 살인마 1명 (양 팀 합계), 같은 판 5명"
+  },
+  {
+    "game_id": "fe7ab058-f4b6-4356-9c66-2dd3ca4f0159",
+    "steam_appid": "550650",
+    "name": "Black Squad",
+    "solo": "none",
+    "party_max": null,
+    "session_max": null,
+    "reason": "온라인 대전 전용"
+  },
+  {
+    "game_id": "fe8986b9-3d89-4a86-ad52-cf5f9dadc3e8",
+    "steam_appid": "471710",
+    "name": "Rec Room",
+    "solo": "possible",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 둘러볼 수 있지만 함께 노는 공간"
+  },
+  {
+    "game_id": "feb253d5-45a2-48ca-9227-4ba3b252667c",
+    "steam_appid": "2980270",
+    "name": "HackHub - Ultimate Hacker Simulator",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "ff2eb3e6-49e8-4b26-a154-1806b1dafe38",
+    "steam_appid": "2726490",
+    "name": "Hamster Hunter",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "ff718ae3-da59-4c01-b43d-9bbf09e9628e",
+    "steam_appid": "400750",
+    "name": "Call to Arms - Gates of Hell: Ostfront",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "혼자 하는 전략"
+  },
+  {
+    "game_id": "ff8f6671-020a-4633-a8c2-0779bd8280ac",
+    "steam_appid": "4073860",
+    "name": "쭉쭉주식회사",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": "fffc708e-96c7-41b4-8c29-637d49016c07",
+    "steam_appid": "292030",
+    "name": "더 위쳐 3: 와일드 헌트 - 컴플리트 에디션",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 전용 (스팀 태그에 멀티 관련 태그 없음)"
+  },
+  {
+    "game_id": null,
+    "steam_appid": "3937550",
+    "name": "용과 같이 극3 / 용과 같이3 외전 Dark Ties",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 스토리 액션 (상점 분류 Single-player만, docs/verification/round10-kiwami3-dd2.md) / game_id 미정 — 앱 번호로 찾기"
+  },
+  {
+    "game_id": null,
+    "steam_appid": "2054970",
+    "name": "Dragon's Dogma 2",
+    "solo": "story",
+    "party_max": null,
+    "session_max": null,
+    "reason": "1인 오픈월드 액션 RPG, 폰 빌리기는 같은 판 멀티가 아님 (docs/verification/round10-kiwami3-dd2.md) / game_id 미정 — 앱 번호로 찾기"
+  }
+]

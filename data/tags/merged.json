@@ -1,0 +1,341 @@
+{
+  "note": "같은 뜻이라 하나로 합친 스팀 태그 (from → into)",
+  "merges": [
+    {
+      "from": {
+        "id": 1638,
+        "en": "Dog",
+        "ko": "Dog"
+      },
+      "into": {
+        "id": 1637,
+        "node": "t:1637",
+        "ko": "개"
+      }
+    },
+    {
+      "from": {
+        "id": 1733,
+        "en": "Unforgiving",
+        "ko": "Unforgiving"
+      },
+      "into": {
+        "id": 4026,
+        "node": "t:4026",
+        "ko": "고난도"
+      }
+    },
+    {
+      "from": {
+        "id": 4136,
+        "en": "Funny",
+        "ko": "유머"
+      },
+      "into": {
+        "id": 1719,
+        "node": "t:1719",
+        "ko": "코미디"
+      }
+    },
+    {
+      "from": {
+        "id": 4162,
+        "en": "Kids",
+        "ko": "Kids"
+      },
+      "into": {
+        "id": 5350,
+        "node": "t:5350",
+        "ko": "가족 친화"
+      }
+    },
+    {
+      "from": {
+        "id": 4376,
+        "en": "Assassin",
+        "ko": "Assassin"
+      },
+      "into": {
+        "id": 97070,
+        "node": "t:97070",
+        "ko": "암살"
+      }
+    },
+    {
+      "from": {
+        "id": 4520,
+        "en": "Farming",
+        "ko": "파밍"
+      },
+      "into": {
+        "id": 87918,
+        "node": "t:87918",
+        "ko": "농장 시뮬레이션"
+      }
+    },
+    {
+      "from": {
+        "id": 4562,
+        "en": "Cartoon",
+        "ko": "만화"
+      },
+      "into": {
+        "id": 4195,
+        "node": "t:4195",
+        "ko": "카툰풍"
+      }
+    },
+    {
+      "from": {
+        "id": 4835,
+        "en": "6DOF",
+        "ko": "6DOF"
+      },
+      "into": {
+        "id": 21978,
+        "node": "t:21978",
+        "ko": "VR"
+      }
+    },
+    {
+      "from": {
+        "id": 5228,
+        "en": "Blood",
+        "ko": "Blood"
+      },
+      "into": {
+        "id": 4345,
+        "node": "t:4345",
+        "ko": "고어·유혈"
+      }
+    },
+    {
+      "from": {
+        "id": 5348,
+        "en": "Mod",
+        "ko": "모드"
+      },
+      "into": {
+        "id": 1669,
+        "node": "t:1669",
+        "ko": "모드 지원"
+      }
+    },
+    {
+      "from": {
+        "id": 7108,
+        "en": "Party",
+        "ko": "파티"
+      },
+      "into": {
+        "id": 7178,
+        "node": "t:7178",
+        "ko": "파티 게임"
+      }
+    },
+    {
+      "from": {
+        "id": 7702,
+        "en": "Narrative",
+        "ko": "내러티브"
+      },
+      "into": {
+        "id": 1742,
+        "node": "t:1742",
+        "ko": "스토리 중심"
+      }
+    },
+    {
+      "from": {
+        "id": 7918,
+        "en": "Dwarf",
+        "ko": "Dwarf"
+      },
+      "into": {
+        "id": 4535,
+        "node": "t:4535",
+        "ko": "드워프"
+      }
+    },
+    {
+      "from": {
+        "id": 15172,
+        "en": "Conversation",
+        "ko": "Conversation"
+      },
+      "into": {
+        "id": 42152,
+        "node": "t:42152",
+        "ko": "대화 중심"
+      }
+    },
+    {
+      "from": {
+        "id": 17927,
+        "en": "Pool",
+        "ko": "Pool"
+      },
+      "into": {
+        "id": 4852,
+        "node": "t:4852",
+        "ko": "당구"
+      }
+    },
+    {
+      "from": {
+        "id": 19995,
+        "en": "Dark Comedy",
+        "ko": "블랙 코미디"
+      },
+      "into": {
+        "id": 5923,
+        "node": "t:5923",
+        "ko": "블랙 유머"
+      }
+    },
+    {
+      "from": {
+        "id": 21725,
+        "en": "Tactical RPG",
+        "ko": "전술 RPG"
+      },
+      "into": {
+        "id": 17305,
+        "node": "t:17305",
+        "ko": "전략·전술 RPG"
+      }
+    },
+    {
+      "from": {
+        "id": 22602,
+        "en": "Agriculture",
+        "ko": "농업"
+      },
+      "into": {
+        "id": 87918,
+        "node": "t:87918",
+        "ko": "농장 시뮬레이션"
+      }
+    },
+    {
+      "from": {
+        "id": 22955,
+        "en": "Mini Golf",
+        "ko": "미니 골프"
+      },
+      "into": {
+        "id": 7038,
+        "node": "t:7038",
+        "ko": "골프"
+      }
+    },
+    {
+      "from": {
+        "id": 30927,
+        "en": "Fox",
+        "ko": "Fox"
+      },
+      "into": {
+        "id": 507423,
+        "node": "t:507423",
+        "ko": "여우"
+      }
+    },
+    {
+      "from": {
+        "id": 37799,
+        "en": "Combat Flight Simulator",
+        "ko": "Combat Flight Simulator"
+      },
+      "into": {
+        "id": 15045,
+        "node": "t:15045",
+        "ko": "비행"
+      }
+    },
+    {
+      "from": {
+        "id": 40500,
+        "en": "Sexual Themes",
+        "ko": "Sexual Themes"
+      },
+      "into": {
+        "id": 12095,
+        "node": "t:12095",
+        "ko": "선정성"
+      }
+    },
+    {
+      "from": {
+        "id": 42329,
+        "en": "Coding",
+        "ko": "Coding"
+      },
+      "into": {
+        "id": 5432,
+        "node": "t:5432",
+        "ko": "코딩"
+      }
+    },
+    {
+      "from": {
+        "id": 56690,
+        "en": "On-Rails Shooter",
+        "ko": "레일 슈팅"
+      },
+      "into": {
+        "id": 3954,
+        "node": "t:3954",
+        "ko": "레일 슈터"
+      }
+    },
+    {
+      "from": {
+        "id": 92092,
+        "en": "Jet",
+        "ko": "Jet"
+      },
+      "into": {
+        "id": 15045,
+        "node": "t:15045",
+        "ko": "비행"
+      }
+    },
+    {
+      "from": {
+        "id": 102530,
+        "en": "Elf",
+        "ko": "Elf"
+      },
+      "into": {
+        "id": 6054,
+        "node": "t:6054",
+        "ko": "엘프"
+      }
+    },
+    {
+      "from": {
+        "id": 198913,
+        "en": "Motorbike",
+        "ko": "오토바이"
+      },
+      "into": {
+        "id": 123332,
+        "node": "t:123332",
+        "ko": "바이크"
+      }
+    },
+    {
+      "from": {
+        "id": 363767,
+        "en": "Snooker",
+        "ko": "Snooker"
+      },
+      "into": {
+        "id": 4852,
+        "node": "t:4852",
+        "ko": "당구"
+      }
+    }
+  ]
+}
