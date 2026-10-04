@@ -10,18 +10,31 @@ import { translateTag } from '../../lib/tagTranslate';
 import type { GameFilters } from '../../lib/useGameFilters';
 import { playersText } from '../../lib/players';
 import GameImage from '../GameImage';
+import PageSkeleton from '../status/PageSkeleton';
 
-export default function SearchResults({ filters, top10Ids = [] }: { filters: GameFilters; top10Ids?: string[] }) {
+export default function SearchResults({ filters, top10Ids = [], loadError = false, onRetry }: { filters: GameFilters; top10Ids?: string[]; loadError?: boolean; onRetry?: () => void }) {
   const {
-    showResults, normalizedQuery, hasFilters, filtered,
+    loaded, showResults, normalizedQuery, hasFilters, filtered,
     compareList, setCompareList, compareError, toggleCompare,
     rememberList, resetFilters, visibleCount, showMore,
   } = filters;
 
   return (
     <>
+      {/* 전체 목록이 아직 안 왔으면 결과 자리에 로딩 막대, 받기에 실패하면 다시 시도 */}
+      {(showResults || normalizedQuery) && !loaded && (
+        loadError ? (
+          <div className="empty-state">
+            게임 목록을 불러오지 못했어요.
+            <div style={{ marginTop: 12 }}>
+              <button onClick={onRetry} className="cm-btn">다시 시도</button>
+            </div>
+          </div>
+        ) : <PageSkeleton />
+      )}
+
       {/* 결과 */}
-      {(showResults || normalizedQuery) && (
+      {(showResults || normalizedQuery) && loaded && (
         <>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
             <div style={{ fontSize: 15, color: 'var(--text-dim)' }}>
