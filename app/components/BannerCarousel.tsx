@@ -65,15 +65,16 @@ export default function BannerCarousel({ games }: { games: any[] }) {
       </Link>
 
       {/* 점 네비게이션 */}
-      {/* 보이는 점은 작게, 누르는 영역은 28px 높이로 넉넉하게 */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}>
+      {/* 보이는 점은 작게, 누르는 영역은 44px. 점이 많아 한 줄에 다 안 들어가면 너비만 나눠 가짐 */}
+      {/* 아래 여백 -16px: 누르는 영역이 늘어난 만큼 빼서 아래 내용 위치는 그대로 (원래 28px 높이) */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 4, marginBottom: -16 }}>
         {games.map((_, i) => (
           <button
             key={i}
             onClick={() => setIndex(i)}
             aria-label={`${i + 1}번째 추천 게임`}
             aria-current={i === index}
-            style={{ minWidth: 24, height: 28, padding: '0 4px', border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{ flex: '0 1 44px', minWidth: 0, height: 44, padding: 0, border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
             <span style={{
               display: 'block',

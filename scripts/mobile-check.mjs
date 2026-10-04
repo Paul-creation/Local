@@ -5,6 +5,8 @@
 //       node scripts/mobile-check.mjs http://localhost:3000
 // - 스크린샷은 scripts/.cache/mobile-check/<시각>/ 에 저장 (gitignore 됨)
 // - 글쓰기·의견함·의견 달기는 화면만 열고 입력·제출은 하지 않는다 (DB에 아무것도 쓰지 않음)
+// - 태그 필터는 메인의 "태그 선택"을 눌러 펼친 상태로 본다 (필터만 바뀌고 저장되는 것 없음)
+// - 투명 ::before/::after로 넓힌 터치 영역(.tag-help-btn 같은 방식)도 크기에 포함한다
 // - 비교는 /compare(빈 화면)만 연다. ?ids=를 붙이면 AI 점수 계산(비용·하루 한도 사용)이 돌 수 있어서
 // - 가로 스크롤이 하나라도 있으면 종료 코드 1
 // 처음 한 번: npm ci (playwright 1.63 — 브라우저가 없으면 npx playwright install chromium)
@@ -100,8 +102,17 @@ function inspect({ minTouch, scope }) {
     // 문장 속 글자 링크는 WCAG 예외 (블록 안에 다른 글자와 섞인 inline 링크)
     if (el.tagName === 'A' && s.display === 'inline' && el.parentElement && el.parentElement.innerText.trim() !== el.innerText.trim()) continue;
     const r = el.getBoundingClientRect();
-    if (r.width < minTouch || r.height < minTouch) {
-      small.push({ desc: `${label(el)} (${Math.round(r.width)}×${Math.round(r.height)})` });
+    // 보이는 크기는 그대로 두고 투명 ::before/::after(position: absolute, 음수 inset)로 넓힌 터치 영역도 인정
+    let w = r.width, h = r.height;
+    for (const pseudo of ['::before', '::after']) {
+      const ps = getComputedStyle(el, pseudo);
+      if (ps.content === 'none' || ps.position !== 'absolute' || ps.display === 'none') continue;
+      const out = (v) => Math.max(0, -(parseFloat(v) || 0));
+      w = Math.max(w, r.width + out(ps.left) + out(ps.right));
+      h = Math.max(h, r.height + out(ps.top) + out(ps.bottom));
+    }
+    if (w < minTouch || h < minTouch) {
+      small.push({ desc: `${label(el)} (${Math.round(w)}×${Math.round(h)})` });
     }
   }
 
@@ -117,6 +128,7 @@ async function main() {
   const pages = [
     { name: '메인', path: '/' },
     { name: '검색 결과', path: '/?r=1&q=' + encodeURIComponent('협동') },
+    { name: '태그 필터(펼침)', path: '/', open: 'button:has-text("태그 선택")' },
     f.withVideo ? { name: '게임 상세(영상 있음)', path: f.withVideo } : null,
     f.noVideo ? { name: '게임 상세(영상 없음)', path: f.noVideo } : null,
     { name: '비교', path: '/compare' },
@@ -155,6 +167,7 @@ async function main() {
           window.scrollTo(0, 0);
         });
         await page.waitForTimeout(500);
+        if (p.open) { await page.locator(p.open).first().click(); await page.waitForTimeout(300); }
         res = await page.evaluate(inspect, { minTouch: MIN_TOUCH, scope: p.scope || null });
         if (p.scope && !res.missing) await page.locator(p.scope).first().screenshot({ path: shot });
         else await page.screenshot({ path: shot, fullPage: true });

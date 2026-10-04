@@ -74,10 +74,10 @@ export default function SearchPanel({ games, filters }: { games: any[], filters:
             {/* 카테고리 */}
             <div style={{ marginBottom: 16 }}>
               <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 8 }}>카테고리</p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              <div className="filter-chips">
                 {CATEGORIES.map(c => (
                   <span key={c} className="tag-chip-wrap">
-                    <button onClick={() => setSelectedCategory(selectedCategory === c ? '' : c)} style={{
+                    <button className="filter-chip" onClick={() => setSelectedCategory(selectedCategory === c ? '' : c)} style={{
                       padding: '6px 14px', borderRadius: 100, fontSize: 15, fontWeight: 600,
                       border: `1.5px solid ${selectedCategory === c ? 'var(--accent)' : 'var(--border)'}`,
                       background: selectedCategory === c ? 'var(--accent)' : 'var(--bg)',
@@ -92,9 +92,9 @@ export default function SearchPanel({ games, filters }: { games: any[], filters:
             {/* 인원수 */}
             <div style={{ marginBottom: 16 }}>
               <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 8 }}>인원수</p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              <div className="filter-chips">
                 {PLAYER_OPTIONS.map(p => (
-                  <button key={p} onClick={() => setSelectedPlayers(selectedPlayers === p ? '' : p)} style={{
+                  <button key={p} className="filter-chip" onClick={() => setSelectedPlayers(selectedPlayers === p ? '' : p)} style={{
                     padding: '6px 14px', borderRadius: 100, fontSize: 15, fontWeight: 600,
                     border: `1.5px solid ${selectedPlayers === p ? 'var(--accent)' : 'var(--border)'}`,
                     background: selectedPlayers === p ? 'var(--accent)' : 'var(--bg)',
@@ -107,10 +107,10 @@ export default function SearchPanel({ games, filters }: { games: any[], filters:
             {/* 난이도 */}
             <div style={{ marginBottom: 16 }}>
               <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 8 }}>난이도</p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              <div className="filter-chips">
                 {DIFFICULTY_OPTIONS.map(d => (
                   <span key={d} className="tag-chip-wrap">
-                    <button onClick={() => setSelectedDifficulty(selectedDifficulty === d ? '' : d)} style={{
+                    <button className="filter-chip" onClick={() => setSelectedDifficulty(selectedDifficulty === d ? '' : d)} style={{
                       padding: '6px 14px', borderRadius: 100, fontSize: 15, fontWeight: 600,
                       border: `1.5px solid ${selectedDifficulty === d ? 'var(--accent)' : 'var(--border)'}`,
                       background: selectedDifficulty === d ? 'var(--accent)' : 'var(--bg)',
@@ -124,13 +124,13 @@ export default function SearchPanel({ games, filters }: { games: any[], filters:
 
             {/* 무료만 */}
             <div style={{ marginBottom: 16 }}>
-              <button onClick={() => setFreeOnly(v => !v)} style={{
+              <button className="filter-chip" onClick={() => setFreeOnly(v => !v)} style={{
                 padding: '6px 14px', borderRadius: 100, fontSize: 15, fontWeight: 600,
                 border: `1.5px solid ${freeOnly ? 'var(--accent)' : 'var(--border)'}`,
                 background: freeOnly ? 'var(--accent)' : 'var(--bg)',
                 color: freeOnly ? '#fff' : 'var(--text)', cursor: 'pointer',
               }}>무료 게임만</button>
-              <button onClick={() => setSaleOnly(v => !v)} style={{
+              <button className="filter-chip" onClick={() => setSaleOnly(v => !v)} style={{
                 padding: '6px 14px', borderRadius: 100, fontSize: 15, fontWeight: 600, marginLeft: 8,
                 border: `1.5px solid ${saleOnly ? 'var(--accent)' : 'var(--border)'}`,
                 background: saleOnly ? 'var(--accent)' : 'var(--bg)',
@@ -161,10 +161,10 @@ export default function SearchPanel({ games, filters }: { games: any[], filters:
                         )}
                       </button>
                       {expandedGroups.includes(group) && (
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8, paddingLeft: 4 }}>
+                        <div className="filter-chips" style={{ marginTop: 8, paddingLeft: 4 }}>
                           {availableTags.map(tag => (
                             <span key={tag} className="tag-chip-wrap">
-                              <button onClick={() => toggleTag(tag)} style={{
+                              <button className="filter-chip" onClick={() => toggleTag(tag)} style={{
                                 padding: '6px 14px', borderRadius: 100, fontSize: 15, fontWeight: 600,
                                 border: `1.5px solid ${selectedTags.includes(tag) ? 'var(--accent)' : 'var(--border)'}`,
                                 background: selectedTags.includes(tag) ? 'rgba(0,113,227,0.1)' : 'var(--bg)',

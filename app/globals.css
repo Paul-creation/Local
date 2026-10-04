@@ -104,6 +104,9 @@ img { display: block; }
 }
 
 .site-logo {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px; /* 터치 영역 */
   font-size: 18px;
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -123,6 +126,12 @@ img { display: block; }
 .site-menu::-webkit-scrollbar { display: none; }
 
 .site-menu a {
+  /* 터치 영역 44px — 헤더(52~56px) 안에서 위아래만 늘어나 바 높이는 그대로 */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
   padding: 8px 12px;
   border-radius: var(--radius-sm);
   font-size: 15px;
@@ -139,6 +148,7 @@ img { display: block; }
 @media (max-width: 480px) {
   .site-header-inner { padding: 0 16px; height: 52px; gap: 8px; }
   .site-logo { font-size: 16px; }
+  .site-menu { gap: 0; } /* '홈'이 44px로 넓어진 만큼 간격을 줄여 360px에서도 한 줄 유지 */
   .site-menu a { padding: 6px 8px; font-size: 14px; }
 }
 
@@ -1794,7 +1804,8 @@ a.hc-row:hover { background: var(--bg-card-hover); }
    ============================================================ */
 .cm-page { max-width: 860px; padding-top: 20px; }
 .cm-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; align-items: center; }
-.cm-tabs a { padding: 8px 14px; border-radius: 999px; background: var(--bg-card); color: var(--text); font-size: 15px; font-weight: 600; text-decoration: none; box-shadow: var(--shadow-sm); }
+.cm-tabs a { position: relative; padding: 8px 14px; border-radius: 999px; background: var(--bg-card); color: var(--text); font-size: 15px; font-weight: 600; text-decoration: none; box-shadow: var(--shadow-sm); }
+.cm-tabs a::after { content: ''; position: absolute; inset: -3px; } /* 보이는 크기(39px)는 그대로, 터치 영역만 45px (간격 6px 안에서 서로 겹치지 않음) */
 .cm-tabs a:hover { background: var(--accent-soft); }
 .cm-tabs .cm-write-btn { margin-left: auto; background: var(--accent); color: #fff; }
 .cm-tabs .cm-write-btn:hover { background: var(--accent-hover); }
@@ -1893,8 +1904,9 @@ a.hc-row:hover { background: var(--bg-card-hover); }
 
 /* 공통 푸터 (layout) */
 .site-footer { max-width: 960px; margin: 48px auto 0; padding: 24px 16px 32px; border-top: 1px solid rgba(0,0,0,0.08); text-align: center; color: var(--text-dimmer); font-size: var(--fs-sub); line-height: 1.7; }
-.site-footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; margin-bottom: 10px; font-size: var(--fs-sub); color: var(--text-dim); }
+.site-footer-links { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0 14px; margin-bottom: 10px; font-size: var(--fs-sub); color: var(--text-dim); }
 .site-footer a { color: var(--text-dim); }
+.site-footer-links a { display: inline-flex; align-items: center; min-height: 44px; } /* 터치 영역 44px (줄 간격이 대신 줄어듦) */
 .site-footer-copy { margin-top: 8px; }
 
 /* 개인정보처리방침·이용약관 */
@@ -1912,6 +1924,10 @@ a.hc-row:hover { background: var(--bg-card-hover); }
 
 /* 태그 칩 + 설명 ? 팝오버 (SearchPanel · TagHelp) */
 .tag-chip-wrap { position: relative; display: inline-flex; }
+/* 게임 찾기 필터 칩 — 보이는 크기(32px)는 그대로, 터치 영역만 44px. 줄 간격 12px 안에서 위아래 칩과 겹치지 않음 */
+.filter-chips { display: flex; flex-wrap: wrap; gap: 12px 8px; }
+.filter-chip { position: relative; }
+.filter-chip::after { content: ''; position: absolute; inset: -6px -4px; }
 .tag-help-btn {
   position: absolute; top: -7px; right: -7px; z-index: 1;
   width: 20px; height: 20px; border-radius: 50%;
