@@ -1,7 +1,7 @@
 {
   "fetched_at": "2026-10-04",
   "source": "store.steampowered.com/app/<appid> InitAppTagModal (votes = 태그 투표 수)",
-  "count": 634,
+  "count": 636,
   "games": [
     {
       "id": "00ea1e6e-f526-40b5-8e12-e42c33ec53da",
@@ -79506,6 +79506,260 @@
           "votes": 1326
         }
       ]
+    },
+    {
+      "id": "cd42df88-7e76-4e7d-8943-d4a7b133186f",
+      "name": "소울워커",
+      "steam_appid": "1825750",
+      "tags": [
+        {
+          "id": 19,
+          "en": "Action",
+          "ko": "액션",
+          "votes": 275
+        },
+        {
+          "id": 122,
+          "en": "RPG",
+          "ko": "RPG",
+          "votes": 270
+        },
+        {
+          "id": 1754,
+          "en": "MMORPG",
+          "ko": "MMORPG",
+          "votes": 242
+        },
+        {
+          "id": 4231,
+          "en": "Action RPG",
+          "ko": "액션 RPG",
+          "votes": 242
+        },
+        {
+          "id": 1646,
+          "en": "Hack and Slash",
+          "ko": "핵 앤 슬래시",
+          "votes": 225
+        },
+        {
+          "id": 4085,
+          "en": "Anime",
+          "ko": "애니메이션",
+          "votes": 222
+        },
+        {
+          "id": 4975,
+          "en": "2.5D",
+          "ko": "2.5D",
+          "votes": 215
+        },
+        {
+          "id": 1697,
+          "en": "Third Person",
+          "ko": "3인칭",
+          "votes": 206
+        },
+        {
+          "id": 4342,
+          "en": "Dark",
+          "ko": "어두운",
+          "votes": 189
+        },
+        {
+          "id": 3835,
+          "en": "Post-apocalyptic",
+          "ko": "포스트아포칼립스",
+          "votes": 180
+        },
+        {
+          "id": 128,
+          "en": "Massively Multiplayer",
+          "ko": "MMO",
+          "votes": 178
+        },
+        {
+          "id": 6650,
+          "en": "Nudity",
+          "ko": "신체 노출",
+          "votes": 178
+        },
+        {
+          "id": 6730,
+          "en": "PvE",
+          "ko": "PvE",
+          "votes": 174
+        },
+        {
+          "id": 1742,
+          "en": "Story Rich",
+          "ko": "풍부한 스토리",
+          "votes": 160
+        },
+        {
+          "id": 3859,
+          "en": "Multiplayer",
+          "ko": "멀티플레이어",
+          "votes": 156
+        },
+        {
+          "id": 4182,
+          "en": "Singleplayer",
+          "ko": "싱글 플레이어",
+          "votes": 131
+        },
+        {
+          "id": 3843,
+          "en": "Online Co-Op",
+          "ko": "온라인 협동",
+          "votes": 118
+        },
+        {
+          "id": 12095,
+          "en": "Sexual Content",
+          "ko": "선정적 콘텐츠",
+          "votes": 114
+        },
+        {
+          "id": 113,
+          "en": "Free to Play",
+          "ko": "무료 플레이",
+          "votes": 109
+        },
+        {
+          "id": 1685,
+          "en": "Co-op",
+          "ko": "협동",
+          "votes": 97
+        }
+      ]
+    },
+    {
+      "id": "e6b212a8-3c01-44a3-9808-00ee1e28b82d",
+      "name": "Grand Theft Auto IV: Complete Edition",
+      "steam_appid": "12210",
+      "tags": [
+        {
+          "id": 1695,
+          "en": "Open World",
+          "ko": "오픈 월드",
+          "votes": 2794
+        },
+        {
+          "id": 19,
+          "en": "Action",
+          "ko": "액션",
+          "votes": 2160
+        },
+        {
+          "id": 6378,
+          "en": "Crime",
+          "ko": "범죄",
+          "votes": 1486
+        },
+        {
+          "id": 1100687,
+          "en": "Automobile Sim",
+          "ko": "자동차 시뮬레이션",
+          "votes": 1475
+        },
+        {
+          "id": 3859,
+          "en": "Multiplayer",
+          "ko": "멀티플레이어",
+          "votes": 1473
+        },
+        {
+          "id": 1697,
+          "en": "Third Person",
+          "ko": "3인칭",
+          "votes": 1332
+        },
+        {
+          "id": 21,
+          "en": "Adventure",
+          "ko": "어드벤처",
+          "votes": 1235
+        },
+        {
+          "id": 4182,
+          "en": "Singleplayer",
+          "ko": "싱글 플레이어",
+          "votes": 1083
+        },
+        {
+          "id": 3814,
+          "en": "Third-Person Shooter",
+          "ko": "3인칭 슈팅",
+          "votes": 1011
+        },
+        {
+          "id": 1669,
+          "en": "Moddable",
+          "ko": "모드 가능",
+          "votes": 961
+        },
+        {
+          "id": 3810,
+          "en": "Sandbox",
+          "ko": "샌드박스",
+          "votes": 950
+        },
+        {
+          "id": 1774,
+          "en": "Shooter",
+          "ko": "슈팅",
+          "votes": 920
+        },
+        {
+          "id": 3968,
+          "en": "Physics",
+          "ko": "물리",
+          "votes": 789
+        },
+        {
+          "id": 4166,
+          "en": "Atmospheric",
+          "ko": "분위기 있는",
+          "votes": 631
+        },
+        {
+          "id": 1693,
+          "en": "Classic",
+          "ko": "클래식",
+          "votes": 599
+        },
+        {
+          "id": 5923,
+          "en": "Dark Humor",
+          "ko": "블랙 유머",
+          "votes": 595
+        },
+        {
+          "id": 4345,
+          "en": "Gore",
+          "ko": "유혈",
+          "votes": 592
+        },
+        {
+          "id": 4136,
+          "en": "Funny",
+          "ko": "유머",
+          "votes": 580
+        },
+        {
+          "id": 1651,
+          "en": "Satire",
+          "ko": "풍자",
+          "votes": 468
+        },
+        {
+          "id": 1685,
+          "en": "Co-op",
+          "ko": "협동",
+          "votes": 451
+        }
+      ]
     }
   ],
   "no_appid": [
@@ -79618,18 +79872,5 @@
       "name": "Legends of Runeterra"
     }
   ],
-  "failed": [
-    {
-      "id": "cd42df88-7e76-4e7d-8943-d4a7b133186f",
-      "name": "소울워커",
-      "steam_appid": "1825750",
-      "reason": "상점 페이지 없음 (다른 곳으로 이동됨)"
-    },
-    {
-      "id": "e6b212a8-3c01-44a3-9808-00ee1e28b82d",
-      "name": "Grand Theft Auto IV: Complete Edition",
-      "steam_appid": "901583",
-      "reason": "태그 데이터 없음"
-    }
-  ]
+  "failed": []
 }

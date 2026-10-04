@@ -12,6 +12,7 @@ const GAMES_FILE = `${OUT_DIR}/game-steam-tags.json`;
 const REQUEST_GAP_MS = 1500;
 const RETRY_WAIT_MS = [30000, 60000, 120000];
 // 성인 인증 페이지 건너뛰기
+// 한국 상점 기준 (cc=kr) — 지역마다 다른 판으로 넘어가는 게임이 있음 (예: 소울워커)
 const COOKIE = 'birthtime=0; lastagecheckage=1-0-1990; wants_mature_content=1; mature_content=1';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -83,7 +84,7 @@ let n = 0;
 for (const g of targets) {
   n++;
   try {
-    const { url, body } = await get(`https://store.steampowered.com/app/${g.steam_appid}/?l=english`);
+    const { url, body } = await get(`https://store.steampowered.com/app/${g.steam_appid}/?l=english&cc=kr`);
     if (!url.includes(`/app/${g.steam_appid}/`)) throw new Error('상점 페이지 없음 (다른 곳으로 이동됨)');
     const m = body.match(/InitAppTagModal\(\s*\d+,\s*(\[[\s\S]*?\])\s*,/);
     if (!m) throw new Error('태그 데이터 없음');
