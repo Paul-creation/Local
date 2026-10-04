@@ -19,8 +19,10 @@ import { getTop10Ids } from '../../lib/hotChart';
 import { playersText } from '../../lib/players';
 import GameOpinions from '../../components/community/GameOpinions';
 
-// 게임마다 처음 열릴 때 만들고 1분 동안 재사용 (ISR). 의견을 쓰거나 고치면 api/game-comments에서 바로 새로 만든다
-export const revalidate = 60;
+// 게임마다 처음 열릴 때 만들고 1시간 동안 재사용 (ISR). 가격·접속자는 하루 한 번 갱신되므로 충분
+// 의견 작성·수정·삭제(api/game-comments)와 신고 자동 숨김(api/community/report)은 그 게임 페이지를 바로 새로 만든다
+// 메인 카드의 <Link>가 화면에 보이면 상세를 미리 불러오므로(prefetch) 짧게 잡으면 방문마다 재생성이 몰린다
+export const revalidate = 3600;
 export async function generateStaticParams() {
   return []; // 빌드 때 미리 만들지 않고, 처음 방문할 때 만든다 (빈 배열이어야 ISR이 켜짐)
 }

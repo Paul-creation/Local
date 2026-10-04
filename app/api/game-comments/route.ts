@@ -35,6 +35,6 @@ export async function POST(req: NextRequest) {
     game_id: gameId, body: text, nickname, password_hash: await hashPassword(body.password), ip_hash, is_admin: asAdmin,
   }).select(PUBLIC_GAME_COMMENT).single();
   if (error || !data) return fail('저장하지 못했어요. 잠시 후 다시 시도해주세요.', 500);
-  revalidatePath(`/games/${gameId}`); // 상세 페이지 캐시(1분)를 바로 새로
+  revalidatePath(`/games/${gameId}`); // 상세 페이지 캐시(1시간)를 바로 새로
   return NextResponse.json({ comment: { ...data, hidden: false } });
 }

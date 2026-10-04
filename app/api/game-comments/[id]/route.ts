@@ -27,7 +27,7 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
 
   const { error } = await db.from('game_comments').update({ body: text }).eq('id', id);
   if (error) return fail('저장하지 못했어요.', 500);
-  revalidatePath(`/games/${comment.game_id}`); // 상세 페이지 캐시(1분)를 바로 새로
+  revalidatePath(`/games/${comment.game_id}`); // 상세 페이지 캐시(1시간)를 바로 새로
   return NextResponse.json({ ok: true, body: text });
 }
 

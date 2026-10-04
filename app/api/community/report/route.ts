@@ -3,6 +3,7 @@ import { getIp } from '../../../lib/aiGuard';
 import { REPORT_REASONS } from '../../../lib/communityBoards';
 import { db, fail, ipHash, syncCommentCount, HIDE_AT_REPORTS } from '../../../lib/community';
 import { notifyDiscord } from '../../../lib/notify';
+import { revalidatePath } from 'next/cache';
 
 // 신고 (글·댓글·게임 의견, IP 해시 기준 1인 1회 — post_reports 유니크 제약). 신고가 쌓이면 자동으로 숨김
 const TABLE = { post: 'posts', comment: 'post_comments', game_comment: 'game_comments' } as const;
@@ -13,8 +14,8 @@ export async function POST(req: NextRequest) {
   if (!(type in TABLE) || !Number.isSafeInteger(id) || id <= 0) return fail('잘못된 요청이에요.');
   const table = TABLE[type as keyof typeof TABLE];
 
-  const { data: target } = await db.from(table).select(type === 'comment' ? 'id, post_id, body, report_count, hidden' : type === 'post' ? 'id, title, body, report_count, hidden' : 'id, body, report_count, hidden').eq('id', id).maybeSingle();
-  const t = target as { report_count: number; hidden: boolean; post_id?: number; title?: string; body: string } | null;
+  const { data: target } = await db.from(table).select(type === 'comment' ? 'id, post_id, body, report_count, hidden' : type === 'post' ? 'id, title, body, report_count, hidden' : 'id, game_id, body, report_count, hidden').eq('id', id).maybeSingle();
+  const t = target as { report_count: number; hidden: boolean; post_id?: number; game_id?: string; title?: string; body: string } | null;
   if (!t || t.hidden) return fail('이미 숨겨졌거나 없는 글이에요.', 404);
 
   const { error } = await db.from('post_reports').insert({
@@ -29,6 +30,9 @@ export async function POST(req: NextRequest) {
   const hidden = reportCount >= HIDE_AT_REPORTS;
   await db.from(table).update({ report_count: reportCount, hidden }).eq('id', id);
   if (hidden && type === 'comment' && t.post_id) await syncCommentCount(t.post_id);
+  // 캐시된 화면(메인 인기 글 5분, 게임 상세 1시간)에서도 숨긴 내용이 바로 빠지게
+  if (hidden && type === 'post') revalidatePath('/');
+  if (hidden && type === 'game_comment' && t.game_id) revalidatePath(`/games/${t.game_id}`);
   // 위에서 이미 숨김 상태면 거절하므로, 여기서 hidden이면 이번 신고로 막 숨겨진 것 → 관리자 알림 (응답을 보낸 뒤 실행 — 실패해도 신고는 그대로)
   if (hidden) {
     const label = LABEL[type as keyof typeof LABEL];
