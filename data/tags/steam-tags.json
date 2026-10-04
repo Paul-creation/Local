@@ -1,0 +1,2238 @@
+{
+  "fetched_at": "2026-10-04",
+  "source": "IStoreService/GetTagList (english, koreana)",
+  "categories": null,
+  "count": 446,
+  "tags": [
+    {
+      "id": 9,
+      "en": "Strategy",
+      "ko": "전략"
+    },
+    {
+      "id": 19,
+      "en": "Action",
+      "ko": "액션"
+    },
+    {
+      "id": 21,
+      "en": "Adventure",
+      "ko": "어드벤처"
+    },
+    {
+      "id": 84,
+      "en": "Design & Illustration",
+      "ko": "디자인 및 일러스트레이션"
+    },
+    {
+      "id": 87,
+      "en": "Utilities",
+      "ko": "유틸리티"
+    },
+    {
+      "id": 113,
+      "en": "Free to Play",
+      "ko": "무료 플레이"
+    },
+    {
+      "id": 122,
+      "en": "RPG",
+      "ko": "RPG"
+    },
+    {
+      "id": 128,
+      "en": "Massively Multiplayer",
+      "ko": "MMO"
+    },
+    {
+      "id": 492,
+      "en": "Indie",
+      "ko": "인디"
+    },
+    {
+      "id": 493,
+      "en": "Early Access",
+      "ko": "앞서 해보기"
+    },
+    {
+      "id": 597,
+      "en": "Casual",
+      "ko": "캐주얼"
+    },
+    {
+      "id": 599,
+      "en": "Simulation",
+      "ko": "시뮬레이션"
+    },
+    {
+      "id": 699,
+      "en": "Racing",
+      "ko": "레이싱"
+    },
+    {
+      "id": 701,
+      "en": "Sports",
+      "ko": "스포츠"
+    },
+    {
+      "id": 784,
+      "en": "Video Production",
+      "ko": "동영상 제작"
+    },
+    {
+      "id": 809,
+      "en": "Photo Editing",
+      "ko": "사진 편집"
+    },
+    {
+      "id": 872,
+      "en": "Animation & Modeling",
+      "ko": "애니메이션 및 모델링"
+    },
+    {
+      "id": 1027,
+      "en": "Audio Production",
+      "ko": "오디오 제작"
+    },
+    {
+      "id": 1036,
+      "en": "Education",
+      "ko": "교육"
+    },
+    {
+      "id": 1445,
+      "en": "Software Training",
+      "ko": "소프트웨어 교육"
+    },
+    {
+      "id": 1616,
+      "en": "Trains",
+      "ko": "기차"
+    },
+    {
+      "id": 1621,
+      "en": "Music",
+      "ko": "음악"
+    },
+    {
+      "id": 1625,
+      "en": "Platformer",
+      "ko": "플랫폼"
+    },
+    {
+      "id": 1628,
+      "en": "Metroidvania",
+      "ko": "메트로배니아"
+    },
+    {
+      "id": 1637,
+      "en": "Dogs",
+      "ko": "개"
+    },
+    {
+      "id": 1638,
+      "en": "Dog",
+      "ko": "Dog"
+    },
+    {
+      "id": 1643,
+      "en": "Building",
+      "ko": "건설"
+    },
+    {
+      "id": 1644,
+      "en": "Driving",
+      "ko": "운전"
+    },
+    {
+      "id": 1645,
+      "en": "Tower Defense",
+      "ko": "타워 디펜스"
+    },
+    {
+      "id": 1646,
+      "en": "Hack and Slash",
+      "ko": "핵 앤 슬래시"
+    },
+    {
+      "id": 1647,
+      "en": "Western",
+      "ko": "웨스턴"
+    },
+    {
+      "id": 1651,
+      "en": "Satire",
+      "ko": "풍자"
+    },
+    {
+      "id": 1654,
+      "en": "Relaxing",
+      "ko": "릴랙싱"
+    },
+    {
+      "id": 1659,
+      "en": "Zombies",
+      "ko": "좀비"
+    },
+    {
+      "id": 1662,
+      "en": "Survival",
+      "ko": "생존"
+    },
+    {
+      "id": 1663,
+      "en": "FPS",
+      "ko": "1인칭 슈팅"
+    },
+    {
+      "id": 1664,
+      "en": "Puzzle",
+      "ko": "퍼즐"
+    },
+    {
+      "id": 1665,
+      "en": "Match 3",
+      "ko": "매치 3"
+    },
+    {
+      "id": 1666,
+      "en": "Card Game",
+      "ko": "카드 게임"
+    },
+    {
+      "id": 1667,
+      "en": "Horror",
+      "ko": "공포"
+    },
+    {
+      "id": 1669,
+      "en": "Moddable",
+      "ko": "모드 가능"
+    },
+    {
+      "id": 1670,
+      "en": "4X",
+      "ko": "4X"
+    },
+    {
+      "id": 1671,
+      "en": "Superhero",
+      "ko": "슈퍼 히어로"
+    },
+    {
+      "id": 1673,
+      "en": "Aliens",
+      "ko": "외계인"
+    },
+    {
+      "id": 1674,
+      "en": "Typing",
+      "ko": "타자"
+    },
+    {
+      "id": 1676,
+      "en": "RTS",
+      "ko": "실시간 전략"
+    },
+    {
+      "id": 1677,
+      "en": "Turn-Based",
+      "ko": "턴제"
+    },
+    {
+      "id": 1678,
+      "en": "War",
+      "ko": "전쟁"
+    },
+    {
+      "id": 1680,
+      "en": "Heist",
+      "ko": "강도"
+    },
+    {
+      "id": 1681,
+      "en": "Pirates",
+      "ko": "해적"
+    },
+    {
+      "id": 1684,
+      "en": "Fantasy",
+      "ko": "판타지"
+    },
+    {
+      "id": 1685,
+      "en": "Co-op",
+      "ko": "협동"
+    },
+    {
+      "id": 1687,
+      "en": "Stealth",
+      "ko": "잠입"
+    },
+    {
+      "id": 1688,
+      "en": "Ninja",
+      "ko": "닌자"
+    },
+    {
+      "id": 1693,
+      "en": "Classic",
+      "ko": "클래식"
+    },
+    {
+      "id": 1695,
+      "en": "Open World",
+      "ko": "오픈 월드"
+    },
+    {
+      "id": 1697,
+      "en": "Third Person",
+      "ko": "3인칭"
+    },
+    {
+      "id": 1698,
+      "en": "Point & Click",
+      "ko": "포인트 앤드 클릭"
+    },
+    {
+      "id": 1702,
+      "en": "Crafting",
+      "ko": "크래프팅"
+    },
+    {
+      "id": 1708,
+      "en": "Tactical",
+      "ko": "전술"
+    },
+    {
+      "id": 1710,
+      "en": "Surreal",
+      "ko": "초현실"
+    },
+    {
+      "id": 1714,
+      "en": "Psychedelic",
+      "ko": "사이키델릭"
+    },
+    {
+      "id": 1716,
+      "en": "Roguelike",
+      "ko": "로그라이크"
+    },
+    {
+      "id": 1717,
+      "en": "Hex Grid",
+      "ko": "육각형 그리드"
+    },
+    {
+      "id": 1718,
+      "en": "MOBA",
+      "ko": "MOBA"
+    },
+    {
+      "id": 1719,
+      "en": "Comedy",
+      "ko": "코미디"
+    },
+    {
+      "id": 1720,
+      "en": "Dungeon Crawler",
+      "ko": "던전 크롤러"
+    },
+    {
+      "id": 1721,
+      "en": "Psychological Horror",
+      "ko": "심리적 공포"
+    },
+    {
+      "id": 1723,
+      "en": "Action RTS",
+      "ko": "액션 RTS"
+    },
+    {
+      "id": 1730,
+      "en": "Sokoban",
+      "ko": "창고지기"
+    },
+    {
+      "id": 1732,
+      "en": "Voxel",
+      "ko": "복셀"
+    },
+    {
+      "id": 1733,
+      "en": "Unforgiving",
+      "ko": "Unforgiving"
+    },
+    {
+      "id": 1734,
+      "en": "Fast-Paced",
+      "ko": "빠른 진행"
+    },
+    {
+      "id": 1738,
+      "en": "Hidden Object",
+      "ko": "숨은 그림 및 물체"
+    },
+    {
+      "id": 1741,
+      "en": "Turn-Based Strategy",
+      "ko": "턴제 전략"
+    },
+    {
+      "id": 1742,
+      "en": "Story Rich",
+      "ko": "풍부한 스토리"
+    },
+    {
+      "id": 1743,
+      "en": "Fighting",
+      "ko": "격투"
+    },
+    {
+      "id": 1746,
+      "en": "Basketball",
+      "ko": "농구"
+    },
+    {
+      "id": 1751,
+      "en": "Comic Book",
+      "ko": "만화책"
+    },
+    {
+      "id": 1752,
+      "en": "Rhythm",
+      "ko": "리듬"
+    },
+    {
+      "id": 1753,
+      "en": "Skateboarding",
+      "ko": "스케이트보딩"
+    },
+    {
+      "id": 1754,
+      "en": "MMORPG",
+      "ko": "MMORPG"
+    },
+    {
+      "id": 1755,
+      "en": "Space",
+      "ko": "우주"
+    },
+    {
+      "id": 1756,
+      "en": "Great Soundtrack",
+      "ko": "웅장한 사운드트랙"
+    },
+    {
+      "id": 1759,
+      "en": "Perma Death",
+      "ko": "퍼마 데스"
+    },
+    {
+      "id": 1770,
+      "en": "Board Game",
+      "ko": "보드게임"
+    },
+    {
+      "id": 1773,
+      "en": "Arcade",
+      "ko": "아케이드"
+    },
+    {
+      "id": 1774,
+      "en": "Shooter",
+      "ko": "슈팅"
+    },
+    {
+      "id": 1775,
+      "en": "PvP",
+      "ko": "PvP"
+    },
+    {
+      "id": 1776,
+      "en": "Espionage",
+      "ko": "첩보 활동"
+    },
+    {
+      "id": 1777,
+      "en": "Steampunk",
+      "ko": "스팀펑크"
+    },
+    {
+      "id": 3796,
+      "en": "Based On A Novel",
+      "ko": "소설 기반"
+    },
+    {
+      "id": 3798,
+      "en": "Side Scroller",
+      "ko": "횡스크롤"
+    },
+    {
+      "id": 3799,
+      "en": "Visual Novel",
+      "ko": "비주얼 노벨"
+    },
+    {
+      "id": 3810,
+      "en": "Sandbox",
+      "ko": "샌드박스"
+    },
+    {
+      "id": 3813,
+      "en": "Real Time Tactics",
+      "ko": "실시간 전술"
+    },
+    {
+      "id": 3814,
+      "en": "Third-Person Shooter",
+      "ko": "3인칭 슈팅"
+    },
+    {
+      "id": 3834,
+      "en": "Exploration",
+      "ko": "탐험"
+    },
+    {
+      "id": 3835,
+      "en": "Post-apocalyptic",
+      "ko": "포스트아포칼립스"
+    },
+    {
+      "id": 3839,
+      "en": "First-Person",
+      "ko": "1인칭"
+    },
+    {
+      "id": 3841,
+      "en": "Local Co-Op",
+      "ko": "로컬 협동"
+    },
+    {
+      "id": 3843,
+      "en": "Online Co-Op",
+      "ko": "온라인 협동"
+    },
+    {
+      "id": 3854,
+      "en": "Lore-Rich",
+      "ko": "깊은 세계관"
+    },
+    {
+      "id": 3859,
+      "en": "Multiplayer",
+      "ko": "멀티플레이어"
+    },
+    {
+      "id": 3871,
+      "en": "2D",
+      "ko": "2D"
+    },
+    {
+      "id": 3877,
+      "en": "Precision Platformer",
+      "ko": "정밀 플랫폼"
+    },
+    {
+      "id": 3878,
+      "en": "Competitive",
+      "ko": "경쟁"
+    },
+    {
+      "id": 3916,
+      "en": "Old School",
+      "ko": "올드 스쿨"
+    },
+    {
+      "id": 3920,
+      "en": "Cooking",
+      "ko": "요리"
+    },
+    {
+      "id": 3934,
+      "en": "Immersive",
+      "ko": "몰입형"
+    },
+    {
+      "id": 3942,
+      "en": "Sci-fi",
+      "ko": "공상과학"
+    },
+    {
+      "id": 3952,
+      "en": "Gothic",
+      "ko": "고딕"
+    },
+    {
+      "id": 3954,
+      "en": "Rail Shooter",
+      "ko": "Rail Shooter"
+    },
+    {
+      "id": 3955,
+      "en": "Character Action Game",
+      "ko": "캐릭터 액션 게임"
+    },
+    {
+      "id": 3959,
+      "en": "Roguelite",
+      "ko": "로그라이트"
+    },
+    {
+      "id": 3964,
+      "en": "Pixel Graphics",
+      "ko": "픽셀 그래픽"
+    },
+    {
+      "id": 3965,
+      "en": "Epic",
+      "ko": "서사"
+    },
+    {
+      "id": 3968,
+      "en": "Physics",
+      "ko": "물리"
+    },
+    {
+      "id": 3978,
+      "en": "Survival Horror",
+      "ko": "생존 공포"
+    },
+    {
+      "id": 3987,
+      "en": "Historical",
+      "ko": "역사"
+    },
+    {
+      "id": 3993,
+      "en": "Combat",
+      "ko": "전투"
+    },
+    {
+      "id": 4004,
+      "en": "Retro",
+      "ko": "복고풍"
+    },
+    {
+      "id": 4026,
+      "en": "Difficult",
+      "ko": "초고난도"
+    },
+    {
+      "id": 4036,
+      "en": "Parkour",
+      "ko": "파쿠르"
+    },
+    {
+      "id": 4046,
+      "en": "Dragons",
+      "ko": "용"
+    },
+    {
+      "id": 4057,
+      "en": "Magic",
+      "ko": "마법"
+    },
+    {
+      "id": 4064,
+      "en": "Thriller",
+      "ko": "스릴러"
+    },
+    {
+      "id": 4085,
+      "en": "Anime",
+      "ko": "애니메이션"
+    },
+    {
+      "id": 4094,
+      "en": "Minimalist",
+      "ko": "미니멀리스트"
+    },
+    {
+      "id": 4102,
+      "en": "Combat Racing",
+      "ko": "전투 레이싱"
+    },
+    {
+      "id": 4106,
+      "en": "Action-Adventure",
+      "ko": "액션 어드벤처"
+    },
+    {
+      "id": 4115,
+      "en": "Cyberpunk",
+      "ko": "사이버펑크"
+    },
+    {
+      "id": 4136,
+      "en": "Funny",
+      "ko": "유머"
+    },
+    {
+      "id": 4137,
+      "en": "Transhumanism",
+      "ko": "트랜스휴머니즘"
+    },
+    {
+      "id": 4145,
+      "en": "Cinematic",
+      "ko": "시네마틱"
+    },
+    {
+      "id": 4150,
+      "en": "World War II",
+      "ko": "제2차 세계 대전"
+    },
+    {
+      "id": 4155,
+      "en": "Class-Based",
+      "ko": "클래스 기반"
+    },
+    {
+      "id": 4158,
+      "en": "Beat 'em up",
+      "ko": "비뎀업"
+    },
+    {
+      "id": 4161,
+      "en": "Real-Time",
+      "ko": "실시간"
+    },
+    {
+      "id": 4162,
+      "en": "Kids",
+      "ko": "Kids"
+    },
+    {
+      "id": 4166,
+      "en": "Atmospheric",
+      "ko": "분위기 있는"
+    },
+    {
+      "id": 4168,
+      "en": "Military",
+      "ko": "군사"
+    },
+    {
+      "id": 4172,
+      "en": "Medieval",
+      "ko": "중세"
+    },
+    {
+      "id": 4175,
+      "en": "Realistic",
+      "ko": "현실적"
+    },
+    {
+      "id": 4182,
+      "en": "Singleplayer",
+      "ko": "싱글 플레이어"
+    },
+    {
+      "id": 4184,
+      "en": "Chess",
+      "ko": "체스"
+    },
+    {
+      "id": 4190,
+      "en": "Addictive",
+      "ko": "중독성"
+    },
+    {
+      "id": 4191,
+      "en": "3D",
+      "ko": "3D"
+    },
+    {
+      "id": 4195,
+      "en": "Cartoony",
+      "ko": "만화 같은"
+    },
+    {
+      "id": 4202,
+      "en": "Trading",
+      "ko": "거래"
+    },
+    {
+      "id": 4231,
+      "en": "Action RPG",
+      "ko": "액션 RPG"
+    },
+    {
+      "id": 4234,
+      "en": "Short",
+      "ko": "단편"
+    },
+    {
+      "id": 4236,
+      "en": "Loot",
+      "ko": "약탈"
+    },
+    {
+      "id": 4242,
+      "en": "Episodic",
+      "ko": "에피소드"
+    },
+    {
+      "id": 4252,
+      "en": "Stylized",
+      "ko": "양식화된"
+    },
+    {
+      "id": 4255,
+      "en": "Shoot 'Em Up",
+      "ko": "슛뎀업"
+    },
+    {
+      "id": 4291,
+      "en": "Spaceships",
+      "ko": "우주선"
+    },
+    {
+      "id": 4295,
+      "en": "Futuristic",
+      "ko": "미래적"
+    },
+    {
+      "id": 4305,
+      "en": "Colorful",
+      "ko": "다채로운"
+    },
+    {
+      "id": 4325,
+      "en": "Turn-Based Combat",
+      "ko": "턴제 전투"
+    },
+    {
+      "id": 4328,
+      "en": "City Builder",
+      "ko": "도시 건설"
+    },
+    {
+      "id": 4342,
+      "en": "Dark",
+      "ko": "어두운"
+    },
+    {
+      "id": 4345,
+      "en": "Gore",
+      "ko": "유혈"
+    },
+    {
+      "id": 4364,
+      "en": "Grand Strategy",
+      "ko": "대전략"
+    },
+    {
+      "id": 4376,
+      "en": "Assassin",
+      "ko": "Assassin"
+    },
+    {
+      "id": 4400,
+      "en": "Abstract",
+      "ko": "추상적"
+    },
+    {
+      "id": 4434,
+      "en": "JRPG",
+      "ko": "JRPG"
+    },
+    {
+      "id": 4474,
+      "en": "CRPG",
+      "ko": "CRPG"
+    },
+    {
+      "id": 4486,
+      "en": "Choose Your Own Adventure",
+      "ko": "자신이 선택하는 모험"
+    },
+    {
+      "id": 4508,
+      "en": "Co-op Campaign",
+      "ko": "협동 캠페인"
+    },
+    {
+      "id": 4520,
+      "en": "Farming",
+      "ko": "파밍"
+    },
+    {
+      "id": 4535,
+      "en": "Dwarves",
+      "ko": "드워프"
+    },
+    {
+      "id": 4559,
+      "en": "Quick-Time Events",
+      "ko": "퀵타임 이벤트"
+    },
+    {
+      "id": 4562,
+      "en": "Cartoon",
+      "ko": "만화"
+    },
+    {
+      "id": 4598,
+      "en": "Alternate History",
+      "ko": "대체 역사"
+    },
+    {
+      "id": 4604,
+      "en": "Dark Fantasy",
+      "ko": "다크 판타지"
+    },
+    {
+      "id": 4608,
+      "en": "Swordplay",
+      "ko": "칼싸움"
+    },
+    {
+      "id": 4637,
+      "en": "Top-Down Shooter",
+      "ko": "탑다운 슈팅"
+    },
+    {
+      "id": 4667,
+      "en": "Violent",
+      "ko": "폭력"
+    },
+    {
+      "id": 4684,
+      "en": "Wargame",
+      "ko": "전쟁 게임"
+    },
+    {
+      "id": 4695,
+      "en": "Economy",
+      "ko": "경제"
+    },
+    {
+      "id": 4711,
+      "en": "Replay Value",
+      "ko": "리플레이 가치"
+    },
+    {
+      "id": 4726,
+      "en": "Cute",
+      "ko": "귀여운"
+    },
+    {
+      "id": 4736,
+      "en": "2D Fighter",
+      "ko": "2D 격투"
+    },
+    {
+      "id": 4747,
+      "en": "Character Customization",
+      "ko": "캐릭터 커스터마이즈"
+    },
+    {
+      "id": 4758,
+      "en": "Twin Stick Shooter",
+      "ko": "트윈 스틱 슈팅"
+    },
+    {
+      "id": 4777,
+      "en": "Spectacle fighter",
+      "ko": "스펙터클 파이터"
+    },
+    {
+      "id": 4791,
+      "en": "Top-Down",
+      "ko": "탑다운"
+    },
+    {
+      "id": 4821,
+      "en": "Mechs",
+      "ko": "매크"
+    },
+    {
+      "id": 4835,
+      "en": "6DOF",
+      "ko": "6DOF"
+    },
+    {
+      "id": 4840,
+      "en": "4 Player Local",
+      "ko": "4인 로컬 플레이"
+    },
+    {
+      "id": 4845,
+      "en": "Capitalism",
+      "ko": "자본주의"
+    },
+    {
+      "id": 4852,
+      "en": "Billiards",
+      "ko": "당구"
+    },
+    {
+      "id": 4878,
+      "en": "Parody ",
+      "ko": "패러디"
+    },
+    {
+      "id": 4885,
+      "en": "Bullet Hell",
+      "ko": "탄막 지옥"
+    },
+    {
+      "id": 4947,
+      "en": "Romance",
+      "ko": "로맨스"
+    },
+    {
+      "id": 4975,
+      "en": "2.5D",
+      "ko": "2.5D"
+    },
+    {
+      "id": 4994,
+      "en": "Naval Combat",
+      "ko": "해상 전투"
+    },
+    {
+      "id": 5030,
+      "en": "Dystopian ",
+      "ko": "반이상향"
+    },
+    {
+      "id": 5055,
+      "en": "eSports",
+      "ko": "e스포츠"
+    },
+    {
+      "id": 5125,
+      "en": "Procedural Generation",
+      "ko": "절차적 생성"
+    },
+    {
+      "id": 5154,
+      "en": "Score Attack",
+      "ko": "스코어 어택"
+    },
+    {
+      "id": 5160,
+      "en": "Dinosaurs",
+      "ko": "공룡"
+    },
+    {
+      "id": 5179,
+      "en": "Cold War",
+      "ko": "냉전"
+    },
+    {
+      "id": 5186,
+      "en": "Psychological",
+      "ko": "심리적"
+    },
+    {
+      "id": 5228,
+      "en": "Blood",
+      "ko": "Blood"
+    },
+    {
+      "id": 5230,
+      "en": "Sequel",
+      "ko": "속편"
+    },
+    {
+      "id": 5300,
+      "en": "God Game",
+      "ko": "신 게임"
+    },
+    {
+      "id": 5348,
+      "en": "Mod",
+      "ko": "모드"
+    },
+    {
+      "id": 5350,
+      "en": "Family Friendly",
+      "ko": "전체 이용가"
+    },
+    {
+      "id": 5363,
+      "en": "Destruction",
+      "ko": "파괴"
+    },
+    {
+      "id": 5372,
+      "en": "Conspiracy",
+      "ko": "음모"
+    },
+    {
+      "id": 5379,
+      "en": "2D Platformer",
+      "ko": "2D 플랫폼"
+    },
+    {
+      "id": 5382,
+      "en": "World War I",
+      "ko": "제1차 세계 대전"
+    },
+    {
+      "id": 5390,
+      "en": "Time Attack",
+      "ko": "시간 공격"
+    },
+    {
+      "id": 5395,
+      "en": "3D Platformer",
+      "ko": "3D 플랫폼"
+    },
+    {
+      "id": 5407,
+      "en": "Benchmark",
+      "ko": "벤치마크"
+    },
+    {
+      "id": 5411,
+      "en": "Beautiful",
+      "ko": "아름다운"
+    },
+    {
+      "id": 5432,
+      "en": "Programming",
+      "ko": "코딩"
+    },
+    {
+      "id": 5502,
+      "en": "Hacking",
+      "ko": "해킹"
+    },
+    {
+      "id": 5537,
+      "en": "Puzzle Platformer",
+      "ko": "퍼즐 플랫폼"
+    },
+    {
+      "id": 5547,
+      "en": "Arena Shooter",
+      "ko": "아레나 슈팅"
+    },
+    {
+      "id": 5608,
+      "en": "Emotional",
+      "ko": "감성적"
+    },
+    {
+      "id": 5613,
+      "en": "Detective",
+      "ko": "추리"
+    },
+    {
+      "id": 5652,
+      "en": "Collectathon",
+      "ko": "컬렉터톤"
+    },
+    {
+      "id": 5673,
+      "en": "Modern",
+      "ko": "현대"
+    },
+    {
+      "id": 5708,
+      "en": "Remake",
+      "ko": "리메이크"
+    },
+    {
+      "id": 5711,
+      "en": "Team-Based",
+      "ko": "팀 기반"
+    },
+    {
+      "id": 5716,
+      "en": "Mystery",
+      "ko": "미스터리"
+    },
+    {
+      "id": 5727,
+      "en": "Baseball",
+      "ko": "야구"
+    },
+    {
+      "id": 5752,
+      "en": "Robots",
+      "ko": "로봇"
+    },
+    {
+      "id": 5765,
+      "en": "Gun Customization",
+      "ko": "총 커스터마이즈"
+    },
+    {
+      "id": 5794,
+      "en": "Science",
+      "ko": "과학"
+    },
+    {
+      "id": 5796,
+      "en": "Bullet Time",
+      "ko": "블렛타임"
+    },
+    {
+      "id": 5851,
+      "en": "Isometric",
+      "ko": "아이소메트릭"
+    },
+    {
+      "id": 5900,
+      "en": "Walking Simulator",
+      "ko": "걷기 시뮬레이션"
+    },
+    {
+      "id": 5914,
+      "en": "Tennis",
+      "ko": "테니스"
+    },
+    {
+      "id": 5923,
+      "en": "Dark Humor",
+      "ko": "블랙 유머"
+    },
+    {
+      "id": 5941,
+      "en": "Reboot",
+      "ko": "리부트"
+    },
+    {
+      "id": 5981,
+      "en": "Mining",
+      "ko": "마이닝"
+    },
+    {
+      "id": 6041,
+      "en": "Horses",
+      "ko": "말"
+    },
+    {
+      "id": 6052,
+      "en": "Noir",
+      "ko": "누아르"
+    },
+    {
+      "id": 6054,
+      "en": "Elves",
+      "ko": "엘프"
+    },
+    {
+      "id": 6129,
+      "en": "Logic",
+      "ko": "논리"
+    },
+    {
+      "id": 6214,
+      "en": "Birds",
+      "ko": "새"
+    },
+    {
+      "id": 6276,
+      "en": "Inventory Management",
+      "ko": "인벤토리 관리"
+    },
+    {
+      "id": 6310,
+      "en": "Diplomacy",
+      "ko": "외교"
+    },
+    {
+      "id": 6378,
+      "en": "Crime",
+      "ko": "범죄"
+    },
+    {
+      "id": 6426,
+      "en": "Choices Matter",
+      "ko": "선택의 중요성"
+    },
+    {
+      "id": 6506,
+      "en": "3D Fighter",
+      "ko": "3D 격투"
+    },
+    {
+      "id": 6621,
+      "en": "Pinball",
+      "ko": "핀볼"
+    },
+    {
+      "id": 6625,
+      "en": "Time Manipulation",
+      "ko": "시간 조작"
+    },
+    {
+      "id": 6650,
+      "en": "Nudity",
+      "ko": "신체 노출"
+    },
+    {
+      "id": 6691,
+      "en": "1990's",
+      "ko": "1990년대"
+    },
+    {
+      "id": 6702,
+      "en": "Mars",
+      "ko": "화성"
+    },
+    {
+      "id": 6730,
+      "en": "PvE",
+      "ko": "PvE"
+    },
+    {
+      "id": 6815,
+      "en": "Hand-drawn",
+      "ko": "손으로 그린"
+    },
+    {
+      "id": 6835,
+      "en": "Poker",
+      "ko": "포커"
+    },
+    {
+      "id": 6869,
+      "en": "Nonlinear",
+      "ko": "비선형"
+    },
+    {
+      "id": 6910,
+      "en": "Naval",
+      "ko": "해군"
+    },
+    {
+      "id": 6915,
+      "en": "Martial Arts",
+      "ko": "무술"
+    },
+    {
+      "id": 6948,
+      "en": "Rome",
+      "ko": "로마"
+    },
+    {
+      "id": 6971,
+      "en": "Multiple Endings",
+      "ko": "복수 결말"
+    },
+    {
+      "id": 7038,
+      "en": "Golf",
+      "ko": "골프"
+    },
+    {
+      "id": 7107,
+      "en": "Real-Time with Pause",
+      "ko": "일시 정지 가능한 실시간"
+    },
+    {
+      "id": 7108,
+      "en": "Party",
+      "ko": "파티"
+    },
+    {
+      "id": 7178,
+      "en": "Party Game",
+      "ko": "파티 게임"
+    },
+    {
+      "id": 7208,
+      "en": "Female Protagonist",
+      "ko": "여주인공"
+    },
+    {
+      "id": 7250,
+      "en": "Linear",
+      "ko": "선형"
+    },
+    {
+      "id": 7309,
+      "en": "Skiing",
+      "ko": "스키"
+    },
+    {
+      "id": 7328,
+      "en": "Bowling",
+      "ko": "볼링"
+    },
+    {
+      "id": 7332,
+      "en": "Base Building",
+      "ko": "기지 건설"
+    },
+    {
+      "id": 7368,
+      "en": "Local Multiplayer",
+      "ko": "로컬 멀티플레이어"
+    },
+    {
+      "id": 7423,
+      "en": "Sniper",
+      "ko": "저격수"
+    },
+    {
+      "id": 7432,
+      "en": "Lovecraftian",
+      "ko": "러브크래프트"
+    },
+    {
+      "id": 7481,
+      "en": "Controller",
+      "ko": "컨트롤러"
+    },
+    {
+      "id": 7556,
+      "en": "Dice",
+      "ko": "주사위"
+    },
+    {
+      "id": 7569,
+      "en": "Grid-Based Movement",
+      "ko": "그리드 기반 움직임"
+    },
+    {
+      "id": 7622,
+      "en": "Offroad",
+      "ko": "오프로드"
+    },
+    {
+      "id": 7702,
+      "en": "Narrative",
+      "ko": "내러티브"
+    },
+    {
+      "id": 7743,
+      "en": "1980s",
+      "ko": "1980년대"
+    },
+    {
+      "id": 7918,
+      "en": "Dwarf",
+      "ko": "Dwarf"
+    },
+    {
+      "id": 7926,
+      "en": "Artificial Intelligence",
+      "ko": "인공 지능"
+    },
+    {
+      "id": 7948,
+      "en": "Soundtrack",
+      "ko": "사운드트랙"
+    },
+    {
+      "id": 8013,
+      "en": "Software",
+      "ko": "소프트웨어"
+    },
+    {
+      "id": 8075,
+      "en": "TrackIR",
+      "ko": "TrackIR"
+    },
+    {
+      "id": 8093,
+      "en": "Minigames",
+      "ko": "미니게임"
+    },
+    {
+      "id": 8122,
+      "en": "Level Editor",
+      "ko": "레벨 에디터"
+    },
+    {
+      "id": 8253,
+      "en": "Music-Based Procedural Generation",
+      "ko": "음악 기반 절차적 생성"
+    },
+    {
+      "id": 8369,
+      "en": "Investigation",
+      "ko": "수사"
+    },
+    {
+      "id": 8666,
+      "en": "Runner",
+      "ko": "러너"
+    },
+    {
+      "id": 8945,
+      "en": "Resource Management",
+      "ko": "자원관리"
+    },
+    {
+      "id": 9130,
+      "en": "Hentai",
+      "ko": "헨타이"
+    },
+    {
+      "id": 9157,
+      "en": "Underwater",
+      "ko": "수중"
+    },
+    {
+      "id": 9204,
+      "en": "Immersive Sim",
+      "ko": "몰입형 시뮬레이션"
+    },
+    {
+      "id": 9271,
+      "en": "Trading Card Game",
+      "ko": "트레이딩 카드 게임"
+    },
+    {
+      "id": 9541,
+      "en": "Demons",
+      "ko": "악령"
+    },
+    {
+      "id": 9551,
+      "en": "Dating Sim",
+      "ko": "연애 시뮬레이션"
+    },
+    {
+      "id": 9564,
+      "en": "Hunting",
+      "ko": "사냥"
+    },
+    {
+      "id": 9592,
+      "en": "Dynamic Narration",
+      "ko": "다이내믹 내레이션"
+    },
+    {
+      "id": 9626,
+      "en": "Animals",
+      "ko": "동물"
+    },
+    {
+      "id": 9803,
+      "en": "Snow",
+      "ko": "눈"
+    },
+    {
+      "id": 10235,
+      "en": "Life Sim",
+      "ko": "생활 시뮬레이션"
+    },
+    {
+      "id": 10383,
+      "en": "Transportation",
+      "ko": "교통 수단"
+    },
+    {
+      "id": 10397,
+      "en": "Memes",
+      "ko": "밈"
+    },
+    {
+      "id": 10437,
+      "en": "Trivia",
+      "ko": "상식 퀴즈"
+    },
+    {
+      "id": 10617,
+      "en": "Samurai",
+      "ko": "사무라이"
+    },
+    {
+      "id": 10679,
+      "en": "Time Travel",
+      "ko": "시간 여행"
+    },
+    {
+      "id": 10695,
+      "en": "Party-Based RPG",
+      "ko": "파티 기반 RPG"
+    },
+    {
+      "id": 10808,
+      "en": "Supernatural",
+      "ko": "초자연"
+    },
+    {
+      "id": 10816,
+      "en": "Split Screen",
+      "ko": "분할 화면"
+    },
+    {
+      "id": 11014,
+      "en": "Interactive Fiction",
+      "ko": "쌍방향 소설"
+    },
+    {
+      "id": 11095,
+      "en": "Boss Rush",
+      "ko": "보스 러시"
+    },
+    {
+      "id": 11104,
+      "en": "Vehicular Combat",
+      "ko": "차량 전투"
+    },
+    {
+      "id": 11123,
+      "en": "Mouse Only",
+      "ko": "마우스 전용"
+    },
+    {
+      "id": 11333,
+      "en": "Villain Protagonist",
+      "ko": "악당 주인공"
+    },
+    {
+      "id": 11634,
+      "en": "Vikings",
+      "ko": "바이킹"
+    },
+    {
+      "id": 12057,
+      "en": "Tutorial",
+      "ko": "튜토리얼"
+    },
+    {
+      "id": 12095,
+      "en": "Sexual Content",
+      "ko": "선정적 콘텐츠"
+    },
+    {
+      "id": 12190,
+      "en": "Boxing",
+      "ko": "복싱"
+    },
+    {
+      "id": 12472,
+      "en": "Management",
+      "ko": "경영"
+    },
+    {
+      "id": 12686,
+      "en": "Vampires",
+      "ko": "뱀파이어"
+    },
+    {
+      "id": 13070,
+      "en": "Solitaire",
+      "ko": "솔리테어"
+    },
+    {
+      "id": 13276,
+      "en": "Tanks",
+      "ko": "탱크"
+    },
+    {
+      "id": 13382,
+      "en": "Archery",
+      "ko": "활쏘기"
+    },
+    {
+      "id": 13577,
+      "en": "Sailing",
+      "ko": "항해"
+    },
+    {
+      "id": 13782,
+      "en": "Experimental",
+      "ko": "실험적"
+    },
+    {
+      "id": 13906,
+      "en": "Game Development",
+      "ko": "게임 개발"
+    },
+    {
+      "id": 14139,
+      "en": "Turn-Based Tactics",
+      "ko": "턴제 전술"
+    },
+    {
+      "id": 14720,
+      "en": "Nostalgia",
+      "ko": "추억 소환"
+    },
+    {
+      "id": 14906,
+      "en": "Intentionally Awkward Controls",
+      "ko": "의도적으로 불편한 컨트롤"
+    },
+    {
+      "id": 15045,
+      "en": "Flight",
+      "ko": "제트"
+    },
+    {
+      "id": 15172,
+      "en": "Conversation",
+      "ko": "Conversation"
+    },
+    {
+      "id": 15277,
+      "en": "Philosophical",
+      "ko": "철학적"
+    },
+    {
+      "id": 15564,
+      "en": "Fishing",
+      "ko": "낚시"
+    },
+    {
+      "id": 15868,
+      "en": "Motocross",
+      "ko": "모터크로스"
+    },
+    {
+      "id": 15954,
+      "en": "Silent Protagonist",
+      "ko": "말 없는 주인공"
+    },
+    {
+      "id": 16094,
+      "en": "Mythology",
+      "ko": "신화"
+    },
+    {
+      "id": 16250,
+      "en": "Gambling",
+      "ko": "도박"
+    },
+    {
+      "id": 16598,
+      "en": "Space Sim",
+      "ko": "우주 시뮬레이션"
+    },
+    {
+      "id": 16689,
+      "en": "Time Management",
+      "ko": "시간 관리"
+    },
+    {
+      "id": 17015,
+      "en": "Werewolves",
+      "ko": "늑대 인간"
+    },
+    {
+      "id": 17305,
+      "en": "Strategy RPG",
+      "ko": "전략 RPG"
+    },
+    {
+      "id": 17337,
+      "en": "Lemmings",
+      "ko": "레밍"
+    },
+    {
+      "id": 17389,
+      "en": "Tabletop",
+      "ko": "테이블탑"
+    },
+    {
+      "id": 17770,
+      "en": "Asynchronous Multiplayer",
+      "ko": "비동기 멀티플레이어"
+    },
+    {
+      "id": 17894,
+      "en": "Cats",
+      "ko": "고양이"
+    },
+    {
+      "id": 17927,
+      "en": "Pool",
+      "ko": "Pool"
+    },
+    {
+      "id": 18594,
+      "en": "FMV",
+      "ko": "FMV"
+    },
+    {
+      "id": 19568,
+      "en": "Cycling",
+      "ko": "사이클링"
+    },
+    {
+      "id": 19780,
+      "en": "Submarine",
+      "ko": "잠수함"
+    },
+    {
+      "id": 19995,
+      "en": "Dark Comedy",
+      "ko": "블랙 코미디"
+    },
+    {
+      "id": 20486,
+      "en": "Wolves",
+      "ko": "늑대"
+    },
+    {
+      "id": 21006,
+      "en": "Underground",
+      "ko": "지하"
+    },
+    {
+      "id": 21635,
+      "en": "Language Learning",
+      "ko": "언어 학습"
+    },
+    {
+      "id": 21725,
+      "en": "Tactical RPG",
+      "ko": "전술 RPG"
+    },
+    {
+      "id": 21978,
+      "en": "VR",
+      "ko": "VR"
+    },
+    {
+      "id": 22602,
+      "en": "Agriculture",
+      "ko": "농업"
+    },
+    {
+      "id": 22955,
+      "en": "Mini Golf",
+      "ko": "미니 골프"
+    },
+    {
+      "id": 23491,
+      "en": "Cleaning",
+      "ko": "청소"
+    },
+    {
+      "id": 24003,
+      "en": "Word Game",
+      "ko": "낱말 게임"
+    },
+    {
+      "id": 25085,
+      "en": "Touch-Friendly",
+      "ko": "터치 친화적"
+    },
+    {
+      "id": 25959,
+      "en": "Wuxia",
+      "ko": "무협"
+    },
+    {
+      "id": 26921,
+      "en": "Political Sim",
+      "ko": "정치 시뮬레이션"
+    },
+    {
+      "id": 27758,
+      "en": "Voice Control",
+      "ko": "보이스 컨트롤"
+    },
+    {
+      "id": 28444,
+      "en": "Snowboarding",
+      "ko": "스노보딩"
+    },
+    {
+      "id": 29482,
+      "en": "Souls-like",
+      "ko": "소울라이크"
+    },
+    {
+      "id": 30358,
+      "en": "Nature",
+      "ko": "자연"
+    },
+    {
+      "id": 30927,
+      "en": "Fox",
+      "ko": "Fox"
+    },
+    {
+      "id": 31275,
+      "en": "Text-Based",
+      "ko": "텍스트 기반"
+    },
+    {
+      "id": 31579,
+      "en": "Otome",
+      "ko": "오토메"
+    },
+    {
+      "id": 32322,
+      "en": "Deckbuilding",
+      "ko": "덱빌딩"
+    },
+    {
+      "id": 33572,
+      "en": "Mahjong",
+      "ko": "마작"
+    },
+    {
+      "id": 35079,
+      "en": "Job Simulator",
+      "ko": "직업 시뮬레이션"
+    },
+    {
+      "id": 37376,
+      "en": "Falling Blocks",
+      "ko": "블록 낙하"
+    },
+    {
+      "id": 37799,
+      "en": "Combat Flight Simulator",
+      "ko": "Combat Flight Simulator"
+    },
+    {
+      "id": 40500,
+      "en": "Sexual Themes",
+      "ko": "Sexual Themes"
+    },
+    {
+      "id": 42089,
+      "en": "Jump Scare",
+      "ko": "깜놀"
+    },
+    {
+      "id": 42152,
+      "en": "Dialogue Heavy",
+      "ko": "대화"
+    },
+    {
+      "id": 42329,
+      "en": "Coding",
+      "ko": "Coding"
+    },
+    {
+      "id": 42804,
+      "en": "Action Roguelike",
+      "ko": "액션 로그라이크"
+    },
+    {
+      "id": 44868,
+      "en": "LGBTQ+",
+      "ko": "LGBTQ+"
+    },
+    {
+      "id": 46348,
+      "en": "Zoo",
+      "ko": "동물원"
+    },
+    {
+      "id": 47827,
+      "en": "Wrestling",
+      "ko": "레슬링"
+    },
+    {
+      "id": 49213,
+      "en": "Rugby",
+      "ko": "럭비"
+    },
+    {
+      "id": 52406,
+      "en": "Cult",
+      "ko": "컬트"
+    },
+    {
+      "id": 56690,
+      "en": "On-Rails Shooter",
+      "ko": "레일 슈팅"
+    },
+    {
+      "id": 61357,
+      "en": "Electronic Music",
+      "ko": "전자 음악"
+    },
+    {
+      "id": 71389,
+      "en": "Spelling",
+      "ko": "맞춤법"
+    },
+    {
+      "id": 87918,
+      "en": "Farming Sim",
+      "ko": "농장 시뮬레이션"
+    },
+    {
+      "id": 91114,
+      "en": "Shop Keeper",
+      "ko": "가게 운영"
+    },
+    {
+      "id": 92092,
+      "en": "Jet",
+      "ko": "Jet"
+    },
+    {
+      "id": 96359,
+      "en": "Skating",
+      "ko": "스케이팅"
+    },
+    {
+      "id": 97070,
+      "en": "Assassins",
+      "ko": "암살"
+    },
+    {
+      "id": 97376,
+      "en": "Cozy",
+      "ko": "아늑함"
+    },
+    {
+      "id": 102530,
+      "en": "Elf",
+      "ko": "Elf"
+    },
+    {
+      "id": 117648,
+      "en": "8-bit Music",
+      "ko": "8비트 음악"
+    },
+    {
+      "id": 123332,
+      "en": "Bikes",
+      "ko": "바이크"
+    },
+    {
+      "id": 129761,
+      "en": "ATV",
+      "ko": "ATV"
+    },
+    {
+      "id": 150626,
+      "en": "Gaming",
+      "ko": "게이밍"
+    },
+    {
+      "id": 158638,
+      "en": "Cricket",
+      "ko": "크리켓"
+    },
+    {
+      "id": 176981,
+      "en": "Battle Royale",
+      "ko": "배틀 로얄"
+    },
+    {
+      "id": 180368,
+      "en": "Faith",
+      "ko": "신념"
+    },
+    {
+      "id": 189941,
+      "en": "Instrumental Music",
+      "ko": "인스트루멘탈 음악"
+    },
+    {
+      "id": 198631,
+      "en": "Mystery Dungeon",
+      "ko": "미스터리 던전"
+    },
+    {
+      "id": 198913,
+      "en": "Motorbike",
+      "ko": "오토바이"
+    },
+    {
+      "id": 220585,
+      "en": "Colony Sim",
+      "ko": "개척 시뮬레이션"
+    },
+    {
+      "id": 252854,
+      "en": "BMX",
+      "ko": "BMX"
+    },
+    {
+      "id": 255534,
+      "en": "Automation",
+      "ko": "자동화"
+    },
+    {
+      "id": 323922,
+      "en": "Musou",
+      "ko": "무쌍"
+    },
+    {
+      "id": 324176,
+      "en": "Hockey",
+      "ko": "하키"
+    },
+    {
+      "id": 337964,
+      "en": "Rock Music",
+      "ko": "락 음악"
+    },
+    {
+      "id": 353880,
+      "en": "Looter Shooter",
+      "ko": "약탈 슈팅"
+    },
+    {
+      "id": 363767,
+      "en": "Snooker",
+      "ko": "Snooker"
+    },
+    {
+      "id": 379975,
+      "en": "Clicker",
+      "ko": "Clicker"
+    },
+    {
+      "id": 454187,
+      "en": "Traditional Roguelike",
+      "ko": "정통 로그라이크"
+    },
+    {
+      "id": 507423,
+      "en": "Foxes",
+      "ko": "여우"
+    },
+    {
+      "id": 552282,
+      "en": "Wholesome",
+      "ko": "건전함"
+    },
+    {
+      "id": 560542,
+      "en": "Incremental",
+      "ko": "인크리멘탈"
+    },
+    {
+      "id": 603297,
+      "en": "Hardware",
+      "ko": "하드웨어"
+    },
+    {
+      "id": 615955,
+      "en": "Idler",
+      "ko": "아이들러"
+    },
+    {
+      "id": 620519,
+      "en": "Hero Shooter",
+      "ko": "히어로 슈팅"
+    },
+    {
+      "id": 723991,
+      "en": "Bullet Heaven",
+      "ko": "탄막 천국"
+    },
+    {
+      "id": 745697,
+      "en": "Social Deduction",
+      "ko": "소셜 디덕션"
+    },
+    {
+      "id": 760247,
+      "en": "Xianxia",
+      "ko": "선협"
+    },
+    {
+      "id": 769306,
+      "en": "Escape Room",
+      "ko": "방 탈출"
+    },
+    {
+      "id": 776177,
+      "en": "360 Video",
+      "ko": "360 동영상"
+    },
+    {
+      "id": 791774,
+      "en": "Card Battler",
+      "ko": "카드 배틀"
+    },
+    {
+      "id": 847164,
+      "en": "Volleyball",
+      "ko": "배구"
+    },
+    {
+      "id": 856791,
+      "en": "Asymmetric VR",
+      "ko": "비대칭 VR"
+    },
+    {
+      "id": 889937,
+      "en": "Decorating",
+      "ko": "장식"
+    },
+    {
+      "id": 916648,
+      "en": "Creature Collector",
+      "ko": "생명체 수집"
+    },
+    {
+      "id": 1023537,
+      "en": "Boomer Shooter",
+      "ko": "부머 슈팅"
+    },
+    {
+      "id": 1084988,
+      "en": "Auto Battler",
+      "ko": "오토 배틀러"
+    },
+    {
+      "id": 1091588,
+      "en": "Roguelike Deckbuilder",
+      "ko": "로그라이크 덱빌딩"
+    },
+    {
+      "id": 1100686,
+      "en": "Outbreak Sim",
+      "ko": "아웃브레이크 시뮬레이션"
+    },
+    {
+      "id": 1100687,
+      "en": "Automobile Sim",
+      "ko": "자동차 시뮬레이션"
+    },
+    {
+      "id": 1100688,
+      "en": "Medical Sim",
+      "ko": "의학 시뮬레이션"
+    },
+    {
+      "id": 1100689,
+      "en": "Open World Survival Craft",
+      "ko": "오픈 월드 생존 제작"
+    },
+    {
+      "id": 1199779,
+      "en": "Extraction Shooter",
+      "ko": "익스트랙션 슈터"
+    },
+    {
+      "id": 1220528,
+      "en": "Hobby Sim",
+      "ko": "취미 시뮬레이션"
+    },
+    {
+      "id": 1239876,
+      "en": "Organizing",
+      "ko": "정리"
+    },
+    {
+      "id": 1254546,
+      "en": "Football (Soccer)",
+      "ko": "축구"
+    },
+    {
+      "id": 1254552,
+      "en": "Football (American)",
+      "ko": "미식축구"
+    },
+    {
+      "id": 1320952,
+      "en": "Desktop Companion",
+      "ko": "데스크톱 컴패니언"
+    },
+    {
+      "id": 1352486,
+      "en": "Capybaras",
+      "ko": "카피바라"
+    }
+  ]
+}
