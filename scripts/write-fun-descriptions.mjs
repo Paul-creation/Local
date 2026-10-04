@@ -1,23 +1,28 @@
 // scripts/write-fun-descriptions.mjs
 // 게임에 "한 줄 소개"를 써서 fun_description에 저장 — 원래 설명(description)은 그대로 둠
-// 기준은 data/intros/top100.json(인기 100개 소개)과 같음: 40~60자 담백한 설명체, 친구랑 할 때 어떤 게임인지 먼저
+// 기준은 data/intros/top100.json(인기 100개 소개)과 같음: 45자 내외(최대 55자, 검사는 40~60자 허용) 담백한 설명체, 친구랑 할 때 어떤 게임인지 먼저
 // 실행: node --env-file=.env.local scripts/write-fun-descriptions.mjs              (기본 20개, 소개가 빈 게임만)
 //       node --env-file=.env.local scripts/write-fun-descriptions.mjs 50           (개수 지정)
 //       node --env-file=.env.local scripts/write-fun-descriptions.mjs --ids <id>,<id>   (지정한 게임만, 이미 있어도 다시 씀)
+//       node --env-file=.env.local scripts/write-fun-descriptions.mjs --ids-file data/intros/backup-old-style-....json   (파일의 game_id 목록, 이미 있어도 다시 씀)
 //       --dry-run 을 붙이면 생성만 하고 DB에는 아무것도 쓰지 않음
 // - 생성 뒤 검사(checkLine): 40~60자, 금지어(과장·예전 퀘스트 말투·인원/가격 숫자 등), 멀티 없는 게임은 "혼자", 협동 게임은 "친구"
 //   어긋나면 저장하지 않고 로그만 남김. AI가 확신이 없다고 답하면(없음) 비워 둠
 // - 한 번 처리한 게임은 fun_description_at에 시각을 남겨 다시 부르지 않음 (검사 탈락·비워 둔 게임 포함, API 오류는 다음에 재시도)
 //   칸이 아직 없으면 경고만 하고 소개가 빈 게임을 대상으로 그대로 진행
 //   추가 SQL: alter table games add column if not exists fun_description_at timestamptz;
-// - AI 호출: Haiku, 게임당 1번 (검사에 걸리면 이유를 알려 주고 1번 더) (scripts/는 CLAUDE.md 규칙상 guardedClaudeFetch 예외 — 사이트 하루 AI 상한을 쓰지 않도록 직접 호출)
+// - AI 호출: Haiku, 게임당 1번에 후보 3개 (셋 다 검사에 걸리면 이유를 알려 주고 1번 더) (scripts/는 CLAUDE.md 규칙상 guardedClaudeFetch 예외 — 사이트 하루 AI 상한을 쓰지 않도록 직접 호출)
 import { createClient } from '@supabase/supabase-js';
+import { readFileSync } from 'node:fs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
-const IDS = process.argv.includes('--ids') ? process.argv[process.argv.indexOf('--ids') + 1].split(',') : null;
+const argAfter = (flag) => (process.argv.includes(flag) ? process.argv[process.argv.indexOf(flag) + 1] : null);
+// --ids-file: JSON 배열(문자열 id 또는 { game_id } / { id } 행, 예: 백업 파일, data/meta/new-games-*.json)
+const IDS = argAfter('--ids')?.split(',')
+  ?? (argAfter('--ids-file') && JSON.parse(readFileSync(argAfter('--ids-file'), 'utf8')).map((r) => (typeof r === 'string' ? r : r.game_id ?? r.id)).filter(Boolean));
 const DRY_RUN = process.argv.includes('--dry-run');
 const LIMIT = (!IDS && Number(process.argv[2])) || 20;
 const MODEL = 'claude-haiku-4-5-20251001';
@@ -27,27 +32,33 @@ const MIN_LEN = 40;
 const MAX_LEN = 60;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-// 예시 5개는 data/intros/top100.json에서 골랐다 (협동·대전·혼자 기본+협동·멀티 없음·파티 추리)
+// 예시 5개는 data/intros/top100.json에서 골라 45자 내외로 줄였다 (협동·대전·혼자 기본+협동·멀티 없음·파티 추리)
+// 한 번 호출에 길이가 다른 후보 3개(35/45/55자 목표)를 JSON 배열로 받는다
 const STYLE = `너는 게임 추천 사이트의 한 줄 소개를 쓴다. 읽는 사람은 "친구랑 뭐 하지?"를 고르는 중이다.
 
 규칙:
-- 공백 포함 40~60자 (넘기 쉬우니 50자 안팎을 목표로), 한두 문장. 담백한 설명체(~다, ~한다)로 쓴다. 명령형(~하라)이나 광고 말투는 쓰지 않는다
+- 공백 포함 45자 내외, 최대 55자. 한두 문장. 두 문장이면 둘째 문장은 20자 이하로 짧게 쓴다
+- 담백한 설명체(~다, ~한다)로 쓴다. 명령형(~하라)이나 광고 말투는 쓰지 않는다
 - 앞부분에서 친구랑 할 때 어떤 게임인지 알려 준다: 협동인지 대전인지 혼자 하는지, 같이 하는 방식, 한 판 길이, 분위기 중 맞는 것
 - 멀티가 없는 게임은 혼자 즐기는 게임이라는 게 드러나게 쓴다 ("혼자"라는 말을 넣는다)
 - 협동 게임은 "친구와 ~"처럼 친구와 함께 한다는 게 분명히 드러나게 쓴다
 - 문장 모양을 다양하게 쓴다. "~게임으로, ~한다" 같은 틀을 반복하지 않는다
 - 과장("역대급", "최고의", "인생 게임" 등), 스포일러(결말·반전·흑막)는 쓰지 않는다
-- 인원 수(예: 4인, 8명)와 가격은 화면에 따로 나오므로 숫자로 쓰지 않는다
+- 인원 수(예: 4인, 8명, 5대5)와 가격은 화면에 따로 나오므로 숫자로 쓰지 않는다
 - 아래 [게임 정보]에 있는 사실만 쓴다. 캐릭터·지명·기능을 지어내지 않는다
-- 정보가 부족하거나 어떤 게임인지 확신이 없으면 소개 대신 "없음"이라고만 답한다
-- 따옴표, 이모지, 해시태그 없이 소개 문장만 출력한다
+- 따옴표, 이모지, 해시태그는 소개 안에 쓰지 않는다
 
-좋은 예시:
-- Lethal Company (온라인 협동 호러): 친구와 버려진 행성에서 고철을 모아 할당량을 채우는 협동 호러. 가까운 목소리만 들려 비명이 웃음이 된다.
-- Rocket League (온라인 팀 대전): 자동차로 공을 차 넣는 팀 대전 게임. 한 경기가 5분이라 친구와 짧게 여러 판 돌리기 좋다.
-- ELDEN RING (기본 혼자, 소환 협동): 기본은 혼자 탐험하는 고난도 액션 RPG. 막히는 보스는 친구를 소환해 함께 잡을 수 있다.
-- Cities: Skylines (멀티 없음): 멀티 없이 혼자 도로, 구역, 교통을 설계하는 도시 건설 시뮬레이션. 끝없이 확장하며 오래 붙잡는다.
-- Among Us (온라인 파티 추리): 친구들 사이에 숨은 임포스터를 토론과 투표로 찾아내는 추리 게임. 한 판이 10분 안팎으로 짧다.`;
+출력 형식:
+- 서로 다른 길이의 후보 3개를 JSON 문자열 배열 하나로만 출력한다. 첫째는 35자, 둘째는 45자, 셋째는 55자 안팎을 목표로 한다
+  예: ["후보1", "후보2", "후보3"]
+- 정보가 부족하거나 어떤 게임인지 확신이 없으면 배열 대신 "없음"이라고만 답한다
+
+좋은 예시 (45자 안팎):
+- Lethal Company (온라인 협동 호러): 친구와 버려진 행성에서 고철을 모아 할당량을 채우는 협동 호러. 비명이 웃음이 된다.
+- Rocket League (온라인 팀 대전): 자동차로 공을 차 넣는 팀 대전 게임. 짧은 경기를 친구와 여러 판 돌린다.
+- ELDEN RING (기본 혼자, 소환 협동): 기본은 혼자 탐험하는 고난도 액션 RPG. 막힌 보스는 친구와 함께 잡는다.
+- Cities: Skylines (멀티 없음): 멀티 없이 혼자 도로와 구역, 교통을 설계하는 도시 건설 시뮬레이션이다.
+- Among Us (온라인 파티 추리): 친구들 사이에 숨은 임포스터를 토론과 투표로 찾는 추리 게임. 한 판이 짧다.`;
 
 // 생성 뒤 검사에 쓰는 금지 표현 (과장·예전 퀘스트 말투·인원/가격 숫자·꾸밈 문자)
 const BANNED = [
@@ -65,14 +76,57 @@ const isEmpty = (line) => !line || /^없음/.test(line);
 const hasCoop = (g) => !!(g.has_online_coop || g.has_local_coop);
 const noMulti = (g) => g.max_players === 1 || (!hasCoop(g) && !g.has_pvp && (g.max_players ?? 1) <= 1);
 
-// 검사에 걸리면 이유 목록을, 통과하면 빈 배열을 돌려준다
+// 다시 쓸 때 어긴 규칙별로 구체적으로 알려 줄 문구
+const FIX = {
+  '과장 표현': '과장 표현("최고의", "압도적" 등)을 빼고 담백하게 쓴다',
+  '명령형(예전 퀘스트 말투)': '명령형(~하라, ~해라)이 아니라 설명체(~다, ~한다)로 끝낸다',
+  '인원 숫자': '인원 수를 숫자로 쓰지 않는다 ("5대5", "4인", "8명" 금지 — "팀 대전", "여럿이"처럼 말로 쓴다)',
+  '가격': '가격·무료·할인 이야기를 쓰지 않는다',
+  '따옴표·해시태그·이모지': '따옴표, 해시태그, 이모지를 쓰지 않는다',
+  '스포일러 우려': '결말·반전·흑막 같은 스포일러 단어를 쓰지 않는다',
+  '"~게임으로, ~" 틀': '"~게임으로, ~" 틀을 쓰지 말고 문장 모양을 바꾼다',
+};
+
+// 검사에 걸리면 [{ why, fix }] 목록을, 통과하면 빈 배열을 돌려준다
 function checkLine(line, game) {
   const problems = [];
-  if (line.length < MIN_LEN || line.length > MAX_LEN) problems.push(`길이 ${line.length}자`);
-  for (const [re, why] of BANNED) if (re.test(line)) problems.push(why);
-  if (noMulti(game) && !line.includes('혼자')) problems.push('멀티 없는 게임인데 "혼자"가 없음');
-  if (hasCoop(game) && !line.includes('친구')) problems.push('협동 게임인데 "친구"가 없음');
+  if (line.length < MIN_LEN || line.length > MAX_LEN) {
+    problems.push({ why: `길이 ${line.length}자`, fix: line.length > MAX_LEN
+      ? `지금 ${line.length}자라 너무 길다. 공백 포함 45자 내외(최대 55자)로 줄인다 — 두 번째 문장을 짧게 하거나 꾸밈말을 뺀다`
+      : `지금 ${line.length}자라 너무 짧다. 공백 포함 45자 내외로 늘린다` });
+  }
+  for (const [re, why] of BANNED) if (re.test(line)) problems.push({ why, fix: FIX[why] });
+  if (noMulti(game) && !line.includes('혼자')) problems.push({ why: '멀티 없는 게임인데 "혼자"가 없음', fix: '멀티가 없는 게임이므로 "혼자"라는 단어를 꼭 넣는다 (예: "혼자 즐기는 ~")' });
+  if (hasCoop(game) && !line.includes('친구')) problems.push({ why: '협동 게임인데 "친구"가 없음', fix: '협동 게임이므로 "친구"라는 단어를 꼭 넣는다 (예: "친구와 ~")' });
   return problems;
+}
+const whyList = (problems) => problems.map((p) => p.why).join(', ');
+
+// 통과한 후보 중 고를 때 점수 (낮을수록 좋음): 45자에서 먼 정도 + 둘째 문장이 20자를 넘으면 감점
+function score(line) {
+  const second = line.split(/(?<=[.!?])\s+/)[1] || '';
+  return Math.abs(line.length - 45) + (second.length > 20 ? 10 : 0);
+}
+
+// AI 답에서 후보 목록을 꺼낸다. "없음"이면 빈 배열
+function parseCandidates(text) {
+  if (isEmpty(text)) return [];
+  const m = text.match(/\[[\s\S]*\]/);
+  if (m) {
+    try {
+      const arr = JSON.parse(m[0]);
+      if (Array.isArray(arr)) return arr.map((x) => String(x).replace(/\s+/g, ' ').trim()).filter((x) => x && !isEmpty(x));
+    } catch { /* 아래에서 줄 단위로 처리 */ }
+  }
+  return text.split('\n').map((x) => x.replace(/^[-*\d.)\s]+/, '').replace(/^["“]|["”],?$/g, '').trim()).filter((x) => x && !isEmpty(x));
+}
+
+// 후보를 검사해 통과한 것 중 가장 좋은 것을, 없으면 문제가 가장 적은 후보를 돌려준다
+function pick(cands, game) {
+  const checked = cands.map((line) => ({ line, problems: checkLine(line, game) }));
+  const ok = checked.filter((c) => !c.problems.length).sort((a, b) => score(a.line) - score(b.line));
+  if (ok.length) return ok[0];
+  return checked.sort((a, b) => a.problems.length - b.problems.length || score(a.line) - score(b.line))[0] || null;
 }
 
 function gameInfo(game) {
@@ -105,13 +159,13 @@ async function write(game, feedback) {
     },
     body: JSON.stringify({
       model: MODEL,
-      max_tokens: 200,
+      max_tokens: 600,
       system: STYLE,
       messages: [
         { role: 'user', content: `[게임 정보]\n${gameInfo(game)}` },
         ...(feedback ? [
           { role: 'assistant', content: feedback.line },
-          { role: 'user', content: `검사에 걸렸어: ${feedback.problems.join(', ')}. 규칙에 맞게 다시 써 (공백 포함 ${MIN_LEN}~${MAX_LEN}자). 소개 문장만 출력해.` },
+          { role: 'user', content: `검사에 걸렸어. 아래를 모두 고쳐서 다시 써:\n${feedback.problems.map((p) => `- ${p.fix}`).join('\n')}\n원래 규칙(공백 포함 45자 내외·최대 55자, 둘째 문장 20자 이하, 담백한 설명체, 숫자로 인원 쓰지 않기, 멀티 없으면 "혼자"·협동이면 "친구" 넣기)도 그대로 지킨다. 후보 3개를 JSON 배열로만 출력해.` },
         ] : []),
       ],
     }),
@@ -120,7 +174,7 @@ async function write(game, feedback) {
   if (json.error) throw new Error(json.error.message);
   usage.input += json.usage?.input_tokens || 0;
   usage.output += json.usage?.output_tokens || 0;
-  return (json.content || []).map((c) => c.text || '').join('').replace(/\s+/g, ' ').trim();
+  return (json.content || []).map((c) => c.text || '').join('').trim();
 }
 
 // 처리 기록: fun_description_at 칸이 있으면 시각을 남겨 다음 주에 다시 부르지 않음
@@ -146,31 +200,39 @@ async function main() {
     console.log('⚠️  games.fun_description_at 칸이 없어 처리 기록을 남기지 못해요 (비워 둔 게임은 다음 주에 다시 시도). 추가 SQL은 파일 위 주석 참고\n');
   }
 
-  let query = supabase.from('games').select(cols);
-  if (IDS) query = query.in('id', IDS);
-  else {
+  let games = [];
+  if (IDS) {
+    // id가 많으면 주소가 길어지므로 100개씩 나눠 조회
+    for (let i = 0; i < IDS.length; i += 100) {
+      const { data, error } = await supabase.from('games').select(cols).in('id', IDS.slice(i, i + 100));
+      if (error) return console.error('조회 실패:', error.message);
+      games.push(...data);
+    }
+  } else {
+    let query = supabase.from('games').select(cols);
     query = query.is('fun_description', null);
     if (hasMarker) query = query.is('fun_description_at', null);
     query = query
       .order('heat_rank', { ascending: true, nullsFirst: false })
       .order('current_players', { ascending: false, nullsFirst: false })
       .limit(LIMIT);
+    const { data, error } = await query;
+    if (error) return console.error('조회 실패:', error.message);
+    games = data;
   }
-  const { data: games, error } = await query;
-  if (error) return console.error('조회 실패:', error.message);
 
-  console.log(`한 줄 소개 ${games.length}개 작성${DRY_RUN ? ' (미리보기 — DB 저장 안 함)' : ''} · 예상 약 $${(games.length * 0.002).toFixed(3)} (다시 쓰기 포함 최대 $${(games.length * 0.005).toFixed(3)})\n`);
+  console.log(`한 줄 소개 ${games.length}개 작성${DRY_RUN ? ' (미리보기 — DB 저장 안 함)' : ''} · 예상 약 $${(games.length * 0.003).toFixed(3)} (다시 쓰기 포함 최대 $${(games.length * 0.006).toFixed(3)})\n`);
   const result = { saved: 0, rejected: 0, empty: 0, failed: 0 };
   for (const g of games) {
     try {
-      let line = await write(g);
-      // 검사에 걸리면 이유를 알려 주고 한 번만 다시 씀 (게임당 최대 2번 호출)
-      let problems = isEmpty(line) ? [] : checkLine(line, g);
-      if (problems.length) {
-        console.log(`   ↻ ${g.name} 다시 씀 (${problems.join(', ')}): ${line}`);
-        line = await write(g, { line, problems });
-        problems = isEmpty(line) ? [] : checkLine(line, g);
+      // 후보 3개 중 검사를 통과한 가장 좋은 것을 고름. 셋 다 걸리면 이유를 알려 주고 한 번만 다시 받음 (게임당 최대 2번 호출)
+      let best = pick(parseCandidates(await write(g)), g);
+      if (best?.problems.length) {
+        console.log(`   ↻ ${g.name} 후보 3개 모두 탈락, 다시 씀 (${whyList(best.problems)}): ${best.line}`);
+        best = pick(parseCandidates(await write(g, best)), g);
       }
+      const line = best?.line ?? null;
+      const problems = best?.problems ?? [];
       if (isEmpty(line)) {
         result.empty++;
         console.log(`⬜ ${g.name} — 확신이 없어 비워 둠`);
@@ -178,7 +240,7 @@ async function main() {
       } else {
         if (problems.length) {
           result.rejected++;
-          console.log(`🚫 ${g.name} — 검사 탈락 (${problems.join(', ')}), 저장 안 함\n    ${line}`);
+          console.log(`🚫 ${g.name} — 검사 탈락 (${whyList(problems)}), 저장 안 함\n    ${line}`);
           await markDone(g.id, null);
         } else {
           result.saved++;
