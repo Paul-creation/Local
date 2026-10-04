@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import ShareButton from '../ShareButton';
-import { getPriceInfo, getLowestTiming } from '../../lib/price';
+import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL } from '../../lib/price';
 import GotyBadge from '../GotyBadge';
 import LowestPriceBadge from '../LowestPriceBadge';
 import { translateTag } from '../../lib/tagTranslate';
@@ -101,6 +101,11 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
                       {game.is_free ? (
                         <div className="price-row">
                           <span className="price-final" style={{ color: '#4a9e3a', fontWeight: 800 }}>무료 플레이</span>
+                        </div>
+                      ) : PRICE_TYPE_LABEL[game.price_type] ? (
+                        // 월 구독·판매처에서 확인 게임은 예전 가격 대신 문구 (가격 슬라이더·할인 필터에서는 가격 없음으로 빠짐)
+                        <div className="price-row">
+                          <span className="price-final no-discount">{PRICE_TYPE_LABEL[game.price_type]}</span>
                         </div>
                       ) : (
                         price && (

@@ -10,7 +10,7 @@ export const INDEX_FIELDS = `
   id, name, search_name_ko, tags, category, difficulty,
   min_players, max_players, recommended_players, solo_playable,
   has_online_coop, has_local_coop, has_pvp,
-  is_free, lowest_price, steam_appid, source, cover_image_url, card_image_url,
+  is_free, price_type, lowest_price, steam_appid, source, cover_image_url, card_image_url,
   price_history(price, discount_percent, checked_at, currency)
 `;
 

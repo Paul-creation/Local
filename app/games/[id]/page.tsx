@@ -69,7 +69,7 @@ function parseMinSpec(raw: string | null) {
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  const { data: game } = await selectGames('name, description, fun_description, min_players, max_players, difficulty, tags, is_free, price_history(price, discount_percent, checked_at)')
+  const { data: game } = await selectGames('name, description, fun_description, min_players, max_players, difficulty, tags, is_free, price_type, price_history(price, discount_percent, checked_at)')
     .eq('id', id)
     .maybeSingle();
   if (!game) {

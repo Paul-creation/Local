@@ -3,7 +3,7 @@
 // 순위는 scripts/snapshot-hot-rank.mjs가 매일 hot_rank_history에 남긴 heat_rank 순위(상위 50)를 쓴다
 import { supabase } from './supabase';
 import { playersText } from './players';
-import { getPriceInfo, getLowestTiming, type LowestTiming } from './price';
+import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL, type LowestTiming } from './price';
 import { translateTag } from './tagTranslate';
 import { selectHomeGames } from './visibleGames';
 
@@ -21,7 +21,7 @@ export type HotItem = {
   tags: string[];         // 한국어 태그 앞 2개
   players: string;        // "1-4인"
   currentPlayers: number | null;
-  price: string | null;   // "₩8,250" / "무료"
+  price: string | null;   // "₩8,250" / "무료" / "월 구독" (가격 유형 게임)
   discount: number;
   lowest: LowestTiming;   // 역대 최저가 / 최저가 근접
   spark: number[];        // 최근 7일 동접자 (1~3위만, 기록이 3일 이상인 게임만)
@@ -88,7 +88,7 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
   const since = addDays(latest, -7 * 26);
 
   const [{ data: games }, { data: weeksRows }, { data: playerRows }] = await Promise.all([
-    selectHomeGames('id, name, hero_image_url, card_image_url, cover_image_url, fun_description, tags, min_players, max_players, current_players, is_free, lowest_price, price_history(price, discount_percent, checked_at, currency)')
+    selectHomeGames('id, name, hero_image_url, card_image_url, cover_image_url, fun_description, tags, min_players, max_players, current_players, is_free, price_type, lowest_price, price_history(price, discount_percent, checked_at, currency)')
       .in('id', ids)
       .gte('price_history.price', 100)
       .order('checked_at', { referencedTable: 'price_history', ascending: false })
@@ -151,7 +151,7 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
         tags: (g.tags || []).slice(0, 2).map((t: string) => translateTag(t)),
         players: playersText(g),
         currentPlayers: g.current_players ?? null,
-        price: g.is_free ? '무료' : price ? price.formattedFinal : null,
+        price: g.is_free ? '무료' : price ? price.formattedFinal : PRICE_TYPE_LABEL[g.price_type] ?? null,
         discount: !g.is_free && price ? price.discount : 0,
         lowest: getLowestTiming(g, price),
         spark: i < 3 ? (spark.get(id) || []) : [],

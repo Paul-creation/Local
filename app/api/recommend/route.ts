@@ -3,11 +3,20 @@ import { guardedClaudeFetch, AiLimitError } from '../../lib/aiGuard';
 import { createClient } from '@supabase/supabase-js';
 import { badgeMatches } from '../../lib/badge.mjs';
 import { selectGames } from '../../lib/visibleGames';
+import { normalizeSearch, searchNames } from '../../lib/searchMatch';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
+
+// 메인 노출 제외 게임(성인 콘텐츠 등, docs/home-excluded-games.md)은 추천 후보에서 뺀다
+// 단, 사용자가 답에 그 게임 이름(영어·한국어·별명)을 직접 쓴 경우는 남긴다
+function dropHomeExcluded<T extends { name?: string | null; search_name_ko?: string | null; home_excluded?: boolean | null }>(games: T[], userTexts: string[]) {
+  const said = normalizeSearch(userTexts.join(' '));
+  return games.filter((g) => !g.home_excluded ||
+    (!!said && searchNames(g).some((n) => { const name = normalizeSearch(n); return name.length >= 2 && said.includes(name); })));
+}
 
 function filterGames(games: any[], answers: { question: string; answer: string }[]) {
   let filtered = [...games];
@@ -114,12 +123,13 @@ async function handlePOST(req: NextRequest) {
   // 한 번의 추천에서 AI는 질문마다 불리므로 첫 AI 호출(답 1개)만 추천 1회로 셈
   const kind = answers.length <= 1 ? 'recommend' : 'recommend-step';
 
-  const { data: games, error } = await selectGames('id, name, cover_image_url, category, tags, min_players, max_players, difficulty, is_free, solo_playable, korean_support', undefined, supabase);
+  const { data: allGames, error } = await selectGames('id, name, search_name_ko, home_excluded, cover_image_url, category, tags, min_players, max_players, difficulty, is_free, solo_playable, korean_support', undefined, supabase);
 
-  if (error || !games) {
+  if (error || !allGames) {
     return NextResponse.json({ error: '게임 목록을 불러오지 못했어요.' }, { status: 500 });
   }
 
+  const games = dropHomeExcluded(allGames, answers.map((a: { answer?: string }) => String(a?.answer || '')));
   const filtered = filterGames(games, answers);
 
   // 첫 질문 고정
@@ -243,9 +253,10 @@ JSON만 출력:
 async function handleLegacy(body: any) {
   const { mood, groupSize, vibe } = body;
 
-  const { data: games } = await selectGames('id, name, cover_image_url, category, tags, min_players, max_players, difficulty', undefined, supabase);
+  const { data: allGames } = await selectGames('id, name, search_name_ko, home_excluded, cover_image_url, category, tags, min_players, max_players, difficulty', undefined, supabase);
 
-  if (!games) return NextResponse.json({ error: '게임 목록을 불러오지 못했어요.' }, { status: 500 });
+  if (!allGames) return NextResponse.json({ error: '게임 목록을 불러오지 못했어요.' }, { status: 500 });
+  const games = dropHomeExcluded(allGames, [mood, groupSize, vibe].map((v) => String(v || '')));
 
   const gameList = games.map((g) =>
     `- id: ${g.id}, 이름: ${g.name}, 카테고리: ${g.category}, 태그: ${(g.tags || []).join(', ')}, 인원: ${g.min_players ?? '?'}-${g.max_players ?? '?'}, 난이도: ${g.difficulty}`
