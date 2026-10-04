@@ -2002,3 +2002,6 @@ a.series-item:hover { border-color: var(--border); }
 .cm-related-list { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .cm-related-list a { display: inline-block; padding: 8px 12px; border-radius: 10px; background: var(--accent-soft); color: var(--accent-deep); font-size: 14px; font-weight: 700; text-decoration: none; word-break: break-word; }
 .cm-related-list a:hover { box-shadow: var(--shadow-sm); }
+/* 메인: 홈에서만 보이는 부분(이벤트·바로가기·홈 섹션) 감싸개 — 레이아웃에 영향 없게 / 필터 주소 첫 HTML용 로딩 막대는 평소 숨김 (app/page.tsx) */
+.home-only { display: contents; }
+.home-url-skel { display: none; }

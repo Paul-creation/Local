@@ -13,7 +13,7 @@ const CATEGORIES = ['파티', '협동', '퍼즐', '서바이벌'];
 const PLAYER_OPTIONS = ['1인', '2인', '3-4인', '5인 이상', '16명 이상'];
 const DIFFICULTY_OPTIONS = ['쉬움', '보통', '어려움'];
 
-export default function SearchPanel({ games, filters }: { games: any[], filters: GameFilters }) {
+export default function SearchPanel({ games, presentTags: presentTagList, filters }: { games: any[], presentTags: string[], filters: GameFilters }) {
   const {
     submitSearch,
     filterOpen, setFilterOpen,
@@ -27,7 +27,8 @@ export default function SearchPanel({ games, filters }: { games: any[], filters:
   } = filters;
   const [expandedGroups, setExpandedGroups] = useState<string[]>([]);
 
-  const presentTags = new Set(games.flatMap((g) => g.tags || []));
+  // DB에 실제로 있는 태그만 그룹에 보여준다 (서버에서 미리 계산해 넘김 — app/page.tsx)
+  const presentTags = new Set(presentTagList);
 
   const toggleGroup = (group: string) =>
     setExpandedGroups(prev => prev.includes(group) ? prev.filter(g => g !== group) : [...prev, group]);

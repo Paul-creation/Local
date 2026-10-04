@@ -1,6 +1,5 @@
 // 담당: Paul(메인 배너·디자인)
-'use client';
-
+// 서버 컴포넌트 — 메인 첫 HTML에 바로 들어감 (배너·차트처럼 움직이는 부분만 클라이언트 컴포넌트)
 import Link from 'next/link';
 import BannerCarousel from '../BannerCarousel';
 import HotChart from './HotChart';
@@ -11,10 +10,8 @@ import type { PostListItem } from '../../lib/community';
 import PopularPosts from './PopularPosts';
 import GameImage from '../GameImage';
 
-export default function HomeSections({ games, hotTabs, weekly, popularPosts = [] }: { games: any[]; hotTabs: HotTab[]; weekly?: any; popularPosts?: PostListItem[] }) {
-  // featured_games에서 뽑힌 이번 주 게임, 기록이 없으면 예전처럼 featured 칸
-  const featured = weekly || games.find((g) => g.featured);
-  const bannerPool = games.filter((g) => g.is_casual_party && !g.featured && g.id !== featured?.id);
+// featured: featured_games에서 뽑힌 이번 주 게임, 기록이 없으면 예전처럼 featured 칸 / bannerPool: 추천 배너 게임 (app/page.tsx에서 고름)
+export default function HomeSections({ featured, bannerPool, hotTabs, popularPosts = [] }: { featured: any; bannerPool: any[]; hotTabs: HotTab[]; popularPosts?: PostListItem[] }) {
 
   const featuredPrice = featured ? getPriceInfo(featured) : null;
 
