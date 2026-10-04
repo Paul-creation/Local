@@ -7,6 +7,7 @@ import { matchesGame, normalizeSearch } from './searchMatch';
 import { LARGE_LOBBY, playersBucket } from './players';
 import { getPriceInfo } from './price';
 import { HOME_FILTER_STYLE_ID } from './homeFilter';
+import { BADGES, badgeMatches } from './badge.mjs';
 
 // 검색 결과는 처음 이만큼만 그리고, 더 보기로 이만큼씩 늘린다
 export const PAGE_SIZE = 24;
@@ -42,7 +43,9 @@ export function useGameFilters(games: any[] | null) {
     setShowResults(sp.get('r') === '1' || sp.has('players') || sp.get('sale') === '1');
     setInput(sp.get('q') || '');
     setQuery(sp.get('q') || '');
-    setSelectedCategory(sp.get('cat') || '');
+    // 예전 주소의 cat=파티·퍼즐·서바이벌처럼 지금 배지에 없는 값은 무시 (결과가 0개로 보이지 않게)
+    const cat = sp.get('cat') || '';
+    setSelectedCategory(BADGES.includes(cat) ? cat : '');
     setSelectedTags((sp.get('tags') || '').split(',').filter(Boolean));
     setSelectedPlayers(sp.get('p') || playersBucket(Number(sp.get('players'))));
     setSelectedDifficulty(sp.get('d') || '');
@@ -129,7 +132,7 @@ export function useGameFilters(games: any[] | null) {
   const filtered = (games || []).filter((g) => {
     if (freeOnly && !g.is_free) return false;
     if (saleOnly && !((getPriceInfo(g)?.discount ?? 0) > 0)) return false;
-    if (selectedCategory && g.category !== selectedCategory) return false;
+    if (selectedCategory && !badgeMatches(g.category, selectedCategory)) return false;
     if (selectedTags.length > 0 && !selectedTags.some(t => g.tags?.includes(t))) return false;
     if (selectedDifficulty && g.difficulty !== selectedDifficulty) return false;
     if (selectedPlayers) {

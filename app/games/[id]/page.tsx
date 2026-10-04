@@ -19,6 +19,7 @@ import GotyBadge from '../../components/GotyBadge';
 import GameImage from '../../components/GameImage';
 import { getTop10Ids } from '../../lib/hotChart';
 import { playersText } from '../../lib/players';
+import { badgeClass } from '../../lib/badge.mjs';
 import GameOpinions from '../../components/community/GameOpinions';
 import RelatedPosts from '../../components/community/RelatedPosts';
 
@@ -166,7 +167,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             </span>
           )}
           <GotyBadge awards={game.goty_awards} all />
-          {game.category && <span className="badge-neutral">{game.category}</span>}
+          {game.category && <span className={`badge-neutral ${badgeClass(game.category)}`}>{game.category}</span>}
           <a href={namuUrl} target="_blank" rel="noopener nofollow" className="namu-link">나무위키 ↗</a>
           {game.discord_url && (
             <a href={game.discord_url} target="_blank" rel="noopener nofollow" className="discord-link">공식 디스코드 ↗</a>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { guardedClaudeFetch, getIp, AiLimitError } from '../../lib/aiGuard';
 import { createClient } from '@supabase/supabase-js';
+import { badgeMatches } from '../../lib/badge.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -91,7 +92,7 @@ function filterGames(games: any[], answers: { question: string; answer: string }
 
     if (q.includes('경쟁') || q.includes('협동') || q.includes('같이')) {
       if (a.includes('협동') || a.includes('같이') || a.includes('협력')) {
-        filtered = filtered.filter(g => g.category === '협동' || g.tags?.includes('온라인 협동'));
+        filtered = filtered.filter(g => badgeMatches(g.category, '협동') || g.tags?.includes('온라인 협동'));
       } else if (a.includes('경쟁') || a.includes('pvp')) {
         filtered = filtered.filter(g => g.tags?.some((t: string) => ['경쟁', 'e스포츠', '배틀로얄'].includes(t)));
       }

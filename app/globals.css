@@ -547,6 +547,10 @@ img { display: block; }
   border-radius: 100px;
 }
 
+.badge-neutral.is-coop { color: var(--accent); border-color: rgba(0,113,227,0.35); background: rgba(0,113,227,0.06); font-weight: 600; }
+.badge-neutral.is-pvp { color: var(--danger); border-color: rgba(214,69,69,0.35); background: rgba(214,69,69,0.06); font-weight: 600; }
+.badge-neutral.is-both { color: #7a4fc9; border-color: rgba(122,79,201,0.35); background: rgba(122,79,201,0.07); font-weight: 600; }
+
 .review-badge {
   display: inline-flex;
   align-items: center;

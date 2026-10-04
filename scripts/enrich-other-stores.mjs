@@ -1,6 +1,7 @@
 // scripts/enrich-other-stores.mjs
 // 스팀이 아닌 게임(에픽·블리자드·라이엇)만 데이터 채우기
 import { createClient } from '@supabase/supabase-js';
+import { refreshCategory } from './lib/category.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -9,25 +10,27 @@ const supabase = createClient(
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const norm = (s = '') => s.toLowerCase().replace(/[^a-z0-9가-힣]/g, '');
 
+// coop·pvp: 공식 모드 기준 협동(친구와 같은 편으로 PvE)·대전 여부 → has_online_coop·has_pvp. 확실하지 않으면 coop을 비워 둠
+// 배지(category)는 이 칸과 인원으로 app/lib/badge.mjs가 계산
 const CURATED = {
-  'riot:league-of-legends':     { min: 1, max: 5,  difficulty: '어려움', category: '협동', tags: ['e스포츠', '경쟁', '전술'] },
-  'riot:valorant':              { min: 1, max: 5,  difficulty: '어려움', category: '협동', tags: ['FPS', 'e스포츠', '전술'] },
-  'riot:teamfight-tactics':     { min: 1, max: 8,  difficulty: '보통',   category: '파티', tags: ['전술', '경쟁', '캐주얼'] },
-  'riot:legends-of-runeterra':  { min: 1, max: 2,  difficulty: '보통',   category: '협동', tags: ['카드 게임', '전술', '경쟁'] },
-  'riot:2xko':                  { min: 1, max: 2,  difficulty: '어려움', category: '협동', tags: ['격투', '경쟁', 'e스포츠'] },
-  'battlenet:overwatch-2':      { min: 1, max: 5,  difficulty: '보통',   category: '협동', tags: ['FPS', '경쟁', 'e스포츠'] },
-  'battlenet:diablo-iv':        { min: 1, max: 4,  difficulty: '보통',   category: '협동', tags: ['액션 RPG', '핵앤슬래시', '다크 판타지'] },
-  'battlenet:diablo-ii-resurrected': { min: 1, max: 8, difficulty: '보통', category: '협동', tags: ['액션 RPG', '핵앤슬래시', '다크 판타지'] },
-  'battlenet:diablo-iii':       { min: 1, max: 4,  difficulty: '쉬움',   category: '협동', tags: ['액션 RPG', '핵앤슬래시', '루팅'] },
-  'battlenet:hearthstone':      { min: 1, max: 2,  difficulty: '쉬움',   category: '파티', tags: ['카드 게임', '경쟁', '캐주얼'] },
-  'battlenet:heroes-of-the-storm': { min: 1, max: 5, difficulty: '보통', category: '협동', tags: ['경쟁', '전술', '캐주얼'] },
-  'battlenet:starcraft-ii':     { min: 1, max: 8,  difficulty: '어려움', category: '협동', tags: ['전술', 'e스포츠', '우주'] },
-  'battlenet:starcraft-remastered': { min: 1, max: 8, difficulty: '어려움', category: '협동', tags: ['전술', 'e스포츠', '우주'] },
-  'battlenet:world-of-warcraft': { min: 1, max: 40, difficulty: '보통',  category: '협동', tags: ['MMORPG', '대규모 멀티', '오픈월드'] },
-  'battlenet:warcraft-iii-reforged': { min: 1, max: 12, difficulty: '어려움', category: '협동', tags: ['전술', '경쟁', '다크 판타지'] },
-  'epic:fortnite':              { min: 1, max: 4,  difficulty: '보통',   category: '협동', tags: ['배틀로얄', '슈팅', '캐주얼'] },
-  'epic:fall-guys':             { min: 1, max: 4,  difficulty: '쉬움',   category: '파티', tags: ['파티 게임', '배틀로얄', '캐주얼'] },
-  'epic:alan-wake-2':           { min: 1, max: 1,  difficulty: '보통',   category: '서바이벌', tags: ['서바이벌 호러', '심리 공포', '스토리 풍부'] },
+  'riot:league-of-legends':     { min: 1, max: 5,  difficulty: '어려움', coop: true, pvp: true, tags: ['e스포츠', '경쟁', '전술'] },
+  'riot:valorant':              { min: 1, max: 5,  difficulty: '어려움', pvp: true, tags: ['FPS', 'e스포츠', '전술'] },
+  'riot:teamfight-tactics':     { min: 1, max: 8,  difficulty: '보통',   pvp: true, tags: ['전술', '경쟁', '캐주얼'] },
+  'riot:legends-of-runeterra':  { min: 1, max: 2,  difficulty: '보통',   pvp: true, tags: ['카드 게임', '전술', '경쟁'] },
+  'riot:2xko':                  { min: 1, max: 2,  difficulty: '어려움', pvp: true, tags: ['격투', '경쟁', 'e스포츠'] },
+  'battlenet:overwatch-2':      { min: 1, max: 5,  difficulty: '보통',   coop: true, pvp: true, tags: ['FPS', '경쟁', 'e스포츠'] },
+  'battlenet:diablo-iv':        { min: 1, max: 4,  difficulty: '보통',   coop: true, pvp: true, tags: ['액션 RPG', '핵앤슬래시', '다크 판타지'] },
+  'battlenet:diablo-ii-resurrected': { min: 1, max: 8, difficulty: '보통', coop: true, pvp: true, tags: ['액션 RPG', '핵앤슬래시', '다크 판타지'] },
+  'battlenet:diablo-iii':       { min: 1, max: 4,  difficulty: '쉬움',   coop: true, pvp: true, tags: ['액션 RPG', '핵앤슬래시', '루팅'] },
+  'battlenet:hearthstone':      { min: 1, max: 2,  difficulty: '쉬움',   pvp: true, tags: ['카드 게임', '경쟁', '캐주얼'] },
+  'battlenet:heroes-of-the-storm': { min: 1, max: 5, difficulty: '보통', coop: true, pvp: true, tags: ['경쟁', '전술', '캐주얼'] },
+  'battlenet:starcraft-ii':     { min: 1, max: 8,  difficulty: '어려움', coop: true, pvp: true, tags: ['전술', 'e스포츠', '우주'] },
+  'battlenet:starcraft-remastered': { min: 1, max: 8, difficulty: '어려움', pvp: true, tags: ['전술', 'e스포츠', '우주'] },
+  'battlenet:world-of-warcraft': { min: 1, max: 40, difficulty: '보통',  coop: true, pvp: true, tags: ['MMORPG', '대규모 멀티', '오픈월드'] },
+  'battlenet:warcraft-iii-reforged': { min: 1, max: 12, difficulty: '어려움', pvp: true, tags: ['전술', '경쟁', '다크 판타지'] },
+  'epic:fortnite':              { min: 1, max: 4,  difficulty: '보통',   coop: true, pvp: true, tags: ['배틀로얄', '슈팅', '캐주얼'] },
+  'epic:fall-guys':             { min: 1, max: 4,  difficulty: '쉬움',   pvp: true, tags: ['파티 게임', '배틀로얄', '캐주얼'] },
+  'epic:alan-wake-2':           { min: 1, max: 1,  difficulty: '보통',   coop: false, pvp: false, tags: ['서바이벌 호러', '심리 공포', '스토리 풍부'] },
 };
 
 const IGDB_TAG = {
@@ -40,14 +43,6 @@ const IGDB_TAG = {
   'Fantasy': '다크 판타지', 'Stealth': '전술', 'Drama': '스토리 풍부', 'Mystery': '스토리 풍부',
   'Adventure': '탐험', 'Arcade': '캐주얼', 'Indie': '캐주얼',
 };
-
-function guessCategory(tags = [], genres = []) {
-  const all = [...tags, ...genres].join(' ').toLowerCase();
-  if (all.includes('생존') || all.includes('호러') || all.includes('survival')) return '서바이벌';
-  if (all.includes('퍼즐') || all.includes('puzzle')) return '퍼즐';
-  if (all.includes('파티') || all.includes('party')) return '파티';
-  return '협동';
-}
 
 async function getIgdbToken() {
   const res = await fetch(
@@ -111,7 +106,8 @@ async function main() {
       update.min_players = curated.min;
       update.max_players = curated.max;
       update.difficulty = curated.difficulty;
-      update.category = curated.category;
+      if (curated.coop != null) update.has_online_coop = curated.coop;
+      if (curated.pvp != null) update.has_pvp = curated.pvp;
     } else {
       if ((game.tags?.length || 0) < 3 && ig) {
         const src = [...(ig.genres || []), ...(ig.themes || [])].map((x) => IGDB_TAG[x.name]).filter(Boolean);
@@ -128,7 +124,6 @@ async function main() {
         }
       }
       if (!game.difficulty) update.difficulty = '보통';
-      if (!game.category) update.category = guessCategory(update.tags || game.tags || [], update.genres || game.genres || []);
     }
 
     if (Object.keys(update).length === 0) {
@@ -138,7 +133,8 @@ async function main() {
 
     const { error: upErr } = await supabase.from('games').update(update).eq('id', game.id);
     if (upErr) console.error(`❌ 실패 (${game.name}):`, upErr.message);
-    else
+    else await refreshCategory(supabase, game.id);
+    if (!upErr)
       console.log(
         `✅ ${game.name} ${curated ? '[지정]' : ig ? '[IGDB]' : '[기본값]'} — ` +
         `${update.min_players ?? game.min_players}-${update.max_players ?? game.max_players}인 · ` +

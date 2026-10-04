@@ -9,7 +9,8 @@ import { TAG_GROUPS } from '../../lib/tagGroups';
 import { translateTag } from '../../lib/tagTranslate';
 import type { GameFilters } from '../../lib/useGameFilters';
 
-const CATEGORIES = ['파티', '협동', '퍼즐', '서바이벌'];
+// 배지(category) 값으로 거름 — '협동'·'대전'은 '협동·대전' 게임도 포함 (app/lib/badge.mjs)
+const CATEGORIES = ['협동', '대전', '혼자'];
 const PLAYER_OPTIONS = ['1인', '2인', '3-4인', '5인 이상', '16명 이상'];
 const DIFFICULTY_OPTIONS = ['쉬움', '보통', '어려움'];
 
@@ -74,7 +75,7 @@ export default function SearchPanel({ games, presentTags: presentTagList, filter
           }}>
             {/* 카테고리 */}
             <div style={{ marginBottom: 16 }}>
-              <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 8 }}>카테고리</p>
+              <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 8 }}>플레이 방식</p>
               <div className="filter-chips">
                 {CATEGORIES.map(c => (
                   <span key={c} className="tag-chip-wrap">

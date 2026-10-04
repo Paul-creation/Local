@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { refreshCategory } from './lib/category.mjs';
 import { onlyIds } from './lib/only-ids.mjs';
 
 const supabase = createClient(
@@ -6,19 +7,10 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-function guessCategory(genres = [], name = '') {
-  const safeGenres = genres || [];
-  const all = [...safeGenres, name].join(' ').toLowerCase();
-  if (all.includes('survival')) return '서바이벌';
-  if (all.includes('puzzle')) return '퍼즐';
-  if (all.includes('party')) return '파티';
-  return '협동';
-}
-
 async function main() {
   const { data: games, error } = await onlyIds(supabase
     .from('games')
-    .select('id, name, steam_appid, category, min_players, max_players, difficulty, genres').not('steam_appid', 'is', null));
+    .select('id, name, steam_appid, min_players, max_players, difficulty, genres').not('steam_appid', 'is', null));
 
   if (error) {
     console.error('조회 실패:', error.message);
@@ -27,7 +19,7 @@ async function main() {
 
   for (const game of games) {
     // 이미 값이 있으면 절대 건드리지 않음
-    const needsFill = !game.category || !game.min_players || !game.difficulty;
+    const needsFill = !game.min_players || !game.difficulty;
     if (!needsFill) {
       console.log(`건너뜀 (이미 채워짐): ${game.name}`);
       continue;
@@ -47,8 +39,7 @@ async function main() {
     const isSingleOnly = categories.includes('Single-player') && !isMulti;
 
     const update = {};
-    // 싱글만 있는 게임은 '기타' — guessCategory의 기본값 '협동'이 1인 게임에 협동 배지로 붙던 문제
-    if (!game.category) update.category = isSingleOnly ? '기타' : guessCategory(game.genres, game.name);
+    // 배지(category)는 여기서 짐작하지 않고, 저장 뒤 인원·협동/대전 칸으로 계산 (app/lib/badge.mjs)
     if (!game.min_players && isSingleOnly) {
       update.min_players = 1;
       update.max_players = 1;
@@ -60,6 +51,7 @@ async function main() {
     if (updateError) {
       console.error(`업데이트 실패 (${game.name}):`, updateError.message);
     } else {
+      if (update.max_players) await refreshCategory(supabase, game.id);
       console.log(`추정값 채움: ${game.name} →`, update);
     }
 

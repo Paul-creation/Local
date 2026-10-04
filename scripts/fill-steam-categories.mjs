@@ -15,6 +15,7 @@
 import fs from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { steamGet, appdetailsUrl, SteamLimitError } from './lib/steam.mjs';
+import { refreshCategory } from './lib/category.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const CACHE = 'scripts/.cache/steam-categories.json';
@@ -67,6 +68,7 @@ async function main() {
     const { error: e } = await q;
     if (e) { console.log(`❌ ${g.name}: ${e.message}`); count.failed++; continue; }
     count.saved++;
+    await refreshCategory(supabase, g.id); // 협동/대전 칸이 바뀌면 배지도 다시 계산
 
     const steamSolo = cats.includes('Single-player');
     if (g.solo_playable != null && g.solo_playable !== steamSolo) soloDiff.push({ name: g.name, db: g.solo_playable, steamSolo });

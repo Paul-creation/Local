@@ -27,6 +27,7 @@ const GROUPS = {
     'enrich-fallback',
     'enrich-igdb',
     'enrich-specs',
+    'fill-steam-categories', // 협동·대전 칸(스팀 분류) → 배지(category)도 같이 계산. 칸이 빈 새 게임만
     'enrich-tags',
     'fix-data-gaps',
     'fill-tags-desc',

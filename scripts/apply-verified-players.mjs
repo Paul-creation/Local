@@ -8,6 +8,7 @@
 // 실행: node --env-file=.env.local scripts/apply-verified-players.mjs data/verification/party-max-decisions.json
 import fs from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
+import { refreshCategory } from './lib/category.mjs';
 
 const FLAGS = ['has_online_coop', 'has_local_coop', 'has_pvp', 'solo_playable'];
 const mark = (v) => (v == null ? '?' : v ? 'O' : 'X');
@@ -45,9 +46,11 @@ async function main() {
     }
     const { data: done, error: e } = await u.select('id');
     if (e || !done?.length) { console.log(`❌ ${f.name}: ${e?.message || '그사이 값이 바뀌어 건너뜀'}`); continue; }
+    const badge = await refreshCategory(supabase, g.id); // 인원·협동/대전 칸이 바뀌었으니 배지도 다시 계산
     const extra = [
       ...Object.keys(update).filter((k) => FLAGS.includes(k)).map((k) => `${k} ${mark(g[k])}→${mark(update[k])}`),
       ...(drop.length ? [`활동 제거: ${drop.join(', ')}`] : []),
+      ...(badge ? [`배지 ${badge.from ?? '없음'}→${badge.to ?? '없음'}`] : []),
     ];
     const max = f.max !== undefined ? f.max : g.max_players;
     const line = `${f.name}: ${g.min_players ?? '?'}~${g.max_players ?? '?'} → ${f.min ?? g.min_players ?? '?'}~${max ?? '?'}${extra.length ? ` [${extra.join(' · ')}]` : ''} (${f.evidence} / ${f.source})`;

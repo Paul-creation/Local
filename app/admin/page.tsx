@@ -53,7 +53,6 @@ export default function AdminPage() {
         max_players: selected.max_players,
         recommended_players: selected.recommended_players,
         solo_playable: selected.solo_playable,
-        category: selected.category,
       }),
     });
     setSaving(false);
@@ -146,13 +145,9 @@ export default function AdminPage() {
           <div style={{ maxWidth: 600 }}>
             <h2 style={{ fontWeight: 800, marginBottom: 24 }}>{selected.name}</h2>
 
-            {/* 카테고리 */}
-            <label style={labelStyle}>카테고리</label>
-            <input
-              style={inputStyle}
-              value={selected.category || ''}
-              onChange={(e) => setSelected({ ...selected, category: e.target.value })}
-            />
+            {/* 배지 — 인원·협동/대전 칸에서 자동 계산 (저장하면 다시 계산됨) */}
+            <label style={labelStyle}>배지 (자동)</label>
+            <input style={{ ...inputStyle, color: 'var(--text-dim)' }} value={selected.category || '(없음)'} readOnly />
 
             {/* 난이도 */}
             <label style={labelStyle}>난이도</label>

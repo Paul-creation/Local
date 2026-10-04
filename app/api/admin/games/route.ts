@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { isAdmin } from '../../../lib/adminAuth';
+import { badgeFor } from '../../../lib/badge.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-const EDITABLE = ['tags', 'difficulty', 'min_players', 'max_players', 'recommended_players', 'solo_playable', 'category'];
+// category(배지)는 직접 고치지 않고 인원·협동/대전 칸에서 계산 (app/lib/badge.mjs)
+const EDITABLE = ['tags', 'difficulty', 'min_players', 'max_players', 'recommended_players', 'solo_playable'];
 const unauthorized = () => NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
 export async function GET(req: NextRequest) {
@@ -29,5 +31,14 @@ export async function PATCH(req: NextRequest) {
 
   const { error } = await supabase.from('games').update(update).eq('id', body.id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ ok: true });
+
+  // 인원이 바뀌었을 수 있으니 배지 다시 계산
+  const { data: g } = await supabase
+    .from('games')
+    .select('category, max_players, has_online_coop, has_local_coop, has_pvp')
+    .eq('id', body.id)
+    .single();
+  const category = g ? badgeFor(g) : null;
+  if (g && category !== g.category) await supabase.from('games').update({ category }).eq('id', body.id);
+  return NextResponse.json({ ok: true, category });
 }

@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { refreshCategory } from './lib/category.mjs';
 import { onlyIds } from './lib/only-ids.mjs';
 
 const supabase = createClient(
@@ -133,6 +134,7 @@ async function main() {
     if (error) {
       console.error(`업데이트 실패 (${game.name}):`, error.message);
     } else {
+      if (update.max_players) await refreshCategory(supabase, game.id);
       console.log(
         `업데이트 성공 [${matchedVia}]: ${game.name} — 인원 ${update.max_players ? `최대 ${update.max_players}인` : '(유지)'} | 플랫폼: ${update.platform?.join(',') || '(유지)'}`
       );

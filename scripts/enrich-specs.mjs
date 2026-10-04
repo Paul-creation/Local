@@ -4,6 +4,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { onlyIds } from './lib/only-ids.mjs';
 import { steamGet, appdetailsUrl, SteamLimitError } from './lib/steam.mjs';
+import { refreshCategory } from './lib/category.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -252,6 +253,7 @@ async function main() {
       failed++;
     } else {
       ok++;
+      if ('max_players' in update) await refreshCategory(supabase, game.id);
       console.log(
         `✅ ${game.name}: 출시일 ${releaseDate ?? 'null'} | 한국어 ${found.korean_support} | 용량 ${found.storage_gb ?? '?'}GB | 솔로 ${soloPlayable} | 채운 칸 ${Object.keys(update).filter((k) => !STEAM_FLAGS.includes(k)).length}개`
       );
