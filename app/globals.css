@@ -718,6 +718,59 @@ img { display: block; }
 
 .search-tag-chip span { font-size: 12px; opacity: 0.7; }
 
+/* 인원·가격 범위 슬라이더 (components/search/RangeSlider) — range 두 개를 겹치고 손잡이만 눌리게.
+   손잡이 판정 영역은 44px, 보이는 점은 가운데 24px */
+.range-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 2px; }
+.range-title { font-size: 15px; font-weight: 700; color: var(--text-dim); }
+.range-value { font-size: 15px; font-weight: 700; color: var(--accent-deep); }
+
+.range-slider { position: relative; height: 44px; touch-action: none; }
+.range-track {
+  position: absolute; left: 22px; right: 22px; top: 50%;
+  height: 6px; transform: translateY(-50%);
+  background: var(--border); border-radius: 3px;
+}
+/* 트랙이 손잡이 반지름(22px)만큼 안쪽이라 % 위치가 손잡이 가운데와 맞는다 */
+.range-fill { position: absolute; top: 0; bottom: 0; background: var(--accent); border-radius: 3px; }
+
+.range-slider input[type="range"] {
+  position: absolute; inset: 0;
+  width: 100%; height: 44px; margin: 0;
+  background: none; pointer-events: none;
+  -webkit-appearance: none; appearance: none;
+}
+.range-slider input[type="range"]:focus { outline: none; }
+.range-slider input[type="range"]::-webkit-slider-runnable-track { background: none; height: 44px; }
+.range-slider input[type="range"]::-moz-range-track { background: none; }
+.range-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; pointer-events: auto; cursor: grab;
+  width: 44px; height: 44px; border: none; border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 8px, var(--accent) 8.5px 12px, transparent 12.5px);
+}
+.range-slider input[type="range"]::-moz-range-thumb {
+  pointer-events: auto; cursor: grab;
+  width: 44px; height: 44px; border: none; border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 8px, var(--accent) 8.5px 12px, transparent 12.5px);
+}
+.range-slider input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: inset 0 0 0 3px rgba(0,113,227,0.35); }
+.range-slider input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: inset 0 0 0 3px rgba(0,113,227,0.35); }
+
+.range-ends { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-dimmer); padding: 0 4px; }
+
+.range-chip {
+  margin-top: 8px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  border: 1.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text-dim);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.range-chip.on { border-color: var(--accent); background: rgba(0,113,227,0.1); color: var(--accent-deep); }
+
 .ai-trigger-clean {
   height: 48px;
   display: flex;

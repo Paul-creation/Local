@@ -5,13 +5,14 @@ import { useState } from 'react';
 import AIRecommend from '../AIRecommend';
 import SearchBox from './SearchBox';
 import TagHelp from './TagHelp';
+import RangeSlider from './RangeSlider';
 import { TAG_GROUPS } from '../../lib/tagGroups';
 import { translateTag } from '../../lib/tagTranslate';
 import type { GameFilters } from '../../lib/useGameFilters';
+import { PLAYERS_MAX, PRICE_MAX, PRICE_ALL, FREE_ONLY, isAll, playersLabel, priceLabel } from '../../lib/rangeFilter';
 
 // 배지(category) 값으로 거름 — '협동'·'대전'은 '협동·대전' 게임도 포함 (app/lib/badge.mjs)
 const CATEGORIES = ['협동', '대전', '혼자'];
-const PLAYER_OPTIONS = ['1인', '2인', '3-4인', '5인 이상', '16명 이상'];
 const DIFFICULTY_OPTIONS = ['쉬움', '보통', '어려움'];
 
 export default function SearchPanel({ games, presentTags: presentTagList, filters }: { games: any[], presentTags: string[], filters: GameFilters }) {
@@ -20,9 +21,9 @@ export default function SearchPanel({ games, presentTags: presentTagList, filter
     filterOpen, setFilterOpen,
     selectedCategory, setSelectedCategory,
     selectedTags, toggleTag,
-    selectedPlayers, setSelectedPlayers,
+    playersRange, setPlayersRange,
     selectedDifficulty, setSelectedDifficulty,
-    freeOnly, setFreeOnly,
+    priceRange, setPriceRange,
     saleOnly, setSaleOnly,
     selectedCount, hasFilters, resetFilters,
   } = filters;
@@ -91,19 +92,28 @@ export default function SearchPanel({ games, presentTags: presentTagList, filter
               </div>
             </div>
 
-            {/* 인원수 */}
+            {/* 인원수 — L명부터 H명까지 전부 가능한 게임 (app/lib/rangeFilter) */}
             <div style={{ marginBottom: 16 }}>
-              <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 8 }}>인원수</p>
-              <div className="filter-chips">
-                {PLAYER_OPTIONS.map(p => (
-                  <button key={p} className="filter-chip" onClick={() => setSelectedPlayers(selectedPlayers === p ? '' : p)} style={{
-                    padding: '6px 14px', borderRadius: 100, fontSize: 15, fontWeight: 600,
-                    border: `1.5px solid ${selectedPlayers === p ? 'var(--accent)' : 'var(--border)'}`,
-                    background: selectedPlayers === p ? 'var(--accent)' : 'var(--bg)',
-                    color: selectedPlayers === p ? '#fff' : 'var(--text)', cursor: 'pointer',
-                  }}>{p}</button>
-                ))}
-              </div>
+              <RangeSlider
+                title="인원수" value={playersRange} max={PLAYERS_MAX} minHigh={1}
+                label={playersLabel} onChange={setPlayersRange}
+                lowName="최소 인원" highName="최대 인원"
+              />
+            </div>
+
+            {/* 가격 — 지금 실제 가격(할인가) 기준. "무료만"은 무료~무료로 바로, 한 번 더 누르면 해제 */}
+            <div style={{ marginBottom: 16 }}>
+              <RangeSlider
+                title="가격" value={priceRange} max={PRICE_MAX}
+                label={priceLabel} onChange={setPriceRange}
+                lowName="최저 가격" highName="최고 가격"
+              />
+              <button
+                type="button"
+                className={`range-chip${isAll(priceRange, FREE_ONLY) ? ' on' : ''}`}
+                aria-pressed={isAll(priceRange, FREE_ONLY)}
+                onClick={() => setPriceRange(isAll(priceRange, FREE_ONLY) ? PRICE_ALL : FREE_ONLY)}
+              >무료만</button>
             </div>
 
             {/* 난이도 */}
@@ -124,16 +134,10 @@ export default function SearchPanel({ games, presentTags: presentTagList, filter
               </div>
             </div>
 
-            {/* 무료만 */}
+            {/* 할인 중 */}
             <div style={{ marginBottom: 16 }}>
-              <button className="filter-chip" onClick={() => setFreeOnly(v => !v)} style={{
-                padding: '6px 14px', borderRadius: 100, fontSize: 15, fontWeight: 600,
-                border: `1.5px solid ${freeOnly ? 'var(--accent)' : 'var(--border)'}`,
-                background: freeOnly ? 'var(--accent)' : 'var(--bg)',
-                color: freeOnly ? '#fff' : 'var(--text)', cursor: 'pointer',
-              }}>무료 게임만</button>
               <button className="filter-chip" onClick={() => setSaleOnly(v => !v)} style={{
-                padding: '6px 14px', borderRadius: 100, fontSize: 15, fontWeight: 600, marginLeft: 8,
+                padding: '6px 14px', borderRadius: 100, fontSize: 15, fontWeight: 600,
                 border: `1.5px solid ${saleOnly ? 'var(--accent)' : 'var(--border)'}`,
                 background: saleOnly ? 'var(--accent)' : 'var(--bg)',
                 color: saleOnly ? '#fff' : 'var(--text)', cursor: 'pointer',

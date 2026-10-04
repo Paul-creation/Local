@@ -3,12 +3,14 @@
 
 import { useState } from 'react';
 import type { GameFilters } from '../../lib/useGameFilters';
+import { PLAYERS_MAX, type Range } from '../../lib/rangeFilter';
 import './quick-links.css';
 
-const PLAYER_CHOICES: [string, string][] = [['1인', '혼자'], ['2인', '2명'], ['3-4인', '3~4명'], ['5인 이상', '5명+'], ['16명 이상', '16명+']];
+// 인원 범위 (app/lib/rangeFilter): 혼자·2명·3~4명은 그 인원으로 할 수 있는 게임, 5명+·16명+는 그만큼 모일 수 있는 게임
+const PLAYER_CHOICES: [Range, string][] = [[[1, 1], '혼자'], [[2, 2], '2명'], [[3, 4], '3~4명'], [[0, 5], '5명+'], [[0, PLAYERS_MAX], '16명+']];
 
 // "뭐 하지" 상단 바로가기 — 인원으로 찾기 · 지금 할인 중 · 비교 만들기
-// 필터는 주소(?p=·?sale=1)에도 담기므로 결과 화면을 그대로 공유할 수 있다
+// 필터는 주소(?players=·?sale=1)에도 담기므로 결과 화면을 그대로 공유할 수 있다
 export default function QuickLinks({ filters }: { filters: GameFilters }) {
   const [pickPlayers, setPickPlayers] = useState(false);
   const show = (apply: () => void) => {
@@ -31,7 +33,7 @@ export default function QuickLinks({ filters }: { filters: GameFilters }) {
       {pickPlayers && (
         <div className="quick-links-row quick-players" role="group" aria-label="몇 명이서 할지">
           {PLAYER_CHOICES.map(([value, label]) => (
-            <button key={value} type="button" className="quick-chip quick-chip-sm" onClick={() => show(() => filters.setSelectedPlayers(value))}>
+            <button key={label} type="button" className="quick-chip quick-chip-sm" onClick={() => show(() => filters.setPlayersRange(value))}>
               {label}
             </button>
           ))}
