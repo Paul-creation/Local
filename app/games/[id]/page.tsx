@@ -16,6 +16,7 @@ import VideoPreviewSection, { type CoopVideo } from '../../components/VideoPrevi
 import Link from 'next/link';
 import ShareButton from '../../components/ShareButton';
 import GotyBadge from '../../components/GotyBadge';
+import GameImage from '../../components/GameImage';
 import { getTop10Ids } from '../../lib/hotChart';
 import { playersText } from '../../lib/players';
 import GameOpinions from '../../components/community/GameOpinions';
@@ -138,7 +139,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </div>
       ) : (
         <div className="detail-hero">
-          <img src={game.hero_image_url || game.card_image_url || game.cover_image_url} alt={game.name} />
+          <GameImage src={game.hero_image_url || game.card_image_url || game.cover_image_url} sizes="(max-width: 1200px) 100vw, 1200px" fallbackWidth={1280} alt={game.name} />
         </div>
       )}
       {/* 제목 + 평가 배지 + 태그 + 설명 */}
@@ -411,7 +412,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               const current = s.id === game.id;
               const inner = (
                 <>
-                  <img src={s.card_image_url || s.cover_image_url} alt="" loading="lazy" />
+                  <GameImage src={s.card_image_url || s.cover_image_url} sizes="240px" loading="lazy" />
                   <span className="series-name">{s.name}</span>
                 </>
               );

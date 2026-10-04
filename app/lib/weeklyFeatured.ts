@@ -2,6 +2,7 @@
 // 메인 "이번주의 게임" — featured_games의 가장 최근 주 게임 1개만 메인 select와 따로 가져온다
 // 선정은 scripts/pick-weekly-featured.mjs가 매주 (week_start = 그 주 금요일, 한국 시간)
 import { supabase } from './supabase';
+import { flattenGame } from './price';
 
 // "2026-10-02" → "10월 1주차" (그 주 금요일이 그 달의 몇 번째 금요일인지)
 export function weekLabel(weekStart: string) {
@@ -28,5 +29,6 @@ export async function getWeeklyFeatured() {
   const row = data?.[0];
   const game = row?.games as any;
   if (!game) return null;
-  return { ...game, weekLabel: weekLabel(row!.week_start) };
+  if (game.fun_description) game.description = null; // 긴 설명은 짧은 소개가 없을 때만 화면에 씀
+  return { ...flattenGame(game), weekLabel: weekLabel(row!.week_start) };
 }

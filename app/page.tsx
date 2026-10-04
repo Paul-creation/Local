@@ -7,6 +7,7 @@ import { BASE_OG, SITE_NAME, SITE_DESCRIPTION } from './lib/site';
 import { getHotChart } from './lib/hotChart';
 import { getWeeklyFeatured } from './lib/weeklyFeatured';
 import { getPopularPosts } from './lib/community';
+import { flattenGame } from './lib/price';
 
 // 5분마다 새로 만든 결과를 모두에게 보여준다 (방문마다 게임 전체를 DB에서 가져오지 않도록). 인기 글·가격도 최대 5분 늦게 반영
 export const revalidate = 300;
@@ -23,6 +24,8 @@ export default async function Home() {
   // 이번주의 게임도 featured_games에서 그 게임 1개만 따로 (lib/weeklyFeatured). 기록이 없으면 featured 칸으로
   // 인기 게시물: 최근 7일 추천+댓글 순 5개, 모자라면 최근 글로 채움
   // GOTY 배지(goty_awards)도 기록 있는 게임만 따로 — 칸이 아직 없으면 오류를 무시하고 배지 없이 표시
+  // 브라우저로 보내는 양을 줄이려고 가격 기록은 최신 가격 두 칸으로 펴고 빈 칸은 뺀다 (flattenGame).
+  // 긴 설명(description)은 짧은 소개(fun_description)가 없을 때만 화면에 쓰이므로 그때만 보낸다
   const [{ data: list }, { data: descs }, hot, weekly, popularPosts, { data: goty }] = await Promise.all([
     supabase
       .from('games')
@@ -30,7 +33,7 @@ export default async function Home() {
         id, name, search_name_ko, tags, category, difficulty,
         min_players, max_players, recommended_players, solo_playable,
         is_free, lowest_price, steam_appid, source, cover_image_url, card_image_url,
-        featured, is_casual_party, heat_rank,
+        featured, is_casual_party,
         price_history(price, discount_percent, checked_at, currency)
       `)
       .gte('price_history.price', 100)
@@ -48,7 +51,15 @@ export default async function Home() {
   ]);
   const descById = new Map((descs || []).map((d) => [d.id, d]));
   const gotyById = new Map((goty || []).map((g) => [g.id, g.goty_awards]));
-  const games = (list || []).map((g) => ({ ...g, ...descById.get(g.id), goty_awards: gotyById.get(g.id) ?? null }));
+  const games = (list || []).map((g) => {
+    const d = descById.get(g.id);
+    return flattenGame({
+      ...g,
+      fun_description: d?.fun_description,
+      description: d?.fun_description ? null : d?.description,
+      goty_awards: gotyById.get(g.id),
+    });
+  });
 
   return (
     <main className="page">

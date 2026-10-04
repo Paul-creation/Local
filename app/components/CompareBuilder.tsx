@@ -7,7 +7,7 @@ import { supabase } from '../lib/supabase';
 import { compareBlockReason, MAX_COMPARE, COMPARE_PICK_KEY, BUILDER_FIELDS } from '../lib/compareRule';
 import { matchRank, looseIlikePattern } from '../lib/searchMatch';
 import { playersText } from '../lib/players';
-import { sizedImage } from '../lib/imageUrl';
+import GameImage from './GameImage';
 
 const MAX_SUGGESTIONS = 6;
 
@@ -148,7 +148,7 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
           const g = picks[i];
           return g ? (
             <div key={g.id} className="cb-slot is-filled">
-              <img src={sizedImage(g.card_image_url || g.cover_image_url)} alt={g.name} />
+              <GameImage src={g.card_image_url || g.cover_image_url} sizes="(max-width: 640px) 33vw, 400px" alt={g.name} />
               <div className="cb-slot-name">{g.name}</div>
               <button className="cb-slot-remove" aria-label={`${g.name} 빼기`} onClick={() => remove(g.id)}>✕</button>
             </div>
