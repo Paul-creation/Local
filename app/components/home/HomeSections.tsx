@@ -9,19 +9,27 @@ import { playersText } from '../../lib/players';
 import type { PostListItem } from '../../lib/community';
 import PopularPosts from './PopularPosts';
 import GameImage from '../GameImage';
+import { preconnect, preload } from 'react-dom';
+import { sizedImage } from '../../lib/imageUrl';
 
 // featured: featured_games에서 뽑힌 이번 주 게임, 기록이 없으면 예전처럼 featured 칸 / bannerPool: 추천 배너 게임 (app/page.tsx에서 고름)
 export default function HomeSections({ featured, bannerPool, hotTabs, popularPosts = [] }: { featured: any; bannerPool: any[]; hotTabs: HotTab[]; popularPosts?: PostListItem[] }) {
 
   const featuredPrice = featured ? getPriceInfo(featured) : null;
+  const featuredImage = featured ? featured.card_image_url || featured.cover_image_url : null;
+
+  // 첫 화면 LCP(이번주의 게임 이미지)를 빨리 받도록 — 스팀 이미지 서버에 미리 연결하고, 그 이미지를 <head>에서 먼저 요청
+  // preload 주소는 GameImage가 실제로 쓰는 주소(sizedImage, fallbackWidth 1280)와 같아야 한 번만 받는다
+  preconnect('https://shared.akamai.steamstatic.com');
+  if (featuredImage) preload(sizedImage(featuredImage, 1280), { as: 'image', fetchPriority: 'high' });
 
   return (
         <>
                     {featured && (
             <Link href={`/games/${featured.id}`} className="hero-card">
               <div className="hero-image-wrap">
-                <GameImage src={featured.card_image_url || featured.cover_image_url} fallbackWidth={1280} alt="" aria-hidden="true" className="img-backdrop" />
-                <GameImage src={featured.card_image_url || featured.cover_image_url} fallbackWidth={1280} alt={featured.name} fetchPriority="high" />
+                <GameImage src={featuredImage} fallbackWidth={1280} alt="" aria-hidden="true" className="img-backdrop" fetchPriority="high" />
+                <GameImage src={featuredImage} fallbackWidth={1280} alt={featured.name} fetchPriority="high" />
               </div>
               <div className="hero-content">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
