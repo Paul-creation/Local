@@ -39,8 +39,9 @@ export function parsePlayers(v: string | null): Range {
 }
 
 // 예전 인원 칸 주소(?p=3-4인 등)를 그때와 비슷한 범위로
+// (1인은 1인 전용 필터로 따로 — useGameFilters의 soloOnly)
 const LEGACY_PLAYERS: Record<string, Range> = {
-  '1인': [1, 1], '2인': [2, 2], '3-4인': [0, 3], '5인 이상': [0, 5], '16명 이상': [0, PLAYERS_MAX],
+  '2인': [2, 2], '3-4인': [0, 3], '5인 이상': [0, 5], '16명 이상': [0, PLAYERS_MAX],
 };
 export const legacyPlayers = (p: string | null): Range => LEGACY_PLAYERS[p || ''] || PLAYERS_ALL;
 

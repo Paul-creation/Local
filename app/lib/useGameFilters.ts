@@ -31,6 +31,8 @@ export function useGameFilters(games: any[] | null) {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   // 인원·가격 범위 슬라이더 (눈금 번호, app/lib/rangeFilter) — 양 끝이면 필터 없음
   const [playersRange, setPlayersRange] = useState<Range>(PLAYERS_ALL);
+  // 1인 전용(최대 인원 1) — 메인 "혼자" 바로가기용. 슬라이더와 따로 걸린다
+  const [soloOnly, setSoloOnly] = useState(false);
   const [selectedDifficulty, setSelectedDifficulty] = useState('');
   const [priceRange, setPriceRange] = useState<Range>(PRICE_ALL);
   const [saleOnly, setSaleOnly] = useState(false);
@@ -54,6 +56,8 @@ export function useGameFilters(games: any[] | null) {
     setSelectedTags((sp.get('tags') || '').split(',').filter(Boolean));
     // players=2-7 · players=5(5~5) / 예전 인원 칸 주소 p=3-4인도 비슷한 범위로
     setPlayersRange(sp.has('players') ? parsePlayers(sp.get('players')) : legacyPlayers(sp.get('p')));
+    // 예전 인원 칸 주소의 1인(p=1인)도 1인 전용
+    setSoloOnly(sp.get('solo') === '1' || sp.get('p') === '1인');
     setSelectedDifficulty(sp.get('d') || '');
     // 예전 "무료 게임만" 주소(free=1)는 무료~무료
     setPriceRange(sp.has('price') ? parsePrice(sp.get('price')) : sp.get('free') === '1' ? FREE_ONLY : PRICE_ALL);
@@ -81,6 +85,7 @@ export function useGameFilters(games: any[] | null) {
     if (selectedCategory) q.set('cat', selectedCategory);
     if (selectedTags.length) q.set('tags', selectedTags.join(','));
     if (formatPlayers(playersRange)) q.set('players', formatPlayers(playersRange));
+    if (soloOnly) q.set('solo', '1');
     if (selectedDifficulty) q.set('d', selectedDifficulty);
     if (formatPrice(priceRange)) q.set('price', formatPrice(priceRange));
     if (saleOnly) q.set('sale', '1');
@@ -92,7 +97,7 @@ export function useGameFilters(games: any[] | null) {
     if (window.location.pathname === '/' && window.location.pathname + window.location.search !== url) {
       window.history.replaceState(null, '', url);
     }
-  }, [inited, showResults, query, selectedCategory, selectedTags, playersRange, selectedDifficulty, priceRange, saleOnly, compareList]);
+  }, [inited, showResults, query, selectedCategory, selectedTags, playersRange, soloOnly, selectedDifficulty, priceRange, saleOnly, compareList]);
 
   // 카드나 비교하기를 누를 때 지금 목록 주소와 스크롤 위치를 기억
   const rememberList = () => {
@@ -164,25 +169,27 @@ export function useGameFilters(games: any[] | null) {
   const normalizedQuery = query.trim().toLowerCase();
   const playersOn = !isAll(playersRange, PLAYERS_ALL);
   const priceOn = !isAll(priceRange, PRICE_ALL);
-  const selectedCount = [selectedCategory, playersOn ? '인원' : '', selectedDifficulty, priceOn ? '가격' : '', saleOnly ? '할인' : '', ...selectedTags].filter(Boolean).length;
-  const hasFilters = !!(normalizedQuery || selectedCategory || selectedTags.length > 0 || playersOn || selectedDifficulty || priceOn || saleOnly);
+  const selectedCount = [selectedCategory, playersOn ? '인원' : '', soloOnly ? '1인 전용' : '', selectedDifficulty, priceOn ? '가격' : '', saleOnly ? '할인' : '', ...selectedTags].filter(Boolean).length;
+  const hasFilters = !!(normalizedQuery || selectedCategory || selectedTags.length > 0 || playersOn || soloOnly || selectedDifficulty || priceOn || saleOnly);
 
   const filtered = (games || []).filter((g) => {
     // 지금 실제 가격(할인 중이면 할인가) 기준
     if (!matchesPrice(g, priceRange)) return false;
     if (saleOnly && !((getPriceInfo(g)?.discount ?? 0) > 0)) return false;
     if (selectedCategory && !badgeMatches(g.category, selectedCategory)) return false;
-    // 고른 태그를 전부 가진 게임만 (AND). "협동"·"대전" 같은 묶음 태그는 온라인·로컬 중 하나만 있어도 (app/lib/tagSearch)
-    if (selectedTags.length > 0 && !selectedTags.every(t => hasTag(g.tags, t))) return false;
+    // 고른 태그를 전부 가진 게임만 (AND). "협동"·"대전" 같은 묶음 태그는 온라인·로컬 중 하나만 있어도,
+    // 협동·대전 태그는 플래그(has_online_coop 등)가 켜져 있어도 (app/lib/tagSearch)
+    if (selectedTags.length > 0 && !selectedTags.every(t => hasTag(g, t))) return false;
     if (selectedDifficulty && g.difficulty !== selectedDifficulty) return false;
     if (!matchesPlayers(g, playersRange)) return false;
+    if (soloOnly && g.max_players !== 1) return false;
     // 영어 이름·한국어 이름·별명 (띄어쓰기·대소문자·기호 무시). 태그 단어는 확정할 때 태그 조건으로 옮겨 둠
     if (normalizedQuery) return matchesGame(g, normalizedQuery);
     return true;
   });
 
   // 검색어·필터가 바뀌면 다시 처음 24개부터 (처음 열 때는 그대로)
-  const filterKey = [query, selectedCategory, selectedTags.join(','), playersRange.join('-'), selectedDifficulty, priceRange.join('-'), saleOnly].join('|');
+  const filterKey = [query, selectedCategory, selectedTags.join(','), playersRange.join('-'), soloOnly, selectedDifficulty, priceRange.join('-'), saleOnly].join('|');
   const prevFilterKey = useRef<string | null>(null);
   useEffect(() => {
     if (prevFilterKey.current !== null && prevFilterKey.current !== filterKey) setVisibleCount(PAGE_SIZE);
@@ -225,6 +232,7 @@ export function useGameFilters(games: any[] | null) {
     setSelectedCategory('');
     setSelectedTags([]);
     setPlayersRange(PLAYERS_ALL);
+    setSoloOnly(false);
     setSelectedDifficulty('');
     setPriceRange(PRICE_ALL);
     setSaleOnly(false);
@@ -242,6 +250,7 @@ export function useGameFilters(games: any[] | null) {
     selectedCategory, setSelectedCategory,
     selectedTags, toggleTag, addTags, tagLookup, splitInput,
     playersRange, setPlayersRange,
+    soloOnly, setSoloOnly,
     selectedDifficulty, setSelectedDifficulty,
     priceRange, setPriceRange,
     saleOnly, setSaleOnly,

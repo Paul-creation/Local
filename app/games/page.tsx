@@ -6,7 +6,7 @@ export default async function GamesIndex({ searchParams }: { searchParams: Promi
   const sp = await searchParams;
   const q = new URLSearchParams({ r: '1' });
   for (const [k, v] of Object.entries(sp)) {
-    if (typeof v === 'string' && ['q', 'cat', 'tags', 'p', 'players', 'price', 'd', 'free', 'sale', 'cmp'].includes(k)) q.set(k, v);
+    if (typeof v === 'string' && ['q', 'cat', 'tags', 'p', 'players', 'price', 'solo', 'd', 'free', 'sale', 'cmp'].includes(k)) q.set(k, v);
   }
   redirect(`/?${q}`);
 }

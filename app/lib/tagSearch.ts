@@ -109,9 +109,20 @@ export const TAG_ANY: Record<string, string[]> = {
   '대전': ['온라인 대전', '로컬 대전'],
 };
 
-// 게임 태그 목록이 고른 태그(묶음 태그 포함)에 맞는지
-export function hasTag(gameTags: string[] | null | undefined, tag: string) {
-  return (TAG_ANY[tag] || [tag]).some((t) => gameTags?.includes(t));
+// 태그가 없어도 스팀 카테고리로 채운 플래그(scripts/fill-steam-categories.mjs)가 켜져 있으면 맞는 것으로 본다
+type FlagField = 'has_online_coop' | 'has_local_coop' | 'has_pvp';
+const TAG_FLAGS: Record<string, FlagField[]> = {
+  '협동': ['has_online_coop', 'has_local_coop'],
+  '온라인 협동': ['has_online_coop'],
+  '로컬 협동': ['has_local_coop'],
+  '대전': ['has_pvp'],
+};
+
+type TaggedGame = { tags?: string[] | null } & Partial<Record<FlagField, boolean | null>>;
+
+// 게임이 고른 태그(묶음 태그 포함)에 맞는지 — 태그나 해당 플래그 중 하나라도 있으면
+export function hasTag(game: TaggedGame, tag: string) {
+  return (TAG_ANY[tag] || [tag]).some((t) => game.tags?.includes(t)) || (TAG_FLAGS[tag] || []).some((f) => game[f]);
 }
 
 // 사람들이 자주 줄여 쓰거나 다르게 부르는 이름 → 태그

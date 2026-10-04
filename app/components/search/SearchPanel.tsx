@@ -22,6 +22,7 @@ export default function SearchPanel({ games, presentTags: presentTagList, filter
     selectedCategory, setSelectedCategory,
     selectedTags, toggleTag,
     playersRange, setPlayersRange,
+    soloOnly, setSoloOnly,
     selectedDifficulty, setSelectedDifficulty,
     priceRange, setPriceRange,
     saleOnly, setSaleOnly,
@@ -99,6 +100,12 @@ export default function SearchPanel({ games, presentTags: presentTagList, filter
                 label={playersLabel} onChange={setPlayersRange}
                 lowName="최소 인원" highName="최대 인원"
               />
+              <button
+                type="button"
+                className={`range-chip${soloOnly ? ' on' : ''}`}
+                aria-pressed={soloOnly}
+                onClick={() => setSoloOnly(!soloOnly)}
+              >1인 전용</button>
             </div>
 
             {/* 가격 — 지금 실제 가격(할인가) 기준. "무료만"은 무료~무료로 바로, 한 번 더 누르면 해제 */}
