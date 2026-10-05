@@ -35,6 +35,7 @@ import { permanentRedirect } from 'next/navigation';
 // 게임마다 처음 열릴 때 만들고 1시간 동안 재사용 (ISR). 가격·접속자는 하루 한 번 갱신되므로 충분
 // 의견 작성·수정·삭제(api/game-comments)와 신고 자동 숨김(api/community/report)은 그 게임 페이지를 바로 새로 만든다
 // 메인 카드의 <Link>가 화면에 보이면 상세를 미리 불러오므로(prefetch) 짧게 잡으면 방문마다 재생성이 몰린다
+type Ch = { channel_title: string | null; streamer_name: string };
 export const revalidate = 3600;
 export async function generateStaticParams() {
   return []; // 빌드 때 미리 만들지 않고, 처음 방문할 때 만든다 (빈 배열이어야 ISR이 켜짐)
@@ -140,7 +141,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const { id } = await params;
 
   const top10Promise = getTop10Ids().catch(() => [] as string[]);
-    const { data: game, error } = await selectGames('*, price_history(price, discount_percent, checked_at), player_history(player_count, recorded_at), game_streamers(streamer_id, streamers(id, name, platform, handle)), game_videos(kind, video_id, title, channel_title, published_at, view_count)')
+    const { data: game, error } = await selectGames('*, price_history(price, discount_percent, checked_at), player_history(player_count, recorded_at), game_streamers(streamer_id, streamers(id, name, platform, handle)), game_videos(kind, video_id, title, channel_title, published_at, view_count), streamer_videos(video_id, title, published_at, streamer_channels(channel_title, streamer_name))')
+    .order('published_at', { referencedTable: 'streamer_videos', ascending: false })
+    .limit(24, { referencedTable: 'streamer_videos' })
     .eq('id', id)
     .single();
 
@@ -490,7 +493,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             </details>
           )}
 
-          {/* 영상으로 미리 보기 — 하이라이트 + 친구랑 플레이(멀티 게임만) + 스트리머 */}
+          {/* 영상으로 미리 보기 — 하이라이트 + 친구랑 플레이(멀티 게임만) + 스트리머 영상 + 스트리머 채널 */}
           <VideoPreviewSection
             highlights={((game.game_videos || []) as (CoopVideo & { kind: string })[])
               .filter((v) => v.kind === 'highlight')
@@ -502,6 +505,10 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
                   .sort((a, b) => (b.view_count || 0) - (a.view_count || 0))
                   .slice(0, 3)
               : []}
+            streamerVideos={((game.streamer_videos || []) as { video_id: string; title: string; published_at: string; streamer_channels: Ch | Ch[] | null }[]).map((v) => {
+              const c = Array.isArray(v.streamer_channels) ? v.streamer_channels[0] : v.streamer_channels;
+              return { video_id: v.video_id, title: v.title, published_at: v.published_at, channel_title: c?.channel_title || c?.streamer_name || null };
+            })}
             streamers={game.game_streamers?.length > 0 ? (
               <div className="streamer-list">
                 {game.game_streamers.map((gs: any) => {

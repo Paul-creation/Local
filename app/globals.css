@@ -1078,6 +1078,8 @@ img { display: block; }
    STREAMER
    ============================================================ */
 
+.streamer-channels.has-videos { margin-top: 24px; }
+.streamer-sub { font-size: 15px; font-weight: 700; color: var(--text); margin: 0 0 10px; }
 .streamer-list { display: flex; flex-wrap: wrap; gap: 10px; }
 
 .streamer-chip {
@@ -1251,7 +1253,9 @@ img { display: block; }
 }
 
 /* 상세 — 영상으로 미리 보기 */
-.video-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.video-tabs { display: flex; gap: 2px; margin-bottom: 16px; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+.video-tabs::-webkit-scrollbar { display: none; }
+.video-tabs .tab { flex: 0 0 auto; white-space: nowrap; }
 .video-tab {
   padding: 8px 16px; border-radius: 100px;
   border: 1px solid var(--border-light); background: var(--bg-card); color: var(--text-dim);
@@ -1276,6 +1280,23 @@ img { display: block; }
   }
   .coop-videos::-webkit-scrollbar { display: none; }
   .coop-video-card { flex: 0 0 78%; scroll-snap-align: start; }
+}
+
+/* 메인 — 스트리머가 플레이한 게임 (가로 스크롤 한 줄) */
+.sg-row {
+  list-style: none; margin: 0 0 0; padding: 0 0 4px; display: flex; gap: 12px;
+  overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: thin;
+}
+.sg-item { flex: 0 0 220px; scroll-snap-align: start; min-width: 0; }
+.sg-card { display: block; color: var(--text); text-decoration: none; }
+.sg-img { width: 100%; aspect-ratio: 460 / 215; object-fit: cover; display: block; border-radius: var(--radius-md); background: var(--inset); }
+.sg-name { display: block; margin-top: 8px; font-size: 15px; font-weight: 700; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sg-card:hover .sg-name { color: var(--accent-text); }
+.sg-meta { display: block; margin-top: 2px; font-size: var(--fs-sub); color: var(--text-dimmer); }
+@media (max-width: 640px) {
+  .sg-row { margin: 0 -24px; padding: 0 24px 4px; scroll-padding-left: 24px; scrollbar-width: none; }
+  .sg-row::-webkit-scrollbar { display: none; }
+  .sg-item { flex-basis: 62%; }
 }
 
 /* TOP 10 배지 (검색 결과 카드·상세 페이지) */
