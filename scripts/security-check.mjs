@@ -38,6 +38,7 @@ function checkCode() {
   read('app/api/admin/community/route.ts').match(/isAdmin\(req\)/g)?.length >= 3 ? ok('게시판 관리자 API 인증') : bad('게시판 관리자 API에 인증 누락 (app/api/admin/community/route.ts)');
   read('app/api/admin/feedback/route.ts').match(/isAdmin\(req\)/g)?.length >= 2 ? ok('의견함 관리자 API 인증') : bad('의견함 관리자 API에 인증 누락 (app/api/admin/feedback/route.ts)');
   read('app/api/admin/reports/route.ts').match(/isAdmin\(req\)/g)?.length >= 2 ? ok('신고 목록 관리자 API 인증') : bad('신고 목록 관리자 API에 인증 누락 (app/api/admin/reports/route.ts)');
+  read('app/api/admin/streamers/route.ts').match(/isAdmin\(req\)/g)?.length >= 2 ? ok('스트리머 관리자 API 인증') : bad('스트리머 관리자 API에 인증 누락 (app/api/admin/streamers/route.ts)');
   const clientFiles = execSync("grep -rlE \"^'use client'|^\\\"use client\\\"\" app --include=*.ts --include=*.tsx || true").toString().trim().split('\n').filter(Boolean);
   const leaky = clientFiles.filter((f) => {
     const src = read(f);
@@ -149,11 +150,45 @@ async function checkDb() {
   fr.error ? ok('브라우저 키로 feedback 읽기 차단됨 (연락처·IP 해시 비공개)') : bad('브라우저 키로 feedback을 읽을 수 있음!', 'revoke all on public.feedback from anon, authenticated; 실행');
 
   await checkGameCommentsDb(anyGame);
+  await checkStreamerDb();
 
   const { count } = await admin.from('compare_cache').select('game_ids', { count: 'exact', head: true });
   count > 0 ? ok(`비교 캐시 저장 중 (${count}개 조합)`) : note('비교 캐시 0개 — 배포 후 비교 페이지를 한 번 열어보고 다시 점검');
 
   await checkSoloInTop();
+}
+
+// 스트리머 PICK 표: 브라우저 키는 공개 칸 읽기만, 숨김·확인 시각 칸과 쓰기·수정은 차단 (쓰기는 수집 스크립트·관리자 API만)
+async function checkStreamerDb() {
+  const pub = [
+    ['streamer_channels', 'channel_id, streamer_name, channel_title, handle, kind'],
+    ['streamer_videos', 'video_id, channel_id, game_id, title, published_at, view_count, is_short'],
+  ];
+  for (const [table, cols] of pub) {
+    const { error } = await anon.from(table).select(cols).limit(1);
+    if (error?.code === '42P01' || /does not exist|schema cache/i.test(error?.message || '')) return note('스트리머 표 없음 — supabase/migrations/20261014090000_streamer_videos.sql 실행 전');
+    error ? bad(`브라우저 키로 ${table} 공개 칸을 못 읽음 (${error.message})`, '마이그레이션의 grant select 확인') : ok(`브라우저 키로 ${table} 공개 칸 읽기 가능`);
+  }
+  for (const [table, col] of [['streamer_channels', 'uploads_checked_at'], ['streamer_videos', 'hidden']]) {
+    const { error } = await anon.from(table).select(col).limit(1);
+    error ? ok(`브라우저 키로 ${table}.${col} 읽기 차단됨`) : bad(`브라우저 키로 ${table}.${col}을 읽을 수 있음!`, `revoke all on public.${table} from anon, authenticated; 후 공개 칸만 grant`);
+  }
+  const TEST_CH = 'UC__security_test__________';
+  const ins = [
+    ['streamer_channels', { channel_id: TEST_CH, streamer_name: '__security_test__', kind: 'main' }, 'channel_id', TEST_CH],
+    ['streamer_videos', { video_id: '__sec_test_', channel_id: TEST_CH, game_id: '00000000-0000-0000-0000-000000000000', title: '__security_test__', published_at: new Date().toISOString(), match_method: 'title' }, 'video_id', '__sec_test_'],
+  ];
+  for (const [table, row, key, val] of ins) {
+    const { error } = await anon.from(table).insert(row);
+    if (error?.code === '42501') ok(`브라우저 키로 ${table} 쓰기 차단됨`);
+    else if (error) note(`브라우저 키로 ${table} 쓰기 시도 → 권한이 아닌 다른 이유로 실패 (${error.message})`);
+    else { bad(`브라우저 키로 ${table}에 쓸 수 있음!`, `revoke all on public.${table} from anon, authenticated; 실행`); await admin.from(table).delete().eq(key, val); }
+  }
+  // 수정: 없는 행을 대상으로 시도 → 권한 오류(42501)여야 통과 (실제 행은 바뀌지 않음)
+  for (const [table, patch, key, val] of [['streamer_channels', { enabled: false }, 'channel_id', TEST_CH], ['streamer_videos', { hidden: true }, 'video_id', '__sec_test_']]) {
+    const { error } = await anon.from(table).update(patch).eq(key, val);
+    error?.code === '42501' ? ok(`브라우저 키로 ${table} 수정 차단됨`) : bad(`브라우저 키로 ${table} 수정 권한이 있음${error ? ` (${error.message})` : ''}`, `revoke update on public.${table} from anon, authenticated; 실행`);
+  }
 }
 
 // 데이터 점검: 인기 상위 200개 중 1인용(max_players=1)이면 경고, 멀티 흔적(활동·태그·멀티 칸)이 있으면 따로 강조
@@ -217,7 +252,7 @@ async function checkSite() {
   r = await call('/api/compare-chat', json('POST', { question: '', gameInfo: '', history: [] }));
   r.body?.answer === '질문을 입력해주세요.' ? ok('비교 채팅 입력 검증 동작 (AI 호출 없음)') : bad('비교 채팅 입력 검증이 배포에 없음', 'aiGuard 패치 후 푸시');
 
-  for (const path of ['/api/admin/feedback', '/api/admin/reports']) {
+  for (const path of ['/api/admin/feedback', '/api/admin/reports', '/api/admin/streamers']) {
     r = await call(path);
     r.status === 401 ? ok(`로그인 없이 ${path} 조회 차단`) : bad(`로그인 없이 ${path} 응답 ${r.status}`, '관리자 API에 isAdmin 확인');
   }

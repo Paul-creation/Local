@@ -2,6 +2,7 @@
 // 이번 주 새 게임의 진입장벽(entry_barrier·reason)과 혼자 플레이 단계(solo_mode)를 채움 (매주 갱신, 태그 연결 다음 단계)
 // 실행: node --env-file=.env.local scripts/judge-new-games.mjs              (미리보기 — AI 안 부르고 대상·예상 비용만)
 //       node --env-file=.env.local scripts/judge-new-games.mjs --apply      (AI 판단 후 저장 — 매주 갱신이 쓰는 방식)
+//       --ids <파일>  지정한 게임만 (lib/only-ids.mjs, 대상 조건은 그대로)
 //       node --env-file=.env.local scripts/judge-new-games.mjs --sample 20  (예전 게임 20개로 프롬프트를 만들어 예상 비용만 계산, AI·DB 안 씀)
 // - 대상: 숨기지 않은 게임 중 이번 주(7일 안)에 들어왔고 이 기능 시작(NEW_SINCE) 뒤에 들어온 게임, entry_barrier나 solo_mode가 빈 것
 //   예전 미정(null) 게임은 일부러 그대로 둠. 한 번 판단한 게임(filter_ai_at)은 다시 묻지 않음. 한 번에 최대 200개
@@ -15,6 +16,7 @@
 import fs from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { fetchSteamTags } from './lib/steam-tags.mjs';
+import { onlyIds } from './lib/only-ids.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const APPLY = process.argv.includes('--apply');
@@ -106,7 +108,7 @@ async function loadTargets(migrated) {
   }
   const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const since = weekAgo > NEW_SINCE ? weekAgo : NEW_SINCE;
-  let q = supabase.from('games').select(cols).eq('hidden', false).gte('created_at', since)
+  let q = onlyIds(supabase.from('games').select(cols)).eq('hidden', false).gte('created_at', since)
     .or('entry_barrier.is.null,solo_mode.is.null').order('created_at', { ascending: true }).limit(MAX_GAMES);
   if (migrated) q = q.is('filter_ai_at', null);
   const { data, error } = await q;

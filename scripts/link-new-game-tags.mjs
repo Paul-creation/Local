@@ -2,6 +2,7 @@
 // 새 게임을 태그 나무에 연결 — 스팀 태그(투표 수)를 받아 game_tags에 저장 (매주 갱신, 새 게임 수집 바로 다음 단계, AI 안 씀)
 // 실행: node --env-file=.env.local scripts/link-new-game-tags.mjs             (미리보기 — DB는 안 바꿈)
 //       node --env-file=.env.local scripts/link-new-game-tags.mjs --apply     (저장 — 매주 갱신이 쓰는 방식)
+//       --ids <파일>  지정한 게임만 (lib/only-ids.mjs, 대상 조건은 그대로)
 //       node --env-file=.env.local scripts/link-new-game-tags.mjs --compare 3 (태그가 이미 있는 게임 3개로 다시 만들어 DB 값과 비교, DB 안 씀)
 //       node --env-file=.env.local scripts/link-new-game-tags.mjs --relink-tag t:1234 [--apply] [--limit 5]
 //         (tree.json에 새로 넣은 태그를 이미 태그가 연결된 게임에도 붙임 — 아래 relinkTag 설명. 전체 약 660개 기준 약 16분)
@@ -13,6 +14,7 @@
 import fs from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { fetchSteamTags, steamTagKoNames, loadTagRules, toGameTags, SteamTagsMissing } from './lib/steam-tags.mjs';
+import { onlyIds } from './lib/only-ids.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const APPLY = process.argv.includes('--apply');
@@ -129,7 +131,7 @@ async function main() {
     linked.get(r.game_id).push(r);
   }
   const games = await readAll('games', `id, name, steam_appid, created_at${migrated ? ', tags_linked_at' : ''}`, (q) =>
-    q.not('steam_appid', 'is', null).eq('hidden', false).order('created_at', { ascending: false }));
+    onlyIds(q.not('steam_appid', 'is', null).eq('hidden', false).order('created_at', { ascending: false })));
   if (RELINK) return relinkTag(rules, dbTagIds, linked, games);
   const targets = COMPARE
     ? games.filter((g) => linked.has(g.id)).slice(0, COMPARE)
