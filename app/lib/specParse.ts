@@ -7,6 +7,10 @@
 //   사용자 부품과 비교하는 규칙은 specJudge.ts (같은 제조사 항목이 있으면 그것, 없으면 적힌 항목 중 가장 높은 등급)
 // - 모델명이 없는 저사양 표기(내장 그래픽·DirectX만·GHz만 등)는 최저 등급({ any: 1 }) + low_spec: true
 // - 세대 없이 급만 적은 CPU("Intel Core i5")와 표에 없는 번호(가장 가까운 번호로 추정)는 confidence를 낮춘다
+// - 모델명·VRAM·DirectX 같은 사양 단어가 하나도 없는 표기(해상도만·"Toaster"처럼 농담·설명뿐)도 최저 등급 + low_spec: true.
+//   단 TBD·N/A·미정 같은 "아직 모름" 표기와, 모델처럼 보이지만 표에 없는 번호(예: GTX 2060 오타)는 판정 불가(null)로 둔다
+// - 세대 없는 Core i3/i5/i7·Ryzen 3/5/7은 게임 출시 연도가 있으면 "출시 3년 전에 나온 세대"로 보고 cpu_generation_guessed: true
+//   (출시 연도가 없으면 등급표의 세대 미표기 기본값). 세대표는 등급표 항목의 basis에 적힌 연도에서 읽는다
 
 export type GpuEntry = { key: string; name: string; vendor: string; tier: number; mobile: boolean; basis: string };
 export type CpuEntry = { key: string; name: string; vendor: string; family: string; gen: number | null; class: string | null; tier: number; basis: string; class_only?: boolean };
@@ -24,6 +28,7 @@ export type ParsedSpec = {
   storage_gb: number | null;
   matched: { cpu: string | null; gpu: string | null }; // 칸 원문
   low_spec: boolean;
+  cpu_generation_guessed: boolean; // 세대가 안 적혀 있어 출시 연도로 짐작한 판정 (화면: "세대가 안 적혀 있어 대략적인 판정이에요")
   confidence: 'high' | 'medium' | 'low';
   detail: { cpu: PartDetail; gpu: PartDetail; ram: 'ok' | 'typo-fixed' | 'missing'; storage: 'ok' | 'missing' };
 };
@@ -163,7 +168,17 @@ function gpuLookup(idx: Index, key: string, mobile: boolean): Hit<GpuEntry> | nu
 
 const GPU_LOW = /\b\d+\s?m\b|integrated|내장|onboard|on-board|igpu|\bdx\s?\d|direct\s?x|\bshader|open\s?gl|vulkan|\d+\s?(?:mb|gb)\b|vram|video (?:card|memory|ram)|graphics (?:card|hardware|processor)|compatible|호환|\bgpu\b|dedicated|capable|support/i;
 const CPU_LOW = /ghz|mhz|dual[- ]?core|quad[- ]?core|multi[- ]?core|\d[- ]?core|processor|cpu|x86|x64|64[- ]?bit|sse|intel or amd|\bany\b|듀얼|쿼드|코어|프로세서/i;
-const RESOLUTION = /\d{3,4}\s*[x×]\s*\d{3,4}/;
+const RESOLUTION_G = /\d{3,4}\s*[x×]\s*\d{3,4}/g;
+
+// "아직 모름" 표기 — 사양이 없다는 뜻이 아니라 판정할 수 없다는 뜻
+const UNKNOWN_MARK = /^\W*(?:tbd|tba|n\/?a|unknown|unspecified|미정|미확정|추후|to be (?:announced|determined|decided)|coming soon|\?+)\W*$/i;
+// 모델처럼 보이는 단어·번호 (제조사·계열 이름, 영문 1~3자 + 3~5자리 숫자)
+const MODEL_LIKE = /\b(?:gtx|rtx|gts|gt|rx|hd|r[579]|arc|radeon|geforce|iris|uhd|vega|titan|ryz[ex]n|core|i[3579]|pentium|celeron|athlon|sempron|xeon|threadripper|phenom|fx|atom|quadro|firepro|nvidia|amd|intel|ati)\b|\b[a-z]{1,3}\s?-?\d{3,5}[a-z]{0,2}\b|\b\d{4}\s?(?:gtx|rtx|gt|gts)\b/i;
+// 사양 단어가 없는 표기(해상도만·농담·설명뿐) → 사실상 요구가 없는 최저 사양
+function isNonSpecText(text: string) {
+  if (UNKNOWN_MARK.test(text)) return false;
+  return !MODEL_LIKE.test(text.replace(RESOLUTION_G, ' '));
+}
 
 // 인식한 항목을 제조사별로 묶는다. 같은 제조사 안의 대안은 낮은 등급
 function byVendor(hits: { vendor: string; tier: number }[]): VendorTiers {
@@ -186,7 +201,7 @@ function parseGpu(text: string | null, idx: Index): { tiers: VendorTiers | null;
   if (hits.length) {
     return { tiers: byVendor(hits.map((h) => ({ vendor: h.entry.vendor, tier: h.entry.tier }))), low: false, detail: { kind: hits.every((h) => h.kind === 'model') ? 'model' : 'nearest', keys: hits.map((h) => h.entry.key) } };
   }
-  if (!RESOLUTION.test(text) && GPU_LOW.test(text)) return { tiers: { any: 1 }, low: true, detail: { kind: 'low-spec', keys: [] } };
+  if (GPU_LOW.test(text.replace(RESOLUTION_G, ' ')) || isNonSpecText(text)) return { tiers: { any: 1 }, low: true, detail: { kind: 'low-spec', keys: [] } };
   return { tiers: null, low: false, detail: { kind: 'unresolved', keys: [] } };
 }
 
@@ -252,8 +267,20 @@ function cpuKeysOf(piece: string): { key: string; kind: 'model' | 'class-only' }
   return out;
 }
 
-function parseCpu(text: string | null, idx: Index): { tiers: VendorTiers | null; low: boolean; detail: PartDetail } {
-  if (!text) return { tiers: null, low: false, detail: { kind: 'missing', keys: [] } };
+// 세대 없는 Core iN·Ryzen N → 출시 3년 전에 나온 세대 (그 연도까지 나온 가장 최신 세대, 아직 없으면 가장 오래된 세대)
+const entryYear = (e: CpuEntry) => { const m = /(\d{4})\)/.exec(e.basis); return m ? +m[1] : null; };
+function guessGeneration(idx: Index, classKey: string, releaseYear: number): CpuEntry | null {
+  const list = [...idx.cpu.values()].filter((e) => e.gen != null && e.key.startsWith(`${classKey} gen`) && entryYear(e) != null);
+  if (!list.length) return null;
+  const target = releaseYear - 3;
+  const old = list.filter((e) => entryYear(e)! <= target);
+  if (old.length) return old.reduce((a, b) => (entryYear(b)! > entryYear(a)! || (entryYear(b) === entryYear(a) && b.gen! > a.gen!) ? b : a));
+  return list.reduce((a, b) => (entryYear(b)! < entryYear(a)! || (entryYear(b) === entryYear(a) && b.gen! < a.gen!) ? b : a));
+}
+
+function parseCpu(text: string | null, idx: Index, releaseYear: number | null): { tiers: VendorTiers | null; low: boolean; guessed: boolean; detail: PartDetail } {
+  if (!text) return { tiers: null, low: false, guessed: false, detail: { kind: 'missing', keys: [] } };
+  let guessed = false;
   const hits: Hit<CpuEntry>[] = [];
   for (const piece of splitAlternatives(text)) {
     for (const { key, kind } of cpuKeysOf(piece)) {
@@ -261,14 +288,19 @@ function parseCpu(text: string | null, idx: Index): { tiers: VendorTiers | null;
       let k: Hit<CpuEntry>['kind'] = kind;
       if (!e && /^intel core i\d gen\d+$/.test(key)) { e = idx.cpu.get(key.replace(/ gen\d+$/, '')); k = 'class-only'; }
       if (!e && /^ryzen \d gen\d$/.test(key)) { e = idx.cpu.get(key.replace(/ gen\d$/, '')); k = 'class-only'; }
-      if (e) { hits.push({ entry: e, kind: e.class_only ? 'class-only' : k }); break; }
+      // 처음부터 세대 없이 급만 적은 경우(cpuKeysOf가 class-only로 돌려준 것)만 출시 연도로 짐작
+      if (e?.class_only && kind === 'class-only' && releaseYear != null && /^(?:intel core i[357]|ryzen [357])$/.test(key)) { // i9·Ryzen 9은 짐작 대상이 아님(기본값)
+        const g = guessGeneration(idx, key, releaseYear);
+        if (g) { e = g; guessed = true; }
+      }
+      if (e) { hits.push({ entry: e, kind: e.class_only || (guessed && kind === 'class-only') ? 'class-only' : k }); break; }
     }
   }
   if (hits.length) {
-    return { tiers: byVendor(hits.map((h) => ({ vendor: h.entry.vendor, tier: h.entry.tier }))), low: false, detail: { kind: hits.every((h) => h.kind === 'model') ? 'model' : 'class-only', keys: hits.map((h) => h.entry.key) } };
+    return { tiers: byVendor(hits.map((h) => ({ vendor: h.entry.vendor, tier: h.entry.tier }))), low: false, guessed, detail: { kind: hits.every((h) => h.kind === 'model') ? 'model' : 'class-only', keys: hits.map((h) => h.entry.key) } };
   }
-  if (CPU_LOW.test(text) && !/\btbd\b/i.test(text)) return { tiers: { any: 1 }, low: true, detail: { kind: 'low-spec', keys: [] } };
-  return { tiers: null, low: false, detail: { kind: 'unresolved', keys: [] } };
+  if ((CPU_LOW.test(text) && !/\btbd\b/i.test(text)) || isNonSpecText(text)) return { tiers: { any: 1 }, low: true, guessed: false, detail: { kind: 'low-spec', keys: [] } };
+  return { tiers: null, low: false, guessed: false, detail: { kind: 'unresolved', keys: [] } };
 }
 
 // ── RAM·저장 공간 ──
@@ -292,11 +324,11 @@ function parseRam(text: string | null): { gb: number | null; detail: 'ok' | 'typ
 }
 
 // ── 한 칸(최소 또는 권장)의 전체 판정 ──
-export function parseSpecText(raw: string | null | undefined, tables: SpecTables): ParsedSpec | null {
+export function parseSpecText(raw: string | null | undefined, tables: SpecTables, opts: { releaseYear?: number | null } = {}): ParsedSpec | null {
   if (!raw || !raw.trim()) return null;
   const idx = buildIndex(tables);
   const f = splitFields(raw);
-  const cpu = parseCpu(f.cpu, idx);
+  const cpu = parseCpu(f.cpu, idx, opts.releaseYear ?? null);
   const gpu = parseGpu(f.gpu, idx);
   const ram = parseRam(f.ram);
   const sto = parseSize(f.storage);
@@ -310,6 +342,7 @@ export function parseSpecText(raw: string | null | undefined, tables: SpecTables
     storage_gb: sto ? round1(sto.gb) : null,
     matched: { cpu: f.cpu, gpu: f.gpu },
     low_spec: low,
+    cpu_generation_guessed: cpu.guessed,
     confidence,
     detail: { cpu: cpu.detail, gpu: gpu.detail, ram: ram.detail, storage: sto ? 'ok' : 'missing' },
   };

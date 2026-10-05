@@ -7,20 +7,18 @@
 // - 저장 대상: 숨기지 않은 게임 중 spec_hash가 비었거나 사양 텍스트가 바뀐 것만. 이미 처리한 항목은 다시 처리하지 않음 (AI 안 씀)
 // - 기존 min_spec·recommended_spec·storage_gb는 건드리지 않음
 import fs from 'node:fs';
-import crypto from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 import { onlyIds } from './lib/only-ids.mjs';
+import { VERSION, releaseYearOf, specHash } from './lib/spec-hash.mjs';
 import { parseSpecText } from '../app/lib/specParse.ts';
 
 const APPLY = process.argv.includes('--apply');
 const OUT = process.argv.includes('--out') ? process.argv[process.argv.indexOf('--out') + 1] : null;
-const VERSION = 2; // 2: cpu·gpu가 제조사별 등급({ nvidia, amd, intel, any })
 
 export const loadTables = () => ({
   gpu: JSON.parse(fs.readFileSync('data/pc-spec/gpu-tiers.json', 'utf8')),
   cpu: JSON.parse(fs.readFileSync('data/pc-spec/cpu-tiers.json', 'utf8')),
 });
-export const specHash = (min, rec) => crypto.createHash('sha1').update(`${min || ''}\n${rec || ''}`).digest('hex').slice(0, 16);
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const tables = loadTables();
@@ -28,7 +26,7 @@ const tables = loadTables();
 async function loadGames() {
   const rows = [];
   for (let from = 0; ; from += 1000) {
-    const { data, error } = await onlyIds(supabase.from('games').select('id, name, min_spec, recommended_spec').eq('hidden', false).range(from, from + 999));
+    const { data, error } = await onlyIds(supabase.from('games').select('id, name, min_spec, recommended_spec, release_date').eq('hidden', false).range(from, from + 999));
     if (error) throw new Error(`게임 목록을 못 불러옴: ${error.message}`);
     rows.push(...data);
     if (data.length < 1000) break;
@@ -51,16 +49,20 @@ function report(parsed) {
     row('저장공간', cnt((s) => s.storage_gb != null), cnt((s) => s.storage_gb != null));
     row('CPU+GPU+RAM', cnt((s) => s.gpu != null && s.cpu != null && s.ram_gb != null),
       cnt((s) => s.gpu != null && s.cpu != null && s.ram_gb != null && !s.low_spec && s.detail.cpu.kind !== 'class-only' && s.detail.ram === 'ok'));
+    console.log(`  CPU 세대 짐작 ${cnt((s) => s.cpu_generation_guessed)}개`);
     console.log(`  confidence: high ${cnt((s) => s.confidence === 'high')} · medium ${cnt((s) => s.confidence === 'medium')} · low ${cnt((s) => s.confidence === 'low')} / low_spec ${cnt((s) => s.low_spec)}개`);
   }
 }
 
 async function main() {
   const games = await loadGames();
-  const parsed = games.map((g) => ({
-    id: g.id, name: g.name, hash: specHash(g.min_spec, g.recommended_spec),
-    min: parseSpecText(g.min_spec, tables), rec: parseSpecText(g.recommended_spec, tables),
-  }));
+  const parsed = games.map((g) => {
+    const year = releaseYearOf(g.release_date);
+    return {
+      id: g.id, name: g.name, year, hash: specHash(g.min_spec, g.recommended_spec, year),
+      min: parseSpecText(g.min_spec, tables, { releaseYear: year }), rec: parseSpecText(g.recommended_spec, tables, { releaseYear: year }),
+    };
+  });
   console.log(`대상 게임 ${games.length}개 (숨김 제외) — 최소 사양 ${parsed.filter((p) => p.min).length}개, 권장 사양 ${parsed.filter((p) => p.rec).length}개`);
   report(parsed);
   if (OUT) { fs.writeFileSync(OUT, JSON.stringify(parsed)); console.log(`\n결과 저장: ${OUT}`); }
@@ -69,7 +71,7 @@ async function main() {
 
   // 마이그레이션이 적용됐는지 확인 (spec_hash 칸)
   const probe = await supabase.from('games').select('id, spec_hash').limit(1);
-  if (probe.error) return console.error(`❌ spec_parsed·spec_hash 칸이 없어요 (마이그레이션 먼저): ${probe.error.message}`);
+  if (probe.error) { process.exitCode = 1; return console.error(`❌ spec_parsed·spec_hash 칸이 없어요 (supabase/migrations/20261015090000_spec_parsed.sql을 SQL Editor에서 먼저 실행): ${probe.error.message}`); }
   const have = new Map();
   for (let from = 0; ; from += 1000) {
     const { data } = await supabase.from('games').select('id, spec_hash').range(from, from + 999);

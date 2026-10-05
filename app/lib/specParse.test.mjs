@@ -47,10 +47,10 @@ test('GPU: 모델 없는 저사양 표기는 최저 등급 + low_spec', () => {
     const r = p('Intel Core i5-6500', g);
     assert.equal(r.gpu_tier, 1, g); assert.equal(r.low_spec, true, g);
   }
-  assert.equal(p('x', 'Intel HD Graphics 630').low_spec, false); // 모델이 있으면 low_spec 아님
+  assert.equal(p('Intel Core i5-6500', 'Intel HD Graphics 630').low_spec, false); // 모델이 있으면 low_spec 아님
   assert.equal(p('x', 'Intel HD Graphics 630').gpu_tier, 2);
   assert.equal(p('x', 'TBD').gpu_tier, null);
-  assert.equal(p('x', '1024x768 pixel over').gpu_tier, null);
+  assert.equal(p('x', '1024x768 pixel over').gpu_tier, 1); // 해상도만 적힌 칸은 최저 등급 (2단계 보완)
 });
 
 test('CPU: 세대·급 읽기', () => {
@@ -115,4 +115,46 @@ test('low_spec·판정 불가 표기의 구조', () => {
   assert.deepEqual(p0('2.4 GHz Dual Core', 'Integrated').gpu, { any: 1 });
   assert.equal(p0('TBD', 'TBD').cpu, null);
   assert.equal(p0('TBD', 'TBD').gpu, null);
+});
+
+// ── 2단계 보완 ──
+test('사양 단어 없는 표기(해상도만·농담·설명뿐)도 최저 등급 + low_spec', () => {
+  for (const g of ['800x600 minimum resolution', '1024x768 pixel over', '1280 x 960', 'Yup', '1GB Video Memory, 1920x1080 or higher display resolution']) {
+    const r = p('Intel Core i5-6500', g);
+    assert.deepEqual(r.gpu, { any: 1 }, g); assert.equal(r.low_spec, true, g); assert.equal(r.detail.gpu.kind, 'low-spec', g);
+  }
+  const c = p('Toaster', 'GeForce GTX 1060');
+  assert.deepEqual(c.cpu, { any: 1 }); assert.equal(c.low_spec, true);
+  assert.equal(p('1 GHz', 'GeForce GTX 1060').cpu_tier, 1);
+});
+
+test('"아직 모름"·모델처럼 보이는 표기는 low_spec로 바꾸지 않는다', () => {
+  for (const g of ['TBD', 'N/A', '미정', 'Nvidia GeForce GTX 2060']) {
+    const r = p('Intel Core i5-6500', g);
+    assert.equal(r.gpu, null, g); assert.equal(r.low_spec, false, g);
+  }
+  assert.equal(p('TBD', 'GeForce GTX 1060').cpu, null);
+  assert.equal(p('Intel HD Graphics 5000 이상, OpenGL 지원 필수', 'GeForce GTX 1060').cpu, null); // 칸이 어긋난 GPU 표기 — 모델처럼 보여서 판정 불가로 둠
+  assert.equal(parseSpecText('운영 체제: Windows 10 / 메모리: 8 GB RAM', tables).gpu, null); // 칸 자체가 없으면 null (low_spec 아님)
+});
+
+test('세대 없는 CPU: 출시 3년 전에 나온 세대로 짐작 + cpu_generation_guessed', () => {
+  const g = (cpu, year) => parseSpecText(spec(cpu, 'GeForce GTX 1060'), tables, { releaseYear: year });
+  const a = g('Intel Core i5', 2023); // 2020년까지 나온 가장 최신 세대 = 10세대
+  assert.deepEqual(a.cpu, { intel: 6 }); assert.equal(a.cpu_generation_guessed, true); assert.equal(a.confidence, 'medium');
+  assert.deepEqual(g('Intel Core i5', 2019).cpu, { intel: 5 }); // 2016 → 같은 해(2015) 중 최신 6세대
+  assert.deepEqual(g('AMD Ryzen 5', 2023).cpu, { amd: 7 }); // 2020 → 5000번대
+  assert.deepEqual(g('Intel Core i5', 2012).cpu, { intel: 3 }); // 그보다 앞서면 가장 오래된 세대
+  const both = g('Intel Core i7 or AMD Ryzen 7', 2023);
+  assert.equal(both.cpu_generation_guessed, true); assert.deepEqual(Object.keys(both.cpu).sort(), ['amd', 'intel']);
+  // 출시 연도가 없으면 기존 방식(세대 미표기 기본값), 짐작 표시 없음
+  const n = g('Intel Core i5', null);
+  assert.deepEqual(n.cpu, { intel: 4 }); assert.equal(n.cpu_generation_guessed, false);
+  assert.equal(p('Intel Core i5', 'x').cpu_generation_guessed, false);
+  // 세대가 적혀 있으면 연도와 상관없이 그대로
+  const m = g('Intel Core i5-6500', 2026);
+  assert.deepEqual(m.cpu, { intel: 5 }); assert.equal(m.cpu_generation_guessed, false);
+  assert.equal(g('Intel i5 6세대', 2026).cpu_generation_guessed, false);
+  // 세대표가 없는 i9·Ryzen 9은 기본값 그대로
+  const i9 = g('Intel Core i9', 2023); assert.deepEqual(i9.cpu, { intel: 8 }); assert.equal(i9.cpu_generation_guessed, false);
 });
