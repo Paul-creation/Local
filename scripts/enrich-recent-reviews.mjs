@@ -37,7 +37,7 @@ async function main() {
   const { data, error } = await q;
   if (error) {
     console.error(`게임 목록을 못 불러옴: ${error.message}`);
-    if (/recent_review/.test(error.message)) console.error('→ supabase/migrations/20261012090000_recent_reviews.sql 을 먼저 실행해 주세요');
+    if (/recent_review/.test(error.message)) console.error('→ supabase/migrations/20261012090100_recent_reviews.sql 을 먼저 실행해 주세요');
     process.exit(1);
   }
   const games = DRY ? data.slice(0, 5) : data;

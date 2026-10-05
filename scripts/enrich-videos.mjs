@@ -1,6 +1,7 @@
 // scripts/enrich-videos.mjs
 // 영상 없는 게임의 상단 트레일러 찾기 — 매일 조금씩
-// 실행: node --env-file=.env.local scripts/enrich-videos.mjs [최대 개수, 기본 90] [--other] [--names="Muck,Inside"]
+// 실행: node --env-file=.env.local scripts/enrich-videos.mjs [최대 개수, 기본 90] [--other] [--names="Muck,Inside"] [--steam-only]
+//   --steam-only: 스팀 공식 영상만 찾고 유튜브는 안 씀. 스팀 영상이 없으면 null 그대로 둬서 다음 매일 작업이 유튜브로 찾게 함
 // - 스팀 게임은 스팀 상점의 공식 영상(appdetails movies, 게임사가 올린 것)을 먼저 씀 → video_url에 HLS 주소(.m3u8) 저장
 // - 스팀 영상이 없거나 스팀 외 게임이면 유튜브 검색으로 대체 (YouTube 검색은 하루 약 100번 한도)
 //   검색 결과 10개 중 제목·채널에 게임 이름과 game·게임·스팀 등이 있고 movie·film·영화가 없는 첫 영상 (lib/video-filter.mjs)
@@ -17,6 +18,7 @@ const supabase = createClient(
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 const ONLY_OTHER = process.argv.includes('--other');
 const LIMIT = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a))) || 90;
+const STEAM_ONLY = process.argv.includes('--steam-only');
 const ONLY_NAMES = (process.argv.find((a) => a.startsWith('--names=')) || '').slice(8).split(',').map((s) => s.trim()).filter(Boolean);
 
 class QuotaError extends Error {}
@@ -59,6 +61,7 @@ async function main() {
   let q = supabase.from('games').select('id, name, steam_appid, search_name_ko, video_exclude_terms', { count: 'exact' }).eq('hidden', false).is('video_url', null)
     .order('created_at', { ascending: false }).limit(LIMIT);
   if (ONLY_OTHER) q = q.is('steam_appid', null);
+  if (STEAM_ONLY) q = q.not('steam_appid', 'is', null);
   if (ONLY_NAMES.length) q = q.in('name', ONLY_NAMES);
   const { data: games, count, error } = await q;
   if (error) return console.error(`❌ 게임 목록을 못 불러옴: ${error.message}`);
@@ -75,6 +78,12 @@ async function main() {
       if (game.steam_appid) {
         url = await steamTrailer(game.steam_appid);
         source = '스팀';
+      }
+      if (!url && STEAM_ONLY) {
+        console.log(`➖ ${game.name}: 스팀 영상 없음 (null 그대로)`);
+        none++;
+        await new Promise((r) => setTimeout(r, 1000));
+        continue;
       }
       if (!url) {
         if (!YOUTUBE_API_KEY) {
@@ -108,7 +117,7 @@ async function main() {
     await new Promise((r) => setTimeout(r, 1000));
   }
 
-  console.log(`\n완료 — 스팀 공식 영상 ${steam}개 · 유튜브 ${found}개 · 영상 없음 ${none}개 · 오류 ${failed}개`);
+  console.log(`\n완료 — 스팀 공식 영상 ${steam}개 · 유튜브 ${found}개 · 영상 없음 ${none}개${STEAM_ONLY ? '(null 그대로, 매일 작업이 유튜브로 찾음)' : ''} · 오류 ${failed}개`);
 }
 
 main();
