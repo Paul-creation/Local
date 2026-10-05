@@ -5,6 +5,7 @@ import { useState } from 'react';
 import TagHelp, { getTagDescription } from './TagHelp';
 import { useChipHint } from './ChipHint';
 import RangeSlider from './RangeSlider';
+import PcSpecPanel from '../pcspec/PcSpecPanel';
 import { BARRIERS, NETS, type GameFilters } from '../../lib/useGameFilters';
 import { EXCLUDE_TAG_IDS, type TagTree } from '../../lib/tagTree';
 import { PLAYERS_MAX, PRICE_MAX, PRICE_ALL, FREE_ONLY, isAll, playersLabel, priceLabel } from '../../lib/rangeFilter';
@@ -42,9 +43,12 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
     soloOnly, setSoloOnly,
     priceRange, setPriceRange,
     saleOnly, setSaleOnly,
+    myPcOnly, setMyPcOnly, myPc, myPcReady,
     selectedCount, clearConditions, filtered, loaded,
   } = filters;
   const [openRoots, setOpenRoots] = useState<number[]>([]);
+  // 내 PC 입력 패널 — 사양이 없을 때 열면 입력을 마치는 순간 필터가 켜진다 (hadPc가 false였던 경우만)
+  const [pcPanel, setPcPanel] = useState<{ hadPc: boolean } | null>(null);
   const playHint = useChipHint(PLAY_DESCS, '방식을 누르면 설명이 나와요');
   const soloHint = useChipHint(SOLO_DESCS, '버튼을 누르면 설명이 나와요');
   const barrierHint = useChipHint(BARRIER_DESCS, '단계를 누르면 설명이 나와요');
@@ -66,6 +70,31 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
       </div>
 
       <div className="filter-body">
+        {/* 내 PC로 돌아가는 게임만 — 맨 위(인원보다 위). 최소 사양 미달만 뺀다 (app/lib/specJudge.runsOnMyPc). 사양은 브라우저에만 저장 */}
+        {myPcReady && (
+          <section className="filter-section">
+            {myPc ? (
+              <>
+                <div className="filter-chips">
+                  <button type="button" className={`chip${myPcOnly ? ' on' : ''}`} aria-pressed={myPcOnly} onClick={() => setMyPcOnly((v) => !v)}>내 PC로 돌아가는 게임만</button>
+                </div>
+                <p className="pcs-summary">
+                  {myPc.gpu.name} / {myPc.cpu.name} / {myPc.ram}GB
+                  <button type="button" className="pcs-link" aria-expanded={!!pcPanel} onClick={() => setPcPanel(pcPanel ? null : { hadPc: true })}>변경</button>
+                </p>
+              </>
+            ) : (
+              <button type="button" className="pcs-link pcs-filter-btn" aria-expanded={!!pcPanel} onClick={() => setPcPanel(pcPanel ? null : { hadPc: false })}>내 PC 사양 입력하고 돌아가는 게임만 보기</button>
+            )}
+            {pcPanel && (
+              <PcSpecPanel
+                onDone={() => { if (!pcPanel.hadPc) setMyPcOnly(true); setPcPanel(null); }}
+                onCancel={() => setPcPanel(null)}
+              />
+            )}
+          </section>
+        )}
+
         <section className="filter-section">
           <p className="filter-label">같이 하는 방식</p>
           <div className="filter-chips">

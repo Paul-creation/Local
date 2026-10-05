@@ -20,7 +20,7 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
     loaded, showResults, normalizedQuery, filtered,
     compareList, compareError, toggleCompare,
     rememberList, resetFilters, visibleCount, showMore, tree,
-    sort, setSort, clearConditions, setInput,
+    sort, setSort, clearConditions, setInput, myPcActive,
   } = filters;
   // 결과 위 조건 칩 (태그는 검색창 안 칩으로 보이므로 뺌) / 0개일 때 요약은 태그까지 전부
   const conditions = filterConditions(filters, { withTags: false });
@@ -45,7 +45,7 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
         <>
           <div className="results-head">
             <div className="results-head-row">
-              <h2 className="results-count">검색 결과 <strong className="num">{filtered.length.toLocaleString('ko-KR')}</strong>개</h2>
+              <h2 className="results-count">검색 결과 <strong className="num">{filtered.length.toLocaleString('ko-KR')}</strong>개{myPcActive && <>{' '}<span className="results-scope">내 PC 기준</span></>}</h2>
               <div className="results-head-actions">
                 <ShareButton variant="text" title="게임 검색 결과" text="이 조건으로 찾은 게임들 같이 보자!" />
                 <button type="button" onClick={resetFilters} className="results-home">← 홈으로</button>

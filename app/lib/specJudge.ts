@@ -101,3 +101,9 @@ export function verdictText(v: PcVerdict): { main: string; flags: string[] } {
   const flags = [v.recMissing && '권장 사양 정보 부족', v.partial && '일부 사양만 확인됨'].filter((f): f is string => !!f);
   return { main, flags };
 }
+
+// ── 검색 필터 "내 PC로 돌아가는 게임만" (4단계) ──
+// 판정은 judgePc 그대로, 최소 미달(fail)만 뺀다. 권장 충족·최소 충족·판정 없음(null: 사양을 못 읽은 게임, 목록에 spec_min이 없음)은 남긴다
+// 목록(app/lib/gameIndex)은 판정에 필요한 최소 사양 세 칸만 spec_min으로 내려준다 (권장 사양은 미달 여부에 영향이 없어 보내지 않음)
+export type GameWithSpecMin = { spec_min?: SpecLike | null };
+export const runsOnMyPc = (user: UserPc, game: GameWithSpecMin): boolean => judgePc(user, { min: game.spec_min ?? null })?.level !== 'fail';

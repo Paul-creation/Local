@@ -141,3 +141,24 @@ test('P3: 한 줄에 AMD·Intel 짝이 1단계 차이면 낮은 쪽으로 (CPU�
   assert.equal(judgePc(user('amd', 8), spec({ intel: 5 }, { nvidia: 12, amd: 13 })).level, 'fail');
   assert.deepEqual(judgeLevel(user('amd', 6), { cpu: { amd: 7, intel: 6 }, gpu: { nvidia: 9 }, ram_gb: 8 }), { cpu: true, gpu: true, ram: true, result: 'pass' });
 });
+
+// ── 4단계: 검색 필터 runsOnMyPc (최소 미달만 제외, 판정 없음은 유지) ──
+import { runsOnMyPc } from './specJudge.ts';
+
+test('runsOnMyPc: 최소 미달만 뺀다 — 권장·최소 충족과 판정 없음(null)은 남긴다', () => {
+  const user = pc('nvidia', 9, 'intel', 6, 16);
+  const g = (spec_min) => ({ spec_min });
+  assert.equal(runsOnMyPc(user, g(full(4, 6, 8))), true); // 최소 충족(·권장 충족)
+  assert.equal(runsOnMyPc(user, g(full(6, 9, 16))), true); // 딱 맞는 최소
+  assert.equal(runsOnMyPc(user, g(full(4, 10, 8))), false); // GPU 미달
+  assert.equal(runsOnMyPc(user, g(full(7, 6, 8))), false); // CPU 미달
+  assert.equal(runsOnMyPc(user, g(full(4, 6, 32))), false); // RAM 미달
+  assert.equal(runsOnMyPc(user, g({ cpu: null, gpu: { nvidia: 10 }, ram_gb: null })), false); // 읽은 칸만으로도 미달이면 뺌
+  assert.equal(runsOnMyPc(user, g({ cpu: null, gpu: { nvidia: 6 }, ram_gb: null })), true); // 일부만 읽혔고 충족
+  assert.equal(runsOnMyPc(user, g({ cpu: null, gpu: null, ram_gb: null })), true); // 판정 없음(null) 유지
+  assert.equal(runsOnMyPc(user, {}), true); // spec_min이 없는 게임(사양 못 읽음) 유지
+  assert.equal(runsOnMyPc(user, g(null)), true);
+  // P3·{any:1}도 judgePc와 같은 결과
+  assert.equal(runsOnMyPc(pc('nvidia', 9, 'amd', 6, 16), g({ cpu: { amd: 7, intel: 6 }, gpu: { any: 1 }, ram_gb: 8 })), true);
+  assert.equal(runsOnMyPc(pc('nvidia', 1, 'amd', 1, 4), g({ cpu: { any: 1 }, gpu: { any: 1 }, ram_gb: 4 })), true);
+});

@@ -2,6 +2,7 @@
 // 메인 페이지 RSC에 싣지 않고, 첫 화면을 그린 뒤 브라우저가 따로 받는다 (app/lib/useGameIndex.ts)
 // 칸을 새로 쓰면 INDEX_FIELDS에 추가. 가격은 게임마다 최신 원화 1건만 (getPriceInfo와 같은 기준: 100 이상)
 // 브라우저로 보내는 양을 줄이려고 가격 기록은 최신 가격 두 칸으로 펴고 빈 칸은 뺀다 (flattenGame)
+// PC 사양은 spec_parsed 전체가 아니라 판정에 필요한 최소 사양의 세 칸(cpu·gpu·ram_gb)만 spec_min으로 보낸다 (읽은 칸이 하나도 없으면 칸 자체를 뺌) — 검색의 "내 PC로 돌아가는 게임" 필터용
 // 태그는 이름 대신 번호(tag_ids, game_tags 표 순서대로)만 보낸다 — 이름·나무는 브라우저가 app/lib/tag-search-dict.json에서 한 번 받음
 // game_tags 표가 아직 없거나 비어 있으면(마이그레이션 전) 예전 한국어 태그(tags)를 그대로 보낸다
 import { supabase } from './supabase';
@@ -14,6 +15,7 @@ export const INDEX_FIELDS = `
   has_online_coop, has_local_coop, has_pvp,
   entry_barrier, solo_mode, party_max, session_max, multiplayer_host,
   is_free, price_type, lowest_price, steam_appid, source, cover_image_url, card_image_url, heat_rank,
+  spec_parsed,
   price_history(price, discount_percent, checked_at, currency)
 `;
 
@@ -34,10 +36,18 @@ export async function getGameIndex() {
   const crossIds = new Set((cross || []).map((g) => g.id));
   const tagIds = await getGameTagIds();
   return (list || []).map((g) => {
-    const { tags, ...rest } = g as typeof g & { tags?: string[] | null };
+    const { tags, spec_parsed, ...rest } = g as typeof g & { tags?: string[] | null };
     const ids = tagIds?.get(g.id);
-    return flattenGame({ ...rest, ...(tagIds ? { tag_ids: ids || [] } : { tags }), goty_awards: gotyById.get(g.id), ...(crossIds.has(g.id) ? { has_crossplay: true } : {}) });
+    return flattenGame({ ...rest, ...(tagIds ? { tag_ids: ids || [] } : { tags }), spec_min: specMinOf(spec_parsed), goty_awards: gotyById.get(g.id), ...(crossIds.has(g.id) ? { has_crossplay: true } : {}) });
   });
+}
+
+// 최소 사양 세 칸만 (cpu·gpu는 제조사별 등급, ram_gb). 하나도 못 읽은 게임은 null → flattenGame이 빼서 목록에 안 실림
+type SpecMin = { cpu: Record<string, number> | null; gpu: Record<string, number> | null; ram_gb: number | null };
+export function specMinOf(parsed: { min?: Partial<SpecMin> | null } | null | undefined): SpecMin | null {
+  const m = parsed?.min;
+  if (!m || (m.cpu == null && m.gpu == null && m.ram_gb == null)) return null;
+  return { cpu: m.cpu ?? null, gpu: m.gpu ?? null, ram_gb: m.ram_gb ?? null };
 }
 
 // 게임 id → 태그 번호 (rank 순). 표가 없거나 비어 있으면 null

@@ -2628,3 +2628,10 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 .pcs-option.is-active { background: var(--card-hover); }
 .pcs-option[aria-selected="true"] { color: var(--accent-text); font-weight: 700; }
 .pcs-empty { color: var(--text-muted); cursor: default; }
+
+/* 검색 필터의 "내 PC로 돌아가는 게임만" (맨 위) + 결과 개수 옆 "내 PC 기준" — 기존 색 토큰만 */
+.pcs-summary { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; margin: 8px 0 0; font-size: 14px; line-height: 1.5; color: var(--text-muted); overflow-wrap: anywhere; }
+.pcs-filter-btn { padding: 0; text-align: left; white-space: normal; }
+.pcs-filter-btn:hover { text-decoration: underline; }
+.filter-section > .pcs-panel { margin-top: 12px; }
+.results-scope { margin-left: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted); }

@@ -18,6 +18,7 @@ export function filterConditions(f: GameFilters, { withTags = true } = {}): Cond
   if (isAll(f.priceRange, FREE_ONLY)) out.push({ key: 'price', label: '무료만', clear: () => f.setPriceRange(PRICE_ALL) });
   else if (!isAll(f.priceRange, PRICE_ALL)) out.push({ key: 'price', label: `가격 ${rangeText(f.priceRange, priceLabel)}`, clear: () => f.setPriceRange(PRICE_ALL) });
   if (f.saleOnly) out.push({ key: 'sale', label: '할인 중', clear: () => f.setSaleOnly(false) });
+  if (f.myPcActive) out.push({ key: 'mypc', label: '내 PC로 돌아가는 게임', clear: () => f.setMyPcOnly(false) });
   for (const [k, label] of NETS) if (f.selectedNet.includes(k)) out.push({ key: `n${k}`, label, clear: () => f.toggleNet(k) });
   for (const b of f.selectedBarriers) out.push({ key: `b${b}`, label: `진입장벽 ${b}`, clear: () => f.toggleBarrier(b) });
   if (withTags) for (const t of f.selectedTags) out.push({ key: `t${t}`, label: tagKeyLabel(t, f.tree) || '알 수 없는 태그', clear: () => f.toggleTag(t) });

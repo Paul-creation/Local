@@ -14,6 +14,9 @@ import {
 } from './rangeFilter';
 import { HOME_FILTER_STYLE_ID } from './homeFilter';
 import { BADGES, badgeMatches } from './badge.mjs';
+import { runsOnMyPc } from './specJudge';
+import { toUserPc } from './myPc';
+import { useMyPc } from '../components/pcspec/useMyPc';
 
 // 검색 결과는 처음 이만큼만 그리고, 더 보기로 이만큼씩 늘린다
 export const PAGE_SIZE = 24;
@@ -64,6 +67,11 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
   const [soloOnly, setSoloOnly] = useState(false);
   const [priceRange, setPriceRange] = useState<Range>(PRICE_ALL);
   const [saleOnly, setSaleOnly] = useState(false);
+  // 내 PC로 돌아가는 게임만 (?mypc=1) — 최소 사양 미달만 뺀다. 내 PC 사양(localStorage)이 있을 때만 실제로 걸리고,
+  // 사양이 없으면 주소에 mypc=1이 있어도 걸러내지 않는다 (사양을 입력하면 바로 켜짐)
+  const [myPcOnly, setMyPcOnly] = useState(false);
+  const { pc: myPc, ready: myPcReady } = useMyPc();
+  const myPcActive = myPcOnly && !!myPc;
   const [sort, setSort] = useState<SortKey>('');
   const [compareList, setCompareList] = useState<any[]>([]);
   const [compareError, setCompareError] = useState('');
@@ -76,7 +84,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     const sp = new URLSearchParams(window.location.search);
     /* eslint-disable react-hooks/set-state-in-effect -- 바깥(주소)에서 한 번 읽어 오는 초기화라 의도된 setState */
     // players·price·sale로 바로 들어오면(바로가기·공유 링크) 결과 화면부터
-    setShowResults(sp.get('r') === '1' || sp.has('players') || sp.has('price') || sp.get('sale') === '1' || sp.has('tags') || sp.has('barrier') || sp.has('ex') || sp.get('story') === '1' || sp.has('net'));
+    setShowResults(sp.get('r') === '1' || sp.has('players') || sp.has('price') || sp.get('sale') === '1' || sp.has('tags') || sp.has('barrier') || sp.has('ex') || sp.get('story') === '1' || sp.has('net') || sp.get('mypc') === '1');
     setInput(sp.get('q') || '');
     setQuery(sp.get('q') || '');
     // 예전 주소의 cat=파티·퍼즐·서바이벌처럼 지금 배지에 없는 값은 무시 (결과가 0개로 보이지 않게)
@@ -96,6 +104,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     // 예전 "무료 게임만" 주소(free=1)는 무료~무료
     setPriceRange(sp.has('price') ? parsePrice(sp.get('price')) : sp.get('free') === '1' ? FREE_ONLY : PRICE_ALL);
     setSaleOnly(sp.get('sale') === '1');
+    setMyPcOnly(sp.get('mypc') === '1');
     setSort(isSortKey(sp.get('sort')) ? (sp.get('sort') as SortKey) : '');
     // 주소에 비교 선택이 없으면 비교함(상세에서 담은 게임 포함)을 이어서 보여 준다
     pendingCmp.current = sp.has('cmp') ? (sp.get('cmp') || '').split(',').filter(Boolean) : readPick();
@@ -128,6 +137,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     if (soloOnly) q.set('solo', '1');
     if (formatPrice(priceRange)) q.set('price', formatPrice(priceRange));
     if (saleOnly) q.set('sale', '1');
+    if (myPcOnly) q.set('mypc', '1');
     if (sort) q.set('sort', sort);
     if (compareList.length) q.set('cmp', compareList.map((g: any) => g.id).join(','));
     const qs = q.toString();
@@ -137,7 +147,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     if (window.location.pathname === '/' && window.location.pathname + window.location.search !== url) {
       window.history.replaceState(null, '', url);
     }
-  }, [inited, showResults, query, selectedCategory, selectedTags, excludedTags, selectedBarriers, storyOnly, selectedNet, playersRange, soloOnly, priceRange, saleOnly, sort, compareList]);
+  }, [inited, showResults, query, selectedCategory, selectedTags, excludedTags, selectedBarriers, storyOnly, selectedNet, playersRange, soloOnly, priceRange, saleOnly, myPcOnly, sort, compareList]);
 
   // 카드나 비교하기를 누를 때 지금 목록 주소와 스크롤 위치를 기억
   const rememberList = () => {
@@ -243,13 +253,15 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
   const normalizedQuery = query.trim().toLowerCase();
   const playersOn = !isAll(playersRange, PLAYERS_ALL);
   const priceOn = !isAll(priceRange, PRICE_ALL);
-  const selectedCount = [selectedCategory, playersOn ? '인원' : '', soloOnly ? '1인 전용' : '', storyOnly ? '혼자도' : '', priceOn ? '가격' : '', saleOnly ? '할인' : '', ...selectedBarriers, ...selectedNet, ...selectedTags, ...excludedTags].filter(Boolean).length;
-  const hasFilters = !!(normalizedQuery || selectedCategory || selectedTags.length > 0 || excludedTags.length > 0 || selectedBarriers.length > 0 || selectedNet.length > 0 || storyOnly || playersOn || soloOnly || priceOn || saleOnly);
+  const selectedCount = [selectedCategory, playersOn ? '인원' : '', soloOnly ? '1인 전용' : '', storyOnly ? '혼자도' : '', priceOn ? '가격' : '', saleOnly ? '할인' : '', myPcActive ? '내 PC' : '', ...selectedBarriers, ...selectedNet, ...selectedTags, ...excludedTags].filter(Boolean).length;
+  const hasFilters = !!(normalizedQuery || selectedCategory || selectedTags.length > 0 || excludedTags.length > 0 || selectedBarriers.length > 0 || selectedNet.length > 0 || storyOnly || playersOn || soloOnly || priceOn || saleOnly || myPcActive);
 
   const matched = (games || []).filter((g) => {
     // 지금 실제 가격(할인 중이면 할인가) 기준
     if (!matchesPrice(g, priceRange)) return false;
     if (saleOnly && !((getPriceInfo(g)?.discount ?? 0) > 0)) return false;
+    // 내 PC 기준: 최소 사양 미달만 뺀다 (판정 없음은 남김) — 전체 목록에서 먼저 거른 뒤 정렬·24개씩 나누므로 개수·더 보기가 필터 후 기준
+    if (myPcActive && myPc && !runsOnMyPc(toUserPc(myPc), g)) return false;
     if (selectedCategory && !badgeMatches(g.category, selectedCategory)) return false;
     // 고른 칸을 전부 만족하는 게임만 (AND). 상위 칸은 그 아래 태그 중 하나라도 있으면,
     // 협동·대전은 스팀 카테고리 플래그(has_online_coop 등)로 (app/lib/tagSearch)
@@ -280,7 +292,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
         : [...matched].sort((a, b) => (a.heat_rank ?? Infinity) - (b.heat_rank ?? Infinity));
 
   // 검색어·필터가 바뀌면 다시 처음 24개부터 (처음 열 때는 그대로)
-  const filterKey = [query, selectedCategory, selectedTags.join(','), excludedTags.join(','), selectedBarriers.join(','), selectedNet.join(','), storyOnly, playersRange.join('-'), soloOnly, priceRange.join('-'), saleOnly, sort].join('|');
+  const filterKey = [query, selectedCategory, selectedTags.join(','), excludedTags.join(','), selectedBarriers.join(','), selectedNet.join(','), storyOnly, playersRange.join('-'), soloOnly, priceRange.join('-'), saleOnly, myPcActive ? `${myPc?.gpu.key}/${myPc?.cpu.key}/${myPc?.ram}` : '', sort].join('|');
   const prevFilterKey = useRef<string | null>(null);
   useEffect(() => {
     if (prevFilterKey.current !== null && prevFilterKey.current !== filterKey) setVisibleCount(PAGE_SIZE);
@@ -329,6 +341,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     setSoloOnly(false);
     setPriceRange(PRICE_ALL);
     setSaleOnly(false);
+    setMyPcOnly(false);
   };
 
   const resetFilters = () => {
@@ -344,6 +357,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     setSoloOnly(false);
     setPriceRange(PRICE_ALL);
     setSaleOnly(false);
+    setMyPcOnly(false);
     setShowResults(false);
     setFilterOpen(false);
     setCompareList([]);
@@ -365,6 +379,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     soloOnly, setSoloOnly,
     priceRange, setPriceRange,
     saleOnly, setSaleOnly,
+    myPcOnly, setMyPcOnly, myPc, myPcReady, myPcActive,
     sort, setSort,
     compareList, setCompareList, compareError, toggleCompare,
     rememberList,
