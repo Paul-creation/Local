@@ -1319,21 +1319,19 @@ img { display: block; }
   .coop-video-card { flex: 0 0 78%; scroll-snap-align: start; }
 }
 
-/* 메인 — 스트리머가 플레이한 게임 (가로 스크롤 한 줄) */
-.sg-row {
-  list-style: none; margin: 0 0 0; padding: 0 0 4px; display: flex; gap: 12px;
-  overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: thin;
-}
-.sg-item { flex: 0 0 220px; scroll-snap-align: start; min-width: 0; }
-.sg-card { display: block; color: var(--text); text-decoration: none; }
+/* 메인 — 스트리머들이 밤새운 협동 게임: PC 6칸 · 태블릿 3칸 · 모바일 2칸 격자 (카드는 6의 배수만 그림, 모바일은 최대 6개) */
+.sg-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 20px 12px; }
+.sg-item { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.sg-card { display: block; width: 100%; color: var(--text); text-decoration: none; }
 .sg-img { width: 100%; aspect-ratio: 460 / 215; object-fit: cover; display: block; border-radius: var(--radius-md); background: var(--inset); }
 .sg-name { display: block; margin-top: 8px; font-size: 15px; font-weight: 700; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sg-card:hover .sg-name { color: var(--accent-text); }
-.sg-meta { display: block; margin-top: 2px; font-size: var(--fs-sub); color: var(--text-dimmer); }
+.sg-video { font-size: var(--fs-sub); font-weight: 700; color: var(--accent-text); }
+.sg-video:hover { text-decoration: underline; }
+@media (max-width: 1000px) { .sg-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 640px) {
-  .sg-row { margin: 0 -24px; padding: 0 24px 4px; scroll-padding-left: 24px; scrollbar-width: none; }
-  .sg-row::-webkit-scrollbar { display: none; }
-  .sg-item { flex-basis: 62%; }
+  .sg-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px; }
+  .sg-item:nth-child(n+7) { display: none; }
 }
 
 /* TOP 10 배지 (검색 결과 카드·상세 페이지) */
@@ -1591,17 +1589,6 @@ a.series-item:hover { border-color: var(--border); }
   font-size: 15px; font-weight: 800; color: var(--text);
 }
 .home-event-cta:hover { border-color: var(--text-faint); }
-/* 스트리머 기획전: 배너 아래 게임 카드 줄 (카드는 .sg-*와 같은 모양) */
-.home-event.has-cards { margin-bottom: 16px; }
-.sg-row.event-cards { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 20px 12px; overflow: visible; margin: 0 0 36px; padding: 0; }
-@media (max-width: 1000px) { .sg-row.event-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (max-width: 640px) { .sg-row.event-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px; }
-  .sg-row.event-cards .sg-item:nth-child(n+7) { display: none; } /* 모바일은 최대 6개 */
-}
-.event-cards .sg-item { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
-.event-cards .sg-card { width: 100%; }
-.sg-video { font-size: var(--fs-sub); font-weight: 700; color: var(--accent-text); }
-.sg-video:hover { text-decoration: underline; }
 
 /* 히어로 */
 .home-hero.is-home { margin-bottom: 44px; }
