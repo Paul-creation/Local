@@ -1078,6 +1078,8 @@ img { display: block; }
    STREAMER
    ============================================================ */
 
+.streamer-channels.has-videos { margin-top: 24px; }
+.streamer-sub { font-size: 15px; font-weight: 700; color: var(--text); margin: 0 0 10px; }
 .streamer-list { display: flex; flex-wrap: wrap; gap: 10px; }
 
 .streamer-chip {

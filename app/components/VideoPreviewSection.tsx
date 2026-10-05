@@ -54,7 +54,7 @@ function VideoCards({ videos }: { videos: CoopVideo[] }) {
 function StreamerVideoCards({ videos }: { videos: StreamerVideo[] }) {
   return (
     <>
-      <div className="coop-videos" role="tabpanel">
+      <div className="coop-videos">
         {videos.map((v) => (
           <div key={v.video_id} className="coop-video-card">
             <YouTubeLite url={`https://www.youtube.com/embed/${v.video_id}`} title={v.title} />
@@ -69,25 +69,25 @@ function StreamerVideoCards({ videos }: { videos: StreamerVideo[] }) {
   );
 }
 
-// 상세 페이지 "영상으로 미리 보기" — [하이라이트] [친구랑 플레이] [스트리머](켜진 스트리머 영상) [스트리머 채널](예전 채널 목록) 탭
+// 상세 페이지 "영상으로 미리 보기" — [하이라이트] [친구랑 플레이] [스트리머](위: 켜진 스트리머 영상, 아래: 이 게임을 플레이한 채널 링크) 탭
 // 내용이 없는 탭은 숨기고, 첫 탭이 기본
-export default function VideoPreviewSection({ highlights, videos, streamerVideos, streamers }: { highlights: CoopVideo[]; videos: CoopVideo[]; streamerVideos: StreamerVideo[]; streamers: ReactNode }) {
+export default function VideoPreviewSection({ highlights, videos, streamerVideos, streamers }: { highlights: CoopVideo[]; videos: CoopVideo[]; streamerVideos: StreamerVideo[]; streamers: ReactNode }) /* streamers: 채널 링크 칩 (없으면 null) */ {
   const tabs = [
     highlights.length > 0 && { key: 'highlight', label: '하이라이트' },
     videos.length > 0 && { key: 'coop', label: '친구랑 플레이' },
-    streamerVideos.length > 0 && { key: STREAMER_VIDEOS_HASH, label: '스트리머' },
-    streamers && { key: 'streamers', label: '스트리머 채널' },
+    (streamerVideos.length > 0 || streamers) && { key: STREAMER_VIDEOS_HASH, label: '스트리머' },
   ].filter(Boolean) as { key: string; label: string }[];
+  const hasStreamerTab = tabs.some((t) => t.key === STREAMER_VIDEOS_HASH);
   const [tab, setTab] = useState(tabs[0]?.key);
   // #streamer-videos 로 들어오면 그 탭을 연다 (탭이 없는 게임이면 무시)
   useEffect(() => {
     const open = () => {
-      if (location.hash === `#${STREAMER_VIDEOS_HASH}` && streamerVideos.length > 0) setTab(STREAMER_VIDEOS_HASH);
+      if (location.hash === `#${STREAMER_VIDEOS_HASH}` && hasStreamerTab) setTab(STREAMER_VIDEOS_HASH);
     };
     open();
     window.addEventListener('hashchange', open);
     return () => window.removeEventListener('hashchange', open);
-  }, [streamerVideos.length]);
+  }, [hasStreamerTab]);
   if (!tabs.length) return null;
 
   return (
@@ -110,8 +110,17 @@ export default function VideoPreviewSection({ highlights, videos, streamerVideos
 
       {tab === 'highlight' && <VideoCards videos={highlights} />}
       {tab === 'coop' && <VideoCards videos={videos} />}
-      {tab === STREAMER_VIDEOS_HASH && <StreamerVideoCards videos={streamerVideos} />}
-      {tab === 'streamers' && <div role="tabpanel">{streamers}</div>}
+      {tab === STREAMER_VIDEOS_HASH && (
+        <div role="tabpanel">
+          {streamerVideos.length > 0 && <StreamerVideoCards videos={streamerVideos} />}
+          {streamers && (
+            <div className={streamerVideos.length > 0 ? 'streamer-channels has-videos' : 'streamer-channels'}>
+              <h4 className="streamer-sub">이 게임을 플레이한 채널</h4>
+              {streamers}
+            </div>
+          )}
+        </div>
+      )}
     </section>
   );
 }
