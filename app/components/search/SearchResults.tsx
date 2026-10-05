@@ -116,10 +116,14 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
                             <span className="price-final no-discount">{PRICE_TYPE_LABEL[game.price_type]}</span>
                           ) : price ? (
                             <>
-                              {price.discount > 0 && <span className="discount-badge">-{price.discount}%</span>}
-                              {price.discount > 0 && <span className="price-original">{price.formattedOriginal}</span>}
-                              <span className="price-final">{price.formattedFinal}</span>
                               <LowestPriceBadge timing={getLowestTiming(game, price)} />
+                              {price.discount > 0 && (
+                                <span className="result-price-off">
+                                  <span className="discount-badge">-{price.discount}%</span>
+                                  <span className="price-original">{price.formattedOriginal}</span>
+                                </span>
+                              )}
+                              <span className="price-final">{price.formattedFinal}</span>
                             </>
                           ) : null}
                         </span>
