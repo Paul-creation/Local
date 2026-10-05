@@ -38,7 +38,7 @@ const SECTION_FIELDS = `
 
 // 필터가 담긴 주소(/?sale=1, /?r=1&p=… 등)로 들어오면, React가 그리기 전 첫 HTML에서 홈 섹션을 숨기고 로딩 막대를 보여준다
 // (홈 화면이 잠깐 보였다가 결과로 바뀌는 깜빡임 방지). useGameFilters가 주소를 읽은 뒤 이 스타일을 지운다
-const HOME_FILTER_SCRIPT = `(function(){try{if(/[?&](r|q|cat|tags|ex|barrier|story|p|d|free|sale|cmp|players|price|solo)=/.test(location.search)){var s=document.createElement('style');s.id='${HOME_FILTER_STYLE_ID}';s.textContent='.home-only{display:none!important}.home-url-skel{display:block!important}';document.head.appendChild(s)}}catch(e){}})();`;
+const HOME_FILTER_SCRIPT = `(function(){try{if(/[?&](r|q|cat|tags|ex|barrier|story|net|p|d|free|sale|cmp|players|price|solo)=/.test(location.search)){var s=document.createElement('style');s.id='${HOME_FILTER_STYLE_ID}';s.textContent='.home-only{display:none!important}.home-url-skel{display:block!important}';document.head.appendChild(s)}}catch(e){}})();`;
 
 export default async function Home() {
   // 전체 게임 목록은 여기서 보내지 않는다 — 검색·필터용 목록은 첫 화면 뒤에 /api/games/list로 따로 받음 (lib/gameIndex)

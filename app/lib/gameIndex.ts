@@ -12,28 +12,31 @@ export const INDEX_FIELDS = `
   id, name, search_name_ko, tags, category, difficulty,
   min_players, max_players, recommended_players, solo_playable,
   has_online_coop, has_local_coop, has_pvp,
-  entry_barrier, solo_mode, party_max, session_max,
+  entry_barrier, solo_mode, party_max, session_max, multiplayer_host,
   is_free, price_type, lowest_price, steam_appid, source, cover_image_url, card_image_url, heat_rank,
   price_history(price, discount_percent, checked_at, currency)
 `;
 
 export async function getGameIndex() {
   // GOTY 배지(goty_awards)는 기록 있는 게임만 따로 — 칸이 아직 없으면 오류를 무시하고 배지 없이
-  const [{ data: list, error }, { data: goty }] = await Promise.all([
+  // 크로스플레이(has_crossplay)도 지원하는 게임 id만 따로 — 마이그레이션 전이라 칸이 없으면 오류를 무시하고 빈 목록
+  const [{ data: list, error }, { data: goty }, { data: cross }] = await Promise.all([
     selectGames(INDEX_FIELDS)
       .gte('price_history.price', 100)
       .order('created_at', { ascending: false })
       .order('checked_at', { referencedTable: 'price_history', ascending: false })
       .limit(1, { referencedTable: 'price_history' }),
     selectGames('id, goty_awards').not('goty_awards', 'is', null),
+    selectGames('id').eq('has_crossplay', true),
   ]);
   if (error) throw new Error(`게임 목록 조회 실패: ${error.message}`);
   const gotyById = new Map((goty || []).map((g) => [g.id, g.goty_awards]));
+  const crossIds = new Set((cross || []).map((g) => g.id));
   const tagIds = await getGameTagIds();
   return (list || []).map((g) => {
     const { tags, ...rest } = g as typeof g & { tags?: string[] | null };
     const ids = tagIds?.get(g.id);
-    return flattenGame({ ...rest, ...(tagIds ? { tag_ids: ids || [] } : { tags }), goty_awards: gotyById.get(g.id) });
+    return flattenGame({ ...rest, ...(tagIds ? { tag_ids: ids || [] } : { tags }), goty_awards: gotyById.get(g.id), ...(crossIds.has(g.id) ? { has_crossplay: true } : {}) });
   });
 }
 

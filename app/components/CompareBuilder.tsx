@@ -4,7 +4,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../lib/supabase';
-import { compareBlockReason, MAX_COMPARE, COMPARE_PICK_KEY, BUILDER_FIELDS } from '../lib/compareRule';
+import { compareBlockReason, MAX_COMPARE, BUILDER_FIELDS } from '../lib/compareRule';
+import { readPick, writePick, COMPARE_EVENT } from '../lib/compareStore';
 import { matchRank, looseIlikePattern } from '../lib/searchMatch';
 import { playersText } from '../lib/players';
 import GameImage from './GameImage';
@@ -15,6 +16,9 @@ const MAX_SUGGESTIONS = 6;
 type Pick = { id: string; name: string; search_name_ko?: string | null; card_image_url?: string | null; cover_image_url?: string | null; min_players?: number | null; max_players?: number | null };
 
 const playersLabel = (g: Pick) => playersText(g);
+
+const savePicks = (picks: Pick[]) =>
+  writePick(picks.map((g) => g.id), { source: 'builder', meta: picks.map((g) => ({ id: g.id, name: g.name, thumb: g.cover_image_url || g.card_image_url })) });
 
 // ids를 받은 순서대로 정렬
 function inOrder(ids: string[], rows: Pick[]) {
@@ -34,26 +38,37 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
   const boxRef = useRef<HTMLDivElement>(null);
   const loaded = useRef(initial.length > 0);
 
-  // 주소로 받은 게임이 없으면, 메인에서 + 비교로 골라둔 게임을 칸에 미리 채움
+  // 주소로 받은 게임이 없으면, 비교함(메인 + 비교·상세 비교에 담기)에 담아 둔 게임을 칸에 미리 채움
+  // ready: 비교함을 다 읽은 뒤부터 칸 변경을 비교함에 저장 (읽기 전에 빈 칸으로 덮어쓰지 않게)
+  const ready = useRef(false);
   useEffect(() => {
-    if (loaded.current) return;
+    // 주소로 게임을 받았으면(loaded가 처음부터 true) 그 칸을 비교함에 그대로 저장
+    if (loaded.current) { ready.current = true; savePicks(picks); return; }
     loaded.current = true;
-    let ids: string[] = [];
-    try { ids = (sessionStorage.getItem(COMPARE_PICK_KEY) || '').split(',').filter(Boolean).slice(0, MAX_COMPARE); } catch {}
-    if (!ids.length) return;
+    const ids = readPick();
+    if (!ids.length) { ready.current = true; return; }
     selectGames(BUILDER_FIELDS).in('id', ids).then(({ data }) => {
+      ready.current = true;
       if (data?.length) setPicks((prev) => (prev.length ? prev : inOrder(ids, data)));
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 처음 한 번만
   }, []);
 
-  // 고른 게임을 기억해서, 다시 들어와도 그대로
+  // 고른 게임을 비교함에 저장해서, 다시 들어와도·다른 페이지에서도 그대로 (헤더 숫자·알약도 같이 바뀜)
   useEffect(() => {
-    if (!loaded.current) return;
-    try {
-      if (picks.length) sessionStorage.setItem(COMPARE_PICK_KEY, picks.map((g) => g.id).join(','));
-      else sessionStorage.removeItem(COMPARE_PICK_KEY);
-    } catch {}
+    if (ready.current) savePicks(picks);
   }, [picks]);
+
+  // 다른 곳(알약의 × 빼기 등)에서 비교함이 바뀌면 칸도 맞춘다
+  useEffect(() => {
+    const on = (e: Event) => {
+      const d = (e as CustomEvent<{ ids: string[]; source: string }>).detail;
+      if (d.source === 'builder') return;
+      setPicks((prev) => prev.filter((g) => d.ids.includes(g.id)));
+    };
+    window.addEventListener(COMPARE_EVENT, on);
+    return () => window.removeEventListener(COMPARE_EVENT, on);
+  }, []);
 
   // 입력이 잠깐 멈추면 이름으로 검색 (매 글자마다 요청하지 않게)
   const q = input.trim();

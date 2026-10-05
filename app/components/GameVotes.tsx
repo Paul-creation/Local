@@ -40,7 +40,7 @@ export default function GameVotes({ gameId }: { gameId: string }) {
   const totalVotes = Object.values(votes).reduce((a, b) => a + b, 0);
 
   return (
-    <section className="detail-card">
+    <section className="detail-card is-roomy">
       <h3 className="detail-card-title">이 게임 어떤 상황에서 좋아요?</h3>
       <p className="detail-card-sub">해당하는 상황을 모두 눌러 주세요 · <span className="num">{totalVotes}</span>명 참여</p>
       <div className="vote-chips">
