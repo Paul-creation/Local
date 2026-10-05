@@ -17,6 +17,11 @@ import { BADGES, badgeMatches } from './badge.mjs';
 // 검색 결과는 처음 이만큼만 그리고, 더 보기로 이만큼씩 늘린다
 export const PAGE_SIZE = 24;
 
+// 결과 정렬 (?sort=discount·price). 기본은 받은 순서(최근 추가순)
+export const SORTS = [['', '최근 추가순'], ['discount', '할인 큰 순'], ['price', '낮은 가격순']] as const;
+export type SortKey = (typeof SORTS)[number][0];
+const isSortKey = (v: string | null): v is SortKey => SORTS.some(([k]) => k === v);
+
 
 // 진입장벽 칩 ↔ 주소 값 (?barrier=low,mid)
 export const BARRIERS = [['낮음', 'low'], ['보통', 'mid'], ['높음', 'high']] as const;
@@ -48,6 +53,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
   const [soloOnly, setSoloOnly] = useState(false);
   const [priceRange, setPriceRange] = useState<Range>(PRICE_ALL);
   const [saleOnly, setSaleOnly] = useState(false);
+  const [sort, setSort] = useState<SortKey>('');
   const [compareList, setCompareList] = useState<any[]>([]);
   const [compareError, setCompareError] = useState('');
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -78,6 +84,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     // 예전 "무료 게임만" 주소(free=1)는 무료~무료
     setPriceRange(sp.has('price') ? parsePrice(sp.get('price')) : sp.get('free') === '1' ? FREE_ONLY : PRICE_ALL);
     setSaleOnly(sp.get('sale') === '1');
+    setSort(isSortKey(sp.get('sort')) ? (sp.get('sort') as SortKey) : '');
     pendingCmp.current = (sp.get('cmp') || '').split(',').filter(Boolean);
     setInited(true);
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -107,6 +114,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     if (soloOnly) q.set('solo', '1');
     if (formatPrice(priceRange)) q.set('price', formatPrice(priceRange));
     if (saleOnly) q.set('sale', '1');
+    if (sort) q.set('sort', sort);
     if (compareList.length) q.set('cmp', compareList.map((g: any) => g.id).join(','));
     const qs = q.toString();
     const url = qs ? `/?${qs}` : '/';
@@ -115,7 +123,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     if (window.location.pathname === '/' && window.location.pathname + window.location.search !== url) {
       window.history.replaceState(null, '', url);
     }
-  }, [inited, showResults, query, selectedCategory, selectedTags, excludedTags, selectedBarriers, storyOnly, playersRange, soloOnly, priceRange, saleOnly, compareList]);
+  }, [inited, showResults, query, selectedCategory, selectedTags, excludedTags, selectedBarriers, storyOnly, playersRange, soloOnly, priceRange, saleOnly, sort, compareList]);
 
   // 카드나 비교하기를 누를 때 지금 목록 주소와 스크롤 위치를 기억
   const rememberList = () => {
@@ -209,7 +217,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
   const selectedCount = [selectedCategory, playersOn ? '인원' : '', soloOnly ? '1인 전용' : '', storyOnly ? '혼자도' : '', priceOn ? '가격' : '', saleOnly ? '할인' : '', ...selectedBarriers, ...selectedTags, ...excludedTags].filter(Boolean).length;
   const hasFilters = !!(normalizedQuery || selectedCategory || selectedTags.length > 0 || excludedTags.length > 0 || selectedBarriers.length > 0 || storyOnly || playersOn || soloOnly || priceOn || saleOnly);
 
-  const filtered = (games || []).filter((g) => {
+  const matched = (games || []).filter((g) => {
     // 지금 실제 가격(할인 중이면 할인가) 기준
     if (!matchesPrice(g, priceRange)) return false;
     if (saleOnly && !((getPriceInfo(g)?.discount ?? 0) > 0)) return false;
@@ -228,8 +236,16 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     return true;
   });
 
+  // 정렬 — 가격이 없는 게임(월 구독·판매처 확인)은 가격순에서 맨 뒤, 무료는 0원
+  const priceOf = (g: any) => (g.is_free ? 0 : getPriceInfo(g)?.final ?? Infinity);
+  const filtered = sort === 'discount'
+    ? [...matched].sort((a, b) => (getPriceInfo(b)?.discount ?? 0) - (getPriceInfo(a)?.discount ?? 0))
+    : sort === 'price'
+      ? [...matched].sort((a, b) => priceOf(a) - priceOf(b))
+      : matched;
+
   // 검색어·필터가 바뀌면 다시 처음 24개부터 (처음 열 때는 그대로)
-  const filterKey = [query, selectedCategory, selectedTags.join(','), excludedTags.join(','), selectedBarriers.join(','), storyOnly, playersRange.join('-'), soloOnly, priceRange.join('-'), saleOnly].join('|');
+  const filterKey = [query, selectedCategory, selectedTags.join(','), excludedTags.join(','), selectedBarriers.join(','), storyOnly, playersRange.join('-'), soloOnly, priceRange.join('-'), saleOnly, sort].join('|');
   const prevFilterKey = useRef<string | null>(null);
   useEffect(() => {
     if (prevFilterKey.current !== null && prevFilterKey.current !== filterKey) setVisibleCount(PAGE_SIZE);
@@ -311,6 +327,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     soloOnly, setSoloOnly,
     priceRange, setPriceRange,
     saleOnly, setSaleOnly,
+    sort, setSort,
     compareList, setCompareList, compareError, toggleCompare,
     rememberList,
     normalizedQuery, selectedCount, hasFilters,

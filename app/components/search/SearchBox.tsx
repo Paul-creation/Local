@@ -82,6 +82,11 @@ export default function SearchBox({ games, filters }: { games: any[], filters: G
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     // 한글 조합 중 엔터·화살표는 무시 (조합 끝날 때 한 번 더 들어와서 두 번 실행되는 것 방지)
     if (e.nativeEvent.isComposing) return;
+    // 빈 입력에서 지우기 키 → 마지막 태그 칩 지우기
+    if (e.key === 'Backspace' && !input && selectedTags.length > 0) {
+      toggleTag(selectedTags[selectedTags.length - 1]);
+      return;
+    }
     if (e.key === 'ArrowDown' && suggestions.length > 0) {
       e.preventDefault();
       setOpen(true);
@@ -110,11 +115,17 @@ export default function SearchBox({ games, filters }: { games: any[], filters: G
   return (
     <div className="search-box" ref={boxRef}>
       <div className="search-box-field">
-      <div className="search-bar-clean">
+      <div className={`search-bar-clean${selectedTags.length ? ' has-chips' : ''}`}>
+        {/* 검색창 안 태그 칩 — 입력으로 알아본 것과 필터에서 고른 것 모두. ×로 지움 */}
+        {selectedTags.map((tag) => (
+          <button key={tag} type="button" className="search-tag-chip" onClick={() => toggleTag(tag)} aria-label={`${tagKeyLabel(tag, tree)} 태그 지우기`}>
+            {tagKeyLabel(tag, tree)} <span aria-hidden="true">×</span>
+          </button>
+        ))}
         <input
           ref={inputRef}
           type="text"
-          placeholder="게임 이름이나 태그로 검색 (예: 좀비, 협동)"
+          placeholder={selectedTags.length ? '검색어 더하기' : '게임 이름이나 태그로 검색 (예: 좀비, 협동)'}
           value={input}
           onChange={(e) => { setInput(e.target.value); setOpen(true); setActive(-1); }}
           onFocus={() => setOpen(true)}
@@ -125,7 +136,7 @@ export default function SearchBox({ games, filters }: { games: any[], filters: G
           aria-autocomplete="list"
           aria-activedescendant={showList && active >= 0 ? `search-suggest-${active}` : undefined}
         />
-        {input && <button className="search-clear" aria-label="입력 지우기" onClick={() => { setInput(''); setActive(-1); }}>✕</button>}
+        {input && <button type="button" className="search-clear" aria-label="입력 지우기" onClick={() => { setInput(''); setActive(-1); }}>×</button>}
       </div>
 
       {showList && (
@@ -160,16 +171,6 @@ export default function SearchBox({ games, filters }: { games: any[], filters: G
       )}
       </div>
 
-      {/* 고른 태그 — 입력으로 알아본 것과 태그 선택에서 고른 것 모두. ✕로 지움 */}
-      {selectedTags.length > 0 && (
-        <div className="search-tag-chips">
-          {selectedTags.map((tag) => (
-            <button key={tag} type="button" className="search-tag-chip" onClick={() => toggleTag(tag)} aria-label={`${tagKeyLabel(tag, tree)} 태그 지우기`}>
-              {tagKeyLabel(tag, tree)} <span aria-hidden="true">✕</span>
-            </button>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
