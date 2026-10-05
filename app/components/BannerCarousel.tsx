@@ -20,14 +20,12 @@ export default function BannerCarousel({ games }: { games: any[] }) {
   return (
     <div className="feature-carousel">
       <FeatureCard game={games[index]} label="추천 게임" />
-      {/* 보이는 점은 작게, 누르는 영역은 44px. 점이 많아 한 줄에 다 안 들어가면 너비만 나눠 가짐 */}
+      {/* 이전·다음 + 몇 번째인지 (점 대신 — 게임이 많아도 버튼마다 터치 영역 44px) */}
       {games.length > 1 && (
-        <div className="feature-dots">
-          {games.map((g, i) => (
-            <button key={g.id} type="button" onClick={() => setIndex(i)} aria-label={`${i + 1}번째 추천 게임`} aria-current={i === index}>
-              <span />
-            </button>
-          ))}
+        <div className="feature-nav">
+          <button type="button" className="btn btn-outline feature-nav-btn" onClick={() => setIndex((i) => (i - 1 + games.length) % games.length)} aria-label="이전 추천 게임">이전</button>
+          <span className="feature-nav-count num" aria-live="polite">{index + 1} / {games.length}</span>
+          <button type="button" className="btn btn-outline feature-nav-btn" onClick={() => setIndex((i) => (i + 1) % games.length)} aria-label="다음 추천 게임">다음</button>
         </div>
       )}
     </div>

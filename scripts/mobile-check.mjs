@@ -5,7 +5,7 @@
 //       node scripts/mobile-check.mjs http://localhost:3000
 // - 스크린샷은 scripts/.cache/mobile-check/<시각>/ 에 저장 (gitignore 됨)
 // - 글쓰기·의견함·의견 달기는 화면만 열고 입력·제출은 하지 않는다 (DB에 아무것도 쓰지 않음)
-// - 태그 필터는 메인의 "태그 선택"을 눌러 펼친 상태로 본다 (필터만 바뀌고 저장되는 것 없음)
+// - 필터는 메인의 "필터" 버튼을 눌러 펼친 상태로 본다 (필터만 바뀌고 저장되는 것 없음)
 // - 투명 ::before/::after로 넓힌 터치 영역(.tag-help-btn 같은 방식)도 크기에 포함한다
 // - 비교는 /compare(빈 화면)만 연다. ?ids=를 붙이면 AI 점수 계산(비용·하루 한도 사용)이 돌 수 있어서
 // - 가로 스크롤이 하나라도 있으면 종료 코드 1
@@ -41,7 +41,7 @@ async function discover(browser) {
       if (found.withVideo && found.noVideo) break;
       const html = await (await page.request.get(SITE + href, { timeout: 30000 })).text().catch(() => '');
       if (!html) continue;
-      const hasVideo = html.includes('video-section');
+      const hasVideo = html.includes('dh-play'); // 상세 맨 위 "트레일러 재생" 버튼
       if (hasVideo && !found.withVideo) found.withVideo = href;
       if (!hasVideo && !found.noVideo) found.noVideo = href;
     }
@@ -128,14 +128,14 @@ async function main() {
   const pages = [
     { name: '메인', path: '/' },
     { name: '검색 결과', path: '/?r=1&q=' + encodeURIComponent('협동') },
-    { name: '태그 필터(펼침)', path: '/', open: 'button:has-text("태그 선택")' },
+    { name: '필터(펼침)', path: '/', open: 'button.filter-toggle' },
     f.withVideo ? { name: '게임 상세(영상 있음)', path: f.withVideo } : null,
     f.noVideo ? { name: '게임 상세(영상 없음)', path: f.noVideo } : null,
     { name: '비교', path: '/compare' },
     { name: '커뮤니티 목록', path: '/community' },
     f.post ? { name: '커뮤니티 글', path: f.post } : null,
     { name: '글쓰기', path: '/community/write' },
-    (f.noVideo || f.withVideo) ? { name: '의견 달기', path: f.noVideo || f.withVideo, scope: '.detail-section-v2:has(.cm-opinion-form)' } : null,
+    (f.noVideo || f.withVideo) ? { name: '의견 달기', path: f.noVideo || f.withVideo, scope: '.detail-card:has(.cm-opinion-form)' } : null,
     { name: '의견함', path: '/feedback' },
     { name: '소개', path: '/about' },
     { name: 'FAQ', path: '/faq' },

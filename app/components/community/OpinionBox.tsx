@@ -42,7 +42,7 @@ export default function OpinionBox({ gameId, initial }: { gameId: string; initia
         {error && <p className="cm-error">{error}</p>}
       </form>
       {list.length === 0 ? (
-        <p className="cm-hint" style={{ marginTop: 12 }}>아직 의견이 없어요. 첫 의견을 남겨주세요!</p>
+        <p className="cm-hint cm-hint-gap">아직 의견이 없어요. 첫 의견을 남겨주세요!</p>
       ) : (
         <ul className="cm-comment-list">
           {list.map((c) => (

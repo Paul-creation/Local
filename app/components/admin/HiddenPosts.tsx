@@ -23,7 +23,7 @@ export default function HiddenPosts() {
     const res = await fetch('/api/admin/community', {
       method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type, id }),
     });
-    setMsg(res.ok ? (method === 'PATCH' ? '복구했어요 ✅' : '삭제했어요 🗑️') : '실패했어요 ❌');
+    setMsg(res.ok ? (method === 'PATCH' ? '복구했어요' : '삭제했어요') : '실패했어요');
     setTimeout(() => setMsg(''), 2000);
     load();
   };
@@ -40,12 +40,12 @@ export default function HiddenPosts() {
             #{it.id} · {it.board || (it.game_id ? `${it.games?.name || '게임'} 의견` : `글 #${it.post_id}의 댓글`)} · {it.nickname} · 신고 {it.report_count}회 · {formatDateTime(it.created_at)}
           </div>
           {it.title && <div style={{ fontWeight: 700, marginBottom: 4 }}>{it.title}</div>}
-          <div style={{ fontSize: 15, whiteSpace: 'pre-wrap', maxHeight: 160, overflow: 'auto', color: '#333' }}>{it.body}</div>
+          <div style={{ fontSize: 15, whiteSpace: 'pre-wrap', maxHeight: 160, overflow: 'auto', color: 'var(--text-2)' }}>{it.body}</div>
           <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
-            {type === 'game_comment' && <a href={`/games/${it.game_id}`} target="_blank" rel="noreferrer" style={{ ...btn, background: '#eee', color: '#16202b', textDecoration: 'none' }}>게임 보기</a>}
-            {type === 'post' && <a href={`/community/post/${it.id}`} target="_blank" rel="noreferrer" style={{ ...btn, background: '#eee', color: '#16202b', textDecoration: 'none' }}>보기</a>}
-            <button onClick={() => act('PATCH', type, it.id)} style={{ ...btn, background: '#16202b' }}>복구</button>
-            <button onClick={() => act('DELETE', type, it.id)} style={{ ...btn, background: '#d64545' }}>삭제</button>
+            {type === 'game_comment' && <a href={`/games/${it.game_id}`} target="_blank" rel="noreferrer" style={{ ...btn, background: 'var(--inset)', color: 'var(--text)', textDecoration: 'none' }}>게임 보기</a>}
+            {type === 'post' && <a href={`/community/post/${it.id}`} target="_blank" rel="noreferrer" style={{ ...btn, background: 'var(--inset)', color: 'var(--text)', textDecoration: 'none' }}>보기</a>}
+            <button onClick={() => act('PATCH', type, it.id)} style={{ ...btn, background: 'var(--accent)' }}>복구</button>
+            <button onClick={() => act('DELETE', type, it.id)} style={{ ...btn, background: 'var(--sale)' }}>삭제</button>
           </div>
         </div>
       ))}
@@ -62,5 +62,5 @@ export default function HiddenPosts() {
   );
 }
 
-const card: React.CSSProperties = { background: '#fff', borderRadius: 12, padding: 16, marginBottom: 10, border: '1px solid #e5e3dc' };
-const btn: React.CSSProperties = { padding: '8px 16px', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: 14 };
+const card: React.CSSProperties = { background: 'var(--card)', borderRadius: 12, padding: 16, marginBottom: 10, border: '1px solid var(--border)' };
+const btn: React.CSSProperties = { padding: '8px 16px', color: 'var(--accent-ink)', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: 14 };

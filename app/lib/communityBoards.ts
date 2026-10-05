@@ -3,15 +3,15 @@ import { formatDate } from './date';
 
 
 export const BOARDS = {
-  party: { emoji: '🎮', label: '같이 할 사람', desc: '같이 게임할 친구를 찾아요' },
-  ask: { emoji: '🤔', label: '뭐 하지?', desc: '어떤 게임 할지 물어봐요' },
-  free: { emoji: '💬', label: '자유', desc: '게임 이야기 아무거나' },
+  party: { label: '같이 할 사람', desc: '같이 게임할 친구를 찾아요' },
+  ask: { label: '뭐 하지?', desc: '어떤 게임 할지 물어봐요' },
+  free: { label: '자유', desc: '게임 이야기 아무거나' },
 } as const;
 
 export type BoardKey = keyof typeof BOARDS;
 export const BOARD_KEYS = Object.keys(BOARDS) as BoardKey[];
 export const isBoard = (v: unknown): v is BoardKey => typeof v === 'string' && v in BOARDS;
-export const boardTitle = (b: BoardKey) => `${BOARDS[b].emoji} ${BOARDS[b].label}`;
+export const boardTitle = (b: BoardKey) => BOARDS[b].label;
 
 // DB 제약(check constraint)과 같은 값
 export const LIMITS = {

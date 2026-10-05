@@ -16,7 +16,7 @@ export default async function CommunityHome() {
       <div className="cm-board-cards">
         {BOARD_KEYS.map((b, i) => (
           <Link key={b} href={`/community/${b}`} className="cm-board-card">
-            <strong>{BOARDS[b].emoji} {BOARDS[b].label}</strong>
+            <strong>{BOARDS[b].label}</strong>
             <span>{BOARDS[b].desc}</span>
             <span className="cm-board-card-count">글 {boards[i].total.toLocaleString('ko-KR')}개</span>
           </Link>

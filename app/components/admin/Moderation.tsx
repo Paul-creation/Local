@@ -37,11 +37,11 @@ export default function Moderation({ initial = 'reports' }: { initial?: ModTab }
 
   const send = async (url: string, body: object, done: string) => {
     const res = await fetch(url, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-    flash(res.ok ? done : '실패했어요 ❌');
+    flash(res.ok ? done : '실패했어요');
   };
-  const resolveReport = async (r: ReportItem) => { await send('/api/admin/reports', { type: r.type, id: r.id }, '처리 완료로 표시했어요 ✅'); loadReports(); };
+  const resolveReport = async (r: ReportItem) => { await send('/api/admin/reports', { type: r.type, id: r.id }, '처리 완료로 표시했어요'); loadReports(); };
   const resolveFeedback = async (f: FeedbackItem, resolved: boolean) => {
-    await send('/api/admin/feedback', { id: f.id, resolved }, resolved ? '처리 완료로 표시했어요 ✅' : '다시 처리 전으로 돌렸어요');
+    await send('/api/admin/feedback', { id: f.id, resolved }, resolved ? '처리 완료로 표시했어요' : '다시 처리 전으로 돌렸어요');
     loadFeedback();
   };
 
@@ -63,7 +63,7 @@ export default function Moderation({ initial = 'reports' }: { initial?: ModTab }
     <div style={{ maxWidth: 760 }}>
       <div style={{ display: 'flex', gap: 6, marginBottom: 20, flexWrap: 'wrap' }}>
         {tabs.map(([k, label, n]) => (
-          <button key={k} onClick={() => setTab(k)} style={{ ...chip, background: tab === k ? '#16202b' : '#fff', color: tab === k ? '#fff' : '#16202b' }}>
+          <button key={k} onClick={() => setTab(k)} style={{ ...chip, background: tab === k ? 'var(--accent)' : 'var(--card)', color: tab === k ? 'var(--accent-ink)' : 'var(--text)' }}>
             {label}{n ? ` (${n})` : ''}
           </button>
         ))}
@@ -81,17 +81,17 @@ export default function Moderation({ initial = 'reports' }: { initial?: ModTab }
             <div key={`${r.type}:${r.id}`} style={card}>
               <div style={{ fontSize: 'var(--fs-sub)', color: 'var(--text-dim)', marginBottom: 6 }}>
                 {TYPE_LABEL[r.type]} #{r.id} · 신고 {r.count}건 · 최근 {when(r.latest)}
-                {r.target?.hidden && <b style={{ color: '#d64545' }}> · 숨김 중</b>}
+                {r.target?.hidden && <b style={{ color: 'var(--sale)' }}> · 숨김 중</b>}
                 {!r.target && <b> · 이미 삭제됨</b>}
               </div>
-              <div style={{ fontSize: 13, color: '#555', marginBottom: 6 }}>
+              <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 6 }}>
                 {Object.entries(r.reasons).map(([k, v]) => `${k} ${v}`).join(' · ')}
               </div>
               {r.target?.title && <div style={{ fontWeight: 700, marginBottom: 4 }}>{r.target.title}</div>}
               {r.target && <div style={bodyStyle}>{r.target.body}</div>}
               <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
-                {link && <a href={link} target="_blank" rel="noreferrer" style={{ ...btn, background: '#eee', color: '#16202b', textDecoration: 'none' }}>보기</a>}
-                <button onClick={() => resolveReport(r)} style={{ ...btn, background: '#16202b' }}>처리 완료</button>
+                {link && <a href={link} target="_blank" rel="noreferrer" style={{ ...btn, background: 'var(--inset)', color: 'var(--text)', textDecoration: 'none' }}>보기</a>}
+                <button onClick={() => resolveReport(r)} style={{ ...btn, background: 'var(--accent)' }}>처리 완료</button>
               </div>
             </div>
           );
@@ -109,16 +109,16 @@ export default function Moderation({ initial = 'reports' }: { initial?: ModTab }
             {(showResolved ? feedback : openFeedback).map((f) => (
               <div key={f.id} style={{ ...card, opacity: f.resolved_at ? 0.6 : 1 }}>
                 <div style={{ fontSize: 'var(--fs-sub)', color: 'var(--text-dim)', marginBottom: 6 }}>
-                  #{f.id} · <b style={{ color: '#16202b' }}>{FEEDBACK_KINDS[f.kind] || f.kind}</b> · {when(f.created_at)}
-                  {f.page_url && <> · 보낸 곳 <a href={f.page_url} target="_blank" rel="noreferrer" style={{ color: '#0071e3' }}>{f.page_url}</a></>}
+                  #{f.id} · <b style={{ color: 'var(--text)' }}>{FEEDBACK_KINDS[f.kind] || f.kind}</b> · {when(f.created_at)}
+                  {f.page_url && <> · 보낸 곳 <a href={f.page_url} target="_blank" rel="noreferrer" style={{ color: 'var(--accent-text)' }}>{f.page_url}</a></>}
                   {f.resolved_at && <> · 처리 완료 {when(f.resolved_at)}</>}
                 </div>
                 <div style={bodyStyle}>{f.body}</div>
                 {f.contact && <div style={{ fontSize: 14, marginTop: 6 }}>연락처: {f.contact}</div>}
                 <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
                   {f.resolved_at
-                    ? <button onClick={() => resolveFeedback(f, false)} style={{ ...btn, background: '#eee', color: '#16202b' }}>처리 전으로</button>
-                    : <button onClick={() => resolveFeedback(f, true)} style={{ ...btn, background: '#16202b' }}>처리 완료</button>}
+                    ? <button onClick={() => resolveFeedback(f, false)} style={{ ...btn, background: 'var(--inset)', color: 'var(--text)' }}>처리 전으로</button>
+                    : <button onClick={() => resolveFeedback(f, true)} style={{ ...btn, background: 'var(--accent)' }}>처리 완료</button>}
                 </div>
               </div>
             ))}
@@ -129,7 +129,7 @@ export default function Moderation({ initial = 'reports' }: { initial?: ModTab }
   );
 }
 
-const chip: React.CSSProperties = { padding: '8px 14px', borderRadius: 100, border: '1px solid #e5e3dc', cursor: 'pointer', fontSize: 14, fontWeight: 700 };
-const card: React.CSSProperties = { background: '#fff', borderRadius: 12, padding: 16, marginBottom: 10, border: '1px solid #e5e3dc' };
-const btn: React.CSSProperties = { padding: '8px 16px', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: 14 };
-const bodyStyle: React.CSSProperties = { fontSize: 15, whiteSpace: 'pre-wrap', maxHeight: 160, overflow: 'auto', color: '#333' };
+const chip: React.CSSProperties = { padding: '8px 14px', borderRadius: 100, border: '1px solid var(--border)', cursor: 'pointer', fontSize: 14, fontWeight: 700 };
+const card: React.CSSProperties = { background: 'var(--card)', borderRadius: 12, padding: 16, marginBottom: 10, border: '1px solid var(--border)' };
+const btn: React.CSSProperties = { padding: '8px 16px', color: 'var(--accent-ink)', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: 14 };
+const bodyStyle: React.CSSProperties = { fontSize: 15, whiteSpace: 'pre-wrap', maxHeight: 160, overflow: 'auto', color: 'var(--text-2)' };

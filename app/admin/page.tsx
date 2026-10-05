@@ -57,18 +57,18 @@ export default function AdminPage() {
     });
     setSaving(false);
     if (res.ok) {
-      setSaveMsg('저장됐어요! ✅');
+      setSaveMsg('저장됐어요!');
       setTimeout(() => setSaveMsg(''), 2000);
       loadGames();
     } else {
-      setSaveMsg('저장 실패 ❌');
+      setSaveMsg('저장 실패');
     }
   };
 
   if (!authed) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f4f2ec' }}>
-        <div style={{ background: '#fff', padding: 32, borderRadius: 16, boxShadow: '0 4px 20px rgba(0,0,0,0.1)', width: 320 }}>
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg)' }}>
+        <div style={{ background: 'var(--card)', padding: 32, borderRadius: 16, boxShadow: 'var(--shadow-md)', width: 320 }}>
           <h2 style={{ marginBottom: 20, fontWeight: 800 }}>어드민 로그인</h2>
           <input
             type="password"
@@ -76,12 +76,12 @@ export default function AdminPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && login()}
-            style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid #ddd', marginBottom: 12, fontSize: 15, boxSizing: 'border-box' }}
+            style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', marginBottom: 12, fontSize: 15, boxSizing: 'border-box' }}
           />
-          {error && <p style={{ color: '#d64545', fontSize: 15, marginBottom: 8 }}>{error}</p>}
+          {error && <p style={{ color: 'var(--sale)', fontSize: 15, marginBottom: 8 }}>{error}</p>}
           <button
             onClick={login}
-            style={{ width: '100%', padding: '10px 0', background: '#16202b', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: 15 }}
+            style={{ width: '100%', padding: '10px 0', background: 'var(--accent)', color: 'var(--accent-ink)', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: 15 }}
           >
             로그인
           </button>
@@ -91,12 +91,12 @@ export default function AdminPage() {
   }
 
   const tabBar = (
-    <div style={{ display: 'flex', gap: 8, padding: '12px 16px', background: '#fff', borderBottom: '1px solid #e5e3dc' }}>
+    <div style={{ display: 'flex', gap: 8, padding: '12px 16px', background: 'var(--card)', borderBottom: '1px solid var(--border)' }}>
       {([['games', '게임 편집'], ['community', '신고·숨김·의견함']] as const).map(([k, label]) => (
         <button
           key={k}
           onClick={() => setTab(k)}
-          style={{ padding: '8px 16px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 15, fontWeight: 700, background: tab === k ? '#16202b' : '#f0efe9', color: tab === k ? '#fff' : '#16202b' }}
+          style={{ padding: '8px 16px', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 15, fontWeight: 700, background: tab === k ? 'var(--accent)' : 'var(--inset)', color: tab === k ? 'var(--accent-ink)' : 'var(--text)' }}
         >
           {label}
         </button>
@@ -106,7 +106,7 @@ export default function AdminPage() {
 
   if (tab === 'community') {
     return (
-      <div style={{ minHeight: '100vh', background: '#f4f2ec' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
         {tabBar}
         <div style={{ padding: 32 }}><Moderation initial={modTab} /></div>
       </div>
@@ -116,9 +116,9 @@ export default function AdminPage() {
   return (
     <>
     {tabBar}
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#f4f2ec' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg)' }}>
       {/* 게임 목록 */}
-      <div style={{ width: 280, background: '#fff', borderRight: '1px solid #e5e3dc', overflowY: 'auto', padding: 16 }}>
+      <div style={{ width: 280, background: 'var(--card)', borderRight: '1px solid var(--border)', overflowY: 'auto', padding: 16 }}>
         <h3 style={{ fontWeight: 800, marginBottom: 16, fontSize: 16 }}>게임 목록 ({games.length})</h3>
         {games.map((g) => (
           <button
@@ -127,13 +127,13 @@ export default function AdminPage() {
             style={{
               display: 'block', width: '100%', textAlign: 'left',
               padding: '10px 12px', borderRadius: 8, border: 'none',
-              background: selected?.id === g.id ? '#f0f9f8' : 'transparent',
+              background: selected?.id === g.id ? 'var(--accent-soft)' : 'transparent',
               cursor: 'pointer', fontSize: 15, fontWeight: selected?.id === g.id ? 700 : 400,
-              color: '#16202b', marginBottom: 2,
+              color: 'var(--text)', marginBottom: 2,
             }}
           >
             {g.name}
-            {g.hidden && <span style={{ marginLeft: 6, fontSize: 12, fontWeight: 700, color: '#b45309', background: '#fef3c7', borderRadius: 4, padding: '1px 6px' }}>숨김</span>}
+            {g.hidden && <span style={{ marginLeft: 6, fontSize: 12, fontWeight: 700, color: 'var(--gold)', border: '1px solid var(--gold-border)', borderRadius: 4, padding: '1px 6px' }}>숨김</span>}
           </button>
         ))}
       </div>
@@ -146,7 +146,7 @@ export default function AdminPage() {
           <div style={{ maxWidth: 600 }}>
             <h2 style={{ fontWeight: 800, marginBottom: 24 }}>{selected.name}</h2>
             {selected.hidden && (
-              <p style={{ margin: '-12px 0 20px', padding: '10px 12px', borderRadius: 8, background: '#fef3c7', color: '#92400e', fontSize: 14 }}>
+              <p style={{ margin: '-12px 0 20px', padding: '10px 12px', borderRadius: 8, background: 'var(--inset)', color: 'var(--gold)', fontSize: 14 }}>
                 숨긴 게임이에요. 사이트 화면·검색·시리즈·sitemap에 나오지 않아요.
                 {selected.merged_into && (
                   <> 상세 주소로 들어오면 <a href={`/games/${selected.merged_into}`} target="_blank" rel="noreferrer">{games.find((x) => x.id === selected.merged_into)?.name ?? '남긴 게임'}</a>(으)로 이동해요.</>
@@ -231,7 +231,7 @@ export default function AdminPage() {
                 onClick={save}
                 disabled={saving}
                 style={{
-                  padding: '12px 28px', background: '#16202b', color: '#fff',
+                  padding: '12px 28px', background: 'var(--accent)', color: 'var(--accent-ink)',
                   border: 'none', borderRadius: 8, fontWeight: 700,
                   cursor: saving ? 'not-allowed' : 'pointer', fontSize: 15,
                 }}
@@ -250,12 +250,12 @@ export default function AdminPage() {
 
 const labelStyle: React.CSSProperties = {
   display: 'block', fontSize: 15, fontWeight: 700,
-  color: '#16202b', marginBottom: 6,
+  color: 'var(--text)', marginBottom: 6,
 };
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '10px 14px',
-  borderRadius: 8, border: '1px solid #ddd',
+  borderRadius: 8, border: '1px solid var(--border)',
   fontSize: 15, marginBottom: 16,
-  boxSizing: 'border-box', background: '#fff',
+  boxSizing: 'border-box', background: 'var(--card)',
 };

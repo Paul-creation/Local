@@ -42,94 +42,51 @@ export default function CompareChat({ games }: { games: any[] }) {
   };
 
   return (
-    <div style={{ marginTop: 32 }}>
+    <section className="cmp-ai">
       {/* CHAT_SIZE_V2 */}
-      <h2 style={{ fontSize: 20, fontWeight: 800, marginBottom: 6 }}>AI에게 물어보기</h2>
-      <p style={{ fontSize: 16, color: 'var(--text-dimmer)', marginBottom: 16 }}>
-        이 게임들에 대해 뭐든 물어봐 (세션당 최대 5회)
-      </p>
+      <h2 className="cmp-h2">AI에게 물어보기</h2>
+      <p className="cmp-ai-sub">이 게임들에 대해 뭐든 물어보세요 (세션당 최대 5회)</p>
 
-      {/* 빠른 질문 */}
+      {/* 추천 질문 */}
       {messages.length === 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
+        <div className="cmp-ai-chips">
           {QUICK_QUESTIONS.map(q => (
-            <button
-              key={q}
-              onClick={() => ask(q)}
-              style={{
-                background: 'var(--bg-card)', border: '1.5px solid var(--border)',
-                borderRadius: 100, padding: '10px 18px',
-                fontSize: 16, color: 'var(--text)', cursor: 'pointer',
-              }}
-            >
-              {q}
-            </button>
+            <button key={q} type="button" className="chip" onClick={() => ask(q)}>{q}</button>
           ))}
         </div>
       )}
 
       {/* 대화 내역 */}
       {messages.length > 0 && (
-        <div style={{
-          background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
-          border: '1px solid var(--border-light)', padding: 22,
-          marginBottom: 12, display: 'flex', flexDirection: 'column', gap: 12,
-        }}>
+        <div className="cmp-ai-log">
           {messages.map((m, i) => (
-            <div key={i} style={{
-              display: 'flex',
-              justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start',
-            }}>
-              <div style={{
-                maxWidth: '85%', padding: '14px 18px', borderRadius: 16,
-                fontSize: 17, lineHeight: 1.7,
-                background: m.role === 'user' ? 'var(--accent)' : 'var(--bg)',
-                color: m.role === 'user' ? '#fff' : 'var(--text)',
-              }}>
-                {m.text}
-              </div>
+            <div key={i} className={`cmp-ai-msg is-${m.role === 'user' ? 'user' : 'ai'}`}>
+              <div className="cmp-ai-bubble">{m.text}</div>
             </div>
           ))}
-          {loading && (
-            <div style={{ color: 'var(--text-dimmer)', fontSize: 16 }}>생각 중...</div>
-          )}
+          {loading && <div className="cmp-ai-wait">생각 중...</div>}
         </div>
       )}
 
-      {/* 입력창 */}
+      {/* 입력창 — 포커스 시 포인트 테두리 + 옅은 빛 */}
       {count < 5 ? (
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div className="cmp-ai-form">
           <input
             type="text"
+            className="input cmp-ai-input"
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && ask(input)}
-            placeholder="궁금한 거 물어봐..."
-            style={{
-              flex: 1, padding: '15px 22px', borderRadius: 100,
-              border: '1.5px solid var(--border)', background: 'var(--bg-card)',
-              fontSize: 17, color: 'var(--text)', outline: 'none',
-            }}
+            placeholder="궁금한 걸 물어보세요"
+            aria-label="AI에게 질문"
           />
-          <button
-            onClick={() => ask(input)}
-            disabled={loading || !input.trim()}
-            style={{
-              background: 'var(--accent)', color: '#fff',
-              border: 'none', borderRadius: 100,
-              padding: '15px 26px', fontSize: 17, fontWeight: 700,
-              cursor: loading ? 'not-allowed' : 'pointer',
-              opacity: loading ? 0.6 : 1,
-            }}
-          >
+          <button type="button" className="btn btn-primary" onClick={() => ask(input)} disabled={loading || !input.trim()}>
             전송
           </button>
         </div>
       ) : (
-        <p style={{ fontSize: 16, color: 'var(--text-dimmer)', textAlign: 'center' }}>
-          세션당 최대 5회까지 질문할 수 있어요.
-        </p>
+        <p className="cmp-ai-sub is-center">세션당 최대 5회까지 질문할 수 있어요.</p>
       )}
-    </div>
+    </section>
   );
 }
