@@ -22,6 +22,7 @@ export default function DetailHero({ image, videoUrl, name, badges }: { image: s
   if (playing && videoUrl) {
     return (
       <div className="dh is-playing">
+        {image && <span className="dh-ambient" aria-hidden="true"><GameImage src={image} fallbackWidth={1280} alt="" /></span>}
         <div className="dh-player">
           {isSteamVideo(videoUrl)
             ? <SteamVideo url={videoUrl} title={title} fallbackImage={image || undefined} autoPlay />
@@ -34,6 +35,8 @@ export default function DetailHero({ image, videoUrl, name, badges }: { image: s
 
   return (
     <div className="dh">
+      {/* 페이지 위쪽 배경에 같은 이미지를 크게 흐리게 — 게임 색이 배어 나오고 아래로 갈수록 배경색으로 사라짐 (같은 주소라 새로 받지 않음) */}
+      {image && <span className="dh-ambient" aria-hidden="true"><GameImage src={image} fallbackWidth={1280} alt="" /></span>}
       <div className="dh-media">
         {image && <GameImage src={image} fallbackWidth={1280} alt="" aria-hidden="true" className="dh-backdrop" />}
         {image && <GameImage src={image} fallbackWidth={1280} alt={name} fetchPriority="high" className="dh-art" />}

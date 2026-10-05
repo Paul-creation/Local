@@ -5,6 +5,7 @@ import "./globals.css";
 import { SITE_NAME, SITE_URL, SITE_TITLE, SITE_META_DESCRIPTION, BASE_OG } from "./lib/site";
 import SiteHeader from "./components/home/SiteHeader";
 import SiteFooter from "./components/SiteFooter";
+import CompareTray from "./components/CompareTray";
 import { THEME_SCRIPT } from "./lib/theme";
 
 export const metadata: Metadata = {
@@ -36,6 +37,7 @@ export default function RootLayout({
         <SiteHeader />
         {children}
         <SiteFooter />
+        <CompareTray />
         {/* Vercel 방문 통계 — 쿠키 없이 페이지 조회 수만 셈 (Vercel 대시보드에서 Analytics를 켜야 수집됨) */}
         <Analytics />
       </body>

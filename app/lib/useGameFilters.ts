@@ -2,7 +2,8 @@
 'use client';
 
 import { useState, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
-import { compareBlockReason, MAX_COMPARE, COMPARE_PICK_KEY } from './compareRule';
+import { compareBlockReason, MAX_COMPARE } from './compareRule';
+import { readPick, writePick, COMPARE_EVENT } from './compareStore';
 import { matchesGame, normalizeSearch, searchNames } from './searchMatch';
 import { buildTagLookup, hasTag, parseSearchInput, FLAG_TAGS, isTreeTag } from './tagSearch';
 import { countByNode, nameToTagId, type TagTree } from './tagTree';
@@ -28,6 +29,14 @@ export const BARRIERS = [['낮음', 'low'], ['보통', 'mid'], ['높음', 'high'
 const barrierFromUrl = (v: string | null) => (v || '').split(',').map((x) => BARRIERS.find(([, u]) => u === x)?.[0]).filter(Boolean) as string[];
 const barrierToUrl = (list: string[]) => BARRIERS.filter(([ko]) => list.includes(ko)).map(([, u]) => u).join(',');
 
+// 네트워크 체크 ↔ 주소 값 (?net=crossplay,dedicated)
+// 크로스플레이는 따로 만족해야 하고, 전용 서버·P2P는 고른 것 중 하나 (한 게임은 둘 중 하나라서)
+export const NETS = [['crossplay', '크로스플레이 지원'], ['dedicated', '전용 서버'], ['p2p', 'P2P']] as const;
+export type NetKey = (typeof NETS)[number][0];
+const netFromUrl = (v: string | null) => (v || '').split(',').filter((x): x is NetKey => NETS.some(([k]) => k === x));
+const onlineMulti = (g: any) => g.has_online_coop === true || g.has_pvp === true;
+const HOST_OF: Record<string, string> = { dedicated: '전용 서버', p2p: 'P2P' };
+
 // games: 첫 화면 뒤에 받아 오는 전체 목록 / tree: 태그 나무 (app/lib/useGameIndex) — 아직 없으면 null
 export function useGameFilters(games: any[] | null, tree: TagTree | null = null) {
   // 서버에서 미리 그린 홈 화면과 맞추려고 처음엔 빈 상태로 그리고, 주소(검색 조건)는 그리기 직전에 한 번 읽는다
@@ -47,6 +56,8 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
   const [selectedBarriers, setSelectedBarriers] = useState<string[]>([]);
   // 혼자도 꽉 차게 (solo_mode = story)
   const [storyOnly, setStoryOnly] = useState(false);
+  // 네트워크: 크로스플레이 지원 · 전용 서버 · P2P
+  const [selectedNet, setSelectedNet] = useState<NetKey[]>([]);
   // 인원·가격 범위 슬라이더 (눈금 번호, app/lib/rangeFilter) — 양 끝이면 필터 없음
   const [playersRange, setPlayersRange] = useState<Range>(PLAYERS_ALL);
   // 1인 전용(최대 인원 1) — 메인 "혼자" 바로가기용. 슬라이더와 따로 걸린다
@@ -65,7 +76,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     const sp = new URLSearchParams(window.location.search);
     /* eslint-disable react-hooks/set-state-in-effect -- 바깥(주소)에서 한 번 읽어 오는 초기화라 의도된 setState */
     // players·price·sale로 바로 들어오면(바로가기·공유 링크) 결과 화면부터
-    setShowResults(sp.get('r') === '1' || sp.has('players') || sp.has('price') || sp.get('sale') === '1' || sp.has('tags') || sp.has('barrier') || sp.has('ex') || sp.get('story') === '1');
+    setShowResults(sp.get('r') === '1' || sp.has('players') || sp.has('price') || sp.get('sale') === '1' || sp.has('tags') || sp.has('barrier') || sp.has('ex') || sp.get('story') === '1' || sp.has('net'));
     setInput(sp.get('q') || '');
     setQuery(sp.get('q') || '');
     // 예전 주소의 cat=파티·퍼즐·서바이벌처럼 지금 배지에 없는 값은 무시 (결과가 0개로 보이지 않게)
@@ -75,6 +86,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     setSelectedTags((sp.get('tags') || '').split(',').filter(Boolean));
     setExcludedTags((sp.get('ex') || '').split(',').filter(isTreeTag));
     setSelectedBarriers(barrierFromUrl(sp.get('barrier')));
+    setSelectedNet(netFromUrl(sp.get('net')));
     setStoryOnly(sp.get('story') === '1');
     // players=2-7 · players=5(5~5) / 예전 인원 칸 주소 p=3-4인도 비슷한 범위로
     setPlayersRange(sp.has('players') ? parsePlayers(sp.get('players')) : legacyPlayers(sp.get('p')));
@@ -85,7 +97,8 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     setPriceRange(sp.has('price') ? parsePrice(sp.get('price')) : sp.get('free') === '1' ? FREE_ONLY : PRICE_ALL);
     setSaleOnly(sp.get('sale') === '1');
     setSort(isSortKey(sp.get('sort')) ? (sp.get('sort') as SortKey) : '');
-    pendingCmp.current = (sp.get('cmp') || '').split(',').filter(Boolean);
+    // 주소에 비교 선택이 없으면 비교함(상세에서 담은 게임 포함)을 이어서 보여 준다
+    pendingCmp.current = sp.has('cmp') ? (sp.get('cmp') || '').split(',').filter(Boolean) : readPick();
     setInited(true);
     /* eslint-enable react-hooks/set-state-in-effect */
     // 이제 React가 홈/결과를 직접 나눠 그리므로, 첫 HTML용 숨김 스타일은 걷어낸다
@@ -110,6 +123,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     if (excludedTags.length) q.set('ex', excludedTags.join(','));
     if (selectedBarriers.length) q.set('barrier', barrierToUrl(selectedBarriers));
     if (storyOnly) q.set('story', '1');
+    if (selectedNet.length) q.set('net', NETS.filter(([k]) => selectedNet.includes(k)).map(([k]) => k).join(','));
     if (formatPlayers(playersRange)) q.set('players', formatPlayers(playersRange));
     if (soloOnly) q.set('solo', '1');
     if (formatPrice(priceRange)) q.set('price', formatPrice(priceRange));
@@ -123,7 +137,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     if (window.location.pathname === '/' && window.location.pathname + window.location.search !== url) {
       window.history.replaceState(null, '', url);
     }
-  }, [inited, showResults, query, selectedCategory, selectedTags, excludedTags, selectedBarriers, storyOnly, playersRange, soloOnly, priceRange, saleOnly, sort, compareList]);
+  }, [inited, showResults, query, selectedCategory, selectedTags, excludedTags, selectedBarriers, storyOnly, selectedNet, playersRange, soloOnly, priceRange, saleOnly, sort, compareList]);
 
   // 카드나 비교하기를 누를 때 지금 목록 주소와 스크롤 위치를 기억
   const rememberList = () => {
@@ -134,17 +148,30 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     } catch {}
   };
 
-  // 메인에서 골라둔 비교 게임을 비교 만들기 화면(/compare)에 넘겨주려고 기억 (처음 열 때 빈 목록으로 지우지는 않음)
+  // 고른 비교 게임을 비교함(app/lib/compareStore)에 저장 — 헤더 숫자·오른쪽 아래 알약·비교 만들기 화면이 같이 본다
+  // (처음 열 때 빈 목록으로 지우지는 않음)
   const prevPick = useRef<string | null>(null);
   useEffect(() => {
     if (!inited) return;
     const ids = compareList.map((g: any) => g.id).join(',');
-    try {
-      if (ids) sessionStorage.setItem(COMPARE_PICK_KEY, ids);
-      else if (prevPick.current) sessionStorage.removeItem(COMPARE_PICK_KEY);
-    } catch {}
+    if ((ids || prevPick.current) && ids !== readPick().join(',')) {
+      writePick(compareList.map((g: any) => g.id), { source: 'filters', meta: compareList.map((g: any) => ({ id: g.id, name: g.name, thumb: g.cover_image_url || g.card_image_url })) });
+    }
     prevPick.current = ids;
   }, [inited, compareList]);
+
+  // 다른 곳(알약의 × 빼기·모두 비우기)에서 비교함이 바뀌면 카드 선택도 맞춘다
+  const gamesRef = useRef(games);
+  useEffect(() => { gamesRef.current = games; }, [games]);
+  useEffect(() => {
+    const on = (e: Event) => {
+      const d = (e as CustomEvent<{ ids: string[]; source: string }>).detail;
+      if (d.source === 'filters') return;
+      setCompareList((prev) => d.ids.map((id) => prev.find((g) => g.id === id) || (gamesRef.current || []).find((g: any) => g.id === id)).filter(Boolean));
+    };
+    window.addEventListener(COMPARE_EVENT, on);
+    return () => window.removeEventListener(COMPARE_EVENT, on);
+  }, []);
 
   const toggleCompare = (game: any) => {
     setCompareList(prev => {
@@ -164,6 +191,8 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
   const toggleExcluded = (tag: string) =>
     setExcludedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
+  const toggleNet = (k: NetKey) =>
+    setSelectedNet(prev => prev.includes(k) ? prev.filter(x => x !== k) : [...prev, k]);
   const toggleBarrier = (b: string) =>
     setSelectedBarriers(prev => prev.includes(b) ? prev.filter(x => x !== b) : [...prev, b]);
   const addTags = (tags: string[]) =>
@@ -214,8 +243,8 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
   const normalizedQuery = query.trim().toLowerCase();
   const playersOn = !isAll(playersRange, PLAYERS_ALL);
   const priceOn = !isAll(priceRange, PRICE_ALL);
-  const selectedCount = [selectedCategory, playersOn ? '인원' : '', soloOnly ? '1인 전용' : '', storyOnly ? '혼자도' : '', priceOn ? '가격' : '', saleOnly ? '할인' : '', ...selectedBarriers, ...selectedTags, ...excludedTags].filter(Boolean).length;
-  const hasFilters = !!(normalizedQuery || selectedCategory || selectedTags.length > 0 || excludedTags.length > 0 || selectedBarriers.length > 0 || storyOnly || playersOn || soloOnly || priceOn || saleOnly);
+  const selectedCount = [selectedCategory, playersOn ? '인원' : '', soloOnly ? '1인 전용' : '', storyOnly ? '혼자도' : '', priceOn ? '가격' : '', saleOnly ? '할인' : '', ...selectedBarriers, ...selectedNet, ...selectedTags, ...excludedTags].filter(Boolean).length;
+  const hasFilters = !!(normalizedQuery || selectedCategory || selectedTags.length > 0 || excludedTags.length > 0 || selectedBarriers.length > 0 || selectedNet.length > 0 || storyOnly || playersOn || soloOnly || priceOn || saleOnly);
 
   const matched = (games || []).filter((g) => {
     // 지금 실제 가격(할인 중이면 할인가) 기준
@@ -229,6 +258,10 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     if (excludedTags.length > 0 && excludedTags.some(t => hasTag(g, t, tree))) return false;
     if (selectedBarriers.length > 0 && !selectedBarriers.includes(g.entry_barrier)) return false;
     if (storyOnly && g.solo_mode !== 'story') return false;
+    if (selectedNet.includes('crossplay') && g.has_crossplay !== true) return false;
+    // 멀티 방식은 온라인 협동·대전이 있는 게임만 (상세 표시와 같은 기준)
+    const hosts = selectedNet.filter((k) => HOST_OF[k]).map((k) => HOST_OF[k]);
+    if (hosts.length && !(onlineMulti(g) && hosts.includes(g.multiplayer_host))) return false;
     if (!matchesPlayers(g, playersRange)) return false;
     if (soloOnly && g.max_players !== 1) return false;
     // 영어 이름·한국어 이름·별명 (띄어쓰기·대소문자·기호 무시). 태그 단어는 확정할 때 태그 조건으로 옮겨 둠
@@ -247,7 +280,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
         : [...matched].sort((a, b) => (a.heat_rank ?? Infinity) - (b.heat_rank ?? Infinity));
 
   // 검색어·필터가 바뀌면 다시 처음 24개부터 (처음 열 때는 그대로)
-  const filterKey = [query, selectedCategory, selectedTags.join(','), excludedTags.join(','), selectedBarriers.join(','), storyOnly, playersRange.join('-'), soloOnly, priceRange.join('-'), saleOnly, sort].join('|');
+  const filterKey = [query, selectedCategory, selectedTags.join(','), excludedTags.join(','), selectedBarriers.join(','), selectedNet.join(','), storyOnly, playersRange.join('-'), soloOnly, priceRange.join('-'), saleOnly, sort].join('|');
   const prevFilterKey = useRef<string | null>(null);
   useEffect(() => {
     if (prevFilterKey.current !== null && prevFilterKey.current !== filterKey) setVisibleCount(PAGE_SIZE);
@@ -290,6 +323,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     setSelectedTags([]);
     setExcludedTags([]);
     setSelectedBarriers([]);
+    setSelectedNet([]);
     setStoryOnly(false);
     setPlayersRange(PLAYERS_ALL);
     setSoloOnly(false);
@@ -304,6 +338,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     setSelectedTags([]);
     setExcludedTags([]);
     setSelectedBarriers([]);
+    setSelectedNet([]);
     setStoryOnly(false);
     setPlayersRange(PLAYERS_ALL);
     setSoloOnly(false);
@@ -325,6 +360,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     excludedTags, toggleExcluded,
     selectedBarriers, toggleBarrier,
     storyOnly, setStoryOnly,
+    selectedNet, toggleNet,
     playersRange, setPlayersRange,
     soloOnly, setSoloOnly,
     priceRange, setPriceRange,

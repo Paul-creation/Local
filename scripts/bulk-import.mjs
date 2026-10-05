@@ -7,6 +7,7 @@
 // - 기준(두 방식 같음): 이미 있는 게임·판매 중단 목록 제외, 스팀 종류가 game, 성인·프로그램 장르 제외, 리뷰 1,000개 이상·긍정 65% 이상
 //   --appids는 손으로 고른 목록이라 긍정 60% 이상까지 받음 (판매 순위 수집은 65% 그대로)
 //   판매 순위 수집만 2013년 이후 출시 조건 추가 (--appids는 손으로 고른 목록이라 연도 무관)
+// - 크로스플레이(스팀 카테고리 27)는 넣을 때 has_crossplay로 같이 저장
 // - 스팀 요청은 scripts/lib/steam.mjs(요청 간격 + 429 재시도)로 함. 끝까지 실패한 게임은 건너뛰고 마지막에 목록으로 출력
 // - --appids 파일: [{ "steam_appid": "1145350", ... }] 형식의 JSON (name·reason 칸은 출력용)
 import { createClient } from '@supabase/supabase-js';
@@ -97,21 +98,26 @@ async function check(item) {
 }
 
 async function insert(appid, { data, reviewSummary }) {
-  const { data: inserted, error } = await supabase
-    .from('games')
-    .insert({
-      name: data.name,
-      steam_appid: appid,
-      platform: ['steam'],
-      cover_image_url: data.header_image,
-      description: data.short_description,
-      review_summary: reviewSummary,
-      is_casual_party: false,
-      // 스팀 성인 콘텐츠 표기 (없으면 빈 배열 = 확인함). 예전 게임은 fill-content-descriptors.mjs
-      content_descriptor_ids: [...new Set((data.content_descriptors?.ids || []).map(Number))].sort((a, b) => a - b),
-    })
-    .select()
-    .single();
+  const row = {
+    name: data.name,
+    steam_appid: appid,
+    platform: ['steam'],
+    cover_image_url: data.header_image,
+    description: data.short_description,
+    review_summary: reviewSummary,
+    is_casual_party: false,
+    // 스팀 성인 콘텐츠 표기 (없으면 빈 배열 = 확인함). 예전 게임은 fill-content-descriptors.mjs
+    content_descriptor_ids: [...new Set((data.content_descriptors?.ids || []).map(Number))].sort((a, b) => a - b),
+    // 크로스플레이 — 스팀 카테고리 27 "Cross-Platform Multiplayer". 카테고리가 없으면 모름(null). 예전 게임은 fill-crossplay.mjs
+    has_crossplay: data.categories?.length ? data.categories.some((c) => Number(c.id) === 27) : null,
+  };
+  let { data: inserted, error } = await supabase.from('games').insert(row).select().single();
+  // 마이그레이션(20261014090000_launch_extras.sql) 전이라 has_crossplay 칸이 없으면 그 칸만 빼고 다시 넣음
+  if (error && /has_crossplay/.test(error.message)) {
+    const rest = { ...row };
+    delete rest.has_crossplay;
+    ({ data: inserted, error } = await supabase.from('games').insert(rest).select().single());
+  }
   if (error) {
     failed.push({ appid, name: data.name, reason: `저장 실패: ${error.message}` });
     return false;

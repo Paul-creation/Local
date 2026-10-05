@@ -12,6 +12,8 @@ import DetailHero from '../../components/DetailHero';
 import AddToCompare from '../../components/AddToCompare';
 import { translateTag } from '../../lib/tagTranslate';
 import GameVotes from '../../components/GameVotes';
+import PlayerCountVote from '../../components/PlayerCountVote';
+import { buyTimingLine } from '../../lib/buyTiming';
 import VideoPreviewSection, { type CoopVideo } from '../../components/VideoPreviewSection';
 import Link from 'next/link';
 import { Fragment } from 'react';
@@ -153,7 +155,6 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const showHost = !!game.multiplayer_host && (game.has_online_coop === true || game.has_pvp === true);
   // 친구랑: 팀 인원(party_max), 없으면 최대 인원 + 같은 서버 인원(session_max)
   const friendsMax = game.party_max ?? game.max_players;
-  const friendsText = [friendsMax === 1 ? '같이 하기 없음' : friendsMax ? `최대 ${friendsMax}명` : '', game.session_max ? `같은 서버 ${game.session_max}명` : ''].filter(Boolean).join(' · ');
   // 같은 시리즈 (series_id가 있을 때만, 출시순)
   const { data: seriesGames } = game.series_id
     ? await selectGames('id, name, card_image_url, cover_image_url, series_order').eq('series_id', game.series_id).order('series_order')
@@ -189,8 +190,14 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const recentPct: number | null = game.recent_review_pct ?? null;
   const showRecent = recentPct != null && (game.recent_review_count ?? 0) >= 30;
   const recentGap = showRecent && game.review_positive_percent ? recentPct! - game.review_positive_percent : 0;
+  // 구매 타이밍 한 줄 (사실만, 할인 3번 미만이면 null)
+  const timingLine = showPriceRecord && price
+    ? buyTimingLine(priceHistory, { currentPrice: price.final, currentDiscount: price.discount, lowestPrice: game.lowest_price ?? null, now: Date.now() })
+    : null;
+  const isMulti = (game.party_max ?? game.max_players ?? 0) > 1;
+  const playersChip = game.max_players === 1 ? '혼자' : playersText(game);
   const hasSteamCard = !!(game.review_positive_percent || game.heat_rank || game.critic_score || game.achievement_count || (game.steam_appid && game.family_sharing != null) || game.has_dlc != null);
-  const hasMore = game.has_ending != null || game.server_type || showHost || game.activities?.length > 0 || game.story_length || game.is_esports || game.has_workshop || subGenres.length > 0;
+  const hasMore = game.has_ending != null || game.server_type || game.activities?.length > 0 || game.story_length || game.is_esports || game.has_workshop || subGenres.length > 0;
 
   return (
     <main className="page detail-page">
@@ -202,6 +209,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         name={game.name}
         badges={
           <>
+            {playersChip && <span className="badge players-chip">{playersChip}</span>}
             {isTop10 && <span className="top10-badge">TOP 10</span>}
             <GotyBadge awards={game.goty_awards} all />
             {game.review_summary && <span className={`review-badge ${getReviewClass(game.review_summary)}`}>{game.review_summary}</span>}
@@ -238,12 +246,13 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               </p>
             )}
             {timing === 'near' && <LowestPriceBadge timing={timing} />}
+            {timingLine && <p className="buy-timing">{timingLine}</p>}
             {buyUrl && (
               <a href={buyUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg price-card-buy">
                 {buyLabel}에서 {game.is_free ? '플레이하기' : '구매하기'}
               </a>
             )}
-            <AddToCompare gameId={game.id} />
+            <AddToCompare gameId={game.id} name={game.name} thumb={game.cover_image_url || game.card_image_url} />
             <p className="price-card-note">가격은 하루 한 번 갱신돼요. 구매 전 스토어에서 한 번 더 확인해 주세요.</p>
           </div>
         </aside>
@@ -289,7 +298,14 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             </div>
             <div className="trio-cell">
               <span className="trio-label">친구랑</span>
-              <span className="trio-value num">{friendsText || playersText(game) || '인원 정보 확인 중'}</span>
+              <span className="trio-value trio-big num">
+                {friendsMax === 1 ? '같이 하기 없음' : friendsMax ? `최대 ${friendsMax}명` : playersText(game) || '인원 정보 확인 중'}
+              </span>
+              {game.session_max && <span className="trio-sub num">같은 서버 {game.session_max}명</span>}
+              {showHost && <span className="trio-sub">{game.multiplayer_host === 'P2P' ? 'P2P(방장 컴퓨터로 연결)' : game.multiplayer_host}</span>}
+              {game.has_crossplay != null && (game.has_online_coop || game.has_pvp) && (
+                <span className={`trio-sub${game.has_crossplay ? ' is-on' : ''}`}>{game.has_crossplay ? '크로스플레이 지원' : '크로스플레이 미지원'}</span>
+              )}
               {game.recommended_players && <span className="trio-sub">추천 {game.recommended_players}</span>}
             </div>
             <div className="trio-cell">
@@ -386,10 +402,11 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           </section>
 
           <GameVotes gameId={game.id} />
+          {isMulti && <PlayerCountVote gameId={game.id} />}
 
           {/* 할인 전적 */}
           {showPriceRecord && priceHistory.length === 1 && price && (
-            <section className="detail-card">
+            <section className="detail-card is-roomy">
               <h3 className="detail-card-title">할인 전적</h3>
               <p className="detail-card-sub">
                 {price.discount > 0
@@ -399,8 +416,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             </section>
           )}
           {showPriceRecord && priceHistory.length >= 2 && (
-            <section className="detail-card">
+            <section className="detail-card is-roomy">
               <h3 className="detail-card-title">할인 전적</h3>
+              {timingLine && <p className="buy-timing is-chart">{timingLine}</p>}
               {/* 기간 기준 시각은 서버에서 정해 넘긴다 (서버·브라우저 계산이 어긋나지 않게) */}
               <DiscountChart history={priceHistory} now={Date.now()} />
             </section>
@@ -436,7 +454,6 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
                   <dl className="more-list">
                     {game.has_ending != null && (<><dt>엔딩</dt><dd>{game.has_ending ? '있음' : '없음'}</dd></>)}
                     {game.server_type && (<><dt>서버 방식</dt><dd>{game.server_type}</dd></>)}
-                    {showHost && (<><dt>멀티 방식</dt><dd>{game.multiplayer_host === 'P2P' ? 'P2P(방장 컴퓨터로 연결)' : game.multiplayer_host}</dd></>)}
                     {game.story_length && (<><dt>클리어까지</dt><dd>{game.story_length}</dd></>)}
                     {game.is_esports && (<><dt>e스포츠</dt><dd>공식 대회 있음</dd></>)}
                     {game.has_workshop && (<><dt>모드 지원</dt><dd>Steam 창작마당</dd></>)}

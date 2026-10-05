@@ -1831,19 +1831,6 @@ a.hc-row:hover { background: var(--card-hover); }
 .results-empty-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 8px; }
 
 /* 하단 비교 바 */
-.compare-bar-space { height: 88px; }
-.compare-bar {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
-  background: var(--card); border-top: 1px solid var(--border); color: var(--text);
-}
-.compare-bar-items { display: flex; gap: 6px; overflow: hidden; flex: 1; align-items: center; }
-.compare-bar-hint { font-size: 14px; color: var(--text-muted); }
-.compare-bar-error { font-size: 14px; color: var(--sale); font-weight: 700; }
-.compare-bar-item { font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: var(--radius-chip); background: var(--inset); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; }
-.compare-bar-reset { min-height: 44px; padding: 0 6px; border: none; background: none; font-family: inherit; font-size: 14px; font-weight: 700; color: var(--text-muted); cursor: pointer; flex-shrink: 0; }
-.compare-bar-wait { opacity: 0.6; cursor: default; }
 
 @media (max-width: 1023px) {
   .results-layout { display: block; }
@@ -1860,8 +1847,6 @@ a.hc-row:hover { background: var(--card-hover); }
   .result-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
   .result-body { padding: 12px; }
   .result-foot { flex-wrap: wrap; }
-  .compare-bar { padding-left: 12px; padding-right: 12px; }
-  .compare-bar-hint { font-size: 13px; }
 }
 
 /* ============================================================
@@ -2215,3 +2200,137 @@ a.series-item:hover { border-color: var(--border); }
 }
 .tag-check input:focus-visible { outline: none; }
 .tag-check input:focus-visible::before { box-shadow: var(--focus-glow); border-color: var(--accent); }
+
+/* ============================================================
+   오픈 전 추가 기능 (launch-extras)
+   ============================================================ */
+/* 검색 카드 — 원래 가격 줄 긋기, 스팀 외 스토어 이름 */
+.result-price .price-original { font-size: 13px; }
+.result-store { font-size: 12px; font-weight: 700; color: var(--text-muted); }
+
+/* 상세 — 인원 칩, 친구랑 칸 확장, 구매 타이밍, 투표·할인 카드 여백 */
+.players-chip { color: var(--text); border-color: var(--text-faint); }
+.trio-big { font-size: 22px; font-weight: 900; letter-spacing: -0.02em; }
+.trio-sub.is-on { color: var(--up); font-weight: 700; }
+.buy-timing { font-size: 13px; font-weight: 700; line-height: 1.5; color: var(--text-2); padding: 8px 10px; border-radius: var(--radius-btn); background: var(--inset); }
+.buy-timing.is-chart { margin: -2px 0 14px; align-self: flex-start; display: inline-block; }
+.detail-card.is-roomy { padding: 28px 30px; }
+.vote-top { color: var(--accent-text); }
+@media (max-width: 760px) { .detail-card.is-roomy { padding: 22px; } }
+
+/* 슬라이더 — 끄는 동안 값 말풍선, 손잡이 호버 시 살짝 커지고 포인트 빛 */
+.range-bubble {
+  position: absolute; bottom: calc(100% - 4px); transform: translateX(-50%); z-index: 5; pointer-events: none;
+  padding: 3px 8px; border-radius: var(--radius-badge); white-space: nowrap;
+  background: var(--accent); color: var(--accent-ink); font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums;
+  animation: bubble-in 0.12s ease-out;
+}
+@keyframes bubble-in { from { opacity: 0; transform: translate(-50%, 4px); } to { opacity: 1; transform: translate(-50%, 0); } }
+.range-slider input[type="range"]:hover::-webkit-slider-thumb { background: radial-gradient(circle, var(--accent) 0 11px, var(--focus-glow-color) 11.5px 17px, transparent 17.5px); }
+.range-slider input[type="range"]:hover::-moz-range-thumb { background: radial-gradient(circle, var(--accent) 0 11px, var(--focus-glow-color) 11.5px 17px, transparent 17.5px); }
+.range-slider input[type="range"]:active::-webkit-slider-thumb { cursor: grabbing; background: radial-gradient(circle, var(--accent) 0 11px, var(--focus-glow-color) 11.5px 17px, transparent 17.5px); }
+.range-slider input[type="range"]:active::-moz-range-thumb { cursor: grabbing; background: radial-gradient(circle, var(--accent) 0 11px, var(--focus-glow-color) 11.5px 17px, transparent 17.5px); }
+@media (prefers-reduced-motion: reduce) { .range-bubble { animation: none; } }
+
+/* 비교함 — 헤더 숫자 뱃지 + 오른쪽 아래 작은 알약(1개 이상일 때) + 팝오버 */
+.nav-count { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; margin-left: 5px; padding: 0 5px; border-radius: var(--radius-chip); background: var(--accent); color: var(--accent-ink); font-size: 11px; font-weight: 900; line-height: 1; }
+.ctray { position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 800; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.ctray-pill {
+  min-height: 44px; padding: 0 16px; border-radius: var(--radius-chip);
+  border: 1px solid var(--accent); background: var(--card); color: var(--text);
+  font-family: inherit; font-size: 14px; font-weight: 800; cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+.ctray-pill .num { color: var(--accent-text); margin-left: 2px; }
+.ctray-pill:hover, .ctray-pill.is-open { background: var(--card-hover); }
+.ctray-pill.is-bump { animation: ctray-bump 0.3s ease-out; }
+@keyframes ctray-bump { 0% { transform: translateY(0) scale(1); } 40% { transform: translateY(-6px) scale(1.06); } 100% { transform: translateY(0) scale(1); } }
+.ctray-pop {
+  width: min(320px, calc(100vw - 32px)); padding: 14px; border-radius: var(--radius-card);
+  background: var(--card); border: 1px solid var(--border); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+:root[data-theme="light"] .ctray-pill, :root[data-theme="light"] .ctray-pop { box-shadow: var(--shadow-lg); }
+.ctray-title { font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+.ctray-title .num { color: var(--text-muted); font-weight: 700; margin-left: 4px; }
+.ctray-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.ctray-item { display: flex; align-items: center; gap: 4px; border-radius: var(--radius-btn); }
+.ctray-item:hover { background: var(--card-hover); }
+.ctray-game { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 4px 6px; color: var(--text); }
+.ctray-game img, .ctray-noimg { width: 64px; aspect-ratio: 120 / 45; object-fit: cover; border-radius: 4px; background: var(--inset); flex-shrink: 0; }
+.ctray-name { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ctray-remove { width: 44px; height: 44px; flex-shrink: 0; border: none; background: none; border-radius: var(--radius-btn); font-size: 20px; line-height: 1; color: var(--text-muted); cursor: pointer; }
+.ctray-remove:hover { color: var(--text); background: var(--inset); }
+.ctray-hint { font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+.ctray-actions { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; }
+.ctray-clear { min-height: 44px; padding: 0 6px; border: none; background: none; font-family: inherit; font-size: 13px; font-weight: 700; color: var(--text-muted); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.ctray-go { min-height: 44px; font-size: 14px; }
+.results-hint.is-error { color: var(--sale); font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { .ctray-pill.is-bump { animation: none; } }
+@media (max-width: 640px) { .ctray { right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); } }
+
+/* ============================================================
+   깊이감 · 상세 글씨 (디자인 피드백)
+   흐림은 페이지마다 1~2곳만 (메인: 지금 뜨는 게임 1위 이미지 / 상세: 맨 위 배경). backdrop-filter는 상세 가격 카드·겹침 글자만
+   ============================================================ */
+:root { --accent-line: rgba(102, 192, 244, 0.45); }
+:root[data-theme="light"] { --accent-line: rgba(0, 113, 227, 0.35); }
+/* 화면 폭을 넘는 배경 장식이 가로 스크롤을 만들지 않게 (clip은 sticky 헤더에 영향 없음) */
+html, body { overflow-x: clip; }
+
+/* 메인 상단 — 아주 옅은 빛 두 개 (좌상단 포인트 색, 우상단 보라). 라이트는 끔 */
+body:has(.home-hero.is-home) {
+  background-image:
+    radial-gradient(640px 420px at 12% 0%, rgba(102, 192, 244, 0.07), transparent 70%),
+    radial-gradient(560px 380px at 88% 0%, rgba(167, 139, 250, 0.045), transparent 70%);
+  background-repeat: no-repeat;
+  background-size: 100% 760px;
+}
+:root[data-theme="light"] body:has(.home-hero.is-home) { background-image: none; }
+
+/* 지금 뜨는 게임 1~3위 — 1위 이미지를 크게 흐리게 */
+.hc-top { position: relative; isolation: isolate; }
+.hc-glow { position: absolute; inset: -8px; z-index: -1; overflow: hidden; border-radius: 24px; pointer-events: none; }
+.hc-glow img { width: 100%; height: 100%; object-fit: cover; filter: blur(44px) saturate(1.2); opacity: 0.13; transform: scale(1.15); }
+:root[data-theme="light"] .hc-glow img { opacity: 0.08; }
+
+/* 상세 맨 위 배경 — 게임 이미지를 크게 흐리게, 아래로 갈수록 배경색으로 */
+.detail-page { position: relative; isolation: isolate; }
+.dh-ambient {
+  position: absolute; z-index: -1; pointer-events: none; overflow: hidden;
+  top: -120px; left: 50%; width: 100vw; height: 900px; transform: translateX(-50%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 35%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 35%, transparent 100%);
+}
+.dh-ambient img { width: 100%; height: 100%; object-fit: cover; filter: blur(48px) saturate(1.3); opacity: 0.16; transform: scale(1.1); }
+:root[data-theme="light"] .dh-ambient img { opacity: 0.1; }
+/* 모바일: 큰 흐림 대신 작게 줄인 이미지를 확대 (흐림 반경을 줄여 그리기 비용을 낮춤) */
+@media (max-width: 760px) {
+  .hc-glow img { filter: blur(20px); transform: scale(1.4); }
+  .dh-ambient { height: 620px; top: -80px; }
+  .dh-ambient img { width: 25%; height: 25%; transform-origin: top left; transform: scale(4); filter: blur(10px) saturate(1.3); }
+}
+
+/* 상세 가격 카드 — 반투명 + 뒤 흐림 (이 카드에만) */
+.price-card { background: color-mix(in srgb, var(--card) 82%, transparent); backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2); }
+
+/* 목록 행 호버 — 배경 밝아짐 + 포인트 색 얇은 선 */
+a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover); box-shadow: inset 0 0 0 1px var(--accent-line); }
+
+/* 상세 글씨 크기 */
+.detail-fun { font-size: 18px; font-weight: 600; line-height: 1.6; }
+.detail-description-v2 { font-size: 15px; line-height: 1.65; color: var(--text-2); }
+.main-tag-row .category-tag { padding: 6px 12px; font-size: 13px; margin: 0; transition: color 0.15s ease, box-shadow 0.15s ease; }
+.main-tag-row .tag-chip-wrap:hover .category-tag { color: var(--accent-text); box-shadow: inset 0 0 0 1px var(--accent-line); }
+.trio-label { font-size: 13px; }
+.trio-value, .trio-big { font-size: 20px; font-weight: 800; letter-spacing: -0.01em; }
+.price-card-now { font-size: 40px; }
+.price-card-buy { font-size: 16px; font-weight: 700; }
+.price-card-buy:hover { background: var(--accent-hover); }
+@media (max-width: 760px) {
+  .detail-card { padding: 20px; }
+  .price-card { padding: 20px; }
+  .price-card-now { font-size: 34px; }
+}
+/* 상세 맨 위 뱃지 줄은 한 줄로 고정 — 글꼴이 늦게 바뀔 때 줄 수가 달라져 제목이 밀리는 것(레이아웃 이동) 방지 */
+.dh-badges { flex-wrap: nowrap; overflow: hidden; }
+.dh-badges > * { flex-shrink: 0; }

@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import TagHelp from './TagHelp';
 import RangeSlider from './RangeSlider';
-import { BARRIERS, type GameFilters } from '../../lib/useGameFilters';
+import { BARRIERS, NETS, type GameFilters } from '../../lib/useGameFilters';
 import { EXCLUDE_TAG_IDS, type TagTree } from '../../lib/tagTree';
 import { PLAYERS_MAX, PRICE_MAX, PRICE_ALL, FREE_ONLY, isAll, playersLabel, priceLabel } from '../../lib/rangeFilter';
 
@@ -24,6 +24,7 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
     excludedTags, toggleExcluded,
     selectedBarriers, toggleBarrier,
     storyOnly, setStoryOnly,
+    selectedNet, toggleNet,
     playersRange, setPlayersRange,
     soloOnly, setSoloOnly,
     priceRange, setPriceRange,
@@ -101,6 +102,23 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
                 onClick={() => toggleBarrier(ko)}>{ko}</button>
             ))}
           </div>
+        </section>
+
+        {/* 네트워크 — 크로스플레이는 따로, 전용 서버·P2P는 고른 것 중 하나 (온라인 협동·대전이 있는 게임만) */}
+        <section className="filter-section">
+          <p className="filter-label">네트워크</p>
+          <ul className="tag-tree">
+            {NETS.map(([k, label]) => (
+              <li key={k}>
+                <div className="tag-row">
+                  <label className="tag-check">
+                    <input type="checkbox" checked={selectedNet.includes(k)} onChange={() => toggleNet(k)} />
+                    <span className="tag-check-name">{k === 'p2p' ? 'P2P (방장 컴퓨터로 연결)' : label}</span>
+                  </label>
+                </div>
+              </li>
+            ))}
+          </ul>
         </section>
 
         {/* 분류 — 큰 칸을 고르면 그 아래 태그 중 하나라도 있는 게임, 서로 다른 칸끼리는 모두 만족 */}

@@ -124,8 +124,14 @@ export default function HotChart({ tabs: allTabs }: { tabs: HotTab[] }) {
           ))}
         </div>
       </div>
-      <div className="hc-cards" role="tabpanel">
-        {tab.items.slice(0, 3).map((item) => <BigCard key={item.id} item={item} />)}
+      <div className="hc-top">
+        {/* 1위 게임 이미지를 크게 흐리게 깔아 깊이감 — 1위 카드와 같은 주소·폭이라 새로 받지 않음 */}
+        {tab.items[0]?.image && (
+          <span className="hc-glow" aria-hidden="true"><GameImage src={tab.items[0].image} fallbackWidth={920} alt="" /></span>
+        )}
+        <div className="hc-cards" role="tabpanel">
+          {tab.items.slice(0, 3).map((item) => <BigCard key={item.id} item={item} />)}
+        </div>
       </div>
       {tab.items.length > 3 && (
         <div className="hc-rows">

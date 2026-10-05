@@ -13,10 +13,13 @@ import { playersText } from '../../lib/players';
 import GameImage from '../GameImage';
 import PageSkeleton from '../status/PageSkeleton';
 
+// 스팀 외 스토어 이름 (games.source)
+const STORE_NAME: Record<string, string> = { epic: 'Epic', battlenet: 'Battle.net', riot: 'Riot', ea: 'EA app', ubisoft: 'Ubisoft Connect', gog: 'GOG' };
+
 export default function SearchResults({ filters, top10Ids = [], loadError = false, onRetry }: { filters: GameFilters; top10Ids?: string[]; loadError?: boolean; onRetry?: () => void }) {
   const {
     loaded, showResults, normalizedQuery, filtered,
-    compareList, setCompareList, compareError, toggleCompare,
+    compareList, compareError, toggleCompare,
     rememberList, resetFilters, visibleCount, showMore, tree,
     sort, setSort, clearConditions, setInput,
   } = filters;
@@ -57,7 +60,9 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
                   </button>
                 ))}
               </div>
-              {filtered.length >= 2 && <span className="results-hint">카드의 + 비교로 최대 3개까지 비교해 보세요</span>}
+              {compareError
+                ? <span className="results-hint is-error" role="alert">{compareError}</span>
+                : filtered.length >= 2 && <span className="results-hint">카드의 + 비교로 최대 3개까지 비교해 보세요</span>}
             </div>
             {conditions.length > 0 && (
               <div className="results-conditions">
@@ -73,7 +78,8 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
 
           {filtered.length === 0 ? (
             <div className="results-empty">
-              <p className="results-empty-title">조건에 맞는 게임이 아직 없어요</p>
+              <p className="results-empty-title">선택한 조건을 모두 만족하는 게임을 찾지 못했어요.</p>
+              <p className="results-empty-summary">조건을 하나 빼보거나 필터를 초기화해 보세요.</p>
               {summary.length > 0 && <p className="results-empty-summary">고른 조건: {summary.join(' · ')}</p>}
               <div className="results-empty-actions">
                 <button type="button" className="btn btn-outline" onClick={() => { clearConditions(); setInput(''); }}>필터 초기화</button>
@@ -86,8 +92,9 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
               {filtered.slice(0, visibleCount).map((game, i) => {
                 const price = getPriceInfo(game);
                 const isSelected = !!compareList.find(g => g.id === game.id);
-                const tag = displayTags(tree, game, 1)[0];
-                const meta = [game.category, playersText(game), tag].filter(Boolean).join(' · ');
+                const meta = [game.category, playersText(game), ...displayTags(tree, game, 2)].filter(Boolean).join(' · ');
+                // 스팀 외 스토어 게임은 스토어 이름을 작게
+                const store = game.steam_appid ? null : STORE_NAME[game.source] ?? '기타 스토어';
                 return (
                   <Link href={`/games/${game.id}`} key={game.id} className={`result-card lift${isSelected ? ' is-picked' : ''}`} onClick={rememberList}>
                     <span className="result-image">
@@ -99,6 +106,7 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
                         {game.name}
                       </span>
                       {game.goty_awards && <span className="goty-row"><GotyBadge awards={game.goty_awards} /></span>}
+                      {store && <span className="result-store">{store}</span>}
                       {meta && <span className="result-meta">{meta}</span>}
                       <span className="result-foot">
                         <span className="result-price">
@@ -110,6 +118,7 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
                           ) : price ? (
                             <>
                               {price.discount > 0 && <span className="discount-badge">-{price.discount}%</span>}
+                              {price.discount > 0 && <span className="price-original">{price.formattedOriginal}</span>}
                               <span className="price-final">{price.formattedFinal}</span>
                               <LowestPriceBadge timing={getLowestTiming(game, price)} />
                             </>
@@ -145,29 +154,7 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
         </>
       )}
 
-      {/* COMPARE_BAR_V2 */}
-      {(showResults || normalizedQuery) && filtered.length >= 2 && <div className="compare-bar-space" />}
-      {(showResults || normalizedQuery) && filtered.length >= 2 && (
-        <div className="compare-bar">
-          <div className="compare-bar-items">
-            {compareError ? (
-              <span className="compare-bar-error">{compareError}</span>
-            ) : compareList.length === 0 ? (
-              <span className="compare-bar-hint">카드의 + 비교를 눌러 게임을 골라주세요 (최대 3개)</span>
-            ) : (
-              compareList.map(g => <span key={g.id} className="compare-bar-item">{g.name}</span>)
-            )}
-          </div>
-          <button type="button" onClick={() => setCompareList([])} className="compare-bar-reset">초기화</button>
-          {compareList.length >= 2 ? (
-            <a href={`/compare?ids=${compareList.map(g => g.id).join(',')}`} onClick={rememberList} className="btn btn-primary">
-              비교하기 ({compareList.length}개)
-            </a>
-          ) : (
-            <span className="btn btn-outline compare-bar-wait" aria-disabled="true">비교하기 ({compareList.length}/3)</span>
-          )}
-        </div>
-      )}
+      {/* 비교 담기는 오른쪽 아래 비교함 알약(components/CompareTray)으로 — 화면 아래를 덮는 바는 쓰지 않음 */}
     </>
   );
 }
