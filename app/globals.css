@@ -2019,7 +2019,7 @@ a.hc-row:hover { background: var(--card-hover); }
 /* 찜목록 버튼·페이지 — 색은 기존 토큰만 (담긴 상태는 포인트색 테두리·글자 + 문구로 구분) */
 .wishlist-btn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent-text); }
 .price-card-wishlist { width: 100%; }
-.cmp-wishlist { width: 100%; }
+.wishlist-btn.is-sm { width: 100%; min-height: 40px; margin-top: 8px; padding: 6px 8px; font-size: 14px; }
 .wishlist-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
 .wishlist-title { font-size: 26px; font-weight: 800; color: var(--text); }
 .wishlist-notice { margin-bottom: 16px; font-size: 15px; color: var(--text-muted); }

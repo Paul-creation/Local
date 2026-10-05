@@ -262,6 +262,8 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
                   {[playersText(g), g.is_free ? '무료' : price?.formattedFinal].filter(Boolean).join(' · ')}
                   {price && price.discount > 0 && !g.is_free && <span className="discount-badge">-{price.discount}%</span>}
                 </span>
+                {/* 카드 전체가 링크라서 버튼 클릭은 이동으로 번지지 않게 막는다 (WishlistButton) */}
+                <WishlistButton gameId={g.id} size="sm" />
               </span>
             </Link>
           );
@@ -322,13 +324,6 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
                 ))}
               </div>
             ))}
-            {/* 각 게임 칸 맨 아래 */}
-            <div className="cmp-row" style={cols}>
-              <div className="cmp-row-label" />
-              {games.map((g: any) => (
-                <div key={g.id} className="cmp-cell"><WishlistButton gameId={g.id} className="cmp-wishlist" /></div>
-              ))}
-            </div>
           </div>
           <div className="compare-mobile">
             {ROWS.map((row) => (
@@ -344,16 +339,6 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
                 </div>
               </div>
             ))}
-            <div className="cmp-mrow">
-              <div className="cmp-mgrid">
-                {games.map((g: any) => (
-                  <div key={g.id} className="cmp-mbox">
-                    <span className="cmp-mname">{g.name}</span>
-                    <WishlistButton gameId={g.id} className="cmp-wishlist" />
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </section>
