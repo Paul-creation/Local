@@ -3,6 +3,7 @@
 // 슬라이더 값은 눈금 번호로 다룬다. 인원: 0(상관없음)·1~15·16(16명+) / 가격: 0(무료)·1~9(5,000원 단위)·10(50,000원+)
 import { LARGE_LOBBY } from './players';
 import { getPriceInfo } from './price';
+import { overlapsPlayers, type PlayersGame } from './playersMatch';
 
 export type Range = [number, number];
 
@@ -41,7 +42,7 @@ export function parsePlayers(v: string | null): Range {
 // 예전 인원 칸 주소(?p=3-4인 등)를 그때와 비슷한 범위로
 // (1인은 1인 전용 필터로 따로 — useGameFilters의 soloOnly)
 const LEGACY_PLAYERS: Record<string, Range> = {
-  '2인': [2, 2], '3-4인': [0, 3], '5인 이상': [0, 5], '16명 이상': [0, PLAYERS_MAX],
+  '2인': [2, 2], '3-4인': [3, 4], '5인 이상': [5, PLAYERS_MAX], '16명 이상': [PLAYERS_MAX, PLAYERS_MAX],
 };
 export const legacyPlayers = (p: string | null): Range => LEGACY_PLAYERS[p || ''] || PLAYERS_ALL;
 
@@ -55,17 +56,9 @@ export function parsePrice(v: string | null): Range {
 export const formatPlayers = (r: Range) => (isAll(r, PLAYERS_ALL) ? '' : `${r[0]}-${r[1]}`);
 export const formatPrice = (r: Range) => (isAll(r, PRICE_ALL) ? '' : `${r[0] * PRICE_STEP}-${r[1] * PRICE_STEP}`);
 
-// 친구끼리 같이 할 수 있는 최대 인원: 팀·파티 인원(party_max, docs/verification-rules.md)이 있으면 그것, 없으면 최대 인원
-// (서버에는 32명이 들어가도 친구끼리 묶이는 팀은 7명인 게임 — 레데리2 등)
-export const friendsMax = (g: { party_max?: number | null; max_players?: number | null }) => g.party_max ?? g.max_players ?? null;
-
-// L명부터 H명까지 전부 가능한 게임: 최소 인원 ≤ L(상관없음이면 조건 없음), 친구끼리 최대 인원 ≥ H(16명+면 16 이상)
-// 범위를 하나라도 움직이면 인원 정보가 없는 게임은 뺀다
-export function matchesPlayers(g: { min_players?: number | null; max_players?: number | null; party_max?: number | null }, r: Range) {
-  if (isAll(r, PLAYERS_ALL)) return true;
-  const max = friendsMax(g);
-  if (!g.min_players || !max) return false;
-  return (r[0] === 0 || g.min_players <= r[0]) && max >= r[1];
+// 선택한 인원 범위와 게임의 가능 인원 범위가 겹치면 포함 (규칙·설명은 playersMatch.ts)
+export function matchesPlayers(g: PlayersGame, r: Range) {
+  return overlapsPlayers(g, r, PLAYERS_MAX);
 }
 
 // 가격 판정에 쓰는 칸 (메인 목록은 price_final, 그 밖은 price_history — getPriceInfo가 둘 다 읽는다)
