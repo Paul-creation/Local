@@ -5,8 +5,7 @@ import Link from 'next/link';
 import ShareButton from '../ShareButton';
 import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL } from '../../lib/price';
 import LowestPriceBadge from '../LowestPriceBadge';
-import GotyBadge from '../GotyBadge';
-import { displayTags } from '../../lib/tagTree';
+import { cardChips } from '../../lib/tagGroups';
 import { SORTS, type GameFilters } from '../../lib/useGameFilters';
 import { filterConditions } from '../../lib/filterConditions';
 import { playersText } from '../../lib/players';
@@ -92,7 +91,8 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
               {filtered.slice(0, visibleCount).map((game, i) => {
                 const price = getPriceInfo(game);
                 const isSelected = !!compareList.find(g => g.id === game.id);
-                const meta = [game.category, playersText(game), ...displayTags(tree, game, 2)].filter(Boolean);
+                const chips = cardChips(tree, game, top10Ids.includes(game.id));
+                const players = playersText(game);
                 // 스팀 외 스토어 게임은 스토어 이름을 작게
                 const store = game.steam_appid ? null : STORE_NAME[game.source] ?? '기타 스토어';
                 return (
@@ -102,12 +102,11 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
                     </span>
                     <span className="result-body">
                       <span className="result-title">
-                        {top10Ids.includes(game.id) && <span className="top10-badge">TOP 10</span>}
                         {game.name}
                       </span>
-                      {game.goty_awards && <span className="goty-row"><GotyBadge awards={game.goty_awards} /></span>}
                       {store && <span className="result-store">{store}</span>}
-                      {meta.length > 0 && <span className="result-meta">{meta.map((m) => <span key={m} className="hc-tag">{m}</span>)}</span>}
+                      {chips.length > 0 && <span className="result-meta">{chips.map((c) => <span key={c.text} className={`hc-tag${c.kind === 'special' ? ' tag-special' : ''}`}>{c.text}</span>)}</span>}
+                      {players && <span className="result-players">{players}</span>}
                       <span className="result-foot">
                         <span className="result-price">
                           {game.is_free ? (

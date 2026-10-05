@@ -61,6 +61,9 @@
   --tag-bg: #0f141b;          /* 카드보다 살짝 어두운 칩 */
   --tag-border: rgba(255, 255, 255, 0.08);
   --tag-text: #E5E7EB;
+  --tag-special-text: var(--accent);
+  --tag-special-bg: rgba(102, 192, 244, 0.08);
+  --tag-special-border: rgba(102, 192, 244, 0.55);
   --card-radius-game: 8px;
   --card-hover-line: rgba(102, 192, 244, 0.7);
   --hero-bg: linear-gradient(to bottom, #1b2838, #101822);
@@ -152,6 +155,9 @@
   --tag-bg: var(--inset);
   --tag-border: transparent;
   --tag-text: var(--text-2);
+  --tag-special-text: var(--accent-text);
+  --tag-special-bg: rgba(0, 113, 227, 0.07);
+  --tag-special-border: rgba(0, 113, 227, 0.45);
   --card-radius-game: var(--radius-card);
   --card-hover-line: var(--border);
   --hero-bg: none;
@@ -2456,10 +2462,20 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 
 /* 태그 칩 — 텍스트가 아니라 칩으로 */
 .hc-tag { color: var(--tag-text); background: var(--tag-bg); box-shadow: inset 0 0 0 1px var(--tag-border); }
-.result-meta { display: flex; gap: 6px; }
+.result-meta { display: flex; flex-wrap: wrap; gap: 4px 6px; overflow: visible; white-space: normal; }
 .result-meta .hc-tag { flex-shrink: 0; }
 
 /* 섹션 라벨(이번주의 게임·추천 게임 등)·서브 문구 — 메인 제목보다 작고 옅게 */
 .feature-label { font-size: var(--label-size); font-weight: var(--label-weight); color: var(--label-color); }
 .feature-sub { color: var(--label-sub-color); font-weight: 500; }
 .section-sub { font-size: var(--sub-size); }
+
+
+/* ============================================================
+   태그 그룹·특별 칩 — 상세는 그룹별 줄(secondary 작은 라벨), 특별 칩(TOP 10·수상)은 포인트색 테두리·글자
+   ============================================================ */
+.tag-group { margin-top: 14px; }
+.tag-group-label { display: block; font-size: 13px; font-weight: 600; line-height: 1.4; color: var(--text-muted); }
+.tag-group .main-tag-row { margin-top: 6px; }
+.category-tag.tag-special, .hc-tag.tag-special { color: var(--tag-special-text); background: var(--tag-special-bg); box-shadow: inset 0 0 0 1px var(--tag-special-border); font-weight: 600; }
+.result-players { font-size: 14px; color: var(--text-muted); }

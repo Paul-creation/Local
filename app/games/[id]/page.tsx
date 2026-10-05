@@ -18,7 +18,6 @@ import VideoPreviewSection, { type CoopVideo } from '../../components/VideoPrevi
 import Link from 'next/link';
 import { Fragment } from 'react';
 import ShareButton from '../../components/ShareButton';
-import GotyBadge from '../../components/GotyBadge';
 import GameImage from '../../components/GameImage';
 import { getTop10Ids } from '../../lib/hotChart';
 import { playersText } from '../../lib/players';
@@ -29,7 +28,8 @@ import { selectGames, mergedTargetOf } from '../../lib/visibleGames';
 import ContentNotice from '../../components/ContentNotice';
 import TagHelp from '../../components/search/TagHelp';
 import TagChips from '../../components/TagChips';
-import { buildTree, tagName, type TagDict } from '../../lib/tagTree';
+import { detailChipGroups } from '../../lib/tagGroups';
+import { buildTree, type TagDict } from '../../lib/tagTree';
 import tagDict from '../../lib/tag-search-dict.json';
 import { permanentRedirect } from 'next/navigation';
 
@@ -47,11 +47,10 @@ const TAG_TREE = buildTree(tagDict as unknown as TagDict);
 // 혼자 플레이 단계 (data/meta/play-modes.json → games.solo_mode)
 const SOLO_LABEL: Record<string, string> = { story: '혼자서도 꽉 참', possible: '혼자도 가능', none: '멀티 전용' };
 
-// 이 게임의 태그 이름 — game_tags(순위순) + 태그 나무 이름. 표가 아직 없거나 비어 있으면 예전 tags 칸 그대로
-async function getGameTagNames(game: { id: string; tags?: string[] | null }) {
+// 이 게임의 태그 번호 — game_tags(투표 순위순). 표가 아직 없거나 비어 있으면 빈 목록(예전 tags 칸으로 대신 표시)
+async function getGameTagIds(game: { id: string }) {
   const { data, error } = await supabase.from('game_tags').select('tag_id, rank').eq('game_id', game.id).order('rank');
-  const names = !error && data?.length ? data.map((r) => tagName(TAG_TREE, r.tag_id)).filter(Boolean) : [];
-  return names.length ? names : (game.tags || []).map(translateTag);
+  return !error && data?.length ? data.map((r) => r.tag_id as number) : [];
 }
 
 // PC 사양 접기 요약에 쓰는 그래픽카드 — 사양 줄 중 그래픽 항목의 첫 제품명만 짧게
@@ -153,8 +152,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
     if (target) permanentRedirect(`/games/${target}`);
     return <div className="page">게임을 찾을 수 없어요.</div>;
   }
-  const [top10, tagNames] = await Promise.all([top10Promise, getGameTagNames(game)]);
+  const [top10, tagIds] = await Promise.all([top10Promise, getGameTagIds(game)]);
   const isTop10 = top10.includes(game.id);
+  const chipGroups = detailChipGroups(TAG_TREE, { ...game, tag_ids: tagIds }, isTop10);
   // 멀티 방식(전용 서버/P2P)은 온라인 협동·대전이 있는 게임만
   const showHost = !!game.multiplayer_host && (game.has_online_coop === true || game.has_pvp === true);
   // 친구랑: 팀 인원(party_max), 없으면 최대 인원 + 같은 서버 인원(session_max)
@@ -214,8 +214,6 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         badges={
           <>
             {playersChip && <span className="badge players-chip">{playersChip}</span>}
-            {isTop10 && <span className="top10-badge">TOP 10</span>}
-            <GotyBadge awards={game.goty_awards} all />
             {game.review_summary && <span className={`review-badge ${getReviewClass(game.review_summary)}`}>{game.review_summary}</span>}
             {game.category && <span className={`badge-neutral ${badgeClass(game.category)}`}>{game.category}</span>}
             {game.is_early_access && <span className="badge badge-accent">얼리 액세스</span>}
@@ -279,7 +277,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           <section className="detail-card">
             {game.fun_description && <p className="detail-fun">{game.fun_description}</p>}
             {game.description && <p className="detail-description-v2">{game.description}</p>}
-            {tagNames.length > 0 && <TagChips tags={tagNames} />}
+            {chipGroups.length > 0 && <TagChips groups={chipGroups} />}
             <ContentNotice ids={game.content_descriptor_ids} />
           </section>
 
