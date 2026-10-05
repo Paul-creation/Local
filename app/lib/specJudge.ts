@@ -5,6 +5,8 @@
 // - 모델명 없는 저사양 표기(low_spec)는 { any: 1 }이라 최저 등급 — 어떤 PC든 충족
 // - 읽지 못한 칸(null)은 "판정 불가"이고, 읽은 칸 중 하나라도 모자라면 판정 불가보다 "부족"이 먼저다
 // - RAM은 사용자 값이 요구보다 작을 때만 부족. 요구 RAM을 읽지 못했으면 막지 않는다
+// - CPU만: 한 줄에 AMD·Intel이 짝으로 적혀 등급이 딱 1단계 차이면 제작사가 동급으로 적은 짝이라 보고 낮은 쪽에 맞춘다 (equalizePair)
+//   예: "i5-10400 / Ryzen 5 5600"(Intel 6, AMD 7) → 둘 다 6. 2단계 이상 벌어지면 그대로 (서로 다른 급을 적은 것)
 
 export type Vendor = 'nvidia' | 'amd' | 'intel';
 export type VendorTiers = Partial<Record<Vendor | 'any', number>>;
@@ -24,6 +26,13 @@ export function requiredTier(req: VendorTiers | null | undefined, vendor: Vendor
   return all.length ? Math.max(...all) : null;
 }
 
+// CPU 요구의 AMD·Intel 짝이 1단계 차이면 낮은 쪽으로 맞춘다 (GPU에는 쓰지 않음)
+export function equalizePair(req: VendorTiers | null | undefined): VendorTiers | null | undefined {
+  if (!req || req.amd == null || req.intel == null || Math.abs(req.amd - req.intel) !== 1) return req;
+  const lo = Math.min(req.amd, req.intel);
+  return { ...req, amd: lo, intel: lo };
+}
+
 // 부품 하나: true 충족 · false 부족 · null 요구를 읽지 못함
 export function partMeets(user: UserPart, req: VendorTiers | null | undefined): boolean | null {
   const need = requiredTier(req, user.vendor);
@@ -32,7 +41,7 @@ export function partMeets(user: UserPart, req: VendorTiers | null | undefined): 
 
 // 사양 한 단계(최소 또는 권장)
 export function judgeLevel(user: UserPc, spec: SpecLike): LevelResult {
-  const cpu = partMeets(user.cpu, spec.cpu);
+  const cpu = partMeets(user.cpu, equalizePair(spec.cpu));
   const gpu = partMeets(user.gpu, spec.gpu);
   const ram = spec.ram_gb == null ? null : user.ram_gb >= spec.ram_gb;
   const result = cpu === false || gpu === false || ram === false ? 'fail' : cpu === true && gpu === true ? 'pass' : 'unknown';

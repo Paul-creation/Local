@@ -55,7 +55,7 @@ test('GPU: 모델 없는 저사양 표기는 최저 등급 + low_spec', () => {
 
 test('CPU: 세대·급 읽기', () => {
   assert.equal(p('Intel Core i7-6700 or AMD Ryzen 5 1600', 'x').cpu_tier, 5); // 낮은 쪽
-  assert.equal(p('Intel Core i5-1135G7', 'x').cpu_tier, 7); // 11세대 모바일
+  assert.equal(p('Intel Core i5-1135G7', 'x').cpu_tier, 6); // 11세대 모바일 (데스크톱 i5 11세대 7보다 한 단계 낮게)
   assert.equal(p('Intel Core i3-10100F', 'x').cpu_tier, 6);
   assert.equal(p('AMD Ryzen 5 3600', 'x').cpu_tier, 6);
   assert.equal(p('AMD Ryzen 5600G', 'x').cpu_tier, 7); // 급 생략 표기
@@ -105,7 +105,7 @@ test('대안 표기는 제조사별로 보존된다', () => {
   assert.deepEqual(p0('Intel Core i5-6500 or AMD Ryzen 5 1600', 'NVIDIA GeForce GTX 1060 or AMD Radeon RX 6600 XT or Intel Arc A380').cpu, { intel: 5, amd: 5 });
   assert.deepEqual(p0('x', 'NVIDIA GeForce GTX 1060 or AMD Radeon RX 6600 XT or Intel Arc A380').gpu, { nvidia: 9, amd: 12, intel: 6 });
   assert.deepEqual(p0('Intel Core i7-8700K', 'NVIDIA GeForce GTX 1080 Ti').gpu, { nvidia: 12 }); // 제조사 하나만 적히면 그 하나만
-  assert.deepEqual(p0('Intel Core i7-8700K', 'NVIDIA GeForce GTX 1080 Ti').cpu, { intel: 7 });
+  assert.deepEqual(p0('Intel Core i7-8700K', 'NVIDIA GeForce GTX 1080 Ti').cpu, { intel: 6 }); // i7 8세대 (P2: 7→6)
   assert.deepEqual(p0('x', 'GeForce GTX 1060 or GeForce GTX 1650 or Radeon RX 580').gpu, { nvidia: 7, amd: 9 }); // 같은 제조사 안의 대안은 낮은 쪽
   assert.equal(highestTier(p0('x', 'GTX 1060 or RX 6600 XT').gpu), 12);
 });
@@ -138,23 +138,71 @@ test('"아직 모름"·모델처럼 보이는 표기는 low_spec로 바꾸지 �
   assert.equal(parseSpecText('운영 체제: Windows 10 / 메모리: 8 GB RAM', tables).gpu, null); // 칸 자체가 없으면 null (low_spec 아님)
 });
 
-test('세대 없는 CPU: 출시 3년 전에 나온 세대로 짐작 + cpu_generation_guessed', () => {
-  const g = (cpu, year) => parseSpecText(spec(cpu, 'GeForce GTX 1060'), tables, { releaseYear: year });
-  const a = g('Intel Core i5', 2023); // 2020년까지 나온 가장 최신 세대 = 10세대
-  assert.deepEqual(a.cpu, { intel: 6 }); assert.equal(a.cpu_generation_guessed, true); assert.equal(a.confidence, 'medium');
-  assert.deepEqual(g('Intel Core i5', 2019).cpu, { intel: 5 }); // 2016 → 같은 해(2015) 중 최신 6세대
-  assert.deepEqual(g('AMD Ryzen 5', 2023).cpu, { amd: 7 }); // 2020 → 5000번대
-  assert.deepEqual(g('Intel Core i5', 2012).cpu, { intel: 3 }); // 그보다 앞서면 가장 오래된 세대
-  const both = g('Intel Core i7 or AMD Ryzen 7', 2023);
-  assert.equal(both.cpu_generation_guessed, true); assert.deepEqual(Object.keys(both.cpu).sort(), ['amd', 'intel']);
-  // 출시 연도가 없으면 기존 방식(세대 미표기 기본값), 짐작 표시 없음
-  const n = g('Intel Core i5', null);
-  assert.deepEqual(n.cpu, { intel: 4 }); assert.equal(n.cpu_generation_guessed, false);
-  assert.equal(p('Intel Core i5', 'x').cpu_generation_guessed, false);
-  // 세대가 적혀 있으면 연도와 상관없이 그대로
-  const m = g('Intel Core i5-6500', 2026);
-  assert.deepEqual(m.cpu, { intel: 5 }); assert.equal(m.cpu_generation_guessed, false);
-  assert.equal(g('Intel i5 6세대', 2026).cpu_generation_guessed, false);
-  // 세대표가 없는 i9·Ryzen 9은 기본값 그대로
-  const i9 = g('Intel Core i9', 2023); assert.deepEqual(i9.cpu, { intel: 8 }); assert.equal(i9.cpu_generation_guessed, false);
+test('세대 없는 CPU: 짐작하지 않고 세대 미표기 기본값 (P1)', () => {
+  const g = (cpu) => parseSpecText(spec(cpu, 'GeForce GTX 1060'), tables);
+  assert.deepEqual(g('Intel Core i3').cpu, { intel: 3 });
+  assert.deepEqual(g('Intel Core i5').cpu, { intel: 4 });
+  assert.deepEqual(g('Intel Core i7').cpu, { intel: 5 });
+  assert.deepEqual(g('Intel Core i9').cpu, { intel: 8 });
+  assert.deepEqual(g('AMD Ryzen 5').cpu, { amd: 5 });
+  const both = g('Intel Core i7 or AMD Ryzen 7');
+  assert.deepEqual(both.cpu, { intel: 5, amd: 6 });
+  assert.equal(both.detail.cpu.kind, 'class-only');
+  assert.equal('cpu_generation_guessed' in both, false);
+  // 세대가 적혀 있으면 그대로
+  assert.deepEqual(g('Intel Core i5-6500').cpu, { intel: 5 });
+  assert.deepEqual(g('Intel i5 6세대').cpu, { intel: 5 });
+  assert.deepEqual(g('Intel i5-10400 / Ryzen 5 5600').cpu, { intel: 6, amd: 7 });
+});
+
+test('파서 보강 (P4): Ryzen 하이픈 모델 · | 구분 · 제조사 이어 붙임 · ® 붙은 GPU', () => {
+  const c = (cpu) => parseSpecText(spec(cpu, 'GeForce GTX 1060'), tables).cpu;
+  assert.deepEqual(c('Intel i5 7th generation or AMD Ryzen 5-2600'), { intel: 5, amd: 6 }); // 2000번대
+  assert.deepEqual(c('Intel i5-8400 / AMD Ryzen 5-1600'), { intel: 6, amd: 5 }); // 1000번대
+  assert.deepEqual(c('Intel Core i7-10700K | Amd Ryzen 5 3600X'), { intel: 6, amd: 6 }); // | 구분
+  assert.deepEqual(c('INTEL® Core TM i7 8700K AMD RYZEN 5 3600'), { intel: 6, amd: 6 }); // 구분자 없이 이어 붙음
+  const gpu = (t) => parseSpecText(spec('Intel Core i5-8400', t), tables).gpu;
+  assert.deepEqual(gpu('NVIDIA® GeForce®RTX 3070, or AMD Radeon™ RX6800 -XT with 8GB of VRAM'), { nvidia: 13, amd: 14 });
+});
+
+test('모바일 구분 (P5): CPU 끝 U·H·P 등은 데스크톱보다 한 단계 낮게, HX·K는 데스크톱급', () => {
+  const c = (cpu) => parseSpecText(spec(cpu, 'GeForce GTX 1060'), tables);
+  assert.deepEqual(c('Intel Core i5-1235U').cpu, { intel: 6 }); // 12세대 i5 데스크톱 7
+  assert.deepEqual(c('Intel Core i5-12400').cpu, { intel: 7 });
+  assert.deepEqual(c('Intel Core i7-8750H').cpu, { intel: 5 }); // 8세대 i7 데스크톱 6
+  assert.deepEqual(c('Intel Core i7-10750H').cpu, { intel: 5 });
+  assert.deepEqual(c('Intel Core i7-1165G7').cpu, { intel: 7 }); // 11세대 i7 8 → 7
+  assert.deepEqual(c('Intel Core i5-8250U').cpu, { intel: 5 }); // 8세대 i5 6 → 5
+  assert.deepEqual(c('Intel Core i9-13900HX').cpu, { intel: 8 }); // HX는 데스크톱급
+  assert.deepEqual(c('Intel Core i7-9700K').cpu, { intel: 6 }); // K는 데스크톱
+  assert.deepEqual(c('AMD Ryzen 5 5500U').cpu, { amd: 6 }); // 5000번대 R5 7 → 6
+  assert.deepEqual(c('AMD Ryzen 7 5800H').cpu, { amd: 7 }); // R7 5000 8 → 7
+  assert.deepEqual(c('AMD Ryzen 5 5600X').cpu, { amd: 7 });
+  assert.equal(c('Intel Core i5-1235U').detail.cpu.keys[0], 'intel core i5 gen12 mobile');
+  assert.deepEqual(c('Intel Core Ultra 7 155H').cpu, { intel: 7 }); // Ultra 7 8 → 7
+});
+
+test('P2 등급표: i7 8~10세대·Ryzen 7 2000·3000은 i5 8~10세대·Ryzen 5 3000과 같은 중급(6)', () => {
+  const by = new Map(tables.cpu.entries.map((e) => [e.key, e.tier]));
+  for (const k of ['intel core i7 gen8', 'intel core i7 gen9', 'intel core i7 gen10', 'ryzen 7 gen2', 'ryzen 7 gen3', 'ryzen 5 gen3', 'intel core i5 gen10']) assert.equal(by.get(k), 6, k);
+  assert.equal(by.get('ryzen 5 gen5'), 7); // 5000번대 R5는 그대로 7
+});
+
+test('모바일 CPU 항목: 같은 세대 데스크톱보다 한 단계 낮게, 별도 key', () => {
+  const by = new Map(tables.cpu.entries.map((e) => [e.key, e]));
+  const mobiles = tables.cpu.entries.filter((e) => e.key.endsWith(' mobile'));
+  assert.ok(mobiles.length > 50);
+  for (const m of mobiles) {
+    const d = by.get(m.key.replace(/ mobile$/, ''));
+    assert.ok(d, `${m.key}의 데스크톱 항목`);
+    assert.equal(m.tier, Math.max(1, d.tier - 1), m.key);
+    assert.equal(m.mobile, true);
+  }
+});
+
+test('GPU: Laptop·Mobile 표기는 데스크톱보다 한 단계 낮게 (P5 확인)', () => {
+  const g = (t) => parseSpecText(spec('Intel Core i5-8400', t), tables).gpu;
+  assert.deepEqual(g('NVIDIA GeForce RTX 3060'), { nvidia: 11 });
+  assert.deepEqual(g('NVIDIA GeForce RTX 3060 Laptop GPU'), { nvidia: 10 });
+  assert.deepEqual(g('NVIDIA GeForce GTX 1650 Mobile'), { nvidia: 6 }); // 데스크톱 1650 = 7
 });

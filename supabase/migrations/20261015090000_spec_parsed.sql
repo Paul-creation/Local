@@ -4,10 +4,10 @@
 -- 채우기: node --env-file=.env.local scripts/parse-specs.mjs (미리보기) → --apply
 -- 기존 min_spec·recommended_spec·storage_gb는 그대로 둔다 (spec_parsed는 그 텍스트를 풀어 둔 결과)
 
--- spec_parsed 모양(v3): {"v":3, "min":{cpu,gpu,ram_gb,storage_gb,matched,low_spec,cpu_generation_guessed,confidence,detail}, "rec":{…} | null}
+-- spec_parsed 모양(v4): {"v":4, "min":{cpu,gpu,ram_gb,storage_gb,matched,low_spec,confidence,detail}, "rec":{…} | null}
 --   cpu·gpu는 제조사별 등급 {"nvidia":9,"amd":11,"intel":6} (대안 표기를 합치지 않음), 읽지 못하면 null, 모델·VRAM·DirectX 같은 사양 단어가 없는 표기는 {"any":1}(low_spec: true)
---   cpu_generation_guessed: 세대 없는 Core i3/i5/i7·Ryzen 3/5/7을 출시 3년 전 세대로 짐작했으면 true (화면 안내: "세대가 안 적혀 있어 대략적인 판정이에요")
---   v1·v2는 지금 저장돼 있지 않다 (버전이 오르면 parse-specs가 전체를 한 번 다시 처리)
+--   세대 없이 급만 적은 CPU는 짐작하지 않고 등급표의 "(세대 미표기)" 기본값, 모바일 CPU·GPU는 데스크톱보다 한 단계 낮게 (v4부터. v3까지는 출시 3년 전 세대로 짐작해 cpu_generation_guessed 칸이 있었음)
+--   v1~v3는 v4 적용 뒤 저장돼 있지 않다 (버전이 오르면 parse-specs가 전체를 한 번 다시 처리)
 alter table public.games add column if not exists spec_parsed jsonb;
 -- spec_hash: 파싱에 쓴 사양 텍스트(min_spec + recommended_spec)의 SHA-1 앞 16자 — 같으면 다시 처리하지 않고, 텍스트가 바뀌면 다시 처리
 alter table public.games add column if not exists spec_hash text;

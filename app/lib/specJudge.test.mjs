@@ -64,7 +64,7 @@ test('권장을 읽지 못해도(권장 판정 불가) 최소는 충족으로 �
 });
 
 // ── 3단계: 상세 페이지 판정 (judgePc) ──
-import { judgePc, hasJudgeableSpec, verdictText } from './specJudge.ts';
+import { judgePc, hasJudgeableSpec, verdictText, equalizePair } from './specJudge.ts';
 
 const full = (cpu, gpu, ram) => ({ cpu: { intel: cpu }, gpu: { nvidia: gpu }, ram_gb: ram });
 
@@ -121,4 +121,23 @@ test('verdictText: 문구와 플래그', () => {
   assert.deepEqual(verdictText({ level: 'min', failed: [], recMissing: true, partial: false }), { main: '최소 사양 충족', flags: ['권장 사양 정보 부족'] });
   assert.deepEqual(verdictText({ level: 'min', failed: [], recMissing: true, partial: true }).flags, ['권장 사양 정보 부족', '일부 사양만 확인됨']);
   assert.equal(verdictText({ level: 'fail', failed: ['gpu', 'ram'], recMissing: false, partial: false }).main, '최소 사양 미달 (그래픽카드·메모리)');
+});
+
+test('P3: 한 줄에 AMD·Intel 짝이 1단계 차이면 낮은 쪽으로 (CPU만)', () => {
+  const user = (cpuVendor, cpuTier) => ({ cpu: { vendor: cpuVendor, tier: cpuTier }, gpu: { vendor: 'nvidia', tier: 11 }, ram_gb: 16 });
+  const spec = (cpu, gpu = { nvidia: 9 }) => ({ min: { cpu, gpu, ram_gb: 8 }, rec: null });
+  assert.deepEqual(equalizePair({ amd: 7, intel: 6 }), { amd: 6, intel: 6 });
+  assert.deepEqual(equalizePair({ amd: 6, intel: 7 }), { amd: 6, intel: 6 });
+  assert.deepEqual(equalizePair({ amd: 8, intel: 6 }), { amd: 8, intel: 6 }); // 2단계 차이는 그대로
+  assert.deepEqual(equalizePair({ amd: 7, intel: 7 }), { amd: 7, intel: 7 });
+  assert.deepEqual(equalizePair({ intel: 7 }), { intel: 7 }); // 한쪽만 적힌 요구는 그대로
+  assert.equal(equalizePair(null), null);
+  // Ryzen 5 3600(6) vs "i5-10400(6) / Ryzen 5 5600(7)" → 충족
+  assert.equal(judgePc(user('amd', 6), spec({ amd: 7, intel: 6 })).level, 'min');
+  assert.equal(judgePc(user('amd', 5), spec({ amd: 7, intel: 6 })).level, 'fail'); // 5는 낮은 쪽(6)에도 모자람
+  assert.equal(judgePc(user('amd', 6), spec({ amd: 8, intel: 6 })).level, 'fail'); // 2단계 차이는 AMD 8 그대로
+  assert.equal(judgePc(user('amd', 6), spec({ intel: 7 })).level, 'fail'); // Intel만 적힌 요구는 그대로 비교
+  // GPU에는 적용하지 않음: RTX 3060(11) vs "GTX 1080 Ti(12) / RX 6800(14)"는 그대로 미달
+  assert.equal(judgePc(user('amd', 8), spec({ intel: 5 }, { nvidia: 12, amd: 13 })).level, 'fail');
+  assert.deepEqual(judgeLevel(user('amd', 6), { cpu: { amd: 7, intel: 6 }, gpu: { nvidia: 9 }, ram_gb: 8 }), { cpu: true, gpu: true, ram: true, result: 'pass' });
 });
