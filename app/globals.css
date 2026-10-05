@@ -2019,7 +2019,7 @@ a.hc-row:hover { background: var(--card-hover); }
 /* 소개 */
 .detail-fun { font-size: 18px; font-weight: 700; line-height: 1.55; color: var(--text); margin-bottom: 10px; word-break: keep-all; }
 .detail-description-v2 { color: var(--text-2); font-size: 15px; line-height: 1.75; max-width: 70ch; }
-.main-tag-row { display: flex; gap: 10px 8px; flex-wrap: wrap; margin: 16px 0 0; }
+.main-tag-row { display: flex; gap: 14px 12px; flex-wrap: wrap; margin: 16px 0 0; } /* 상세 태그 칩: 가로 +4px, 줄 +4px */
 .content-notice { margin-top: 12px; font-size: 14px; color: var(--text-muted); }
 .content-notice strong { color: var(--text-2); }
 
@@ -2565,3 +2565,13 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 :root:not([data-theme="light"]) .cb-go:disabled { background: var(--card-hover); color: var(--text-muted); border-color: transparent; opacity: 1; cursor: not-allowed; }
 :root:not([data-theme="light"]) .cb-go:not(:disabled) { background: var(--accent); color: var(--accent-ink); }
 :root:not([data-theme="light"]) .cb-go:not(:disabled):hover { background: var(--accent-hover); }
+
+/* 상세 가격·구매 박스 — 본문 카드보다 반 톤 밝은 독립 박스 (다크, sticky는 .detail-price 그대로) */
+:root:not([data-theme="light"]) .price-card { background: linear-gradient(rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), var(--card-surface); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; }
+
+/* 비교 만들기 "인기 게임 바로 추가" — 제목은 primary·굵게·한 단계 크게, 칩 글자는 secondary 색 토큰(호버 시 primary) */
+.cb-quick-wrap .filter-label { font-size: 17px; font-weight: 800; color: var(--text); margin-bottom: 10px; }
+.cb-quick-btn { color: var(--text-muted); }
+.cb-quick-btn:hover:not(:disabled) { color: var(--text); }
+:root:not([data-theme="light"]) .price-card-compare { border-color: rgba(255, 255, 255, 0.2); }
+:root:not([data-theme="light"]) .price-card-compare:hover { border-color: var(--accent); color: var(--accent-text); }
