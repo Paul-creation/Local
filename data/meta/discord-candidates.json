@@ -341,5 +341,13 @@
     "invite_code": "assassinscreed",
     "invite_url": "https://discord.gg/assassinscreed",
     "note": "유비소프트 어쌔신 크리드 공식 서버"
+  },
+  {
+    "game_id": "c1ed8167-fa7e-41ba-b2ab-77bbb6f322ec",
+    "name": "Fallout 4",
+    "invite_code": "fallout",
+    "invite_url": "https://discord.gg/fallout",
+    "code_confidence": "medium",
+    "verified": false
   }
 ]
