@@ -2579,3 +2579,16 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 .cb-quick-btn:hover:not(:disabled) { color: var(--text); }
 :root:not([data-theme="light"]) .price-card-compare { border-color: rgba(255, 255, 255, 0.2); }
 :root:not([data-theme="light"]) .price-card-compare:hover { border-color: var(--accent); color: var(--accent-text); }
+/* ============================================================
+   카드 안 정렬 — 고정 높이 대신 flex column: 정보 영역이 남는 높이를 채우고, 가격 줄은 항상 맨 아래
+   (역대 최저가 배지가 줄바꿈되면 가격 줄 위로 올라가서 가격 줄 위치는 카드마다 같음)
+   ============================================================ */
+.feature-pair { align-items: stretch; --feature-nav-h: 54px; } /* 이전·다음 줄 높이(버튼 44 + 위 여백 10) */
+.feature-carousel { display: flex; flex-direction: column; min-width: 0; }
+.feature-carousel > .feature-card { flex: 1; }
+.feature-body { flex: 1; }
+.feature-price { margin-top: auto; padding-top: 2px; }
+@media (min-width: 761px) { .feature-pair:has(.feature-nav) > .feature-card { margin-bottom: var(--feature-nav-h); } } /* 오른쪽 카드 아래 이전·다음 줄만큼 비워 두 카드 높이를 맞춤 */
+.hc-card .hc-price { flex-wrap: wrap-reverse; }
+.result-foot { align-items: flex-end; }
+.result-price { flex-wrap: wrap-reverse; }
