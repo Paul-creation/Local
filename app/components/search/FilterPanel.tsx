@@ -2,7 +2,8 @@
 'use client';
 
 import { useState } from 'react';
-import TagHelp from './TagHelp';
+import TagHelp, { getTagDescription } from './TagHelp';
+import { useChipHint } from './ChipHint';
 import RangeSlider from './RangeSlider';
 import { BARRIERS, NETS, type GameFilters } from '../../lib/useGameFilters';
 import { EXCLUDE_TAG_IDS, type TagTree } from '../../lib/tagTree';
@@ -10,6 +11,18 @@ import { PLAYERS_MAX, PRICE_MAX, PRICE_ALL, FREE_ONLY, isAll, playersLabel, pric
 
 // 배지(category) 값으로 거름 — '협동'·'대전'은 '협동·대전' 게임도 포함 (app/lib/badge.mjs)
 const CATEGORIES = ['협동', '대전', '혼자'];
+
+// 그룹별 안내 문구 (용어집 tag-glossary.json 기준, 없는 칩만 여기서 적음)
+const PLAY_DESCS = Object.fromEntries(CATEGORIES.map((c) => [c, getTagDescription(c)]));
+const SOLO_DESCS: Record<string, string> = {
+  '1인 전용': '혼자서만 하는 1인용 게임만 보여줘요',
+  '혼자도 꽉 차게': getTagDescription('혼자도 꽉 차게'),
+};
+const BARRIER_DESCS: Record<string, string> = {
+  '낮음': '설명 없이 바로 시작해서 같이 즐길 수 있어요',
+  '보통': '조금 익히면 같이 즐길 수 있어요',
+  '높음': '조작·규칙을 꽤 배워야 같이 즐길 수 있어요',
+};
 
 // 필터 카드 — "필터" + 전체 지우기 / 같이 하는 방식 / 인원 + 1인 전용·혼자도 꽉 차게 / 가격 + 무료만·지금 할인 중 /
 // 진입장벽 3칸 / 분류 아코디언 / 빼고 보기
@@ -32,6 +45,9 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
     selectedCount, clearConditions, filtered, loaded,
   } = filters;
   const [openRoots, setOpenRoots] = useState<number[]>([]);
+  const playHint = useChipHint(PLAY_DESCS, '방식을 누르면 설명이 나와요');
+  const soloHint = useChipHint(SOLO_DESCS, '버튼을 누르면 설명이 나와요');
+  const barrierHint = useChipHint(BARRIER_DESCS, '단계를 누르면 설명이 나와요');
   const freeOnly = isAll(priceRange, FREE_ONLY);
   const sheet = variant === 'sheet';
 
@@ -54,13 +70,11 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
           <p className="filter-label">같이 하는 방식</p>
           <div className="filter-chips">
             {CATEGORIES.map(c => (
-              <span key={c} className="tag-chip-wrap">
-                <button type="button" className={`chip${selectedCategory === c ? ' on' : ''}`} aria-pressed={selectedCategory === c}
-                  onClick={() => setSelectedCategory(selectedCategory === c ? '' : c)}>{c}</button>
-                <TagHelp tag={c} />
-              </span>
+              <button key={c} type="button" className={`chip${selectedCategory === c ? ' on' : ''}`} aria-pressed={selectedCategory === c}
+                {...playHint.bind(c)} onClick={() => setSelectedCategory(selectedCategory === c ? '' : c)}>{c}</button>
             ))}
           </div>
+          {playHint.hint}
         </section>
 
         {/* 인원 — 친구랑 같이 할 수 있는 인원(팀 인원, 없으면 최대 인원) 기준 (app/lib/rangeFilter) */}
@@ -71,12 +85,10 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
             lowName="최소 인원" highName="최대 인원"
           />
           <div className="filter-chips">
-            <button type="button" className={`chip${soloOnly ? ' on' : ''}`} aria-pressed={soloOnly} onClick={() => setSoloOnly(!soloOnly)}>1인 전용</button>
-            <span className="tag-chip-wrap">
-              <button type="button" className={`chip${storyOnly ? ' on' : ''}`} aria-pressed={storyOnly} onClick={() => setStoryOnly(!storyOnly)}>혼자도 꽉 차게</button>
-              <TagHelp tag="혼자도 꽉 차게" />
-            </span>
+            <button type="button" className={`chip${soloOnly ? ' on' : ''}`} aria-pressed={soloOnly} {...soloHint.bind('1인 전용')} onClick={() => setSoloOnly(!soloOnly)}>1인 전용</button>
+            <button type="button" className={`chip${storyOnly ? ' on' : ''}`} aria-pressed={storyOnly} {...soloHint.bind('혼자도 꽉 차게')} onClick={() => setStoryOnly(!storyOnly)}>혼자도 꽉 차게</button>
           </div>
+          {soloHint.hint}
         </section>
 
         {/* 가격 — 지금 실제 가격(할인가) 기준 */}
@@ -95,13 +107,14 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
 
         {/* 진입장벽 — 3칸 버튼 (여러 개 고르면 그중 하나) */}
         <section className="filter-section">
-          <p className="filter-label">진입장벽 <TagHelp tag="진입장벽" /></p>
+          <p className="filter-label">진입장벽</p>
           <div className="seg" role="group" aria-label="진입장벽">
             {BARRIERS.map(([ko]) => (
               <button key={ko} type="button" className={`seg-btn${selectedBarriers.includes(ko) ? ' on' : ''}`} aria-pressed={selectedBarriers.includes(ko)}
-                onClick={() => toggleBarrier(ko)}>{ko}</button>
+                {...barrierHint.bind(ko)} onClick={() => toggleBarrier(ko)}>{ko}</button>
             ))}
           </div>
+          {barrierHint.hint}
         </section>
 
         {/* 네트워크 — 크로스플레이는 따로, 전용 서버·P2P는 고른 것 중 하나 (온라인 협동·대전이 있는 게임만) */}

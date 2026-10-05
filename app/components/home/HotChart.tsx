@@ -67,11 +67,12 @@ function StreamerBadge({ names, max, suffix }: { names?: string[]; max: number; 
 // 1~3위 큰 카드 — 왼쪽 위 큰 순위 숫자(장식)를 이미지가 일부 가리게 겹침. 아래: 제목·한 줄 소개·"인원 · 동접"·가격
 function BigCard({ item }: { item: HotItem }) {
   return (
-    <Link href={`/games/${item.id}`} className="hc-card lift" aria-label={`${item.rank}위 ${item.name}`}>
+    <Link href={`/games/${item.id}`} className={`hc-card lift${item.rank === 1 ? ' is-first' : ''}`} aria-label={`${item.rank}위 ${item.name}`}>
       <span className="hc-rank-big" aria-hidden="true">{item.rank}</span>
       <span className="hc-card-image">
         <GameImage src={item.image} fallbackWidth={920} alt="" />
         <span className="hc-card-badges">
+          {item.rank === 1 && <span className="hc-tag tag-special hc-first-chip">1위</span>}
           <Change change={item.change} />
           {item.weeks >= 2 && <span className="hc-weeks">{item.weeks}주째 순위권</span>}
         </span>
