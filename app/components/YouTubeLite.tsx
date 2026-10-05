@@ -17,8 +17,9 @@ function getVideoId(url: string | null): string | null {
 // 4:3 위아래 검은 띠는 16:9 상자에서 object-fit: cover로 잘려 나감
 const WIDE_MEDIA = '(min-width: 689px)';
 
-export default function YouTubeLite({ url, title, fallbackImage, wide = false, fetchPriority }: { url: string | null; title: string; fallbackImage?: string; wide?: boolean; fetchPriority?: 'high' | 'low' | 'auto' }) {
-  const [playing, setPlaying] = useState(false);
+export default function YouTubeLite({ url, title, fallbackImage, wide = false, fetchPriority, autoPlay = false }: { url: string | null; title: string; fallbackImage?: string; wide?: boolean; fetchPriority?: 'high' | 'low' | 'auto'; autoPlay?: boolean }) {
+  // autoPlay: 이미 재생 버튼을 누른 뒤 그려질 때 (상세 맨 위 "트레일러 재생") 바로 재생
+  const [playing, setPlaying] = useState(autoPlay);
   const [thumbFailed, setThumbFailed] = useState(false);
   const [noMaxres, setNoMaxres] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -49,7 +50,7 @@ export default function YouTubeLite({ url, title, fallbackImage, wide = false, f
 
   const box: CSSProperties = {
     position: 'relative', width: '100%', aspectRatio: '16/9',
-    borderRadius: 12, overflow: 'hidden', background: '#000',
+    borderRadius: 12, overflow: 'hidden', background: 'var(--inset)',
   };
 
   if (playing) {
@@ -90,15 +91,7 @@ export default function YouTubeLite({ url, title, fallbackImage, wide = false, f
           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
         />
       </picture>
-      <span
-        style={{
-          position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-          width: 68, height: 48, borderRadius: 12, background: 'rgba(255,0,0,0.9)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}
-      >
-        <span style={{ width: 0, height: 0, borderLeft: '18px solid #fff', borderTop: '11px solid transparent', borderBottom: '11px solid transparent', marginLeft: 4 }} />
-      </span>
+      <span className="video-play-label" aria-hidden="true">재생</span>
     </button>
   );
 }

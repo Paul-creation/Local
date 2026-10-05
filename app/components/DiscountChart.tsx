@@ -106,6 +106,8 @@ export default function DiscountChart({ history, now }: { history: PriceRecord[]
   const line = monotonePath(xy);
   const area = line && `${line}L${xy[xy.length - 1].x},${PAD.top + innerH}L${xy[0].x},${PAD.top + innerH}Z`;
   const dots = points.filter((p) => p.discount > 0);
+  // 빨간 점은 최저가 지점 하나만 (가장 최근의 최저가), 마우스·터치로 고른 지점은 포인트 색 점
+  const lowestPoint = [...points].reverse().find((p) => p.price === lowest) || null;
 
   // 가로축 날짜 3~4개 ("25.11"). 기간이 짧아 같은 달만 나오면 "11.3"처럼 일까지
   const ticks = (() => {
@@ -185,9 +187,8 @@ export default function DiscountChart({ history, now }: { history: PriceRecord[]
               ))}
               <path d={area} className="dchart-area" />
               <path d={line} className="dchart-line" />
-              {dots.map((p, i) => (
-                <circle key={i} cx={x(p.t)} cy={y(p.price)} r={active === p ? 5.5 : 3.5} className="dchart-dot" />
-              ))}
+              {active && active !== lowestPoint && <circle cx={x(active.t)} cy={y(active.price)} r={5} className="dchart-dot-active" />}
+              {lowestPoint && <circle cx={x(lowestPoint.t)} cy={y(lowestPoint.price)} r={active === lowestPoint ? 6 : 4.5} className="dchart-dot" />}
             </svg>
 
             {active && (

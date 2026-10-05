@@ -9,8 +9,9 @@ import GameImage from './GameImage';
 // - 영상을 못 불러오면(스팀이 주소를 바꾼 경우 등) 사진으로 대신
 // 이 컴포넌트를 쓸지는 app/lib/steamVideo.ts의 isSteamVideo로 고른다
 
-export default function SteamVideo({ url, title, fallbackImage, fetchPriority }: { url: string; title: string; fallbackImage?: string; fetchPriority?: 'high' | 'low' | 'auto' }) {
-  const [playing, setPlaying] = useState(false);
+export default function SteamVideo({ url, title, fallbackImage, fetchPriority, autoPlay = false }: { url: string; title: string; fallbackImage?: string; fetchPriority?: 'high' | 'low' | 'auto'; autoPlay?: boolean }) {
+  // autoPlay: 이미 재생 버튼을 누른 뒤 그려질 때 (상세 맨 위 "트레일러 재생") 바로 재생
+  const [playing, setPlaying] = useState(autoPlay);
   const [failed, setFailed] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -39,7 +40,7 @@ export default function SteamVideo({ url, title, fallbackImage, fetchPriority }:
 
   const box: CSSProperties = {
     position: 'relative', width: '100%', aspectRatio: '16/9',
-    borderRadius: 12, overflow: 'hidden', background: '#000',
+    borderRadius: 12, overflow: 'hidden', background: 'var(--inset)',
   };
 
   if (failed) {
@@ -73,15 +74,7 @@ export default function SteamVideo({ url, title, fallbackImage, fetchPriority }:
       {fallbackImage && (
         <GameImage src={fallbackImage} fallbackWidth={1280} alt={title} fetchPriority={fetchPriority} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
       )}
-      <span
-        style={{
-          position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-          width: 64, height: 64, borderRadius: '50%', background: 'rgba(0,0,0,0.65)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}
-      >
-        <span style={{ width: 0, height: 0, borderLeft: '20px solid #fff', borderTop: '12px solid transparent', borderBottom: '12px solid transparent', marginLeft: 5 }} />
-      </span>
+      <span className="video-play-label" aria-hidden="true">재생</span>
     </button>
   );
 }

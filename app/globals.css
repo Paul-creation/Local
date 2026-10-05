@@ -861,42 +861,22 @@ img { display: block; }
 
 .back-link:hover { color: var(--accent); }
 
-.detail-hero {
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  margin-bottom: 24px;
-  box-shadow: var(--shadow-lg);
-}
+
 
 /* 상세 맨 위 사진: 칸은 스팀 library_hero(1920×620, 약 3:1) 비율로 고정 → 게임마다 높이가 들쭉날쭉하지 않게
    이미지는 두 겹: 뒤는 같은 이미지를 cover + 흐림 + 살짝 어둡게로 칸 채우기, 앞은 원본을 contain으로 잘림 없이 가운데에
    (메인 배너 .hero-image-wrap과 같은 방식. 흐림은 한 번 그려 두는 정적 레이어라 부담이 작고, 같은 주소라 추가 다운로드 없음) */
-.detail-hero { aspect-ratio: 1920 / 620; background: var(--inset); position: relative; }
-.detail-hero img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
-.detail-hero .img-backdrop { object-fit: cover; filter: blur(24px) brightness(0.6) saturate(1.2); transform: scale(1.15); }
-.detail-hero img:not(.img-backdrop) { object-fit: contain; object-position: center; z-index: 1; }
+
+
+
+
 /* 작은 화면에서 3:1은 너무 얇아서(폭 342px이면 높이 110px) 2:1로 */
-@media (max-width: 640px) {
-  .detail-hero { aspect-ratio: 2 / 1; }
-}
 
-.detail-header { margin-bottom: 32px; }
 
-.detail-title-v2 {
-  font-size: 36px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  margin-bottom: 12px;
-  line-height: 1.1;
-}
 
-.detail-meta-line {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
-}
+
+
+
 
 .detail-description-v2 {
   color: var(--text-dim);
@@ -916,25 +896,14 @@ img { display: block; }
    BUY CARD
    ============================================================ */
 
-.buy-card {
-  background: var(--bg-nav);
-  border-radius: var(--radius-lg);
-  padding: 22px 26px;
-  margin: 28px 0 36px;
-}
 
-.buy-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
-}
 
-.buy-price-block { display: flex; flex-direction: column; gap: 6px; }
-.buy-label { color: var(--navy-text-dim); font-size: 14px; letter-spacing: 0.02em; }
-.buy-price-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.buy-lowest { color: var(--navy-text-dim); font-size: var(--fs-sub); }
+
+
+
+
+
+
 .buy-price-original { color: var(--navy-text-dim); font-size: 15px; text-decoration: line-through; }
 .buy-price-final { color: var(--text); font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
 .buy-discount-badge {
@@ -946,67 +915,35 @@ img { display: block; }
   border-radius: var(--radius-badge);
 }
 
-.buy-cta {
-  background: var(--accent);
-  color: var(--accent-ink);
-  font-size: 16px;
-  font-weight: 700;
-  padding: 13px 24px;
-  border-radius: var(--radius-md);
-  white-space: nowrap;
-  transition: background 0.2s ease, transform 0.1s ease;
-}
 
-.buy-cta:hover {
-  background: var(--accent-hover);
-  transform: translateY(-1px);
-}
+
+
 
 /* ============================================================
    PLATFORM
    ============================================================ */
 
-.platform-section { margin: 36px 0; }
 
-.platform-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 10px;
-}
 
-.platform-card {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
-  padding: 14px 16px;
-  box-shadow: var(--shadow-sm);
-}
 
-.platform-card-icon svg { width: 20px; height: 20px; }
-.platform-card-label { font-size: 15px; font-weight: 700; }
+
+
+
+
+
 
 /* ============================================================
    SPEC LIST
    ============================================================ */
 
-.spec-list { display: flex; flex-direction: column; }
 
-.spec-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 24px;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border-light);
-}
 
-.spec-row:first-child { border-top: 1px solid var(--border-light); }
-.spec-label { color: var(--text-dim); font-size: 15px; flex-shrink: 0; }
-.spec-value { color: var(--text); font-size: 15px; font-weight: 600; text-align: right; }
-.spec-value.spec-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+
+
+
+
+
+
 
 /* ============================================================
    ACCORDION
@@ -1040,55 +977,30 @@ img { display: block; }
 }
 
 .detail-accordion[open] summary::after { transform: rotate(45deg); }
-.detail-accordion .spec-list { margin-top: 16px; }
+
 .accordion-note { color: var(--text-dim); font-size: 15px; line-height: 1.6; margin-top: 14px; }
 
 /* ============================================================
    REVIEW PANEL
    ============================================================ */
 
-.review-panel {
-  background: var(--bg-card);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
-  padding: 4px 22px;
-  margin-bottom: 32px;
-  box-shadow: var(--shadow-sm);
-}
 
-.review-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 18px 0;
-  border-bottom: 1px solid var(--border-light);
-}
 
-.review-row:last-child { border-bottom: none; }
-.review-source { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; }
-.review-source-label { font-size: 15px; font-weight: 700; color: var(--text); }
-.review-count { font-size: 14px; color: var(--text-dimmer); }
 
-.review-bar-wrap { flex: 1; max-width: 260px; }
 
-.review-bar-track {
-  display: flex;
-  height: 6px;
-  border-radius: 3px;
-  overflow: hidden;
-  background: var(--border-light);
-  margin-bottom: 8px;
-}
 
-.review-bar-fill { height: 100%; transition: width 0.5s ease; }
-.review-bar-neg { height: 100%; background: var(--sale); opacity: 0.25; }
 
-.review-bar-labels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-}
+
+
+
+
+
+
+
+
+
+
+
 
 /* ============================================================
    PLAYER STATS
@@ -1205,33 +1117,17 @@ img { display: block; }
    DETAIL SECTION
    ============================================================ */
 
-.detail-section-v2 { margin-top: 40px; }
 
-.detail-section-v2 h3 {
-  font-size: 19px;
-  font-weight: 800;
-  margin-bottom: 16px;
-  letter-spacing: -0.02em;
-  color: var(--text);
-}
 
-.sample-note {
-  color: var(--text-dimmer);
-  font-size: 14px;
-  font-weight: 400;
-  margin-left: 6px;
-}
+
+
+
 
 /* ============================================================
    VIDEO
    ============================================================ */
 
-.video-section {
-  margin-bottom: 32px;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-lg);
-}
+
 
 /* ============================================================
    EMPTY STATE
@@ -1248,29 +1144,9 @@ img { display: block; }
    AGE / TAG BADGES
    ============================================================ */
 
-.age-badge {
-  display: inline-flex;
-  align-items: center;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--gold);
-  border: 1px solid var(--gold-border);
-  padding: 4px 11px;
-  border-radius: 6px;
-}
 
-.tag-badge {
-  display: inline-block;
-  background: var(--scrim);
-  backdrop-filter: blur(8px);
-  color: var(--on-image);
-  font-size: 12px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 100px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
+
+
 @media (max-width: 480px) {
   .search-row {
     flex-direction: column;
@@ -1307,57 +1183,24 @@ img { display: block; }
   position: relative;
 }
 
-.wishlist-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: none;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-  padding: 0;
-  line-height: 1;
-}
+
 
 /* SPEC_GRID_V1 — 상세 스펙을 카드 타일로 (이름 바로 아래 값) */
-.spec-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 12px;
-  margin: 8px 0 28px;
-}
-.spec-row, .spec-row:first-child {
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 6px;
-  padding: 14px 16px;
-  border: 1px solid var(--border-light);
-  border-radius: 12px;
-  background: var(--bg-card);
-}
-.spec-label {
-  font-size: var(--fs-sub);
-  font-weight: 700;
-  color: var(--text-dim);
-}
-.spec-value { font-size: 17px; font-weight: 700; text-align: left; line-height: 1.4; }
-.spec-row:has(.spec-tags) { grid-column: 1 / -1; }
-.spec-value.spec-tags { justify-content: flex-start; }
-.detail-accordion .spec-list { margin-bottom: 0; }
 
-@media (max-width: 640px) {
-  .spec-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-  .spec-row, .spec-row:first-child { padding: 12px; }
-  .spec-value { font-size: 15px; }
-}
+
+
+
+
+
+
+
 
 
 /* SPEC_GROUPS_CSS — 스펙 묶음 제목 */
-.spec-group { margin-bottom: 8px; }
-.spec-group-title { font-size: 17px; font-weight: 800; margin: 18px 0 10px; letter-spacing: -0.01em; }
-.spec-group .spec-list { margin-bottom: 12px; }
-.spec-group:not(:has(.spec-row)) { display: none; }
+
+
+
+
 
 /* 비교 만들기 화면 (/compare, ids 없을 때) */
 .compare-builder { max-width: 760px; margin: 0 auto; padding-bottom: 40px; }
@@ -1475,7 +1318,7 @@ img { display: block; }
 .cm-board-card:hover { box-shadow: var(--shadow-md); }
 .cm-list { list-style: none; padding: 0; margin: 0; background: var(--bg-card); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow: hidden; }
 .cm-list li + li { border-top: 1px solid var(--border-light); }
-.detail-section-v2 .cm-list { box-shadow: none; border: 1px solid var(--border-light); }
+
 .cm-row { display: flex; flex-direction: column; gap: 6px; padding: 14px 18px; text-decoration: none; color: var(--text); }
 .cm-row:hover { background: var(--bg-card-hover); }
 .cm-row-title { font-size: 16px; font-weight: 600; word-break: break-word; }
@@ -1588,11 +1431,8 @@ img { display: block; }
   box-shadow: var(--shadow-md);
 }
 .tag-help-text { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; } /* 최대 2줄 */
-.namu-link {
-  font-size: var(--fs-sub); font-weight: 600; color: var(--accent-deep);
-  border: 1px solid var(--border); padding: 4px 11px; border-radius: 100px; background: var(--bg-card);
-}
-.namu-link:hover { border-color: var(--accent); }
+
+
 
 /* GOTY 배지 — 수상은 금색 채움으로 눈에 띄게, 후보는 테두리만 */
 .goty-row { margin-bottom: 6px; }
@@ -1607,11 +1447,8 @@ img { display: block; }
 .goty-badge.is-nominee { color: var(--text-muted); border: 1px solid var(--border); }
 
 /* 공식 디스코드 버튼 (상세) */
-.discord-link {
-  font-size: var(--fs-sub); font-weight: 700; color: var(--text); border: 1px solid var(--border);
-  padding: 5px 12px; border-radius: 100px;
-}
-.discord-link:hover { border-color: var(--text-faint); }
+
+
 
 /* 같은 시리즈 가로 목록 (상세) */
 .series-section { margin: 8px 0 24px; }
@@ -1635,7 +1472,7 @@ a.series-item:hover { border-color: var(--border); }
 @media (max-width: 480px) { .series-item { width: 132px; } }
 
 /* 스펙 값: 좁은 칸(모바일 2열)에서 한국어는 단어 단위로 줄바꿈, 긴 영문·숫자는 칸 안에서 끊김 */
-.spec-value { word-break: keep-all; overflow-wrap: anywhere; }
+
 
 /* 게시글 "이 글과 관련된 정보" 카드 */
 .cm-related-title { font-size: 16px; font-weight: 800; color: var(--text); margin: 0 0 10px; }
@@ -2033,4 +1870,205 @@ a.hc-row:hover { background: var(--card-hover); }
   .result-foot { flex-wrap: wrap; }
   .compare-bar { padding-left: 12px; padding-right: 12px; }
   .compare-bar-hint { font-size: 13px; }
+}
+
+/* ============================================================
+   게임 상세 (4단계)
+   ============================================================ */
+
+/* 상단 히어로 — 잘림 없는 아트워크 + 흐린 배경, 아래 55% 그라데이션, 가운데 트레일러 재생, 왼쪽 아래 뱃지·제목 */
+.dh { position: relative; margin-bottom: 28px; }
+.dh-media { position: relative; aspect-ratio: 1920 / 620; min-height: 300px; overflow: hidden; border-radius: var(--radius-card); background: var(--inset); }
+.dh-media img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.dh-backdrop { object-fit: cover; filter: blur(28px) brightness(0.55) saturate(1.2); transform: scale(1.15); }
+.dh-art { object-fit: contain; object-position: center top; z-index: 1; }
+.dh-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 55%; z-index: 2; background: linear-gradient(to bottom, transparent, var(--bg)); pointer-events: none; }
+.dh-play {
+  position: absolute; top: 42%; left: 50%; transform: translate(-50%, -50%); z-index: 3;
+  min-height: 48px; padding: 0 22px; border-radius: var(--radius-chip);
+  border: 1px solid rgba(255, 255, 255, 0.35); background: rgba(11, 14, 20, 0.55);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  color: #fff; font-family: inherit; font-size: 15px; font-weight: 800; cursor: pointer;
+}
+.dh-play:hover { background: rgba(11, 14, 20, 0.75); border-color: rgba(255, 255, 255, 0.6); }
+.dh-info { position: absolute; left: 28px; right: 28px; bottom: 22px; z-index: 3; }
+.dh.is-playing .dh-info { position: static; margin-top: 18px; }
+.dh-player { border-radius: var(--radius-card); overflow: hidden; }
+.dh-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.dh-badges .badge-neutral, .dh-badges .review-badge, .dh-badges .goty-badge, .dh-badges .top10-badge, .dh-badges .badge { background: var(--bg); }
+.dh-title { font-size: 52px; font-weight: 900; letter-spacing: -0.04em; line-height: 1.08; color: var(--text); word-break: keep-all; overflow-wrap: anywhere; }
+.top10-badge { font-size: 12px; font-weight: 900; }
+
+/* 2단: 왼쪽 본문 · 오른쪽 가격 카드(+ 시리즈·디스코드) */
+.detail-layout {
+  display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start;
+  grid-template-areas: "main price" "main extra";
+}
+.detail-main { grid-area: main; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.detail-price { grid-area: price; }
+.detail-extra { grid-area: extra; display: flex; flex-direction: column; gap: 16px; }
+
+/* 공통 상세 카드 */
+.detail-card { background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-card); padding: 22px 24px; }
+.detail-card-title { font-size: 17px; font-weight: 800; letter-spacing: -0.01em; color: var(--text); margin-bottom: 12px; }
+.detail-card-sub { font-size: 14px; color: var(--text-muted); margin: -4px 0 14px; }
+.detail-card-note { font-size: 13px; color: var(--text-muted); margin-top: 10px; }
+
+/* 가격 카드 */
+.price-card { display: flex; flex-direction: column; gap: 10px; padding: 22px; background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-card); }
+.price-card-label { font-size: 14px; font-weight: 700; color: var(--text-muted); }
+.price-card-was { display: flex; align-items: center; gap: 8px; }
+.buy-price-original { color: var(--text-muted); font-size: 15px; text-decoration: line-through; font-variant-numeric: tabular-nums; }
+.price-card-now { font-size: 40px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.1; color: var(--text); font-variant-numeric: tabular-nums; }
+.price-card-store { font-size: 22px; color: var(--accent-text); }
+.lowest-pill { align-self: flex-start; padding: 4px 12px; border-radius: var(--radius-chip); border: 1px solid var(--sale-border); color: var(--sale); font-size: 13px; font-weight: 800; }
+.price-card-lowest { font-size: 14px; color: var(--text-muted); }
+.price-card-buy, .price-card-compare { width: 100%; }
+.price-card-buy { margin-top: 6px; }
+.price-card-note { font-size: 12px; line-height: 1.5; color: var(--text-muted); }
+
+/* 링크 줄 */
+.detail-links { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; }
+.detail-link { display: inline-flex; align-items: center; min-height: 44px; font-size: 15px; font-weight: 700; color: var(--text-2); }
+.detail-link:hover { color: var(--text); }
+.detail-platforms { font-size: 14px; color: var(--text-muted); }
+
+/* 소개 */
+.detail-fun { font-size: 18px; font-weight: 700; line-height: 1.55; color: var(--text); margin-bottom: 10px; word-break: keep-all; }
+.detail-description-v2 { color: var(--text-2); font-size: 15px; line-height: 1.75; max-width: 70ch; }
+.main-tag-row { display: flex; gap: 10px 8px; flex-wrap: wrap; margin: 16px 0 0; }
+.content-notice { margin-top: 12px; font-size: 13px; color: var(--text-muted); }
+.content-notice strong { color: var(--text-2); }
+
+/* 혼자 | 친구랑 | 진입장벽 */
+.trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 8px; }
+.trio-cell { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; border-radius: var(--radius-card-sm); background: var(--inset); min-width: 0; }
+.trio-label { display: flex; align-items: center; font-size: 13px; font-weight: 700; color: var(--text-muted); }
+.trio-label .tag-help-btn { position: relative; top: auto; right: auto; margin-left: 4px; }
+.trio-value { font-size: 17px; font-weight: 800; color: var(--text); word-break: keep-all; }
+.trio-value.is-down { color: var(--sale); }
+.trio-sub { font-size: 13px; color: var(--text-muted); line-height: 1.45; }
+
+/* 스팀 카드 */
+.steam-card { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; }
+.steam-pct { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.steam-pct > .num { font-size: 40px; font-weight: 900; letter-spacing: -0.03em; line-height: 1; color: var(--review); }
+.steam-count { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
+.steam-bar { height: 12px; border-radius: 6px; background: var(--inset); overflow: hidden; margin-top: 10px; }
+.steam-bar span { display: block; height: 100%; background: var(--review); border-radius: 6px; }
+.steam-bar.is-thin { height: 6px; margin-top: 6px; }
+.steam-recent { margin-top: 16px; }
+.steam-recent-head { font-size: 14px; font-weight: 800; color: var(--text-2); }
+.steam-trend { margin-top: 6px; font-size: 13px; font-weight: 700; }
+.steam-trend.is-down { color: var(--sale); }
+.steam-trend.is-up { color: var(--up); }
+.steam-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.steam-cell { display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: var(--radius-card-sm); background: var(--inset); min-width: 0; }
+.steam-cell-label { font-size: 12px; font-weight: 700; color: var(--text-muted); }
+.steam-cell-value { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.5; }
+.steam-rank { font-size: 28px; font-weight: 900; color: var(--accent-text); letter-spacing: -0.02em; line-height: 1.1; }
+.score-ring-track { fill: none; stroke: var(--border); stroke-width: 5; }
+.score-ring-fill { fill: none; stroke: var(--up); stroke-width: 5; stroke-linecap: round; }
+.score-ring-num { fill: var(--text); font-size: 15px; font-weight: 900; font-family: inherit; }
+
+/* 게임 정보 가로 한 줄 */
+.info-row { display: flex; flex-wrap: wrap; gap: 0; padding: 6px; }
+.info-cell { flex: 1 1 140px; display: flex; flex-direction: column; gap: 3px; padding: 12px 16px; min-width: 0; }
+.info-cell + .info-cell { border-left: 1px solid var(--border-soft); }
+.info-label { font-size: 12px; font-weight: 700; color: var(--text-muted); }
+.info-value { font-size: 15px; font-weight: 700; color: var(--text); overflow-wrap: anywhere; }
+.info-value.is-down, .info-sub.is-down { color: var(--sale); }
+.info-sub { font-size: 12px; font-weight: 700; color: var(--text-muted); }
+.info-sub.is-up { color: var(--up); }
+
+/* 상황 칩 투표 */
+.vote-chips { display: flex; flex-wrap: wrap; gap: 10px 8px; }
+.vote-chip { min-height: 40px; }
+.vote-chip:disabled { cursor: default; }
+.vote-count { font-size: 12px; font-weight: 800; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.vote-chip.on .vote-count { color: var(--accent-text); }
+
+/* 할인 전적 그래프 기간 탭 — 공통 탭 모양 */
+.dchart-periods { background: var(--inset); border-radius: 12px; padding: 4px; }
+.dchart-periods button { min-height: 36px; border-radius: 9px; color: var(--text-muted); }
+.dchart-periods button.is-on { background: var(--card-hover); color: var(--text); box-shadow: none; }
+:root[data-theme="light"] .dchart-periods button.is-on { background: var(--card); box-shadow: var(--shadow-sm); }
+.dchart-dot { fill: var(--sale); stroke: var(--card); stroke-width: 2; }
+.dchart-dot-active { fill: var(--accent); stroke: var(--card); stroke-width: 2; }
+.dchart-tip { background: var(--card-hover); border-color: var(--border); }
+
+/* 플레이어 현황 + 더 자세히 */
+.detail-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.detail-two > :only-child { grid-column: 1 / -1; }
+.player-stats { display: flex; gap: 8px; margin-bottom: 14px; }
+.player-stat-card { flex: 1; display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border: none; border-radius: var(--radius-card-sm); background: var(--inset); }
+.player-stat-label { font-size: 12px; font-weight: 700; color: var(--text-muted); }
+.player-stat-num { font-size: 20px; font-weight: 900; color: var(--text); }
+.chart-label { color: var(--text-muted); font-size: 12px; }
+.chart-label strong { color: var(--text-2); }
+.more-list { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px 16px; font-size: 14px; }
+.more-list dt { color: var(--text-muted); font-weight: 700; white-space: nowrap; }
+.more-list dd { color: var(--text); font-weight: 600; overflow-wrap: anywhere; }
+.more-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.activity-chip { padding: 2px 8px; border: none; border-radius: var(--radius-badge); background: var(--inset); font-size: 13px; font-weight: 600; color: var(--text-2); }
+.accordion-note { color: var(--text-muted); font-size: 14px; line-height: 1.6; margin-top: 14px; }
+
+/* PC 사양 접기 */
+.detail-accordion { padding: 0; }
+.detail-accordion summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px;
+  min-height: 60px; padding: 14px 56px 14px 24px; position: relative; border-radius: var(--radius-card);
+}
+.detail-accordion summary::-webkit-details-marker { display: none; }
+.detail-accordion summary::after { content: '펼치기'; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 13px; font-weight: 700; color: var(--text-muted); }
+.detail-accordion[open] summary::after { content: '접기'; transform: translateY(-50%); }
+.detail-accordion summary:hover { background: var(--card-hover); }
+.detail-accordion summary .detail-card-title { margin: 0; }
+.spec-summary { font-size: 13px; color: var(--text-muted); }
+.spec-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; padding: 4px 24px 22px; }
+.spec-col-title { font-size: 14px; font-weight: 800; color: var(--text-2); margin-bottom: 10px; }
+
+/* 영상 탭 카드 */
+.video-tabs { margin-bottom: 16px; }
+.coop-video-title { color: var(--text); }
+.coop-video-channel { color: var(--text-2); }
+.coop-video-meta, .video-source { color: var(--text-muted); }
+.video-play-label {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  padding: 8px 16px; border-radius: var(--radius-chip); border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(11, 14, 20, 0.6); color: #fff; font-size: 14px; font-weight: 800;
+}
+.streamer-chip { background: var(--inset); border: none; box-shadow: none; }
+.streamer-chip:hover { background: var(--card-hover); box-shadow: none; }
+
+/* 같은 시리즈 · 디스코드 (오른쪽 아래) */
+.series-section { margin: 0; }
+.series-list { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 0; overflow: visible; }
+.series-item { width: auto; border-radius: var(--radius-card-sm); background: var(--inset); border: 1px solid transparent; box-shadow: none; }
+a.series-item:hover { border-color: var(--border); }
+.series-item.is-current { border-color: var(--accent); }
+.series-item img { background: var(--inset); }
+.series-name { color: var(--text-2); }
+.series-item.is-current .series-name { color: var(--accent-text); }
+.discord-card { display: flex; align-items: center; min-height: 56px; padding: 14px 20px; font-size: 15px; font-weight: 800; color: var(--text); }
+.discord-card:hover { border-color: var(--border); background: var(--card-hover); }
+
+@media (max-width: 960px) {
+  .detail-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "price" "main" "extra"; gap: 16px; }
+  .series-list { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+}
+@media (max-width: 760px) {
+  .dh-media { aspect-ratio: 16 / 10; min-height: 0; }
+  .dh-title { font-size: 32px; }
+  .dh-info { left: 16px; right: 16px; bottom: 14px; }
+  .dh-play { top: 36%; }
+  .detail-card { padding: 18px; }
+  .trio { grid-template-columns: minmax(0, 1fr); }
+  .steam-card { grid-template-columns: minmax(0, 1fr); }
+  .detail-two { grid-template-columns: minmax(0, 1fr); }
+  .spec-columns { grid-template-columns: minmax(0, 1fr); padding: 4px 18px 18px; }
+  .detail-accordion summary { padding-left: 18px; }
+  .info-cell + .info-cell { border-left: none; }
+  .info-cell { flex-basis: 45%; padding: 10px 12px; }
+  .price-card-now { font-size: 34px; }
 }
