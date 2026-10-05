@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24 # parse-specs가 app/lib/*.ts를 바로 읽음 — .ts 직접 실행은 Node 22.18 이상·24부터 기본 지원(22.x 중 낮은 버전은 실패)
           cache: npm
       - run: npm ci
       - name: 환경변수 파일 만들기
