@@ -31,6 +31,7 @@ const GROUPS = {
     'enrich-fallback',
     'enrich-igdb',
     'enrich-specs',
+    'fill-crossplay --apply --true-only', // 스팀 "Cross-Platform Multiplayer" 있는 게임만 true로 (없으면 null 그대로). 칸이 빈 스팀 게임만, AI 안 씀
     'fill-steam-categories', // 협동·대전 칸(스팀 분류) → 배지(category)도 같이 계산. 칸이 빈 새 게임만
     'enrich-tags',
     'fix-data-gaps',

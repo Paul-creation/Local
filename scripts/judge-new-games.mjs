@@ -2,6 +2,8 @@
 // 이번 주 새 게임의 진입장벽(entry_barrier·reason)과 혼자 플레이 단계(solo_mode)를 채움 (매주 갱신, 태그 연결 다음 단계)
 // 실행: node --env-file=.env.local scripts/judge-new-games.mjs              (미리보기 — AI 안 부르고 대상·예상 비용만)
 //       node --env-file=.env.local scripts/judge-new-games.mjs --apply      (AI 판단 후 저장 — 매주 갱신이 쓰는 방식)
+//       --existing  날짜 조건 없이 entry_barrier·solo_mode가 미정인 기존 게임을 대상으로 (기본 동작은 그대로. --apply와 같이, --sample N과도 같이 쓰면 N개만 실제 판단)
+//       --existing --sample N  (--apply 없이) 기존 게임 N개를 실제로 AI에 물어 결과만 보여줌, DB는 안 바꿈 (Haiku 1번 호출)
 //       --ids <파일>  지정한 게임만 (lib/only-ids.mjs, 대상 조건은 그대로)
 //       node --env-file=.env.local scripts/judge-new-games.mjs --sample 20  (예전 게임 20개로 프롬프트를 만들어 예상 비용만 계산, AI·DB 안 씀)
 // - 대상: 숨기지 않은 게임 중 이번 주(7일 안)에 들어왔고 이 기능 시작(NEW_SINCE) 뒤에 들어온 게임, entry_barrier나 solo_mode가 빈 것
@@ -20,8 +22,10 @@ import { onlyIds } from './lib/only-ids.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const APPLY = process.argv.includes('--apply');
+const EXISTING = process.argv.includes('--existing');
 const SAMPLE = process.argv.includes('--sample') ? Number(process.argv[process.argv.indexOf('--sample') + 1]) || 20 : 0;
 const NEW_SINCE = '2026-10-05T00:00:00Z'; // 이 기능을 넣은 날 — 그 전에 들어온 게임은 대상 아님
+const DRY_AI = SAMPLE && EXISTING && !APPLY; // 기존 게임 N개 판단 결과만 보기 (저장 안 함)
 const MAX_GAMES = 200;
 const BATCH = 20;
 const MAX_COST_USD = 1;
@@ -47,16 +51,18 @@ const PROMPT_HEAD = `너는 한국 게임 정보 사이트의 필터 데이터�
   League of Legends 높음 "챔피언·운영 학습량과 실력차 큼" / Counter-Strike 2 높음 "정확한 사격·전술 실력차 큼" / Baldur's Gate 3 높음 "규칙과 선택지가 많은 CRPG" / Civilization VI 높음 "규칙과 시대별 요소가 많은 4X" / Monster Hunter: World 높음 "무기·시스템이 많아 배울 게 많음" / Street Fighter 6 높음 "격투 콤보 실력차가 큼" / Rust 높음 "생존·건설에 PvP 실력차 큼"
 
 [혼자 플레이 solo] ("solo 판단 필요"라고 적힌 게임만, 나머지는 null)
-- "story": 혼자 해도 한 편의 게임으로 꽉 참 (스토리 캠페인·싱글 콘텐츠가 핵심급). 1인 전용 게임은 모두 여기 (예: Baldur's Gate 3, Terraria, Portal 2)
-- "possible": 혼자도 되지만 멀티가 핵심. 혼자 할 모드가 있어도 대전이 핵심인 격투·카드 대전도 여기 (예: Deep Rock Galactic, Lethal Company, Rocket League, Street Fighter 6)
-- "none": 멀티 전용. 낯선 사람과 매칭되는 온라인 전용도 포함 (예: League of Legends, Among Us, It Takes Two, PUBG)
-- 근거: 스팀 태그(Singleplayer·Story Rich와 멀티 관련 태그의 투표 비율), 소개 문구, 게임을 아는 범위의 판단. 확신이 없으면 null
+- "story": 혼자서도 완결된 경험 (스토리 캠페인·싱글 콘텐츠가 핵심급). 1인 전용 게임은 모두 여기 (예: Baldur's Gate 3, Terraria, Portal 2)
+- "possible": 혼자 할 수 있는 모드(봇·AI 상대, 싱글 캠페인 등)가 있지만 본편은 협동·대전 중심 (예: Deep Rock Galactic, Lethal Company, Rocket League, Street Fighter 6)
+- "none": 온라인 매칭 전용이거나, 혼자서는 봇·AI 상대가 없어 사실상 할 수 없는 멀티 전용 (예: League of Legends, Among Us, It Takes Two, PUBG)
+- 근거: 스팀 태그(Singleplayer·Story Rich와 멀티 관련 태그의 투표 비율), 소개 문구, 게임을 아는 범위의 판단
+- 애매하면 possible로 뭉뚱그리지 말고 solo와 solo_reason 모두 null (게임을 모르거나 혼자 모드가 있는지 확신이 없을 때)
+- solo_reason: solo를 정한 근거를 한국어 20자 안팎 한 구절로
 
 게임 목록 (스팀 태그는 영어 이름(투표 수), 투표 많은 순):
 `;
 const PROMPT_TAIL = `
 번호 순서대로 JSON으로만 답해. 설명이나 코드블록은 쓰지 마.
-{"games": [{"index": 1, "barrier": "낮음", "reason": "줍고 나르고 도망치는 간단한 협동", "solo": "possible"}]}`;
+{"games": [{"index": 1, "barrier": "낮음", "reason": "줍고 나르고 도망치는 간단한 협동", "solo": "possible", "solo_reason": "혼자 할 수 있지만 협동이 핵심"}]}`;
 
 const clean = (s, max) => String(s || '').replace(/\s+/g, ' ').trim().slice(0, max);
 
@@ -74,7 +80,7 @@ const estimateTokens = (text) => {
   const nonAscii = (text.match(/[^\x00-\x7f]/g) || []).length;
   return Math.ceil((text.length - nonAscii) / 4 + nonAscii);
 };
-const OUTPUT_TOKENS_PER_GAME = 45; // {"index":n,"barrier":"보통","reason":"…20자…","solo":"story"} 한 줄 어림
+const OUTPUT_TOKENS_PER_GAME = 60; // {"index":n,"barrier":"보통","reason":"…20자…","solo":"story"} 한 줄 어림
 
 async function askHaiku(prompt) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -99,17 +105,30 @@ async function hasMigration() {
 
 async function loadTargets(migrated) {
   const cols = `id, name, steam_appid, description, created_at, entry_barrier, solo_mode${migrated ? ', filter_ai_at' : ''}`;
-  if (SAMPLE) {
+  if (SAMPLE && !EXISTING) {
     // 비용 어림용: 예전 게임 중 아무거나 (판단은 안 함)
     const { data, error } = await supabase.from('games').select(cols).eq('hidden', false).not('steam_appid', 'is', null)
       .order('created_at', { ascending: false }).limit(SAMPLE);
     if (error) throw new Error(error.message);
     return data.map((g) => ({ ...g, entry_barrier: null, solo_mode: null }));
   }
-  const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-  const since = weekAgo > NEW_SINCE ? weekAgo : NEW_SINCE;
-  let q = onlyIds(supabase.from('games').select(cols)).eq('hidden', false).gte('created_at', since)
-    .or('entry_barrier.is.null,solo_mode.is.null').order('created_at', { ascending: true }).limit(MAX_GAMES);
+  if (DRY_AI) {
+    // 미리보기: 진입장벽만 빈 3 · 혼자만 빈 3 · 둘 다 빈 4 (SAMPLE=10 기준 비율, 아니면 3:3:나머지)
+    const { data, error } = await supabase.from('games').select(cols).eq('hidden', false)
+      .or('entry_barrier.is.null,solo_mode.is.null').order('created_at', { ascending: true });
+    if (error) throw new Error(error.message);
+    const rows = data.filter((g) => !migrated || !g.filter_ai_at);
+    const n = Math.min(3, Math.floor(SAMPLE * 0.3));
+    return [...rows.filter((g) => !g.entry_barrier && g.solo_mode).slice(0, n),
+      ...rows.filter((g) => g.entry_barrier && !g.solo_mode).slice(0, n),
+      ...rows.filter((g) => !g.entry_barrier && !g.solo_mode).slice(0, SAMPLE - 2 * n)];
+  }
+  let q = onlyIds(supabase.from('games').select(cols)).eq('hidden', false)
+    .or('entry_barrier.is.null,solo_mode.is.null').order('created_at', { ascending: true }).limit(SAMPLE && EXISTING ? SAMPLE : MAX_GAMES);
+  if (!EXISTING) {
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    q = q.gte('created_at', weekAgo > NEW_SINCE ? weekAgo : NEW_SINCE);
+  }
   if (migrated) q = q.is('filter_ai_at', null);
   const { data, error } = await q;
   if (error) throw new Error(error.message);
@@ -117,7 +136,7 @@ async function loadTargets(migrated) {
 }
 
 async function main() {
-  console.log(SAMPLE ? `🧮 비용 어림 (예전 게임 ${SAMPLE}개로 프롬프트만 만듦, AI·DB 안 씀)` : APPLY ? '🟢 저장 모드' : '👀 미리보기 (AI 안 부름, 저장하려면 --apply)');
+  console.log(DRY_AI ? `🔍 기존 게임 ${SAMPLE}개 판단 결과 미리보기 (AI 부름, DB 저장 안 함)` : SAMPLE ? `🧮 비용 어림 (예전 게임 ${SAMPLE}개로 프롬프트만 만듦, AI·DB 안 씀)` : APPLY ? '🟢 저장 모드' : '👀 미리보기 (AI 안 부름, 저장하려면 --apply)');
   const migrated = await hasMigration();
   if (!migrated) console.log('⚠️ 마이그레이션 20261013090000_new_game_tagging.sql 전 — 처리 표시(filter_ai_at) 없이 진행');
   const games = await loadTargets(migrated);
@@ -147,7 +166,7 @@ async function main() {
   console.log(`혼자 플레이: 규칙으로 story ${ruleStory}개 · AI에 물을 것 ${askItems.filter((it) => it.askSolo).length}개`);
   console.log(`진입장벽: AI에 물을 것 ${askItems.filter((it) => it.askBarrier).length}개 → Haiku ${batches.length}번 호출`);
 
-  if (!APPLY) {
+  if (!APPLY && !DRY_AI) {
     const inTok = batches.reduce((s, b) => s + estimateTokens(buildPrompt(b)), 0);
     const outTok = askItems.length * OUTPUT_TOKENS_PER_GAME;
     const cost = inTok * PRICE.input + outTok * PRICE.output;
@@ -173,6 +192,7 @@ async function main() {
           it.patch.entry_barrier_reason = clean(r.reason, 60) || null;
         }
         if (it.askSolo && SOLOS.includes(r.solo)) it.patch.solo_mode = r.solo;
+        if (it.askSolo) it.soloReason = clean(r.solo_reason, 60); // 저장 안 함, 미리보기 표시용
         it.asked = true;
       });
     } catch (e) {
@@ -188,6 +208,7 @@ async function main() {
   for (const it of items) {
     if ((it.askBarrier || it.askSolo) && !it.asked) continue; // AI 실패한 게임은 표시하지 않음 → 다음 실행에 다시
     let ok = true;
+    if (DRY_AI) { console.log(`  - ${it.game.name}: 진입장벽 ${it.patch.entry_barrier ?? 'null(보류)'}${it.patch.entry_barrier_reason ? ` "${it.patch.entry_barrier_reason}"` : ''} · 혼자 ${it.patch.solo_mode ?? (it.askSolo ? 'null(보류)' : '그대로')}${it.soloReason ? ` "${it.soloReason}"` : ''}`); continue; }
     for (const [field, value] of updates(it.patch)) {
       const { error } = await supabase.from('games').update(value).eq('id', it.game.id).is(field, null);
       if (error) { ok = false; failed.push(`${it.game.name}: 저장 실패 (${error.message})`); }
@@ -196,7 +217,7 @@ async function main() {
     if (ok) saved++;
     console.log(`  - ${it.game.name}: 진입장벽 ${it.patch.entry_barrier ?? (it.askBarrier ? 'null(보류)' : '그대로')}${it.patch.entry_barrier_reason ? ` "${it.patch.entry_barrier_reason}"` : ''} · 혼자 ${it.patch.solo_mode ?? (it.askSolo ? 'null(보류)' : '그대로')}`);
   }
-  console.log(`\n✅ ${saved}개 게임 처리 · AI 비용 약 $${totalCost.toFixed(4)}`);
+  console.log(`\n${DRY_AI ? '(저장 안 함) ' : ''}✅ ${saved}개 게임 처리 · AI 비용 약 $${totalCost.toFixed(4)}`);
   if (failed.length) {
     console.log(`❌ 실패 ${failed.length}개`);
     for (const f of failed) console.log(`  - ${f}`);
