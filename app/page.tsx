@@ -9,7 +9,7 @@ import { getWeeklyFeatured } from './lib/weeklyFeatured';
 import { getPopularPosts } from './lib/community';
 import { flattenGame } from './lib/price';
 import { HOME_FILTER_STYLE_ID } from './lib/homeFilter';
-import { getStreamerGames } from './lib/streamerVideos';
+import { getStreamerGames, getStreamerNamesByGame } from './lib/streamerVideos';
 import { selectHomeGames } from './lib/visibleGames';
 
 // 5분마다 새로 만든 결과를 모두에게 보여준다 (방문마다 DB를 조회하지 않도록). 인기 글·가격도 최대 5분 늦게 반영
@@ -58,6 +58,10 @@ export default async function Home() {
     getStreamerGames().catch(() => []),
   ]);
 
+  // 지금 뜨는 게임에 보이는 게임들의 스트리머를 한 번에 읽어 붙인다 (실패해도 배지만 빠짐)
+  const names = await getStreamerNamesByGame([...new Set(hot.tabs.flatMap((t) => t.items.map((i) => i.id)))]).catch(() => new Map<string, string[]>());
+  const hotTabs = hot.tabs.map((t) => ({ ...t, items: t.items.map((i) => ({ ...i, streamers: names.get(i.id) ?? [] })) }));
+
   const rows = (sectionRows || []).map((g) => flattenGame({ ...g, description: g.fun_description ? null : g.description }));
   const featured: Record<string, any> | null = weekly || rows.find((g) => g.featured) || null;
   const bannerPool = rows.filter((g) => g.is_casual_party && !g.featured && g.id !== featured?.id);
@@ -68,7 +72,7 @@ export default async function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd).replace(/</g, '\\u003c') }} />
       <GameGrid
         event={<HomeEvent />}
-        sections={<HomeSections featured={featured} bannerPool={bannerPool} hotTabs={hot.tabs} popularPosts={popularPosts} streamerGames={streamerGames} />}
+        sections={<HomeSections featured={featured} bannerPool={bannerPool} hotTabs={hotTabs} popularPosts={popularPosts} streamerGames={streamerGames} />}
         top10Ids={hot.top10Ids}
       />
     </main>

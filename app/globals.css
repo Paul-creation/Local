@@ -1695,6 +1695,8 @@ a.series-item:hover { border-color: var(--border); }
 .hc-card-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 4px; }
 .hc-card-meta { font-size: 15px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hc-card .hc-price { font-size: 16px; }
+.hc-streamer { align-self: flex-start; max-width: 100%; font-size: 13px; font-weight: 600; line-height: 1.4; color: var(--tag-text); background: var(--tag-bg); box-shadow: inset 0 0 0 1px var(--tag-border); padding: 2px 7px; border-radius: var(--radius-badge); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hc-row-sub .hc-streamer { flex: 0 1 auto; min-width: 0; }
 .hc-spark { display: inline-flex; align-items: center; gap: 4px; color: var(--up); flex-shrink: 0; white-space: nowrap; }
 .hc-spark-label { font-size: 14px; color: var(--text-faint); white-space: nowrap; }
 

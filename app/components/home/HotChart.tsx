@@ -56,6 +56,14 @@ function Sparkline({ points }: { points: number[] }) {
 const metaText = (item: HotItem) =>
   [item.players, item.currentPlayers ? `동접 ${formatCount(item.currentPlayers)}` : ''].filter(Boolean).join(' · ');
 
+// 스트리머 배지 — 글자만. 카드: 최대 2명 "A·B 플레이"(더 있으면 "A·B 외 N명"), 줄: 1명 + "외 N명". 없으면 안 그림
+function StreamerBadge({ names, max, suffix }: { names?: string[]; max: number; suffix: string }) {
+  if (!names?.length) return null;
+  const rest = names.length - max;
+  const text = names.slice(0, max).join('·') + (rest > 0 ? ` 외 ${rest}명` : suffix);
+  return <span className="hc-streamer" title={`${names.join('·')} 플레이`}>{text}</span>;
+}
+
 // 1~3위 큰 카드 — 왼쪽 위 큰 순위 숫자(장식)를 이미지가 일부 가리게 겹침. 아래: 제목·한 줄 소개·"인원 · 동접"·가격
 function BigCard({ item }: { item: HotItem }) {
   return (
@@ -76,6 +84,7 @@ function BigCard({ item }: { item: HotItem }) {
           <Sparkline points={item.spark} />
         </span>
         <Price item={item} />
+        <StreamerBadge names={item.streamers} max={2} suffix=" 플레이" />
       </span>
     </Link>
   );
@@ -95,6 +104,7 @@ function Row({ item }: { item: HotItem }) {
         <span className="hc-row-sub">
           {item.players && <span>{item.players}</span>}
           {item.tags.map((t) => <span key={t} className="hc-tag">{t}</span>)}
+          <StreamerBadge names={item.streamers} max={1} suffix=" 플레이" />
         </span>
       </span>
       <span className="hc-row-ccu">{item.currentPlayers ? <>{formatCount(item.currentPlayers)}<small>명</small></> : '-'}</span>

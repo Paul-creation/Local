@@ -25,6 +25,7 @@ export type HotItem = {
   discount: number;
   lowest: LowestTiming;   // 역대 최저가 / 최저가 근접
   spark: number[];        // 최근 7일 동접자 (1~3위만, 기록이 3일 이상인 게임만)
+  streamers?: string[];   // 이 게임을 플레이한 스트리머 (최근 영상 순, app/page.tsx에서 한 번에 채움)
 };
 
 export type HotTab = { key: 'all' | 'friends' | 'rising'; label: string; items: HotItem[] };
