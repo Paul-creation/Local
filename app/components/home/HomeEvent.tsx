@@ -1,10 +1,10 @@
 // 담당: Paul(메인 배너·디자인)
 // 메인 상단 이벤트 배너 — 서버 컴포넌트 (한국 시간 기준 날짜로 고름, lib/event)
 // 이벤트 색의 아주 어두운 배경 카드 + 작은 라벨 + 제목 + 설명 + "보러 가기 →" (색은 globals.css .home-event[data-tone])
-// 스트리머 기획전(kind: 'streamer')은 "보러 가기" 대신 아래에 게임 카드 한 줄 (lib/streamerTheme). 게임이 없으면 fallback 이벤트
+// 스트리머 기획전(kind: 'streamer')은 "보러 가기" 대신 아래에 게임 카드 한 줄 (lib/streamerTheme). 게임이 6개 미만이면 fallback 이벤트
 import Link from 'next/link';
 import { getCurrentEvent, eventHref } from '../../lib/event';
-import { getStreamerTheme, type StreamerTheme } from '../../lib/streamerTheme';
+import { getStreamerTheme, THEME_MIN, type StreamerTheme } from '../../lib/streamerTheme';
 import GameImage from '../GameImage';
 import StreamerBadge from './StreamerBadge';
 
@@ -13,7 +13,7 @@ export default async function HomeEvent({ previewMonth }: { previewMonth?: numbe
   let theme: StreamerTheme | null = null;
   if (event.kind === 'streamer') {
     theme = await getStreamerTheme().catch(() => null);
-    if (theme?.games.length) event = { ...event, description: '스트리머가 직접 플레이한 협동 게임 모음' };
+    if (theme && theme.games.length >= THEME_MIN) event = { ...event, description: '스트리머가 직접 플레이한 협동 게임 모음' };
     else if (event.fallback) { event = { ...event.fallback, label: event.label }; theme = null; }
   }
   return (

@@ -2,10 +2,11 @@
 // 그래서 매일 도는 fetch-streamer-videos(새 영상 연결)와 관리자 페이지의 숨김·채널 끄기가 따로 작업 없이 바로 반영된다 (페이지는 5분 캐시)
 // 조건: 스트리머 영상이 1개 이상 + 친구끼리 최대 인원 2명 이상 + 온라인 협동 또는 로컬 협동이 true (null은 제외) + category가 순수 "협동"
 // (협동·대전·혼자는 제외 — PvP 위주 게임을 거르는 기준). 개별 제외 목록은 두지 않는다
-// 정렬: 플레이한 스트리머 수 → 인기(heat_rank) 순, 최대 12개
+// 정렬: 플레이한 스트리머 수 → 인기(heat_rank) 순, 최대 12개 (6개 미만이면 기획전 대신 fallback)
 import { supabase } from './supabase';
 import { friendsMax } from './playersMatch';
 
+export const THEME_MIN = 6; // 이보다 적으면 기획전 대신 fallback 이벤트 (HomeEvent)
 export const THEME_MAX = 12;
 
 export type ThemeGame = {
@@ -58,7 +59,8 @@ export async function getStreamerTheme(): Promise<StreamerTheme | null> {
   }
 
   const all = [...byGame.values()].map((g) => ({ ...g, videoId: g.videoId ?? g.short }));
-  if (!all.length) return null;
   all.sort((a, b) => b.streamers.length - a.streamers.length || a.rank - b.rank);
-  return { games: all.slice(0, THEME_MAX).map(({ rank, short, ...g }) => g) };
+  // 카드는 PC 6칸·태블릿 3칸·모바일 2칸 격자라 6의 배수로만 보여준다 (마지막 줄이 비는 어색한 배치 방지, 6~11개면 6개, 12개면 12개)
+  const shown = Math.floor(Math.min(all.length, THEME_MAX) / THEME_MIN) * THEME_MIN;
+  return { games: all.slice(0, shown).map(({ rank, short, ...g }) => g) };
 }
