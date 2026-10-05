@@ -109,7 +109,7 @@ export default function AIRecommend() {
                 <div style={{ marginBottom: 20 }}>
                   <div style={{
                     display: 'flex', justifyContent: 'space-between',
-                    fontSize: 14, color: 'var(--text-dimmer)', marginBottom: 6
+                    fontSize: 15, color: 'var(--text-dimmer)', marginBottom: 6
                   }}>
                     <span>후보 게임 {remainingCount}개</span>
                     <span>{answers.length}개 답변 완료</span>
@@ -147,7 +147,7 @@ export default function AIRecommend() {
                     {answers.map((a, i) => (
                       <div key={i} style={{
                         display: 'flex', justifyContent: 'space-between',
-                        fontSize: 14, color: 'var(--text-dimmer)', marginBottom: 4
+                        fontSize: 15, color: 'var(--text-dimmer)', marginBottom: 4
                       }}>
                         <span>{a.question}</span>
                         <span style={{ color: 'var(--accent)', fontWeight: 700 }}>{a.answer}</span>
@@ -178,7 +178,7 @@ export default function AIRecommend() {
                           <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>
                             {r.game.name}
                           </div>
-                          <div style={{ fontSize: 14, color: 'var(--text-dim)' }}>{r.hook}</div>
+                          <div style={{ fontSize: 15, color: 'var(--text-dim)' }}>{r.hook}</div>
                         </div>
                       </Link>
                     ))}
