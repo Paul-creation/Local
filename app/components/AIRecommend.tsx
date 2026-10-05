@@ -76,7 +76,7 @@ export default function AIRecommend() {
 
   return (
     <>
-      <button className="ai-trigger-clean" onClick={() => setOpen(true)}>
+      <button type="button" className="ai-trigger-clean" onClick={() => setOpen(true)}>
         AI 추천
       </button>
 
@@ -85,12 +85,12 @@ export default function AIRecommend() {
           <div className="ai-modal" onClick={(e) => e.stopPropagation()}>
             <div className="ai-modal-header">
               <h3>
-                {step === 'intro' && '🎮 게임 찾기'}
-                {step === 'asking' && `🔍 질문 ${answers.length + 1}`}
-                {step === 'result' && '🎯 찾았어요!'}
-                {step === 'error' && '😅 오류'}
+                {step === 'intro' && '게임 찾기'}
+                {step === 'asking' && `질문 ${answers.length + 1}`}
+                {step === 'result' && '찾았어요!'}
+                {step === 'error' && '오류'}
               </h3>
-              <button className="ai-modal-close" onClick={close}>✕</button>
+              <button type="button" className="ai-modal-close" onClick={close} aria-label="닫기">×</button>
             </div>
 
             {step === 'intro' && (

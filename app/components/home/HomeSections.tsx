@@ -1,91 +1,39 @@
 // 담당: Paul(메인 배너·디자인)
 // 서버 컴포넌트 — 메인 첫 HTML에 바로 들어감 (배너·차트처럼 움직이는 부분만 클라이언트 컴포넌트)
-import Link from 'next/link';
 import BannerCarousel from '../BannerCarousel';
 import HotChart from './HotChart';
 import type { HotTab } from '../../lib/hotChart';
-import { getPriceInfo } from '../../lib/price';
-import { playersText } from '../../lib/players';
 import type { PostListItem } from '../../lib/community';
 import PopularPosts from './PopularPosts';
-import GameImage from '../GameImage';
+import FeatureCard from './FeatureCard';
 import { preconnect, preload } from 'react-dom';
 import { sizedImage } from '../../lib/imageUrl';
 
 // featured: featured_games에서 뽑힌 이번 주 게임, 기록이 없으면 예전처럼 featured 칸 / bannerPool: 추천 배너 게임 (app/page.tsx에서 고름)
 export default function HomeSections({ featured, bannerPool, hotTabs, popularPosts = [] }: { featured: any; bannerPool: any[]; hotTabs: HotTab[]; popularPosts?: PostListItem[] }) {
 
-  const featuredPrice = featured ? getPriceInfo(featured) : null;
-  const featuredImage = featured ? featured.card_image_url || featured.cover_image_url : null;
+  // 카드 이미지는 스팀 헤더(460:215)를 카드 폭에 꽉 차게 — FeatureCard와 같은 주소·폭이어야 preload가 한 번만 받는다
+  const featuredImage = featured ? featured.cover_image_url || featured.card_image_url : null;
 
   // 첫 화면 LCP(이번주의 게임 이미지)를 빨리 받도록 — 스팀 이미지 서버에 미리 연결하고, 그 이미지를 <head>에서 먼저 요청
-  // preload 주소는 GameImage가 실제로 쓰는 주소(sizedImage, fallbackWidth 1280)와 같아야 한 번만 받는다
+  // preload 주소는 GameImage가 실제로 쓰는 주소(sizedImage, fallbackWidth 920)와 같아야 한 번만 받는다
   preconnect('https://shared.akamai.steamstatic.com');
-  if (featuredImage) preload(sizedImage(featuredImage, 1280), { as: 'image', fetchPriority: 'high' });
+  if (featuredImage) preload(sizedImage(featuredImage, 920), { as: 'image', fetchPriority: 'high' });
 
   return (
-        <>
-                    {featured && (
-            <Link href={`/games/${featured.id}`} className="hero-card">
-              <div className="hero-image-wrap">
-                <GameImage src={featuredImage} fallbackWidth={1280} alt="" aria-hidden="true" className="img-backdrop" fetchPriority="high" />
-                <GameImage src={featuredImage} fallbackWidth={1280} alt={featured.name} fetchPriority="high" />
-              </div>
-              <div className="hero-content">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span className="hero-badge">🔥 이번주의 게임</span>
-                  {featured.weekLabel && <span style={{ fontSize: 'var(--fs-sub)', color: 'var(--text-dimmer)' }}>{featured.weekLabel}</span>}
-                </div>
-                <h2>{featured.name}</h2>
-                <p className="hero-tagline">이번주에 가장 인기있던 작품, 친구들하고 어때요?</p>
-                <div className="hero-meta">
-                  {playersText(featured)}
-                  {featured.difficulty ? ` · ${featured.difficulty}` : ''}
-                </div>
-                {featured.tags?.length > 0 && (
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                    {featured.tags.slice(0, 4).map((tag: string) => (
-                      <span key={tag} className="category-tag">{tag}</span>
-                    ))}
-                  </div>
-                )}
-                {featured.fun_description ? (
-  <p style={{ fontSize: 16, color: 'var(--text)', fontWeight: 600, lineHeight: 1.6, margin: 0 }}>{featured.fun_description}</p>
-) : featured.description && (
-  <p style={{ fontSize: 15, color: 'var(--text-dim)', lineHeight: 1.6, margin: 0 }}>
-    {featured.description.replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&#39;/g, "'").slice(0, 120)}...
-  </p>
-)}
-                {featuredPrice && (
-                  <div className="price-row">
-                    {featuredPrice.discount > 0 && (
-                      <>
-                        <span className="discount-badge">-{featuredPrice.discount}%</span>
-                        <span className="price-original">{featuredPrice.formattedOriginal}</span>
-                      </>
-                    )}
-                    <span className="price-final">{featuredPrice.formattedFinal}</span>
-                  </div>
-                )}
-              </div>
-            </Link>
-          )}
+    <>
+      {(featured || bannerPool.length > 0) && (
+        <div className="feature-pair">
+          {featured && <FeatureCard game={featured} label="이번주의 게임" sub={featured.weekLabel} priority />}
+          {bannerPool.length > 0 && <BannerCarousel games={bannerPool} />}
+        </div>
+      )}
 
-          {bannerPool.length > 0 && (
-            <>
-              <div className="section-label">🎯 추천 게임</div>
-              <BannerCarousel games={bannerPool} />
-            </>
-          )}
+      {/* 지금 뜨는 게임 — 데이터는 page.tsx에서 따로 가져옴 (lib/hotChart) */}
+      {hotTabs.length > 0 && <HotChart tabs={hotTabs} />}
 
-
-
-          {/* 🔥 지금 뜨는 게임 — 데이터는 page.tsx에서 따로 가져옴 (lib/hotChart) */}
-          {hotTabs.length > 0 && <HotChart tabs={hotTabs} />}
-
-          {/* 💬 인기 게시물 — 글이 하나도 없을 때만 숨김 (적으면 최근 글로 채움, lib/community) */}
-          {popularPosts.length > 0 && <PopularPosts posts={popularPosts} />}
-
-        </>
+      {/* 인기 게시물 — 글이 하나도 없을 때만 숨김 (적으면 최근 글로 채움, lib/community) */}
+      {popularPosts.length > 0 && <PopularPosts posts={popularPosts} />}
+    </>
   );
 }

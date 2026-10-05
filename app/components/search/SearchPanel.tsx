@@ -14,7 +14,7 @@ const FilterPanel = dynamic(loadFilterPanel, {
   loading: () => <div className="filter-panel"><p className="filter-note" style={{ padding: 20 }}>필터 불러오는 중…</p></div>,
 });
 
-// 검색창 + 필터 버튼. 필터 본문은 FilterPanel
+// 검색창 + 필터 버튼 + AI 추천. 필터 본문은 FilterPanel
 export default function SearchPanel({ games, filters }: { games: any[], filters: GameFilters }) {
   const { filterOpen, setFilterOpen, selectedCount } = filters;
 
@@ -27,31 +27,27 @@ export default function SearchPanel({ games, filters }: { games: any[], filters:
 
   return (
     <>
-      {/* 검색창 */}
+      {/* 검색창 + 필터(테두리 버튼) + AI 추천(포인트 버튼) */}
       <div className="search-row">
         <SearchBox games={games} filters={filters} />
-        <AIRecommend />
-      </div>
-
-      <div className="filter-wrap">
-        <button
-          type="button"
-          className={`filter-toggle${filterOpen ? ' open' : ''}`}
-          aria-expanded={filterOpen}
-          aria-controls="filter-panel"
-          onPointerEnter={() => { loadFilterPanel(); }}
-          onFocus={() => { loadFilterPanel(); }}
-          onClick={() => setFilterOpen(v => !v)}
-        >
-          <span>
+        <div className="search-actions">
+          <button
+            type="button"
+            className={`btn btn-outline filter-toggle${filterOpen ? ' open' : ''}`}
+            aria-expanded={filterOpen}
+            aria-controls="filter-panel"
+            onPointerEnter={() => { loadFilterPanel(); }}
+            onFocus={() => { loadFilterPanel(); }}
+            onClick={() => setFilterOpen(v => !v)}
+          >
             필터
-            {selectedCount > 0 && <span className="filter-count">{selectedCount}개 선택됨</span>}
-          </span>
-          <span aria-hidden="true">{filterOpen ? '▴' : '▾'}</span>
-        </button>
-
-        {filterOpen && <FilterPanel filters={filters} />}
+            {selectedCount > 0 && <span className="filter-count" aria-label={`${selectedCount}개 선택됨`}>{selectedCount}</span>}
+          </button>
+          <AIRecommend />
+        </div>
       </div>
+
+      {filterOpen && <div className="filter-wrap"><FilterPanel filters={filters} /></div>}
     </>
   );
 }

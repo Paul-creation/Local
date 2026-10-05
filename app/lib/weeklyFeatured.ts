@@ -17,7 +17,7 @@ export async function getWeeklyFeatured() {
       week_start,
       games!inner(
         id, name, tags, difficulty, min_players, max_players, is_free, price_type, lowest_price,
-        card_image_url, cover_image_url, description, fun_description,
+        card_image_url, cover_image_url, description, fun_description, category, goty_awards,
         price_history(price, discount_percent, checked_at, currency)
       )
     `)
