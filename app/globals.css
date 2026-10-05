@@ -8,7 +8,7 @@
   color-scheme: dark;
 
   /* 면 — 선 대신 밝기 차이로 구분 */
-  --bg: #101822;             /* 히어로 그라데이션 끝색과 같은 값 — 이음새 없이 이어짐 */
+  --bg: #0b0e13;             /* 히어로 그라데이션 끝색과 같은 값 — 이음새 없이 이어짐 */
   --card: #151A24;
   --card-hover: #1C2331;
   --inset: #10141C;          /* 카드 안의 칸 */
@@ -52,18 +52,37 @@
   --scrim: rgba(0, 0, 0, 0.6);
 
   /* 카드 면·태그·푸터 (라이트 값은 예전 모양 그대로) */
-  --card-surface: linear-gradient(135deg, #1a2230, #141921);
+  --card-surface: linear-gradient(135deg, #202a3a, #1a2230);   /* 배경 #0b0e13 < 패널 #151a23 < 카드 */
   --card-line: rgba(255, 255, 255, 0.06);
   --card-hl: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   --card-shadow: var(--card-hl);
-  --card-hover-shadow: var(--card-hl);
+  --card-hover-shadow: 0 4px 14px rgba(102, 192, 244, 0.10), var(--card-hl);
+  --card-info: rgba(8, 12, 18, 0.34);     /* 카드 이미지 아래 정보 영역 — 한 톤 어둡게 */
+  --panel-bg: #151a23;
+  --panel-line: rgba(255, 255, 255, 0.06);
+  --panel-radius: 8px;
+  --results-bg: #151a23;
+  --results-line: rgba(255, 255, 255, 0.06);
+  --results-pad: 20px;
+  --discount-bg: #4c6b22;      /* 스팀식 할인 배지 */
+  --discount-text: #beee11;
+  --discount-border: #4c6b22;
+  --discount-radius: 3px;
+  --lowest-text: #beee11;
+  --lowest-bg: rgba(190, 238, 17, 0.06);
+  --lowest-border: rgba(190, 238, 17, 0.45);
+  --lowest-radius: 999px;
+  --tag-radius: 4px;
   --price-surface: var(--card-surface);
   --tag-bg: #0f141b;          /* 카드보다 살짝 어두운 칩 */
   --tag-border: rgba(255, 255, 255, 0.08);
   --tag-text: #E5E7EB;
+  --tag-special-text: var(--accent);
+  --tag-special-bg: rgba(102, 192, 244, 0.08);
+  --tag-special-border: rgba(102, 192, 244, 0.55);
   --card-radius-game: 8px;
   --card-hover-line: rgba(102, 192, 244, 0.7);
-  --hero-bg: linear-gradient(to bottom, #1b2838, #101822);
+  --hero-bg: linear-gradient(to bottom, #1b2838, #0b0e13);
   --hero-h: 380px;
   --label-size: 13px;
   --label-weight: 600;
@@ -148,10 +167,29 @@
   --card-hl: none;
   --card-shadow: var(--shadow-sm);
   --card-hover-shadow: none;
+  --card-info: transparent;
+  --panel-bg: var(--card);
+  --panel-line: var(--border-soft);
+  --panel-radius: var(--radius-card);
+  --results-bg: transparent;
+  --results-line: transparent;
+  --results-pad: 0;
+  --discount-bg: transparent;
+  --discount-text: var(--sale);
+  --discount-border: var(--sale-border);
+  --discount-radius: var(--radius-badge);
+  --lowest-text: var(--sale);
+  --lowest-bg: transparent;
+  --lowest-border: var(--sale-border);
+  --lowest-radius: 5px;
+  --tag-radius: var(--radius-badge);
   --price-surface: color-mix(in srgb, var(--card) 82%, transparent);
   --tag-bg: var(--inset);
   --tag-border: transparent;
   --tag-text: var(--text-2);
+  --tag-special-text: var(--accent-text);
+  --tag-special-bg: rgba(0, 113, 227, 0.07);
+  --tag-special-border: rgba(0, 113, 227, 0.45);
   --card-radius-game: var(--radius-card);
   --card-hover-line: var(--border);
   --hero-bg: none;
@@ -485,12 +523,13 @@ img { display: block; }
 }
 
 .discount-badge {
-  color: var(--sale);
-  border: 1px solid var(--sale-border);
-  font-size: 14px;
+  color: var(--discount-text);
+  background: var(--discount-bg);
+  border: 1px solid var(--discount-border);
+  font-size: 16px;
   font-weight: 800;
-  padding: 1px 7px;
-  border-radius: var(--radius-badge);
+  padding: 1px 8px;
+  border-radius: var(--discount-radius);
 }
 
 .price-original {
@@ -539,7 +578,7 @@ img { display: block; }
 }
 .timing-badge.is-overlay { position: absolute; bottom: 8px; right: 8px; background: var(--card); }
 
-.timing-badge.best { color: var(--sale); border: 1px solid var(--sale-border); }
+.timing-badge.best { color: var(--lowest-text); background: var(--lowest-bg); border: 1px solid var(--lowest-border); border-radius: var(--lowest-radius); font-size: 14px; }
 .timing-badge.near { color: var(--gold); border: 1px solid var(--gold-border); }
 
 .badge-neutral {
@@ -946,12 +985,13 @@ img { display: block; }
 .buy-price-original { color: var(--navy-text-dim); font-size: 15px; text-decoration: line-through; }
 .buy-price-final { color: var(--text); font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
 .buy-discount-badge {
-  color: var(--sale);
-  border: 1px solid var(--sale-border);
-  font-size: 15px;
+  color: var(--discount-text);
+  background: var(--discount-bg);
+  border: 1px solid var(--discount-border);
+  font-size: 18px;
   font-weight: 800;
-  padding: 3px 9px;
-  border-radius: var(--radius-badge);
+  padding: 3px 10px;
+  border-radius: var(--discount-radius);
 }
 
 
@@ -1104,7 +1144,7 @@ img { display: block; }
   box-shadow: var(--shadow-md); font-size: var(--fs-sub); color: var(--text);
 }
 .dchart-tip-date { color: var(--text-dim); margin-bottom: 2px; }
-.dchart-tip-off { color: var(--danger); font-weight: 700; }
+.dchart-tip-off { color: var(--discount-text); font-weight: 700; }
 @media (max-width: 480px) {
   .dchart-summary { font-size: 15px; }
   .dchart-periods { width: 100%; }
@@ -1662,7 +1702,7 @@ a.series-item:hover { border-color: var(--border); }
 .hc-change.is-same { color: var(--text-faint); }
 .hc-change.is-new { color: var(--accent-text); border: 1px solid var(--accent); padding: 2px 5px; border-radius: var(--radius-badge); font-size: 12px; letter-spacing: 0.03em; }
 .hc-price { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 6px; font-weight: 800; white-space: nowrap; }
-.hc-discount { color: var(--sale); border: 1px solid var(--sale-border); font-size: 13px; font-weight: 800; padding: 1px 6px; border-radius: var(--radius-badge); }
+.hc-discount { color: var(--discount-text); background: var(--discount-bg); border: 1px solid var(--discount-border); font-size: 15px; font-weight: 800; padding: 1px 7px; border-radius: var(--discount-radius); }
 
 /* 1~3위 큰 카드 — 큰 순위 숫자를 이미지가 일부 가림 */
 .hc-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
@@ -1721,7 +1761,7 @@ a.hc-row:hover { background: var(--card-hover); }
 .hc-row-thumb { width: 104px; aspect-ratio: 460 / 215; object-fit: cover; border-radius: 8px; background: var(--inset); }
 .hc-row-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .hc-row-name { font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.hc-row-sub { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--text-muted); white-space: nowrap; overflow: hidden; }
+.hc-row-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 6px; max-height: 26px; font-size: 14px; color: var(--text-muted); white-space: nowrap; overflow: hidden; } /* 한 줄에 안 들어가는 칩은 다음 줄로 밀려 통째로 가려짐 */
 .hc-tag { font-size: 13px; font-weight: 600; color: var(--text-2); background: var(--inset); padding: 2px 7px; border-radius: var(--radius-badge); }
 .hc-row-ccu { text-align: right; font-size: 15px; font-weight: 800; white-space: nowrap; }
 .hc-row-ccu small { margin-left: 2px; font-size: 14px; font-weight: 600; color: var(--text-muted); }
@@ -1778,7 +1818,7 @@ a.hc-row:hover { background: var(--card-hover); }
 
 /* 필터 카드 */
 .filter-wrap { margin-bottom: 24px; }
-.filter-panel { background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-card); }
+.filter-panel { background: var(--panel-bg); border: 1px solid var(--panel-line); border-radius: var(--panel-radius); }
 .filter-loading { padding: 20px; }
 .filter-head { display: flex; align-items: center; gap: 8px; min-height: 56px; padding: 6px 8px 6px 20px; }
 .filter-head-title { font-size: 17px; font-weight: 900; margin-right: auto; }
@@ -1843,7 +1883,7 @@ a.hc-row:hover { background: var(--card-hover); }
 
 /* 데스크톱: 왼쪽 필터 + 오른쪽 결과 */
 .results-layout { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 24px; align-items: start; }
-.results-filter { position: sticky; top: 76px; max-height: calc(100vh - 92px); overflow-y: auto; border-radius: var(--radius-card); scrollbar-width: thin; }
+.results-filter { position: sticky; top: 76px; max-height: calc(100vh - 92px); overflow-y: auto; border-radius: var(--panel-radius); scrollbar-width: thin; }
 .results-filter .filter-body { padding-bottom: 12px; }
 
 /* 결과 머리: "검색 결과 N개" + 정렬 탭 + 고른 조건 칩 */
@@ -1961,7 +2001,7 @@ a.hc-row:hover { background: var(--card-hover); }
 .buy-price-original { color: var(--text-muted); font-size: 15px; text-decoration: line-through; font-variant-numeric: tabular-nums; }
 .price-card-now { font-size: 40px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.1; color: var(--text); font-variant-numeric: tabular-nums; }
 .price-card-store { font-size: 22px; color: var(--accent-text); }
-.lowest-pill { align-self: flex-start; padding: 4px 12px; border-radius: var(--radius-chip); border: 1px solid var(--sale-border); color: var(--sale); font-size: 14px; font-weight: 800; }
+.lowest-pill { align-self: flex-start; padding: 4px 12px; border-radius: var(--radius-chip); border: 1px solid var(--lowest-border); background: var(--lowest-bg); color: var(--lowest-text); font-size: 15px; font-weight: 800; }
 .price-card-lowest { font-size: 15px; color: var(--text-muted); }
 .price-card-buy, .price-card-compare { width: 100%; }
 .price-card-buy { margin-top: 6px; }
@@ -2036,7 +2076,7 @@ a.hc-row:hover { background: var(--card-hover); }
 .dchart-periods button { min-height: 44px; min-width: 52px; border-radius: 9px; color: var(--text-muted); }
 .dchart-periods button.is-on { background: var(--card-hover); color: var(--text); box-shadow: none; }
 :root[data-theme="light"] .dchart-periods button.is-on { background: var(--card); box-shadow: var(--shadow-sm); }
-.dchart-dot { fill: var(--sale); stroke: var(--card); stroke-width: 2; }
+.dchart-dot { fill: var(--discount-text); stroke: var(--card); stroke-width: 2; }
 .dchart-dot-active { fill: var(--accent); stroke: var(--card); stroke-width: 2; }
 .dchart-tip { background: var(--card-hover); border-color: var(--border); }
 
@@ -2427,7 +2467,7 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 }
 
 /* 태그 칩 */
-.category-tag { color: var(--tag-text); background: var(--tag-bg); box-shadow: inset 0 0 0 1px var(--tag-border); }
+.category-tag { border-radius: var(--tag-radius); color: var(--tag-text); background: var(--tag-bg); box-shadow: inset 0 0 0 1px var(--tag-border); }
 .tag-chip-btn { border: none; font-family: inherit; line-height: inherit; cursor: pointer; }
 .tag-chip-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .main-tag-row .tag-chip-btn:hover, .main-tag-row .tag-chip-btn:focus-visible, .main-tag-row .tag-chip-btn[aria-pressed="true"] { color: var(--accent-text); box-shadow: inset 0 0 0 1px var(--accent-line); }
@@ -2457,11 +2497,39 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 :root:not([data-theme="light"]) :is(.card, .feature-card, .result-card, .hc-card):is(:hover, :focus-visible) :is(.feature-title, .result-title, .hc-card-name, h3) { color: var(--accent); }
 
 /* 태그 칩 — 텍스트가 아니라 칩으로 */
-.hc-tag { color: var(--tag-text); background: var(--tag-bg); box-shadow: inset 0 0 0 1px var(--tag-border); }
-.result-meta { display: flex; gap: 6px; }
+.hc-tag { border-radius: var(--tag-radius); color: var(--tag-text); background: var(--tag-bg); box-shadow: inset 0 0 0 1px var(--tag-border); }
+.result-meta { display: flex; flex-wrap: wrap; gap: 4px 6px; overflow: visible; white-space: normal; }
 .result-meta .hc-tag { flex-shrink: 0; }
 
 /* 섹션 라벨(이번주의 게임·추천 게임 등)·서브 문구 — 메인 제목보다 작고 옅게 */
 .feature-label { font-size: var(--label-size); font-weight: var(--label-weight); color: var(--label-color); }
 .feature-sub { color: var(--label-sub-color); font-weight: 500; }
 .section-sub { font-size: var(--sub-size); }
+
+
+/* ============================================================
+   태그 그룹·특별 칩 — 상세는 그룹별 줄(secondary 작은 라벨), 특별 칩(TOP 10·수상)은 포인트색 테두리·글자
+   ============================================================ */
+.tag-group { margin-top: 14px; }
+.tag-group-label { display: block; font-size: 13px; font-weight: 600; line-height: 1.4; color: var(--text-muted); }
+.tag-group .main-tag-row { margin-top: 6px; }
+.category-tag.tag-special, .hc-tag.tag-special { color: var(--tag-special-text); background: var(--tag-special-bg); box-shadow: inset 0 0 0 1px var(--tag-special-border); font-weight: 600; }
+.result-players { font-size: 14px; color: var(--text-muted); }
+
+
+/* ============================================================
+   명도 3단계 — 배경(#0b0e13) < 패널(#151a23) < 카드, 카드 안은 이미지 아래 정보 영역만 한 톤 어둡게
+   ============================================================ */
+.results-main { background: var(--results-bg); box-shadow: inset 0 0 0 1px var(--results-line); border-radius: var(--panel-radius); padding: var(--results-pad); }
+@media (max-width: 640px) { :root:not([data-theme="light"]) .results-main { padding: 12px; } }
+
+.feature-card, .result-card { box-shadow: var(--card-hl); }
+.feature-card:hover, .result-card:hover { box-shadow: var(--card-hover-shadow); }
+.feature-body, .result-body, .card-body { background: var(--card-info); }
+:root:not([data-theme="light"]) .hc-card-body { margin: 0 -16px -18px; padding: 14px 16px 18px; background: var(--card-info); }
+@media (max-width: 640px) { :root:not([data-theme="light"]) .hc-card-body { margin: 0 -16px -18px; } }
+
+/* 필터 패널 안내 줄 — 칩을 호버·포커스·탭하면 그 설명으로 바뀜 (높이 3줄 고정) */
+.filter-hint { margin-top: 10px; height: 4.5em; font-size: 14px; line-height: 1.5; color: var(--text-faint); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.filter-hint.is-active { color: var(--text-muted); }
+.filter-hint strong { color: var(--text); font-weight: 700; }
