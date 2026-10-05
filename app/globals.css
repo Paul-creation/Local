@@ -72,8 +72,6 @@
   --lowest-bg: rgba(190, 238, 17, 0.06);
   --lowest-border: rgba(190, 238, 17, 0.45);
   --lowest-radius: 999px;
-  --first-line: var(--accent);
-  --first-display: inline-flex;
   --tag-radius: 4px;
   --price-surface: var(--card-surface);
   --tag-bg: #0f141b;          /* 카드보다 살짝 어두운 칩 */
@@ -184,8 +182,6 @@
   --lowest-bg: transparent;
   --lowest-border: var(--sale-border);
   --lowest-radius: 5px;
-  --first-line: var(--border-soft);
-  --first-display: none;
   --tag-radius: var(--radius-badge);
   --price-surface: color-mix(in srgb, var(--card) 82%, transparent);
   --tag-bg: var(--inset);
@@ -2530,11 +2526,6 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 .feature-body, .result-body, .card-body { background: var(--card-info); }
 :root:not([data-theme="light"]) .hc-card-body { margin: 0 -16px -18px; padding: 14px 16px 18px; background: var(--card-info); }
 @media (max-width: 640px) { :root:not([data-theme="light"]) .hc-card-body { margin: 0 -16px -18px; } }
-
-/* 지금 뜨는 게임 1위 — 포인트색 테두리 + "1위" 칩 (다크만, 검색 결과에는 적용 안 함) */
-.hc-card.is-first { border-color: var(--first-line); }
-:root:not([data-theme="light"]) .hc-card.is-first:is(:hover, :focus-visible) { border-color: var(--accent); }
-.hc-first-chip { display: var(--first-display); }
 
 /* 필터 패널 안내 줄 — 칩을 호버·포커스·탭하면 그 설명으로 바뀜 (높이 3줄 고정) */
 .filter-hint { margin-top: 10px; height: 4.5em; font-size: 14px; line-height: 1.5; color: var(--text-faint); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
