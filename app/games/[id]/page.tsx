@@ -229,14 +229,14 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
                   ? <a href={buyUrl} target="_blank" rel="noopener noreferrer" className="price-card-store">{PRICE_TYPE_LABEL.check_store} ↗</a>
                   : PRICE_TYPE_LABEL[game.price_type] ?? '가격 정보 없음'}
             </p>
-            {timing === 'best' ? (
-              <span className="lowest-pill">역대 최저가</span>
-            ) : showPriceRecord && game.lowest_price >= 100 ? (
+            {timing === 'best' && <span className="lowest-pill">역대 최저가</span>}
+            {/* 지금이 역대 최저여도 금액·날짜는 그대로 보여 준다 */}
+            {showPriceRecord && game.lowest_price >= 100 && (
               <p className="price-card-lowest">
                 역대 최저 <span className="num">₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}</span>
                 {formatDate(game.lowest_price_date) && ` · ${formatDate(game.lowest_price_date)}`}
               </p>
-            ) : null}
+            )}
             {timing === 'near' && <LowestPriceBadge timing={timing} />}
             {buyUrl && (
               <a href={buyUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg price-card-buy">

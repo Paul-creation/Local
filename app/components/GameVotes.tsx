@@ -46,6 +46,7 @@ export default function GameVotes({ gameId }: { gameId: string }) {
       <div className="vote-chips">
         {SITUATIONS.map(situation => {
           const count = votes[situation] || 0;
+          const percent = totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
           const voted = myVotes.includes(situation);
           return (
             <button
@@ -57,7 +58,7 @@ export default function GameVotes({ gameId }: { gameId: string }) {
               className={`chip vote-chip${voted ? ' on' : ''}`}
             >
               {situation}
-              {!loading && count > 0 && <span className="vote-count">{count}</span>}
+              {!loading && count > 0 && <span className="vote-count">{count}명 · {percent}%</span>}
             </button>
           );
         })}

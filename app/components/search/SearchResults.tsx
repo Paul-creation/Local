@@ -5,6 +5,7 @@ import Link from 'next/link';
 import ShareButton from '../ShareButton';
 import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL } from '../../lib/price';
 import LowestPriceBadge from '../LowestPriceBadge';
+import GotyBadge from '../GotyBadge';
 import { displayTags } from '../../lib/tagTree';
 import { SORTS, type GameFilters } from '../../lib/useGameFilters';
 import { filterConditions } from '../../lib/filterConditions';
@@ -97,6 +98,7 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
                         {top10Ids.includes(game.id) && <span className="top10-badge">TOP 10</span>}
                         {game.name}
                       </span>
+                      {game.goty_awards && <span className="goty-row"><GotyBadge awards={game.goty_awards} /></span>}
                       {meta && <span className="result-meta">{meta}</span>}
                       <span className="result-foot">
                         <span className="result-price">
