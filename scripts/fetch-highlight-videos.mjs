@@ -13,13 +13,14 @@
 //     트레일러 몫 = min(영상 못 찾은 게임 수, 90) × 100 (새벽 3시 enrich-videos 90)
 //     스트리머 영상 몫 = 200 (새벽 3시 fetch-streamer-videos, lib/streamer-videos.mjs)
 //     평소: max(5,000, 10,000 − 여유 500 − 트레일러 몫 − 스트리머 몫) → 트레일러 대기분이 줄면 남는 한도가 자동으로 하이라이트에 더해짐
-//     목요일(태평양 시간, 금요일 새벽 주간 작업과 같은 한도일): 10,000 − 여유 500 − 트레일러 몫 − 스트리머 몫 − 합방 몫(갱신할 게임 × 202), 최소 보장 없음
+//     목요일(태평양 시간, 금요일 새벽 주간 작업과 같은 한도일): 10,000 − 여유 500 − 트레일러 몫(일간 YouTube 검색 15개 상한 = 1,500, lib/quota-plan.mjs) − 스트리머 몫 − 합방 몫(갱신할 게임 × 202), 최소 보장 없음
 // - 한도일 중 새벽 작업이 이미 돌았을 수 있는 시각(태평양 시간 10시 이후)이면 남은 한도를 알 수 없어 건너뜀 (--force로 무시)
 // - 한도 초과면 그 게임은 기록하지 않고 조용히 멈춤 → 다음 실행 때 그 게임부터 이어서
 import { createClient } from '@supabase/supabase-js';
 import { getCoopTargets, gameNameKeys, searchKeyword, searchExcludeSuffix, excludeTerms, EXCLUDE_TITLE_WORDS, DESC_HEAD } from './lib/coop-targets.mjs';
 import { videoRejectReason, isGenericName } from './lib/video-filter.mjs';
 import { STREAMER_UNITS_PER_DAY } from './lib/streamer-videos.mjs';
+import { TRAILER_UNIT, THU_TRAILER_YT_MAX, pacificNow } from './lib/quota-plan.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
@@ -30,7 +31,6 @@ const DAILY_QUOTA = 10000;
 const SAFETY = 500;
 const HIGHLIGHT_BASE = 5000;
 const TRAILER_PER_DAY = 90; // run-steps.mjs daily의 'enrich-videos 90'과 맞춤
-const TRAILER_UNIT = 100;
 const COOP_UNIT_PER_GAME = 202;
 const SEARCH_UNIT = 101;
 const REFRESH_DAYS = 30;
@@ -63,14 +63,6 @@ function parseDuration(iso) {
 const cleanName = (name) => String(name || '').replace(/[™®©]/g, '').replace(/\s+/g, ' ').trim();
 const norm = (s) => String(s || '').toLowerCase().replace(/[\s\p{P}\p{S}]/gu, '');
 
-// 태평양 시간 기준 시각·요일 (YouTube 한도일 기준)
-function pacificNow() {
-  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/Los_Angeles', hour: 'numeric', hourCycle: 'h23', weekday: 'short',
-  }).formatToParts(new Date()).map((p) => [p.type, p.value]));
-  return { hour: Number(parts.hour), weekday: parts.weekday };
-}
-
 async function computeBudget() {
   const { count: pendingTrailers, error } = await supabase.from('games').select('id', { count: 'exact', head: true }).eq('hidden', false).is('video_url', null);
   if (error) throw new Error(`트레일러 대기 수를 못 불러옴: ${error.message}`);
@@ -81,7 +73,9 @@ async function computeBudget() {
     const targets = await getCoopTargets(supabase, 'coop_videos_at');
     const coopDue = targets.filter((g) => !g.coop_videos_at || new Date(g.coop_videos_at).getTime() < cutoff).length;
     const coop = coopDue * COOP_UNIT_PER_GAME;
-    return { cap: Math.max(0, DAILY_QUOTA - SAFETY - trailer - STREAMER_UNITS_PER_DAY - coop), note: `목요일 — 트레일러 몫 ${trailer} · 스트리머 몫 ${STREAMER_UNITS_PER_DAY} · 주간 합방 몫 ${coop} (${coopDue}개) 먼저 남김` };
+    // 트레일러 몫은 대기 수가 아니라 그날 일간 작업의 YouTube 검색 상한(새 게임이 금요일 새벽 bulk-import로 늘어도 이만큼만)
+    const thuTrailer = THU_TRAILER_YT_MAX * TRAILER_UNIT;
+    return { cap: Math.max(0, DAILY_QUOTA - SAFETY - thuTrailer - STREAMER_UNITS_PER_DAY - coop), note: `목요일 — 트레일러 몫 ${thuTrailer} (일간 YouTube 검색 ${THU_TRAILER_YT_MAX}개 상한) · 스트리머 몫 ${STREAMER_UNITS_PER_DAY} · 주간 합방 몫 ${coop} (${coopDue}개) 먼저 남김` };
   }
   return { cap: Math.max(HIGHLIGHT_BASE, DAILY_QUOTA - SAFETY - trailer - STREAMER_UNITS_PER_DAY), note: `트레일러 몫 ${trailer} (대기 ${pendingTrailers ?? 0}개) · 스트리머 몫 ${STREAMER_UNITS_PER_DAY}` };
 }

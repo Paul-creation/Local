@@ -1,6 +1,6 @@
 // scripts/enrich-videos.mjs
 // 영상 없는 게임의 상단 트레일러 찾기 — 매일 조금씩
-// 실행: node --env-file=.env.local scripts/enrich-videos.mjs [최대 개수, 기본 90] [--other] [--names="Muck,Inside"] [--steam-only]
+// 실행: node --env-file=.env.local scripts/enrich-videos.mjs [최대 개수, 기본 90] [--other] [--names="Muck,Inside"] [--steam-only] [--yt-max=N]
 //   --steam-only: 스팀 공식 영상만 찾고 유튜브는 안 씀. 스팀 영상이 없으면 null 그대로 둬서 다음 매일 작업이 유튜브로 찾게 함
 // - 스팀 게임은 스팀 상점의 공식 영상(appdetails movies, 게임사가 올린 것)을 먼저 씀 → video_url에 HLS 주소(.m3u8) 저장
 // - 스팀 영상이 없거나 스팀 외 게임이면 유튜브 검색으로 대체 (YouTube 검색은 하루 약 100번 한도)
@@ -19,6 +19,8 @@ const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 const ONLY_OTHER = process.argv.includes('--other');
 const LIMIT = Number(process.argv.slice(2).find((a) => /^\d+$/.test(a))) || 90;
 const STEAM_ONLY = process.argv.includes('--steam-only');
+// --yt-max=N: 이번 실행의 YouTube 검색 상한 (스팀 영상 찾기는 계속). 넘기면 그 게임은 null 그대로 둬서 다음 실행이 찾음
+const YT_MAX = Number((process.argv.find((a) => a.startsWith('--yt-max=')) || '').slice(9)) || Infinity;
 const ONLY_NAMES = (process.argv.find((a) => a.startsWith('--names=')) || '').slice(8).split(',').map((s) => s.trim()).filter(Boolean);
 
 class QuotaError extends Error {}
@@ -71,6 +73,7 @@ async function main() {
   let found = 0;
   let none = 0;
   let failed = 0;
+  let ytSearches = 0;
   for (const game of games) {
     let url = null;
     let source = '';
@@ -90,6 +93,11 @@ async function main() {
           console.log(`⏭️ ${game.name}: 스팀 영상 없음, YOUTUBE_API_KEY가 없어 유튜브 검색은 건너뜀`);
           continue;
         }
+        if (ytSearches >= YT_MAX) {
+          console.log(`⏭️ ${game.name}: 스팀 영상 없음, 이번 실행 YouTube 검색 상한 ${YT_MAX}개 도달 (null 그대로)`);
+          continue;
+        }
+        ytSearches++;
         url = await youtubeTrailer(game);
         source = '유튜브';
       }

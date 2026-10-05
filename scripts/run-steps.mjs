@@ -3,6 +3,7 @@
 // 사용: node scripts/run-steps.mjs daily | weekly
 import { spawn } from 'child_process';
 import fs from 'fs';
+import { THU_TRAILER_YT_MAX, pacificNow } from './lib/quota-plan.mjs';
 
 const GROUPS = {
   // 매일: 가격·할인·접속자처럼 자주 바뀌는 것
@@ -65,7 +66,13 @@ if (!steps) {
 
 const envArgs = fs.existsSync('.env.local') ? ['--env-file=.env.local'] : [];
 
-function run(step) {
+// 목요일(태평양 시간)은 금요일 02:00 주간 합방 영상이 한도를 크게 쓰므로, 같은 한도일의 일간 트레일러는 YouTube 검색을 상한까지만
+// (하이라이트의 목요일 상한 계산이 같은 값을 남겨 둠, lib/quota-plan.mjs)
+const withQuotaPlan = (step) =>
+  group === 'daily' && step.startsWith('enrich-videos') && pacificNow().weekday === 'Thu' ? `${step} --yt-max=${THU_TRAILER_YT_MAX}` : step;
+
+function run(rawStep) {
+  const step = withQuotaPlan(rawStep);
   const [name, ...args] = step.split(' ');
   return new Promise((resolve) => {
     const file = `scripts/${name}.mjs`;
