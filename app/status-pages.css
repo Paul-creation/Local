@@ -1,35 +1,32 @@
 /* 404·에러·로딩 화면 (not-found.tsx, error.tsx, global-error.tsx, loading.tsx) */
 .status-page { max-width: 560px; padding-top: 56px; text-align: center; }
-.status-card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 40px 28px; box-shadow: var(--shadow-sm); }
+.status-card { background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-card); padding: 40px 28px; }
 .status-code { font-size: 15px; font-weight: 700; color: var(--accent); letter-spacing: 0.04em; }
 .status-title { margin-top: 8px; font-size: 26px; font-weight: 800; line-height: 1.3; }
 .status-desc { margin-top: 10px; font-size: 16px; color: var(--text-dim); }
 .status-search { display: flex; gap: 8px; margin-top: 24px; }
 .status-search input {
   flex: 1; min-width: 0; height: 46px; padding: 0 14px; font: inherit; font-size: 16px;
-  border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-card); color: var(--text);
+  border: 1px solid var(--border); border-radius: var(--radius-btn); background: var(--inset); color: var(--text);
 }
-.status-search input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+.status-search input:focus { outline: none; border-color: var(--accent); box-shadow: var(--focus-glow); }
 .status-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
 .status-btn {
   display: inline-flex; align-items: center; justify-content: center; height: 46px; padding: 0 20px;
-  border-radius: var(--radius-md); font-size: 16px; font-weight: 700; border: 1px solid var(--border);
-  background: var(--bg-card); color: var(--text);
+  border-radius: var(--radius-btn); font-size: 16px; font-weight: 700; border: 1px solid var(--border);
+  background: transparent; color: var(--text);
 }
-.status-btn:hover { border-color: var(--accent); color: var(--accent); }
-.status-btn.is-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-.status-btn.is-primary:hover { background: var(--accent-hover); color: #fff; }
+.status-btn:hover { border-color: var(--text-faint); background: var(--card-hover); }
+.status-btn.is-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.status-btn.is-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: var(--accent-ink); }
 .status-digest { margin-top: 16px; font-size: 13px; color: var(--text-dimmer); }
 
-/* 로딩 화면 — 회색 막대가 은은하게 깜빡임 */
+/* 로딩 화면 — 시머 막대 (.skel 빛 지나감은 globals.css 공통 컴포넌트) */
 .status-loading { padding-top: 8px; min-height: 100vh; }
-.skel { background: rgba(0,0,0,0.07); border-radius: var(--radius-sm); animation: skel-pulse 1.4s ease-in-out infinite; }
 .skel-title { width: 40%; height: 28px; margin-bottom: 20px; }
 .skel-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-.skel-card { height: 220px; border-radius: var(--radius-lg); }
+.skel-card { height: 220px; border-radius: var(--radius-card); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
-@keyframes skel-pulse { 50% { opacity: 0.5; } }
-@media (prefers-reduced-motion: reduce) { .skel { animation: none; } }
 
 @media (max-width: 768px) {
   .status-page { padding: 32px 16px 80px; }

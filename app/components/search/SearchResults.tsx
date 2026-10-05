@@ -47,7 +47,7 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
               )}
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0 }}>
-              <ShareButton variant="text" label="🔗 공유하기" title="게임 검색 결과" text="이 조건으로 찾은 게임들 같이 보자!" />
+              <ShareButton variant="text" title="게임 검색 결과" text="이 조건으로 찾은 게임들 같이 보자!" />
               <button onClick={resetFilters} style={{ background: 'none', border: 'none', color: 'var(--accent)', fontSize: 15, fontWeight: 700, cursor: 'pointer', minHeight: 44, padding: '0 4px' }}>
                 ← 홈으로
               </button>

@@ -9,4 +9,4 @@ export function sortGoty(raw: unknown): GotyAward[] {
     .sort((a, b) => (a.result === b.result ? b.year - a.year : a.result === 'winner' ? -1 : 1));
 }
 
-export const gotyLabel = (a: GotyAward) => (a.result === 'winner' ? `🏆 ${a.year} 올해의 게임` : `${a.year} 올해의 게임 후보`);
+export const gotyLabel = (a: GotyAward) => (a.result === 'winner' ? `${a.year} 올해의 게임` : `${a.year} 올해의 게임 후보`);

@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
   // 위에서 이미 숨김 상태면 거절하므로, 여기서 hidden이면 이번 신고로 막 숨겨진 것 → 관리자 알림 (응답을 보낸 뒤 실행 — 실패해도 신고는 그대로)
   if (hidden) {
     const label = LABEL[type as keyof typeof LABEL];
-    after(() => notifyDiscord(`🚨 신고 ${HIDE_AT_REPORTS}번 자동 숨김 · ${label} #${id}`, t.title ? `${t.title} — ${t.body}` : t.body, 'hidden'));
+    after(() => notifyDiscord(`신고 ${HIDE_AT_REPORTS}번 자동 숨김 · ${label} #${id}`, t.title ? `${t.title} — ${t.body}` : t.body, 'hidden'));
   }
   return NextResponse.json({ ok: true, hidden });
 }
