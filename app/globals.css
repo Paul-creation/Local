@@ -1917,6 +1917,9 @@ a.hc-row:hover { background: var(--card-hover); }
 .price-card-lowest { font-size: 14px; color: var(--text-muted); }
 .price-card-buy, .price-card-compare { width: 100%; }
 .price-card-buy { margin-top: 6px; }
+.price-card-compare-status { margin-top: -2px; font-size: 14px; font-weight: 600; color: var(--text); }
+.price-card-compare-status:empty { display: none; }
+.price-card-compare-status a { color: var(--accent-text); font-weight: 800; white-space: nowrap; }
 .price-card-note { font-size: 12px; line-height: 1.5; color: var(--text-muted); }
 
 /* 링크 줄 */

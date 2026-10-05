@@ -17,8 +17,8 @@ import { BADGES, badgeMatches } from './badge.mjs';
 // 검색 결과는 처음 이만큼만 그리고, 더 보기로 이만큼씩 늘린다
 export const PAGE_SIZE = 24;
 
-// 결과 정렬 (?sort=discount·price). 기본은 받은 순서(최근 추가순)
-export const SORTS = [['', '최근 추가순'], ['discount', '할인 큰 순'], ['price', '낮은 가격순']] as const;
+// 결과 정렬 (?sort=recent·discount·price). 기본은 인기순(ITAD heat_rank, 순위 없는 게임은 뒤에 받은 순서대로)
+export const SORTS = [['', '인기순'], ['recent', '최근 추가순'], ['discount', '할인 큰 순'], ['price', '낮은 가격순']] as const;
 export type SortKey = (typeof SORTS)[number][0];
 const isSortKey = (v: string | null): v is SortKey => SORTS.some(([k]) => k === v);
 
@@ -242,7 +242,9 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     ? [...matched].sort((a, b) => (getPriceInfo(b)?.discount ?? 0) - (getPriceInfo(a)?.discount ?? 0))
     : sort === 'price'
       ? [...matched].sort((a, b) => priceOf(a) - priceOf(b))
-      : matched;
+      : sort === 'recent'
+        ? matched
+        : [...matched].sort((a, b) => (a.heat_rank ?? Infinity) - (b.heat_rank ?? Infinity));
 
   // 검색어·필터가 바뀌면 다시 처음 24개부터 (처음 열 때는 그대로)
   const filterKey = [query, selectedCategory, selectedTags.join(','), excludedTags.join(','), selectedBarriers.join(','), storyOnly, playersRange.join('-'), soloOnly, priceRange.join('-'), saleOnly, sort].join('|');
