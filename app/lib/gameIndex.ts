@@ -42,6 +42,32 @@ export async function getGameIndex() {
   });
 }
 
+// 카드 몇 장에만 필요한 게임들 (상세 페이지 "비슷한 게임") — 전체 목록과 같은 칸·같은 모양으로, 넘긴 id 순서대로. 숨긴 게임은 빠진다
+export async function getCardGames(ids: string[]) {
+  if (!ids.length) return [];
+  const [{ data: list, error }, { data: goty }, { data: cross }, { data: tagRows }] = await Promise.all([
+    selectGames(INDEX_FIELDS)
+      .in('id', ids)
+      .gte('price_history.price', 100)
+      .order('checked_at', { referencedTable: 'price_history', ascending: false })
+      .limit(1, { referencedTable: 'price_history' }),
+    selectGames('id, goty_awards').in('id', ids).not('goty_awards', 'is', null),
+    selectGames('id').in('id', ids).eq('has_crossplay', true),
+    supabase.from('game_tags').select('game_id, tag_id, rank').in('game_id', ids).order('rank'),
+  ]);
+  if (error) throw new Error(`게임 카드 조회 실패: ${error.message}`);
+  const gotyById = new Map((goty || []).map((g) => [g.id, g.goty_awards]));
+  const crossIds = new Set((cross || []).map((g) => g.id));
+  const tagIds = new Map<string, number[]>();
+  for (const r of tagRows || []) tagIds.set(r.game_id, [...(tagIds.get(r.game_id) || []), Number(r.tag_id)]);
+  const byId = new Map((list || []).map((g) => {
+    const { tags, spec_parsed, ...rest } = g as typeof g & { tags?: string[] | null };
+    void tags; // 번호(tag_ids)만 보낸다
+    return [g.id, flattenGame({ ...rest, tag_ids: tagIds.get(g.id) || [], spec_min: specMinOf(spec_parsed), goty_awards: gotyById.get(g.id), ...(crossIds.has(g.id) ? { has_crossplay: true } : {}) })] as const;
+  }));
+  return ids.map((id) => byId.get(id)).filter((g): g is NonNullable<typeof g> => !!g);
+}
+
 // 최소 사양 세 칸만 (cpu·gpu는 제조사별 등급, ram_gb). 하나도 못 읽은 게임은 null → flattenGame이 빼서 목록에 안 실림
 type SpecMin = { cpu: Record<string, number> | null; gpu: Record<string, number> | null; ram_gb: number | null };
 export function specMinOf(parsed: { min?: Partial<SpecMin> | null } | null | undefined): SpecMin | null {

@@ -2134,6 +2134,9 @@ a.hc-row:hover { background: var(--card-hover); }
 /* 같은 시리즈 · 디스코드 (오른쪽 아래) */
 .series-section { margin: 0; }
 .series-list { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; padding: 0; overflow: visible; }
+/* 상세 하단 "이 게임과 비슷한 게임" — 검색 결과 카드(.result-card) 4열, 좁은 화면은 2열 */
+.similar-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 720px) { .similar-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .series-item { width: auto; border-radius: var(--radius-card-sm); background: var(--inset); border: 1px solid transparent; box-shadow: none; }
 a.series-item:hover { border-color: var(--border); }
 .series-item.is-current { border-color: var(--accent); }

@@ -34,6 +34,8 @@ import { detailChipGroups } from '../../lib/tagGroups';
 import { buildTree, type TagDict } from '../../lib/tagTree';
 import tagDict from '../../lib/tag-search-dict.json';
 import { permanentRedirect } from 'next/navigation';
+import SimilarGames from '../../components/SimilarGames';
+import { getCardGames } from '../../lib/gameIndex';
 
 // 게임마다 처음 열릴 때 만들고 1시간 동안 재사용 (ISR). 가격·접속자는 하루 한 번 갱신되므로 충분
 // 의견 작성·수정·삭제(api/game-comments)와 신고 자동 숨김(api/community/report)은 그 게임 페이지를 바로 새로 만든다
@@ -53,6 +55,15 @@ const SOLO_LABEL: Record<string, string> = { story: '혼자서도 꽉 참', poss
 async function getGameTagIds(game: { id: string }) {
   const { data, error } = await supabase.from('game_tags').select('tag_id, rank').eq('game_id', game.id).order('rank');
   return !error && data?.length ? data.map((r) => r.tag_id as number) : [];
+}
+
+// 비슷한 게임 후보 — similar_games(태그 희귀도 점수순). 내 PC 사양으로 거르는 건 브라우저(SimilarGames)라 4장보다 넉넉히 받는다
+// 함수가 아직 없거나 실패하면 빈 목록 = 섹션 숨김
+const SIMILAR_CANDIDATES = 12;
+async function getSimilarGames(gameId: string) {
+  const { data, error } = await supabase.rpc('similar_games', { p_game_id: gameId, p_limit: SIMILAR_CANDIDATES });
+  if (error || !data?.length) return [];
+  try { return await getCardGames(data.map((r: { game_id: string }) => r.game_id)); } catch { return []; }
 }
 
 // PC 사양 접기 요약에 쓰는 그래픽카드 — 사양 줄 중 그래픽 항목의 첫 제품명만 짧게
@@ -154,7 +165,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
     if (target) permanentRedirect(`/games/${target}`);
     return <div className="page">게임을 찾을 수 없어요.</div>;
   }
-  const [top10, tagIds] = await Promise.all([top10Promise, getGameTagIds(game)]);
+  const [top10, tagIds, similarGames] = await Promise.all([top10Promise, getGameTagIds(game), getSimilarGames(game.id)]);
   const isTop10 = top10.includes(game.id);
   const chipGroups = detailChipGroups(TAG_TREE, { ...game, tag_ids: tagIds }, isTop10);
   // 멀티 방식(전용 서버/P2P)은 온라인 협동·대전이 있는 게임만
@@ -553,6 +564,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               </ol>
             </section>
           )}
+          {similarGames.length > 0 && <SimilarGames games={similarGames} />}
         </div>
       </div>
     </main>
