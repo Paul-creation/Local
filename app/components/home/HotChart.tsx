@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import type { HotItem, HotTab, RankChange } from '../../lib/hotChart';
 import LowestPriceBadge from '../LowestPriceBadge';
 import GameImage from '../GameImage';
@@ -44,9 +44,18 @@ function Sparkline({ points }: { points: number[] }) {
   const min = Math.min(...points), max = Math.max(...points);
   const span = max - min || 1;
   const d = points.map((p, i) => `${((i / (points.length - 1)) * w).toFixed(1)},${(h - 2 - ((p - min) / span) * (h - 4)).toFixed(1)}`).join(' ');
+  const gid = `spark-${useId().replace(/:/g, '')}`;
   return (
     <span className="hc-spark" title="최근 7일 동접자">
       <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} aria-hidden="true">
+        {/* 선 아래 같은 녹색의 옅은 세로 그라데이션 (위 15% → 아래 0%, 다크에서만 보임) */}
+        <defs>
+          <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="currentColor" stopOpacity="0.15" />
+            <stop offset="1" stopColor="currentColor" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <polygon className="hc-spark-area" points={`0,${h} ${d} ${w},${h}`} fill={`url(#${gid})`} />
         <polyline points={d} fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
       </svg>
       <span className="hc-spark-label">7일</span>
@@ -57,13 +66,13 @@ function Sparkline({ points }: { points: number[] }) {
 const metaText = (item: HotItem) =>
   [item.players, item.currentPlayers ? `동접 ${formatCount(item.currentPlayers)}` : ''].filter(Boolean).join(' · ');
 
-// 1~3위 큰 카드 — 왼쪽 위 큰 순위 숫자(장식)를 이미지가 일부 가리게 겹침. 아래: 제목·한 줄 소개·"인원 · 동접"·가격
+// 1~3위 큰 카드 — 이미지 좌상단에 작은 순위 배지. 아래: 제목·한 줄 소개·"인원 · 동접"·가격
 function BigCard({ item }: { item: HotItem }) {
   return (
     <Link href={`/games/${item.id}`} className="hc-card lift" aria-label={`${item.rank}위 ${item.name}`}>
-      <span className="hc-rank-big" aria-hidden="true">{item.rank}</span>
       <span className="hc-card-image">
         <GameImage src={item.image} fallbackWidth={920} alt="" />
+        <span className={`hc-rank-badge is-r${item.rank}`} aria-hidden="true">{item.rank}위</span>
         <span className="hc-card-badges">
           <Change change={item.change} />
           {item.weeks >= 2 && <span className="hc-weeks">{item.weeks}주째 순위권</span>}

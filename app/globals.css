@@ -229,7 +229,7 @@ img { display: block; }
 
 /* 가격·순위·인원 숫자는 자리 폭을 맞춤 */
 .num, .price-final, .price-original, .buy-price-final, .buy-price-original, .hc-price, .hc-row-rank-n,
-.hc-rank-big, .hc-row-ccu, .discount-badge, .player-stat-num, .card-meta, .hc-card-meta { font-variant-numeric: tabular-nums; }
+.hc-rank-badge, .hc-row-ccu, .discount-badge, .player-stat-num, .card-meta, .hc-card-meta { font-variant-numeric: tabular-nums; }
 
 /* ============================================================
    LAYOUT
@@ -1629,6 +1629,11 @@ a.series-item:hover { border-color: var(--border); }
   font-size: 15px; font-weight: 800; color: var(--text);
 }
 .home-event-cta:hover { border-color: var(--text-faint); }
+/* 다크: 꽉 찬 포인트 버튼 (AI 추천 버튼과 같은 색·굵기, 모서리만 6px) + 배경에 묻히지 않는 옅은 흰 테두리
+   (테마 데이터에는 색 값이 없고 배경 톤 이름만 있어서 테두리는 모든 테마 공통 흰 8%) */
+:root:not([data-theme="light"]) .home-event { border-color: rgba(255, 255, 255, 0.08); }
+:root:not([data-theme="light"]) .home-event-cta { min-height: 46px; padding: 0 24px; border: none; border-radius: 6px; background: var(--accent); color: var(--accent-ink); font-weight: 800; }
+:root:not([data-theme="light"]) .home-event-cta:hover { background: var(--accent-hover); }
 
 /* 히어로 */
 .home-hero.is-home { margin-bottom: 44px; }
@@ -1707,19 +1712,16 @@ a.series-item:hover { border-color: var(--border); }
 /* 1~3위 큰 카드 — 큰 순위 숫자를 이미지가 일부 가림 */
 .hc-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .hc-card {
-  --rank-num: #232B3A;
   position: relative; display: flex; flex-direction: column; overflow: hidden; padding: 16px 16px 18px;
   border-radius: var(--radius-card); background: var(--card); border: 1px solid var(--border-soft); color: var(--text);
 }
-:root[data-theme="light"] .hc-card { --rank-num: #e4e4ea; }
 .hc-card:hover { background: var(--card); }
-.hc-rank-big {
-  position: absolute; top: -14px; left: 4px; z-index: 0;
-  font-size: 150px; font-weight: 900; line-height: 1; letter-spacing: -0.06em;
-  color: var(--rank-num); pointer-events: none; user-select: none;
-}
-.hc-card-image { position: relative; z-index: 1; display: block; margin-left: 64px; aspect-ratio: 16 / 9; border-radius: var(--radius-card-sm); background: var(--inset); overflow: hidden; }
+.hc-card-image { position: relative; z-index: 1; display: block; aspect-ratio: 16 / 9; border-radius: var(--radius-card-sm); background: var(--inset); overflow: hidden; }
 .hc-card-image img { width: 100%; height: 100%; object-fit: cover; }
+.hc-rank-badge { position: absolute; top: 8px; left: 8px; z-index: 1; padding: 2px 8px; border-radius: 4px; font-size: 14px; font-weight: 800; line-height: 1.4; background: var(--text-2); color: var(--accent-ink); }
+.hc-rank-badge.is-r1 { background: var(--accent); }
+/* 1위 카드는 포인트색 옅은 테두리로 항상 강조 (다크) */
+:root:not([data-theme="light"]) .hc-card:has(.is-r1) { border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
 .hc-card-badges { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; align-items: center; }
 .hc-card-badges:empty { display: none; }
 .hc-card-badges .hc-change { background: var(--scrim); padding: 4px 7px; border-radius: var(--radius-chip); border: none; }
@@ -1740,6 +1742,7 @@ a.series-item:hover { border-color: var(--border); }
 .sc-chip.is-off { position: absolute; visibility: hidden; pointer-events: none; }
 .hc-row-sub .sc-row { flex: 1 1 0; width: auto; }
 .hc-spark { display: inline-flex; align-items: center; gap: 4px; color: var(--up); flex-shrink: 0; white-space: nowrap; }
+:root[data-theme="light"] .hc-spark-area { display: none; }
 .hc-spark-label { font-size: 14px; color: var(--text-faint); white-space: nowrap; }
 
 /* 4~10위 — 한 카드 안 목록 행, 행 사이 아주 옅은 선 */
@@ -1751,6 +1754,9 @@ a.series-item:hover { border-color: var(--border); }
 .hc-row + .hc-row { border-top: 1px solid var(--border-soft); }
 a.hc-row { transition: background 0.15s ease; }
 a.hc-row:hover { background: var(--card-hover); }
+/* 다크 지브라: 5·7·9위(머리 줄 다음 두 번째·네 번째·여섯 번째 행)만 반 톤 밝게, 호버는 한 단계 더 */
+:root:not([data-theme="light"]) a.hc-row:nth-child(odd) { background: color-mix(in srgb, var(--card), var(--card-hover) 50%); }
+:root:not([data-theme="light"]) a.hc-row:nth-child(odd):hover { background: var(--card-hover); }
 .hc-row-head { padding-top: 12px; padding-bottom: 8px; }
 .hc-row-head > span { font-size: 14px; font-weight: 700; color: var(--text-muted); }
 .hc-row-head > span:first-child { text-align: center; }
@@ -1772,8 +1778,6 @@ a.hc-row:hover { background: var(--card-hover); }
   .hc-cards { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -24px; padding: 0 24px 6px; scroll-padding-left: 24px; gap: 12px; scrollbar-width: none; }
   .hc-cards::-webkit-scrollbar { display: none; }
   .hc-card { flex: 0 0 82%; scroll-snap-align: start; }
-  .hc-rank-big { font-size: 120px; top: -10px; }
-  .hc-card-image { margin-left: 52px; }
   .hc-row { grid-template-columns: 30px 72px minmax(0, 1fr) 88px; column-gap: 10px; padding: 10px 12px; }
   .hc-row-ccu { display: none; }
   .hc-row-rank-n { font-size: 17px; }

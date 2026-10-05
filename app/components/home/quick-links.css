@@ -8,3 +8,7 @@
   .quick-links-row { gap: 6px; }
   .quick-chip { padding: 10px 14px; font-size: 14px; }
 }
+/* 다크: 테두리만 있던 칩을 패널(--card)보다 한 단계 밝은 회색조로 채움, 호버는 한 단계 더, 선택은 포인트 테두리+글자 */
+:root:not([data-theme="light"]) .quick-chip { background: var(--card-hover); }
+:root:not([data-theme="light"]) .quick-chip:hover { background: color-mix(in srgb, var(--card-hover), white 6%); }
+:root:not([data-theme="light"]) .quick-chip.on { background: var(--card-hover); border-color: var(--accent); color: var(--accent-text); }
