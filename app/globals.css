@@ -8,7 +8,7 @@
   color-scheme: dark;
 
   /* 면 — 선 대신 밝기 차이로 구분 */
-  --bg: #0B0E14;
+  --bg: #11151c;             /* 아주 옅은 네이비 틴트 */
   --card: #151A24;
   --card-hover: #1C2331;
   --inset: #10141C;          /* 카드 안의 칸 */
@@ -16,10 +16,10 @@
   --border-soft: #1E2533;
 
   /* 글자 */
-  --text: #E8EAED;
+  --text: #F3F4F6;            /* primary */
   --text-2: #C3C9D2;
-  --text-muted: #AEB6C3;
-  --text-faint: #9AA3B2;
+  --text-muted: #9CA3AF;      /* secondary — 카드 위 6.2:1 이상 */
+  --text-faint: #8B95A5;      /* muted — 카드(#1a2230) 위 5.3:1, #1C2331 위 5.2:1 */
 
   /* 포인트 */
   --accent: #66C0F4;          /* 스팀 블루 — 기본 버튼·슬라이더·포커스·선택된 칩·TOP 10·운영자 배지 */
@@ -50,6 +50,18 @@
   /* 이미지 위 글자·어둡게 깔기 (두 테마 공통) */
   --on-image: #ffffff;
   --scrim: rgba(0, 0, 0, 0.6);
+
+  /* 카드 면·태그·푸터 (라이트 값은 예전 모양 그대로) */
+  --card-surface: linear-gradient(135deg, #1a2230, #141921);
+  --card-line: rgba(255, 255, 255, 0.06);
+  --card-hl: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --card-shadow: var(--card-hl);
+  --card-hover-shadow: 0 6px 18px rgba(102, 192, 244, 0.14), var(--card-hl);
+  --price-surface: var(--card-surface);
+  --tag-bg: #1F2937;
+  --tag-border: #374151;
+  --tag-text: #E5E7EB;
+  --footer-bg: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.32));
 
   /* 로딩 시머 */
   --skel-base: #151A24;
@@ -122,6 +134,16 @@
   --header-text: #ffffff;
   --header-text-2: rgba(255, 255, 255, 0.88);
   --header-hover: rgba(255, 255, 255, 0.14);
+  --card-surface: var(--card);
+  --card-line: var(--border-soft);
+  --card-hl: none;
+  --card-shadow: var(--shadow-sm);
+  --card-hover-shadow: none;
+  --price-surface: color-mix(in srgb, var(--card) 82%, transparent);
+  --tag-bg: var(--inset);
+  --tag-border: transparent;
+  --tag-text: var(--text-2);
+  --footer-bg: none;
   --skel-base: #dcdce1;
   --skel-shine: rgba(255, 255, 255, 0.55);
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
@@ -1399,12 +1421,14 @@ img { display: block; }
 .cm-opinion-form { margin-bottom: 4px; }
 
 /* 공통 푸터 (layout) */
-.site-footer { max-width: 960px; margin: 56px auto 0; padding: 28px 16px 36px; text-align: center; color: var(--text-faint); font-size: var(--fs-sub); line-height: 1.7; }
-.site-footer-links { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0 14px; margin-bottom: 10px; font-size: var(--fs-sub); color: var(--text-dim); }
-.site-footer a { color: var(--text-muted); }
+.site-footer { max-width: none; margin: 56px 0 0; padding: 48px 16px 44px; text-align: center; color: var(--text-faint); font-size: var(--fs-sub); line-height: 2; background: var(--footer-bg); }
+.site-footer-links { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; margin-bottom: 12px; font-size: var(--fs-sub); color: var(--text-faint); }
+.site-footer a { color: var(--text-faint); }
 .site-footer a:hover { color: var(--text); }
-.site-footer-links a { display: inline-flex; align-items: center; min-height: 44px; } /* 터치 영역 44px (줄 간격이 대신 줄어듦) */
-.site-footer-copy { margin-top: 8px; }
+.site-footer-links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; } /* 터치 영역 44px */
+.site-footer-links a + a { border-left: 1px solid var(--card-line); }
+.site-footer p { max-width: 640px; margin-inline: auto; }
+.site-footer-copy { margin-top: 12px; }
 
 /* 개인정보처리방침·이용약관 */
 .legal p { font-size: 15px; line-height: 1.7; color: var(--text); margin-bottom: 10px; }
@@ -2330,7 +2354,7 @@ body:has(.home-hero.is-home) {
 }
 
 /* 상세 가격 카드 — 반투명 + 뒤 흐림 (이 카드에만) */
-.price-card { background: color-mix(in srgb, var(--card) 82%, transparent); backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2); }
+.price-card { background: var(--price-surface); backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2); }
 
 /* 목록 행 호버 — 배경 밝아짐 + 포인트 색 얇은 선 */
 a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover); box-shadow: inset 0 0 0 1px var(--accent-line); }
@@ -2353,3 +2377,46 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 /* 상세 맨 위 뱃지 줄은 한 줄로 고정 — 글꼴이 늦게 바뀔 때 줄 수가 달라져 제목이 밀리는 것(레이아웃 이동) 방지 */
 .dh-badges { flex-wrap: nowrap; overflow: hidden; }
 .dh-badges > * { flex-shrink: 0; }
+
+
+/* ============================================================
+   다크 가독성 — 카드 면·텍스트 위계·태그 안내 (색은 위 토큰으로만, 라이트 값은 예전 그대로)
+   ============================================================ */
+.detail-card, .hc-card, .card, .cm-board-card, .cm-card, .cm-list { background: var(--card-surface); border-color: var(--card-line); }
+.detail-card, .hc-card { box-shadow: var(--card-hl); }
+.card { box-shadow: var(--card-shadow); }
+.price-card { border-color: var(--card-line); box-shadow: var(--card-hl); }
+
+/* 클릭되는 카드만 — 호버 시 떠오름 + 포인트색 옅은 그림자 (움직임은 .lift·.card가 담당) */
+.hc-card:hover { background: var(--card-surface); }
+.card:hover, .hc-card:hover, .cm-board-card:hover { box-shadow: var(--card-hover-shadow); }
+:root[data-theme="light"] .card:hover { box-shadow: var(--shadow-sm); }
+@media (prefers-reduced-motion: reduce) {
+  .card, .card:hover, .cm-board-card, .cm-board-card:hover { transition: none; transform: none; }
+}
+
+/* 상세 정보 라벨·값 */
+.info-label { font-size: 13px; font-weight: 500; color: var(--text-muted); }
+.info-value { font-size: 15px; font-weight: 600; color: var(--text); }
+
+/* 핵심 수치 — PC 32px(순위 28px), 모바일 24px */
+.steam-pct > .num { font-size: 32px; }
+.steam-rank { font-size: 28px; }
+.player-stat-num { font-size: 28px; font-weight: 700; }
+@media (max-width: 760px) {
+  .steam-pct > .num, .steam-rank, .player-stat-num { font-size: 24px; }
+}
+
+/* 태그 칩 */
+.category-tag { color: var(--tag-text); background: var(--tag-bg); box-shadow: inset 0 0 0 1px var(--tag-border); }
+.tag-chip-btn { border: none; font-family: inherit; line-height: inherit; cursor: pointer; }
+.tag-chip-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.main-tag-row .tag-chip-btn:hover, .main-tag-row .tag-chip-btn:focus-visible, .main-tag-row .tag-chip-btn[aria-pressed="true"] { color: var(--accent-text); box-shadow: inset 0 0 0 1px var(--accent-line); }
+
+/* 태그 설명 안내 줄 — 높이 고정(2줄)이라 내용이 바뀌어도 레이아웃이 흔들리지 않음 */
+.tag-hint {
+  margin-top: 12px; height: 3em; font-size: 15px; line-height: 1.5; color: var(--text-faint);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.tag-hint.is-active { color: var(--text-muted); }
+.tag-hint strong { color: var(--text); font-weight: 700; }

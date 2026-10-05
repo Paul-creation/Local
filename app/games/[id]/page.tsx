@@ -28,6 +28,7 @@ import RelatedPosts from '../../components/community/RelatedPosts';
 import { selectGames, mergedTargetOf } from '../../lib/visibleGames';
 import ContentNotice from '../../components/ContentNotice';
 import TagHelp from '../../components/search/TagHelp';
+import TagChips from '../../components/TagChips';
 import { buildTree, tagName, type TagDict } from '../../lib/tagTree';
 import tagDict from '../../lib/tag-search-dict.json';
 import { permanentRedirect } from 'next/navigation';
@@ -256,7 +257,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               </a>
             )}
             <AddToCompare gameId={game.id} name={game.name} thumb={game.cover_image_url || game.card_image_url} />
-            <p className="price-card-note">가격은 하루 한 번 갱신돼요. 구매 전 스토어에서 한 번 더 확인해 주세요.</p>
+            <p className="price-card-note">가격·할인 정보는 실제와 다를 수 있어요. 가격은 하루 한 번 갱신되니 구매 전 스토어에서 확인해 주세요.</p>
           </div>
           {game.discord_url && (
             <a href={game.discord_url} target="_blank" rel="noopener nofollow" className="detail-card discord-card">공식 디스코드 ↗</a>
@@ -278,16 +279,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           <section className="detail-card">
             {game.fun_description && <p className="detail-fun">{game.fun_description}</p>}
             {game.description && <p className="detail-description-v2">{game.description}</p>}
-            {tagNames.length > 0 && (
-              <div className="main-tag-row">
-                {tagNames.map((tag: string) => (
-                  <span key={tag} className="tag-chip-wrap">
-                    <span className="category-tag">{tag}</span>
-                    <TagHelp tag={tag} />
-                  </span>
-                ))}
-              </div>
-            )}
+            {tagNames.length > 0 && <TagChips tags={tagNames} />}
             <ContentNotice ids={game.content_descriptor_ids} />
           </section>
 
