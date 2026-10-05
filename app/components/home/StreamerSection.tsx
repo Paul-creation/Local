@@ -22,7 +22,7 @@ export default function StreamerSection({ theme }: { theme: StreamerTheme | null
               <GameImage src={g.image} steamSize="header_292x136" fallbackWidth={480} alt="" loading="lazy" className="sg-img" />
               <span className="sg-name">{g.name}</span>
             </Link>
-            <StreamerBadge names={g.streamers} max={2} suffix=" 플레이" />
+            <StreamerBadge names={g.streamers} max={2} />
             {g.videoId && <a href={`https://www.youtube.com/watch?v=${g.videoId}`} target="_blank" rel="noopener noreferrer" className="sg-video">플레이 영상 보기</a>}
           </li>
         ))}
