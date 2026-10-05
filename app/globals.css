@@ -51,6 +51,13 @@
   --on-image: #ffffff;
   --scrim: rgba(0, 0, 0, 0.6);
 
+  /* 찜·구매·비교 버튼 (디자인 시안) — 컴포넌트는 이 토큰만 참조 */
+  --wishlist-active: #f43f5e;
+  --steam-buy: #107c10;
+  --steam-buy-hover: #1b8e27;
+  --compare-active: #2563eb;
+  --on-solid: #ffffff;        /* 위 색 면 위 글자 */
+
   /* 카드 면·태그·푸터 (라이트 값은 예전 모양 그대로) */
   --card-surface: linear-gradient(135deg, #202a3a, #1a2230);   /* 배경 #0b0e13 < 패널 #151a23 < 카드 */
   --card-line: rgba(255, 255, 255, 0.06);
@@ -147,6 +154,11 @@
   --accent-ink: #ffffff;
   --accent-soft: #e8f1fd;
   --accent-text: #0a4fae;
+  --wishlist-active: #f43f5e;
+  --steam-buy: #107c10;
+  --steam-buy-hover: #1b8e27;
+  --compare-active: #2563eb;
+  --on-solid: #ffffff;        /* 위 색 면 위 글자 */
   --focus-glow: 0 0 0 3px rgba(0, 113, 227, 0.15);
   --focus-glow-color: rgba(0, 113, 227, 0.15);
   --sale: #c62828;
@@ -2016,6 +2028,32 @@ a.hc-row:hover { background: var(--card-hover); }
 .price-card-compare-status a { color: var(--accent-text); font-weight: 800; white-space: nowrap; }
 .price-card-note { font-size: 13px; line-height: 1.5; color: var(--text-muted); }
 
+/* 가격 박스 버튼 시안 — 모서리 2px, 아이콘은 인라인 SVG */
+.price-card-actions { display: flex; gap: 8px; margin-top: 6px; }
+.price-card-actions .price-card-buy { flex: 1; min-width: 0; margin-top: 0; }
+.price-card-buy.is-steam, .compare-add, .heart-btn { border-radius: 2px; }
+.price-card-buy.is-steam { background: var(--steam-buy); color: var(--on-solid); }
+.price-card-buy.is-steam:hover { background: var(--steam-buy-hover); }
+.compare-add { background: transparent; border-color: var(--accent); color: var(--accent-text); }
+.compare-add:hover { border-color: var(--accent-hover); background: var(--accent-soft); }
+.compare-add[aria-pressed="true"] { background: var(--compare-active); border-color: var(--compare-active); color: var(--on-solid); }
+.compare-add svg, .heart-btn svg { flex-shrink: 0; }
+
+/* 하트 버튼: 기본은 빈 하트, 찜하면 채움 + 확대 애니메이션 */
+.heart-btn { display: inline-flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; background: transparent; border: 1px solid var(--border); color: var(--text-faint); transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease; }
+.heart-btn:hover { border-color: var(--text-faint); background: var(--card-hover); }
+.heart-btn svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; }
+.heart-btn[aria-pressed="true"] { border-color: var(--wishlist-active); color: var(--wishlist-active); }
+.heart-btn[aria-pressed="true"] svg { fill: currentColor; animation: heart-pop 0.35s ease; }
+.heart-btn.is-box { width: 52px; height: 52px; flex-shrink: 0; }
+/* 비교 페이지 카드: 썸네일 우측 상단에 올리는 원형 */
+.heart-btn.is-overlay { position: absolute; top: 8px; right: 8px; z-index: 1; width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--scrim); color: var(--on-image); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.heart-btn.is-overlay:hover { background: var(--scrim); }
+.heart-btn.is-overlay[aria-pressed="true"] { background: var(--wishlist-active); color: var(--on-solid); }
+.cmp-poster { position: relative; }
+@keyframes heart-pop { 0% { transform: scale(0.8); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .heart-btn[aria-pressed="true"] svg { animation: none; } }
+
 /* 찜목록 버튼·페이지 — 색은 기존 토큰만 (담긴 상태는 포인트색 테두리·글자 + 문구로 구분) */
 .wishlist-btn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent-text); }
 .price-card-wishlist { width: 100%; }
@@ -2592,8 +2630,6 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 .cb-quick-wrap .filter-label { font-size: 17px; font-weight: 800; color: var(--text); margin-bottom: 10px; }
 .cb-quick-btn { color: var(--text-muted); }
 .cb-quick-btn:hover:not(:disabled) { color: var(--text); }
-:root:not([data-theme="light"]) .price-card-compare { border-color: rgba(255, 255, 255, 0.2); }
-:root:not([data-theme="light"]) .price-card-compare:hover { border-color: var(--accent); color: var(--accent-text); }
 /* ============================================================
    카드 안 정렬 — 고정 높이 대신 flex column: 정보 영역이 남는 높이를 채우고, 가격 줄은 항상 맨 아래
    (역대 최저가 배지가 줄바꿈되면 가격 줄 위로 올라가서 가격 줄 위치는 카드마다 같음)

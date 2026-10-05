@@ -17,7 +17,7 @@ import CompareBuilder from '../components/CompareBuilder';
 import { BUILDER_FIELDS } from '../lib/compareRule';
 import { playersText } from '../lib/players';
 import GameImage from '../components/GameImage';
-import WishlistButton from '../components/wishlist/WishlistButton';
+import HeartButton from '../components/wishlist/HeartButton';
 import { selectGames } from '../lib/visibleGames';
 
 export const dynamic = 'force-dynamic';
@@ -256,14 +256,14 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
               <span className="cmp-poster-image">
                 <GameImage src={g.cover_image_url || g.card_image_url} steamSize="header" alt="" />
               </span>
+              {/* 썸네일 우측 상단 하트 — 카드 전체가 링크라서 클릭이 이동으로 번지지 않게 막는다 (HeartButton) */}
+              <HeartButton gameId={g.id} variant="overlay" />
               <span className="cmp-poster-body">
                 <span className="cmp-poster-name">{g.name}</span>
                 <span className="cmp-poster-meta">
                   {[playersText(g), g.is_free ? '무료' : price?.formattedFinal].filter(Boolean).join(' · ')}
                   {price && price.discount > 0 && !g.is_free && <span className="discount-badge">-{price.discount}%</span>}
                 </span>
-                {/* 카드 전체가 링크라서 버튼 클릭은 이동으로 번지지 않게 막는다 (WishlistButton) */}
-                <WishlistButton gameId={g.id} size="sm" />
               </span>
             </Link>
           );
