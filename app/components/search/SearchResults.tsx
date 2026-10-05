@@ -92,7 +92,7 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
               {filtered.slice(0, visibleCount).map((game, i) => {
                 const price = getPriceInfo(game);
                 const isSelected = !!compareList.find(g => g.id === game.id);
-                const meta = [game.category, playersText(game), ...displayTags(tree, game, 2)].filter(Boolean).join(' · ');
+                const meta = [game.category, playersText(game), ...displayTags(tree, game, 2)].filter(Boolean);
                 // 스팀 외 스토어 게임은 스토어 이름을 작게
                 const store = game.steam_appid ? null : STORE_NAME[game.source] ?? '기타 스토어';
                 return (
@@ -107,7 +107,7 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
                       </span>
                       {game.goty_awards && <span className="goty-row"><GotyBadge awards={game.goty_awards} /></span>}
                       {store && <span className="result-store">{store}</span>}
-                      {meta && <span className="result-meta">{meta}</span>}
+                      {meta.length > 0 && <span className="result-meta">{meta.map((m) => <span key={m} className="hc-tag">{m}</span>)}</span>}
                       <span className="result-foot">
                         <span className="result-price">
                           {game.is_free ? (
