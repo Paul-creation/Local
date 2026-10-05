@@ -7,6 +7,7 @@ const cacheDb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.
 import { headers } from 'next/headers';
 import { guardedClaudeFetch } from '../lib/aiGuard';
 import Link from 'next/link';
+import { getPriceInfo } from '../lib/price';
 import { formatDate } from '../lib/date';
 import CompareChat from '../components/CompareChat';
 import ScrollToTop from '../components/ScrollToTop';
@@ -133,7 +134,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
   const { data } = await selectGames('id, name').in('id', ids);
   const games = ids.map((id) => (data || []).find((g) => g.id === id)).filter(Boolean) as any[];
   const names = games.map((g) => g.name).join(' vs ');
-  const ogTitle = `🎮 게임 ${games.length}개 비교 — 우리 뭐 할래?`;
+  const ogTitle = `게임 ${games.length}개 비교 — 우리 뭐 할래?`;
   const desc = `${names} — 상황별 추천도·인원·가격을 한눈에 비교해보세요`;
   const image = `/api/og/compare?ids=${games.map((g) => g.id).join(',')}`;
   return {
@@ -143,6 +144,18 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
     openGraph: { title: ogTitle, description: desc, images: [{ url: image, width: 1200, height: 630 }] },
     twitter: { card: 'summary_large_image', title: ogTitle, description: desc, images: [image] },
   };
+}
+
+// 상황별 추천도 — 5칸 막대(장식) + "N/5"
+function Meter({ score }: { score: number }) {
+  return (
+    <span className="cmp-meter">
+      <span className="cmp-meter-bar" aria-hidden="true">
+        {[1, 2, 3, 4, 5].map((n) => <span key={n} className={n <= score ? 'on' : ''} />)}
+      </span>
+      <span className="cmp-meter-num">{score}/5</span>
+    </span>
+  );
 }
 
 export default async function ComparePage({ searchParams }: { searchParams: Promise<{ ids?: string }> }) {
@@ -169,9 +182,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
   if (!games || games.length < 2) {
     return (
       <main className="page">
-        <p style={{ textAlign: 'center', marginTop: 60, color: 'var(--text-dim)' }}>
-          게임을 불러오지 못했어요. 다시 시도해줘요.
-        </p>
+        <p className="cmp-empty">게임을 불러오지 못했어요. 다시 시도해 주세요.</p>
       </main>
     );
   }
@@ -200,12 +211,12 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
     }},
     { label: '솔로 플레이', render: (g: any) =>
       g.solo_playable === true && g.max_players === 1
-        ? <span style={{ color: '#4a9e3a', fontWeight: 700 }}>싱글 플레이 게임</span>
+        ? '싱글 플레이 게임'
         : g.solo_playable === true
-        ? <span style={{ color: '#4a9e3a', fontWeight: 700 }}>솔로 가능</span>
+        ? '솔로 가능'
         : '멀티 필수'
     },
-    { label: '난이도', key: 'difficulty' },
+    { label: '진입장벽', render: (g: any) => g.entry_barrier || g.difficulty || '-' },
     { label: '한국어', key: 'korean_support' },
     { label: '필요 용량', render: (g: any) => g.storage_gb ? `${g.storage_gb}GB` : '-' },
     { label: '출시일', render: (g: any) => formatDate(g.release_date) || '-' },
@@ -219,177 +230,117 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
 
   const gameCount = games.length;
 
+  const cols = { gridTemplateColumns: `180px repeat(${gameCount}, minmax(0, 1fr))` };
+
   return (
-    <main className="page" style={{ paddingBottom: 32 }}>
+    <main className="page cmp-page">
       <ScrollToTop />
 
       <BackToList />
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 24 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em' }}>
-          게임 비교
-        </h1>
+      <div className="cmp-head">
+        <h1 className="cmp-title">게임 비교</h1>
         <ShareButton
           title={`게임 ${games.length}개 비교 — 우리 뭐 할래?`}
           text={`${games.map((g: any) => g.name).join(' vs ')} 중에 뭐 할래?`}
         />
       </div>
 
-      {/* 게임 헤더 */}
-      <div className="compare-header" style={{
-        display: 'grid',
-        gridTemplateColumns: `180px repeat(${gameCount}, 1fr)`,
-        gap: 12, marginBottom: 24,
-      }}>
+      {/* 포스터 카드 */}
+      <div className="compare-header cmp-posters" style={cols}>
         <div />
-        {games.map((g: any) => (
-          <Link href={`/games/${g.id}`} key={g.id} style={{ textDecoration: 'none' }}>
-            <div style={{
-              background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
-              overflow: 'hidden', border: '1px solid var(--border-light)',
-              boxShadow: 'var(--shadow-sm)',
-            }}>
-              <GameImage src={g.card_image_url || g.cover_image_url} alt={g.name} style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover' }} />
-              <div style={{ padding: '10px 12px' }}>
-                <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)', lineHeight: 1.3 }}>{g.name}</div>
-              </div>
-            </div>
-          </Link>
-        ))}
+        {games.map((g: any) => {
+          const price = getPriceInfo(g);
+          return (
+            <Link href={`/games/${g.id}`} key={g.id} className="cmp-poster lift">
+              <span className="cmp-poster-image">
+                <GameImage src={g.cover_image_url || g.card_image_url} steamSize="header" alt="" />
+              </span>
+              <span className="cmp-poster-body">
+                <span className="cmp-poster-name">{g.name}</span>
+                <span className="cmp-poster-meta">
+                  {[playersText(g), g.is_free ? '무료' : price?.formattedFinal].filter(Boolean).join(' · ')}
+                  {price && price.discount > 0 && !g.is_free && <span className="discount-badge">-{price.discount}%</span>}
+                </span>
+              </span>
+            </Link>
+          );
+        })}
       </div>
 
       {/* 상황별 추천도 */}
       {activeSituations.length > 0 && situationScores.length === 0 && (
-        <p style={{ padding: '18px 20px', marginBottom: 32, borderRadius: 'var(--radius-lg)', background: 'var(--bg-card)', border: '1px solid var(--border-light)', color: 'var(--text-dim)', fontSize: 15 }}>
-          상황별 추천도를 불러오지 못했어요. 잠시 후 새로고침해 주세요.
-        </p>
+        <p className="cmp-note">상황별 추천도를 불러오지 못했어요. 잠시 후 새로고침해 주세요.</p>
       )}
       {activeSituations.length > 0 && situationScores.length > 0 && (
-        <>
-          <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 12 }}>상황별 추천도</h2>
-          <div style={{
-            background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
-            border: '1px solid var(--border-light)',
-            boxShadow: 'var(--shadow-sm)', marginBottom: 28, overflow: 'hidden',
-          }}>
-            {/* PC: 테이블 형태 */}
+        <section className="cmp-section">
+          <h2 className="cmp-h2">상황별 추천도</h2>
+          <div className="cmp-table">
+            {/* PC: 표 */}
             <div className="compare-desktop">
               {activeSituations.map((situation, si) => (
-                <div key={situation} style={{
-                  display: 'grid',
-                  gridTemplateColumns: `180px repeat(${gameCount}, 1fr)`,
-                  borderBottom: si < activeSituations.length - 1 ? '1px solid var(--border-light)' : 'none',
-                }}>
-                  <div style={{ padding: '14px 16px', fontSize: 15, color: 'var(--text-dim)', fontWeight: 600, background: 'var(--bg)' }}>
-                    {situation}
-                  </div>
+                <div key={situation} className="cmp-row" style={cols}>
+                  <div className="cmp-row-label">{situation}</div>
                   {games.map((g: any) => {
                     const gameScore = situationScores.find((s: any) => s.game === g.name);
-                    const score = gameScore?.scores?.[si] ?? 0;
+                    return <div key={g.id} className="cmp-cell"><Meter score={gameScore?.scores?.[si] ?? 0} /></div>;
+                  })}
+                </div>
+              ))}
+            </div>
+            {/* 모바일: 세로 */}
+            <div className="compare-mobile">
+              {activeSituations.map((situation, si) => (
+                <div key={situation} className="cmp-mrow">
+                  <div className="cmp-row-label is-m">{situation}</div>
+                  {games.map((g: any) => {
+                    const gameScore = situationScores.find((s: any) => s.game === g.name);
                     return (
-                      <div key={g.id} style={{ padding: '14px 16px', borderLeft: '1px solid var(--border-light)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                        {[1,2,3,4,5].map(n => (
-                          <span key={n} style={{ fontSize: 17, color: n <= score ? '#f59e0b' : 'var(--border)' }}>★</span>
-                        ))}
-                        <span style={{ fontSize: 14, color: 'var(--text-dimmer)', marginLeft: 4 }}>{score}/5</span>
+                      <div key={g.id} className="cmp-mitem">
+                        <span className="cmp-mname">{g.name}</span>
+                        <Meter score={gameScore?.scores?.[si] ?? 0} />
                       </div>
                     );
                   })}
                 </div>
               ))}
             </div>
-
-            {/* 모바일: 세로 형태 */}
-            <div className="compare-mobile">
-              {activeSituations.map((situation, si) => (
-                <div key={situation} style={{
-                  borderBottom: si < activeSituations.length - 1 ? '1px solid var(--border-light)' : 'none',
-                  padding: '12px 16px',
-                }}>
-                  <div style={{ fontSize: 15, color: 'var(--text-dim)', fontWeight: 600, marginBottom: 10 }}>
-                    {situation}
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {games.map((g: any) => {
-                      const gameScore = situationScores.find((s: any) => s.game === g.name);
-                      const score = gameScore?.scores?.[si] ?? 0;
-                      return (
-                        <div key={g.id} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <span style={{ fontSize: 14, color: 'var(--text-dimmer)', width: 90, flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            {g.name}
-                          </span>
-                          <div style={{ display: 'flex', gap: 2 }}>
-                            {[1,2,3,4,5].map(n => (
-                              <span key={n} style={{ fontSize: 16, color: n <= score ? '#f59e0b' : 'var(--border)' }}>★</span>
-                            ))}
-                          </div>
-                          <span style={{ fontSize: 14, color: 'var(--text-dimmer)' }}>{score}/5</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
-        </>
+        </section>
       )}
 
       {/* 스펙 비교 */}
-      <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 12 }}>스펙 비교</h2>
-      <div style={{
-        background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)',
-        border: '1px solid var(--border-light)',
-        boxShadow: 'var(--shadow-sm)', overflow: 'hidden',
-      }}>
-        {/* PC: 테이블 형태 */}
-        <div className="compare-desktop">
-          {ROWS.map((row, i) => (
-            <div key={row.label} style={{
-              display: 'grid',
-              gridTemplateColumns: `180px repeat(${gameCount}, 1fr)`,
-              borderBottom: i < ROWS.length - 1 ? '1px solid var(--border-light)' : 'none',
-            }}>
-              <div style={{ padding: '14px 16px', fontSize: 15, color: 'var(--text-dim)', fontWeight: 600, background: 'var(--bg)' }}>
-                {row.label}
-              </div>
-              {games.map((g: any) => (
-                <div key={g.id} style={{ padding: '14px 16px', fontSize: 15, color: 'var(--text)', fontWeight: 500, borderLeft: '1px solid var(--border-light)' }}>
-                  {row.render ? row.render(g) : (g[row.key!] || '-')}
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-
-        {/* 모바일: 세로 형태 */}
-        <div className="compare-mobile">
-          {ROWS.map((row, i) => (
-            <div key={row.label} style={{
-              borderBottom: i < ROWS.length - 1 ? '1px solid var(--border-light)' : 'none',
-              padding: '12px 16px',
-            }}>
-              <div style={{ fontSize: 14, color: 'var(--text-dimmer)', fontWeight: 600, marginBottom: 8 }}>
-                {row.label}
-              </div>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+      <section className="cmp-section">
+        <h2 className="cmp-h2">스펙 비교</h2>
+        <div className="cmp-table">
+          <div className="compare-desktop">
+            {ROWS.map((row) => (
+              <div key={row.label} className="cmp-row" style={cols}>
+                <div className="cmp-row-label">{row.label}</div>
                 {games.map((g: any) => (
-                  <div key={g.id} style={{
-                    flex: 1, minWidth: 100,
-                    background: 'var(--bg)', borderRadius: 8,
-                    padding: '8px 10px', fontSize: 15, color: 'var(--text)', fontWeight: 500,
-                  }}>
-                    <div style={{ fontSize: 'var(--fs-sub)', color: 'var(--text-dimmer)', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {g.name}
-                    </div>
-                    {row.render ? row.render(g) : (g[row.key!] || '-')}
-                  </div>
+                  <div key={g.id} className="cmp-cell num">{row.render ? row.render(g) : (g[row.key!] || '-')}</div>
                 ))}
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          <div className="compare-mobile">
+            {ROWS.map((row) => (
+              <div key={row.label} className="cmp-mrow">
+                <div className="cmp-row-label is-m">{row.label}</div>
+                <div className="cmp-mgrid">
+                  {games.map((g: any) => (
+                    <div key={g.id} className="cmp-mbox">
+                      <span className="cmp-mname">{g.name}</span>
+                      <span className="num">{row.render ? row.render(g) : (g[row.key!] || '-')}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-            {/* AI 분석 채팅 */}
+      </section>
+
+      {/* AI 질문 카드 */}
       <CompareChat games={games} />
     </main>
   );

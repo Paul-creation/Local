@@ -13,13 +13,14 @@ function formatCount(n: number) {
   return n.toLocaleString('ko-KR');
 }
 
+// 순위 변동 — 상승 초록 "+N", 유지 "–", 하락 빨강 "-N", 처음 진입 "NEW" (글자만, 기호 없음)
 function Change({ change }: { change: RankChange }) {
   if (!change) return null;
   if (change.type === 'new') return <span className="hc-change is-new">NEW</span>;
-  if (change.type === 'same') return <span className="hc-change is-same" aria-label="순위 유지">━</span>;
+  if (change.type === 'same') return <span className="hc-change is-same" aria-label="순위 유지">–</span>;
   return (
     <span className={`hc-change is-${change.type}`} aria-label={`${change.n}계단 ${change.type === 'up' ? '상승' : '하락'}`}>
-      {change.type === 'up' ? '▲' : '▼'}{change.n}
+      {change.type === 'up' ? '+' : '-'}{change.n}
     </span>
   );
 }
@@ -55,19 +56,19 @@ function Sparkline({ points }: { points: number[] }) {
 const metaText = (item: HotItem) =>
   [item.players, item.currentPlayers ? `동접 ${formatCount(item.currentPlayers)}` : ''].filter(Boolean).join(' · ');
 
-// 1~3위 큰 카드 — 위: 게임 이미지(선명하게), 아래: 글. 순위 숫자는 경계 왼쪽에 반쯤 걸침
+// 1~3위 큰 카드 — 왼쪽 위 큰 순위 숫자(장식)를 이미지가 일부 가리게 겹침. 아래: 제목·한 줄 소개·"인원 · 동접"·가격
 function BigCard({ item }: { item: HotItem }) {
   return (
-    <Link href={`/games/${item.id}`} className="hc-card">
+    <Link href={`/games/${item.id}`} className="hc-card lift" aria-label={`${item.rank}위 ${item.name}`}>
+      <span className="hc-rank-big" aria-hidden="true">{item.rank}</span>
       <span className="hc-card-image">
-        <GameImage src={item.image} fallbackWidth={1280} />
+        <GameImage src={item.image} fallbackWidth={920} alt="" />
         <span className="hc-card-badges">
           <Change change={item.change} />
           {item.weeks >= 2 && <span className="hc-weeks">{item.weeks}주째 순위권</span>}
         </span>
       </span>
       <span className="hc-card-body">
-        <span className="hc-rank-big" aria-label={`${item.rank}위`}>{item.rank}</span>
         <span className="hc-card-name">{item.name}</span>
         {item.fun && <span className="hc-card-fun">{item.fun}</span>}
         <span className="hc-card-foot">
@@ -102,24 +103,27 @@ function Row({ item }: { item: HotItem }) {
   );
 }
 
-export default function HotChart({ tabs }: { tabs: HotTab[] }) {
+// 탭: 친구랑 하기 좋은(기본) · 전체
+const SHOWN_TABS = ['friends', 'all'];
+
+export default function HotChart({ tabs: allTabs }: { tabs: HotTab[] }) {
+  const tabs = allTabs.filter((t) => SHOWN_TABS.includes(t.key));
   const [key, setKey] = useState(tabs[0]?.key);
   const tab = tabs.find((t) => t.key === key) || tabs[0];
   if (!tab) return null;
 
   return (
-    <section className="hc">
+    <section className="hc home-block">
       <div className="hc-head">
-        <h2 className="section-title">🔥 지금 뜨는 게임</h2>
-        <div className="hc-tabs" role="tablist">
+        <h2 className="section-title">지금 뜨는 게임</h2>
+        <div className="tabs" role="tablist" aria-label="지금 뜨는 게임 보기">
           {tabs.map((t) => (
-            <button key={t.key} type="button" role="tab" aria-selected={t.key === tab.key} className={`hc-tab${t.key === tab.key ? ' is-active' : ''}`} onClick={() => setKey(t.key)}>
+            <button key={t.key} type="button" role="tab" aria-selected={t.key === tab.key} className={`tab${t.key === tab.key ? ' is-active' : ''}`} onClick={() => setKey(t.key)}>
               {t.label}
             </button>
           ))}
         </div>
       </div>
-      {tab.key === 'rising' && <p className="hc-note">7일 전보다 순위가 많이 오른 순서예요</p>}
       <div className="hc-cards" role="tabpanel">
         {tab.items.slice(0, 3).map((item) => <BigCard key={item.id} item={item} />)}
       </div>

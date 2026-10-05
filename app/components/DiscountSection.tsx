@@ -17,7 +17,7 @@ export default function DiscountSection({ games }: { games: any[] }) {
   return (
     <section id="discount" className="discount-section">
       <div className="section-header">
-        <h2 className="section-title">🔥 지금 할인 중</h2>
+        <h2 className="section-title">지금 할인 중</h2>
         <span className="section-sub">할인 끝나기 전에 확인해봐</span>
       </div>
       <div className="grid">

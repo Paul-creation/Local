@@ -30,6 +30,6 @@ export async function POST(req: NextRequest) {
   const { error } = await db.from('feedback').insert({ kind, body: text, contact: contact || null, page_url: pageUrl, ip_hash });
   if (error) return fail('보내지 못했어요. 잠시 후 다시 시도해주세요.', 500);
 
-  after(() => notifyDiscord(`📮 새 의견 · ${FEEDBACK_KINDS[kind]}`, text, 'feedback'));
+  after(() => notifyDiscord(`새 의견 · ${FEEDBACK_KINDS[kind]}`, text, 'feedback'));
   return NextResponse.json({ ok: true });
 }

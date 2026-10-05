@@ -5,6 +5,7 @@ import "./globals.css";
 import { SITE_NAME, SITE_URL, SITE_TITLE, SITE_META_DESCRIPTION, BASE_OG } from "./lib/site";
 import SiteHeader from "./components/home/SiteHeader";
 import SiteFooter from "./components/SiteFooter";
+import { THEME_SCRIPT } from "./lib/theme";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -26,7 +27,11 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ko">
+    // 다크가 기본. 라이트를 고른 사람은 첫 HTML 스크립트가 data-theme="light"를 붙임 → html 속성이 서버와 달라도 경고 안 냄
+    <html lang="ko" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body>
         <SiteHeader />
         {children}

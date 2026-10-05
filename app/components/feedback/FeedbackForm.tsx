@@ -30,8 +30,8 @@ export default function FeedbackForm({ from, initialKind }: { from?: string; ini
   if (done) {
     return (
       <div className="cm-card">
-        <p style={{ fontSize: 17, fontWeight: 700, color: 'var(--text)', marginBottom: 8 }}>보내주셔서 고마워요! 🙏</p>
-        <p className="cm-sub" style={{ marginBottom: 16 }}>꼼꼼히 읽고 반영할게요.</p>
+        <p className="fb-done-title">보내주셔서 고마워요!</p>
+        <p className="cm-sub">꼼꼼히 읽고 반영할게요.</p>
         <div className="cm-inline-row">
           <a href="/" className="cm-btn">홈으로</a>
           <button type="button" className="cm-btn" onClick={() => { setDone(false); setBody(''); setKind(null); }}>하나 더 보내기</button>
@@ -51,7 +51,7 @@ export default function FeedbackForm({ from, initialKind }: { from?: string; ini
       </div>
       <textarea
         className="cm-input cm-textarea"
-        placeholder={kind === 'info' ? '어떤 게임의 어떤 정보가 다른지 알려주세요 (예: ○○ 최대 인원은 8명이에요)' : '내용을 입력하세요'}
+        placeholder={kind === 'info' ? '어떤 게임의 어떤 정보가 다른지 알려주세요 (예: 오버쿡드 2 최대 인원은 4명이에요)' : '내용을 입력하세요'}
         value={body} maxLength={FEEDBACK_LIMITS.body[1]} onChange={(e) => setBody(e.target.value)} aria-label="내용"
       />
       <p className="cm-hint">{[...body].length} / {FEEDBACK_LIMITS.body[1]}자</p>
@@ -61,7 +61,7 @@ export default function FeedbackForm({ from, initialKind }: { from?: string; ini
       />
       <p className="cm-hint">연락처는 공개되지 않고 관리자만 봐요.</p>
       {error && <p className="cm-error">{error}</p>}
-      <div className="cm-inline-row" style={{ justifyContent: 'flex-end' }}>
+      <div className="cm-inline-row is-end">
         <button className="cm-btn cm-btn-primary" disabled={busy}>{busy ? '보내는 중...' : '보내기'}</button>
       </div>
     </form>

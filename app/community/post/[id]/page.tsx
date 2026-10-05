@@ -41,7 +41,7 @@ export default async function PostPage({ params }: Props) {
   if (post.hidden) {
     return (
       <div className="cm-card cm-hidden-note">
-        <p>🚫 신고가 쌓여 숨겨진 글이에요. 운영자가 확인한 뒤 복구하거나 삭제해요.</p>
+        <p>신고가 쌓여 숨겨진 글이에요. 운영자가 확인한 뒤 복구하거나 삭제해요.</p>
         <Link href={`/community/${post.board}`} className="cm-btn">목록으로</Link>
       </div>
     );
@@ -64,7 +64,7 @@ export default async function PostPage({ params }: Props) {
           {post.updated_at && <span>· 수정됨</span>}
         </div>
         {post.games && (
-          <Link href={`/games/${post.games.id}`} className="cm-game-link">🎮 {post.games.name}</Link>
+          <Link href={`/games/${post.games.id}`} className="cm-game-link">관련 게임 · {post.games.name}</Link>
         )}
         {/* 본문은 글자 그대로 출력 (HTML로 해석하지 않음) */}
         <div className="cm-post-body">{post.body}</div>

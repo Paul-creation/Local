@@ -136,8 +136,8 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
 
   return (
     <div className="compare-builder">
-      <h1 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.02em', marginBottom: 6 }}>게임 비교 만들기</h1>
-      <p style={{ fontSize: 15, color: 'var(--text-dim)', marginBottom: 20 }}>
+      <h1 className="cmp-title">게임 비교 만들기</h1>
+      <p className="cmp-ai-sub">
         비교할 게임을 2~3개 골라주세요. 싱글 게임끼리, 멀티 게임끼리만 비교할 수 있어요.
       </p>
 
@@ -149,7 +149,7 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
             <div key={g.id} className="cb-slot is-filled">
               <GameImage src={g.card_image_url || g.cover_image_url} alt={g.name} />
               <div className="cb-slot-name">{g.name}</div>
-              <button className="cb-slot-remove" aria-label={`${g.name} 빼기`} onClick={() => remove(g.id)}>✕</button>
+              <button type="button" className="cb-slot-remove" aria-label={`${g.name} 빼기`} onClick={() => remove(g.id)}>×</button>
             </div>
           ) : (
             <div key={`empty-${i}`} className="cb-slot">
@@ -176,7 +176,7 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
             aria-autocomplete="list"
             aria-activedescendant={showList && active >= 0 ? `cb-suggest-${active}` : undefined}
           />
-          {input && <button className="search-clear" aria-label="입력 지우기" onClick={() => { setInput(''); setActive(-1); }}>✕</button>}
+          {input && <button type="button" className="search-clear" aria-label="입력 지우기" onClick={() => { setInput(''); setActive(-1); }}>×</button>}
         </div>
         {showList && (
           <ul className="search-suggest" id="cb-suggest" role="listbox">
@@ -189,7 +189,7 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
                     className={`search-suggest-item cb-suggest-item${i === active ? ' is-active' : ''}`}
                     onClick={() => add(g)}
                     onMouseEnter={() => setActive(i)}
-                    style={picked ? { opacity: 0.5 } : undefined}
+                    data-picked={picked || undefined}
                   >
                     {g.cover_image_url ? <GameImage src={g.cover_image_url} steamSize="header_292x136" /> : <span className="search-suggest-noimg" />}
                     <span className="search-suggest-name">{g.name}</span>
@@ -201,22 +201,22 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
           </ul>
         )}
         {open && q && results.length === 0 && (
-          <div className="search-suggest" style={{ padding: '14px 16px', fontSize: 15, color: 'var(--text-dim)' }}>{searching ? '찾는 중...' : '이름이 맞는 게임이 없어요.'}</div>
+          <div className="search-suggest cb-suggest-empty">{searching ? '찾는 중...' : '이름이 맞는 게임이 없어요.'}</div>
         )}
       </div>
 
-      {error && <p role="alert" style={{ marginTop: 10, fontSize: 15, fontWeight: 700, color: 'var(--danger)' }}>{error}</p>}
+      {error && <p role="alert" className="cb-error">{error}</p>}
 
       {/* 검색어가 없을 때 인기 게임 빠른 추가 */}
       {!q && popular.length > 0 && !full && (
-        <div style={{ marginTop: 20 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-dim)', marginBottom: 10 }}>🔥 인기 게임 바로 추가</div>
+        <div className="cb-quick-wrap">
+          <div className="filter-label">인기 게임 바로 추가</div>
           <div className="cb-quick">
             {popular.map((g) => {
               const picked = picks.some((p) => p.id === g.id);
               return (
-                <button key={g.id} type="button" className="cb-quick-btn" disabled={picked} onClick={() => add(g)}>
-                  {picked ? '✓ ' : '+ '}{g.name}
+                <button key={g.id} type="button" className={`chip cb-quick-btn${picked ? ' on' : ''}`} disabled={picked} onClick={() => add(g)}>
+                  {picked ? '담음 · ' : '+ '}{g.name}
                 </button>
               );
             })}
@@ -224,8 +224,8 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
         </div>
       )}
 
-      <div style={{ marginTop: 28, display: 'flex', justifyContent: 'center' }}>
-        <button type="button" className="cb-go" disabled={picks.length < 2} onClick={goCompare}>
+      <div className="cb-go-wrap">
+        <button type="button" className="btn btn-primary btn-lg cb-go" disabled={picks.length < 2} onClick={goCompare}>
           {picks.length < 2 ? `게임을 ${2 - picks.length}개 더 골라주세요` : `비교하기 (${picks.length}개)`}
         </button>
       </div>

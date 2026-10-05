@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { db, PUBLIC_POST_LIST, type PostListItem } from '../../lib/community';
-import { boardTitle, timeAgo } from '../../lib/communityBoards';
+import { BOARDS, timeAgo } from '../../lib/communityBoards';
 import { UUID } from '../../lib/postLinks';
 
 // 게임 상세 "관련 게시물" — 직접 고른 게임(game_id) 또는 자동 매칭(related_game_ids)된 최근 글 3개, 숨김 글 제외. 없으면 안 그림
@@ -13,14 +13,14 @@ export default async function RelatedPosts({ gameId }: { gameId: string }) {
   if (!posts.length) return null;
 
   return (
-    <section className="detail-section-v2">
-      <h3>관련 게시물</h3>
+    <section className="detail-card">
+      <h3 className="detail-card-title">관련 게시물</h3>
       <ul className="cm-list">
         {posts.map((p) => (
           <li key={p.id}>
             <Link href={`/community/post/${p.id}`} className="cm-row">
               <span className="cm-row-title">
-                <span className="cm-board-chip">{boardTitle(p.board)}</span>
+                <span className="cm-board-chip">{BOARDS[p.board].label}</span>
                 {p.title}
                 {p.comment_count > 0 && <span className="cm-row-count">[{p.comment_count}]</span>}
               </span>

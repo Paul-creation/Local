@@ -51,16 +51,16 @@ export default function VideoPreviewSection({ highlights, videos, streamers }: {
   if (!tabs.length) return null;
 
   return (
-    <section className="detail-section-v2">
-      <h3>영상으로 미리 보기</h3>
-      <div className="video-tabs" role="tablist">
+    <section className="detail-card">
+      <h3 className="detail-card-title">영상으로 미리 보기</h3>
+      <div className="tabs video-tabs" role="tablist" aria-label="영상 종류">
         {tabs.map((t) => (
           <button
             key={t.key}
             type="button"
             role="tab"
             aria-selected={tab === t.key}
-            className={`video-tab${tab === t.key ? ' is-active' : ''}`}
+            className={`tab${tab === t.key ? ' is-active' : ''}`}
             onClick={() => setTab(t.key)}
           >
             {t.label}

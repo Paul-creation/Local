@@ -7,7 +7,7 @@ import { SITE_URL } from '../lib/site';
 export default function ShareButton({
   title,
   text,
-  label = '🔗 공유하기',
+  label = '공유하기',
   variant = 'pill',
 }: {
   title?: string;
@@ -42,24 +42,15 @@ export default function ShareButton({
 
   if (variant === 'text') {
     return (
-      <button onClick={share} style={{ background: 'none', border: 'none', color: copied ? '#4a9e3a' : 'var(--text-dim)', fontSize: 15, fontWeight: 700, cursor: 'pointer', minHeight: 44, padding: '0 4px' }}>
-        {copied ? '✓ 복사됨' : label}
+      <button type="button" onClick={share} className="share-text-btn" data-copied={copied || undefined}>
+        {copied ? '링크 복사됨' : label}
       </button>
     );
   }
 
   return (
-    <button
-      onClick={share}
-      style={{
-        background: copied ? '#4a9e3a' : 'var(--bg-card)',
-        color: copied ? '#fff' : 'var(--text)',
-        border: '1px solid var(--border-light)',
-        borderRadius: 100, padding: '8px 16px',
-        fontSize: 14, fontWeight: 700, cursor: 'pointer', flexShrink: 0,
-      }}
-    >
-      {copied ? '✓ 복사됨' : label}
+    <button type="button" onClick={share} className="btn btn-outline share-btn" data-copied={copied || undefined}>
+      {copied ? '링크 복사됨' : label}
     </button>
   );
 }

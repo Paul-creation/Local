@@ -26,17 +26,17 @@ export default function PlayerChart({ data }: { data: { player_count: number; re
   return (
     <div className="chart-wrap">
       <svg viewBox={`0 0 ${width} ${height}`} className="chart-svg" preserveAspectRatio="none">
-        <path d={areaPath} fill="rgba(15,155,142,0.1)" />
-        <path d={linePath} fill="none" stroke="var(--teal)" strokeWidth="2.5" />
+        <path d={areaPath} fill="var(--accent)" fillOpacity="0.08" />
+        <path d={linePath} fill="none" stroke="var(--accent)" strokeWidth="2.5" />
         {[points[0], points[Math.floor(points.length / 2)], points[points.length - 1]].map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="4" fill="var(--bg-card)" stroke="var(--teal)" strokeWidth="2" />
+          <circle key={i} cx={p.x} cy={p.y} r="4" fill="var(--card)" stroke="var(--accent)" strokeWidth="2" />
         ))}
       </svg>
       <div className="chart-labels">
         {[points[0], points[Math.floor(points.length / 2)], points[points.length - 1]].map((p, i) => (
           <span className="chart-label" key={i}>
             {p.date}<br />
-            <strong style={{ color: 'var(--teal)' }}>{p.count.toLocaleString('ko-KR')}</strong>
+            <strong className="num">{p.count.toLocaleString('ko-KR')}</strong>
           </span>
         ))}
       </div>

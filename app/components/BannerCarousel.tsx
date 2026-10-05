@@ -1,12 +1,9 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { getPriceInfo } from '../lib/price';
-import { translateTag } from '../lib/tagTranslate';
-import { playersText } from '../lib/players';
-import GameImage from './GameImage';
+import FeatureCard from './home/FeatureCard';
 
+// 메인 "추천 게임" — 4초마다 넘어가는 카드 하나 (모양은 이번주의 게임과 같은 FeatureCard)
 export default function BannerCarousel({ games }: { games: any[] }) {
   const [index, setIndex] = useState(0);
 
@@ -20,73 +17,17 @@ export default function BannerCarousel({ games }: { games: any[] }) {
 
   if (games.length === 0) return null;
 
-  const game = games[index];
-  const price = getPriceInfo(game);
-
   return (
-    <div style={{ marginBottom: 32 }}>
-      <Link href={`/games/${game.id}`} className="hero-card" style={{ marginBottom: 0 }}>
-        <div className="hero-image-wrap">
-          <GameImage src={game.card_image_url || game.cover_image_url} fallbackWidth={1280} alt="" aria-hidden="true" className="img-backdrop" />
-          <GameImage src={game.card_image_url || game.cover_image_url} fallbackWidth={1280} alt={game.name} />
+    <div className="feature-carousel">
+      <FeatureCard game={games[index]} label="추천 게임" />
+      {/* 이전·다음 + 몇 번째인지 (점 대신 — 게임이 많아도 버튼마다 터치 영역 44px) */}
+      {games.length > 1 && (
+        <div className="feature-nav">
+          <button type="button" className="btn btn-outline feature-nav-btn" onClick={() => setIndex((i) => (i - 1 + games.length) % games.length)} aria-label="이전 추천 게임">이전</button>
+          <span className="feature-nav-count num" aria-live="polite">{index + 1} / {games.length}</span>
+          <button type="button" className="btn btn-outline feature-nav-btn" onClick={() => setIndex((i) => (i + 1) % games.length)} aria-label="다음 추천 게임">다음</button>
         </div>
-        <div className="hero-content">
-          <h2>{game.name}</h2>
-          <div className="hero-meta">
-            {playersText(game)}
-            {game.difficulty ? ` · ${game.difficulty}` : ''}
-          </div>
-          {game.tags?.length > 0 && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-              {game.tags.slice(0, 4).map((tag: string) => (
-                <span key={tag} className="category-tag">{translateTag(tag)}</span>
-              ))}
-            </div>
-          )}
-          {game.fun_description ? (
-  <p style={{ fontSize: 16, color: 'var(--text)', fontWeight: 600, lineHeight: 1.6, margin: 0 }}>{game.fun_description}</p>
-) : game.description && (
-            <p style={{ fontSize: 15, color: 'var(--text-dim)', lineHeight: 1.6, margin: 0 }}>
-              {game.description.replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&#39;/g, "'").slice(0, 100)}...
-            </p>
-          )}
-          {price && (
-            <div className="price-row">
-              {price.discount > 0 && (
-                <>
-                  <span className="discount-badge">-{price.discount}%</span>
-                  <span className="price-original">{price.formattedOriginal}</span>
-                </>
-              )}
-              <span className="price-final">{price.formattedFinal}</span>
-            </div>
-          )}
-        </div>
-      </Link>
-
-      {/* 점 네비게이션 */}
-      {/* 보이는 점은 작게, 누르는 영역은 44px. 점이 많아 한 줄에 다 안 들어가면 너비만 나눠 가짐 */}
-      {/* 아래 여백 -16px: 누르는 영역이 늘어난 만큼 빼서 아래 내용 위치는 그대로 (원래 28px 높이) */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 4, marginBottom: -16 }}>
-        {games.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setIndex(i)}
-            aria-label={`${i + 1}번째 추천 게임`}
-            aria-current={i === index}
-            style={{ flex: '0 1 44px', minWidth: 0, height: 44, padding: 0, border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-          >
-            <span style={{
-              display: 'block',
-              width: i === index ? 22 : 6,
-              height: 6,
-              borderRadius: 3,
-              background: i === index ? 'var(--accent)' : 'var(--border)',
-              transition: 'all 0.25s ease',
-            }} />
-          </button>
-        ))}
-      </div>
+      )}
     </div>
   );
 }

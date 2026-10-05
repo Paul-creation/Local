@@ -36,12 +36,12 @@ export default function WriteForm({ initialBoard, initialGame }: { initialBoard:
       <div className="cm-board-pick" role="radiogroup" aria-label="게시판">
         {BOARD_KEYS.map((b) => (
           <button key={b} type="button" role="radio" aria-checked={board === b} className={board === b ? 'on' : ''} onClick={() => setBoard(b)}>
-            {BOARDS[b].emoji} {BOARDS[b].label}
+            {BOARDS[b].label}
           </button>
         ))}
       </div>
       {board === 'party' && (
-        <p className="cm-notice">⚠️ 연락처(디스코드 ID 등)를 적으면 모두에게 공개돼요.</p>
+        <p className="cm-notice">연락처(디스코드 ID 등)를 적으면 모두에게 공개돼요.</p>
       )}
 
       <input className="cm-input" placeholder="제목" value={title} maxLength={LIMITS.title[1]} onChange={(e) => setTitle(e.target.value)} aria-label="제목" />
@@ -55,7 +55,7 @@ export default function WriteForm({ initialBoard, initialGame }: { initialBoard:
         <input className="cm-input" type="password" placeholder="비밀번호 (수정·삭제용)" value={password} maxLength={LIMITS.password[1]} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" aria-label="비밀번호" />
       </div>
       {error && <p className="cm-error">{error}</p>}
-      <div className="cm-inline-row" style={{ justifyContent: 'flex-end' }}>
+      <div className="cm-inline-row is-end">
         <button type="button" className="cm-btn" onClick={() => router.back()}>취소</button>
         <button className="cm-btn cm-btn-primary" disabled={busy}>{busy ? '올리는 중...' : '등록'}</button>
       </div>
@@ -84,7 +84,7 @@ function GamePicker({ game, onChange }: { game: Game | null; onChange: (g: Game 
   if (game) {
     return (
       <div className="cm-picked-game">
-        🎮 관련 게임: <strong>{game.name}</strong>
+        관련 게임: <strong>{game.name}</strong>
         <button type="button" className="cm-link-btn" onClick={() => onChange(null)}>빼기</button>
       </div>
     );

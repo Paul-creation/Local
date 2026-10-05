@@ -11,5 +11,5 @@ export default function WriteLink() {
   const href = isBoard(seg) ? `/community/write?board=${seg}`
     : seg === 'post' && /^\d+$/.test(id || '') ? `/community/write?post=${id}`
     : '/community/write';
-  return <Link href={href} className="cm-write-btn">✏️ 글쓰기</Link>;
+  return <Link href={href} className="cm-write-btn">글쓰기</Link>;
 }

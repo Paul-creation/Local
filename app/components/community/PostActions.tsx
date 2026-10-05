@@ -45,7 +45,7 @@ export default function PostActions({ post, initialLiked }: Props) {
     <div className="cm-actions">
       <div className="cm-actions-row">
         <button type="button" className={`cm-like ${liked ? 'on' : ''}`} onClick={like} disabled={liked} aria-pressed={liked}>
-          👍 추천 {likes}
+          추천 {likes}
         </button>
         <span className="cm-actions-right">
           <button type="button" className="cm-link-btn" onClick={() => { setMode(mode === 'edit' ? '' : 'edit'); setError(''); }}>수정</button>

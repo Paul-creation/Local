@@ -26,15 +26,15 @@ export default async function PostRelatedCard({ postId, title, body, pickedGameI
       <h2 className="cm-related-title">이 글과 관련된 정보</h2>
       <ul className="cm-related-list">
         {shownGames.map((g) => (
-          <li key={g.id}><Link href={`/games/${g.id}`}>🎮 {g.name}</Link></li>
+          <li key={g.id}><Link href={`/games/${g.id}`}>{g.name}</Link></li>
         ))}
         {hints.players.map((n) => (
-          <li key={`p${n}`}><Link href={playersLink(n)}>👥 {n}명 이상 되는 게임 보기</Link></li>
+          <li key={`p${n}`}><Link href={playersLink(n)}>{n}명 이상 되는 게임 보기</Link></li>
         ))}
         {canCompare && (
-          <li><Link href={compareLink(games.map((g) => g.id))}>⚖️ {games.length >= 2 ? `${games.map((g) => g.name).join(' vs ')} 비교 만들기` : `${games[0].name} 비교 만들기`}</Link></li>
+          <li><Link href={compareLink(games.map((g) => g.id))}>{games.length >= 2 ? `${games.map((g) => g.name).join(' vs ')} 비교 만들기` : `${games[0].name} 비교 만들기`}</Link></li>
         )}
-        {hints.sale && <li><Link href={SALE_LINK}>💸 지금 할인 중인 게임 보기</Link></li>}
+        {hints.sale && <li><Link href={SALE_LINK}>지금 할인 중인 게임 보기</Link></li>}
       </ul>
     </aside>
   );

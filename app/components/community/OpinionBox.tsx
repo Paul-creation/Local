@@ -29,8 +29,8 @@ export default function OpinionBox({ gameId, initial }: { gameId: string; initia
   };
 
   return (
-    <section className="detail-section-v2">
-      <h3>의견 달기</h3>
+    <section className="detail-card">
+      <h3 className="detail-card-title">의견 달기</h3>
       <form className="cm-comment-form cm-opinion-form" onSubmit={(e) => { e.preventDefault(); submit(); }}>
         <textarea className="cm-input cm-textarea-xs" placeholder="이 게임 어땠어요? 한두 줄로 남겨주세요" value={body} maxLength={MAX} onChange={(e) => setBody(e.target.value)} aria-label="의견" />
         <div className="cm-inline-row">
@@ -42,7 +42,7 @@ export default function OpinionBox({ gameId, initial }: { gameId: string; initia
         {error && <p className="cm-error">{error}</p>}
       </form>
       {list.length === 0 ? (
-        <p className="cm-hint" style={{ marginTop: 12 }}>아직 의견이 없어요. 첫 의견을 남겨주세요!</p>
+        <p className="cm-hint cm-hint-gap">아직 의견이 없어요. 첫 의견을 남겨주세요!</p>
       ) : (
         <ul className="cm-comment-list">
           {list.map((c) => (

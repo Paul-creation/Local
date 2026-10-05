@@ -8,7 +8,7 @@ export default function CommunityLayout({ children }: { children: React.ReactNod
       <nav className="cm-tabs" aria-label="게시판">
         <Link href="/community">전체</Link>
         {BOARD_KEYS.map((b) => (
-          <Link key={b} href={`/community/${b}`}>{BOARDS[b].emoji} {BOARDS[b].label}</Link>
+          <Link key={b} href={`/community/${b}`}>{BOARDS[b].label}</Link>
         ))}
         <WriteLink />
       </nav>
