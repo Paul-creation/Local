@@ -22,6 +22,8 @@ const GROUPS = {
   // 매주: 새 게임 수집 + 게임 정보 보강
   weekly: [
     'bulk-import --apply', // 기본은 미리보기라 --apply로 실제 추가 (판매 순위 새 게임 최대 200개)
+    'link-new-game-tags --apply', // 태그 없는 게임을 태그 나무(game_tags)에 연결 (스팀 태그 투표, AI 안 씀). 새 스팀 태그는 일일 요약에 알림
+    'judge-new-games --apply', // 이번 주 새 게임의 진입장벽·혼자 플레이 단계 (Haiku, 200개 기준 약 $0.1)
     'import-other-stores',
     'check-delisted',
     'find-non-games',

@@ -29,6 +29,7 @@
 
 - 근거: 스팀 태그(Singleplayer·Story Rich와 멀티 관련 태그의 투표 비율), 한 줄 소개의 "혼자" 표현, 게임을 아는 범위의 판단
 - 스팀 태그에 멀티 관련 태그가 하나도 없으면 1인 전용으로 보고 `story` (게임이 아닌 프로그램은 null)
+- 매주 새로 들어온 게임은 `scripts/judge-new-games.mjs`가 이 기준(진입장벽은 data/tags/entry-barrier.json의 rule)으로 Haiku에 물어 채운다. 빈 칸만 채우고, 확신 없으면 null. party_max·session_max는 채우지 않는다
 
 ## party_max — 친구끼리 같이 할 수 있는 최대 인원 (팀·파티)
 

@@ -1,8 +1,9 @@
 // scripts/daily-summary.mjs
 // 디스코드 일일 요약: 지난 24시간 새 글·댓글·게임 의견·의견함·신고 수 + 지금 숨김 중인 항목 수
-// + 오늘 가격을 못 받은 게임 수 (3일 연속 실패한 게임은 이름까지)
+// + 오늘 가격을 못 받은 게임 수 (3일 연속 실패한 게임은 이름까지) + 분류 안 된 새 스팀 태그 수 (있을 때만)
 // DISCORD_WEBHOOK_URL이 없으면 화면에만 출력. 개인정보(IP 해시·연락처·본문)는 보내지 않고 숫자만 보낸다
 // 사용: node --env-file=.env.local scripts/daily-summary.mjs
+import fs from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { readPurge } from './lib/privacy-purge.mjs';
 import { readPriceCheck } from './lib/price-check.mjs';
@@ -60,7 +61,25 @@ if (streak.error) {
   const names = streak.data.slice(0, MAX).map((g) => `${g.name} (${g.price_check_note ?? '이유 모름'})`);
   priceLine += `\n   ⚠️ 3일 연속 실패 ${streak.data.length}개: ${names.join(', ')}${streak.data.length > MAX ? ` 외 ${streak.data.length - MAX}개` : ''}`;
 }
-const message = `${content}\n${purgeLine}\n${priceLine}`;
+// 분류 안 된 새 스팀 태그 (link-new-game-tags가 기록, tree·제외·합치기 파일에 넣으면 빠짐) — 있을 때만 한 줄
+let tagLine = '';
+const unclassified = await db.from('tag_unclassified').select('steam_tag_id, en, ko, game_count').order('game_count', { ascending: false });
+if (!unclassified.error) {
+  const readIds = (path, pick) => {
+    try { return JSON.parse(fs.readFileSync(path, 'utf8'))[pick[0]].map(pick[1]); } catch { return []; }
+  };
+  const known = new Set([
+    ...readIds('data/tags/tree.json', ['nodes', (n) => n.steam_tag_id]),
+    ...readIds('data/tags/excluded.json', ['tags', (t) => t.id]),
+    ...readIds('data/tags/merged.json', ['merges', (m) => m.from.id]),
+  ]);
+  const left = unclassified.data.filter((t) => !known.has(Number(t.steam_tag_id)));
+  if (left.length) {
+    const names = left.slice(0, 10).map((t) => `${t.ko || t.en} ${t.game_count}개`);
+    tagLine = `\n🏷️ 분류 안 된 새 태그 ${left.length}개: ${names.join(', ')}${left.length > 10 ? ` 외 ${left.length - 10}개` : ''} (data/tags/tree.json에 넣거나 제외)`;
+  }
+}
+const message = `${content}\n${purgeLine}\n${priceLine}${tagLine}`;
 console.log(message);
 
 const url = process.env.DISCORD_WEBHOOK_URL;
