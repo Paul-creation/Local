@@ -131,6 +131,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   }
   const [top10, tagNames] = await Promise.all([top10Promise, getGameTagNames(game)]);
   const isTop10 = top10.includes(game.id);
+  // 멀티 방식(전용 서버/P2P)은 온라인 협동·대전이 있는 게임만
+  const showHost = !!game.multiplayer_host && (game.has_online_coop === true || game.has_pvp === true);
   // 친구랑: 팀 인원(party_max), 없으면 최대 인원 + 같은 서버 인원(session_max)
   const friendsMax = game.party_max ?? game.max_players;
   const friendsText = [friendsMax === 1 ? '같이 하기 없음' : friendsMax ? `최대 ${friendsMax}명` : '', game.session_max ? `같은 서버 ${game.session_max}명` : ''].filter(Boolean).join(' · ');
@@ -566,8 +568,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </details>
       )}
 
-      {/* 더 자세히 — 엔딩/서버/활동만 */}
-      {(game.has_ending !== null || game.server_type || game.activities?.length > 0) && (
+      {/* 더 자세히 — 엔딩/서버/멀티 방식/활동만 */}
+      {(game.has_ending !== null || game.server_type || showHost || game.activities?.length > 0) && (
         <details className="detail-accordion">
           <summary>더 자세히 들어가 보시겠어요?</summary>
           <div className="spec-list">
@@ -581,6 +583,12 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               <div className="spec-row">
                 <span className="spec-label">서버 방식</span>
                 <span className="spec-value">{game.server_type}</span>
+              </div>
+            )}
+            {showHost && (
+              <div className="spec-row">
+                <span className="spec-label">멀티 방식</span>
+                <span className="spec-value">{game.multiplayer_host === 'P2P' ? 'P2P(방장 컴퓨터로 연결)' : game.multiplayer_host}</span>
               </div>
             )}
             {game.activities?.length > 0 && (

@@ -22,7 +22,8 @@ const PROMPT = (name, store) => `게임 "${name}" (${store} 플랫폼, PC 버전
   "storage_gb": 숫자 (최소 사양의 저장 공간, GB 단위),
   "solo_playable": true | false (혼자서도 제대로 즐길 수 있는지),
   "recommended_players": "예: 2-4인, 5인 파티",
-  "server_type": "예: 전용 서버, P2P, 오프라인 가능",
+  "server_type": "상시 온라인" | "온라인 + 오프라인" | "오프라인 전용" (인터넷 필요 여부. 혼자 해도 접속이 필요하면 상시 온라인, 인터넷 멀티가 없으면 오프라인 전용),
+  "multiplayer_host": "전용 서버" | "P2P" | null (온라인 멀티 연결 방식. 회사 서버면 전용 서버, 방장 컴퓨터로 연결하면 P2P, 온라인 멀티가 없거나 모르면 null),
   "has_ending": true | false,
   "ending_note": "엔딩 관련 한 줄 설명 또는 null",
   "story_length": "예: 약 20시간, 엔딩 없음(라이브 서비스)",
@@ -59,6 +60,8 @@ async function askClaude(name, store) {
 
 const STORE_NAME = { epic: 'Epic Games Store', battlenet: 'Battle.net', riot: 'Riot Client' };
 const KOREAN = new Set(['자막+더빙', '자막', '한국어 없음']);
+const SERVER = new Set(['상시 온라인', '온라인 + 오프라인', '오프라인 전용']); // DB 제약과 같음
+const HOST = new Set(['전용 서버', 'P2P']);
 
 function clean(ai, game) {
   const u = {};
@@ -72,7 +75,8 @@ function clean(ai, game) {
   if (typeof ai.storage_gb === 'number' && ai.storage_gb > 0) u.storage_gb = ai.storage_gb;
   if (typeof ai.solo_playable === 'boolean') u.solo_playable = ai.solo_playable;
   if (str(ai.recommended_players)) u.recommended_players = str(ai.recommended_players);
-  if (str(ai.server_type)) u.server_type = str(ai.server_type);
+  if (SERVER.has(ai.server_type)) u.server_type = ai.server_type;
+  if (HOST.has(ai.multiplayer_host)) u.multiplayer_host = ai.multiplayer_host;
   if (typeof ai.has_ending === 'boolean') u.has_ending = ai.has_ending;
   if (str(ai.ending_note)) u.ending_note = str(ai.ending_note);
   if (str(ai.story_length)) u.story_length = str(ai.story_length);
@@ -96,7 +100,7 @@ async function main() {
 
   const { data: games, error } = await supabase
     .from('games')
-    .select('id, name, source, description, korean_support, release_date, min_spec, recommended_spec, storage_gb, solo_playable, recommended_players, server_type, has_ending, ending_note, story_length, activities, is_esports, ai_enriched_at').eq('hidden', false)
+    .select('id, name, source, description, korean_support, release_date, min_spec, recommended_spec, storage_gb, solo_playable, recommended_players, server_type, multiplayer_host, has_ending, ending_note, story_length, activities, is_esports, ai_enriched_at').eq('hidden', false)
     .is('steam_appid', null);
   if (error) return console.error('조회 실패:', error.message);
 
