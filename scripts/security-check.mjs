@@ -141,6 +141,14 @@ async function checkDb() {
     error ? ok(`브라우저 키로 ${table}의 password_hash·ip_hash 읽기 차단됨`) : bad(`브라우저 키로 ${table}의 password_hash·ip_hash를 읽을 수 있음!`, 'revoke all on posts, post_comments, post_likes, post_reports from anon, authenticated; 실행');
   }
 
+  // 추천 인원 투표: 쓰기는 서버 API(/api/player-votes)로만, 투표자 해시(voter_hash)는 브라우저에 비공개
+  const pv = await anon.from('player_count_votes').insert({ game_id: anyGame, choice: '2', voter_hash: '__security_test__' });
+  if (pv.error?.code === '42501') ok('브라우저 키로 player_count_votes 쓰기 차단됨');
+  else if (pv.error) note(`브라우저 키로 player_count_votes 쓰기 시도 → 권한이 아닌 다른 이유로 실패 (${pv.error.message})`);
+  else { bad('브라우저 키로 player_count_votes에 쓸 수 있음!', 'launch_extras SQL(RLS·revoke) 실행'); await admin.from('player_count_votes').delete().eq('voter_hash', '__security_test__'); }
+  const pvr = await anon.from('player_count_votes').select('voter_hash').limit(1);
+  pvr.error ? ok('브라우저 키로 player_count_votes의 voter_hash 읽기 차단됨') : bad('브라우저 키로 player_count_votes의 voter_hash를 읽을 수 있음!', 'launch_extras SQL의 칸 단위 grant 실행');
+
   // 의견함: 브라우저 키로 쓰기·읽기 전부 차단 (서버 API로만)
   const fb = await anon.from('feedback').insert({ kind: 'etc', body: '__security_test__', ip_hash: 'x' });
   if (fb.error?.code === '42501') ok('브라우저 키로 feedback 쓰기 차단됨');
@@ -248,6 +256,17 @@ async function checkSite() {
 
   r = await call('/api/votes', json('POST', { gameId: 'not-a-uuid', situation: '혼자 심심할 때' }));
   r.status === 400 ? ok('잘못된 게임 ID 투표 거절') : bad(`잘못된 게임 ID 응답 ${r.status}`, '투표 패치 후 푸시');
+
+  // 추천 인원 투표 — 이상한 값·잘못된 ID·쿠키 없는 요청은 저장 전에 거절, 읽기 응답에 투표자 해시 없음
+  const anyGameId = (await admin.from('games').select('id').gt('max_players', 1).limit(1)).data?.[0]?.id ?? '00000000-0000-0000-0000-000000000000';
+  r = await call('/api/player-votes', json('POST', { gameId: anyGameId, choice: '__hack__' }));
+  r.status === 400 ? ok('추천 인원 투표: 이상한 선택지 거절') : bad(`추천 인원 투표 이상한 선택지 응답 ${r.status}`);
+  r = await call('/api/player-votes', json('POST', { gameId: 'not-a-uuid', choice: '2' }));
+  r.status === 400 ? ok('추천 인원 투표: 잘못된 게임 ID 거절') : bad(`추천 인원 투표 잘못된 게임 ID 응답 ${r.status}`);
+  r = await call('/api/player-votes', json('POST', { gameId: anyGameId, choice: '2' }));
+  r.status === 400 ? ok('추천 인원 투표: 익명 쿠키 없는 요청 거절') : bad(`추천 인원 투표 쿠키 없는 요청 응답 ${r.status}`);
+  r = await call(`/api/player-votes?gameId=${anyGameId}`);
+  r.status === 200 && !JSON.stringify(r.body).includes('voter_hash') ? ok('추천 인원 투표: 읽기 응답에 투표자 해시 없음') : bad(`추천 인원 투표 읽기 응답 ${r.status} 또는 해시 노출`);
 
   r = await call('/api/compare-chat', json('POST', { question: '', gameInfo: '', history: [] }));
   r.body?.answer === '질문을 입력해주세요.' ? ok('비교 채팅 입력 검증 동작 (AI 호출 없음)') : bad('비교 채팅 입력 검증이 배포에 없음', 'aiGuard 패치 후 푸시');

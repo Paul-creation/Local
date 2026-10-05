@@ -22,6 +22,7 @@ const NULLABLE = [
   ['feedback', 'ip_hash'],
   ['post_reports', 'reporter_hash'],
   ['game_votes', 'voter_hash'],
+  ['player_count_votes', 'voter_hash'], // 추천 인원 투표 중복 방지용 익명 값 (익명 쿠키 ID 해시)
   ['ai_calls', 'ip'],
   ['ai_calls', 'client_id'], // AI 한도용 익명 쿠키 ID 해시
 ];
