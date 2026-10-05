@@ -2014,16 +2014,16 @@ a.hc-row:hover { background: var(--card-hover); }
 /* PC 사양 접기 */
 .detail-accordion { padding: 0; }
 .detail-accordion summary {
-  list-style: none; cursor: pointer; display: flex; align-items: center; flex-wrap: wrap; gap: 4px 12px;
-  min-height: 60px; padding: 14px 56px 14px 24px; position: relative; border-radius: var(--radius-card);
+  list-style: none; cursor: pointer; display: flex; align-items: center; flex-wrap: nowrap; justify-content: flex-start; gap: 4px 12px;
+  min-height: 60px; padding: 14px 20px 14px 24px; position: relative; border-radius: var(--radius-card);
 }
 .detail-accordion summary::-webkit-details-marker { display: none; }
-.detail-accordion summary::after { content: '펼치기'; position: absolute; right: 20px; top: 50%; transform: translateY(-50%); padding: 6px 14px; border: 1px solid var(--accent-text); border-radius: var(--radius-btn); font-size: 14px; font-weight: 700; line-height: 1.2; color: var(--accent-text); background: transparent; transition: none; }
-.detail-accordion[open] summary::after { content: '접기'; transform: translateY(-50%); }
+.detail-accordion summary::after { content: '펼치기'; flex: 0 0 auto; margin-left: auto; padding: 6px 14px; white-space: nowrap; border: 1px solid var(--accent-text); border-radius: var(--radius-btn); font-size: 14px; font-weight: 700; line-height: 1.2; color: var(--accent-text); background: transparent; transition: none; }
+.detail-accordion[open] summary::after { content: '접기'; transform: none; }
 .detail-accordion summary:hover::after { background: var(--accent-soft); }
 .detail-accordion summary:hover { background: var(--card-hover); }
-.detail-accordion summary .detail-card-title { margin: 0; }
-.spec-summary { font-size: 14px; color: var(--text-muted); }
+.detail-accordion summary .detail-card-title { margin: 0; flex: 0 0 auto; white-space: nowrap; }
+.spec-summary { flex: 0 1 auto; min-width: 0; margin-right: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; color: var(--text-muted); }
 .spec-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; padding: 4px 24px 22px; }
 .spec-col-title { font-size: 15px; font-weight: 800; color: var(--text-2); margin-bottom: 10px; }
 
@@ -2066,7 +2066,7 @@ a.series-item:hover { border-color: var(--border); }
   .steam-card { grid-template-columns: minmax(0, 1fr); }
   .detail-two { grid-template-columns: minmax(0, 1fr); }
   .spec-columns { grid-template-columns: minmax(0, 1fr); padding: 4px 18px 18px; }
-  .detail-accordion summary { padding-left: 18px; }
+  .detail-accordion summary { padding-left: 18px; padding-right: 14px; }
   .info-cell + .info-cell { border-left: none; }
   .info-cell { flex-basis: 45%; padding: 10px 12px; }
   .price-card-now { font-size: 34px; }
