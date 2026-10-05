@@ -258,6 +258,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             <AddToCompare gameId={game.id} name={game.name} thumb={game.cover_image_url || game.card_image_url} />
             <p className="price-card-note">가격은 하루 한 번 갱신돼요. 구매 전 스토어에서 한 번 더 확인해 주세요.</p>
           </div>
+          {game.discord_url && (
+            <a href={game.discord_url} target="_blank" rel="noopener nofollow" className="detail-card discord-card">공식 디스코드 ↗</a>
+          )}
         </aside>
 
         <div className="detail-main">
@@ -530,41 +533,32 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
 
           <GameOpinions gameId={game.id} />
           <RelatedPosts gameId={game.id} />
+          {seriesGames && seriesGames.length > 1 && (
+            <section className="detail-card series-section">
+              <h3 className="detail-card-title">같은 시리즈{series?.name_ko ? ` · ${series.name_ko}` : ''}</h3>
+              <ol className="series-list">
+                {seriesGames.map((sg) => {
+                  const current = sg.id === game.id;
+                  const inner = (
+                    <>
+                      <GameImage src={sg.cover_image_url || sg.card_image_url} steamSize="header_292x136" loading="lazy" alt="" />
+                      <span className="series-name">{sg.name}</span>
+                    </>
+                  );
+                  return (
+                    <li key={sg.id}>
+                      {current ? (
+                        <div className="series-item is-current" aria-current="page">{inner}</div>
+                      ) : (
+                        <Link href={`/games/${sg.id}`} className="series-item">{inner}</Link>
+                      )}
+                    </li>
+                  );
+                })}
+              </ol>
+            </section>
+          )}
         </div>
-
-        {/* 같은 시리즈 · 공식 디스코드 — 데스크톱 오른쪽 아래, 좁은 화면에서는 맨 아래 */}
-        {((seriesGames && seriesGames.length > 1) || game.discord_url) && (
-          <aside className="detail-extra">
-            {seriesGames && seriesGames.length > 1 && (
-              <section className="detail-card series-section">
-                <h3 className="detail-card-title">같은 시리즈{series?.name_ko ? ` · ${series.name_ko}` : ''}</h3>
-                <ol className="series-list">
-                  {seriesGames.map((sg) => {
-                    const current = sg.id === game.id;
-                    const inner = (
-                      <>
-                        <GameImage src={sg.cover_image_url || sg.card_image_url} steamSize="header_292x136" loading="lazy" alt="" />
-                        <span className="series-name">{sg.name}</span>
-                      </>
-                    );
-                    return (
-                      <li key={sg.id}>
-                        {current ? (
-                          <div className="series-item is-current" aria-current="page">{inner}</div>
-                        ) : (
-                          <Link href={`/games/${sg.id}`} className="series-item">{inner}</Link>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ol>
-              </section>
-            )}
-            {game.discord_url && (
-              <a href={game.discord_url} target="_blank" rel="noopener nofollow" className="detail-card discord-card">공식 디스코드 ↗</a>
-            )}
-          </aside>
-        )}
       </div>
     </main>
   );
