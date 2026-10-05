@@ -44,7 +44,7 @@ export const MONTHLY_EVENTS: HomeEvent[] = [
   { tone: 'gold', title: '추석 연휴엔 다 같이', description: '모이면 바로 시작하는 협동 게임', tags: ['온라인 협동', '로컬 협동', '파티 게임', '캐주얼'] },
   { tone: 'horror', title: '10월은 공포 게임의 달', description: '혼자는 무섭고, 같이 하면 더 무서운 공포 게임', tags: ['호러', '심리 공포'] },
   {
-    kind: 'streamer', tone: 'blue', title: '스트리머들이 같이 밤새운 협동 게임', description: '', tags: [],
+    kind: 'streamer', tone: 'blue', title: '스트리머들이 밤새운 협동 게임', description: '', tags: [],
     fallback: { tone: 'orange', title: '쌀쌀할 땐 집에서 협동', description: '따뜻한 방에서 친구랑 온라인 협동', tags: ['온라인 협동', '로컬 협동'] },
   },
   { tone: 'red', title: '연말엔 파티 게임', description: '송년회에서 다 같이 웃으면서 하는 게임', tags: ['파티 게임', '코미디', '로컬 협동', '분할 화면'] },

@@ -1,13 +1,12 @@
 // 스트리머 기획전 (lib/event의 kind: 'streamer') — 선정은 스트리머 영상 표에서 매번 계산한다
 // 그래서 매일 도는 fetch-streamer-videos(새 영상 연결)와 관리자 페이지의 숨김·채널 끄기가 따로 작업 없이 바로 반영된다 (페이지는 5분 캐시)
-// 조건: 서로 다른 스트리머(사람 기준) N명 이상이 플레이 + 친구끼리 최대 인원 2명 이상 + 온라인 협동 또는 로컬 협동이 true (null은 제외). 3명 기준으로 8~12개가 나오면 3명, 아니면 2명 기준 (최대 12개)
-// 정렬: 플레이한 스트리머 수 → 인기(heat_rank) 순
+// 조건: 스트리머 영상이 1개 이상 + 친구끼리 최대 인원 2명 이상 + 온라인 협동 또는 로컬 협동이 true (null은 제외) + category가 순수 "협동"
+// (협동·대전·혼자는 제외 — PvP 위주 게임을 거르는 기준). 개별 제외 목록은 두지 않는다
+// 정렬: 플레이한 스트리머 수 → 인기(heat_rank) 순, 최대 12개
 import { supabase } from './supabase';
 import { friendsMax } from './playersMatch';
 
-export const THEME_MIN = 8;
 export const THEME_MAX = 12;
-const THRESHOLDS = [3, 2];
 
 export type ThemeGame = {
   id: string;
@@ -16,14 +15,14 @@ export type ThemeGame = {
   streamers: string[]; // 최근 영상 순, 사람 기준 중복 없음
   videoId: string | null; // "플레이 영상 보기" — 가장 최근 영상 (쇼츠가 아닌 것 먼저)
 };
-export type StreamerTheme = { minStreamers: number; games: ThemeGame[] };
+export type StreamerTheme = { games: ThemeGame[] };
 
 type One<T> = T | T[] | null;
 const first = <T,>(v: One<T>): T | null => (Array.isArray(v) ? v[0] ?? null : v);
 type Row = {
   video_id: string; is_short: boolean; published_at: string;
   streamer_channels: One<{ streamer_name: string }>;
-  games: One<{ id: string; name: string; card_image_url: string | null; cover_image_url: string | null; min_players: number | null; max_players: number | null; party_max: number | null; has_online_coop: boolean | null; has_local_coop: boolean | null; heat_rank: number | null }>;
+  games: One<{ id: string; name: string; card_image_url: string | null; cover_image_url: string | null; category: string | null; min_players: number | null; max_players: number | null; party_max: number | null; has_online_coop: boolean | null; has_local_coop: boolean | null; heat_rank: number | null }>;
 };
 
 export async function getStreamerTheme(): Promise<StreamerTheme | null> {
@@ -31,7 +30,7 @@ export async function getStreamerTheme(): Promise<StreamerTheme | null> {
   for (let from = 0; from < 10000; from += 1000) {
     const { data, error } = await supabase
       .from('streamer_videos')
-      .select('video_id, is_short, published_at, streamer_channels(streamer_name), games!inner(id, name, card_image_url, cover_image_url, min_players, max_players, party_max, has_online_coop, has_local_coop, heat_rank)')
+      .select('video_id, is_short, published_at, streamer_channels(streamer_name), games!inner(id, name, card_image_url, cover_image_url, category, min_players, max_players, party_max, has_online_coop, has_local_coop, heat_rank)')
       .eq('games.hidden', false)
       .eq('games.home_excluded', false)
       .order('published_at', { ascending: false })
@@ -45,6 +44,7 @@ export async function getStreamerTheme(): Promise<StreamerTheme | null> {
   for (const r of rows) { // 최근 영상부터 들어온다
     const g = first(r.games);
     if (!g || (friendsMax(g) ?? 0) < 2) continue;
+    if (g.category !== '협동') continue; // 협동·대전·혼자 제외
     if (g.has_online_coop !== true && g.has_local_coop !== true) continue; // 협동 모드가 확인된 게임만
     let item = byGame.get(g.id);
     if (!item) {
@@ -58,12 +58,7 @@ export async function getStreamerTheme(): Promise<StreamerTheme | null> {
   }
 
   const all = [...byGame.values()].map((g) => ({ ...g, videoId: g.videoId ?? g.short }));
-  for (const k of THRESHOLDS) {
-    const picked = all.filter((g) => g.streamers.length >= k);
-    if (picked.length >= THEME_MIN || k === THRESHOLDS[THRESHOLDS.length - 1]) {
-      picked.sort((a, b) => b.streamers.length - a.streamers.length || a.rank - b.rank);
-      return { minStreamers: k, games: picked.slice(0, THEME_MAX).map(({ rank, short, ...g }) => g) };
-    }
-  }
-  return null;
+  if (!all.length) return null;
+  all.sort((a, b) => b.streamers.length - a.streamers.length || a.rank - b.rank);
+  return { games: all.slice(0, THEME_MAX).map(({ rank, short, ...g }) => g) };
 }

@@ -13,7 +13,7 @@ export default async function HomeEvent({ previewMonth }: { previewMonth?: numbe
   let theme: StreamerTheme | null = null;
   if (event.kind === 'streamer') {
     theme = await getStreamerTheme().catch(() => null);
-    if (theme?.games.length) event = { ...event, description: `스트리머 ${theme.minStreamers}명 이상이 함께 플레이한 게임 모음` };
+    if (theme?.games.length) event = { ...event, description: '스트리머가 직접 플레이한 협동 게임 모음' };
     else if (event.fallback) { event = { ...event.fallback, label: event.label }; theme = null; }
   }
   return (
