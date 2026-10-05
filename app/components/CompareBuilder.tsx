@@ -12,6 +12,7 @@ import GameImage from './GameImage';
 import { selectGames } from '../lib/visibleGames';
 
 const MAX_SUGGESTIONS = 6;
+const QUICK_COUNT = 6;
 
 type Pick = { id: string; name: string; search_name_ko?: string | null; card_image_url?: string | null; cover_image_url?: string | null; min_players?: number | null; max_players?: number | null };
 
@@ -36,6 +37,7 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
   const [active, setActive] = useState(-1);
   const [searching, setSearching] = useState(false);
   const boxRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const loaded = useRef(initial.length > 0);
 
   // 주소로 받은 게임이 없으면, 비교함(메인 + 비교·상세 비교에 담기)에 담아 둔 게임을 칸에 미리 채움
@@ -167,9 +169,11 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
               <button type="button" className="cb-slot-remove" aria-label={`${g.name} 빼기`} onClick={() => remove(g.id)}>×</button>
             </div>
           ) : (
-            <div key={`empty-${i}`} className="cb-slot">
-              <span>{i + 1}번째 게임</span>
-            </div>
+            // 빈 칸을 누르면 아래 검색창으로 (키보드·화면 낭독기도 누를 수 있게 버튼)
+            <button key={`empty-${i}`} type="button" className="cb-slot is-empty" disabled={full} onClick={() => { inputRef.current?.focus(); inputRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' }); }}>
+              <span className="cb-slot-plus" aria-hidden="true">+</span>
+              <span className="cb-slot-hint">게임을 추가하세요</span>
+            </button>
           );
         })}
       </div>
@@ -178,6 +182,7 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
       <div className="search-box cb-search" ref={boxRef}>
         <div className="search-bar-clean">
           <input
+            ref={inputRef}
             type="text"
             placeholder={full ? '3개까지 골랐어요' : '게임 이름으로 찾아서 추가...'}
             value={input}
@@ -223,18 +228,16 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
       {error && <p role="alert" className="cb-error">{error}</p>}
 
       {/* 검색어가 없을 때 인기 게임 빠른 추가 */}
-      {!q && popular.length > 0 && !full && (
+      {!q && !full && (
         <div className="cb-quick-wrap">
           <div className="filter-label">인기 게임 바로 추가</div>
           <div className="cb-quick">
-            {popular.map((g) => {
-              const picked = picks.some((p) => p.id === g.id);
-              return (
-                <button key={g.id} type="button" className={`chip cb-quick-btn${picked ? ' on' : ''}`} disabled={picked} onClick={() => add(g)}>
-                  {picked ? '담음 · ' : '+ '}{g.name}
-                </button>
-              );
-            })}
+            {/* 인기 순, 이미 담은 게임은 빼고 6개 — 누르면 다음 빈 칸에 들어감 */}
+            {popular.filter((g) => !picks.some((p) => p.id === g.id)).slice(0, QUICK_COUNT).map((g) => (
+              <button key={g.id} type="button" className="chip cb-quick-btn" onClick={() => add(g)}>
+                + {g.name}
+              </button>
+            ))}
           </div>
         </div>
       )}

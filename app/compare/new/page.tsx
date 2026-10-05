@@ -16,7 +16,7 @@ export default async function NewComparePage({ searchParams }: { searchParams: P
   const { games } = await searchParams;
   const ids = [...new Set((games || '').split(',').filter((id) => UUID.test(id)))].slice(0, MAX_COMPARE);
   const [{ data: popular }, { data: rows }] = await Promise.all([
-    selectGames(BUILDER_FIELDS).not('heat_rank', 'is', null).order('heat_rank', { ascending: true }).limit(8),
+    selectGames(BUILDER_FIELDS).not('heat_rank', 'is', null).order('heat_rank', { ascending: true }).limit(9),
     ids.length ? selectGames(BUILDER_FIELDS).in('id', ids) : Promise.resolve({ data: [] as Pick[] }),
   ]);
   const initial: Pick[] = [];
