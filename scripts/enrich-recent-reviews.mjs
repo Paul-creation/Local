@@ -8,6 +8,7 @@
 // 실행: node --env-file=.env.local scripts/enrich-recent-reviews.mjs   (--dry: 저장 없이 출력만, 최대 5개)
 import { createClient } from '@supabase/supabase-js';
 import { steamGet, SteamLimitError } from './lib/steam.mjs';
+import { onlyIds } from './lib/only-ids.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const DRY = process.argv.includes('--dry');
@@ -29,7 +30,7 @@ function parseRecent(html) {
 
 async function main() {
   const cols = DRY ? 'id, name, steam_appid' : 'id, name, steam_appid, recent_reviews_at';
-  let q = supabase.from('games').select(cols).eq('hidden', false).not('steam_appid', 'is', null);
+  let q = onlyIds(supabase.from('games').select(cols)).eq('hidden', false).not('steam_appid', 'is', null);
   if (!DRY) {
     const since = new Date(Date.now() - RECHECK_HOURS * 3600 * 1000).toISOString();
     q = q.or(`recent_reviews_at.is.null,recent_reviews_at.lt.${since}`).order('recent_reviews_at', { ascending: true, nullsFirst: true });

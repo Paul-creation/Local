@@ -5,6 +5,7 @@
 // - 가격 유형이 있는 게임(월 구독 등)은 건너뜀. 가격을 못 받은 게임은 이유와 함께 출력하고 games.price_check_*에 표시 → daily-summary가 3일 연속 실패를 알림
 import { createClient } from '@supabase/supabase-js';
 import { steamGet } from './lib/steam.mjs';
+import { onlyIds } from './lib/only-ids.mjs';
 import { markPriceStatus, noPriceIds, recordPriceCheck } from './lib/price-check.mjs';
 
 const supabase = createClient(
@@ -14,9 +15,9 @@ const supabase = createClient(
 const BATCH = 50;
 
 async function main() {
-  const { data: games, error } = await supabase
+  const { data: games, error } = await onlyIds(supabase
     .from('games')
-    .select('id, name, steam_appid, is_free, price_history(price, discount_percent, checked_at)').eq('hidden', false)
+    .select('id, name, steam_appid, is_free, price_history(price, discount_percent, checked_at)')).eq('hidden', false)
     .not('steam_appid', 'is', null);
   if (error) {
     console.error('조회 실패:', error.message);

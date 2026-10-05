@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { onlyIds } from './lib/only-ids.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -34,7 +35,7 @@ async function getAccurateReviews(appid) {
 }
 
 async function main() {
-  const { data: games } = await supabase.from('games').select('id, name, steam_appid').eq('hidden', false).not('steam_appid', 'is', null);
+  const { data: games } = await onlyIds(supabase.from('games').select('id, name, steam_appid')).eq('hidden', false).not('steam_appid', 'is', null);
   if (!games) return;
 
   for (const game of games) {

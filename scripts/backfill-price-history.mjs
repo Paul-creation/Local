@@ -3,6 +3,7 @@
 // 한 번 찾은 ITAD ID는 games.itad_id에 저장해서 다음부터는 lookup을 건너뜀
 import { createClient } from '@supabase/supabase-js';
 import { lookupItadId, getPriceHistory, ItadLimitError } from './lib/itad.mjs';
+import { onlyIds } from './lib/only-ids.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -15,9 +16,9 @@ const minuteKey = (t) => new Date(t).toISOString().slice(0, 16);
 async function main() {
   if (!process.env.ITAD_API_KEY) return console.error('.env.local에 ITAD_API_KEY가 없어요');
 
-  const { data: games, error } = await supabase
+  const { data: games, error } = await onlyIds(supabase
     .from('games')
-    .select('id, name, steam_appid, is_free, itad_id, price_history(price, checked_at)').eq('hidden', false)
+    .select('id, name, steam_appid, is_free, itad_id, price_history(price, checked_at)')).eq('hidden', false)
     .not('steam_appid', 'is', null);
   if (error) return console.error('조회 실패:', error.message);
 
