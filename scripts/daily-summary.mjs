@@ -83,8 +83,8 @@ if (!unclassified.error) {
 // 스트리머 영상 수집 결과 (fetch-streamer-videos --apply가 오늘 남긴 수)
 const streamer = readStreamerVideos();
 const streamerLine = streamer
-  ? `🎬 스트리머 영상 새로 연결 ${streamer.linked}개 (연결 안 된 새 영상 ${streamer.unlinked}개 · YouTube ${streamer.units}유닛)`
-  : '🎬 스트리머 영상: 오늘 기록 없음 (수집 단계가 안 돌았거나 표가 아직 없음)';
+  ? `스트리머 영상 새로 연결 ${streamer.linked}개 (연결 안 된 새 영상 ${streamer.unlinked}개 · YouTube ${streamer.units}유닛)`
+  : '스트리머 영상: 오늘 기록 없음 (수집 단계가 안 돌았거나 표가 아직 없음)';
 const message = `${content}\n${purgeLine}\n${priceLine}\n${streamerLine}${tagLine}`;
 console.log(message);
 
