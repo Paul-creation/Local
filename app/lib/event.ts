@@ -10,6 +10,10 @@ export type HomeEvent = {
   title: string;
   description: string;
   tags: string[];
+  // 'streamer' = 스트리머 기획전: 태그 검색 대신 스트리머가 같이 플레이한 게임 카드를 보여준다 (lib/streamerTheme).
+  // 설명(description)은 데이터 기준 문구로 바뀌고, 게임이 하나도 없으면 fallback 이벤트를 대신 보여준다
+  kind?: 'streamer';
+  fallback?: HomeEvent;
 };
 
 export type DatedEvent = HomeEvent & {
@@ -39,7 +43,10 @@ export const MONTHLY_EVENTS: HomeEvent[] = [
   { tone: 'green', title: '한여름 밤의 생존', description: '좀비와 자연을 버티는 생존 게임', tags: ['생존', '오픈월드 생존', '좀비', '서바이벌 호러'] },
   { tone: 'gold', title: '추석 연휴엔 다 같이', description: '모이면 바로 시작하는 협동 게임', tags: ['온라인 협동', '로컬 협동', '파티 게임', '캐주얼'] },
   { tone: 'horror', title: '10월은 공포 게임의 달', description: '혼자는 무섭고, 같이 하면 더 무서운 공포 게임', tags: ['호러', '심리 공포'] },
-  { tone: 'orange', title: '쌀쌀할 땐 집에서 협동', description: '따뜻한 방에서 친구랑 온라인 협동', tags: ['온라인 협동', '로컬 협동'] },
+  {
+    kind: 'streamer', tone: 'blue', title: '스트리머들이 같이 밤새운 협동 게임', description: '', tags: [],
+    fallback: { tone: 'orange', title: '쌀쌀할 땐 집에서 협동', description: '따뜻한 방에서 친구랑 온라인 협동', tags: ['온라인 협동', '로컬 협동'] },
+  },
   { tone: 'red', title: '연말엔 파티 게임', description: '송년회에서 다 같이 웃으면서 하는 게임', tags: ['파티 게임', '코미디', '로컬 협동', '분할 화면'] },
 ];
 
@@ -49,7 +56,9 @@ function todayInKorea(now: Date) {
 }
 
 // label: 배너 위 작은 글씨 — 기간 이벤트는 "기간 한정", 달 기본 이벤트는 "N월의 테마"
-export function getCurrentEvent(now: Date = new Date()): HomeEvent & { label: string } {
+// previewMonth: 관리자 미리보기(/theme-preview?month=11)용 — 그 달의 기본 이벤트를 날짜와 상관없이 보여준다
+export function getCurrentEvent(now: Date = new Date(), previewMonth?: number): HomeEvent & { label: string } {
+  if (previewMonth) return { ...MONTHLY_EVENTS[previewMonth - 1], label: `${previewMonth}월의 테마` };
   const today = todayInKorea(now);
   const dated = EVENTS.find((e) => e.start <= today && today <= e.end);
   if (dated) return { ...dated, label: '기간 한정' };

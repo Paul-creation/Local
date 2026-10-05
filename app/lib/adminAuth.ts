@@ -18,10 +18,11 @@ export function createSessionToken() {
   return `${exp}.${sign(exp)}`;
 }
 
-export function isAdmin(req: NextRequest) {
+export function isAdminToken(token: string) {
   if (!secret()) return false;
-  const token = req.cookies.get(ADMIN_COOKIE)?.value || '';
   const [exp, sig] = token.split('.');
   if (!exp || !sig || Number(exp) < Date.now()) return false;
   return safeEqual(sig, sign(exp));
 }
+
+export const isAdmin = (req: NextRequest) => isAdminToken(req.cookies.get(ADMIN_COOKIE)?.value || '');

@@ -1591,6 +1591,13 @@ a.series-item:hover { border-color: var(--border); }
   font-size: 15px; font-weight: 800; color: var(--text);
 }
 .home-event-cta:hover { border-color: var(--text-faint); }
+/* 스트리머 기획전: 배너 아래 게임 카드 줄 (카드는 .sg-*와 같은 모양) */
+.home-event.has-cards { margin-bottom: 16px; }
+.event-cards { margin-bottom: 36px; }
+.event-cards .sg-item { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.event-cards .sg-card { width: 100%; }
+.sg-video { font-size: var(--fs-sub); font-weight: 700; color: var(--accent-text); }
+.sg-video:hover { text-decoration: underline; }
 
 /* 히어로 */
 .home-hero.is-home { margin-bottom: 44px; }
