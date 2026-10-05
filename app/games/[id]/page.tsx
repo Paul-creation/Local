@@ -13,7 +13,7 @@ import AddToCompare from '../../components/AddToCompare';
 import { translateTag } from '../../lib/tagTranslate';
 import GameVotes from '../../components/GameVotes';
 import PlayerCountVote from '../../components/PlayerCountVote';
-import { buyTimingLine } from '../../lib/buyTiming';
+import { buyTimingLine, SAME_AS_LOWEST } from '../../lib/buyTiming';
 import VideoPreviewSection, { type CoopVideo } from '../../components/VideoPreviewSection';
 import Link from 'next/link';
 import { Fragment } from 'react';
@@ -421,7 +421,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           {showPriceRecord && priceHistory.length >= 2 && (
             <section className="detail-card is-roomy">
               <h3 className="detail-card-title">할인 전적</h3>
-              {timingLine && <p className="buy-timing is-chart">{timingLine}</p>}
+              {timingLine && timingLine !== SAME_AS_LOWEST && <p className="buy-timing is-chart">{timingLine}</p>}
               {/* 기간 기준 시각은 서버에서 정해 넘긴다 (서버·브라우저 계산이 어긋나지 않게) */}
               <DiscountChart history={priceHistory} now={Date.now()} />
             </section>

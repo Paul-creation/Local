@@ -24,26 +24,12 @@ const kst = (t: number) => {
 };
 const won = (n: number) => `₩${Math.round(n).toLocaleString('ko-KR')}`;
 
-// 실제 값보다 위아래로 튀지 않는 부드러운 곡선 (monotone cubic, d3의 curveMonotoneX와 같은 방식)
-function monotonePath(pts: { x: number; y: number }[]) {
-  const n = pts.length;
-  if (n < 2) return '';
-  if (n === 2) return `M${pts[0].x},${pts[0].y}L${pts[1].x},${pts[1].y}`;
-  const dx = pts.slice(1).map((p, i) => p.x - pts[i].x);
-  const slope = pts.slice(1).map((p, i) => (dx[i] === 0 ? 0 : (p.y - pts[i].y) / dx[i]));
-  const tan = pts.map((_, i) => {
-    if (i === 0) return slope[0];
-    if (i === n - 1) return slope[n - 2];
-    const a = slope[i - 1], b = slope[i];
-    if (a * b <= 0) return 0;
-    const h0 = dx[i - 1], h1 = dx[i];
-    return (3 * (h0 + h1)) / ((2 * h1 + h0) / a + (h1 + 2 * h0) / b);
-  });
+// 계단형 선 (d3의 curveStepAfter와 같은 방식) — 가격은 기록된 시점에 바로 바뀌고 다음 기록까지 유지되므로
+// 값이 바뀌는 날에 수직으로 꺾는다
+function stepPath(pts: { x: number; y: number }[]) {
+  if (pts.length < 2) return '';
   let d = `M${pts[0].x},${pts[0].y}`;
-  for (let i = 0; i < n - 1; i++) {
-    const h = dx[i] / 3;
-    d += `C${pts[i].x + h},${pts[i].y + tan[i] * h},${pts[i + 1].x - h},${pts[i + 1].y - tan[i + 1] * h},${pts[i + 1].x},${pts[i + 1].y}`;
-  }
+  for (let i = 1; i < pts.length; i++) d += `H${pts[i].x}V${pts[i].y}`;
   return d;
 }
 
@@ -103,7 +89,7 @@ export default function DiscountChart({ history, now }: { history: PriceRecord[]
   const y = (v: number) => PAD.top + (1 - (v - yMin) / (yMax - yMin)) * innerH;
 
   const xy = points.map((p) => ({ x: x(p.t), y: y(p.price) }));
-  const line = monotonePath(xy);
+  const line = stepPath(xy);
   const area = line && `${line}L${xy[xy.length - 1].x},${PAD.top + innerH}L${xy[0].x},${PAD.top + innerH}Z`;
   const dots = points.filter((p) => p.discount > 0);
   // 빨간 점은 최저가 지점 하나만 (가장 최근의 최저가), 마우스·터치로 고른 지점은 포인트 색 점

@@ -5,6 +5,9 @@ type Row = { price: number; discount_percent: number | null; checked_at: string 
 
 const DAY = 86400000;
 
+// 가격 카드에만 보여주는 문구 — 할인 전적 섹션에서는 중복이라 숨긴다
+export const SAME_AS_LOWEST = '역대 최저가와 같은 가격이에요';
+
 export function buyTimingLine(history: Row[], opts: { currentPrice: number | null; currentDiscount: number; lowestPrice: number | null; now: number }) {
   const rows = history
     .filter((r) => r.price >= 100 && r.checked_at)
@@ -30,7 +33,7 @@ export function buyTimingLine(history: Row[], opts: { currentPrice: number | nul
 
   const { currentPrice, currentDiscount, lowestPrice } = opts;
   if (currentDiscount > 0 && currentPrice != null && lowestPrice != null && Math.round(currentPrice) <= Math.round(lowestPrice)) {
-    return '역대 최저가와 같은 가격이에요';
+    return SAME_AS_LOWEST;
   }
   // 지금 할인 구간은 빼고 비교 (자기 자신과 비교하지 않게)
   const past = (inSale ? recent.slice(0, -1) : recent);
