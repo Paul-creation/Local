@@ -77,7 +77,7 @@ function BigCard({ item }: { item: HotItem }) {
           <Sparkline points={item.spark} />
         </span>
         <Price item={item} />
-        <StreamerBadge names={item.streamers} max={2} suffix=" 플레이" />
+        <StreamerBadge names={item.streamers} max={2} />
       </span>
     </Link>
   );
@@ -97,7 +97,7 @@ function Row({ item }: { item: HotItem }) {
         <span className="hc-row-sub">
           {item.players && <span>{item.players}</span>}
           {item.tags.map((t) => <span key={t} className="hc-tag">{t}</span>)}
-          <StreamerBadge names={item.streamers} max={1} suffix=" 플레이" />
+          <StreamerBadge names={item.streamers} max={1} />
         </span>
       </span>
       <span className="hc-row-ccu">{item.currentPlayers ? <>{formatCount(item.currentPlayers)}<small>명</small></> : '-'}</span>

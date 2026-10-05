@@ -9,7 +9,8 @@ import { getWeeklyFeatured } from './lib/weeklyFeatured';
 import { getPopularPosts } from './lib/community';
 import { flattenGame } from './lib/price';
 import { HOME_FILTER_STYLE_ID } from './lib/homeFilter';
-import { getStreamerGames, getStreamerNamesByGame } from './lib/streamerVideos';
+import { getStreamerNamesByGame } from './lib/streamerVideos';
+import { getStreamerTheme } from './lib/streamerTheme';
 import { selectHomeGames } from './lib/visibleGames';
 
 // 5분마다 새로 만든 결과를 모두에게 보여준다 (방문마다 DB를 조회하지 않도록). 인기 글·가격도 최대 5분 늦게 반영
@@ -45,7 +46,7 @@ export default async function Home() {
   // 전체 게임 목록은 여기서 보내지 않는다 — 검색·필터용 목록은 첫 화면 뒤에 /api/games/list로 따로 받음 (lib/gameIndex)
   // 🔥 지금 뜨는 게임(lib/hotChart)·이번주의 게임(lib/weeklyFeatured)·인기 게시물(최근 7일 추천+댓글 순 5개)은 필요한 것만 따로
   // 긴 설명(description)은 짧은 소개(fun_description)가 없을 때만 화면에 쓰이므로 그때만 남긴다
-  const [{ data: sectionRows }, hot, weekly, popularPosts, streamerGames] = await Promise.all([
+  const [{ data: sectionRows }, hot, weekly, popularPosts, streamerTheme] = await Promise.all([
     selectHomeGames(SECTION_FIELDS) // 메인 노출 제외 게임은 배너·추천에서 빠짐
       .or('featured.eq.true,is_casual_party.eq.true')
       .gte('price_history.price', 100)
@@ -55,7 +56,7 @@ export default async function Home() {
     getHotChart().catch(() => ({ tabs: [], top10Ids: [] as string[] })),
     getWeeklyFeatured().catch(() => null),
     getPopularPosts().catch(() => []),
-    getStreamerGames().catch(() => []),
+    getStreamerTheme().catch(() => null),
   ]);
 
   // 지금 뜨는 게임에 보이는 게임들의 스트리머를 한 번에 읽어 붙인다 (실패해도 배지만 빠짐)
@@ -72,7 +73,7 @@ export default async function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd).replace(/</g, '\\u003c') }} />
       <GameGrid
         event={<HomeEvent />}
-        sections={<HomeSections featured={featured} bannerPool={bannerPool} hotTabs={hotTabs} popularPosts={popularPosts} streamerGames={streamerGames} />}
+        sections={<HomeSections featured={featured} bannerPool={bannerPool} hotTabs={hotTabs} popularPosts={popularPosts} streamerTheme={streamerTheme} />}
         top10Ids={hot.top10Ids}
       />
     </main>

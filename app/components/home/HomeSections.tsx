@@ -6,13 +6,13 @@ import type { HotTab } from '../../lib/hotChart';
 import type { PostListItem } from '../../lib/community';
 import PopularPosts from './PopularPosts';
 import FeatureCard from './FeatureCard';
-import StreamerGames from './StreamerGames';
-import type { StreamerGame } from '../../lib/streamerVideos';
+import StreamerSection from './StreamerSection';
+import type { StreamerTheme } from '../../lib/streamerTheme';
 import { preconnect, preload } from 'react-dom';
 import { sizedImage } from '../../lib/imageUrl';
 
 // featured: featured_games에서 뽑힌 이번 주 게임, 기록이 없으면 예전처럼 featured 칸 / bannerPool: 추천 배너 게임 (app/page.tsx에서 고름)
-export default function HomeSections({ featured, bannerPool, hotTabs, popularPosts = [], streamerGames = [] }: { featured: any; bannerPool: any[]; hotTabs: HotTab[]; popularPosts?: PostListItem[]; streamerGames?: StreamerGame[] }) {
+export default function HomeSections({ featured, bannerPool, hotTabs, popularPosts = [], streamerTheme = null }: { featured: any; bannerPool: any[]; hotTabs: HotTab[]; popularPosts?: PostListItem[]; streamerTheme?: StreamerTheme | null }) {
 
   // 카드 이미지는 스팀 헤더(460:215)를 카드 폭에 꽉 차게 — FeatureCard와 같은 주소·폭이어야 preload가 한 번만 받는다
   const featuredImage = featured ? featured.cover_image_url || featured.card_image_url : null;
@@ -34,8 +34,8 @@ export default function HomeSections({ featured, bannerPool, hotTabs, popularPos
       {/* 지금 뜨는 게임 — 데이터는 page.tsx에서 따로 가져옴 (lib/hotChart) */}
       {hotTabs.length > 0 && <HotChart tabs={hotTabs} />}
 
-      {/* 스트리머가 플레이한 게임 — 켜진 영상이 있는 게임이 없으면 숨김 (lib/streamerVideos) */}
-      <StreamerGames games={streamerGames} />
+      {/* 스트리머들이 밤새운 협동 게임 — 선정이 6개 미만이면 통째로 숨김 (lib/streamerTheme) */}
+      <StreamerSection theme={streamerTheme} />
 
       {/* 인기 게시물 — 글이 하나도 없을 때만 숨김 (적으면 최근 글로 채움, lib/community) */}
       {popularPosts.length > 0 && <PopularPosts posts={popularPosts} />}
