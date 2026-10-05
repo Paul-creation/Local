@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Moderation, { type ModTab } from '../components/admin/Moderation';
+import StreamerAdmin from '../components/admin/StreamerAdmin';
 
 export default function AdminPage() {
   const [password, setPassword] = useState('');
@@ -11,7 +12,7 @@ export default function AdminPage() {
   const [selected, setSelected] = useState<any>(null);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
-  const [tab, setTab] = useState<'games' | 'community'>('games');
+  const [tab, setTab] = useState<'games' | 'community' | 'streamers'>('games');
   const [modTab, setModTab] = useState<ModTab>('reports');
 
   // 디스코드 알림 링크(/admin?tab=feedback 등)로 들어오면 운영 탭의 해당 목록부터
@@ -92,7 +93,7 @@ export default function AdminPage() {
 
   const tabBar = (
     <div style={{ display: 'flex', gap: 8, padding: '12px 16px', background: 'var(--card)', borderBottom: '1px solid var(--border)' }}>
-      {([['games', '게임 편집'], ['community', '신고·숨김·의견함']] as const).map(([k, label]) => (
+      {([['games', '게임 편집'], ['community', '신고·숨김·의견함'], ['streamers', '스트리머 영상']] as const).map(([k, label]) => (
         <button
           key={k}
           onClick={() => setTab(k)}
@@ -103,6 +104,15 @@ export default function AdminPage() {
       ))}
     </div>
   );
+
+  if (tab === 'streamers') {
+    return (
+      <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
+        {tabBar}
+        <div style={{ padding: 32 }}><StreamerAdmin /></div>
+      </div>
+    );
+  }
 
   if (tab === 'community') {
     return (

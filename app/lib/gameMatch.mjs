@@ -45,12 +45,12 @@ export function buildMatchers(games) {
 }
 
 /**
- * @param {string} text 제목 + 본문
+ * 겹치는 이름을 정리한 뒤 남은 매칭 위치들 (scripts/fetch-streamer-videos.mjs가 "가장 긴 이름 하나"를 고를 때 씀)
+ * @param {string} text
  * @param {ReturnType<typeof buildMatchers>} matchers
- * @param {number} [limit]
- * @returns {string[]} 관련 게임 id (글에 나온 순서)
+ * @returns {{ id: string, start: number, len: number }[]}
  */
-export function matchGames(text, matchers, limit = MAX_RELATED) {
+export function findGameHits(text, matchers) {
   const spaced = normalize(text);
   // 띄어쓴 글자 위치 → 띄어쓰기 뺀 글자 위치
   const toKeyIdx = [];
@@ -76,11 +76,25 @@ export function matchGames(text, matchers, limit = MAX_RELATED) {
   // 긴 이름부터 자리를 차지하고, 겹치는 짧은 이름은 버림
   hits.sort((a, b) => b.len - a.len || a.start - b.start);
   const taken = [];
-  const first = new Map();
+  const kept = [];
   for (const h of hits) {
     const end = h.start + h.len;
     if (taken.some(([s, e]) => h.start < e && s < end)) continue;
     taken.push([h.start, end]);
+    kept.push(h);
+  }
+  return kept;
+}
+
+/**
+ * @param {string} text 제목 + 본문
+ * @param {ReturnType<typeof buildMatchers>} matchers
+ * @param {number} [limit]
+ * @returns {string[]} 관련 게임 id (글에 나온 순서)
+ */
+export function matchGames(text, matchers, limit = MAX_RELATED) {
+  const first = new Map();
+  for (const h of findGameHits(text, matchers)) {
     if (!first.has(h.id) || first.get(h.id) > h.start) first.set(h.id, h.start);
   }
   return [...first].sort((a, b) => a[1] - b[1]).slice(0, limit).map(([id]) => id);

@@ -1,12 +1,13 @@
 // scripts/daily-summary.mjs
 // 디스코드 일일 요약: 지난 24시간 새 글·댓글·게임 의견·의견함·신고 수 + 지금 숨김 중인 항목 수
-// + 오늘 가격을 못 받은 게임 수 (3일 연속 실패한 게임은 이름까지) + 분류 안 된 새 스팀 태그 수 (있을 때만)
+// + 오늘 가격을 못 받은 게임 수 (3일 연속 실패한 게임은 이름까지) + 스트리머 영상 새로 연결된 수 + 분류 안 된 새 스팀 태그 수 (있을 때만)
 // DISCORD_WEBHOOK_URL이 없으면 화면에만 출력. 개인정보(IP 해시·연락처·본문)는 보내지 않고 숫자만 보낸다
 // 사용: node --env-file=.env.local scripts/daily-summary.mjs
 import fs from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { readPurge } from './lib/privacy-purge.mjs';
 import { readPriceCheck } from './lib/price-check.mjs';
+import { readStreamerVideos } from './lib/streamer-videos.mjs';
 
 const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const SITE = (process.env.NEXT_PUBLIC_SITE_URL || 'https://game-info-hub.vercel.app').replace(/\/$/, '');
@@ -79,7 +80,12 @@ if (!unclassified.error) {
     tagLine = `\n🏷️ 분류 안 된 새 태그 ${left.length}개: ${names.join(', ')}${left.length > 10 ? ` 외 ${left.length - 10}개` : ''} (data/tags/tree.json에 넣거나 제외)`;
   }
 }
-const message = `${content}\n${purgeLine}\n${priceLine}${tagLine}`;
+// 스트리머 영상 수집 결과 (fetch-streamer-videos --apply가 오늘 남긴 수)
+const streamer = readStreamerVideos();
+const streamerLine = streamer
+  ? `🎬 스트리머 영상 새로 연결 ${streamer.linked}개 (연결 안 된 새 영상 ${streamer.unlinked}개 · YouTube ${streamer.units}유닛)`
+  : '🎬 스트리머 영상: 오늘 기록 없음 (수집 단계가 안 돌았거나 표가 아직 없음)';
+const message = `${content}\n${purgeLine}\n${priceLine}\n${streamerLine}${tagLine}`;
 console.log(message);
 
 const url = process.env.DISCORD_WEBHOOK_URL;

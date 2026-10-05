@@ -13,6 +13,7 @@ const GROUPS = {
     'enrich-players',
     'enrich-recent-reviews', // 스팀 최근 30일 평가 (상점 페이지, 요청 간격 2초, 숨긴 게임 제외)
     'enrich-itad-heat',
+    'fetch-streamer-videos --apply', // 스트리머 공식 채널 새 영상 → 게임 연결 (YouTube 하루 200유닛, 하이라이트 작업이 이 몫을 남겨 둠). 트레일러보다 먼저
     'enrich-videos 90', // YouTube 하루 한도 안에서 매일 조금씩
     'snapshot-hot-rank', // 메인 "지금 뜨는 게임" 순위 기록 (heat_rank 갱신 뒤)
     'purge-ip-hash', // 90일 지난 IP 해시 칸 비우기 (개인정보처리방침, 행은 지우지 않음)

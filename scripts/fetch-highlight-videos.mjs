@@ -11,13 +11,15 @@
 // - YouTube 사용량: 검색 1번당 101 (검색 100 + 영상 정보 1), 게임당 최대 202
 // - 하루 사용 상한 (새벽·주간 작업 몫을 먼저 남김):
 //     트레일러 몫 = min(영상 못 찾은 게임 수, 90) × 100 (새벽 3시 enrich-videos 90)
-//     평소: max(5,000, 10,000 − 여유 500 − 트레일러 몫) → 트레일러 대기분이 줄면 남는 한도가 자동으로 하이라이트에 더해짐
-//     목요일(태평양 시간, 금요일 새벽 주간 작업과 같은 한도일): 10,000 − 여유 500 − 트레일러 몫 − 합방 몫(갱신할 게임 × 202), 최소 보장 없음
+//     스트리머 영상 몫 = 200 (새벽 3시 fetch-streamer-videos, lib/streamer-videos.mjs)
+//     평소: max(5,000, 10,000 − 여유 500 − 트레일러 몫 − 스트리머 몫) → 트레일러 대기분이 줄면 남는 한도가 자동으로 하이라이트에 더해짐
+//     목요일(태평양 시간, 금요일 새벽 주간 작업과 같은 한도일): 10,000 − 여유 500 − 트레일러 몫 − 스트리머 몫 − 합방 몫(갱신할 게임 × 202), 최소 보장 없음
 // - 한도일 중 새벽 작업이 이미 돌았을 수 있는 시각(태평양 시간 10시 이후)이면 남은 한도를 알 수 없어 건너뜀 (--force로 무시)
 // - 한도 초과면 그 게임은 기록하지 않고 조용히 멈춤 → 다음 실행 때 그 게임부터 이어서
 import { createClient } from '@supabase/supabase-js';
 import { getCoopTargets, gameNameKeys, searchKeyword, searchExcludeSuffix, excludeTerms, EXCLUDE_TITLE_WORDS, DESC_HEAD } from './lib/coop-targets.mjs';
 import { videoRejectReason, isGenericName } from './lib/video-filter.mjs';
+import { STREAMER_UNITS_PER_DAY } from './lib/streamer-videos.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
@@ -79,9 +81,9 @@ async function computeBudget() {
     const targets = await getCoopTargets(supabase, 'coop_videos_at');
     const coopDue = targets.filter((g) => !g.coop_videos_at || new Date(g.coop_videos_at).getTime() < cutoff).length;
     const coop = coopDue * COOP_UNIT_PER_GAME;
-    return { cap: Math.max(0, DAILY_QUOTA - SAFETY - trailer - coop), note: `목요일 — 트레일러 몫 ${trailer} · 주간 합방 몫 ${coop} (${coopDue}개) 먼저 남김` };
+    return { cap: Math.max(0, DAILY_QUOTA - SAFETY - trailer - STREAMER_UNITS_PER_DAY - coop), note: `목요일 — 트레일러 몫 ${trailer} · 스트리머 몫 ${STREAMER_UNITS_PER_DAY} · 주간 합방 몫 ${coop} (${coopDue}개) 먼저 남김` };
   }
-  return { cap: Math.max(HIGHLIGHT_BASE, DAILY_QUOTA - SAFETY - trailer), note: `트레일러 몫 ${trailer} (대기 ${pendingTrailers ?? 0}개)` };
+  return { cap: Math.max(HIGHLIGHT_BASE, DAILY_QUOTA - SAFETY - trailer - STREAMER_UNITS_PER_DAY), note: `트레일러 몫 ${trailer} (대기 ${pendingTrailers ?? 0}개) · 스트리머 몫 ${STREAMER_UNITS_PER_DAY}` };
 }
 
 // 영상에 이 게임 이름이 있는지 (제목 또는 설명 앞부분)

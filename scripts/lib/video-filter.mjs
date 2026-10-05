@@ -16,6 +16,7 @@ export const GENERIC_NAMES = new Set([
   'muck', 'inside', 'prey', 'control', 'limbo', 'portal', 'granny', 'devour', 'geronimo', 'raft', 'rust',
   'steep', 'trove', 'celeste', 'hades', 'doom', 'smite', 'sworn', 'subsistence', 'melatonin', 'viewfinder', 'unpacking',
   'journey', 'outlast', 'stray', 'hollow', 'scorn', 'forest', 'classrooms',
+  'ticktockatalefortwo', // 한국어 이름 '틱톡'이 TikTok과 섞임
 ]);
 
 export function isGenericName(game) {
