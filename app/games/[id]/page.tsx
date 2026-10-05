@@ -10,6 +10,7 @@ import { getPlatformCategories, CATEGORY_LABEL } from '../../lib/platformDisplay
 import PlayerChart from '../../components/PlayerChart';
 import DetailHero from '../../components/DetailHero';
 import AddToCompare from '../../components/AddToCompare';
+import WishlistButton from '../../components/wishlist/WishlistButton';
 import { translateTag } from '../../lib/tagTranslate';
 import GameVotes from '../../components/GameVotes';
 import PlayerCountVote from '../../components/PlayerCountVote';
@@ -267,7 +268,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
                 {buyLabel}에서 {game.is_free ? '플레이하기' : '구매하기'}
               </a>
             )}
-            <AddToCompare gameId={game.id} name={game.name} thumb={game.cover_image_url || game.card_image_url} />
+            <AddToCompare gameId={game.id} name={game.name} thumb={game.cover_image_url || game.card_image_url}>
+              <WishlistButton gameId={game.id} className="btn-lg price-card-wishlist" />
+            </AddToCompare>
             <p className="price-card-note">가격·할인 정보는 실제와 다를 수 있어요. 가격은 하루 한 번 갱신되니 구매 전 스토어에서 확인해 주세요.</p>
           </div>
           {game.discord_url && (

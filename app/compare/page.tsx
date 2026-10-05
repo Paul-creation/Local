@@ -17,6 +17,7 @@ import CompareBuilder from '../components/CompareBuilder';
 import { BUILDER_FIELDS } from '../lib/compareRule';
 import { playersText } from '../lib/players';
 import GameImage from '../components/GameImage';
+import WishlistButton from '../components/wishlist/WishlistButton';
 import { selectGames } from '../lib/visibleGames';
 
 export const dynamic = 'force-dynamic';
@@ -321,6 +322,13 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
                 ))}
               </div>
             ))}
+            {/* 각 게임 칸 맨 아래 */}
+            <div className="cmp-row" style={cols}>
+              <div className="cmp-row-label" />
+              {games.map((g: any) => (
+                <div key={g.id} className="cmp-cell"><WishlistButton gameId={g.id} className="cmp-wishlist" /></div>
+              ))}
+            </div>
           </div>
           <div className="compare-mobile">
             {ROWS.map((row) => (
@@ -336,6 +344,16 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
                 </div>
               </div>
             ))}
+            <div className="cmp-mrow">
+              <div className="cmp-mgrid">
+                {games.map((g: any) => (
+                  <div key={g.id} className="cmp-mbox">
+                    <span className="cmp-mname">{g.name}</span>
+                    <WishlistButton gameId={g.id} className="cmp-wishlist" />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>

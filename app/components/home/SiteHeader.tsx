@@ -8,6 +8,7 @@ import CompareCount from '../CompareCount';
 const MENU = [
   { href: '/', label: '홈' },
   { href: '/compare', label: '비교' },
+  { href: '/wishlist', label: '찜목록' },
   { href: '/community', label: '커뮤니티' },
   { href: '/feedback', label: '의견 보내기' },
 ];
