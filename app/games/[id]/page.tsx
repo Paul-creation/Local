@@ -17,6 +17,8 @@ import { buyTimingLine, SAME_AS_LOWEST } from '../../lib/buyTiming';
 import VideoPreviewSection, { type CoopVideo } from '../../components/VideoPreviewSection';
 import Link from 'next/link';
 import { Fragment } from 'react';
+import PcVerdictLine from '../../components/pcspec/PcVerdictLine';
+import { hasJudgeableSpec } from '../../lib/specJudge';
 import ShareButton from '../../components/ShareButton';
 import GameImage from '../../components/GameImage';
 import { getTop10Ids } from '../../lib/hotChart';
@@ -465,6 +467,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               )}
             </div>
           )}
+
+          {/* 내 PC 판정 한 줄 — 입력한 사양은 브라우저에만 있어서 클라이언트에서 판정. 최소 사양을 하나도 못 읽은 게임(spec_parsed가 없거나 전부 null)은 그리지 않음 */}
+          {(minSpec || recSpec) && hasJudgeableSpec(game.spec_parsed) && <PcVerdictLine parsed={game.spec_parsed} />}
 
           {/* PC 사양 — 접기 (요약에 최소·권장 그래픽카드) */}
           {(minSpec || recSpec) && (

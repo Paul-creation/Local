@@ -62,3 +62,63 @@ test('권장을 읽지 못해도(권장 판정 불가) 최소는 충족으로 �
   const r = judgeGame(pc('nvidia', 10), { min, rec });
   assert.equal(r.verdict, 'min'); assert.equal(r.rec.result, 'unknown');
 });
+
+// ── 3단계: 상세 페이지 판정 (judgePc) ──
+import { judgePc, hasJudgeableSpec, verdictText } from './specJudge.ts';
+
+const full = (cpu, gpu, ram) => ({ cpu: { intel: cpu }, gpu: { nvidia: gpu }, ram_gb: ram });
+
+test('judgePc: 권장 충족 / 최소 충족 / 최소 미달(항목 이름 포함)', () => {
+  const parsed = { min: full(4, 6, 8), rec: full(6, 9, 16) };
+  assert.deepEqual(judgePc(pc('nvidia', 9, 'intel', 6, 16), parsed), { level: 'rec', failed: [], recMissing: false, partial: false });
+  assert.deepEqual(judgePc(pc('nvidia', 7, 'intel', 6, 16), parsed), { level: 'min', failed: [], recMissing: false, partial: false });
+  assert.deepEqual(judgePc(pc('nvidia', 3, 'intel', 3, 4), parsed), { level: 'fail', failed: ['cpu', 'gpu', 'ram'], recMissing: false, partial: false });
+  assert.deepEqual(judgePc(pc('nvidia', 3, 'intel', 6, 16), parsed).failed, ['gpu']);
+});
+
+test('judgePc: 제조사 일치 비교와 {any:1}·low_spec 충족', () => {
+  const parsed = { min: { cpu: { any: 1 }, gpu: { nvidia: 6, amd: 8 }, ram_gb: 4 }, rec: null };
+  assert.equal(judgePc(pc('amd', 7, 'amd', 1, 8), parsed).level, 'fail'); // AMD는 8 필요
+  assert.equal(judgePc(pc('amd', 8, 'amd', 1, 8), parsed).level, 'min'); // CPU {any:1}은 충족
+  assert.equal(judgePc(pc('nvidia', 6, 'amd', 1, 8), parsed).level, 'min');
+  assert.equal(judgePc(pc('intel', 7, 'intel', 1, 8), parsed).level, 'fail'); // Intel 항목 없음 → 가장 높은 8과 비교
+});
+
+test('judgePc: rec가 null이거나 rec의 한 항목이라도 못 읽으면 최소 기준 + "권장 사양 정보 부족"', () => {
+  const min = full(4, 6, 8);
+  const strong = pc('nvidia', 15, 'intel', 8, 64);
+  assert.deepEqual(judgePc(strong, { min, rec: null }), { level: 'min', failed: [], recMissing: true, partial: false });
+  assert.deepEqual(judgePc(strong, { min }), { level: 'min', failed: [], recMissing: true, partial: false });
+  for (const rec of [{ ...full(6, 9, 16), cpu: null }, { ...full(6, 9, 16), gpu: null }, { ...full(6, 9, 16), ram_gb: null }]) {
+    const v = judgePc(strong, { min, rec });
+    assert.equal(v.level, 'min'); // 읽힌 권장 항목을 다 충족해도 권장 충족은 나오지 않음
+    assert.equal(v.recMissing, true);
+  }
+});
+
+test('judgePc: 최소는 읽힌 항목만으로 판정하고 일부만 읽혔으면 "일부 사양만 확인됨"', () => {
+  const rec = full(6, 9, 16);
+  const v = judgePc(pc('nvidia', 9, 'intel', 6, 16), { min: { cpu: null, gpu: { nvidia: 6 }, ram_gb: 8 }, rec });
+  assert.deepEqual(v, { level: 'rec', failed: [], recMissing: false, partial: true });
+  assert.equal(judgePc(pc('nvidia', 9, 'intel', 6, 16), { min: { cpu: null, gpu: { nvidia: 6 }, ram_gb: 8 }, rec: null }).level, 'min');
+  const fail = judgePc(pc('nvidia', 3, 'intel', 6, 16), { min: { cpu: null, gpu: { nvidia: 6 }, ram_gb: null }, rec: null });
+  assert.deepEqual(fail, { level: 'fail', failed: ['gpu'], recMissing: true, partial: true });
+});
+
+test('judgePc: 최소 세 항목이 전부 안 읽히거나 min이 없으면 null', () => {
+  const user = pc('nvidia', 9);
+  assert.equal(judgePc(user, { min: { cpu: null, gpu: null, ram_gb: null }, rec: full(6, 9, 16) }), null);
+  assert.equal(judgePc(user, { min: null, rec: full(6, 9, 16) }), null);
+  assert.equal(judgePc(user, null), null);
+  assert.equal(judgePc(user, undefined), null);
+  assert.equal(hasJudgeableSpec({ min: { cpu: null, gpu: null, ram_gb: null } }), false);
+  assert.equal(hasJudgeableSpec({ min: { cpu: null, gpu: null, ram_gb: 8 } }), true);
+  assert.equal(hasJudgeableSpec(null), false);
+});
+
+test('verdictText: 문구와 플래그', () => {
+  assert.deepEqual(verdictText({ level: 'rec', failed: [], recMissing: false, partial: false }), { main: '권장 사양 충족', flags: [] });
+  assert.deepEqual(verdictText({ level: 'min', failed: [], recMissing: true, partial: false }), { main: '최소 사양 충족', flags: ['권장 사양 정보 부족'] });
+  assert.deepEqual(verdictText({ level: 'min', failed: [], recMissing: true, partial: true }).flags, ['권장 사양 정보 부족', '일부 사양만 확인됨']);
+  assert.equal(verdictText({ level: 'fail', failed: ['gpu', 'ram'], recMissing: false, partial: false }).main, '최소 사양 미달 (그래픽카드·메모리)');
+});

@@ -50,3 +50,45 @@ export function judgeGame(user: UserPc, parsed: { min: SpecLike | null; rec: Spe
   if (min.result === 'unknown') return { verdict: 'unknown', min, rec, failed: [] };
   return { verdict: rec?.result === 'pass' ? 'rec' : 'min', min, rec, failed: [] };
 }
+
+// ── 상세 페이지 판정 한 줄용 (3단계) ──
+// 권장 충족 / 최소 충족 / 최소 미달 + 두 가지 플래그. 위의 judgeGame과 달리 읽지 못한 칸이 있어도 읽은 칸만으로 판정한다
+// - 최소(min): 읽힌 항목(CPU·GPU·RAM)만으로 판정. 하나라도 못 읽었으면 partial 플래그. 세 항목이 전부 안 읽혔거나 min이 없으면 null (줄을 숨김)
+// - 권장(rec): rec가 없거나 CPU·GPU·RAM 중 하나라도 못 읽었으면 최소 기준으로만 판정하고 recMissing 플래그 (권장 충족은 나오지 않음)
+export type PcPart = 'cpu' | 'gpu' | 'ram';
+export type PcVerdict = {
+  level: 'rec' | 'min' | 'fail';
+  failed: PcPart[]; // level이 fail일 때 미달 항목
+  recMissing: boolean; // 권장 사양 정보 부족
+  partial: boolean; // 최소 사양 일부만 확인됨
+};
+
+const readable = (s: SpecLike) => ({ cpu: s.cpu != null, gpu: s.gpu != null, ram: s.ram_gb != null });
+// 최소 사양 세 항목 중 하나라도 읽혔는지 — 사용자 입력과 무관 (false면 판정 줄 자체를 숨긴다)
+export const hasJudgeableSpec = (parsed: { min?: SpecLike | null } | null | undefined) => {
+  const m = parsed?.min;
+  return !!m && (m.cpu != null || m.gpu != null || m.ram_gb != null);
+};
+
+export function judgePc(user: UserPc, parsed: { min?: SpecLike | null; rec?: SpecLike | null } | null | undefined): PcVerdict | null {
+  const min = parsed?.min;
+  if (!min || !hasJudgeableSpec(parsed)) return null;
+  const r = readable(min);
+  const partial = !(r.cpu && r.gpu && r.ram);
+  const rec = parsed?.rec ?? null;
+  const recReadable = !!rec && readable(rec).cpu && readable(rec).gpu && readable(rec).ram;
+  const level = judgeLevel(user, min);
+  const failed = (['cpu', 'gpu', 'ram'] as const).filter((k) => level[k] === false);
+  if (failed.length) return { level: 'fail', failed: [...failed], recMissing: !recReadable, partial };
+  const recPass = recReadable && judgeLevel(user, rec!).result === 'pass';
+  return { level: recPass ? 'rec' : 'min', failed: [], recMissing: !recReadable, partial };
+}
+
+const PART_LABEL: Record<PcPart, string> = { cpu: '프로세서', gpu: '그래픽카드', ram: '메모리' };
+
+// 판정 문구 — 본문과 플래그(서브 텍스트 토큰으로 따로 그림)를 나눠 돌려준다
+export function verdictText(v: PcVerdict): { main: string; flags: string[] } {
+  const main = v.level === 'rec' ? '권장 사양 충족' : v.level === 'min' ? '최소 사양 충족' : `최소 사양 미달 (${v.failed.map((k) => PART_LABEL[k]).join('·')})`;
+  const flags = [v.recMissing && '권장 사양 정보 부족', v.partial && '일부 사양만 확인됨'].filter((f): f is string => !!f);
+  return { main, flags };
+}
