@@ -2,11 +2,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { parseSpecText } from './specParse.ts';
+import { parseSpecText, lowestTier, highestTier } from './specParse.ts';
 
 const tables = { gpu: JSON.parse(fs.readFileSync('data/pc-spec/gpu-tiers.json', 'utf8')), cpu: JSON.parse(fs.readFileSync('data/pc-spec/cpu-tiers.json', 'utf8')) };
 const spec = (cpu, gpu, ram = '8 GB RAM', sto = '10 GB 사용 가능 공간') => `운영 체제: Windows 10 / 프로세서: ${cpu} / 메모리: ${ram} / 그래픽: ${gpu} / 저장 공간: ${sto}`;
-const p = (cpu, gpu, ram, sto) => parseSpecText(spec(cpu, gpu, ram, sto), tables);
+const p0 = (cpu, gpu, ram, sto) => parseSpecText(spec(cpu, gpu, ram, sto), tables);
+// 대안 표기는 제조사별로 보존된다. 아래 기존 단언은 "가장 낮은 등급" 기준이라 lowestTier로 읽는다
+const p = (...a) => { const r = p0(...a); return r && { ...r, cpu_tier: lowestTier(r.cpu), gpu_tier: lowestTier(r.gpu) }; };
 
 test('등급표: 키 중복 없음·등급 범위·노트북은 데스크톱보다 한 단계 낮음', () => {
   for (const [name, max] of [['gpu', 15], ['cpu', 8]]) {
@@ -82,7 +84,7 @@ test('RAM·저장 공간', () => {
 
 test('칸 나누기: 값 안의 " / "와 영어 칸 이름, 권장 라벨 줄', () => {
   const r = parseSpecText('권장: / 운영 체제: Windows 10 / Processor: Intel Core i5-6600 / Memory: 16 GB RAM / Graphics: NVIDIA GTX 1060 / AMD RX 480 / Storage: 40 GB available space', tables);
-  assert.equal(r.cpu_tier, 5); assert.equal(r.gpu_tier, 9); assert.equal(r.ram_gb, 16); assert.equal(r.storage_gb, 40);
+  assert.deepEqual(r.cpu, { intel: 5 }); assert.deepEqual(r.gpu, { nvidia: 9, amd: 9 }); assert.equal(r.ram_gb, 16); assert.equal(r.storage_gb, 40);
   assert.equal(parseSpecText('', tables), null);
   assert.equal(parseSpecText(null, tables), null);
 });
@@ -97,4 +99,20 @@ test('GPU: 8800·9600처럼 4자리 옛 시리즈는 RTX로 읽지 않는다', (
   assert.equal(p('x', 'NVIDIA 9600GT').gpu_tier, 2);
   assert.equal(p('x', 'GeForce 8800 GT').gpu_tier, 2);
   assert.equal(p('x', 'NVIDIA GeForce 2080RTX').gpu_tier, 12);
+});
+
+test('대안 표기는 제조사별로 보존된다', () => {
+  assert.deepEqual(p0('Intel Core i5-6500 or AMD Ryzen 5 1600', 'NVIDIA GeForce GTX 1060 or AMD Radeon RX 6600 XT or Intel Arc A380').cpu, { intel: 5, amd: 5 });
+  assert.deepEqual(p0('x', 'NVIDIA GeForce GTX 1060 or AMD Radeon RX 6600 XT or Intel Arc A380').gpu, { nvidia: 9, amd: 12, intel: 6 });
+  assert.deepEqual(p0('Intel Core i7-8700K', 'NVIDIA GeForce GTX 1080 Ti').gpu, { nvidia: 12 }); // 제조사 하나만 적히면 그 하나만
+  assert.deepEqual(p0('Intel Core i7-8700K', 'NVIDIA GeForce GTX 1080 Ti').cpu, { intel: 7 });
+  assert.deepEqual(p0('x', 'GeForce GTX 1060 or GeForce GTX 1650 or Radeon RX 580').gpu, { nvidia: 7, amd: 9 }); // 같은 제조사 안의 대안은 낮은 쪽
+  assert.equal(highestTier(p0('x', 'GTX 1060 or RX 6600 XT').gpu), 12);
+});
+
+test('low_spec·판정 불가 표기의 구조', () => {
+  assert.deepEqual(p0('2.4 GHz Dual Core', 'Integrated').cpu, { any: 1 });
+  assert.deepEqual(p0('2.4 GHz Dual Core', 'Integrated').gpu, { any: 1 });
+  assert.equal(p0('TBD', 'TBD').cpu, null);
+  assert.equal(p0('TBD', 'TBD').gpu, null);
 });

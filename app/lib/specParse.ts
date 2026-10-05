@@ -3,18 +3,23 @@
 // 등급표: data/pc-spec/gpu-tiers.json · cpu-tiers.json (세대·급 기준 자체 등급, docs/pc-spec-checker-plan.md)
 // 규칙
 // - 칸 이름(프로세서·그래픽·메모리·저장 공간)으로 나눈 뒤, 상표 기호(®™)를 지우고 모델명을 찾는다
-// - "A 또는 B" 대안 표기는 둘 중 낮은 등급을 요구치로 본다 (제작사가 둘 중 하나면 된다고 적었으므로)
-// - 모델명이 없는 저사양 표기(내장 그래픽·DirectX만·GHz만 등)는 최저 등급 + low_spec: true
+// - "A 또는 B" 대안 표기는 하나로 합치지 않고 제조사별 등급으로 보존한다 (예: gpu: { nvidia: 9, amd: 11, intel: 6 }). 같은 제조사 안의 대안은 낮은 쪽
+//   사용자 부품과 비교하는 규칙은 specJudge.ts (같은 제조사 항목이 있으면 그것, 없으면 적힌 항목 중 가장 높은 등급)
+// - 모델명이 없는 저사양 표기(내장 그래픽·DirectX만·GHz만 등)는 최저 등급({ any: 1 }) + low_spec: true
 // - 세대 없이 급만 적은 CPU("Intel Core i5")와 표에 없는 번호(가장 가까운 번호로 추정)는 confidence를 낮춘다
 
 export type GpuEntry = { key: string; name: string; vendor: string; tier: number; mobile: boolean; basis: string };
 export type CpuEntry = { key: string; name: string; vendor: string; family: string; gen: number | null; class: string | null; tier: number; basis: string; class_only?: boolean };
 export type SpecTables = { gpu: { entries: GpuEntry[] }; cpu: { entries: CpuEntry[] } };
 
+export type Vendor = 'nvidia' | 'amd' | 'intel';
+// 제조사별 등급. any = 제조사를 알 수 없는 저사양 표기(low_spec)의 최저 등급
+export type VendorTiers = Partial<Record<Vendor | 'any', number>>;
+
 export type PartDetail = { kind: 'model' | 'class-only' | 'nearest' | 'low-spec' | 'unresolved' | 'missing'; keys: string[] };
 export type ParsedSpec = {
-  cpu_tier: number | null;
-  gpu_tier: number | null;
+  cpu: VendorTiers | null; // 판정 불가(칸 없음·해석 실패)면 null
+  gpu: VendorTiers | null;
   ram_gb: number | null;
   storage_gb: number | null;
   matched: { cpu: string | null; gpu: string | null }; // 칸 원문
@@ -160,8 +165,17 @@ const GPU_LOW = /\b\d+\s?m\b|integrated|내장|onboard|on-board|igpu|\bdx\s?\d|d
 const CPU_LOW = /ghz|mhz|dual[- ]?core|quad[- ]?core|multi[- ]?core|\d[- ]?core|processor|cpu|x86|x64|64[- ]?bit|sse|intel or amd|\bany\b|듀얼|쿼드|코어|프로세서/i;
 const RESOLUTION = /\d{3,4}\s*[x×]\s*\d{3,4}/;
 
-function parseGpu(text: string | null, idx: Index): { tier: number | null; low: boolean; detail: PartDetail } {
-  if (!text) return { tier: null, low: false, detail: { kind: 'missing', keys: [] } };
+// 인식한 항목을 제조사별로 묶는다. 같은 제조사 안의 대안은 낮은 등급
+function byVendor(hits: { vendor: string; tier: number }[]): VendorTiers {
+  const out: VendorTiers = {};
+  for (const h of hits) { const v = h.vendor as Vendor; out[v] = out[v] == null ? h.tier : Math.min(out[v]!, h.tier); }
+  return out;
+}
+export const lowestTier = (v: VendorTiers | null) => { const n = v ? Object.values(v) : []; return n.length ? Math.min(...n) : null; };
+export const highestTier = (v: VendorTiers | null) => { const n = v ? Object.values(v) : []; return n.length ? Math.max(...n) : null; };
+
+function parseGpu(text: string | null, idx: Index): { tiers: VendorTiers | null; low: boolean; detail: PartDetail } {
+  if (!text) return { tiers: null, low: false, detail: { kind: 'missing', keys: [] } };
   const hits: Hit<GpuEntry>[] = [];
   for (const piece of splitAlternatives(text)) {
     for (const { key, mobile } of gpuKeysOf(piece)) {
@@ -170,11 +184,10 @@ function parseGpu(text: string | null, idx: Index): { tier: number | null; low: 
     }
   }
   if (hits.length) {
-    const min = hits.reduce((a, b) => (b.entry.tier < a.entry.tier ? b : a));
-    return { tier: min.entry.tier, low: false, detail: { kind: hits.every((h) => h.kind === 'model') ? 'model' : 'nearest', keys: hits.map((h) => h.entry.key) } };
+    return { tiers: byVendor(hits.map((h) => ({ vendor: h.entry.vendor, tier: h.entry.tier }))), low: false, detail: { kind: hits.every((h) => h.kind === 'model') ? 'model' : 'nearest', keys: hits.map((h) => h.entry.key) } };
   }
-  if (!RESOLUTION.test(text) && GPU_LOW.test(text)) return { tier: 1, low: true, detail: { kind: 'low-spec', keys: [] } };
-  return { tier: null, low: false, detail: { kind: 'unresolved', keys: [] } };
+  if (!RESOLUTION.test(text) && GPU_LOW.test(text)) return { tiers: { any: 1 }, low: true, detail: { kind: 'low-spec', keys: [] } };
+  return { tiers: null, low: false, detail: { kind: 'unresolved', keys: [] } };
 }
 
 // ── CPU ──
@@ -239,8 +252,8 @@ function cpuKeysOf(piece: string): { key: string; kind: 'model' | 'class-only' }
   return out;
 }
 
-function parseCpu(text: string | null, idx: Index): { tier: number | null; low: boolean; detail: PartDetail } {
-  if (!text) return { tier: null, low: false, detail: { kind: 'missing', keys: [] } };
+function parseCpu(text: string | null, idx: Index): { tiers: VendorTiers | null; low: boolean; detail: PartDetail } {
+  if (!text) return { tiers: null, low: false, detail: { kind: 'missing', keys: [] } };
   const hits: Hit<CpuEntry>[] = [];
   for (const piece of splitAlternatives(text)) {
     for (const { key, kind } of cpuKeysOf(piece)) {
@@ -252,11 +265,10 @@ function parseCpu(text: string | null, idx: Index): { tier: number | null; low: 
     }
   }
   if (hits.length) {
-    const min = hits.reduce((a, b) => (b.entry.tier < a.entry.tier ? b : a));
-    return { tier: min.entry.tier, low: false, detail: { kind: hits.every((h) => h.kind === 'model') ? 'model' : 'class-only', keys: hits.map((h) => h.entry.key) } };
+    return { tiers: byVendor(hits.map((h) => ({ vendor: h.entry.vendor, tier: h.entry.tier }))), low: false, detail: { kind: hits.every((h) => h.kind === 'model') ? 'model' : 'class-only', keys: hits.map((h) => h.entry.key) } };
   }
-  if (CPU_LOW.test(text) && !/\btbd\b/i.test(text)) return { tier: 1, low: true, detail: { kind: 'low-spec', keys: [] } };
-  return { tier: null, low: false, detail: { kind: 'unresolved', keys: [] } };
+  if (CPU_LOW.test(text) && !/\btbd\b/i.test(text)) return { tiers: { any: 1 }, low: true, detail: { kind: 'low-spec', keys: [] } };
+  return { tiers: null, low: false, detail: { kind: 'unresolved', keys: [] } };
 }
 
 // ── RAM·저장 공간 ──
@@ -290,10 +302,10 @@ export function parseSpecText(raw: string | null | undefined, tables: SpecTables
   const sto = parseSize(f.storage);
   const low = cpu.low || gpu.low;
   const clean = (d: PartDetail) => d.kind === 'model';
-  const confidence = cpu.tier == null || gpu.tier == null ? 'low' : clean(cpu.detail) && clean(gpu.detail) && ram.gb != null ? 'high' : 'medium';
+  const confidence = cpu.tiers == null || gpu.tiers == null ? 'low' : clean(cpu.detail) && clean(gpu.detail) && ram.gb != null ? 'high' : 'medium';
   return {
-    cpu_tier: cpu.tier,
-    gpu_tier: gpu.tier,
+    cpu: cpu.tiers,
+    gpu: gpu.tiers,
     ram_gb: ram.gb,
     storage_gb: sto ? round1(sto.gb) : null,
     matched: { cpu: f.cpu, gpu: f.gpu },
@@ -304,15 +316,15 @@ export function parseSpecText(raw: string | null | undefined, tables: SpecTables
 }
 
 // "A 또는 B" 대안 검증용: 칸 안에서 인식된 부품과 등급을 모두 돌려준다 (충돌 검사 스크립트)
-export function alternativesOf(kind: 'cpu' | 'gpu', text: string | null, tables: SpecTables): { piece: string; key: string; tier: number }[] {
+export function alternativesOf(kind: 'cpu' | 'gpu', text: string | null, tables: SpecTables): { piece: string; key: string; vendor: string; tier: number }[] {
   if (!text) return [];
   const idx = buildIndex(tables);
-  const out: { piece: string; key: string; tier: number }[] = [];
+  const out: { piece: string; key: string; vendor: string; tier: number }[] = [];
   for (const piece of splitAlternatives(text)) {
     if (kind === 'gpu') {
-      for (const { key, mobile } of gpuKeysOf(piece)) { const h = gpuLookup(idx, key, mobile); if (h) { out.push({ piece, key: h.entry.key, tier: h.entry.tier }); break; } }
+      for (const { key, mobile } of gpuKeysOf(piece)) { const h = gpuLookup(idx, key, mobile); if (h) { out.push({ piece, key: h.entry.key, vendor: h.entry.vendor, tier: h.entry.tier }); break; } }
     } else {
-      for (const { key } of cpuKeysOf(piece)) { const e = idx.cpu.get(key); if (e && !e.class_only) { out.push({ piece, key: e.key, tier: e.tier }); break; } }
+      for (const { key } of cpuKeysOf(piece)) { const e = idx.cpu.get(key); if (e && !e.class_only) { out.push({ piece, key: e.key, vendor: e.vendor, tier: e.tier }); break; } }
     }
   }
   return out;

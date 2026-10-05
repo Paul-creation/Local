@@ -1,5 +1,5 @@
 // scripts/parse-specs.mjs
-// 게임 PC 사양 텍스트(min_spec·recommended_spec)를 CPU 등급·GPU 등급·RAM·저장 공간으로 풀어 games.spec_parsed에 저장
+// 게임 PC 사양 텍스트(min_spec·recommended_spec)를 CPU·GPU 등급(대안 표기는 제조사별로 보존)·RAM·저장 공간으로 풀어 games.spec_parsed에 저장
 // 실행: node --env-file=.env.local scripts/parse-specs.mjs                  (미리보기 — DB에 쓰지 않고 성공률만 출력)
 //       node --env-file=.env.local scripts/parse-specs.mjs --out 파일.json    (미리보기 + 게임별 결과를 파일로)
 //       node --env-file=.env.local scripts/parse-specs.mjs --apply          (spec_parsed·spec_hash 저장 — 마이그레이션 적용 후에만)
@@ -14,7 +14,7 @@ import { parseSpecText } from '../app/lib/specParse.ts';
 
 const APPLY = process.argv.includes('--apply');
 const OUT = process.argv.includes('--out') ? process.argv[process.argv.indexOf('--out') + 1] : null;
-const VERSION = 1;
+const VERSION = 2; // 2: cpu·gpu가 제조사별 등급({ nvidia, amd, intel, any })
 
 export const loadTables = () => ({
   gpu: JSON.parse(fs.readFileSync('data/pc-spec/gpu-tiers.json', 'utf8')),
@@ -45,12 +45,12 @@ function report(parsed) {
     const cnt = (f) => list.filter(f).length;
     const row = (label, ok, okStrict) => console.log(`  ${label.padEnd(8)} 포함(low_spec 포함) ${String(ok).padStart(4)}/${n} (${pct(ok, n)})   제외 ${String(okStrict).padStart(4)}/${n} (${pct(okStrict, n)})`);
     console.log(`\n[${kind === 'min' ? '최소' : '권장'} 사양] ${n}개`);
-    row('GPU', cnt((s) => s.gpu_tier != null), cnt((s) => s.gpu_tier != null && s.detail.gpu.kind !== 'low-spec'));
-    row('CPU', cnt((s) => s.cpu_tier != null), cnt((s) => s.cpu_tier != null && s.detail.cpu.kind !== 'low-spec'));
+    row('GPU', cnt((s) => s.gpu != null), cnt((s) => s.gpu != null && s.detail.gpu.kind !== 'low-spec'));
+    row('CPU', cnt((s) => s.cpu != null), cnt((s) => s.cpu != null && s.detail.cpu.kind !== 'low-spec'));
     row('RAM', cnt((s) => s.ram_gb != null), cnt((s) => s.ram_gb != null && s.detail.ram === 'ok'));
     row('저장공간', cnt((s) => s.storage_gb != null), cnt((s) => s.storage_gb != null));
-    row('CPU+GPU+RAM', cnt((s) => s.gpu_tier != null && s.cpu_tier != null && s.ram_gb != null),
-      cnt((s) => s.gpu_tier != null && s.cpu_tier != null && s.ram_gb != null && !s.low_spec && s.detail.cpu.kind !== 'class-only' && s.detail.ram === 'ok'));
+    row('CPU+GPU+RAM', cnt((s) => s.gpu != null && s.cpu != null && s.ram_gb != null),
+      cnt((s) => s.gpu != null && s.cpu != null && s.ram_gb != null && !s.low_spec && s.detail.cpu.kind !== 'class-only' && s.detail.ram === 'ok'));
     console.log(`  confidence: high ${cnt((s) => s.confidence === 'high')} · medium ${cnt((s) => s.confidence === 'medium')} · low ${cnt((s) => s.confidence === 'low')} / low_spec ${cnt((s) => s.low_spec)}개`);
   }
 }

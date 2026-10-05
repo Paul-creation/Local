@@ -8,7 +8,7 @@
 // - 누적 비용이 MAX_COST_USD를 넘으면 멈춤. 실제 사용 토큰으로 비용을 계산해 마지막에 출력
 import fs from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
-import { parseSpecText, splitFields } from '../app/lib/specParse.ts';
+import { parseSpecText, splitFields, lowestTier } from '../app/lib/specParse.ts';
 
 const RUN = process.argv.includes('--run');
 const arg = (name, d) => (process.argv.includes(name) ? process.argv[process.argv.indexOf(name) + 1] : d);
@@ -17,6 +17,8 @@ let seed = Number(arg('--seed', 7));
 const OUT = arg('--out', 'docs/pc-spec-review.csv');
 const CACHE = 'scripts/.cache/spec-review-ai.json'; // AI 응답 저장 — --reuse면 다시 부르지 않고 이 응답으로 비교만 (비용 0)
 const REUSE = process.argv.includes('--reuse');
+const PRIORITY = arg('--priority', null); // 예: docs/pc-spec-review-priority.csv
+const OPINIONS = 'data/pc-spec/review-opinions.json';
 const BATCH = 10;
 const MAX_COST_USD = 1;
 const MODEL = 'claude-haiku-4-5-20251001';
@@ -126,7 +128,9 @@ for (let bi = 0; bi < batches.length && !REUSE; bi++) {
 if (!REUSE) { fs.mkdirSync('scripts/.cache', { recursive: true }); fs.writeFileSync(CACHE, JSON.stringify([...ai])); }
 
 // 비교 → CSV (다른 항목만)
-const fmt = (s) => s ? `CPU ${s.cpu_tier ?? '-'} · GPU ${s.gpu_tier ?? '-'} · RAM ${s.ram_gb ?? '-'} · 저장 ${s.storage_gb ?? '-'} · low_spec ${s.low_spec}` : '-';
+const vt = (v) => (v == null ? '-' : Object.entries(v).map(([k, n]) => `${k} ${n}`).join('/'));
+const fmtP = (s) => `CPU ${vt(s.cpu)} · GPU ${vt(s.gpu)} · RAM ${s.ram_gb ?? '-'} · 저장 ${s.storage_gb ?? '-'} · low_spec ${s.low_spec}`;
+const fmt = (s) => `CPU ${s.cpu_tier ?? '-'} · GPU ${s.gpu_tier ?? '-'} · RAM ${s.ram_gb ?? '-'} · 저장 ${s.storage_gb ?? '-'} · low_spec ${s.low_spec}`;
 const num = (v) => (v == null ? null : Math.round(Number(v) * 10) / 10);
 const csv = (v) => `"${String(v ?? '').replace(/"/g, '""').replace(/\r?\n/g, ' ')}"`;
 const rowsOut = [];
@@ -141,19 +145,31 @@ for (const b of batches) for (const it of b) {
   const A = { cpu_tier: num(r.cpu_tier), gpu_tier: num(r.gpu_tier), ram_gb: num(r.ram_gb), storage_gb: num(r.storage_gb), low_spec: !!(r.cpu_low || r.gpu_low) };
   const diffs = [];
   let size = 0;
+  // AI에는 "대안이 있으면 가장 낮은 값"으로 물었으므로, 파서의 제조사별 값은 가장 낮은 값으로 접어서 비교한다 (결과 칸에는 제조사별 값을 그대로 보여줌)
+  const Pn = { cpu_tier: lowestTier(P.cpu), gpu_tier: lowestTier(P.gpu), ram_gb: P.ram_gb, storage_gb: P.storage_gb };
   for (const k of ['cpu_tier', 'gpu_tier', 'ram_gb', 'storage_gb']) {
-    if ((P[k] ?? null) === (A[k] ?? null)) continue;
-    const d = P[k] == null || A[k] == null ? 99 : Math.abs(P[k] - A[k]); // 한쪽만 null이면 99(판정 여부 자체가 다름)
+    if ((Pn[k] ?? null) === (A[k] ?? null)) continue;
+    const d = Pn[k] == null || A[k] == null ? 99 : Math.abs(Pn[k] - A[k]); // 한쪽만 null이면 99(판정 여부 자체가 다름)
     diffs.push(k.endsWith('tier') ? `${k}(${d === 99 ? '한쪽 null' : '±' + d})` : k); diffStat[k]++; size = Math.max(size, d);
     if (k.endsWith('tier')) tierDiff[d === 99 ? 'null' : d >= 3 ? '3+' : d]++;
   }
   if (P.low_spec !== A.low_spec) { diffs.push('low_spec'); diffStat.low_spec++; size = Math.max(size, 1); }
   if (!diffs.length) continue;
-  rowsOut.push({ size, cells: [it.game, it.kind, `CPU: ${it.fields.cpu ?? '-'} | GPU: ${it.fields.gpu ?? '-'} | RAM: ${it.fields.ram ?? '-'} | 저장: ${it.fields.storage ?? '-'}`, fmt(P), fmt({ ...A }), diffs.join(', ')] });
+  // 우선 검토 행: 등급 차이 ±2 이상 또는 한쪽만 null (CPU·GPU 등급 기준)
+  const big = diffs.some((d) => /tier\((±[2-9]|한쪽 null)\)/.test(d));
+  rowsOut.push({ size, big, key: `${it.game}|${it.kind}`, cells: [it.game, it.kind, `CPU: ${it.fields.cpu ?? '-'} | GPU: ${it.fields.gpu ?? '-'} | RAM: ${it.fields.ram ?? '-'} | 저장: ${it.fields.storage ?? '-'}`, fmtP(P), fmt({ ...A }), diffs.join(', ')] });
 }
 rowsOut.sort((a, b) => b.size - a.size); // 차이가 큰 행이 위로
 const lines = [['게임명', '구분', '원문', '파서 결과', 'AI 결과', '차이 항목'].map(csv).join(','), ...rowsOut.map((r) => r.cells.map(csv).join(','))];
-fs.writeFileSync(OUT, '﻿' + lines.join('\r\n') + '\r\n');
+fs.writeFileSync(OUT, '\uFEFF' + lines.join('\r\n') + '\r\n');
+// 우선 검토용: ±2 이상·한쪽 null 행만 + 의견 칸 (의견은 data/pc-spec/review-opinions.json, 키 "게임|구분")
+if (PRIORITY) {
+  const op = fs.existsSync(OPINIONS) ? JSON.parse(fs.readFileSync(OPINIONS, 'utf8')) : {};
+  const pr = rowsOut.filter((r) => r.big);
+  const head = ['게임명', '구분', '원문', '파서 결과(제조사별)', 'AI 결과(낮은 쪽 기준)', '차이 항목', '어느 쪽이 맞아 보이는지(Claude 의견)'];
+  fs.writeFileSync(PRIORITY, '\uFEFF' + [head.map(csv).join(','), ...pr.map((r) => [...r.cells, op[r.key] ?? '(의견 없음)'].map(csv).join(','))].join('\r\n') + '\r\n');
+  console.log(`우선 검토 ${pr.length}행 → ${PRIORITY}`);
+}
 console.log(`\n비교한 항목 ${compared}개 (AI 응답 없음 ${missingAi}) → 다른 항목 ${lines.length - 1}행 → ${OUT}`);
 console.log('항목별 차이:', JSON.stringify(diffStat));
 console.log('등급 차이 크기(CPU·GPU 합산):', JSON.stringify(tierDiff));

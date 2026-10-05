@@ -4,7 +4,8 @@
 -- 채우기: node --env-file=.env.local scripts/parse-specs.mjs (미리보기) → --apply
 -- 기존 min_spec·recommended_spec·storage_gb는 그대로 둔다 (spec_parsed는 그 텍스트를 풀어 둔 결과)
 
--- spec_parsed 모양: {"v":1, "min":{cpu_tier,gpu_tier,ram_gb,storage_gb,matched,low_spec,confidence,detail}, "rec":{…} | null}
+-- spec_parsed 모양(v2): {"v":2, "min":{cpu,gpu,ram_gb,storage_gb,matched,low_spec,confidence,detail}, "rec":{…} | null}
+--   cpu·gpu는 제조사별 등급 {"nvidia":9,"amd":11,"intel":6} (대안 표기를 합치지 않음), 읽지 못하면 null, 모델 없는 저사양 표기는 {"any":1}
 alter table public.games add column if not exists spec_parsed jsonb;
 -- spec_hash: 파싱에 쓴 사양 텍스트(min_spec + recommended_spec)의 SHA-1 앞 16자 — 같으면 다시 처리하지 않고, 텍스트가 바뀌면 다시 처리
 alter table public.games add column if not exists spec_hash text;
