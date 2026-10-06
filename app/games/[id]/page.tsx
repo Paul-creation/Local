@@ -239,7 +239,10 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         {/* 가격 카드 — 데스크톱 오른쪽 위, 좁은 화면에서는 제목 바로 아래 */}
         <aside className="detail-price">
           <div className="price-card">
-            <p className="price-card-label">{buyLabel} 가격</p>
+            <div className="price-card-head">
+              <p className="price-card-label">{buyLabel} 가격</p>
+              <HeartButton gameId={game.id} variant="title" />
+            </div>
             {price && price.discount > 0 && !game.is_free && (
               <p className="price-card-was">
                 <span className="buy-discount-badge">-{price.discount}%</span>
@@ -264,14 +267,11 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             {timing === 'near' && <LowestPriceBadge timing={timing} />}
             {timingLine && <p className="buy-timing">{timingLine}</p>}
             <div className="price-card-buttons">
-              <div className="price-card-actions">
-                {buyUrl && (
-                  <a href={buyUrl} target="_blank" rel="noopener noreferrer" className={`btn btn-primary btn-lg price-card-buy${game.steam_appid ? ' is-steam' : ''}`}>
-                    {buyLabel}에서 {game.is_free ? '플레이하기' : '구매하기'}
-                  </a>
-                )}
-                <HeartButton gameId={game.id} variant="box" />
-              </div>
+              {buyUrl && (
+                <a href={buyUrl} target="_blank" rel="noopener noreferrer" className={`btn btn-primary btn-lg price-card-buy${game.steam_appid ? ' is-steam' : ''}`}>
+                  {buyLabel}에서 {game.is_free ? '플레이하기' : '구매하기'}
+                </a>
+              )}
               <AddToCompare gameId={game.id} name={game.name} thumb={game.cover_image_url || game.card_image_url} />
             </div>
             <p className="price-card-note">가격·할인 정보는 실제와 다를 수 있어요. 가격은 하루 한 번 갱신되니 구매 전 스토어에서 확인해 주세요.</p>
