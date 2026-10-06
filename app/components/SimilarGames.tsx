@@ -26,7 +26,7 @@ export default function SimilarGames({ games }: { games: any[] }) {
     <section className="detail-card similar-section" aria-labelledby="similar-title">
       <h3 id="similar-title" className="detail-card-title">이 게임과 비슷한 게임</h3>
       <div className="similar-grid">
-        {shown.map((g) => <ResultCard key={g.id} game={g} tree={TREE} />)}
+        {shown.map((g) => <ResultCard key={g.id} game={g} tree={TREE} compact />)}
       </div>
     </section>
   );

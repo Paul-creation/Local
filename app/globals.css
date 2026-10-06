@@ -1610,7 +1610,6 @@ a.series-item:hover { border-color: var(--border); }
 
 /* 공유 버튼 (components/ShareButton) */
 .share-btn { flex-shrink: 0; font-size: var(--fs-l); }
-.share-btn[data-copied] { border-color: var(--up); color: var(--up); }
 .share-text-btn { min-height: 44px; padding: 0 4px; border: none; background: none; color: var(--text-muted); font-family: inherit; font-size: var(--fs-m); font-weight: 700; cursor: pointer; }
 .share-text-btn:hover { color: var(--text); }
 .share-text-btn[data-copied] { color: var(--up); }

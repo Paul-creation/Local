@@ -49,7 +49,7 @@ export default function ShareButton({
   }
 
   return (
-    <button type="button" onClick={share} className="btn btn-outline share-btn" data-copied={copied || undefined}>
+    <button type="button" onClick={share} className="btn btn-primary btn-lg share-btn" data-copied={copied || undefined}>
       {copied ? '링크 복사됨' : label}
     </button>
   );
