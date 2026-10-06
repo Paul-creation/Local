@@ -1310,7 +1310,7 @@ img { display: block; }
 
 
 /* 비교 만들기 화면 (/compare, ids 없을 때) */
-.compare-builder { max-width: 760px; margin: 0 auto; padding-bottom: 40px; }
+.compare-builder { padding-bottom: 40px; }
 .cb-slots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
 .cb-slot {
   position: relative;
@@ -1337,9 +1337,10 @@ img { display: block; }
   position: absolute; top: 8px; right: 8px;
   width: 30px; height: 30px; border-radius: 50%;
   border: none; background: var(--scrim); color: var(--on-image);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
   font-size: var(--fs-l); cursor: pointer;
 }
-.cb-search { width: 100%; }
+.cb-search { width: 100%; max-width: 760px; }
 .cb-search .search-bar-clean input { min-width: 0; }
 .cb-suggest-item { width: 100%; border: none; background: none; font-family: inherit; text-align: left; cursor: pointer; }
 .cb-quick { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -2038,9 +2039,9 @@ a.hc-row:hover { background: var(--card-hover); }
 .price-card-compare-status { font-size: var(--fs-l); font-weight: 600; color: var(--text); }
 .price-card-compare-status:empty { display: none; }
 /* 비교에 담긴 상태일 때만 보이는 전체 폭 링크 배너 */
-.compare-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 10px 14px; border-radius: 2px; background: var(--panel-bg); border: 1px solid var(--border); color: var(--text); font-size: var(--fs-l); font-weight: 700; transition: border-color 0.15s ease; }
-.compare-banner:hover { border-color: var(--accent); }
-.compare-banner-count { color: var(--accent-text); font-weight: 800; white-space: nowrap; }
+.compare-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 10px 14px; border-radius: 2px; background: var(--panel-bg); border: 1px solid var(--compare-active); color: var(--text); font-size: var(--fs-l); font-weight: 700; transition: border-color 0.15s ease; }
+.compare-banner:hover { border-color: var(--compare-active); }
+.compare-banner-count { color: var(--text-2); font-weight: 800; white-space: nowrap; }
 .price-card-note { font-size: var(--fs-xs); line-height: 1.5; color: var(--text-muted); }
 
 /* 가격 박스 버튼 시안 — 모서리 2px, 아이콘은 인라인 SVG */
@@ -2255,7 +2256,7 @@ a.series-item:hover { border-color: var(--border); }
 .cmp-poster-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: var(--fs-s); color: var(--text-muted); font-variant-numeric: tabular-nums; }
 .cmp-table { background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-card); overflow: hidden; }
 .cmp-row { display: grid; }
-.cmp-row + .cmp-row { border-top: 1px solid var(--border-soft); }
+.cmp-row + .cmp-row { border-top: 1px solid var(--panel-line); }
 .cmp-row-label { padding: 14px 16px; font-size: var(--fs-m); font-weight: 700; color: var(--text-muted); background: var(--inset); }
 .cmp-row-label.is-m { padding: 0 0 8px; background: none; }
 .cmp-cell { padding: 14px 16px; font-size: var(--fs-l); color: var(--text); display: flex; align-items: center; }
@@ -2265,7 +2266,7 @@ a.series-item:hover { border-color: var(--border); }
 .cmp-meter-bar span.on { background: var(--accent); }
 .cmp-meter-num { font-size: var(--fs-s); font-weight: 700; color: var(--text-muted); font-variant-numeric: tabular-nums; }
 .cmp-mrow { padding: 12px 16px; }
-.cmp-mrow + .cmp-mrow { border-top: 1px solid var(--border-soft); }
+.cmp-mrow + .cmp-mrow { border-top: 1px solid var(--panel-line); }
 .cmp-mitem { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
 .cmp-mname { font-size: var(--fs-s); color: var(--text-muted); width: 92px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cmp-mgrid { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -2274,7 +2275,7 @@ a.series-item:hover { border-color: var(--border); }
 
 /* AI 질문 카드 */
 .cmp-ai { margin-top: 8px; padding: 22px 24px; background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-card); }
-.cmp-ai-sub { font-size: var(--fs-m); color: var(--text-muted); margin-bottom: 16px; }
+.cmp-ai-sub { max-width: 68ch; font-size: var(--fs-m); color: var(--text-muted); margin-bottom: 16px; }
 .cmp-ai-sub.is-center { text-align: center; margin: 8px 0 0; }
 .cmp-ai-chips { display: flex; flex-wrap: wrap; gap: 10px 8px; margin-bottom: 16px; }
 .cmp-ai-log { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; padding: 16px; border-radius: var(--radius-card-sm); background: var(--inset); }
@@ -2414,7 +2415,7 @@ a.series-item:hover { border-color: var(--border); }
 @media (prefers-reduced-motion: reduce) { .range-bubble { animation: none; } }
 
 /* 비교함 — 헤더 숫자 뱃지 + 오른쪽 아래 작은 알약(1개 이상일 때) + 팝오버 */
-.nav-count { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; margin-left: 5px; padding: 0 5px; border-radius: var(--radius-chip); background: var(--accent); color: var(--accent-ink); font-size: var(--fs-xs); font-weight: 900; line-height: 1; }
+.nav-count { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; margin-left: 5px; padding: 0 5px; border-radius: var(--radius-chip); background: var(--compare-active); color: var(--on-solid); font-size: var(--fs-xs); font-weight: 900; line-height: 1; }
 .ctray { position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 800; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
 .ctray-pill {
   min-height: 44px; padding: 0 16px; border-radius: var(--radius-chip);
@@ -2631,12 +2632,10 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 :root:not([data-theme="light"]) .compare-btn.on { border-color: var(--accent); background: transparent; color: var(--accent-text); }
 
 /* 비교 만들기 — 빈 칸은 점선 박스 안에 "+"와 안내 문구 (누르면 검색창으로) */
-.cb-slot.is-empty { background: transparent; font-family: inherit; cursor: pointer; gap: 4px; }
+.cb-slot.is-empty { background: var(--card); font-family: inherit; cursor: pointer; gap: 4px; }
 .cb-slot.is-empty:disabled { cursor: default; }
-.cb-slot-plus { font-size: 30px; font-weight: 400; line-height: 1; color: var(--text-muted); }
-.cb-slot-hint { font-size: var(--fs-s); font-weight: 500; color: var(--text-muted); }
+.cb-slot-hint { font-size: var(--fs-m); font-weight: 600; color: var(--text-muted); }
 :root:not([data-theme="light"]) .cb-slot.is-empty:hover:not(:disabled) { border-color: var(--accent); }
-:root:not([data-theme="light"]) .cb-slot.is-empty:hover:not(:disabled) .cb-slot-plus { color: var(--accent-text); }
 /* 하단 실행 버튼 — 조건 미충족은 무채색(눌러도 반응 없음), 충족하면 포인트색 꽉 찬 버튼 + 어두운 글자 */
 :root:not([data-theme="light"]) .cb-go:disabled { background: var(--card-hover); color: var(--text-muted); border-color: transparent; opacity: 1; cursor: not-allowed; }
 :root:not([data-theme="light"]) .cb-go:not(:disabled) { background: var(--accent); color: var(--accent-ink); }
@@ -2647,8 +2646,6 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 
 /* 비교 만들기 "인기 게임 바로 추가" — 제목은 primary·굵게·한 단계 크게, 칩 글자는 secondary 색 토큰(호버 시 primary) */
 .cb-quick-wrap .filter-label { font-size: var(--fs-xxl); font-weight: 800; color: var(--text); margin-bottom: 10px; }
-.cb-quick-btn { color: var(--text-muted); }
-.cb-quick-btn:hover:not(:disabled) { color: var(--text); }
 /* ============================================================
    카드 안 정렬 — 고정 높이 대신 flex column: 정보 영역이 남는 높이를 채우고, 가격 줄은 항상 맨 아래
    (역대 최저가 배지가 줄바꿈되면 가격 줄 위로 올라가서 가격 줄 위치는 카드마다 같음)

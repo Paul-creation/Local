@@ -171,8 +171,7 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
           ) : (
             // 빈 칸을 누르면 아래 검색창으로 (키보드·화면 낭독기도 누를 수 있게 버튼)
             <button key={`empty-${i}`} type="button" className="cb-slot is-empty" disabled={full} onClick={() => { inputRef.current?.focus(); inputRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' }); }}>
-              <span className="cb-slot-plus" aria-hidden="true">+</span>
-              <span className="cb-slot-hint">게임을 추가하세요</span>
+              <span className="cb-slot-hint">게임 추가하기</span>
             </button>
           );
         })}
@@ -235,7 +234,7 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
             {/* 인기 순, 이미 담은 게임은 빼고 6개 — 누르면 다음 빈 칸에 들어감 */}
             {popular.filter((g) => !picks.some((p) => p.id === g.id)).slice(0, QUICK_COUNT).map((g) => (
               <button key={g.id} type="button" className="chip cb-quick-btn" onClick={() => add(g)}>
-                + {g.name}
+                {g.name}
               </button>
             ))}
           </div>

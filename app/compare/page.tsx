@@ -147,14 +147,14 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
   };
 }
 
-// 상황별 추천도 — 5칸 막대(장식) + "N/5"
+// 상황별 추천도 — 5칸 막대(aria-label로 값 제공) + "N/5"
 function Meter({ score }: { score: number }) {
   return (
     <span className="cmp-meter">
-      <span className="cmp-meter-bar" aria-hidden="true">
+      <span className="cmp-meter-bar" role="img" aria-label={`5점 중 ${score}점`}>
         {[1, 2, 3, 4, 5].map((n) => <span key={n} className={n <= score ? 'on' : ''} />)}
       </span>
-      <span className="cmp-meter-num">{score}/5</span>
+      <span className="cmp-meter-num" aria-hidden="true">{score}/5</span>
     </span>
   );
 }
