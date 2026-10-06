@@ -65,14 +65,6 @@ async function getSimilarGames(gameId: string) {
   try { return await getCardGames(data.map((r: { game_id: string }) => r.game_id)); } catch { return []; }
 }
 
-// PC 사양 접기 요약에 쓰는 그래픽카드 — 사양 줄 중 그래픽 항목의 첫 제품명만 짧게
-function gpuOf(spec: { label: string; value: string }[] | null) {
-  const row = spec?.find((r) => /그래픽|graphics|gpu|video/i.test(r.label));
-  if (!row) return null;
-  const first = row.value.split(/\s*(?:\/|,|또는| or )\s*/i)[0].trim();
-  return first.length > 32 ? `${first.slice(0, 31)}…` : first;
-}
-
 // 마지막 업데이트로부터 지난 날 → 표시 (30일 안: 활발히 업데이트 중)
 function updateState(date: string) {
   const diff = Math.floor((Date.now() - new Date(date).getTime()) / 86400000);
@@ -199,7 +191,6 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const timing = getLowestTiming(game, price);
   const minSpec = parseMinSpec(game.min_spec);
   const recSpec = parseMinSpec(game.recommended_spec);
-  const gpuSummary = [gpuOf(minSpec) && `최소 ${gpuOf(minSpec)}`, gpuOf(recSpec) && `권장 ${gpuOf(recSpec)}`].filter(Boolean).join(' · ');
   const nexusUrl = `https://www.nexusmods.com/search?gameName=${encodeURIComponent(game.name)}`;
   const koreanOk = !!game.korean_support && game.korean_support !== '한국어 없음';
   // 최근 30일 평가 — 리뷰 30개 이상일 때만, 전체와 15%p 이상 차이면 한 줄 안내
@@ -484,7 +475,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           )}
 
           {/* PC 사양 카드 — 내 PC 판정 요약 + 부품별 표 + 원문 사양. 입력한 사양은 브라우저에만 있어서 클라이언트에서 판정. 최소 사양을 하나도 못 읽은 게임(spec_parsed가 없거나 전부 null)은 판정·표 없이 원문만 */}
-          {(minSpec || recSpec) && <PcSpecCard parsed={game.spec_parsed} minRows={minSpec} recRows={recSpec} gpuSummary={gpuSummary} />}
+          {(minSpec || recSpec) && <PcSpecCard parsed={game.spec_parsed} minRows={minSpec} recRows={recSpec} />}
 
           {/* 영상으로 미리 보기 — 하이라이트 + 친구랑 플레이(멀티 게임만) + 스트리머 영상 + 스트리머 채널 */}
           <VideoPreviewSection

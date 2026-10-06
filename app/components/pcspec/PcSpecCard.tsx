@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useState } from 'react';
+import { Fragment, useState, type ReactNode } from 'react';
 import { hasJudgeableSpec, judgePc, LEVEL_TITLE, PART_SHORT, verdictReason, verdictText, type PartLevel, type PcPart, type SpecLike } from '../../lib/specJudge';
 import { toUserPc } from '../../lib/myPc';
 import PcSpecPanel from './PcSpecPanel';
@@ -9,9 +9,10 @@ import { useMyPc } from './useMyPc';
 type Row = { label: string; value: string };
 type Parsed = { min?: SpecLike | null; rec?: SpecLike | null };
 
-// 상세 페이지 "PC 사양" 카드 — 내 PC 판정 요약 + 부품별 비교표 + 원문 사양
-// 내 PC 입력됨 + 최소 사양을 하나라도 읽은 게임: 판정 요약 → 부품별 표 → "원문 사양 보기" 접기
-// 미입력: 입력 유도 한 줄 + 원문 사양 접기 (지금과 같음) / 최소 사양을 전부 못 읽은 게임: 원문 사양 접기만 (표·판정 모두 숨김)
+// 상세 페이지 "내 PC 사양 진단" 카드 하나 — 입력 유도 · 판정 요약 · 부품별 표 · 원문 사양이 모두 이 카드 안에 있다
+// 미입력: 가운데 큰 안내 + "내 PC 사양 입력하기" 버튼(누르면 카드 안에서 입력 패널이 펼쳐짐) → 게임의 최소·권장 사양 (늘 보임)
+// 입력됨 + 최소 사양을 하나라도 읽은 게임: 제목 오른쪽 "사양 변경" → 판정 요약 · 플래그 → 부품별 표 → 맨 아래 "원문 사양 보기" 접기
+// 최소 사양을 전부 못 읽은 게임: 표·판정 없이 원문 사양과 "사양 정보를 읽지 못했어요"만
 // 사양은 브라우저에만 저장돼 있어서 판정은 여기서 한다. 카드 목록에는 판정을 넣지 않는다
 
 const PART_RE: Record<PcPart, RegExp> = { cpu: /프로세서|processor|cpu/i, gpu: /그래픽|graphics|gpu|video/i, ram: /메모리|memory|ram/i };
@@ -45,53 +46,54 @@ function RawColumns({ minRows, recRows }: { minRows: Row[] | null; recRows: Row[
   );
 }
 
-// 원문 사양 접기 (요약에 최소·권장 그래픽카드) — 기존 "PC 사양" 접기 카드
-function RawAccordion({ minRows, recRows, gpuSummary }: { minRows: Row[] | null; recRows: Row[] | null; gpuSummary: string }) {
-  return (
-    <details className="detail-card detail-accordion">
-      <summary>
-        <span className="detail-card-title">PC 사양</span>
-        {gpuSummary && <span className="spec-summary">{gpuSummary}</span>}
-      </summary>
-      <RawColumns minRows={minRows} recRows={recRows} />
-    </details>
-  );
-}
-
-export default function PcSpecCard({ parsed, minRows, recRows, gpuSummary }: { parsed: Parsed | null; minRows: Row[] | null; recRows: Row[] | null; gpuSummary: string }) {
+export default function PcSpecCard({ parsed, minRows, recRows }: { parsed: Parsed | null; minRows: Row[] | null; recRows: Row[] | null }) {
   const { pc, ready } = useMyPc();
   const [open, setOpen] = useState(false);
-  const raw = <RawAccordion minRows={minRows} recRows={recRows} gpuSummary={gpuSummary} />;
-  if (!hasJudgeableSpec(parsed)) return raw;
-  if (!ready) return <><div className="pcs-wrap"><div className="pcs-line" aria-hidden="true" /></div>{raw}</>; // 저장된 값을 읽기 전: 자리만 잡아 화면이 밀리지 않게
+  const judgeable = hasJudgeableSpec(parsed);
+  const panel = open && <div className="pcs-panel-wrap"><PcSpecPanel onDone={() => setOpen(false)} onCancel={() => setOpen(false)} /></div>;
+  const verdict = ready && judgeable && pc ? judgePc(toUserPc(pc), parsed) : null;
+  const state = !judgeable ? 'hidden' : !ready ? 'loading' : verdict ? verdict.level : 'empty'; // 테두리: rec·fail만 색
 
-  const panel = open && <PcSpecPanel onDone={() => setOpen(false)} onCancel={() => setOpen(false)} />;
-  if (!pc) {
-    return (
+  const title = (
+    <div className="pcs-card-head">
+      <h3 className="pcs-card-title">내 PC 사양 진단</h3>
+      {verdict && <button type="button" className="pcs-change" aria-expanded={open} onClick={() => setOpen((o) => !o)}>사양 변경</button>}
+    </div>
+  );
+
+  let content: ReactNode;
+  if (!judgeable) {
+    content = (
       <>
-        <div className="pcs-wrap">
-          <div className="pcs-line">
-            <p className="pcs-text pcs-text-empty">내 PC 사양을 입력하면 실행 가능 여부를 알려드려요</p>
-            <button type="button" className="pcs-link" aria-expanded={open} onClick={() => setOpen((o) => !o)}>내 PC 사양 입력</button>
-          </div>
-          {panel}
-        </div>
-        {raw}
+        <p className="pcs-flags">사양 정보를 읽지 못했어요</p>
+        <RawColumns minRows={minRows} recRows={recRows} />
       </>
     );
-  }
-
-  const verdict = judgePc(toUserPc(pc), parsed)!; // hasJudgeableSpec가 참이면 null이 아님
-  const flags = verdictText(verdict).flags;
-  const mine: Record<PcPart, string> = { cpu: pc.cpu.name, gpu: pc.gpu.name, ram: `${pc.ram}GB` };
-  return (
-    <>
-      {panel && <div className="pcs-wrap">{panel}</div>}
-      <section className={`detail-card pcs-card is-${verdict.level}`} aria-label="내 PC 사양 진단">
-        <div className="pcs-card-head">
-          <h3 className="pcs-card-title">내 PC 사양 진단</h3>
-          <button type="button" className="pcs-change" aria-expanded={open} onClick={() => setOpen((o) => !o)}>사양 변경</button>
+  } else if (!ready) {
+    // 저장된 값을 읽기 전: 안내 자리만 잡아 화면이 밀리지 않게
+    content = (
+      <>
+        <div className="pcs-intro pcs-intro-placeholder" aria-hidden="true" />
+        <RawColumns minRows={minRows} recRows={recRows} />
+      </>
+    );
+  } else if (!verdict) {
+    content = (
+      <>
+        <div className="pcs-intro">
+          <p className="pcs-intro-text">내 PC 사양을 입력하면 이 게임이 돌아가는지 바로 알려드려요</p>
+          {!open && <button type="button" className="btn btn-primary pcs-cta" aria-expanded={open} onClick={() => setOpen(true)}>내 PC 사양 입력하기</button>}
         </div>
+        {panel}
+        <div className="pcs-game-spec"><RawColumns minRows={minRows} recRows={recRows} /></div>
+      </>
+    );
+  } else {
+    const flags = verdictText(verdict).flags;
+    const mine: Record<PcPart, string> = { cpu: pc!.cpu.name, gpu: pc!.gpu.name, ram: `${pc!.ram}GB` };
+    content = (
+      <>
+        {panel}
         <p className={`pcs-verdict is-${verdict.level}`}>{LEVEL_TITLE[verdict.level]}</p>
         <p className={`pcs-reason is-${verdict.level}`}>{verdictReason(verdict)}</p>
         {flags.length > 0 && <p className="pcs-flags">{flags.join(' · ')}</p>}
@@ -119,7 +121,14 @@ export default function PcSpecCard({ parsed, minRows, recRows, gpuSummary }: { p
           <summary>원문 사양 보기</summary>
           <RawColumns minRows={minRows} recRows={recRows} />
         </details>
-      </section>
-    </>
+      </>
+    );
+  }
+
+  return (
+    <section className={`detail-card pcs-card is-${state}`} aria-label="내 PC 사양 진단">
+      {title}
+      {content}
+    </section>
   );
 }
