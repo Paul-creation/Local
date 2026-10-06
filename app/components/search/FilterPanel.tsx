@@ -1,7 +1,7 @@
 // 담당: 친구(검색·태그·비교)
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import TagHelp, { getTagDescription } from './TagHelp';
 import { useChipHint } from './ChipHint';
 import RangeSlider from './RangeSlider';
@@ -12,6 +12,9 @@ import { PLAYERS_MAX, PRICE_MAX, PRICE_ALL, FREE_ONLY, isAll, playersLabel, pric
 
 // 배지(category) 값으로 거름 — '협동'·'대전'은 '협동·대전' 게임도 포함 (app/lib/badge.mjs)
 const CATEGORIES = ['협동', '대전', '혼자'];
+
+// 분류 큰 칸 안의 태그는 처음 이만큼만 보이고 나머지는 "더 보기"
+const MORE_LIMIT = 6;
 
 // 그룹별 안내 문구 (용어집 tag-glossary.json 기준, 없는 칩만 여기서 적음)
 const PLAY_DESCS = Object.fromEntries(CATEGORIES.map((c) => [c, getTagDescription(c)]));
@@ -47,6 +50,7 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
     selectedCount, clearConditions, filtered, loaded,
   } = filters;
   const [openRoots, setOpenRoots] = useState<number[]>([]);
+  const [moreRoots, setMoreRoots] = useState<number[]>([]);
   // 내 PC 입력 패널 — 사양이 없을 때 열면 입력을 마치는 순간 필터가 켜진다 (hadPc가 false였던 경우만)
   const [pcPanel, setPcPanel] = useState<{ hadPc: boolean } | null>(null);
   const playHint = useChipHint(PLAY_DESCS, '방식을 누르면 설명이 나와요');
@@ -57,6 +61,9 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
 
   const toggleRoot = (id: number) =>
     setOpenRoots(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+
+  const toggleMore = (id: number) =>
+    setMoreRoots(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
 
   const roots = tree ? tree.roots.filter((id) => id !== tree.contentId && tagCounts.get(id)) : [];
   const excludable = tree ? EXCLUDE_TAG_IDS.filter((id) => tree.nodes.has(id) && tagCounts.get(id)) : [];
@@ -95,8 +102,7 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
           </section>
         )}
 
-        <section className="filter-section">
-          <p className="filter-label">같이 하는 방식</p>
+        <FoldSection title="같이 하는 방식" count={selectedCategory ? 1 : 0}>
           <div className="filter-chips">
             {CATEGORIES.map(c => (
               <button key={c} type="button" className={`chip${selectedCategory === c ? ' on' : ''}`} aria-pressed={selectedCategory === c}
@@ -104,7 +110,7 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
             ))}
           </div>
           {playHint.hint}
-        </section>
+        </FoldSection>
 
         {/* 인원 — 친구랑 같이 할 수 있는 인원(팀 인원, 없으면 최대 인원) 기준 (app/lib/rangeFilter) */}
         <section className="filter-section">
@@ -135,8 +141,7 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
         </section>
 
         {/* 진입장벽 — 3칸 버튼 (여러 개 고르면 그중 하나) */}
-        <section className="filter-section">
-          <p className="filter-label">진입장벽</p>
+        <FoldSection title="진입장벽" count={selectedBarriers.length}>
           <div className="seg" role="group" aria-label="진입장벽">
             {BARRIERS.map(([ko]) => (
               <button key={ko} type="button" className={`seg-btn${selectedBarriers.includes(ko) ? ' on' : ''}`} aria-pressed={selectedBarriers.includes(ko)}
@@ -144,11 +149,10 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
             ))}
           </div>
           {barrierHint.hint}
-        </section>
+        </FoldSection>
 
         {/* 네트워크 — 크로스플레이는 따로, 전용 서버·P2P는 고른 것 중 하나 (온라인 협동·대전이 있는 게임만) */}
-        <section className="filter-section">
-          <p className="filter-label">네트워크</p>
+        <FoldSection title="네트워크" count={selectedNet.length}>
           <ul className="tag-tree">
             {NETS.map(([k, label]) => (
               <li key={k}>
@@ -161,11 +165,10 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
               </li>
             ))}
           </ul>
-        </section>
+        </FoldSection>
 
         {/* 분류 — 큰 칸을 고르면 그 아래 태그 중 하나라도 있는 게임, 서로 다른 칸끼리는 모두 만족 */}
-        <section className="filter-section">
-          <p className="filter-label">분류</p>
+        <FoldSection title="분류" count={selectedTags.length}>
           {!tree ? (
             <p className="filter-note">{loaded ? '태그 목록을 불러오지 못했어요' : '태그 목록 불러오는 중…'}</p>
           ) : roots.length === 0 ? (
@@ -176,6 +179,11 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
                 const node = tree.nodes.get(id)!;
                 const open = openRoots.includes(id);
                 const picked = selectedTags.filter((t) => isUnder(tree, Number(t), id)).length;
+                const kids = node.children.filter((c) => tagCounts.get(c));
+                // 많은 칸은 처음 일부만 — 숨겨진 칸에 고른 게 있으면 처음부터 다 보임
+                const foldable = kids.length - MORE_LIMIT >= 2;
+                const hiddenPicked = foldable && kids.slice(MORE_LIMIT).some((c) => selectedTags.some((t) => isUnder(tree, Number(t), c)));
+                const more = !foldable || hiddenPicked || moreRoots.includes(id);
                 return (
                   <div key={id} className="filter-acc-item">
                     <button type="button" className="filter-acc-head" aria-expanded={open} onClick={() => toggleRoot(id)}>
@@ -185,9 +193,12 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
                     </button>
                     {open && (
                       <ul className="tag-tree" role="group">
-                        {node.children.filter((c) => tagCounts.get(c)).map((c) => (
+                        {(more ? kids : kids.slice(0, MORE_LIMIT)).map((c) => (
                           <TagRow key={c} id={c} tree={tree} counts={tagCounts} selected={selectedTags} onToggle={toggleTag} />
                         ))}
+                        {foldable && !hiddenPicked && (
+                          <li><button type="button" className="filter-more" onClick={() => toggleMore(id)}>{more ? '접기' : `더 보기 (${kids.length - MORE_LIMIT}개)`}</button></li>
+                        )}
                       </ul>
                     )}
                   </div>
@@ -195,12 +206,11 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
               })}
             </div>
           )}
-        </section>
+        </FoldSection>
 
         {/* 빼고 보기 — 이용 연령·표현 */}
         {excludable.length > 0 && (
-          <section className="filter-section">
-            <p className="filter-label">빼고 보기</p>
+          <FoldSection title="빼고 보기" count={excludedTags.length}>
             <ul className="tag-tree">
               {excludable.map((id) => {
                 const key = String(id);
@@ -219,7 +229,7 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
                 );
               })}
             </ul>
-          </section>
+          </FoldSection>
         )}
       </div>
 
@@ -235,6 +245,22 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
         </div>
       )}
     </div>
+  );
+}
+
+// 접을 수 있는 필터 섹션 — 기본은 접힘, 제목 줄 전체가 토글. 고른 값이 있으면 처음부터 펼침(직접 접으면 제목 옆에 개수만 남김)
+function FoldSection({ title, count, children }: { title: string; count: number; children: ReactNode }) {
+  const [userOpen, setUserOpen] = useState<boolean | null>(null);
+  const open = userOpen ?? count > 0;
+  return (
+    <section className="filter-section is-fold">
+      <button type="button" className="filter-fold-head" aria-expanded={open} onClick={() => setUserOpen(!open)}>
+        <span className="filter-fold-title">{title}</span>
+        {count > 0 && <span className="filter-fold-count">{count}개 선택</span>}
+        <span className="filter-acc-state">{open ? '접기' : '펼치기'}</span>
+      </button>
+      {open && <div className="filter-fold-body">{children}</div>}
+    </section>
   );
 }
 

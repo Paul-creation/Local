@@ -1885,6 +1885,14 @@ a.hc-row:hover { background: var(--card-hover); }
 .seg-btn.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-text); }
 
 /* 분류 아코디언 — 묶음 머리줄 48px */
+.filter-section.is-fold { padding: 0; }
+.filter-fold-head { width: 100%; min-height: 52px; padding: 0; border: none; background: none; display: flex; align-items: center; gap: 8px; font-family: inherit; font-size: var(--fs-m); font-weight: 800; color: var(--text-2); text-align: left; cursor: pointer; }
+.filter-fold-head:hover { color: var(--text); }
+.filter-fold-title { margin-right: auto; }
+.filter-fold-count { font-size: var(--fs-s); font-weight: 700; color: var(--accent-text); }
+.filter-fold-body { padding: 0 0 14px; }
+.filter-more { min-height: 44px; padding: 0 6px; border: none; background: none; font-family: inherit; font-size: var(--fs-s); font-weight: 700; color: var(--text-muted); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.filter-more:hover { color: var(--text); }
 .filter-accordion { display: flex; flex-direction: column; gap: 6px; }
 .filter-acc-item { border-radius: var(--radius-card-sm); background: var(--inset); }
 .filter-acc-head {
