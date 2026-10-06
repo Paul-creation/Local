@@ -1337,7 +1337,6 @@ img { display: block; }
   position: absolute; top: 8px; right: 8px;
   width: 30px; height: 30px; border-radius: 50%;
   border: none; background: var(--scrim); color: var(--on-image);
-  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
   font-size: var(--fs-l); cursor: pointer;
 }
 .cb-search { width: 100%; max-width: 760px; }
