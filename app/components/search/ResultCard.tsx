@@ -13,7 +13,7 @@ const STORE_NAME: Record<string, string> = { epic: 'Epic', battlenet: 'Battle.ne
 
 // 검색 결과 카드 한 장 — 검색 결과와 상세 페이지의 "비슷한 게임"이 같이 쓴다
 // compare를 넘기면 카드 아래에 "+ 비교" 버튼이 붙는다 (검색 결과만)
-// compact: 썸네일·타이틀·인원수·가격 줄만 (상세 "비슷한 게임") — 태그 칩과 스토어 이름은 뺀다
+// compact: 썸네일·타이틀·인원수·가격 줄만 (홈 추천·상세 "비슷한 게임") — 태그 칩은 뺀다 (스팀 외 스토어 이름은 유지)
 export default function ResultCard({ game, tree, isTop10 = false, eager = false, onClick, compare, compact = false }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- 게임 카드 칸은 목록(gameIndex)과 같은 느슨한 모양
   game: any;
@@ -29,7 +29,7 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
   const chips = compact ? [] : cardChips(tree, game, isTop10);
   const players = playersText(game);
   // 스팀 외 스토어 게임은 스토어 이름을 작게
-  const store = compact || game.steam_appid ? null : STORE_NAME[game.source] ?? '기타 스토어';
+  const store = game.steam_appid ? null : STORE_NAME[game.source] ?? '기타 스토어';
   return (
     <Link href={`/games/${game.id}`} className={`result-card lift${isSelected ? ' is-picked' : ''}`} onClick={onClick}>
       <span className="result-image">

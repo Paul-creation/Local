@@ -10,7 +10,7 @@ type Row = { label: string; value: string };
 type Parsed = { min?: SpecLike | null; rec?: SpecLike | null };
 
 // 상세 페이지 "내 PC 사양 진단" 카드 하나 — 입력 유도 · 판정 요약 · 부품별 표 · 원문 사양이 모두 이 카드 안에 있다
-// 미입력: 가운데 큰 안내 + "내 PC 사양 입력하기" 버튼(누르면 카드 안에서 입력 패널이 펼쳐짐) → 게임의 최소·권장 사양 (늘 보임)
+// 미입력: 가운데 큰 안내 + "내 PC 사양 입력하기" 버튼(누르면 카드 안에서 입력 패널이 펼쳐짐) → 부품 / 최소 / 권장 표 + 원문 사양 접기 (늘 보임)
 // 입력됨 + 최소 사양을 하나라도 읽은 게임: 제목 오른쪽 "사양 변경" → 판정 요약 · 플래그 → 부품별 표 → 맨 아래 "원문 사양 보기" 접기
 // 최소 사양을 전부 못 읽은 게임: 표·판정 없이 원문 사양과 "사양 정보를 읽지 못했어요"만
 // 사양은 브라우저에만 저장돼 있어서 판정은 여기서 한다. 카드 목록에는 판정을 넣지 않는다
@@ -43,6 +43,39 @@ function RawColumns({ minRows, recRows }: { minRows: Row[] | null; recRows: Row[
         </div>
       ))}
     </div>
+  );
+}
+
+// 부품별 표 — verdict·mine이 있으면(내 PC 입력됨) "내 PC"·"판정" 열까지, 없으면 부품 / 최소 / 권장만
+function SpecTable({ parsed, minRows, recRows, verdict, mine }: { parsed: Parsed | null; minRows: Row[] | null; recRows: Row[] | null; verdict?: NonNullable<ReturnType<typeof judgePc>>; mine?: Record<PcPart, string> }) {
+  const withMine = !!verdict && !!mine;
+  return (
+    <table className="pcs-table" role="table">
+      <thead role="rowgroup">
+        <tr role="row">
+          <th role="columnheader" scope="col">부품</th>
+          {withMine && <th role="columnheader" scope="col">내 PC</th>}
+          <th role="columnheader" scope="col">최소</th>
+          <th role="columnheader" scope="col">권장</th>
+          {withMine && <th role="columnheader" scope="col">판정</th>}
+        </tr>
+      </thead>
+      <tbody role="rowgroup">
+        {PART_ORDER.map((part) => {
+          const r = verdict?.parts.find((p) => p.part === part);
+          const lv = r ? CELL_LEVEL[r.level] : null;
+          return (
+            <tr key={part} role="row">
+              <th role="rowheader" scope="row" className="pcs-part">{PART_SHORT[part]}</th>
+              {withMine && <td role="cell" data-label="내 PC" className="pcs-mine">{mine[part]}</td>}
+              <td role="cell" data-label="최소">{requirement(part, parsed?.min, minRows)}</td>
+              <td role="cell" data-label="권장">{requirement(part, parsed?.rec, recRows)}</td>
+              {lv && <td role="cell" data-label="판정" className={`pcs-cell-verdict ${lv.cls}`}>{lv.text}</td>}
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
   );
 }
 
@@ -85,7 +118,13 @@ export default function PcSpecCard({ parsed, minRows, recRows }: { parsed: Parse
           {!open && <button type="button" className="btn btn-primary pcs-cta" aria-expanded={open} onClick={() => setOpen(true)}>내 PC 사양 입력하기</button>}
         </div>
         {panel}
-        <div className="pcs-game-spec"><RawColumns minRows={minRows} recRows={recRows} /></div>
+        <div className="pcs-game-spec">
+          <SpecTable parsed={parsed} minRows={minRows} recRows={recRows} />
+          <details className="pcs-raw">
+            <summary>원문 사양 보기</summary>
+            <RawColumns minRows={minRows} recRows={recRows} />
+          </details>
+        </div>
       </>
     );
   } else {
@@ -97,26 +136,7 @@ export default function PcSpecCard({ parsed, minRows, recRows }: { parsed: Parse
         <p className={`pcs-verdict is-${verdict.level}`}>{LEVEL_TITLE[verdict.level]}</p>
         <p className={`pcs-reason is-${verdict.level}`}>{verdictReason(verdict)}</p>
         {flags.length > 0 && <p className="pcs-flags">{flags.join(' · ')}</p>}
-        <table className="pcs-table" role="table">
-          <thead role="rowgroup">
-            <tr role="row"><th role="columnheader" scope="col">부품</th><th role="columnheader" scope="col">내 PC</th><th role="columnheader" scope="col">최소</th><th role="columnheader" scope="col">권장</th><th role="columnheader" scope="col">판정</th></tr>
-          </thead>
-          <tbody role="rowgroup">
-            {PART_ORDER.map((part) => {
-              const r = verdict.parts.find((p) => p.part === part)!;
-              const lv = CELL_LEVEL[r.level];
-              return (
-                <tr key={part} role="row">
-                  <th role="rowheader" scope="row" className="pcs-part">{PART_SHORT[part]}</th>
-                  <td role="cell" data-label="내 PC" className="pcs-mine">{mine[part]}</td>
-                  <td role="cell" data-label="최소">{requirement(part, parsed?.min, minRows)}</td>
-                  <td role="cell" data-label="권장">{requirement(part, parsed?.rec, recRows)}</td>
-                  <td role="cell" data-label="판정" className={`pcs-cell-verdict ${lv.cls}`}>{lv.text}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <SpecTable parsed={parsed} minRows={minRows} recRows={recRows} verdict={verdict} mine={mine} />
         <details className="pcs-raw">
           <summary>원문 사양 보기</summary>
           <RawColumns minRows={minRows} recRows={recRows} />

@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { SITE_URL } from '../../lib/site';
 import { parseIdsParam, shareQuery } from '../../lib/wishlist';
-import { getPriceInfo, PRICE_TYPE_LABEL } from '../../lib/price';
+import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL } from '../../lib/price';
+import LowestPriceBadge from '../LowestPriceBadge';
 import { playersText } from '../../lib/players';
 import { useGameIndex } from '../../lib/useGameIndex';
 import GameImage from '../GameImage';
@@ -20,7 +21,7 @@ const STORE_NAME: Record<string, string> = { epic: 'Epic', battlenet: 'Battle.ne
 
 // 카드에 쓰는 열만 적은 타입 (목록 API가 주는 게임 줄)
 type Game = {
-  id: string; name: string; source: string; steam_appid?: number | null; is_free?: boolean; price_type: string;
+  id: string; name: string; source: string; steam_appid?: number | null; is_free?: boolean; price_type: string; lowest_price?: number | null;
   cover_image_url?: string | null; card_image_url?: string | null; min_players?: number | null; max_players?: number | null;
 };
 
@@ -45,6 +46,7 @@ function Card({ game }: { game: Game }) {
               <span className="price-final no-discount">{PRICE_TYPE_LABEL[game.price_type]}</span>
             ) : price ? (
               <>
+                <LowestPriceBadge timing={getLowestTiming(game, price)} />
                 {price.discount > 0 && (
                   <span className="result-price-off">
                     <span className="discount-badge">-{price.discount}%</span>
