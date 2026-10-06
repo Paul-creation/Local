@@ -1,7 +1,7 @@
 // 메인 "스트리머들이 밤새운 협동 게임" 섹션 — 선정은 스트리머 영상 표에서 매번 계산한다
 // 그래서 매일 도는 fetch-streamer-videos(새 영상 연결)와 관리자 페이지의 숨김·채널 끄기가 따로 작업 없이 바로 반영된다 (페이지는 5분 캐시)
-// 조건: 스트리머 영상이 1개 이상 + 친구끼리 최대 인원 2명 이상 + 온라인 협동 또는 로컬 협동이 true (null은 제외) + category가 순수 "협동"
-// (협동·대전·혼자는 제외 — PvP 위주 게임을 거르는 기준). 개별 제외 목록은 두지 않는다
+// 조건: 스트리머 영상이 1개 이상 + 친구끼리 최대 인원 2명 이상 + 온라인 협동 또는 로컬 협동이 true (null은 제외) + category가 "협동" 또는 "협동·대전"
+// ("대전" 단독·혼자는 제외 — PvP 위주 게임을 거르는 기준. 협동·대전도 위 협동 모드 확인 조건을 통과한 게임만). 개별 제외 목록은 두지 않는다
 // 정렬: 플레이한 스트리머 수 → 인기(heat_rank) 순, 최대 12개 (6개 미만이면 null = 섹션 숨김)
 import { supabase } from './supabase';
 import { friendsMax } from './playersMatch';
@@ -45,7 +45,7 @@ export async function getStreamerTheme(): Promise<StreamerTheme | null> {
   for (const r of rows) { // 최근 영상부터 들어온다
     const g = first(r.games);
     if (!g || (friendsMax(g) ?? 0) < 2) continue;
-    if (g.category !== '협동') continue; // 협동·대전·혼자 제외
+    if (g.category !== '협동' && g.category !== '협동·대전') continue; // 대전·혼자 제외 (협동·대전은 아래 협동 모드 확인 필수)
     if (g.has_online_coop !== true && g.has_local_coop !== true) continue; // 협동 모드가 확인된 게임만
     let item = byGame.get(g.id);
     if (!item) {
