@@ -2014,7 +2014,7 @@ a.hc-row:hover { background: var(--card-hover); }
 
 /* 가격 카드 */
 .price-card { display: flex; flex-direction: column; gap: 10px; padding: 22px; background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-card); }
-.price-card-label { font-size: 15px; font-weight: 700; color: var(--text-muted); }
+.price-card-label { font-size: 17px; font-weight: 800; line-height: 1.3; color: var(--text-muted); }
 .price-card-was { display: flex; align-items: center; gap: 8px; }
 .buy-price-original { color: var(--text-muted); font-size: 15px; text-decoration: line-through; font-variant-numeric: tabular-nums; }
 .price-card-now { font-size: 40px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.1; color: var(--text); font-variant-numeric: tabular-nums; }
@@ -2039,6 +2039,11 @@ a.hc-row:hover { background: var(--card-hover); }
 .compare-add:hover { border-color: var(--accent-hover); background: var(--accent-soft); }
 .compare-add[aria-pressed="true"] { background: var(--compare-active); border-color: var(--compare-active); color: var(--on-solid); }
 .compare-add svg { flex-shrink: 0; }
+.compare-add-label.is-hover { display: none; }
+@media (hover: hover) {
+  .compare-add[aria-pressed="true"]:hover .compare-add-label:not(.is-hover) { display: none; }
+  .compare-add[aria-pressed="true"]:hover .compare-add-label.is-hover { display: inline; }
+}
 
 /* 하트 버튼: 기본은 빈 하트, 찜하면 채움 + 확대 애니메이션 */
 .heart-btn { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; cursor: pointer; background: transparent; border: none; color: var(--text-faint); transition: color 0.15s ease; }
@@ -2048,7 +2053,7 @@ a.hc-row:hover { background: var(--card-hover); }
 .heart-btn[aria-pressed="true"] svg { fill: currentColor; animation: heart-pop 0.35s ease; }
 /* 가격 박스 제목 줄 오른쪽 끝: 아이콘 16px, 터치 영역 40x40 — 음수 여백으로 줄 높이·아이콘 위치는 그대로 */
 .price-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.heart-btn.is-title { width: 40px; height: 40px; margin: -12px -12px -12px 0; }
+.heart-btn.is-title { width: 44px; height: 44px; margin: -11px -10px -11px 0; }
 .heart-btn.is-overlay { position: absolute; top: 8px; right: 8px; z-index: 1; width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--scrim); color: var(--on-image); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .heart-btn.is-overlay:hover { background: var(--scrim); color: var(--on-image); }
 .heart-btn.is-overlay[aria-pressed="true"] { background: var(--wishlist-active); color: var(--on-solid); }

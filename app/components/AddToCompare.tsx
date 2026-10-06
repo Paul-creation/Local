@@ -5,16 +5,21 @@ import { MAX_COMPARE } from '../lib/compareRule';
 import { readPick, writePick, useComparePick } from '../lib/compareStore';
 import { useState } from 'react';
 
-// 상세 가격 카드 "비교에 담기" — 비교함(app/lib/compareStore)에 이 게임을 넣고, 이동 없이 버튼 아래에 안내
-// 담으면 오른쪽 아래 비교함 알약이 살짝 튀어 오름. 이미 3개가 차 있으면 빼지 않고 "꽉 찼어요"만 알린다
+// 상세 가격 카드 "비교에 담기" 토글 — 비교함(app/lib/compareStore)에 이 게임을 넣고 빼며, 이동 없이 버튼 아래에 안내
+// 담으면 오른쪽 아래 비교함 알약이 살짝 튀어 오름. 담긴 상태에서 다시 누르면 빠지고 기본 상태(배너 없음)로 돌아간다
+// 이미 3개가 차 있으면 빼지 않고 "꽉 찼어요"만 알린다. 헤더 숫자·알약은 writePick 이벤트로 바로 갱신
 export default function AddToCompare({ gameId, name, thumb }: { gameId: string; name: string; thumb?: string | null }) {
   const { ids } = useComparePick();
   const [full, setFull] = useState(false);
   const added = ids.includes(gameId);
 
-  const add = () => {
+  const toggle = () => {
     const now = readPick();
-    if (now.includes(gameId)) return;
+    if (now.includes(gameId)) {
+      setFull(false);
+      writePick(now.filter((id) => id !== gameId), { source: 'detail' });
+      return;
+    }
     if (now.length >= MAX_COMPARE) return setFull(true);
     setFull(false);
     writePick([...now, gameId], { bump: true, meta: [{ id: gameId, name, thumb }], source: 'detail' });
@@ -22,13 +27,19 @@ export default function AddToCompare({ gameId, name, thumb }: { gameId: string; 
 
   return (
     <>
-      <button type="button" className="btn btn-lg price-card-compare compare-add" onClick={add} aria-pressed={added}>
+      <button type="button" className="btn btn-lg price-card-compare compare-add" onClick={toggle} aria-pressed={added}>
         {added ? (
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
         ) : (
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /></svg>
         )}
-        {added ? '비교 목록에 추가됨' : '이 게임 비교에 담기'}
+        {added ? (
+          // 담긴 상태에서 마우스를 올리면(hover 가능한 기기만) "비교에서 빼기"로 바뀐다 — 보이지 않는 쪽 글자는 접근성 이름에서도 빠짐
+          <>
+            <span className="compare-add-label">비교 목록에 추가됨</span>
+            <span className="compare-add-label is-hover">비교에서 빼기</span>
+          </>
+        ) : '이 게임 비교에 담기'}
       </button>
       {/* 담긴 상태일 때만 전체 폭 링크 배너, 3개가 꽉 찬 채 담으려 하면 안내 문구 */}
       <div className="price-card-compare-status" role="status">
