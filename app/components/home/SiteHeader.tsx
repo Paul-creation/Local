@@ -2,6 +2,7 @@
 import { SITE_NAME } from '../../lib/site';
 import ThemeToggle from '../ThemeToggle';
 import CompareCount from '../CompareCount';
+import NavProgress from '../NavProgress';
 
 // 모든 페이지 공통 상단 바 (layout.tsx). 모바일(768px 미만)에서는 desktopOnly 항목을 숨김 — 로고가 홈 링크, 의견 보내기는 푸터.
 // 메인의 필터 상태는 처음 열 때 주소에서 읽으므로, 같은 페이지 안 이동도 새로 불러오게 Link 대신 a를 쓴다.
@@ -25,6 +26,7 @@ export default function SiteHeader() {
         </nav>
         <ThemeToggle />
       </div>
+      <NavProgress />
     </header>
   );
 }

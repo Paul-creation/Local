@@ -28,7 +28,22 @@
 .skel-card { height: 220px; border-radius: var(--radius-card); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
 
+/* 게임 상세 로딩 틀 (app/games/[id]/loading.tsx) — 정지된 빈 틀. 200ms 뒤에야 보이게 해서 빨리 끝나는 이동에는 번쩍임이 없다 */
+@keyframes dl-reveal { to { visibility: visible; } }
+.dl-wait { visibility: hidden; animation: dl-reveal 1ms linear 200ms forwards; }
+.dl-back { min-height: 44px; }
+.dl-line { background: var(--inset); border-radius: var(--radius-sm); }
+.dl-badges { width: 180px; height: 24px; margin-bottom: 10px; }
+.dl-title { width: min(60%, 520px); height: 52px; }
+.dl-box { background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-card); }
+.dl-price { min-height: 340px; }
+.dl-card-s { min-height: 140px; }
+.dl-card-m { min-height: 220px; }
+.dl-card-l { min-height: 320px; }
+
 @media (max-width: 768px) {
+  .dl-title { height: 32px; }
+  .dl-price { min-height: 300px; }
   .status-page { padding: 32px 16px 80px; }
   .status-card { padding: 32px 20px; }
   .status-title { font-size: 22px; }
