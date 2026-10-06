@@ -2021,16 +2021,19 @@ a.hc-row:hover { background: var(--card-hover); }
 .price-card-store { font-size: 22px; color: var(--accent-text); }
 .lowest-pill { align-self: flex-start; padding: 4px 12px; border-radius: var(--radius-chip); border: 1px solid var(--lowest-border); background: var(--lowest-bg); color: var(--lowest-text); font-size: 15px; font-weight: 800; }
 .price-card-lowest { font-size: 15px; color: var(--text-muted); }
-.price-card-buy, .price-card-compare { width: 100%; }
-.price-card-buy { margin-top: 6px; }
-.price-card-compare-status { margin-top: -2px; font-size: 15px; font-weight: 600; color: var(--text); }
+/* 버튼 영역: 세 줄(구매+하트 · 비교 · 비교 상태)이 이 컨테이너 하나의 폭을 같이 쓴다 — 줄마다 폭·여백을 따로 주지 않음 */
+.price-card-buttons { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+.price-card-compare-status { font-size: 15px; font-weight: 600; color: var(--text); }
 .price-card-compare-status:empty { display: none; }
-.price-card-compare-status a { color: var(--accent-text); font-weight: 800; white-space: nowrap; }
+/* 비교에 담긴 상태일 때만 보이는 전체 폭 링크 배너 */
+.compare-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 10px 14px; border-radius: 2px; background: var(--panel-bg); border: 1px solid var(--border); color: var(--text); font-size: 15px; font-weight: 700; transition: border-color 0.15s ease; }
+.compare-banner:hover { border-color: var(--accent); }
+.compare-banner-count { color: var(--accent-text); font-weight: 800; white-space: nowrap; }
 .price-card-note { font-size: 13px; line-height: 1.5; color: var(--text-muted); }
 
 /* 가격 박스 버튼 시안 — 모서리 2px, 아이콘은 인라인 SVG */
-.price-card-actions { display: flex; gap: 8px; margin-top: 6px; }
-.price-card-actions .price-card-buy { flex: 1; min-width: 0; margin-top: 0; }
+.price-card-actions { display: flex; gap: 8px; }
+.price-card-actions .price-card-buy { flex: 1; min-width: 0; }
 .price-card-buy.is-steam, .compare-add, .heart-btn { border-radius: 2px; }
 .price-card-buy.is-steam { background: var(--steam-buy); color: var(--on-solid); }
 .price-card-buy.is-steam:hover { background: var(--steam-buy-hover); }

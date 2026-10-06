@@ -30,15 +30,15 @@ export default function AddToCompare({ gameId, name, thumb }: { gameId: string; 
         )}
         {added ? '비교 목록에 추가됨' : '이 게임 비교에 담기'}
       </button>
-      <p className="price-card-compare-status" role="status">
-        {(added || full) && (
-          <>
-            {added ? `비교에 담았어요 (${ids.length}/${MAX_COMPARE})` : '비교함이 꽉 찼어요'}
-            {' · '}
-            <Link href={ids.length >= 2 ? `/compare?ids=${ids.join(',')}` : '/compare'}>비교하기 →</Link>
-          </>
-        )}
-      </p>
+      {/* 담긴 상태일 때만 전체 폭 링크 배너, 3개가 꽉 찬 채 담으려 하면 안내 문구 */}
+      <div className="price-card-compare-status" role="status">
+        {added ? (
+          <Link href={ids.length >= 2 ? `/compare?ids=${ids.join(',')}` : '/compare'} className="compare-banner">
+            <span>비교 목록에 담김</span>
+            <span className="compare-banner-count num">{ids.length}/{MAX_COMPARE} · 비교하러 가기</span>
+          </Link>
+        ) : full ? '비교함이 꽉 찼어요' : null}
+      </div>
     </>
   );
 }

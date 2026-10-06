@@ -263,15 +263,17 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             )}
             {timing === 'near' && <LowestPriceBadge timing={timing} />}
             {timingLine && <p className="buy-timing">{timingLine}</p>}
-            <div className="price-card-actions">
-              {buyUrl && (
-                <a href={buyUrl} target="_blank" rel="noopener noreferrer" className={`btn btn-primary btn-lg price-card-buy${game.steam_appid ? ' is-steam' : ''}`}>
-                  {buyLabel}에서 {game.is_free ? '플레이하기' : '구매하기'}
-                </a>
-              )}
-              <HeartButton gameId={game.id} variant="box" />
+            <div className="price-card-buttons">
+              <div className="price-card-actions">
+                {buyUrl && (
+                  <a href={buyUrl} target="_blank" rel="noopener noreferrer" className={`btn btn-primary btn-lg price-card-buy${game.steam_appid ? ' is-steam' : ''}`}>
+                    {buyLabel}에서 {game.is_free ? '플레이하기' : '구매하기'}
+                  </a>
+                )}
+                <HeartButton gameId={game.id} variant="box" />
+              </div>
+              <AddToCompare gameId={game.id} name={game.name} thumb={game.cover_image_url || game.card_image_url} />
             </div>
-            <AddToCompare gameId={game.id} name={game.name} thumb={game.cover_image_url || game.card_image_url} />
             <p className="price-card-note">가격·할인 정보는 실제와 다를 수 있어요. 가격은 하루 한 번 갱신되니 구매 전 스토어에서 확인해 주세요.</p>
           </div>
           {game.discord_url && (
