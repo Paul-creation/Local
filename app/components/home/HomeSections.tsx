@@ -9,6 +9,7 @@ import FeatureCard from './FeatureCard';
 import StreamerSection from './StreamerSection';
 import PeopleRecs from './PeopleRecs';
 import WishlistRecs from './WishlistRecs';
+import HomeQuickLinks from './HomeQuickLinks';
 import type { PeopleRecs as PeopleRecsData } from '../../lib/peopleRecs';
 import type { StreamerTheme } from '../../lib/streamerTheme';
 import { preconnect, preload } from 'react-dom';
@@ -25,13 +26,14 @@ export default function HomeSections({ featured, bannerPool, hotTabs, popularPos
   preconnect('https://shared.akamai.steamstatic.com');
   if (featuredImage) preload(sizedImage(featuredImage, 920), { as: 'image', fetchPriority: 'high' });
 
-  // 순서: 인원별 추천 → 찜 기반 추천(찜이 있을 때) → 스트리머 → 지금 뜨는 게임 → 이번주의 게임·배너 → 인기 게시물 (인원 버튼은 검색창 바로 아래, HomeHero)
+  // 순서: 인원별 추천 → 빠른 칩 줄 → 찜 기반 추천(찜이 있을 때) → 스트리머 → 지금 뜨는 게임 → 이번주의 게임·배너 → 인기 게시물 (인원 버튼은 검색창 바로 아래, HomeHero)
   return (
     <>
       <PeopleRecs recs={peopleRecs} />
+      <HomeQuickLinks />
       <WishlistRecs homeExcluded={homeExcluded} />
 
-      {/* 스트리머들이 밤새운 협동 게임 — 선정이 6개 미만이면 통째로 숨김 (lib/streamerTheme). 인원 선택에 따라 스트리머 수로 거름 */}
+      {/* 스트리머들이 밤새운 협동 게임 — 선정이 6개 미만이면 통째로 숨김 (lib/streamerTheme) */}
       <StreamerSection theme={streamerTheme} />
 
       {/* 지금 뜨는 게임 — 데이터는 page.tsx에서 따로 가져옴 (lib/hotChart) */}

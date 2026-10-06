@@ -3,7 +3,6 @@
 
 import type { ReactNode } from 'react';
 import SearchPanel from '../search/SearchPanel';
-import QuickLinks from './QuickLinks';
 import PeopleSelect from './PeopleSelect';
 import type { GameFilters } from '../../lib/useGameFilters';
 
@@ -27,7 +26,6 @@ export default function HomeHero({ event, games, filters, showEvent, sidebar = f
         <SearchPanel games={games} filters={filters} sidebar={sidebar} />
       </div>
       {showEvent && <div className="home-only"><PeopleSelect /></div>}
-      {showEvent && <div className="home-only"><QuickLinks filters={filters} /></div>}
     </div>
   );
 }

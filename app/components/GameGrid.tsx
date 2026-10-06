@@ -33,7 +33,7 @@ export default function GameGrid({ event, sections, top10Ids = [] }: { event: Re
   const sidebar = useWide() && !showHome;
 
   return (
-    <PeopleProvider>
+    <PeopleProvider filters={filters}>
       {/* 이벤트 + 가운데 큰 검색창 */}
       <HomeHero event={event} games={index.games || []} filters={filters} showEvent={showHome} sidebar={sidebar} />
 

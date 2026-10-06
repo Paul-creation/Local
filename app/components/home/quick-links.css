@@ -3,7 +3,6 @@
 .quick-links-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .quick-chip { min-height: 44px; padding: 10px 18px; font-size: var(--fs-l); text-decoration: none; }
 .quick-chip::after { display: none; }
-.quick-chip-sm { min-width: 64px; justify-content: center; font-size: var(--fs-m); }
 @media (max-width: 480px) {
   .quick-links-row { gap: 6px; }
   .quick-chip { padding: 10px 14px; font-size: var(--fs-m); }
