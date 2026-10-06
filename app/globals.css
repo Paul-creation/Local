@@ -301,14 +301,13 @@ img { display: block; }
   display: flex;
   gap: 4px;
   min-width: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
 }
-.site-menu::-webkit-scrollbar { display: none; }
+/* 모바일(768px 미만)에서는 홈(로고가 대신함)·의견 보내기(푸터에 있음)를 헤더에서 숨겨 한 줄에 다 들어가게 함 */
+@media (max-width: 767px) { .site-menu .is-desktop-only { display: none; } }
 
 .site-menu a, .theme-toggle {
   /* 터치 영역 44px */
-  flex-shrink: 0; /* 좁은 화면에서 글자끼리 겹치지 않게 — 넘치면 메뉴가 옆으로 밀림(스크롤) */
+  flex-shrink: 0; /* 글자끼리 겹치지 않게 */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -340,7 +339,7 @@ img { display: block; }
 @media (max-width: 480px) {
   .site-header-inner { padding: 0 12px; height: 56px; gap: 4px; }
   .site-logo { font-size: var(--fs-xl); }
-  .site-menu { gap: 0; } /* 360px에서도 한 줄 유지 */
+  .site-menu { gap: 0; }
   .site-menu a { padding: 6px 7px; font-size: var(--fs-s); } /* 헤더는 360~390px에서 한 줄이라 올리지 않음 */
   .theme-toggle { padding: 6px 8px; font-size: var(--fs-xs); }
 }
@@ -2216,10 +2215,10 @@ a.series-item:hover { border-color: var(--border); }
   .detail-price { position: static; }
 }
 @media (max-width: 760px) {
-  .dh-media { aspect-ratio: 16 / 10; min-height: 0; }
+  .dh-media { min-height: 0; } /* 칩·제목이 이미지 아래로 내려가서 이미지 비율은 원래대로(가로로 긴 배너) */
   .dh-title { font-size: 32px; }
-  .dh-info { left: 16px; right: 16px; bottom: 14px; }
-  .dh-play { top: 36%; }
+  .dh-info { position: static; margin-top: 12px; } /* 모바일: 칩·제목을 이미지 위에 겹치지 않고 아래로 (재생 버튼과 겹침 방지, 재생 중 화면과 같은 배치) */
+  .dh-play { top: 50%; }
   .detail-card { padding: 18px; }
   .trio { grid-template-columns: minmax(0, 1fr); }
   .steam-card { grid-template-columns: minmax(0, 1fr); }
