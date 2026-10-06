@@ -2686,16 +2686,23 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 .pcs-link { min-height: 44px; padding: 0 4px; border: none; background: none; font-family: inherit; font-size: var(--fs-l); font-weight: 700; color: var(--accent-text); cursor: pointer; }
 .pcs-link:hover { text-decoration: underline; }
 /* PC 사양 카드 — 판정 요약 + 부품별 표 (권장 충족 녹색 · 최소만 충족 기본 글자색 · 미달 --verdict-fail) */
-.pcs-card { display: flex; flex-direction: column; gap: 6px; }
-.pcs-card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.pcs-card-head .detail-card-title { margin: 0; }
+.pcs-card { display: flex; flex-direction: column; gap: 6px; padding: 26px 32px; }
+/* 판정별 상단 테두리 3px — 권장 충족 녹색 · 최소 미달 --verdict-fail, 최소만 충족은 기존 테두리 그대로 */
+.pcs-card.is-rec { border-top: 3px solid var(--verdict-rec); }
+.pcs-card.is-fail { border-top: 3px solid var(--verdict-fail); }
+.pcs-card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 14px; margin-bottom: 8px; border-bottom: 1px solid var(--border-soft); }
+.pcs-card-title { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -0.01em; color: var(--text); }
+.pcs-change { min-height: 44px; padding: 0 4px; border: none; background: none; font-family: inherit; font-size: 16px; font-weight: 800; color: var(--accent-text); cursor: pointer; }
+.pcs-change:hover { text-decoration: underline; }
 .pcs-verdict { margin: 8px 0 0; font-size: 28px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.25; color: var(--text); }
 .pcs-verdict.is-rec { color: var(--verdict-rec); }
 .pcs-verdict.is-fail { color: var(--verdict-fail); }
-.pcs-reason { margin: 0; font-size: 16px; line-height: 1.5; color: var(--text-2); }
+.pcs-reason { margin: 0; font-size: 20px; font-weight: 900; letter-spacing: -0.01em; line-height: 1.4; color: var(--text); }
+.pcs-reason.is-rec { color: var(--verdict-rec); }
+.pcs-reason.is-fail { color: var(--verdict-fail); }
 .pcs-flags { margin: 0; font-size: 14px; line-height: 1.5; color: var(--text-muted); }
-.pcs-table { width: 100%; margin-top: 14px; border-collapse: collapse; font-size: 15px; }
-.pcs-table th, .pcs-table td { padding: 10px 12px; text-align: left; vertical-align: top; border-top: 1px solid var(--border-soft); overflow-wrap: anywhere; }
+.pcs-table { width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 15px; }
+.pcs-table th, .pcs-table td { padding: 16px 24px 16px 0; text-align: left; vertical-align: top; border-top: 1px solid var(--border-soft); overflow-wrap: anywhere; }
 .pcs-table thead th { border-top: none; padding-top: 0; font-size: 14px; font-weight: 700; color: var(--text-muted); white-space: nowrap; }
 .pcs-table .pcs-part { font-weight: 800; color: var(--text); white-space: nowrap; }
 .pcs-table td { color: var(--text-2); }
@@ -2704,11 +2711,13 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 .pcs-table .pcs-cell-verdict.is-rec { color: var(--verdict-rec); }
 .pcs-table .pcs-cell-verdict.is-fail { color: var(--verdict-fail); }
 .pcs-table .pcs-cell-verdict.is-unknown { color: var(--text-muted); font-weight: 700; }
-.pcs-raw { margin-top: 12px; border-top: 1px solid var(--border-soft); }
+.pcs-raw { margin-top: 16px; border-top: 1px solid var(--border-soft); }
 .pcs-raw summary { display: flex; align-items: center; min-height: 44px; font-size: 15px; font-weight: 700; color: var(--accent-text); cursor: pointer; }
 .pcs-raw .spec-columns { padding: 4px 0 4px; }
 @media (max-width: 640px) {
+  .pcs-card { padding: 20px; }
   .pcs-verdict { font-size: 24px; }
+  .pcs-reason { font-size: 18px; }
   .pcs-table, .pcs-table tbody { display: block; }
   .pcs-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } /* 열 제목은 화면에서 숨기고 칸마다 이름을 붙임 */
   .pcs-table tr { display: block; padding: 12px 0; border-top: 1px solid var(--border-soft); }

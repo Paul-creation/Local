@@ -87,13 +87,13 @@ export default function PcSpecCard({ parsed, minRows, recRows, gpuSummary }: { p
   return (
     <>
       {panel && <div className="pcs-wrap">{panel}</div>}
-      <section className="detail-card pcs-card" aria-label="PC 사양">
+      <section className={`detail-card pcs-card is-${verdict.level}`} aria-label="내 PC 사양 진단">
         <div className="pcs-card-head">
-          <h3 className="detail-card-title">PC 사양</h3>
-          <button type="button" className="pcs-link" aria-expanded={open} onClick={() => setOpen((o) => !o)}>변경</button>
+          <h3 className="pcs-card-title">내 PC 사양 진단</h3>
+          <button type="button" className="pcs-change" aria-expanded={open} onClick={() => setOpen((o) => !o)}>사양 변경</button>
         </div>
         <p className={`pcs-verdict is-${verdict.level}`}>{LEVEL_TITLE[verdict.level]}</p>
-        <p className="pcs-reason">{verdictReason(verdict)}</p>
+        <p className={`pcs-reason is-${verdict.level}`}>{verdictReason(verdict)}</p>
         {flags.length > 0 && <p className="pcs-flags">{flags.join(' · ')}</p>}
         <table className="pcs-table" role="table">
           <thead role="rowgroup">
