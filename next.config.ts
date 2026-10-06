@@ -30,6 +30,13 @@ const nextConfig: NextConfig = {
       './node_modules/pretendard/dist/public/static/Pretendard-ExtraBold.otf',
     ],
   },
+  // OG 이미지는 resvg.wasm으로 그려서 sharp(libvips 약 18MB)가 필요 없음
+  outputFileTracingExcludes: {
+    '/api/og/**': [
+      './node_modules/@img/sharp-libvips-*/**',
+      './node_modules/sharp/**',
+    ],
+  },
 };
 
 export default nextConfig;
