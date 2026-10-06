@@ -1915,6 +1915,14 @@ a.hc-row:hover { background: var(--card-hover); }
 .results-filter { position: sticky; top: 76px; max-height: calc(100vh - 92px); overflow-y: auto; border-radius: var(--panel-radius); scrollbar-width: thin; }
 .results-filter .filter-body { padding-bottom: 12px; }
 
+/* 데스크톱 메인 필터 카드 — 헤더 아래 고정 + 카드 안에서만 스크롤 (끝에 닿아도 페이지로 안 넘어감), "N개 게임 보기" 버튼은 카드 하단 고정 */
+.results-filter { overscroll-behavior: contain; }
+@media (min-width: 641px) {
+  .filter-wrap { position: sticky; top: 76px; z-index: 5; }
+  .filter-wrap .filter-panel.is-sheet { max-height: calc(100vh - 92px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+  .filter-wrap .filter-foot { position: sticky; bottom: 0; background: var(--panel-bg); border-top: 1px solid var(--panel-line); padding-bottom: 12px; }
+}
+
 /* 결과 머리: "검색 결과 N개" + 정렬 탭 + 고른 조건 칩 */
 .results-head { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
 .results-head-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
@@ -1971,7 +1979,7 @@ a.hc-row:hover { background: var(--card-hover); }
 @media (max-width: 640px) {
   .filter-panel.is-sheet {
     position: fixed; inset: 0; z-index: 900; border: none; border-radius: 0;
-    display: flex; flex-direction: column;
+    display: flex; flex-direction: column; overscroll-behavior: contain;
   }
   .filter-panel.is-sheet .filter-head { border-bottom: 1px solid var(--border-soft); padding-left: 16px; }
   .filter-panel.is-sheet .filter-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 4px 16px 8px; }
