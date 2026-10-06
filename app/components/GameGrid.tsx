@@ -7,6 +7,7 @@ import HomeHero from './home/HomeHero';
 import SearchResults from './search/SearchResults';
 import PageSkeleton from './status/PageSkeleton';
 import { FilterPanel } from './search/SearchPanel';
+import PeopleProvider from './home/PeopleContext';
 
 // 데스크톱(1024px 이상)이면 결과 화면에서 필터를 왼쪽 칸에 늘 펼쳐 둔다. 휴대폰·태블릿은 버튼으로 여는 전체 화면 패널
 const WIDE = '(min-width: 1024px)';
@@ -32,7 +33,7 @@ export default function GameGrid({ event, sections, top10Ids = [] }: { event: Re
   const sidebar = useWide() && !showHome;
 
   return (
-    <>
+    <PeopleProvider>
       {/* 이벤트 + 가운데 큰 검색창 */}
       <HomeHero event={event} games={index.games || []} filters={filters} showEvent={showHome} sidebar={sidebar} />
 
@@ -49,6 +50,6 @@ export default function GameGrid({ event, sections, top10Ids = [] }: { event: Re
           <SearchResults filters={filters} top10Ids={top10Ids} loadError={index.error} onRetry={index.retry} />
         </div>
       </div>
-    </>
+    </PeopleProvider>
   );
 }

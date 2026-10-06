@@ -16,7 +16,9 @@ export type ThemeGame = {
   streamers: string[]; // 최근 영상 순, 사람 기준 중복 없음
   videoId: string | null; // "플레이 영상 보기" — 가장 최근 영상 (쇼츠가 아닌 것 먼저)
 };
-export type StreamerTheme = { games: ThemeGame[] };
+// games: 기본 표시(6의 배수) / pool: 인원 선택에 따라 스트리머 수로 거를 때 쓰는 전체 후보 (스트리머 많은 순, 최대 POOL_MAX)
+export type StreamerTheme = { games: ThemeGame[]; pool: ThemeGame[] };
+const POOL_MAX = 48;
 
 type One<T> = T | T[] | null;
 const first = <T,>(v: One<T>): T | null => (Array.isArray(v) ? v[0] ?? null : v);
@@ -63,5 +65,6 @@ export async function getStreamerTheme(): Promise<StreamerTheme | null> {
   // 카드는 PC 6칸·태블릿 3칸·모바일 2칸 격자라 6의 배수로만 보여준다 (마지막 줄이 비는 어색한 배치 방지, 6~11개면 6개, 12개면 12개)
   if (all.length < THEME_MIN) return null;
   const shown = Math.floor(Math.min(all.length, THEME_MAX) / THEME_MIN) * THEME_MIN;
-  return { games: all.slice(0, shown).map(({ rank, short, ...g }) => g) };
+  const strip = ({ rank, short, ...g }: (typeof all)[number]) => { void rank; void short; return g; };
+  return { games: all.slice(0, shown).map(strip), pool: all.slice(0, POOL_MAX).map(strip) };
 }

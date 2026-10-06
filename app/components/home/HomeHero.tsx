@@ -4,6 +4,7 @@
 import type { ReactNode } from 'react';
 import SearchPanel from '../search/SearchPanel';
 import QuickLinks from './QuickLinks';
+import PeopleSelect from './PeopleSelect';
 import type { GameFilters } from '../../lib/useGameFilters';
 
 // 이벤트 배너 + 히어로(제목·설명) + 검색창·필터·AI 추천 + 빠른 칩. 검색 결과를 볼 때는 검색창 줄만 위에 남긴다.
@@ -25,6 +26,7 @@ export default function HomeHero({ event, games, filters, showEvent, sidebar = f
       <div className="home-search">
         <SearchPanel games={games} filters={filters} sidebar={sidebar} />
       </div>
+      {showEvent && <div className="home-only"><PeopleSelect /></div>}
       {showEvent && <div className="home-only"><QuickLinks filters={filters} /></div>}
     </div>
   );

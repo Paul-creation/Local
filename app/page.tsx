@@ -12,6 +12,7 @@ import { HOME_FILTER_STYLE_ID } from './lib/homeFilter';
 import { getStreamerNamesByGame } from './lib/streamerVideos';
 import { getStreamerTheme } from './lib/streamerTheme';
 import { selectHomeGames } from './lib/visibleGames';
+import { getPeopleRecs, getHomeExcludedIds } from './lib/peopleRecs';
 
 // 5분마다 새로 만든 결과를 모두에게 보여준다 (방문마다 DB를 조회하지 않도록). 인기 글·가격도 최대 5분 늦게 반영
 export const revalidate = 300;
@@ -63,6 +64,10 @@ export default async function Home() {
   const names = await getStreamerNamesByGame([...new Set(hot.tabs.flatMap((t) => t.items.map((i) => i.id)))]).catch(() => new Map<string, string[]>());
   const hotTabs = hot.tabs.map((t) => ({ ...t, items: t.items.map((i) => ({ ...i, streamers: names.get(i.id) ?? [] })) }));
 
+  // 인원별 추천 — 지금 뜨는 게임(모든 탭 1~3위)과 겹치는 건 뺀다. 실패하면 줄만 빠짐
+  const hotTop3 = [...new Set(hot.tabs.flatMap((t) => t.items.slice(0, 3).map((i) => i.id)))];
+  const [peopleRecs, homeExcluded] = await Promise.all([getPeopleRecs(hotTop3).catch(() => null), getHomeExcludedIds().catch(() => [] as string[])]);
+
   const rows = (sectionRows || []).map((g) => flattenGame({ ...g, description: g.fun_description ? null : g.description }));
   const featured: Record<string, any> | null = weekly || rows.find((g) => g.featured) || null;
   const bannerPool = rows.filter((g) => g.is_casual_party && !g.featured && g.id !== featured?.id);
@@ -73,7 +78,7 @@ export default async function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd).replace(/</g, '\\u003c') }} />
       <GameGrid
         event={<HomeEvent />}
-        sections={<HomeSections featured={featured} bannerPool={bannerPool} hotTabs={hotTabs} popularPosts={popularPosts} streamerTheme={streamerTheme} />}
+        sections={<HomeSections featured={featured} bannerPool={bannerPool} hotTabs={hotTabs} popularPosts={popularPosts} streamerTheme={streamerTheme} peopleRecs={peopleRecs} homeExcluded={homeExcluded} />}
         top10Ids={hot.top10Ids}
       />
     </main>
