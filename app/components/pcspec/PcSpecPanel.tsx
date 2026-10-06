@@ -10,7 +10,7 @@ import { useMyPc } from './useMyPc';
 // 내 PC 사양 입력 패널 — GPU·CPU는 등급표 검색 콤보박스, RAM은 선택형. 저장은 브라우저(localStorage)에만
 // GPU 자동 입력 보조: WebGL 렌더러 이름을 읽어 "감지됨: …, 맞으면 선택"으로 제안만 한다 (자동 확정 안 함, 못 읽거나 매칭이 안 되면 숨김)
 // CPU·RAM은 브라우저에서 믿을 만하게 알 수 없어 자동 입력이 없다
-// 상세 페이지 판정 줄(PcVerdictLine)에서 열고, 4단계 검색 필터에서도 그대로 쓸 수 있다
+// 상세 페이지 PC 사양 카드(PcSpecCard)에서 열고, 4단계 검색 필터에서도 그대로 쓸 수 있다
 // WebGL 렌더러 이름 (못 읽으면 null). 컨텍스트는 읽자마자 반납한다
 function readRenderer(): string | null {
   try {

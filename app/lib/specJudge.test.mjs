@@ -3,6 +3,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { requiredTier, partMeets, judgeLevel, judgeGame } from './specJudge.ts';
 
+// 판정 규칙 확인용 — 부품별 결과(parts)는 따로 아래 테스트에서 본다
+const rule = ({ parts: _parts, ...r }) => r;
 const pc = (gpuVendor, gpuTier, cpuVendor = 'intel', cpuTier = 6, ram = 16) => ({ cpu: { vendor: cpuVendor, tier: cpuTier }, gpu: { vendor: gpuVendor, tier: gpuTier }, ram_gb: ram });
 
 test('요구 등급: 같은 제조사가 있으면 그것, 없으면 적힌 것 중 가장 높은 것', () => {
@@ -70,9 +72,9 @@ const full = (cpu, gpu, ram) => ({ cpu: { intel: cpu }, gpu: { nvidia: gpu }, ra
 
 test('judgePc: 권장 충족 / 최소 충족 / 최소 미달(항목 이름 포함)', () => {
   const parsed = { min: full(4, 6, 8), rec: full(6, 9, 16) };
-  assert.deepEqual(judgePc(pc('nvidia', 9, 'intel', 6, 16), parsed), { level: 'rec', failed: [], recMissing: false, partial: false });
-  assert.deepEqual(judgePc(pc('nvidia', 7, 'intel', 6, 16), parsed), { level: 'min', failed: [], recMissing: false, partial: false });
-  assert.deepEqual(judgePc(pc('nvidia', 3, 'intel', 3, 4), parsed), { level: 'fail', failed: ['cpu', 'gpu', 'ram'], recMissing: false, partial: false });
+  assert.deepEqual(rule(judgePc(pc('nvidia', 9, 'intel', 6, 16), parsed)), { level: 'rec', failed: [], recMissing: false, partial: false });
+  assert.deepEqual(rule(judgePc(pc('nvidia', 7, 'intel', 6, 16), parsed)), { level: 'min', failed: [], recMissing: false, partial: false });
+  assert.deepEqual(rule(judgePc(pc('nvidia', 3, 'intel', 3, 4), parsed)), { level: 'fail', failed: ['cpu', 'gpu', 'ram'], recMissing: false, partial: false });
   assert.deepEqual(judgePc(pc('nvidia', 3, 'intel', 6, 16), parsed).failed, ['gpu']);
 });
 
@@ -87,8 +89,8 @@ test('judgePc: 제조사 일치 비교와 {any:1}·low_spec 충족', () => {
 test('judgePc: rec가 null이거나 rec의 한 항목이라도 못 읽으면 최소 기준 + "권장 사양 정보 부족"', () => {
   const min = full(4, 6, 8);
   const strong = pc('nvidia', 15, 'intel', 8, 64);
-  assert.deepEqual(judgePc(strong, { min, rec: null }), { level: 'min', failed: [], recMissing: true, partial: false });
-  assert.deepEqual(judgePc(strong, { min }), { level: 'min', failed: [], recMissing: true, partial: false });
+  assert.deepEqual(rule(judgePc(strong, { min, rec: null })), { level: 'min', failed: [], recMissing: true, partial: false });
+  assert.deepEqual(rule(judgePc(strong, { min })), { level: 'min', failed: [], recMissing: true, partial: false });
   for (const rec of [{ ...full(6, 9, 16), cpu: null }, { ...full(6, 9, 16), gpu: null }, { ...full(6, 9, 16), ram_gb: null }]) {
     const v = judgePc(strong, { min, rec });
     assert.equal(v.level, 'min'); // 읽힌 권장 항목을 다 충족해도 권장 충족은 나오지 않음
@@ -99,10 +101,10 @@ test('judgePc: rec가 null이거나 rec의 한 항목이라도 못 읽으면 최
 test('judgePc: 최소는 읽힌 항목만으로 판정하고 일부만 읽혔으면 "일부 사양만 확인됨"', () => {
   const rec = full(6, 9, 16);
   const v = judgePc(pc('nvidia', 9, 'intel', 6, 16), { min: { cpu: null, gpu: { nvidia: 6 }, ram_gb: 8 }, rec });
-  assert.deepEqual(v, { level: 'rec', failed: [], recMissing: false, partial: true });
+  assert.deepEqual(rule(v), { level: 'rec', failed: [], recMissing: false, partial: true });
   assert.equal(judgePc(pc('nvidia', 9, 'intel', 6, 16), { min: { cpu: null, gpu: { nvidia: 6 }, ram_gb: 8 }, rec: null }).level, 'min');
   const fail = judgePc(pc('nvidia', 3, 'intel', 6, 16), { min: { cpu: null, gpu: { nvidia: 6 }, ram_gb: null }, rec: null });
-  assert.deepEqual(fail, { level: 'fail', failed: ['gpu'], recMissing: true, partial: true });
+  assert.deepEqual(rule(fail), { level: 'fail', failed: ['gpu'], recMissing: true, partial: true });
 });
 
 test('judgePc: 최소 세 항목이 전부 안 읽히거나 min이 없으면 null', () => {
@@ -161,4 +163,36 @@ test('runsOnMyPc: 최소 미달만 뺀다 — 권장·최소 충족과 판정 �
   // P3·{any:1}도 judgePc와 같은 결과
   assert.equal(runsOnMyPc(pc('nvidia', 9, 'amd', 6, 16), g({ cpu: { amd: 7, intel: 6 }, gpu: { any: 1 }, ram_gb: 8 })), true);
   assert.equal(runsOnMyPc(pc('nvidia', 1, 'amd', 1, 4), g({ cpu: { any: 1 }, gpu: { any: 1 }, ram_gb: 4 })), true);
+});
+
+// ── 부품별 결과(parts)·원인 문장 — 판정 규칙(level·failed 등)은 그대로 ──
+test('부품별 결과: 최소 미달·권장 미달·정보 없음을 부품마다 따로', async () => {
+  const { judgePc, verdictReason } = await import('./specJudge.ts');
+  const parsed = {
+    min: { cpu: { intel: 5 }, gpu: { nvidia: 9 }, ram_gb: 8 },
+    rec: { cpu: { intel: 7 }, gpu: { nvidia: 11 }, ram_gb: 16 },
+  };
+  const rec = judgePc(pc('nvidia', 11, 'intel', 7, 16), parsed);
+  assert.equal(rec.level, 'rec');
+  assert.deepEqual(rec.parts.map((p) => p.level), ['rec', 'rec', 'rec']);
+  assert.equal(verdictReason(rec), '모든 부품이 권장 사양을 충족해요');
+
+  const min = judgePc(pc('nvidia', 9, 'intel', 7, 16), parsed); // GPU만 권장 미달
+  assert.equal(min.level, 'min');
+  assert.deepEqual(min.parts.map((p) => [p.part, p.min, p.rec, p.level]), [['cpu', true, true, 'rec'], ['gpu', true, false, 'min'], ['ram', true, true, 'rec']]);
+  assert.equal(verdictReason(min), 'GPU가 권장 사양에는 못 미쳐요');
+
+  const fail = judgePc(pc('nvidia', 8, 'intel', 7, 4), parsed); // GPU·RAM 최소 미달
+  assert.equal(fail.level, 'fail');
+  assert.deepEqual(fail.failed, ['gpu', 'ram']);
+  assert.equal(verdictReason(fail), 'GPU·RAM이 최소 사양에 못 미쳐요');
+
+  const noRec = judgePc(pc('nvidia', 9), { min: parsed.min }); // 권장 없음: rec는 null, 최소 기준
+  assert.equal(noRec.level, 'min');
+  assert.deepEqual(noRec.parts.map((p) => p.rec), [null, null, null]);
+  assert.equal(verdictReason(noRec), '모든 부품이 최소 사양을 충족해요');
+
+  const partial = judgePc(pc('nvidia', 9), { min: { cpu: null, gpu: { nvidia: 9 }, ram_gb: 8 } }); // CPU를 못 읽음
+  assert.equal(partial.partial, true);
+  assert.equal(partial.parts[0].level, 'unknown');
 });

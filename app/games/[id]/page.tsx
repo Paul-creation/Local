@@ -17,9 +17,7 @@ import PlayerCountVote from '../../components/PlayerCountVote';
 import { buyTimingLine, SAME_AS_LOWEST } from '../../lib/buyTiming';
 import VideoPreviewSection, { type CoopVideo } from '../../components/VideoPreviewSection';
 import Link from 'next/link';
-import { Fragment } from 'react';
-import PcVerdictLine from '../../components/pcspec/PcVerdictLine';
-import { hasJudgeableSpec } from '../../lib/specJudge';
+import PcSpecCard from '../../components/pcspec/PcSpecCard';
 import ShareButton from '../../components/ShareButton';
 import GameImage from '../../components/GameImage';
 import { getTop10Ids } from '../../lib/hotChart';
@@ -485,28 +483,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             </div>
           )}
 
-          {/* 내 PC 판정 한 줄 — 입력한 사양은 브라우저에만 있어서 클라이언트에서 판정. 최소 사양을 하나도 못 읽은 게임(spec_parsed가 없거나 전부 null)은 그리지 않음 */}
-          {(minSpec || recSpec) && hasJudgeableSpec(game.spec_parsed) && <PcVerdictLine parsed={game.spec_parsed} />}
-
-          {/* PC 사양 — 접기 (요약에 최소·권장 그래픽카드) */}
-          {(minSpec || recSpec) && (
-            <details className="detail-card detail-accordion">
-              <summary>
-                <span className="detail-card-title">PC 사양</span>
-                {gpuSummary && <span className="spec-summary">{gpuSummary}</span>}
-              </summary>
-              <div className="spec-columns">
-                {[['최소 사양', minSpec], ['권장 사양', recSpec]].map(([title, rows]) => rows && (
-                  <div key={title as string}>
-                    <p className="spec-col-title">{title as string}</p>
-                    <dl className="more-list">
-                      {(rows as { label: string; value: string }[]).map(({ label, value }) => (<Fragment key={label}><dt>{label}</dt><dd>{value}</dd></Fragment>))}
-                    </dl>
-                  </div>
-                ))}
-              </div>
-            </details>
-          )}
+          {/* PC 사양 카드 — 내 PC 판정 요약 + 부품별 표 + 원문 사양. 입력한 사양은 브라우저에만 있어서 클라이언트에서 판정. 최소 사양을 하나도 못 읽은 게임(spec_parsed가 없거나 전부 null)은 판정·표 없이 원문만 */}
+          {(minSpec || recSpec) && <PcSpecCard parsed={game.spec_parsed} minRows={minSpec} recRows={recSpec} gpuSummary={gpuSummary} />}
 
           {/* 영상으로 미리 보기 — 하이라이트 + 친구랑 플레이(멀티 게임만) + 스트리머 영상 + 스트리머 채널 */}
           <VideoPreviewSection

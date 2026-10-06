@@ -65,11 +65,16 @@ export function judgeGame(user: UserPc, parsed: { min: SpecLike | null; rec: Spe
 // - 최소(min): 읽힌 항목(CPU·GPU·RAM)만으로 판정. 하나라도 못 읽었으면 partial 플래그. 세 항목이 전부 안 읽혔거나 min이 없으면 null (줄을 숨김)
 // - 권장(rec): rec가 없거나 CPU·GPU·RAM 중 하나라도 못 읽었으면 최소 기준으로만 판정하고 recMissing 플래그 (권장 충족은 나오지 않음)
 export type PcPart = 'cpu' | 'gpu' | 'ram';
+// 부품 하나의 결과 (상세 페이지 부품별 표용) — min·rec: true 충족 · false 미달 · null 요구를 읽지 못함(권장이 아예 없을 때도 null)
+// level: 미달(fail) > 정보 없음(unknown, 최소를 읽지 못함) > 권장 충족(rec) > 최소만 충족(min). 전체 판정(level)과 달리 이 부품 하나만 본 결과
+export type PartLevel = 'rec' | 'min' | 'fail' | 'unknown';
+export type PartResult = { part: PcPart; min: boolean | null; rec: boolean | null; level: PartLevel };
 export type PcVerdict = {
   level: 'rec' | 'min' | 'fail';
   failed: PcPart[]; // level이 fail일 때 미달 항목
   recMissing: boolean; // 권장 사양 정보 부족
   partial: boolean; // 최소 사양 일부만 확인됨
+  parts: PartResult[]; // CPU·GPU·RAM 순서
 };
 
 const readable = (s: SpecLike) => ({ cpu: s.cpu != null, gpu: s.gpu != null, ram: s.ram_gb != null });
@@ -87,17 +92,36 @@ export function judgePc(user: UserPc, parsed: { min?: SpecLike | null; rec?: Spe
   const rec = parsed?.rec ?? null;
   const recReadable = !!rec && readable(rec).cpu && readable(rec).gpu && readable(rec).ram;
   const level = judgeLevel(user, min);
+  const recLevel = rec ? judgeLevel(user, rec) : null;
+  const parts = (['cpu', 'gpu', 'ram'] as const).map((part): PartResult => {
+    const m = level[part];
+    const r = recLevel ? recLevel[part] : null;
+    return { part, min: m, rec: r, level: m === false ? 'fail' : m === null ? 'unknown' : r === true ? 'rec' : 'min' };
+  });
   const failed = (['cpu', 'gpu', 'ram'] as const).filter((k) => level[k] === false);
-  if (failed.length) return { level: 'fail', failed: [...failed], recMissing: !recReadable, partial };
+  if (failed.length) return { level: 'fail', failed: [...failed], recMissing: !recReadable, partial, parts };
   const recPass = recReadable && judgeLevel(user, rec!).result === 'pass';
-  return { level: recPass ? 'rec' : 'min', failed: [], recMissing: !recReadable, partial };
+  return { level: recPass ? 'rec' : 'min', failed: [], recMissing: !recReadable, partial, parts };
 }
 
 const PART_LABEL: Record<PcPart, string> = { cpu: '프로세서', gpu: '그래픽카드', ram: '메모리' };
+// 표·원인 문장에 쓰는 짧은 부품 이름
+export const PART_SHORT: Record<PcPart, string> = { cpu: 'CPU', gpu: 'GPU', ram: 'RAM' };
+const withParticle = (parts: PcPart[]) => `${parts.map((k) => PART_SHORT[k]).join('·')}${parts[parts.length - 1] === 'ram' ? '이' : '가'}`;
+
+// 판정 요약 아래 원인 한 문장 — 전체 판정은 위의 level 그대로, 어느 부품 때문인지만 덧붙인다
+// 권장 충족: 모든 부품이 권장 충족 / 최소만 충족: 권장에 못 미친 부품(없으면 최소 충족 안내) / 미달: 최소에 못 미친 부품
+export function verdictReason(v: PcVerdict): string {
+  if (v.level === 'fail') return `${withParticle(v.failed)} 최소 사양에 못 미쳐요`;
+  if (v.level === 'rec') return '모든 부품이 권장 사양을 충족해요';
+  const belowRec = v.parts.filter((p) => p.rec === false).map((p) => p.part);
+  return belowRec.length ? `${withParticle(belowRec)} 권장 사양에는 못 미쳐요` : '모든 부품이 최소 사양을 충족해요';
+}
 
 // 판정 문구 — 본문과 플래그(서브 텍스트 토큰으로 따로 그림)를 나눠 돌려준다
+export const LEVEL_TITLE: Record<PcVerdict['level'], string> = { rec: '권장 사양 충족', min: '최소 사양 충족', fail: '최소 사양 미달' };
 export function verdictText(v: PcVerdict): { main: string; flags: string[] } {
-  const main = v.level === 'rec' ? '권장 사양 충족' : v.level === 'min' ? '최소 사양 충족' : `최소 사양 미달 (${v.failed.map((k) => PART_LABEL[k]).join('·')})`;
+  const main = v.level === 'fail' ? `${LEVEL_TITLE.fail} (${v.failed.map((k) => PART_LABEL[k]).join('·')})` : LEVEL_TITLE[v.level];
   const flags = [v.recMissing && '권장 사양 정보 부족', v.partial && '일부 사양만 확인됨'].filter((f): f is string => !!f);
   return { main, flags };
 }

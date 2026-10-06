@@ -76,6 +76,8 @@
   --discount-border: #4c6b22;
   --discount-radius: 3px;
   --lowest-text: #beee11;
+  --verdict-rec: var(--lowest-text);  /* PC 사양 판정: 권장 충족 — 역대 최저가 녹색 */
+  --verdict-fail: #f43f5e;           /* PC 사양 판정: 최소 미달 */
   --lowest-bg: rgba(190, 238, 17, 0.06);
   --lowest-border: rgba(190, 238, 17, 0.45);
   --lowest-radius: 999px;
@@ -198,6 +200,8 @@
   --discount-border: var(--sale-border);
   --discount-radius: var(--radius-badge);
   --lowest-text: var(--sale);
+  --verdict-rec: var(--up);           /* 라이트에서 --lowest-text는 빨강(--sale)이라 미달과 헷갈려서 녹색(--up) */
+  --verdict-fail: #f43f5e;
   --lowest-bg: transparent;
   --lowest-border: var(--sale-border);
   --lowest-radius: 5px;
@@ -2681,6 +2685,39 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 .pcs-text-empty { color: var(--text-2); }
 .pcs-link { min-height: 44px; padding: 0 4px; border: none; background: none; font-family: inherit; font-size: var(--fs-l); font-weight: 700; color: var(--accent-text); cursor: pointer; }
 .pcs-link:hover { text-decoration: underline; }
+/* PC 사양 카드 — 판정 요약 + 부품별 표 (권장 충족 녹색 · 최소만 충족 기본 글자색 · 미달 --verdict-fail) */
+.pcs-card { display: flex; flex-direction: column; gap: 6px; }
+.pcs-card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.pcs-card-head .detail-card-title { margin: 0; }
+.pcs-verdict { margin: 8px 0 0; font-size: 28px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.25; color: var(--text); }
+.pcs-verdict.is-rec { color: var(--verdict-rec); }
+.pcs-verdict.is-fail { color: var(--verdict-fail); }
+.pcs-reason { margin: 0; font-size: 16px; line-height: 1.5; color: var(--text-2); }
+.pcs-flags { margin: 0; font-size: 14px; line-height: 1.5; color: var(--text-muted); }
+.pcs-table { width: 100%; margin-top: 14px; border-collapse: collapse; font-size: 15px; }
+.pcs-table th, .pcs-table td { padding: 10px 12px; text-align: left; vertical-align: top; border-top: 1px solid var(--border-soft); overflow-wrap: anywhere; }
+.pcs-table thead th { border-top: none; padding-top: 0; font-size: 14px; font-weight: 700; color: var(--text-muted); white-space: nowrap; }
+.pcs-table .pcs-part { font-weight: 800; color: var(--text); white-space: nowrap; }
+.pcs-table td { color: var(--text-2); }
+.pcs-table .pcs-mine { color: var(--text); font-weight: 700; }
+.pcs-table .pcs-cell-verdict { font-weight: 800; white-space: nowrap; color: var(--text); }
+.pcs-table .pcs-cell-verdict.is-rec { color: var(--verdict-rec); }
+.pcs-table .pcs-cell-verdict.is-fail { color: var(--verdict-fail); }
+.pcs-table .pcs-cell-verdict.is-unknown { color: var(--text-muted); font-weight: 700; }
+.pcs-raw { margin-top: 12px; border-top: 1px solid var(--border-soft); }
+.pcs-raw summary { display: flex; align-items: center; min-height: 44px; font-size: 15px; font-weight: 700; color: var(--accent-text); cursor: pointer; }
+.pcs-raw .spec-columns { padding: 4px 0 4px; }
+@media (max-width: 640px) {
+  .pcs-verdict { font-size: 24px; }
+  .pcs-table, .pcs-table tbody { display: block; }
+  .pcs-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } /* 열 제목은 화면에서 숨기고 칸마다 이름을 붙임 */
+  .pcs-table tr { display: block; padding: 12px 0; border-top: 1px solid var(--border-soft); }
+  .pcs-table th, .pcs-table td { padding: 0; border-top: none; }
+  .pcs-table .pcs-part { display: block; margin-bottom: 6px; font-size: 16px; }
+  .pcs-table td { display: grid; grid-template-columns: 3.5em minmax(0, 1fr); gap: 0 12px; padding: 3px 0; }
+  .pcs-table td::before { content: attr(data-label); font-weight: 700; color: var(--text-muted); }
+  .pcs-table .pcs-cell-verdict { white-space: normal; }
+}
 .pcs-detect .pcs-link { min-height: 0; padding: 0; }
 .pcs-panel { display: flex; flex-direction: column; gap: 14px; padding: 18px; background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-card); }
 .pcs-field { position: relative; display: flex; flex-direction: column; gap: 6px; }
