@@ -20,9 +20,11 @@ export default function StreamerSection({ theme }: { theme: StreamerTheme | null
           <li key={g.id} className="sg-item">
             <Link href={`/games/${g.id}`} className="sg-card">
               <GameImage src={g.image} steamSize="header_292x136" fallbackWidth={480} alt="" loading="lazy" className="sg-img" />
-              <span className="sg-name">{g.name}</span>
+              <span className="sg-body">
+                <span className="sg-name">{g.name}</span>
+                <StreamerBadge names={g.streamers} max={2} />
+              </span>
             </Link>
-            <StreamerBadge names={g.streamers} max={2} />
             {g.videoId && <a href={`https://www.youtube.com/watch?v=${g.videoId}`} target="_blank" rel="noopener noreferrer" className="sg-video">플레이 영상 보기</a>}
           </li>
         ))}
