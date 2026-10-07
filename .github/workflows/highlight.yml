@@ -1,8 +1,7 @@
 name: 하이라이트 영상 (YouTube 한도 초기화 직후)
 
 on:
-  schedule:
-    - cron: '10 8 * * *'   # 매일 한국 시간 17:10 (YouTube 한도는 KST 16시·서머타임 끝나면 17시에 초기화)
+
   workflow_dispatch:        # Actions 탭에서 직접 실행 가능
 
 concurrency:
