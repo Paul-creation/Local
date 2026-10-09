@@ -2861,6 +2861,19 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 
 /* 스크린샷 갤러리 — 썸네일 줄(scroll-snap)과 라이트박스. 로딩 전에는 같은 비율의 정지된 빈 틀 */
 .shots-row { display: flex; gap: 10px; list-style: none; margin: 12px 0 0; padding: 0 0 4px; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; }
+.shots-row { scrollbar-width: none; -ms-overflow-style: none; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent); }
+.shots-row::-webkit-scrollbar { display: none; }
+.shots-row[data-end] { -webkit-mask-image: none; mask-image: none; }
+.shots-wrap { position: relative; }
+.shots-nav { display: none; }
+@media (hover: hover) and (pointer: fine) {
+  .shots-nav { position: absolute; top: calc(50% - 2px); transform: translateY(-50%); z-index: 1; display: block; min-width: 36px; min-height: 44px; padding: 0 10px; border: 1px solid var(--border); border-radius: var(--radius-btn); background: var(--card); color: var(--text); font-size: var(--fs-xxl); font-weight: 700; line-height: 1; cursor: pointer; }
+  .shots-nav:hover { border-color: var(--accent); }
+  .shots-nav:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .shots-nav-prev { left: 4px; }
+  .shots-nav-next { right: 4px; }
+}
+@media (prefers-reduced-motion: reduce) { .shots-row { scroll-behavior: auto; } }
 .shots-item { flex: 0 0 calc((100% - 10px) / 1.3); scroll-snap-align: start; min-width: 0; }
 @media (min-width: 768px) { .shots-item { flex-basis: calc((100% - 30px) / 3.5); } }
 .shots-thumb { display: block; width: 100%; aspect-ratio: 16 / 9; padding: 0; border: 1px solid var(--border); border-radius: var(--radius-card-sm); background: var(--inset); overflow: hidden; cursor: pointer; }

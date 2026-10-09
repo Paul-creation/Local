@@ -10,11 +10,42 @@ export default function ScreenshotGallery({ shots, name }: { shots: Screenshot[]
   const [open, setOpen] = useState<number | null>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const lastFocus = useRef<HTMLElement | null>(null);
+  const rowRef = useRef<HTMLUListElement>(null);
+  const [edge, setEdge] = useState({ start: true, end: false });
   const count = shots.length;
   const isOpen = open != null;
 
   const move = useCallback((d: number) => setOpen((i) => (i == null ? i : (i + d + count) % count)), [count]);
   const close = useCallback(() => setOpen(null), []);
+
+  const updateEdge = useCallback(() => {
+    const el = rowRef.current;
+    if (!el) return;
+    const start = el.scrollLeft <= 1;
+    const end = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
+    setEdge((p) => (p.start === start && p.end === end ? p : { start, end }));
+  }, []);
+
+  useEffect(() => {
+    const el = rowRef.current;
+    if (!el) return;
+    updateEdge();
+    el.addEventListener('scroll', updateEdge, { passive: true });
+    window.addEventListener('resize', updateEdge);
+    return () => {
+      el.removeEventListener('scroll', updateEdge);
+      window.removeEventListener('resize', updateEdge);
+    };
+  }, [updateEdge, count]);
+
+  // 썸네일 한 장 반 만큼 이동. 모션 줄이기 설정이면 즉시 이동
+  const scrollRow = useCallback((dir: 1 | -1) => {
+    const el = rowRef.current;
+    const item = el?.firstElementChild as HTMLElement | null;
+    if (!el || !item) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el.scrollBy({ left: dir * (item.offsetWidth + 10) * 1.5, behavior: reduce ? 'auto' : 'smooth' });
+  }, []);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -37,7 +68,8 @@ export default function ScreenshotGallery({ shots, name }: { shots: Screenshot[]
   return (
     <section className="detail-card shots" aria-label="스크린샷">
       <h3 className="detail-card-title">스크린샷</h3>
-      <ul className="shots-row">
+      <div className="shots-wrap">
+      <ul className="shots-row" ref={rowRef} data-end={edge.end || undefined}>
         {shots.map((s, i) => (
           <li key={s.path_thumbnail} className="shots-item">
             <button
@@ -51,6 +83,9 @@ export default function ScreenshotGallery({ shots, name }: { shots: Screenshot[]
           </li>
         ))}
       </ul>
+      {!edge.start && <button type="button" className="shots-nav shots-nav-prev" onClick={() => scrollRow(-1)} aria-label="이전 스크린샷 보기">‹</button>}
+      {!edge.end && <button type="button" className="shots-nav shots-nav-next" onClick={() => scrollRow(1)} aria-label="다음 스크린샷 보기">›</button>}
+      </div>
 
       {open != null && (
         <div className="shots-lightbox" role="dialog" aria-modal="true" aria-label={`${name} 스크린샷`} onClick={close}>
