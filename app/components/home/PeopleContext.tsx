@@ -26,12 +26,12 @@ const parse = (raw: string | null | undefined): PeopleN => {
 // filters: 서버에서 그린 홈 섹션 사이에 놓이는 빠른 칩(HomeQuickLinks)이 메인 필터를 쓰도록 GameGrid가 넘겨 준다
 // recsReady: 서버가 인원별 추천 데이터를 보냈는지 — 못 보냈으면 인원 버튼이 아래 추천을 바꾸는 대신 /?players=N 검색으로 이동한다 (PeopleSelect)
 type Value = { n: PeopleN; setN: (n: PeopleN) => void; myPcOn: boolean; setMyPcOn: (v: boolean) => void; filters: GameFilters | null; recsReady: boolean };
-const Ctx = createContext<Value>({ n: 2, setN: () => {}, myPcOn: true, setMyPcOn: () => {}, filters: null, recsReady: true });
+const Ctx = createContext<Value>({ n: 2, setN: () => {}, myPcOn: false, setMyPcOn: () => {}, filters: null, recsReady: true });
 export const usePeople = () => useContext(Ctx);
 
 export default function PeopleProvider({ children, filters, recsReady = true }: { children: ReactNode; filters: GameFilters; recsReady?: boolean }) {
   const raw = useSyncExternalStore<string | null>(subscribe, readRaw, () => null);
-  const [myPcOn, setMyPcOn] = useState(true);
+  const [myPcOn, setMyPcOn] = useState(false); // 기본 꺼짐 — 사양을 저장해 뒀어도 사용자가 메인에서 직접 켜기 전에는 거르지 않는다
   const setN = useCallback((n: PeopleN) => {
     memory = String(n);
     try { window.localStorage.setItem(KEY, memory); } catch { /* 저장소를 못 쓰면 이 탭에서만 유지 */ }

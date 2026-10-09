@@ -15,7 +15,7 @@ export const peopleHref = (n: PeopleN, myPc: boolean) => href(n, myPc, PLAYERS_M
 
 // 검색창 바로 아래 "2인 / 3인 / 4인 / 5인 이상" 한 줄 4칸 + 내 PC 토글
 // 인원별 추천 데이터가 없으면(recsReady 거짓) 버튼은 선택 표시만 바꾸고 바로 그 인원의 검색 결과(/?players=N)로 이동
-// 내 PC 사양이 저장돼 있으면 "내 PC로 돌아가는 게임만"(기본 켜짐), 없으면 사양 입력 패널을 여는 텍스트 버튼
+// 내 PC 사양이 저장돼 있으면 "내 PC로 돌아가는 게임만"(기본 꺼짐 — 사양을 저장해도 자동으로 켜지 않음), 없으면 사양 입력 패널을 여는 텍스트 버튼
 export default function PeopleSelect() {
   const { n, setN, myPcOn, setMyPcOn, recsReady } = usePeople();
   const { pc, ready } = useMyPc();
@@ -38,7 +38,7 @@ export default function PeopleSelect() {
         </div>
       )}
       {ready && !pc && panel && (
-        <div className="people-panel"><PcSpecPanel onDone={() => { setMyPcOn(true); setPanel(false); }} onCancel={() => setPanel(false)} /></div>
+        <div className="people-panel"><PcSpecPanel onDone={() => setPanel(false)} onCancel={() => setPanel(false)} /></div>
       )}
     </div>
   );
