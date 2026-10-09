@@ -1,7 +1,7 @@
 // 메인 "인원별 추천" 데이터 — 인원 4종(2·3·4·5인 이상)의 후보를 서버에서 한 번에 골라 메인 HTML에 실어 보낸다
-// 후보: 그 인원이 지원 범위에 들어가는 게임 (최소 인원 ≤ N ≤ 친구끼리 최대 인원, 5인 이상은 최대 인원 5 이상) + 1인 전용 제외
+// 후보: 그 인원이 지원 범위에 들어가는 게임 (최소 인원 ≤ N ≤ 친구끼리 최대 인원, 5인 이상은 최대 인원 5 이상) + 1인 전용 제외 + 최대 인원 상한(2인 4, 3인 6, 4인 8, 5인 이상 16)
 // 버려진 게임 제외: 접속자 100명 미만이면서 마지막 업데이트가 2년보다 오래된 게임 (둘 다 해당할 때만. 업데이트 날짜를 모르면 거르지 않는다)
-// 풀: 남은 후보 중 접속자 많은 상위 30개 → 그중 9개를 한국 시간 날짜를 시드로 골라 보여준다 (같은 날은 누구에게나 같은 결과). 지금 뜨는 게임에 보이는 게임(excludeIds)은 뺀다
+// 풀: 남은 후보 중 접속자 많은 상위 30개 → 그중 3개를 한국 시간 날짜를 시드로 골라 보여준다 (같은 날은 누구에게나 같은 결과). 지금 뜨는 게임에 보이는 게임(excludeIds)은 뺀다
 // 내 PC 사양으로 거르는 건 브라우저(PeopleRecs). 게임 카드 칸은 상세 "비슷한 게임"과 같은 getCardGames
 import { friendsMax } from './playersMatch';
 import type { SpecLike } from './specJudge';
@@ -10,9 +10,10 @@ import { selectGames, selectHomeGames } from './visibleGames';
 
 export const PEOPLE_CHOICES = [2, 3, 4, 5] as const; // 5는 "5인 이상"
 export type PeopleN = (typeof PEOPLE_CHOICES)[number];
-export const PEOPLE_SHOW = 3; // 찜 기반 추천(WishlistRecs)이 쓰는 개수
-export const PEOPLE_DAILY_SHOW = 9;
+export const PEOPLE_SHOW = 3;
 const POOL_SIZE = 30;
+// 인원별 친구끼리 최대 인원 상한 — 대규모 멀티가 소규모 추천에 섞이지 않게
+const MAX_CAP: Record<PeopleN, number> = { 2: 4, 3: 6, 4: 8, 5: 16 };
 const ABANDONED_PLAYERS = 100;
 const ABANDONED_YEARS = 2;
 
@@ -26,6 +27,7 @@ export const fitsPeople = (g: Pick<Row, 'min_players' | 'max_players' | 'party_m
   if (g.max_players === 1) return false; // 1인 전용
   const max = friendsMax(g);
   if (!max) return false;
+  if (max > MAX_CAP[n]) return false;
   return n >= 5 ? max >= 5 : (g.min_players || 1) <= n && max >= n;
 };
 
@@ -58,7 +60,7 @@ export async function getPeopleRecs(excludeIds: string[]): Promise<PeopleRecs | 
   const cutoff = new Date(now.getTime() + 9 * 3600_000 - ABANDONED_YEARS * 365.25 * 86400_000).toISOString().slice(0, 10);
   const alive = (data as unknown as Row[]).filter((g) => !skip.has(g.id) && !isAbandoned(g, cutoff));
   const byPlayers = alive.sort((a, b) => (b.current_players ?? 0) - (a.current_players ?? 0) || a.id.localeCompare(b.id));
-  const picked = Object.fromEntries(PEOPLE_CHOICES.map((n) => [n, pickDaily(byPlayers.filter((g) => fitsPeople(g, n)).slice(0, POOL_SIZE).map((g) => g.id), PEOPLE_DAILY_SHOW, `${today}:${n}`)])) as Record<PeopleN, string[]>;
+  const picked = Object.fromEntries(PEOPLE_CHOICES.map((n) => [n, pickDaily(byPlayers.filter((g) => fitsPeople(g, n)).slice(0, POOL_SIZE).map((g) => g.id), PEOPLE_SHOW, `${today}:${n}`)])) as Record<PeopleN, string[]>;
   const unique = [...new Set(Object.values(picked).flat())];
   try {
     const cards = await getCardGames(unique);
