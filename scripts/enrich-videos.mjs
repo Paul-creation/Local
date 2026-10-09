@@ -8,7 +8,7 @@
 // - 찾아봤는데 영상이 없으면 video_url을 ''로 저장해서 다음부터 다시 찾지 않음. 이미 값이 있는 게임은 건드리지 않음
 import { createClient } from '@supabase/supabase-js';
 import { gameNameKeys, excludeTerms } from './lib/coop-targets.mjs';
-import { trailerRejectReason } from './lib/video-filter.mjs';
+import { trailerRejectReason, englishNameKeys } from './lib/video-filter.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -50,7 +50,7 @@ async function youtubeTrailer(game) {
     const quota = json.error.errors?.some((e) => /quota/i.test(e.reason)) || /quota/i.test(json.error.message);
     throw quota ? new QuotaError(json.error.message) : new Error(json.error.message);
   }
-  const keys = gameNameKeys(game);
+  const keys = [...gameNameKeys(game), ...englishNameKeys(game)]; // 한글 이름 또는 영어 원제(스토어 주소 이름) 중 하나가 제목에 있으면 됨
   const terms = excludeTerms(game).map(norm).filter(Boolean);
   const hit = (json.items || []).find((it) => {
     const video = { title: it.snippet?.title, channel_title: it.snippet?.channelTitle };
@@ -60,7 +60,7 @@ async function youtubeTrailer(game) {
 }
 
 async function main() {
-  let q = supabase.from('games').select('id, name, steam_appid, search_name_ko, video_exclude_terms', { count: 'exact' }).eq('hidden', false).is('video_url', null)
+  let q = supabase.from('games').select('id, name, steam_appid, external_id, search_name_ko, video_exclude_terms', { count: 'exact' }).eq('hidden', false).is('video_url', null)
     .order('created_at', { ascending: false }).limit(LIMIT);
   if (ONLY_OTHER) q = q.is('steam_appid', null);
   if (STEAM_ONLY) q = q.not('steam_appid', 'is', null);
