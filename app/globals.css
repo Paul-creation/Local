@@ -424,6 +424,15 @@ img { display: block; }
   .site-menu a { padding: 6px 7px; font-size: var(--fs-s); } /* 헤더는 360~390px에서 한 줄이라 올리지 않음 */
   .theme-toggle { padding: 6px 8px; font-size: var(--fs-xs); }
 }
+/* 400px 이하: 로고·링크·테마 버튼 안쪽 여백과 글자를 조금 줄여 360px까지 메뉴와 로그인 버튼이 겹치지 않게 (링크 글자는 13px 아래로 내리지 않음, 터치 영역 44px은 유지) */
+@media (max-width: 400px) {
+  .site-header-inner { padding: 0 8px; gap: 2px; }
+  .site-logo { font-size: 15px; }
+  .site-menu a { padding: 6px 4px; font-size: var(--fs-xs); }
+  .theme-toggle { padding: 6px 4px; }
+}
+/* 350px 이하: 그래도 자리가 모자라 "커뮤니티"는 헤더에서 빼고 푸터 링크로 */
+@media (max-width: 349px) { .site-menu .is-narrow-hide { display: none; } }
 
 /* ============================================================
    공통 컴포넌트 — 버튼·칩·뱃지·입력창·탭·카드·스켈레톤
