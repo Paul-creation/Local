@@ -242,6 +242,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             {showPriceRecord && game.lowest_price >= 100 && (
               <p className="price-card-lowest">
                 역대 최저 <span className="num">₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}</span>
+                {game.lowest_price_shop && ` · ${game.lowest_price_shop}`}
                 {formatDate(game.lowest_price_date) && ` · ${formatDate(game.lowest_price_date)}`}
               </p>
             )}

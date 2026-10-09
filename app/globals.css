@@ -1591,33 +1591,15 @@ a.series-item:hover { border-color: var(--border); }
    메인 (2단계) — 이벤트 배너 · 히어로 · 이번주/추천 카드 · 지금 뜨는 게임 · 인기 게시물
    ============================================================ */
 
-/* 이벤트 배너 — 이벤트 색의 아주 어두운 배경 카드 (라이트는 아주 옅은 배경) */
+/* 이벤트 배너 — 카드 토큰 배경 (data-tone은 구분용으로만 남기고 색은 모두 같음) */
 .home-event {
-  --ev-bg: #151A24; --ev-border: #262E3D;
+  --ev-bg: var(--card); --ev-border: var(--border);
   display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
   padding: 22px 26px; margin-bottom: 36px;
   background: var(--ev-bg); border: 1px solid var(--ev-border); border-radius: var(--radius-card);
 }
-.home-event[data-tone="horror"] { --ev-bg: #1A1420; --ev-border: #2E2233; }
-.home-event[data-tone="blue"]   { --ev-bg: #111A26; --ev-border: #1F2D40; }
-.home-event[data-tone="red"]    { --ev-bg: #1F1214; --ev-border: #3A2226; }
-.home-event[data-tone="green"]  { --ev-bg: #121C16; --ev-border: #21352A; }
-.home-event[data-tone="pink"]   { --ev-bg: #1E1419; --ev-border: #36232D; }
-.home-event[data-tone="gold"]   { --ev-bg: var(--card); --ev-border: var(--border); }
-.home-event[data-tone="purple"] { --ev-bg: #17142A; --ev-border: #2A2546; }
-.home-event[data-tone="teal"]   { --ev-bg: #0F1D20; --ev-border: #1C3439; }
-.home-event[data-tone="orange"] { --ev-bg: #1F1610; --ev-border: #3A2A1E; }
-:root[data-theme="light"] .home-event { --ev-bg: #ffffff; --ev-border: #d2d2d7; }
-:root[data-theme="light"] .home-event[data-tone="horror"] { --ev-bg: #f6eef8; --ev-border: #e6d5ec; }
-:root[data-theme="light"] .home-event[data-tone="blue"]   { --ev-bg: #eaf1fa; --ev-border: #d3e1f2; }
-:root[data-theme="light"] .home-event[data-tone="red"]    { --ev-bg: #fbeeee; --ev-border: #f0d6d6; }
-:root[data-theme="light"] .home-event[data-tone="green"]  { --ev-bg: #ecf6ef; --ev-border: #d2e8da; }
-:root[data-theme="light"] .home-event[data-tone="pink"]   { --ev-bg: #fbeff4; --ev-border: #f0d5e1; }
-:root[data-theme="light"] .home-event[data-tone="gold"]   { --ev-bg: var(--card); --ev-border: var(--border); }
-.home-event[data-tone="gold"] .home-event-title { color: var(--accent-text); } /* 강조는 제목에만 */
-:root[data-theme="light"] .home-event[data-tone="purple"] { --ev-bg: #f0eefa; --ev-border: #dcd7f0; }
-:root[data-theme="light"] .home-event[data-tone="teal"]   { --ev-bg: #e8f6f7; --ev-border: #cce6e9; }
-:root[data-theme="light"] .home-event[data-tone="orange"] { --ev-bg: #fbf1e8; --ev-border: #efdcc8; }
+/* 이벤트 색 구분 없이 같은 카드 — 배경·테두리는 토큰, 강조는 제목에만 */
+.home-event .home-event-title { color: var(--accent-text); }
 .home-event-text { min-width: 0; flex: 1 1 320px; }
 .home-event-label { font-size: var(--fs-s); font-weight: 800; color: var(--text-muted); letter-spacing: 0.02em; margin-bottom: 4px; }
 .home-event-title { font-size: 22px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.3; color: var(--text); word-break: keep-all; }

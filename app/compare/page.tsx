@@ -226,7 +226,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
     { label: 'DLC', render: steamOnly((g: any) => g.has_dlc ? '있음' : '없음') },
     { label: 'Steam 평점', render: steamOnly((g: any) => g.review_positive_percent ? `${g.review_positive_percent}% (${g.review_total?.toLocaleString('ko-KR')}개)` : '-') },
     { label: '현재 접속자', render: steamOnly((g: any) => g.current_players ? `${g.current_players.toLocaleString('ko-KR')}명` : '-') },
-    { label: '역대 최저가', render: (g: any) => g.lowest_price ? `₩${g.lowest_price.toLocaleString('ko-KR')}` : '-' },
+    { label: '역대 최저가', render: (g: any) => g.lowest_price ? `₩${g.lowest_price.toLocaleString('ko-KR')}${g.lowest_price_shop ? ` · ${g.lowest_price_shop}` : ''}` : '-' },
   ];
 
   const gameCount = games.length;
