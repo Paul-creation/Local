@@ -59,7 +59,7 @@
   - `git add -A` / `git add .` 금지. 내가 바꾼 파일만 경로를 지정해서 add 한다.
   - `git add`가 하나라도 실패하면 커밋하지 말고 멈춘다. (`git add ... && git commit ...`처럼 이어 붙이기)
   - 커밋 전에 `git diff --cached --stat`으로 들어갈 파일 목록을 확인한다.
-  - main에 강제 푸시(`--force`, `--force-with-lease`) 금지.
+  - main에는 force 금지(`--force`, `--force-with-lease` 모두). 기능 브랜치는 rebase 뒤 `--force-with-lease`로 푸시해도 된다.
 - 보안 관련 코드를 바꾸면 `scripts/security-check.mjs` 실행을 제안한다.
 - 더 빠르거나 간단한 방법이 있으면 먼저 알려준다.
 - worktree에서 빌드할 때는 node_modules 심볼릭 링크를 쓰지 말고(Turbopack이 거부함) 처음부터 npm ci로 설치한다. .env.local은 복사하되 커밋하지 않는다.
