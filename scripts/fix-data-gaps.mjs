@@ -82,6 +82,7 @@ async function main() {
           game_id: game.id,
           price: final,
           discount_percent: data.price_overview.discount_percent || 0,
+          original_price: data.price_overview.initial / 100 >= 100 ? data.price_overview.initial / 100 : null, // 스팀 정가
         });
         notes.push(`가격 ₩${final.toLocaleString('ko-KR')}`);
         stats.price++;

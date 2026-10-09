@@ -11,7 +11,7 @@ const IMG_W = 540;
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { data: game } = await selectGames('name, fun_description, description, min_players, max_players, difficulty, entry_barrier, review_summary, review_positive_percent, is_free, price_type, card_image_url, cover_image_url, price_history(price, discount_percent, checked_at)')
+  const { data: game } = await selectGames('name, fun_description, description, min_players, max_players, difficulty, entry_barrier, review_summary, review_positive_percent, is_free, price_type, card_image_url, cover_image_url, price_history(price, discount_percent, checked_at, original_price)')
     .eq('id', id)
     .maybeSingle();
   if (!game) return new Response('게임을 찾을 수 없어요', { status: 404 });

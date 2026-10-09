@@ -177,7 +177,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
     );
   }
 
-  const { data: games } = await selectGames('*, price_history(price, discount_percent, checked_at, currency)')
+  const { data: games } = await selectGames('*, price_history(price, discount_percent, checked_at, currency, original_price)')
     .in('id', ids);
 
   if (!games || games.length < 2) {

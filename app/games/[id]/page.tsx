@@ -94,7 +94,7 @@ function parseMinSpec(raw: string | null) {
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  const { data: game } = await selectGames('name, description, fun_description, min_players, max_players, difficulty, tags, is_free, price_type, price_history(price, discount_percent, checked_at)')
+  const { data: game } = await selectGames('name, description, fun_description, min_players, max_players, difficulty, tags, is_free, price_type, price_history(price, discount_percent, checked_at, original_price)')
     .eq('id', id)
     .maybeSingle();
   if (!game) {
@@ -128,7 +128,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const { id } = await params;
 
   const top10Promise = getTop10Ids().catch(() => [] as string[]);
-    const { data: game, error } = await selectGames('*, price_history(price, discount_percent, checked_at), game_streamers(streamer_id, streamers(id, name, platform, handle)), game_videos(kind, video_id, title, channel_title, published_at, view_count), streamer_videos(video_id, title, published_at, streamer_channels(channel_title, streamer_name))')
+    const { data: game, error } = await selectGames('*, price_history(price, discount_percent, checked_at, original_price), game_streamers(streamer_id, streamers(id, name, platform, handle)), game_videos(kind, video_id, title, channel_title, published_at, view_count), streamer_videos(video_id, title, published_at, streamer_channels(channel_title, streamer_name))')
     .order('published_at', { referencedTable: 'streamer_videos', ascending: false })
     .limit(24, { referencedTable: 'streamer_videos' })
     .eq('id', id)

@@ -27,7 +27,7 @@ function Meta({ g, size }: { g: Item; size: number }) {
 export async function GET(request: Request) {
   const ids = [...new Set((new URL(request.url).searchParams.get('ids') || '').split(',').filter((x) => UUID.test(x)))].slice(0, MAX_OG_GAMES);
   const { data } = ids.length
-    ? await selectGames('id, name, min_players, max_players, is_free, price_type, card_image_url, cover_image_url, price_history(price, discount_percent, checked_at)').in('id', ids)
+    ? await selectGames('id, name, min_players, max_players, is_free, price_type, card_image_url, cover_image_url, price_history(price, discount_percent, checked_at, original_price)').in('id', ids)
     : { data: [] };
   const found = ids.map((id) => (data || []).find((g: any) => g.id === id)).filter(Boolean) as any[];
   const [fonts, images] = await Promise.all([

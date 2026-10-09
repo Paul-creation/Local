@@ -92,7 +92,7 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
   const since = addDays(latest, -7 * 26);
 
   const [{ data: games }, { data: weeksRows }] = await Promise.all([
-    selectHomeGames('id, name, hero_image_url, card_image_url, cover_image_url, fun_description, tags, min_players, max_players, current_players, review_summary, review_positive_percent, review_total, is_free, price_type, lowest_price, steam_appid, entry_barrier, difficulty, goty_awards, has_crossplay, korean_support, price_history(price, discount_percent, checked_at, currency)')
+    selectHomeGames('id, name, hero_image_url, card_image_url, cover_image_url, fun_description, tags, min_players, max_players, current_players, review_summary, review_positive_percent, review_total, is_free, price_type, lowest_price, steam_appid, entry_barrier, difficulty, goty_awards, has_crossplay, korean_support, price_history(price, discount_percent, checked_at, currency, original_price)')
       .in('id', ids)
       .gte('price_history.price', 100)
       .order('checked_at', { referencedTable: 'price_history', ascending: false })

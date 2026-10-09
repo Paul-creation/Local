@@ -243,6 +243,7 @@ async function main() {
         game_id: inserted.id,
         price: item.price.final,
         discount_percent: discount,
+        original_price: item.price.original, // 상점이 준 정가 (위에서 100원 이상 확인함)
       });
     }
 

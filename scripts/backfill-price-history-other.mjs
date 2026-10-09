@@ -86,6 +86,7 @@ async function main() {
           game_id: game.id,
           price: h.deal.price.amount,
           discount_percent: h.deal.cut,
+          original_price: h.deal.regular?.amount >= 100 ? h.deal.regular.amount : null, // ITAD 정가
           checked_at: h.timestamp,
         }));
 

@@ -127,6 +127,7 @@ async function insert(appid, { data, reviewSummary }) {
       game_id: inserted.id,
       price: data.price_overview.final / 100,
       discount_percent: data.price_overview.discount_percent,
+      original_price: data.price_overview.initial / 100 >= 100 ? data.price_overview.initial / 100 : null, // 스팀 정가
     });
   }
   return true;

@@ -18,7 +18,7 @@ export async function getWeeklyFeatured() {
       games!inner(
         id, name, tags, difficulty, min_players, max_players, is_free, price_type, lowest_price,
         card_image_url, cover_image_url, description, fun_description, category, goty_awards,
-        price_history(price, discount_percent, checked_at, currency)
+        price_history(price, discount_percent, checked_at, currency, original_price)
       )
     `)
     .eq('games.hidden', false) // 숨긴 게임이 뽑힌 주는 건너뛰고 그 전 주 게임을 보여줌 (lib/visibleGames.ts 참고)
