@@ -5,7 +5,7 @@ import { useId, useState } from 'react';
 import { getTagDescription } from './search/TagHelp';
 import type { ChipGroup } from '../lib/tagGroups';
 
-const DEFAULT_HINT = '태그를 누르면 같은 태그의 게임 목록이 열려요';
+const DEFAULT_HINT = '태그를 누르면 같은 태그 게임을 볼 수 있어요';
 
 // 누르면 이동할 목록 주소 — 메인 검색 결과(?r=1)에 태그 필터를 담는다 (useGameFilters가 tags를 읽음).
 // 태그 나무 칸은 번호, 협동·대전은 이름(FLAG_TAGS), '혼자 플레이'는 분류(cat). 특별 칩(TOP 10·올해의 게임)은 태그가 아니라 링크 없음
