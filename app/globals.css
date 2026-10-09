@@ -957,8 +957,10 @@ img { display: block; }
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: var(--text-dimmer);
-  font-size: var(--fs-m);
+  color: var(--text);
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  min-height: 40px;
   margin: 24px 0 20px;
   transition: color 0.15s ease;
 }
@@ -1717,7 +1719,7 @@ a.series-item:hover { border-color: var(--border); }
 .people-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .people-item { display: flex; min-width: 0; }
 .people-item > .result-card { flex: 1; min-width: 0; }
-.people-more { display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; font-size: var(--fs-m); font-weight: 700; color: var(--accent-text); }
+.people-more { display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; font-size: var(--fs-xl); font-weight: 700; color: var(--text); }
 .people-more:hover { text-decoration: underline; }
 .people-chips { margin-bottom: 44px; }
 .people-empty { margin: 0 0 4px; font-size: var(--fs-m); color: var(--text-muted); }
@@ -2435,7 +2437,7 @@ a.series-item:hover { border-color: var(--border); }
 .result-store { font-size: var(--fs-xs); font-weight: 700; color: var(--text-muted); }
 
 /* 상세 — 인원 칩, 친구랑 칸 확장, 구매 타이밍, 투표·할인 카드 여백 */
-.players-chip { color: var(--text); border-color: var(--text-faint); }
+.players-chip { color: var(--text); border-color: var(--text-faint); font-size: var(--fs-l); font-weight: 900; padding: 4px 12px; }
 .trio-big { font-size: 22px; font-weight: 900; letter-spacing: -0.02em; }
 .trio-sub.is-on { color: var(--up); font-weight: 700; }
 .buy-timing { font-size: var(--fs-s); font-weight: 700; line-height: 1.5; color: var(--text-2); padding: 8px 10px; border-radius: var(--radius-btn); background: var(--inset); }

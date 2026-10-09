@@ -37,7 +37,7 @@ export default function PeopleRecs({ recs }: { recs: Data | null }) {
       ) : (
         <p className="people-empty">조건에 맞는 추천 게임이 아직 없어요</p>
       )}
-      <a href={href} className="people-more">{peopleLabel(n)} 게임 전체 보기</a>
+      <a href={href} className="people-more">{peopleLabel(n)} 게임 전체 보기 →</a>
     </section>
   );
 }

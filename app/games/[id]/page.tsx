@@ -48,7 +48,7 @@ export async function generateStaticParams() {
 const TAG_TREE = buildTree(tagDict as unknown as TagDict);
 
 // 혼자 플레이 단계 (data/meta/play-modes.json → games.solo_mode)
-const SOLO_LABEL: Record<string, string> = { story: '혼자서도 꽉 참', possible: '혼자도 가능', none: '멀티 전용' };
+const SOLO_LABEL: Record<string, string> = { story: '혼자 해도 충분해요', possible: '혼자도 가능', none: '멀티 전용' };
 
 // 이 게임의 태그 번호 — game_tags(투표 순위순). 표가 아직 없거나 비어 있으면 빈 목록(예전 tags 칸으로 대신 표시)
 async function getGameTagIds(game: { id: string }) {
@@ -305,6 +305,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               <span className="trio-value trio-big num">
                 {friendsMax === 1 ? '같이 하기 없음' : friendsMax ? `최대 ${friendsMax}명` : playersText(game) || '인원 정보 확인 중'}
               </span>
+              {game.min_players > 0 && <span className="trio-sub num">최소 {game.min_players}명</span>}
               {game.session_max && <span className="trio-sub num">같은 서버 {game.session_max}명</span>}
               {showHost && <span className="trio-sub">{game.multiplayer_host === 'P2P' ? 'P2P(방장 컴퓨터로 연결)' : game.multiplayer_host}</span>}
               {game.has_crossplay != null && (game.has_online_coop || game.has_pvp) && (

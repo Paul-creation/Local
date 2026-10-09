@@ -11,5 +11,5 @@ export default function BackToList() {
       if (saved && saved.startsWith('/')) setHref(saved);
     } catch {}
   }, []);
-  return <Link href={href} className="back-link" style={{ minHeight: 44 }}>목록으로</Link>;
+  return <Link href={href} className="back-link" >← 목록으로</Link>;
 }
