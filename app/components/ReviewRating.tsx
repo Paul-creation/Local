@@ -4,22 +4,28 @@ type Props = {
   summary: string | null;
   percent: number | null;
   total: number | null;
-  criticScore?: number | null; // 있으면 옆에 작게 "Metascore N" (size="lg"에서만)
+  extras?: string[]; // size="lg" 보조 줄 — "Metascore 82", "현재 1,234명"처럼 이미 글자로 만든 조각. 리뷰 수 뒤에 " · "로 이어 붙임
   size?: 'sm' | 'lg';
 };
 
-// 스팀 평가 — "매우 긍정적 94%" (+ 상세는 리뷰 수·Metascore). 퍼센트가 없으면 아무것도 그리지 않는다
-export default function ReviewRating({ summary, percent, total, criticScore, size = 'sm' }: Props) {
-  if (!percent) return null;
+// 스팀 평가 — "매우 긍정적 94%". 상세(lg)는 뒤에 보조 한 덩어리 "리뷰 N개 · Metascore N · 현재 N명 …"를 같은 기준선에 둔다
+// 퍼센트가 없으면 sm은 아무것도 그리지 않고, lg는 보조 조각만 그린다
+export default function ReviewRating({ summary, percent, total, extras = [], size = 'sm' }: Props) {
   const tone = reviewTone(summary);
+  const main = percent ? (
+    <span className={`rating-main is-${tone}`} title={total ? `Steam 리뷰 ${total.toLocaleString('ko-KR')}개` : undefined}>
+      {summary && <span className="rating-text">{summary}</span>}
+      <span className="rating-pct num">{percent}%</span>
+    </span>
+  ) : null;
+  if (size === 'sm') return main ? <span className="rating is-sm">{main}</span> : null;
+
+  const subs = [percent && total ? `리뷰 ${total.toLocaleString('ko-KR')}개` : '', ...extras].filter(Boolean);
+  if (!main && subs.length === 0) return null;
   return (
-    <span className={`rating is-${size}`}>
-      <span className={`rating-main is-${tone}`} title={total ? `Steam 리뷰 ${total.toLocaleString('ko-KR')}개` : undefined}>
-        {summary && <span className="rating-text">{summary}</span>}
-        <span className="rating-pct num">{percent}%</span>
-      </span>
-      {size === 'lg' && total ? <span className="rating-sub">리뷰 <span className="num">{total.toLocaleString('ko-KR')}</span>개</span> : null}
-      {size === 'lg' && criticScore ? <span className="rating-sub">Metascore <span className="num">{Number(criticScore)}</span></span> : null}
+    <span className="rating is-lg">
+      {main}
+      {subs.length > 0 && <span className="rating-sub num">{subs.join(' · ')}</span>}
     </span>
   );
 }

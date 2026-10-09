@@ -184,18 +184,17 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
     : null;
   const isMulti = (game.party_max ?? game.max_players ?? 0) > 1;
   const playersChip = game.max_players === 1 ? '혼자' : playersText(game);
-  // 제목 아래 한 줄: 스팀 평가(등급·%·리뷰 수·Metascore) + 동접 — 값이 없는 조각은 빠진다
-  const ccuParts = [
+  // 제목 아래 한 줄: 주 = 등급 문구 + %, 보조 = 리뷰 수 · Metascore · 현재 동접 · 역대 최고 동접 — 값이 없는 조각은 빠진다
+  const headExtras = [
+    game.critic_score ? `Metascore ${Number(game.critic_score)}` : '',
     game.current_players > 0 ? `현재 ${game.current_players.toLocaleString('ko-KR')}명` : '',
     game.peak_players > 0 ? `역대 최고 ${game.peak_players.toLocaleString('ko-KR')}명` : '',
   ].filter(Boolean);
-  const headMeta = (game.review_positive_percent || ccuParts.length > 0) ? (
-    <>
-      <ReviewRating size="lg" summary={game.review_summary} percent={game.review_positive_percent} total={game.review_total} criticScore={game.critic_score} />
-      {ccuParts.length > 0 && <span className="dh-players num">{ccuParts.join(' · ')}</span>}
-    </>
-  ) : null;
-  const hasSteamCard = !!(showRecent || game.heat_rank || game.achievement_count || (game.steam_appid && game.family_sharing != null) || game.has_dlc != null);
+  const headMeta = (game.review_positive_percent || headExtras.length > 0)
+    ? <ReviewRating size="lg" summary={game.review_summary} percent={game.review_positive_percent} total={game.review_total} extras={headExtras} />
+    : null;
+  const hasReviews = !!(game.review_positive_percent || showRecent);
+  const hasSteamCard = !!(hasReviews || game.heat_rank || game.achievement_count || (game.steam_appid && game.family_sharing != null) || game.has_dlc != null);
   const hasMore = game.has_ending != null || game.server_type || game.activities?.length > 0 || game.story_length || game.is_esports || game.has_workshop || subGenres.length > 0;
 
   return (
@@ -313,21 +312,37 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             </div>
           </section>
 
-          {/* 스팀 카드 — 헤더에 없는 정보만: 최근 30일 평가 + 인기 순위·도전과제·가족 공유·DLC (전체 평가 등급·%·리뷰 수·Metascore는 헤더) */}
+          {/* 스팀 카드 — 왼쪽: 전체 평가(등급·%·리뷰 수·막대) + 최근 30일, 오른쪽: 인기 순위·도전과제·가족 공유·DLC. 헤더는 요약, 여기는 막대가 있는 자세한 평가 */}
           {hasSteamCard && (
-            <section className={`detail-card steam-card${showRecent ? '' : ' is-solo'}`}>
-              {showRecent && (
+            <section className={`detail-card steam-card${hasReviews ? '' : ' is-solo'}`}>
+              {hasReviews && (
                 <div className="steam-reviews">
-                  <h3 className="detail-card-title">최근 평가</h3>
-                  <p className="steam-recent-head">
-                    최근 30일 <span className="num">{recentPct}%</span>
-                    <span className="steam-count"> · 리뷰 <span className="num">{game.recent_review_count.toLocaleString('ko-KR')}</span>개</span>
-                  </p>
-                  <div className="steam-bar is-thin" role="img" aria-label={`최근 30일 긍정 ${recentPct}%`}>
-                    <span style={{ width: `${recentPct}%` }} />
-                  </div>
-                  {Math.abs(recentGap) >= 15 && (
-                    <p className={`steam-trend ${recentGap < 0 ? 'is-down' : 'is-up'}`}>{recentGap < 0 ? '최근 평가가 낮아졌어요' : '최근 평가가 좋아졌어요'}</p>
+                  <h3 className="detail-card-title">Steam 평가</h3>
+                  {game.review_positive_percent ? (
+                    <>
+                      <p className={`steam-pct is-${reviewTone(game.review_summary)}`}>
+                        <span className="num">{game.review_positive_percent}%</span>
+                        {game.review_summary && <span className={`review-badge ${reviewTone(game.review_summary)}`}>{game.review_summary}</span>}
+                      </p>
+                      {game.review_total && <p className="steam-count">전체 리뷰 <span className="num">{game.review_total.toLocaleString('ko-KR')}</span>개</p>}
+                      <div className="steam-bar" role="img" aria-label={`긍정 ${game.review_positive_percent}%`}>
+                        <span style={{ width: `${game.review_positive_percent}%` }} />
+                      </div>
+                    </>
+                  ) : null}
+                  {showRecent && (
+                    <div className="steam-recent">
+                      <p className="steam-recent-head">
+                        최근 30일 <span className="num">{recentPct}%</span>
+                        <span className="steam-count"> · 리뷰 <span className="num">{game.recent_review_count.toLocaleString('ko-KR')}</span>개</span>
+                      </p>
+                      <div className="steam-bar is-thin" role="img" aria-label={`최근 30일 긍정 ${recentPct}%`}>
+                        <span style={{ width: `${recentPct}%` }} />
+                      </div>
+                      {Math.abs(recentGap) >= 15 && (
+                        <p className={`steam-trend ${recentGap < 0 ? 'is-down' : 'is-up'}`}>{recentGap < 0 ? '최근 평가가 낮아졌어요' : '최근 평가가 좋아졌어요'}</p>
+                      )}
+                    </div>
                   )}
                 </div>
               )}

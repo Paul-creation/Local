@@ -1755,11 +1755,12 @@ a.series-item:hover { border-color: var(--border); }
 .rating-main.is-mixed { color: var(--text-muted); }
 .rating.is-sm { flex-shrink: 0; }
 .rating.is-sm .rating-main { font-size: var(--fs-s); }
+.rating.is-lg { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 14px; }
 .rating.is-lg .rating-main { font-size: var(--fs-xxl); }
 .rating.is-lg .rating-pct { font-size: 26px; font-weight: 900; letter-spacing: -0.02em; }
-.rating-sub { font-size: var(--fs-xs); font-weight: 700; color: var(--text-muted); white-space: nowrap; }
-.dh-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 10px; }
-.dh-players { font-size: var(--fs-m); font-weight: 700; color: var(--text-2); }
+/* 보조: 리뷰 수 · Metascore · 동접 — 항목마다 크기·굵기·색·투명도가 같은 한 덩어리 (좁으면 덩어리째 다음 줄) */
+.rating-sub { font-size: var(--fs-s); font-weight: 600; color: var(--text-2); }
+.dh-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; margin-top: 10px; }
 
 /* 4~10위 — 한 카드 안 목록 행, 행 사이 아주 옅은 선 */
 .hc-rows { margin-top: 16px; background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-card); overflow: hidden; }
@@ -2011,7 +2012,9 @@ a.hc-row:hover { background: var(--card-hover); }
 .dh-info { position: absolute; left: 28px; right: 28px; bottom: 22px; z-index: 3; }
 .dh.is-playing .dh-info { position: static; margin-top: 18px; }
 .dh-player { border-radius: var(--radius-card); overflow: hidden; }
-.dh-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.dh-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 10px; }
+.dh-badges > .badge, .dh-badges > .badge-neutral { display: inline-flex; align-items: center; box-sizing: border-box; min-height: 28px; padding: 0 10px; font-size: var(--fs-s); line-height: 1.4; }
+.dh-badges > .players-chip { font-weight: 900; }
 .dh-badges .badge-neutral, .dh-badges .review-badge, .dh-badges .goty-badge, .dh-badges .top10-badge, .dh-badges .badge { background: var(--bg); }
 .dh-title { font-size: 52px; font-weight: 900; letter-spacing: -0.04em; line-height: 1.08; color: var(--text); word-break: keep-all; overflow-wrap: anywhere; }
 .top10-badge { font-size: var(--fs-xs); font-weight: 900; }
@@ -2115,6 +2118,10 @@ a.hc-row:hover { background: var(--card-hover); }
 /* 스팀 카드 */
 .steam-card.is-solo { grid-template-columns: minmax(0, 1fr); }
 .steam-card { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; }
+.steam-pct { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.steam-pct > .num { font-size: 40px; font-weight: 900; letter-spacing: -0.03em; line-height: 1; color: var(--review); }
+.steam-pct.is-negative > .num { color: var(--down); }
+.steam-pct.is-mixed > .num { color: var(--text-muted); }
 .steam-count { font-size: var(--fs-s); color: var(--text-muted); margin-top: 6px; }
 .steam-bar { height: 12px; border-radius: 6px; background: var(--inset); overflow: hidden; margin-top: 10px; }
 .steam-bar span { display: block; height: 100%; background: var(--review); border-radius: 6px; }
@@ -2533,9 +2540,11 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 .info-value { font-size: var(--fs-l); font-weight: 600; color: var(--text); }
 
 /* 핵심 수치 — PC 32px(순위 28px), 모바일 24px */
+.steam-pct > .num { font-size: 32px; }
 .steam-rank { font-size: 28px; }
 @media (max-width: 760px) {
-  }
+  .steam-pct > .num, .steam-rank { font-size: 24px; }
+}
 
 /* 태그 칩 */
 .category-tag { border-radius: var(--tag-radius); color: var(--tag-text); background: var(--tag-bg); box-shadow: inset 0 0 0 1px var(--tag-border); }
