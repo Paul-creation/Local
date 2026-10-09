@@ -14,7 +14,7 @@
 //   이름이 일반 단어인 게임(Muck·Inside 등, lib/video-filter.mjs)은 제목에 "게임"·game·스팀 등이나 영문 원제+한국어 이름이 같이 있을 때만
 //   이름 바로 뒤가 "같은·감성·후속작"이나 한 자리 숫자(속편)면 그 게임으로 보지 않음
 //   여러 게임이 걸리면 가장 긴 이름 하나 (길이가 같으면 제목 쪽, 먼저 나온 쪽)
-// - 연결 안 된 영상은 저장하지 않고 개수만 기록. 이미 저장된 영상은 건드리지 않음
+// - 연결 안 된 영상은 저장하지 않고 개수 집계 + 실행 로그에 채널 / 제목 / video id / 쇼츠 여부를 한 줄씩 출력 (미리보기·--apply 모두). 이미 저장된 영상은 건드리지 않음
 // - YouTube 하루 상한 200유닛 (lib/streamer-videos.mjs, 하이라이트 작업이 이 몫을 빼 두고 씀). 상한에 닿으면 그 채널은 확인 시각을 안 바꾸고 멈춤 → 다음 실행 때 이어서
 import fs from 'fs';
 import { createClient } from '@supabase/supabase-js';
@@ -111,7 +111,7 @@ async function scanChannel(ch, matchers, gamesById) {
   }
 
   const linked = [];
-  let unlinked = 0;
+  const unlinkedList = [];
   let cursor = startedAt;
   for (let i = 0; i < ids.length; i += 50) {
     const res = await youtube('videos', { part: 'snippet,statistics,contentDetails', id: ids.slice(i, i + 50).join(',') }, 1);
@@ -132,12 +132,12 @@ async function scanChannel(ch, matchers, gamesById) {
         is_short: duration > 0 && duration <= SHORT_MAX_SEC,
       };
       const hit = matchVideo(v, matchers, gamesById);
-      if (!hit) { unlinked++; continue; }
+      if (!hit) { unlinkedList.push({ id: v.video_id, title: v.title, short: v.is_short }); continue; }
       const { description, ...row } = v;
       linked.push({ ...row, channel_id: ch.channel_id, game_id: hit.id, match_method: hit.where });
     }
   }
-  return { checked: ids.length, linked, unlinked, cursor };
+  return { checked: ids.length, linked, unlinked: unlinkedList.length, unlinkedList, cursor };
 }
 
 async function main() {
@@ -186,6 +186,7 @@ async function main() {
       samples.push({ streamer: ch.streamer_name, channel: ch.channel_title, game: gamesById.get(v.game_id)?.name, how: v.match_method, short: v.is_short, title: v.title });
     }
     console.log(`${ch.streamer_name} · ${ch.channel_title} (${ch.kind}) — 새 영상 ${r.checked}개 · 연결 ${r.linked.length}개 · 연결 안 됨 ${r.unlinked}개`);
+    for (const u of r.unlinkedList) console.log(`  연결 안 됨 | ${ch.channel_title} | ${u.title.replace(/\s+/g, ' ')} | ${u.id} | ${u.short ? '쇼츠' : '일반'}`);
   }
 
   console.log('\n연결된 게임 상위 10개');
