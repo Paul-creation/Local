@@ -52,16 +52,7 @@ async function main() {
       update.review_total = reviews.total;
     }
 
-    // 역대 피크 플레이어 (SteamSpy)
-    try {
-      const spyRes = await fetch(
-        `https://steamspy.com/api.php?request=appdetails&appid=${game.steam_appid}`
-      );
-      const spyJson = await spyRes.json();
-      if (spyJson.peak_ccu) {
-        update.peak_players = spyJson.peak_ccu;
-      }
-    } catch {}
+    // peak_players(역대 최고 동접)는 enrich-itad-heat가 ITAD 값으로만 채움 (SteamSpy peak_ccu는 하루 피크라 쓰지 않음)
 
     if (Object.keys(update).length > 0) {
       await supabase.from('games').update(update).eq('id', game.id);
@@ -76,7 +67,7 @@ async function main() {
     }
 
     console.log(
-      `${game.name}: 현재 ${currentPlayers?.toLocaleString() ?? '?'}명 | 피크 ${update.peak_players?.toLocaleString() ?? '?'}명 | 리뷰 ${reviews?.percent ?? '?'}% (${reviews?.total?.toLocaleString() ?? '?'}개)`
+      `${game.name}: 현재 ${currentPlayers?.toLocaleString() ?? '?'}명 | 리뷰 ${reviews?.percent ?? '?'}% (${reviews?.total?.toLocaleString() ?? '?'}개)`
     );
 
     await new Promise((r) => setTimeout(r, 800));
