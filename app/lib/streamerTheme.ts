@@ -6,6 +6,8 @@
 // excludeIds: 메인 위쪽 섹션에 이미 나온 게임 — 후보에서 먼저 빼고 고른다. 빼고 나서 6개 미만이면 중복 제거 없이 원래대로 고른다
 import { supabase } from './supabase';
 import { friendsMax } from './playersMatch';
+import { getCardGames } from './gameIndex';
+import { getCardExtras } from './cardExtras';
 
 export const THEME_MIN = 6; // 이보다 적으면 섹션을 숨긴다 (null)
 export const THEME_MAX = 12;
@@ -13,7 +15,7 @@ export const THEME_MAX = 12;
 export type ThemeGame = {
   id: string;
   name: string;
-  image: string | null;
+  game: Record<string, unknown>; // 공통 카드(GameCard)가 쓰는 칸 — 카드 조회(getCardGames) + 평가·태그·한국어(getCardExtras)
   streamers: string[]; // 최근 영상 순, 사람 기준 중복 없음
   videoId: string | null; // "플레이 영상 보기" — 가장 최근 영상 (쇼츠가 아닌 것 먼저)
 };
@@ -51,7 +53,7 @@ export async function getStreamerTheme(excludeIds: string[] = []): Promise<Strea
       if (g.has_online_coop !== true && g.has_local_coop !== true) continue; // 협동 모드가 확인된 게임만
       let item = byGame.get(g.id);
       if (!item) {
-        item = { id: g.id, name: g.name, image: g.card_image_url || g.cover_image_url || null, streamers: [], videoId: null, rank: g.heat_rank ?? Infinity, short: null };
+        item = { id: g.id, name: g.name, game: {}, streamers: [], videoId: null, rank: g.heat_rank ?? Infinity, short: null };
         byGame.set(g.id, item);
       }
       const name = first(r.streamer_channels)?.streamer_name;
@@ -68,5 +70,16 @@ export async function getStreamerTheme(excludeIds: string[] = []): Promise<Strea
     return { games: all.slice(0, shown).map(({ rank, short, ...g }) => g) };
   };
   const skip = new Set(excludeIds);
-  return (skip.size > 0 ? pick(skip) : null) ?? pick(new Set());
+  const theme = (skip.size > 0 ? pick(skip) : null) ?? pick(new Set());
+  if (!theme) return null;
+  // 카드에 쓸 칸(가격·인원·진입장벽·GOTY·태그·평가…)을 뽑힌 게임들 몫만 읽어 붙인다. 카드 조회에서 빠진(숨김 등) 게임은 섹션에서도 뺀다
+  const ids = theme.games.map((g) => g.id);
+  try {
+    const [cards, extras] = await Promise.all([getCardGames(ids), getCardExtras(ids).catch(() => ({}) as Awaited<ReturnType<typeof getCardExtras>>)]);
+    const byId = new Map(cards.map((c) => [c.id as string, c]));
+    const games = theme.games.flatMap((g) => { const c = byId.get(g.id); return c ? [{ ...g, game: { ...c, ...extras[g.id] } }] : []; });
+    return games.length >= THEME_MIN ? { games } : null;
+  } catch {
+    return null;
+  }
 }

@@ -252,7 +252,7 @@ img { display: block; }
 
 /* 가격·순위·인원 숫자는 자리 폭을 맞춤 */
 .num, .price-final, .price-original, .buy-price-final, .buy-price-original, .hc-price, .hc-row-rank-n,
-.hc-rank-badge, .hc-row-ccu, .discount-badge, .card-meta, .hc-card-meta { font-variant-numeric: tabular-nums; }
+.hc-rank-badge, .hc-row-ccu, .discount-badge, .card-meta { font-variant-numeric: tabular-nums; }
 
 /* ============================================================
    LAYOUT
@@ -1442,12 +1442,8 @@ img { display: block; }
   .sg-grid:not(:has(.sg-item:nth-child(7))) .sg-item:nth-child(n+5) { display: none; }
 }
 .sg-item { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
-.sg-card { display: flex; flex-direction: column; width: 100%; overflow: hidden; color: var(--text); text-decoration: none; background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-card); transition: border-color 0.15s ease; }
-.sg-card:hover { border-color: var(--accent); }
-.sg-img { width: 100%; aspect-ratio: 460 / 215; object-fit: cover; display: block; background: var(--inset); }
-.sg-body { display: flex; flex-direction: column; gap: 8px; min-width: 0; padding: 12px 14px 14px; }
-.sg-body .sc-chip { color: var(--text-2); font-size: var(--fs-xs); }
-.sg-name { display: block; font-size: var(--fs-xl); font-weight: 700; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sg-card { flex: 1; width: 100%; } /* 같은 줄 카드끼리 높이를 맞춰 가격 위치가 같게 (공통 카드 .gc) */
+.sg-card .sc-chip { color: var(--text-2); font-size: var(--fs-xs); }
 .sg-video { padding: 6px 0; font-size: var(--fs-m); font-weight: 700; color: var(--text-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
 .sg-video:hover { text-decoration-thickness: 2px; }
 @media (max-width: 640px) {
@@ -1749,7 +1745,7 @@ a.series-item:hover { border-color: var(--border); }
 /* 인원별·찜 기반 추천 — 데스크톱 3열, 모바일은 가로 스크롤(다음 카드가 일부 보이게) */
 .people-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .people-item { display: flex; min-width: 0; }
-.people-item > .result-card { flex: 1; min-width: 0; }
+.people-item > .gc { flex: 1; min-width: 0; }
 .people-more { display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; font-size: var(--fs-xl); font-weight: 700; color: var(--text); }
 .people-more:hover { text-decoration: underline; }
 .people-chips { margin-bottom: 44px; }
@@ -1758,9 +1754,11 @@ a.series-item:hover { border-color: var(--border); }
   .people-cards { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin-right: -16px; padding-right: 16px; }
   .people-cards::-webkit-scrollbar { display: none; }
   .people-item { flex: 0 0 78%; scroll-snap-align: start; }
-  /* 정보를 보강한 카드가 390×844 첫 화면에 다 보이도록 이미지는 460:150으로 낮추고(위아래를 조금 자름) 줄 간격을 줄임 */
-  .people-item .result-image { aspect-ratio: 460 / 150; }
-  .people-item .result-body { gap: 4px; }
+  /* 정보가 많은 카드가 390×844 첫 화면에 다 보이도록 이미지는 460:125로 낮추고(위아래를 자름) 여백·칩 높이·줄 간격을 줄임 */
+  .people-item .gc-image { aspect-ratio: 460 / 125; }
+  .people-item .gc-body { gap: 4px; padding: 10px 12px; }
+  .people-item .gc-foot { padding-top: 2px; }
+  .people-item .chip.is-static { min-height: 24px; }
   .people-btn { font-size: var(--fs-l); }
 }
 
@@ -1800,22 +1798,11 @@ a.series-item:hover { border-color: var(--border); }
 
 /* 1~3위 큰 카드 — 큰 순위 숫자를 이미지가 일부 가림 */
 .hc-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.hc-card {
-  position: relative; display: flex; flex-direction: column; overflow: hidden; padding: 16px 16px 18px;
-  border-radius: var(--radius-card); background: var(--card); border: 1px solid var(--border-soft); color: var(--text);
-}
-.hc-card:hover { background: var(--card); }
-.hc-card-image { position: relative; z-index: 1; display: block; aspect-ratio: 460 / 215; border-radius: var(--radius-card-sm); background: var(--inset); overflow: hidden; }
-.hc-card-image img { width: 100%; height: 100%; object-fit: cover; }
+.hc-cards > .gc { position: relative; z-index: 1; } /* 1위 이미지를 흐리게 깐 배경(.hc-glow) 위에 */
 .hc-rank-badge { position: absolute; top: 12px; left: 12px; z-index: 1; padding: 3px 12px; border-radius: 6px; font-size: var(--fs-xxl); font-weight: 800; line-height: 1.4; background: var(--text-2); color: var(--accent-ink); }
 .hc-rank-badge.is-r1 { background: var(--accent); }
 /* 1위 카드는 포인트색 옅은 테두리로 항상 강조 (다크) */
-:root:not([data-theme="light"]) .hc-card:has(.is-r1) { border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
-.hc-card-body { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 6px; padding-top: 14px; flex: 1; }
-.hc-card-name { font-size: 18px; font-weight: 800; line-height: 1.3; letter-spacing: -0.02em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.hc-card-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 4px; }
-.hc-card-meta { font-size: var(--fs-m); color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.hc-card .hc-price { font-size: var(--fs-xl); }
+:root:not([data-theme="light"]) .gc:has(.is-r1) { border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
 /* 스트리머 이름 칩 (components/home/StreamerBadge) — 태그 칩(--tag-bg)보다 한 단계 밝은 면 + 얇은 테두리, 글자는 primary 700. "+N명"은 secondary 400 */
 .sc-row { position: relative; display: flex; flex-wrap: nowrap; gap: 4px; width: 100%; min-width: 0; overflow: hidden; }
 .sc-chip { flex: none; font-size: var(--fs-xs); font-weight: 700; line-height: 1.4; white-space: nowrap; color: var(--text); background: var(--card-hover); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; }
@@ -1871,7 +1858,7 @@ a.hc-row:hover { background: var(--card-hover); }
 @media (max-width: 760px) {
   .hc-cards { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -24px; padding: 0 24px 6px; scroll-padding-left: 24px; gap: 12px; scrollbar-width: none; }
   .hc-cards::-webkit-scrollbar { display: none; }
-  .hc-card { flex: 0 0 82%; scroll-snap-align: start; }
+  .hc-cards > .gc { flex: 0 0 82%; scroll-snap-align: start; }
   .hc-row { grid-template-columns: 30px 72px minmax(0, 1fr) 88px; column-gap: 10px; padding: 14px 12px; }
   .hc-row-ccu { display: none; }
   .hc-row-rank-n { font-size: var(--fs-xxl); }
@@ -2065,6 +2052,7 @@ a.hc-row:hover { background: var(--card-hover); }
   .result-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
   .result-body { padding: 12px; }
   .result-foot { flex-wrap: wrap; }
+  .gc-body { padding: 12px; }
 }
 
 /* ============================================================
@@ -2595,14 +2583,13 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 /* ============================================================
    다크 가독성 — 카드 면·텍스트 위계·태그 안내 (색은 위 토큰으로만, 라이트 값은 예전 그대로)
    ============================================================ */
-.detail-card, .hc-card, .card, .cm-board-card, .cm-card, .cm-list { background: var(--card-surface); border-color: var(--card-line); }
-.detail-card, .hc-card { box-shadow: var(--card-hl); }
+.detail-card, .card, .cm-board-card, .cm-card, .cm-list { background: var(--card-surface); border-color: var(--card-line); }
+.detail-card { box-shadow: var(--card-hl); }
 .card { box-shadow: var(--card-shadow); }
 .price-card { border-color: var(--card-line); box-shadow: var(--card-hl); }
 
 /* 클릭되는 카드만 — 호버 시 떠오름 + 포인트색 옅은 그림자 (움직임은 .lift·.card가 담당) */
-.hc-card:hover { background: var(--card-surface); }
-.card:hover, .hc-card:hover, .cm-board-card:hover { box-shadow: var(--card-hover-shadow); }
+.card:hover, .cm-board-card:hover { box-shadow: var(--card-hover-shadow); }
 :root[data-theme="light"] .card:hover { box-shadow: var(--shadow-sm); }
 @media (prefers-reduced-motion: reduce) {
   .card, .card:hover, .cm-board-card, .cm-board-card:hover { transition: none; transform: none; }
@@ -2642,14 +2629,14 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 @media (max-width: 640px) { :root { --hero-h: 420px; } }
 
 /* 게임 카드: 모서리 8px, 이미지는 위쪽 모서리에 맞춰 잘림 (overflow: hidden) */
-.feature-card, .result-card, .hc-card, .card { border-radius: var(--card-radius-game); }
-.card, .feature-card, .result-card, .hc-card { transition: border-color 0.2s ease, box-shadow 0.2s ease; }
-.feature-title, .result-title, .hc-card-name, .card-body h3 { transition: color 0.2s ease; }
+.feature-card, .result-card, .gc, .card { border-radius: var(--card-radius-game); }
+.card, .feature-card, .result-card, .gc { transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+.feature-title, .result-title, .gc-name, .card-body h3 { transition: color 0.2s ease; }
 
 /* 호버·포커스(다크): 이동·발광 없이 테두리 1px 포인트색 + 제목 포인트색 */
-:root:not([data-theme="light"]) :is(.card, .feature-card, .result-card, .hc-card):is(:hover, :focus-visible) { transform: none; border-color: var(--card-hover-line); }
-:root:not([data-theme="light"]) :is(.card, .feature-card, .result-card, .hc-card):focus-visible { outline: none; }
-:root:not([data-theme="light"]) :is(.card, .feature-card, .result-card, .hc-card):is(:hover, :focus-visible) :is(.feature-title, .result-title, .hc-card-name, h3) { color: var(--accent); }
+:root:not([data-theme="light"]) :is(.card, .feature-card, .result-card, .gc):is(:hover, :focus-visible) { transform: none; border-color: var(--card-hover-line); }
+:root:not([data-theme="light"]) :is(.card, .feature-card, .result-card, .gc):focus-visible { outline: none; }
+:root:not([data-theme="light"]) :is(.card, .feature-card, .result-card, .gc):is(:hover, :focus-visible) :is(.feature-title, .result-title, .gc-name, h3) { color: var(--accent); }
 
 /* 태그 칩 — 텍스트가 아니라 칩으로 */
 .hc-tag { border-radius: var(--tag-radius); color: var(--tag-text); background: var(--tag-bg); box-shadow: inset 0 0 0 1px var(--tag-border); }
@@ -2671,7 +2658,25 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 .category-tag.tag-special, .hc-tag.tag-special { color: var(--tag-special-text); background: var(--tag-special-bg); box-shadow: inset 0 0 0 1px var(--tag-special-border); font-weight: 600; }
 .result-players { font-size: var(--fs-s); color: var(--text-muted); }
 /* 메인 추천 카드(rich) — 인원·스팀 평가·진입장벽 한 줄(좁으면 줄바꿈), 칩 줄. 진입장벽은 중립 정보라 상태 색 없음 */
-.result-info { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
+/* 메인 공통 게임 카드(.gc, GameCard) — 검색 결과 카드(.result-card)와 같은 모양: 이미지 → 이름 → 인원·진입장벽 → Steam 평가 → 칩 → 가격(아래에 붙음) */
+.gc { display: flex; flex-direction: column; overflow: hidden; background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-card); color: var(--text); }
+.gc-image { position: relative; display: block; aspect-ratio: 460 / 215; background: var(--inset); overflow: hidden; }
+.gc-image img { width: 100%; height: 100%; object-fit: cover; }
+.gc-body { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; flex: 1; min-width: 0; }
+.gc-name { font-size: var(--fs-xl); font-weight: 800; line-height: 1.35; letter-spacing: -0.01em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.gc-foot { display: flex; margin-top: auto; padding-top: 6px; }
+.gc-body > .chip.is-static { align-self: flex-start; }
+.gc-info { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; }
+/* Steam 평가 한 줄 단독 — "Steam"(보조) + 등급 문구(굵게, 주 정보, 색은 상세 평가와 같은 기준: 긍정 --review, 부정 --down, 그 사이 보조 글자색) + 퍼센트(보조).
+   한 줄에 안 들어가면 "등급 + 퍼센트" 덩어리가 통째로 아래 줄로 내려가고 "Steam"만 위에 남는다 */
+.gc-rating { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 6px; }
+.gc-rating-src { font-size: var(--fs-xs); font-weight: 600; color: var(--text-muted); }
+.gc-rating-main { display: inline-flex; align-items: baseline; gap: 6px; white-space: nowrap; }
+.gc-rating-grade { font-size: var(--fs-m); font-weight: 800; }
+.gc-rating-grade.is-positive { color: var(--review); }
+.gc-rating-grade.is-negative { color: var(--down); }
+.gc-rating-grade.is-mixed { color: var(--text-muted); }
+.gc-rating-pct { font-size: var(--fs-s); font-weight: 600; color: var(--text-muted); }
 .result-barrier { font-size: var(--fs-s); color: var(--text-muted); }
 .result-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip.is-static.is-up { color: var(--up); border-color: var(--up); }
@@ -2684,11 +2689,9 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 .results-main { background: var(--results-bg); box-shadow: inset 0 0 0 1px var(--results-line); border-radius: var(--panel-radius); padding: var(--results-pad); }
 @media (max-width: 640px) { :root:not([data-theme="light"]) .results-main { padding: 12px; } }
 
-.feature-card, .result-card { box-shadow: var(--card-hl); }
-.feature-card:hover, .result-card:hover { box-shadow: var(--card-hover-shadow); }
-.feature-body, .result-body, .card-body { background: var(--card-info); }
-:root:not([data-theme="light"]) .hc-card-body { margin: 0 -16px -18px; padding: 14px 16px 18px; background: var(--card-info); }
-@media (max-width: 640px) { :root:not([data-theme="light"]) .hc-card-body { margin: 0 -16px -18px; } }
+.feature-card, .result-card, .gc { box-shadow: var(--card-hl); }
+.feature-card:hover, .result-card:hover, .gc:hover { box-shadow: var(--card-hover-shadow); }
+.feature-body, .result-body, .gc-body, .card-body { background: var(--card-info); }
 
 /* 필터 패널 안내 줄 — 칩을 호버·포커스·탭하면 그 설명으로 바뀜 (높이 3줄 고정) */
 .filter-hint { margin-top: 10px; height: 4.5em; font-size: var(--fs-s); line-height: 1.5; color: var(--text-faint); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
@@ -2742,7 +2745,6 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
   .feature-solo .feature-title { font-size: 30px; }
   .feature-solo .feature-price { padding-top: 12px; }
 }
-.hc-card .hc-price { flex-wrap: wrap-reverse; }
 .result-foot { align-items: flex-end; }
 .result-price { flex-direction: column; flex-wrap: nowrap; align-items: flex-start; gap: 4px; }
 .result-price-off { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
@@ -2856,14 +2858,14 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
    ============================================================ */
 @media (prefers-reduced-motion: no-preference) {
   .people-cards, .hc-cards { scroll-behavior: smooth; }
-  :root :is(.feature-card, .hc-card, .people-item > .result-card) { transition: transform 150ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out; }
+  :root :is(.feature-card, .gc) { transition: transform 150ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out; }
 }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  :root :is(.feature-card, .hc-card, .people-item > .result-card):hover { transform: translateY(-2px); }
+  :root :is(.feature-card, .gc):hover { transform: translateY(-2px); }
 }
 @media (prefers-reduced-motion: reduce) {
   .people-cards, .hc-cards { scroll-behavior: auto; }
-  :root :is(.feature-card, .hc-card, .people-item > .result-card), :root :is(.feature-card, .hc-card, .people-item > .result-card):hover { transition: none; transform: none; }
+  :root :is(.feature-card, .gc), :root :is(.feature-card, .gc):hover { transition: none; transform: none; }
 }
 
 /* 스크린샷 갤러리 — 썸네일 줄(scroll-snap)과 라이트박스. 로딩 전에는 같은 비율의 정지된 빈 틀 */

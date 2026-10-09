@@ -1,10 +1,9 @@
-import Link from 'next/link';
 import type { StreamerTheme } from '../../lib/streamerTheme';
-import GameImage from '../GameImage';
+import GameCard from './GameCard';
 import StreamerBadge from './StreamerBadge';
 
 // 메인 "스트리머들이 밤새운 협동 게임" — 선정은 lib/streamerTheme (6개 미만이면 theme이 null → 통째로 숨김)
-// 카드를 누르면 일반 게임 카드처럼 상세 페이지 맨 위로, "플레이 영상 보기"는 가장 최근 영상(YouTube)
+// 카드는 메인 공통 카드(GameCard) + 맨 아래 스트리머 배지 줄 — 누르면 상세 페이지 맨 위로, "플레이 영상 보기"는 카드 아래 가장 최근 영상(YouTube)
 export default function StreamerSection({ theme }: { theme: StreamerTheme | null }) {
   if (!theme?.games.length) return null;
   return (
@@ -18,13 +17,9 @@ export default function StreamerSection({ theme }: { theme: StreamerTheme | null
       <ul className="sg-grid">
         {theme.games.map((g) => (
           <li key={g.id} className="sg-item">
-            <Link href={`/games/${g.id}`} className="sg-card">
-              <GameImage src={g.image} steamSize="header_292x136" fallbackWidth={480} alt="" loading="lazy" className="sg-img" />
-              <span className="sg-body">
-                <span className="sg-name">{g.name}</span>
-                <StreamerBadge names={g.streamers} max={2} />
-              </span>
-            </Link>
+            <GameCard game={g.game} className="sg-card">
+              <StreamerBadge names={g.streamers} max={2} />
+            </GameCard>
             {g.videoId && <a href={`https://www.youtube.com/watch?v=${g.videoId}`} target="_blank" rel="noopener noreferrer" className="sg-video">플레이 영상 보기</a>}
           </li>
         ))}

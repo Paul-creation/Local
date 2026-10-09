@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import ResultCard from '../search/ResultCard';
+import GameCard from './GameCard';
 import { useMyPc } from '../pcspec/useMyPc';
 import { toUserPc } from '../../lib/myPc';
 import { runsOnMyPc } from '../../lib/specJudge';
@@ -31,7 +31,7 @@ export default function PeopleRecs({ recs }: { recs: Data | null }) {
       </div>
       {games.length > 0 ? (
         <div className="people-cards">
-          {games.map((g) => <div key={g.id} className="people-item"><ResultCard game={g} tree={null} compact rich /></div>)}
+          {games.map((g, i) => <div key={g.id} className="people-item"><GameCard game={g} eager={i === 0} /></div>)}
         </div>
       ) : (
         <p className="people-empty">조건에 맞는 추천 게임이 아직 없어요</p>

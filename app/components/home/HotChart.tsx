@@ -6,7 +6,7 @@ import { useState } from 'react';
 import type { HotItem, HotTab, RankChange } from '../../lib/hotChart';
 import LowestPriceBadge from '../LowestPriceBadge';
 import GameImage from '../GameImage';
-import ReviewRating from '../ReviewRating';
+import GameCard from './GameCard';
 import StreamerBadge from './StreamerBadge';
 
 // 44396 → 4.4만
@@ -38,28 +38,16 @@ function Price({ item }: { item: HotItem }) {
   );
 }
 
-// 1~3위 큰 카드 — 이미지 좌상단에 작은 순위 배지. 아래: 제목·인원·가격·평점 % 하나 (변동·소개·동접·N주째·스트리머·최저가 배지는 4~10위 줄이나 상세에서)
+// 1~3위 큰 카드 — 메인 공통 카드(GameCard), 순위 배지는 이미지 위. 변동·소개·동접·N주째·스트리머·최저가 외 정보는 4~10위 줄이나 상세에서
 function BigCard({ item }: { item: HotItem }) {
   return (
-    <Link href={`/games/${item.id}`} className="hc-card lift" aria-label={`${item.rank}위 ${item.name}`}>
-      <span className="hc-card-image">
-        <GameImage src={item.image} fallbackWidth={920} alt="" />
-        <span className={`hc-rank-badge is-r${item.rank}`} aria-hidden="true">{item.rank}위</span>
-      </span>
-      <span className="hc-card-body">
-        <span className="hc-card-name">{item.name}</span>
-        <span className="hc-card-foot">
-          <span className="hc-card-meta">{item.players}</span>
-          <ReviewRating summary={item.reviewSummary} percent={item.reviewPercent} total={item.reviewTotal} showText={false} label="스팀" />
-        </span>
-        {item.price && (
-          <span className="hc-price">
-            {item.discount > 0 && <span className="hc-discount">-{item.discount}%</span>}
-            <span className="hc-price-final">{item.price}</span>
-          </span>
-        )}
-      </span>
-    </Link>
+    <GameCard
+      game={item.card}
+      image={item.image}
+      imgProps={{ fallbackWidth: 920 }}
+      ariaLabel={`${item.rank}위 ${item.name}`}
+      badge={<span className={`hc-rank-badge is-r${item.rank}`} aria-hidden="true">{item.rank}위</span>}
+    />
   );
 }
 

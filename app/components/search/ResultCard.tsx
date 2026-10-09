@@ -8,8 +8,6 @@ import type { TagTree } from '../../lib/tagTree';
 import { playersText } from '../../lib/players';
 import GameImage from '../GameImage';
 import OwnedChip from '../owned/OwnedChip';
-import ReviewRating from '../ReviewRating';
-import { barrierLabel, infoChips } from '../../lib/cardInfo';
 
 // 스팀 외 스토어 이름 (games.source)
 const STORE_NAME: Record<string, string> = { epic: 'Epic', battlenet: 'Battle.net', riot: 'Riot', ea: 'EA app', ubisoft: 'Ubisoft Connect', gog: 'GOG' };
@@ -17,8 +15,7 @@ const STORE_NAME: Record<string, string> = { epic: 'Epic', battlenet: 'Battle.ne
 // 검색 결과 카드 한 장 — 검색 결과와 상세 페이지의 "비슷한 게임"이 같이 쓴다
 // compare를 넘기면 카드 아래에 "+ 비교" 버튼이 붙는다 (검색 결과만)
 // compact: 썸네일·타이틀·인원수·가격 줄만 (홈 추천·상세 "비슷한 게임") — 태그 칩은 뺀다 (스팀 외 스토어 이름은 유지)
-// rich: compact에 정보를 보강 (메인 인원별·찜 기반 추천) — 인원 줄에 스팀 평가·진입장벽, 칩 줄에 태그 2개·크로스플레이·한국어 미지원. 값이 없는 줄·칩은 숨김, 가격은 늘 카드 아래에 붙는다
-export default function ResultCard({ game, tree, isTop10 = false, eager = false, onClick, compare, compact = false, rich = false }: {
+export default function ResultCard({ game, tree, isTop10 = false, eager = false, onClick, compare, compact = false }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- 게임 카드 칸은 목록(gameIndex)과 같은 느슨한 모양
   game: any;
   tree: TagTree | null;
@@ -27,14 +24,11 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
   onClick?: () => void;
   compare?: { selected: boolean; disabled: boolean; onToggle: () => void };
   compact?: boolean;
-  rich?: boolean;
 }) {
   const price = getPriceInfo(game);
   const isSelected = !!compare?.selected;
   const chips = compact ? [] : cardChips(tree, game, isTop10);
   const players = playersText(game);
-  const barrier = rich ? barrierLabel(game) : null;
-  const extraChips = rich ? infoChips(game) : [];
   // 스팀 외 스토어 게임은 스토어 이름을 작게
   const store = game.steam_appid ? null : STORE_NAME[game.source] ?? '기타 스토어';
   return (
@@ -49,22 +43,7 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
         {store && <span className="result-store">{store}</span>}
         <OwnedChip steamAppid={game.steam_appid} />
         {chips.length > 0 && <span className="result-meta">{chips.map((c) => <span key={c.text} className={`hc-tag${c.kind === 'special' ? ' tag-special' : ''}`}>{c.text}</span>)}</span>}
-        {rich ? (
-          (players || game.review_percent || barrier) && (
-            <span className="result-info">
-              {players && <span className="result-players">{players}</span>}
-              {game.review_percent ? <ReviewRating summary={game.review_summary ?? null} percent={game.review_percent} total={game.review_total ?? null} showText={false} label="스팀" /> : null}
-              {barrier && <span className="result-barrier">진입장벽 {barrier}</span>}
-            </span>
-          )
-        ) : (
-          players && <span className="result-players">{players}</span>
-        )}
-        {extraChips.length > 0 && (
-          <span className="result-chips">
-            {extraChips.map((c) => <span key={c.text} className={`chip is-static${c.kind === 'tag' ? '' : ` is-${c.kind}`}`}>{c.text}</span>)}
-          </span>
-        )}
+        {players && <span className="result-players">{players}</span>}
         <span className="result-foot">
           <span className="result-price">
             {game.is_free ? (

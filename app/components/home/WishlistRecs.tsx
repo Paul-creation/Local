@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import ResultCard from '../search/ResultCard';
+import GameCard from './GameCard';
 import { useWishlist } from '../wishlist/useWishlist';
 import { useMyPc } from '../pcspec/useMyPc';
 import { useGameIndex } from '../../lib/useGameIndex';
@@ -70,7 +70,7 @@ export default function WishlistRecs({ homeExcluded }: { homeExcluded: string[] 
         <h2 id="wishlist-recs-title" className="section-title">찜한 게임과 비슷한 게임</h2>
       </div>
       <div className="people-cards">
-        {shown.map((g) => <div key={g.id} className="people-item"><ResultCard game={{ ...g, ...extraMap[g.id] }} tree={null} compact rich /></div>)}
+        {shown.map((g) => <div key={g.id} className="people-item"><GameCard game={{ ...g, ...extraMap[g.id] }} /></div>)}
       </div>
     </section>
   );

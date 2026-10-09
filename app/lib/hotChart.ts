@@ -3,7 +3,8 @@
 // 순위는 scripts/snapshot-hot-rank.mjs가 매일 hot_rank_history에 남긴 heat_rank 순위(상위 50)를 쓴다
 import { supabase } from './supabase';
 import { playersText } from './players';
-import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL, type LowestTiming } from './price';
+import { getPriceInfo, getLowestTiming, flattenGame, PRICE_TYPE_LABEL, type LowestTiming } from './price';
+import { isNoKorean } from './cardInfo';
 import { translateTag } from './tagTranslate';
 import { selectHomeGames } from './visibleGames';
 
@@ -28,6 +29,7 @@ export type HotItem = {
   reviewPercent: number | null;   // 긍정 %
   reviewTotal: number | null;     // 리뷰 수
   streamers?: string[];   // 이 게임을 플레이한 스트리머 (최근 영상 순, app/page.tsx에서 한 번에 채움)
+  card: Record<string, unknown>; // 1~3위 공통 카드(GameCard)가 쓰는 칸 — 가격·인원·진입장벽·평가·GOTY·태그·크로스플레이·한국어 (목록과 같은 모양)
 };
 
 export type HotTab = { key: 'all' | 'friends' | 'rising'; label: string; items: HotItem[] };
@@ -90,7 +92,7 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
   const since = addDays(latest, -7 * 26);
 
   const [{ data: games }, { data: weeksRows }] = await Promise.all([
-    selectHomeGames('id, name, hero_image_url, card_image_url, cover_image_url, fun_description, tags, min_players, max_players, current_players, review_summary, review_positive_percent, review_total, is_free, price_type, lowest_price, price_history(price, discount_percent, checked_at, currency)')
+    selectHomeGames('id, name, hero_image_url, card_image_url, cover_image_url, fun_description, tags, min_players, max_players, current_players, review_summary, review_positive_percent, review_total, is_free, price_type, lowest_price, steam_appid, entry_barrier, difficulty, goty_awards, has_crossplay, korean_support, price_history(price, discount_percent, checked_at, currency)')
       .in('id', ids)
       .gte('price_history.price', 100)
       .order('checked_at', { referencedTable: 'price_history', ascending: false })
@@ -148,6 +150,15 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
         reviewSummary: g.review_summary ?? null,
         reviewPercent: g.review_positive_percent ?? null,
         reviewTotal: g.review_total ?? null,
+        card: flattenGame({
+          id, name: g.name, steam_appid: g.steam_appid, min_players: g.min_players, max_players: g.max_players,
+          is_free: g.is_free, price_type: g.price_type, lowest_price: g.lowest_price, price_history: g.price_history,
+          entry_barrier: g.entry_barrier, difficulty: g.difficulty, goty_awards: g.goty_awards,
+          has_crossplay: g.has_crossplay === true ? true : null,
+          top_tags: (g.tags || []).slice(0, 2).map((t: string) => translateTag(t)),
+          review_summary: g.review_summary, review_percent: g.review_positive_percent, review_total: g.review_total,
+          no_korean: isNoKorean(g.korean_support) ? true : null,
+        }),
       }];
     });
 
