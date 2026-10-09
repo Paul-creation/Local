@@ -2,12 +2,12 @@
 // 스팀 공식 장르로 "게임이 아닌 프로그램"(유틸리티, 제작 툴 등)을 찾기
 // 실행: node --env-file=.env.local scripts/find-non-games.mjs            (최근 14일 안에 추가된 게임만 찾기)
 //       node --env-file=.env.local scripts/find-non-games.mjs --all      (게임 전체 찾기, 약 15분)
-//       node --env-file=.env.local scripts/find-non-games.mjs --delete   (찾은 것 삭제, --all과 같이 써도 됨)
+//       node --env-file=.env.local scripts/find-non-games.mjs --hide     (찾은 것을 games.hidden = true로 숨김, --all과 같이 써도 됨. 행·기록은 지우지 않음)
 import { createClient } from '@supabase/supabase-js';
 import { isNonGame } from './lib/non-game.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
-const DELETE = process.argv.includes('--delete');
+const HIDE = process.argv.includes('--hide');
 const ALL = process.argv.includes('--all');
 const RECENT_DAYS = 14;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -37,13 +37,10 @@ for (const g of games) {
 }
 
 console.log(`\n게임이 아닌 것으로 보이는 항목: ${found.length}개`);
-if (!DELETE || !found.length) {
-  if (found.length) console.log('확인 후 지우려면 같은 명령 끝에 --delete 를 붙여서 다시 실행하세요');
+if (!HIDE || !found.length) {
+  if (found.length) console.log('확인 후 숨기려면 같은 명령 끝에 --hide 를 붙여서 다시 실행하세요');
   process.exit(0);
 }
 const ids = found.map((g) => g.id);
-for (const t of ['price_history', 'player_history', 'game_votes', 'game_streamers']) {
-  await supabase.from(t).delete().in('game_id', ids);
-}
-const { error } = await supabase.from('games').delete().in('id', ids);
-console.log(error ? `❌ 삭제 실패: ${error.message}` : `🗑️  ${ids.length}개 삭제 완료`);
+const { error } = await supabase.from('games').update({ hidden: true }).in('id', ids);
+console.log(error ? `❌ 숨기기 실패: ${error.message}` : `🙈 ${ids.length}개 숨김 완료`);
