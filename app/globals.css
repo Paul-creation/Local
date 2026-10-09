@@ -1749,6 +1749,8 @@ a.series-item:hover { border-color: var(--border); }
 .people-more { display: inline-flex; align-items: center; min-height: 44px; margin-top: 8px; font-size: var(--fs-xl); font-weight: 700; color: var(--text); }
 .people-more:hover { text-decoration: underline; }
 .people-chips { margin-bottom: 44px; }
+.people-empty-box { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 4px; }
+.people-empty-box .people-empty { margin: 0; }
 .people-empty { margin: 0 0 4px; font-size: var(--fs-m); color: var(--text-muted); }
 @media (max-width: 720px) {
   .people-cards { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin-right: -16px; padding-right: 16px; }
