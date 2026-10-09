@@ -36,6 +36,7 @@ import tagDict from '../../lib/tag-search-dict.json';
 import { permanentRedirect } from 'next/navigation';
 import SimilarGames from '../../components/SimilarGames';
 import { getCardGames } from '../../lib/gameIndex';
+import ScreenshotGallery, { type Screenshot } from '../../components/ScreenshotGallery';
 
 // 게임마다 처음 열릴 때 만들고 1시간 동안 재사용 (ISR). 가격·접속자는 하루 한 번 갱신되므로 충분
 // 의견 작성·수정·삭제(api/game-comments)와 신고 자동 숨김(api/community/report)은 그 게임 페이지를 바로 새로 만든다
@@ -195,6 +196,10 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
     : null;
   const hasReviews = !!(game.review_positive_percent || showRecent);
   const hasSteamCard = !!(hasReviews || game.heat_rank || game.achievement_count || (game.steam_appid && game.family_sharing != null) || game.has_dlc != null);
+  // 스크린샷 — 주소가 둘 다 있는 것만, 없거나 비면 섹션 숨김
+  const shots: Screenshot[] = Array.isArray(game.screenshots)
+    ? game.screenshots.filter((s: any) => typeof s?.path_thumbnail === 'string' && typeof s?.path_full === 'string').slice(0, 10)
+    : [];
   const hasMore = game.has_ending != null || game.server_type || game.activities?.length > 0 || game.story_length || game.is_esports || game.has_workshop || subGenres.length > 0;
 
   return (
@@ -263,6 +268,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </aside>
 
         <div className="detail-main">
+          {shots.length > 0 && <ScreenshotGallery shots={shots} name={game.name} />}
+
           {/* 링크 줄 */}
           <div className="detail-links">
             <a href={namuUrl} target="_blank" rel="noopener nofollow" className="detail-link">나무위키 ↗</a>
@@ -285,7 +292,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           <section className="detail-card trio" aria-label="혼자·친구랑·진입장벽">
             <div className="trio-cell">
               <span className="trio-label">혼자</span>
-              <span className={`trio-value${game.solo_mode === 'none' || game.solo_playable === false ? ' is-down' : ''}`}>
+              <span className="trio-value">
                 {game.solo_mode ? SOLO_LABEL[game.solo_mode] ?? '정보 없음'
                   : game.solo_playable == null ? '정보 없음'
                   : game.solo_playable && game.max_players === 1 ? '싱글 플레이 게임'
