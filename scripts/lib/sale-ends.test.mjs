@@ -73,6 +73,22 @@ test('ITAD 오류면 기존 값을 지우지 않음', async () => {
   assert.equal(r.errors, 1);
 });
 
+test('ITAD 배치 응답이 통째로 비면 그 묶음은 유지하고, 게임 하나만 빠지면 비움', async () => {
+  const old = '2026-10-12T00:00:00Z';
+  const mk = () => [game(1, [sale('p1', { sale_ends_at: old })]), game(2, [sale('p2', { sale_ends_at: old })])];
+  const logs = [];
+  const db = fakeDb();
+  const r = await processSaleEnds({ supabase: db, games: mk(), getDeals: async () => [], now: NOW, log: (m) => logs.push(m) });
+  assert.deepEqual(db.calls, []);
+  assert.equal(r.heldEmpty, 2);
+  assert.ok(logs.includes('⚠️ ITAD 응답 없음으로 유지 2개'));
+  // 하나만 빠진 경우: 빠진 게임은 할인 끝남으로 비움
+  const db2 = fakeDb();
+  const r2 = await processSaleEnds({ supabase: db2, games: mk(), getDeals: async () => [deal(2, '2026-10-20T00:00:00Z')], now: NOW, log: quiet });
+  assert.deepEqual(db2.calls.map((c) => [c.id, c.sale_ends_at]), [['p1', null], ['p2', '2026-10-20T00:00:00.000Z']]);
+  assert.equal(r2.heldEmpty, 0);
+});
+
 test('딜 가격이 최신 기록과 다르면 건드리지 않음', async () => {
   const db = fakeDb();
   const g = game(1, [sale('p1', { sale_ends_at: '2026-10-12T00:00:00Z' })]);

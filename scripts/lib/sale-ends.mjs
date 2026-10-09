@@ -11,9 +11,9 @@ const latestOf = (history) =>
     .filter((p) => p.price >= 100 && p.checked_at)
     .sort((a, b) => new Date(b.checked_at).getTime() - new Date(a.checked_at).getTime())[0] || null;
 
-// 반환: { set, cleared, kept, noInfo, mismatch, errors, requests }
+// 반환: { heldEmpty, set, cleared, kept, noInfo, mismatch, errors, requests }
 export async function processSaleEnds({ supabase, games, getDeals, now = Date.now(), log = console.log }) {
-  const r = { set: 0, cleared: 0, kept: 0, noInfo: 0, mismatch: 0, errors: 0, requests: 0 };
+  const r = { heldEmpty: 0, set: 0, cleared: 0, kept: 0, noInfo: 0, mismatch: 0, errors: 0, requests: 0 };
   const clearIds = [];
   const targets = []; // 최신 행이 할인 중인 게임
 
@@ -45,6 +45,12 @@ export async function processSaleEnds({ supabase, games, getDeals, now = Date.no
       continue;
     }
     const byId = new Map(list.map((x) => [x.id, x]));
+    // 요청한 게임이 하나도 안 돌아왔으면 ITAD 쪽 문제로 보고 이 묶음은 건드리지 않음 (게임 하나만 빠진 경우는 아래에서 할인 끝남으로 비움)
+    if (!chunk.some((t) => byId.has(t.game.itad_id))) {
+      log(`⚠️ ITAD 응답 없음으로 유지 ${chunk.length}개`);
+      r.heldEmpty += chunk.length;
+      continue;
+    }
 
     for (const { game, latest } of chunk) {
       const deal = (byId.get(game.itad_id)?.deals || []).find((d) => d.shop?.id === STEAM_SHOP_ID && d.cut > 0);

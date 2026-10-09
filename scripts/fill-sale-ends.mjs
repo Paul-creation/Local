@@ -20,7 +20,7 @@ async function main() {
     process.exit(1);
   }
   const r = await processSaleEnds({ supabase, games, getDeals: getSteamDeals });
-  console.log(`완료 — 종료일 저장 ${r.set}개 · 비움 ${r.cleared}개 · 변동 없음 ${r.kept}개 · 종료 시각 모름 ${r.noInfo}개 · 가격 불일치로 건너뜀 ${r.mismatch}개`);
+  console.log(`완료 — 종료일 저장 ${r.set}개 · 비움 ${r.cleared}개 · 변동 없음 ${r.kept}개 · 종료 시각 모름 ${r.noInfo}개 · 가격 불일치로 건너뜀 ${r.mismatch}개 · ITAD 응답 없음으로 유지 ${r.heldEmpty}개`);
   console.log(`ITAD 요청 ${r.requests}번 · 오류 ${r.errors}번`);
 }
 
