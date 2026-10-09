@@ -56,6 +56,8 @@ function checkCode() {
     ? bad('관리자 로그인에서 비밀번호를 로그로 출력 중', '관리자 인증 패치')
     : ok('관리자 비밀번호 로그 출력 없음');
 
+  checkUserLogin(clientFiles);
+
   const direct = execSync("grep -rl \"fetch('https://api.anthropic.com\" app --include=*.ts --include=*.tsx || true").toString().trim()
     .split('\n').filter((f) => f && !f.endsWith('aiGuard.ts'));
   direct.length === 0 ? ok('한도를 거치지 않는 AI 호출 없음') : bad(`한도 없이 AI를 부르는 파일: ${direct.join(', ')}`);
@@ -69,6 +71,38 @@ function checkCode() {
     const pending = execSync('git status --porcelain app scripts').toString().trim();
     pending ? note('아직 커밋·푸시 안 된 변경이 있어요 → 배포 사이트에는 반영 안 됨') : ok('변경 사항 모두 커밋됨');
   } catch {}
+}
+
+// 스팀 로그인: 사용자 접근은 app/lib/user/ 한 곳, 스팀 서버 재검증 필수, 세션 쿠키는 서버 코드만 다룸
+function checkUserLogin(clientFiles) {
+  if (!fs.existsSync('app/lib/user')) return note('스팀 로그인 코드 없음 (app/lib/user) — 로그인 점검 건너뜀');
+  read('app/lib/user/index.ts').includes("import 'server-only'") ? ok('사용자 모듈이 server-only (브라우저에서 import하면 빌드 실패)') : bad('app/lib/user/index.ts에 server-only 표시 없음');
+  const oid = read('app/lib/user/steamOpenId.ts');
+  oid.includes('check_authentication') && oid.includes('is_valid:true') && oid.includes("op_endpoint !== STEAM_OPENID_ENDPOINT")
+    ? ok('스팀 로그인: 스팀 서버 재검증(check_authentication)·op_endpoint 확인 적용') : bad('스팀 로그인 검증 코드가 빠졌거나 바뀜 (app/lib/user/steamOpenId.ts)');
+  read('app/api/auth/steam/callback/route.ts').includes('verifySteamLogin') ? ok('로그인 콜백이 verifySteamLogin을 거침') : bad('로그인 콜백이 검증 없이 통과할 수 있음 (app/api/auth/steam/callback/route.ts)');
+  const cookieUsers = execSync("grep -rlE \"user_session|USER_COOKIE|USER_SESSION_SECRET\" app proxy.ts --include=*.ts --include=*.tsx || true").toString().trim().split('\n')
+    .filter((f) => f && !f.startsWith('app/lib/user/') && f !== 'app/api/me/route.ts');
+  cookieUsers.length === 0 ? ok('사용자 세션 쿠키·비밀 키를 app/lib/user/ 밖에서 직접 다루지 않음') : bad(`사용자 세션을 모듈 밖에서 직접 다룸: ${cookieUsers.join(', ')}`, 'app/lib/user의 함수로만 접근');
+  const leakyUser = clientFiles.filter((f) => /from\s+['"][./]*(lib\/)?user(\/[a-zA-Z]+)?['"]/.test(read(f)));
+  leakyUser.length === 0 ? ok('브라우저 코드가 사용자 모듈을 가져오지 않음') : bad(`브라우저 코드가 사용자 모듈 import: ${leakyUser.join(', ')}`);
+  /NEXT_PUBLIC_[A-Z_]*(STEAM_API|SESSION_SECRET)/.test(execSync("grep -rhE 'NEXT_PUBLIC_' app scripts proxy.ts .env.local 2>/dev/null || true").toString())
+    ? bad('스팀 API 키·세션 비밀 키가 NEXT_PUBLIC_ 이름으로 쓰임') : ok('스팀 API 키·세션 비밀 키가 NEXT_PUBLIC_이 아님');
+  /secure:\s*process\.env\.NODE_ENV === 'production'/.test(read('app/lib/user/session.ts')) && /httpOnly:\s*true/.test(read('app/lib/user/session.ts'))
+    ? ok('세션 쿠키 httpOnly·Secure(운영)·SameSite 설정') : bad('세션 쿠키 속성 확인 필요 (app/lib/user/session.ts)');
+}
+
+// users 표: 브라우저 키로 읽기·쓰기 전부 차단 (서버 API로만)
+async function checkUsersDb() {
+  const probe = await anon.from('users').select('id, steam_id').limit(1);
+  if (probe.error?.code === '42P01' || /does not exist|schema cache/i.test(probe.error?.message || '')) return note('users 표 없음 — supabase/migrations/20261016090000_users.sql 실행 전');
+  probe.error ? ok('브라우저 키로 users 읽기 차단됨 (스팀 ID 비공개)') : bad('브라우저 키로 users를 읽을 수 있음!', 'revoke all on public.users from anon, authenticated; 실행');
+  const ins = await anon.from('users').insert({ steam_id: '00000000000000000', persona_name: '__security_test__' });
+  if (ins.error?.code === '42501') ok('브라우저 키로 users 쓰기 차단됨');
+  else if (ins.error) note(`브라우저 키로 users 쓰기 시도 → 권한이 아닌 다른 이유로 실패 (${ins.error.message})`);
+  else { bad('브라우저 키로 users에 쓸 수 있음!', 'revoke all on public.users from anon, authenticated; 실행'); await admin.from('users').delete().eq('steam_id', '00000000000000000'); }
+  const upd = await anon.from('users').update({ persona_name: '__security_test__' }).eq('steam_id', '00000000000000000');
+  upd.error?.code === '42501' ? ok('브라우저 키로 users 수정 차단됨') : bad(`브라우저 키로 users 수정 권한이 있음${upd.error ? ` (${upd.error.message})` : ''}`, 'revoke update on public.users from anon, authenticated; 실행');
 }
 
 // 디스코드 웹후크 주소는 서버에서만: NEXT_PUBLIC_ 이름 금지, 브라우저 코드에서 안 읽음, 빌드된 브라우저 번들에 없음
@@ -158,6 +192,7 @@ async function checkDb() {
   fr.error ? ok('브라우저 키로 feedback 읽기 차단됨 (연락처·IP 해시 비공개)') : bad('브라우저 키로 feedback을 읽을 수 있음!', 'revoke all on public.feedback from anon, authenticated; 실행');
 
   await checkGameCommentsDb(anyGame);
+  await checkUsersDb();
   await checkStreamerDb();
 
   const { count } = await admin.from('compare_cache').select('game_ids', { count: 'exact', head: true });

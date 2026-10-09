@@ -335,6 +335,76 @@ img { display: block; }
 :root[data-theme="light"] .theme-toggle { border-color: rgba(255, 255, 255, 0.4); }
 .theme-toggle:hover { background: var(--header-hover); color: var(--header-text); }
 
+/* 헤더 로그인 영역 (AuthMenu) — 새 색 없이 기존 토큰만 */
+.auth-menu { position: relative; flex-shrink: 0; }
+.auth-login, .auth-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 6px 12px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-btn);
+  background: none;
+  color: var(--accent-text);
+  font-size: var(--fs-l);
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.auth-login:hover, .auth-user:hover { background: var(--header-hover); }
+:root[data-theme="light"] .auth-login, :root[data-theme="light"] .auth-user { border-color: rgba(255, 255, 255, 0.4); color: var(--header-text); }
+.auth-user { border-color: var(--border); color: var(--header-text); }
+.auth-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.auth-name { max-width: 9em; overflow: hidden; text-overflow: ellipsis; }
+.auth-pop {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  min-width: 100%;
+  padding: 4px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-btn);
+  z-index: 110;
+}
+.auth-pop-item {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  background: none;
+  border: 0;
+  border-radius: var(--radius-badge);
+  color: var(--text);
+  font-size: var(--fs-l);
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.auth-pop-item:hover { background: var(--card-hover); }
+.auth-notice {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  width: max-content;
+  max-width: min(320px, calc(100vw - 24px));
+  padding: 10px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-btn);
+  color: var(--text);
+  font-size: var(--fs-s);
+  z-index: 110;
+}
+@media (max-width: 480px) {
+  .auth-login, .auth-user { padding: 6px 8px; font-size: var(--fs-xs); gap: 0; }
+  .auth-login-long, .auth-avatar ~ .auth-name { display: none; } /* 좁은 화면: "로그인" / 아바타만 (아바타가 없으면 닉네임은 남김) */
+  .auth-user { padding: 6px; }
+}
+
 /* 상단 바로 이동할 때 섹션 제목이 바에 가려지지 않게 */
 #free, #discount { scroll-margin-top: 76px; }
 

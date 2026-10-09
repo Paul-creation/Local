@@ -1,6 +1,7 @@
 // 담당: Paul(메인 배너·디자인)
 import { SITE_NAME } from '../../lib/site';
 import ThemeToggle from '../ThemeToggle';
+import AuthMenu from '../AuthMenu';
 import CompareCount from '../CompareCount';
 import NavProgress from '../NavProgress';
 
@@ -25,6 +26,7 @@ export default function SiteHeader() {
           ))}
         </nav>
         <ThemeToggle />
+        <AuthMenu />
       </div>
       <NavProgress />
     </header>
