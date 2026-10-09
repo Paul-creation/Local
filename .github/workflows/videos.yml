@@ -1,0 +1,50 @@
+name: 트레일러 채우기 (수동 실행)
+
+on:
+  workflow_dispatch:        # Actions 탭에서 직접 실행 (video_url이 비어 있는 게임만 처리, 이미 있는 값은 건드리지 않음)
+    inputs:
+      max:
+        description: '이번에 처리할 최대 게임 수 (기본 90, 게임당 약 1초. 343개 ≈ 6분)'
+        required: false
+        default: '90'
+      steam_only:
+        description: '스팀 공식 영상만 찾기 (YouTube 안 씀. 스팀 영상이 없는 게임은 비어 있는 채로 두고 매일 갱신이 새 규칙으로 찾음)'
+        type: boolean
+        required: false
+        default: false
+      yt_max:
+        description: 'YouTube 검색 상한 (비우면 한도 안에서 계속. 1번 = 100유닛, 하루 10,000유닛)'
+        required: false
+        default: ''
+
+concurrency:
+  group: data-jobs
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: 환경변수 파일 만들기
+        run: printf '%s\n' "$ENV_FILE" > .env.local
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+      - name: 트레일러 채우기
+        # 입력값은 환경변수로 받아 숫자인지 확인한 뒤에만 인자로 넘김
+        run: |
+          [[ "$MAX" =~ ^[0-9]*$ && "$YT_MAX" =~ ^[0-9]*$ ]] || { echo "숫자만 넣어 주세요"; exit 1; }
+          args="${MAX:-90}"
+          [ "$STEAM_ONLY" = "true" ] && args="$args --steam-only"
+          [ -n "$YT_MAX" ] && args="$args --yt-max=$YT_MAX"
+          node --env-file=.env.local scripts/enrich-videos.mjs $args
+        env:
+          MAX: ${{ inputs.max }}
+          STEAM_ONLY: ${{ inputs.steam_only }}
+          YT_MAX: ${{ inputs.yt_max }}

@@ -4,11 +4,11 @@
 //   --steam-only: 스팀 공식 영상만 찾고 유튜브는 안 씀. 스팀 영상이 없으면 null 그대로 둬서 다음 매일 작업이 유튜브로 찾게 함
 // - 스팀 게임은 스팀 상점의 공식 영상(appdetails movies, 게임사가 올린 것)을 먼저 씀 → video_url에 HLS 주소(.m3u8) 저장
 // - 스팀 영상이 없거나 스팀 외 게임이면 유튜브 검색으로 대체 (YouTube 검색은 하루 약 100번 한도)
-//   검색 결과 10개 중 제목·채널에 게임 이름과 game·게임·스팀 등이 있고 movie·film·영화가 없는 첫 영상 (lib/video-filter.mjs)
+//   검색 결과 10개 중 제목에 게임 이름과 trailer·공식 등 트레일러 단서가 있고, 리뷰·공략·방법·speedrun·Part N 등이 없고, movie·영화가 없는 첫 영상 (lib/video-filter.mjs trailerRejectReason)
 // - 찾아봤는데 영상이 없으면 video_url을 ''로 저장해서 다음부터 다시 찾지 않음. 이미 값이 있는 게임은 건드리지 않음
 import { createClient } from '@supabase/supabase-js';
 import { gameNameKeys, excludeTerms } from './lib/coop-targets.mjs';
-import { videoRejectReason } from './lib/video-filter.mjs';
+import { trailerRejectReason } from './lib/video-filter.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -54,7 +54,7 @@ async function youtubeTrailer(game) {
   const terms = excludeTerms(game).map(norm).filter(Boolean);
   const hit = (json.items || []).find((it) => {
     const video = { title: it.snippet?.title, channel_title: it.snippet?.channelTitle };
-    return it.id?.videoId && !videoRejectReason(video, keys, { requireGameWord: true }) && !terms.some((w) => norm(video.title).includes(w));
+    return it.id?.videoId && !trailerRejectReason(video, keys) && !terms.some((w) => norm(video.title).includes(w));
   });
   return hit ? `https://www.youtube.com/embed/${hit.id.videoId}` : null;
 }

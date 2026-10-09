@@ -46,3 +46,24 @@ export function videoRejectReason(video, keys, { requireGameWord }) {
   if (!GAME_WORDS.test(stripNames(text, keys))) return '게임 단어 없음';
   return null;
 }
+
+// ---- 트레일러 대체 검색용 (enrich-videos) — 스팀 공식 영상이 없는 게임에만 쓰는 더 엄격한 규칙 ----
+// 하이라이트·합방 검색(videoRejectReason)은 "레식 5인 합방"처럼 트레일러 단서 없는 정상 영상이 많아서 위의 느슨한 규칙을 그대로 씀
+// a. 제목에 게임 이름이 있어야 함 (채널에만 있으면 탈락)
+// b. 제목에 trailer·트레일러·official·공식·launch·론치·PV·gameplay 중 하나가 있어야 함
+// c. review·리뷰·공략·방법·how to·guide·tutorial·후기·playthrough·let's play·speedrun·part N·EP N이 있으면 탈락 (게임 이름 자체에 든 단어는 봐줌)
+// d. "세 글자 이상 한국어 이름이면 게임 단어 없이 통과" 예외 없음 ("낚시 방법" 같은 흔한 구절이 낚시 강좌와 섞였음)
+export const TRAILER_WORDS = /trailer|트레일러|official|공식|launch|론치|\bpv\b|gameplay/i;
+export const NOT_TRAILER_WORDS = /review|리뷰|공략|방법|how to|guide|tutorial|후기|playthrough|let['’]?s play|speedrun|\bpart\s*\d+|\bep\.?\s*\d+/gi;
+
+// video: { title, channel_title }, keys: gameNameKeys(game). 통과면 null, 아니면 빠진 이유
+export function trailerRejectReason(video, keys) {
+  const movie = videoRejectReason(video, keys, { requireGameWord: false }); // 영화 단어 (제목·채널)
+  if (movie) return movie;
+  const title = String(video.title || '');
+  if (!keys.some((k) => norm(title).includes(k))) return '제목에 게임 이름 없음';
+  const deny = (title.toLowerCase().match(NOT_TRAILER_WORDS) || []).find((w) => !keys.some((k) => k.includes(norm(w))));
+  if (deny) return `트레일러가 아닌 단어 (${deny.trim()})`;
+  if (!TRAILER_WORDS.test(title)) return '트레일러 단서 없음';
+  return null;
+}
