@@ -93,7 +93,7 @@ export default function HotChart({ tabs: allTabs }: { tabs: HotTab[] }) {
   const tabs = allTabs.filter((t) => SHOWN_TABS.includes(t.key));
   const [key, setKey] = useState(tabs[0]?.key);
   const tab = tabs.find((t) => t.key === key) || tabs[0];
-  // 모바일에서는 4~10위 줄을 접어 두고 "더 보기"로 10위까지 펼친다 (접힘은 CSS .is-collapsed, 데스크톱은 늘 펼침)
+  // 4~10위 줄은 접어 두고 "더 보기"로 10위까지 펼친다 (모바일·데스크톱 같음, 접힘은 CSS .is-collapsed)
   const [open, setOpen] = useState(false);
   if (!tab) return null;
 

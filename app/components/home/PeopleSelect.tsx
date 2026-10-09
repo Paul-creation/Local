@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { PEOPLE_CHOICES, type PeopleN } from '../../lib/peopleRecs';
-import { formatPlayers, PLAYERS_MAX } from '../../lib/rangeFilter';
+import { PLAYERS_MAX } from '../../lib/rangeFilter';
+import { peopleHref as href, peopleButtonTarget } from '../../lib/peopleLink';
 import PcSpecPanel from '../pcspec/PcSpecPanel';
 import { useMyPc } from '../pcspec/useMyPc';
 import { usePeople } from './PeopleContext';
@@ -10,7 +11,7 @@ import { usePeople } from './PeopleContext';
 export const peopleLabel = (n: number) => (n >= 5 ? '5인 이상' : `${n}인`);
 
 // 메인 검색 주소(?players=)에 인원과 내 PC 조건을 담은 "전체 보기" 주소 — 인원별 추천의 전체 보기 링크와, 추천 데이터가 없을 때의 인원 버튼 이동이 같이 쓴다
-export const peopleHref = (n: PeopleN, myPc: boolean) => `/?players=${formatPlayers(n >= 5 ? [5, PLAYERS_MAX] : [n, n])}${myPc ? '&mypc=1' : ''}`;
+export const peopleHref = (n: PeopleN, myPc: boolean) => href(n, myPc, PLAYERS_MAX);
 
 // 검색창 바로 아래 "2인 / 3인 / 4인 / 5인 이상" 한 줄 4칸 + 내 PC 토글
 // 인원별 추천 데이터가 없으면(recsReady 거짓) 버튼은 선택 표시만 바꾸고 바로 그 인원의 검색 결과(/?players=N)로 이동
@@ -24,7 +25,7 @@ export default function PeopleSelect() {
     <div className="people-select">
       <div className="people-btns" role="group" aria-label="몇 명이서 할까요?">
         {PEOPLE_CHOICES.map((v) => (
-          <button key={v} type="button" className={`people-btn${n === v ? ' on' : ''}`} aria-pressed={n === v} onClick={() => { setN(v); if (!recsReady) window.location.assign(peopleHref(v, myPcActive)); }}>{peopleLabel(v)}</button>
+          <button key={v} type="button" className={`people-btn${n === v ? ' on' : ''}`} aria-pressed={n === v} onClick={() => { setN(v); const to = peopleButtonTarget(recsReady, v, myPcActive, PLAYERS_MAX); if (to) window.location.assign(to); }}>{peopleLabel(v)}</button>
         ))}
       </div>
       {ready && (

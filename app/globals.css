@@ -1847,7 +1847,8 @@ a.hc-row:hover { background: var(--card-hover); }
 :root:not([data-theme="light"]) a.hc-row:nth-child(odd) { background: color-mix(in srgb, var(--card), var(--card-hover) 50%); }
 :root:not([data-theme="light"]) a.hc-row:nth-child(odd):hover { background: var(--card-hover); }
 .hc-row-head { padding-top: 12px; padding-bottom: 8px; }
-.hc-more { display: none; } /* 모바일에서만 */
+.hc-rows.is-collapsed { display: none; } /* 4~10위는 "더 보기"로 펼침 (모바일·데스크톱 같음) */
+.hc-more { display: flex; justify-content: center; width: 100%; min-height: 44px; margin-top: 12px; }
 .hc-row-head > span { font-size: var(--fs-s); font-weight: 700; color: var(--text-muted); }
 .hc-row-head > span:first-child { text-align: center; }
 .hc-row-rank { display: flex; flex-direction: column; align-items: center; gap: 4px; }
@@ -1868,8 +1869,6 @@ a.hc-row:hover { background: var(--card-hover); }
   .hc-cards { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -24px; padding: 0 24px 6px; scroll-padding-left: 24px; gap: 12px; scrollbar-width: none; }
   .hc-cards::-webkit-scrollbar { display: none; }
   .hc-card { flex: 0 0 82%; scroll-snap-align: start; }
-  .hc-rows.is-collapsed { display: none; } /* 4~10위는 "더 보기"로 펼침 */
-  .hc-more { display: flex; justify-content: center; width: 100%; min-height: 44px; margin-top: 12px; }
   .hc-row { grid-template-columns: 30px 72px minmax(0, 1fr) 88px; column-gap: 10px; padding: 14px 12px; }
   .hc-row-ccu { display: none; }
   .hc-row-rank-n { font-size: var(--fs-xxl); }
