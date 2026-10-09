@@ -50,7 +50,7 @@ function BigCard({ item }: { item: HotItem }) {
         <span className="hc-card-name">{item.name}</span>
         <span className="hc-card-foot">
           <span className="hc-card-meta">{item.players}</span>
-          <ReviewRating summary={item.reviewSummary} percent={item.reviewPercent} total={item.reviewTotal} showText={false} />
+          <ReviewRating summary={item.reviewSummary} percent={item.reviewPercent} total={item.reviewTotal} showText={false} label="스팀" />
         </span>
         {item.price && (
           <span className="hc-price">
