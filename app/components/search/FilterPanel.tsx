@@ -20,7 +20,7 @@ const MORE_LIMIT = 6;
 const PLAY_DESCS = Object.fromEntries(CATEGORIES.map((c) => [c, getTagDescription(c)]));
 const SOLO_DESCS: Record<string, string> = {
   '1인 전용': '혼자서만 하는 1인용 게임만 보여줘요',
-  '혼자도 꽉 차게': getTagDescription('혼자도 꽉 차게'),
+  '혼자도 충분': getTagDescription('혼자도 충분'),
 };
 const BARRIER_DESCS: Record<string, string> = {
   '낮음': '설명 없이 바로 시작해서 같이 즐길 수 있어요',
@@ -28,7 +28,7 @@ const BARRIER_DESCS: Record<string, string> = {
   '높음': '조작·규칙을 꽤 배워야 같이 즐길 수 있어요',
 };
 
-// 필터 카드 — "필터" + 전체 지우기 / 같이 하는 방식 / 인원 + 1인 전용·혼자도 꽉 차게 / 가격 + 무료만·지금 할인 중 /
+// 필터 카드 — "필터" + 전체 지우기 / 같이 하는 방식 / 인원 + 1인 전용·혼자도 충분 / 가격 + 무료만·지금 할인 중 /
 // 진입장벽 3칸 / 분류 아코디언 / 빼고 보기
 // variant: sheet = 메인에서 펼치는 카드 (휴대폰은 화면 전체를 덮고 아래 "N개 게임 보기"), sidebar = 데스크톱 결과 왼쪽 칸
 // 필터를 처음 열 때 따로 받는다 (SearchPanel·GameGrid의 dynamic import) — 태그 설명·나무 화면 코드를 메인 첫 로드에서 뺌
@@ -121,7 +121,7 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
           />
           <div className="filter-chips">
             <button type="button" className={`chip${soloOnly ? ' on' : ''}`} aria-pressed={soloOnly} {...soloHint.bind('1인 전용')} onClick={() => setSoloOnly(!soloOnly)}>1인 전용</button>
-            <button type="button" className={`chip${storyOnly ? ' on' : ''}`} aria-pressed={storyOnly} {...soloHint.bind('혼자도 꽉 차게')} onClick={() => setStoryOnly(!storyOnly)}>혼자도 꽉 차게</button>
+            <button type="button" className={`chip${storyOnly ? ' on' : ''}`} aria-pressed={storyOnly} {...soloHint.bind('혼자도 충분')} onClick={() => setStoryOnly(!storyOnly)}>혼자도 충분</button>
           </div>
           {soloHint.hint}
         </section>

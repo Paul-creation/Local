@@ -57,7 +57,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
   const [excludedTags, setExcludedTags] = useState<string[]>([]);
   // 진입장벽 낮음·보통·높음 (여러 개 고르면 그중 하나)
   const [selectedBarriers, setSelectedBarriers] = useState<string[]>([]);
-  // 혼자도 꽉 차게 (solo_mode = story)
+  // 혼자도 충분 (solo_mode = story)
   const [storyOnly, setStoryOnly] = useState(false);
   // 네트워크: 크로스플레이 지원 · 전용 서버 · P2P
   const [selectedNet, setSelectedNet] = useState<NetKey[]>([]);

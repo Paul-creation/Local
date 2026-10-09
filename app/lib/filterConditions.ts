@@ -14,7 +14,7 @@ export function filterConditions(f: GameFilters, { withTags = true } = {}): Cond
   if (f.selectedCategory) out.push({ key: 'cat', label: f.selectedCategory, clear: () => f.setSelectedCategory('') });
   if (!isAll(f.playersRange, PLAYERS_ALL)) out.push({ key: 'players', label: `인원 ${rangeText(f.playersRange, playersLabel)}`, clear: () => f.setPlayersRange(PLAYERS_ALL) });
   if (f.soloOnly) out.push({ key: 'solo', label: '1인 전용', clear: () => f.setSoloOnly(false) });
-  if (f.storyOnly) out.push({ key: 'story', label: '혼자도 꽉 차게', clear: () => f.setStoryOnly(false) });
+  if (f.storyOnly) out.push({ key: 'story', label: '혼자도 충분', clear: () => f.setStoryOnly(false) });
   if (isAll(f.priceRange, FREE_ONLY)) out.push({ key: 'price', label: '무료만', clear: () => f.setPriceRange(PRICE_ALL) });
   else if (!isAll(f.priceRange, PRICE_ALL)) out.push({ key: 'price', label: `가격 ${rangeText(f.priceRange, priceLabel)}`, clear: () => f.setPriceRange(PRICE_ALL) });
   if (f.saleOnly) out.push({ key: 'sale', label: '할인 중', clear: () => f.setSaleOnly(false) });
