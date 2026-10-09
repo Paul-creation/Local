@@ -1692,11 +1692,22 @@ a.series-item:hover { border-color: var(--border); }
   font-size: var(--fs-l); font-weight: 800; color: var(--text);
 }
 .home-event-cta:hover { border-color: var(--text-faint); }
+.home-event-cta { gap: 0.3em; }
 /* 다크: 꽉 찬 포인트 버튼 (AI 추천 버튼과 같은 색·굵기, 모서리만 6px) + 배경에 묻히지 않는 옅은 흰 테두리
    (테마 데이터에는 색 값이 없고 배경 톤 이름만 있어서 테두리는 모든 테마 공통 흰 8%) */
 :root:not([data-theme="light"]) .home-event { border-color: rgba(255, 255, 255, 0.08); }
 :root:not([data-theme="light"]) .home-event-cta { min-height: 46px; padding: 0 24px; border: none; border-radius: 6px; background: var(--accent); color: var(--accent-ink); font-weight: 800; }
 :root:not([data-theme="light"]) .home-event-cta:hover { background: var(--accent-hover); }
+
+/* 900px 미만: 이벤트 배너는 제목 + → 한 줄 띠(48px), 띠 전체가 링크 — 작은 화면 첫 화면에 인원 버튼이 보이게 */
+@media (max-width: 899px) {
+  .home-event { position: relative; flex-wrap: nowrap; gap: 12px; height: 48px; padding: 0 16px; margin-bottom: 12px; }
+  .home-event-text { flex: 1 1 0; }
+  .home-event-label, .home-event-desc, .home-event-cta-text { display: none; }
+  .home-event .home-event-title { margin: 0; font-size: var(--fs-l); line-height: 48px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  :root .home-event .home-event-cta, :root:not([data-theme="light"]) .home-event .home-event-cta { min-height: 0; height: 48px; padding: 0; border: none; border-radius: 0; background: none; color: var(--accent-text); font-size: var(--fs-xl); }
+  .home-event-cta::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius-card); }
+}
 
 /* 히어로 */
 .home-hero.is-home { margin-bottom: 32px; }
@@ -1721,8 +1732,6 @@ a.series-item:hover { border-color: var(--border); }
 }
 .ai-trigger-clean:hover { background: var(--accent-hover); }
 @media (max-width: 640px) {
-  .home-event { padding: 18px; margin-bottom: 28px; }
-  .home-event-title { font-size: 19px; }
   .home-intro-title { font-size: 30px; }
   .search-row { flex-direction: column; align-items: stretch; }
   .search-actions > * { flex: 1; justify-content: center; }
