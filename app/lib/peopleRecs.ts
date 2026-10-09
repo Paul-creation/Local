@@ -6,6 +6,8 @@
 import { friendsMax } from './playersMatch';
 import type { SpecLike } from './specJudge';
 import { getCardGames } from './gameIndex';
+import { getCardExtras } from './cardExtras';
+import type { CardExtras } from './cardInfo';
 import { selectGames, selectHomeGames } from './visibleGames';
 
 export const PEOPLE_CHOICES = [2, 3, 4, 5] as const; // 5는 "5인 이상"
@@ -63,9 +65,10 @@ export async function getPeopleRecs(excludeIds: string[]): Promise<PeopleRecs | 
   const picked = Object.fromEntries(PEOPLE_CHOICES.map((n) => [n, pickDaily(byPlayers.filter((g) => fitsPeople(g, n)).slice(0, POOL_SIZE).map((g) => g.id), PEOPLE_SHOW, `${today}:${n}`)])) as Record<PeopleN, string[]>;
   const unique = [...new Set(Object.values(picked).flat())];
   try {
-    const cards = await getCardGames(unique);
+    // 평가·태그·한국어 지원은 카드 칸에 없어 따로 읽어 덧붙인다 (못 읽으면 그 줄만 빠짐)
+    const [cards, extras] = await Promise.all([getCardGames(unique), getCardExtras(unique).catch(() => ({} as Record<string, CardExtras>))]);
     // 칩은 안 쓰는 카드라 태그 번호는 보내지 않는다
-    const games = Object.fromEntries((cards as CardGame[]).map(({ tag_ids, ...g }) => { void tag_ids; return [g.id, g as CardGame]; }));
+    const games = Object.fromEntries((cards as CardGame[]).map(({ tag_ids, ...g }) => { void tag_ids; return [g.id, { ...g, ...extras[g.id] } as CardGame]; }));
     const ids = Object.fromEntries(PEOPLE_CHOICES.map((n) => [n, picked[n].filter((id) => games[id])])) as Record<PeopleN, string[]>;
     return { games, ids };
   } catch {

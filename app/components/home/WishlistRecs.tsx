@@ -9,6 +9,8 @@ import { supabase } from '../../lib/supabase';
 import { toUserPc } from '../../lib/myPc';
 import { runsOnMyPc } from '../../lib/specJudge';
 import { PEOPLE_SHOW, type CardGame } from '../../lib/peopleRecs';
+import { getCardExtras } from '../../lib/cardExtras';
+import type { CardExtras } from '../../lib/cardInfo';
 import { usePeople } from './PeopleContext';
 
 // 메인 "찜한 게임과 비슷한 게임" — 찜목록(localStorage)이 있을 때만. 가장 최근에 찜한 3개마다 similar_games(상세 "비슷한 게임"과 같은 함수)를 불러
@@ -50,6 +52,17 @@ export default function WishlistRecs({ homeExcluded }: { homeExcluded: string[] 
       .slice(0, PEOPLE_SHOW);
   }, [ready, index, scored, seedKey, ids, homeExcluded, pcReady, pc, myPcOn]);
 
+  // 보여줄 카드 3장의 평가·태그·한국어 지원은 게임 목록에 없어 따로 읽는다 (못 읽으면 그 줄만 빠짐)
+  const shownKey = shown.map((g) => g.id).join(',');
+  const [extras, setExtras] = useState<{ key: string; map: Record<string, CardExtras> } | null>(null);
+  useEffect(() => {
+    if (!shownKey) return;
+    let alive = true;
+    getCardExtras(shownKey.split(',')).then((map) => { if (alive) setExtras({ key: shownKey, map }); }).catch(() => {});
+    return () => { alive = false; };
+  }, [shownKey]);
+  const extraMap = extras && extras.key === shownKey ? extras.map : {};
+
   if (shown.length === 0) return null;
   return (
     <section className="home-block people-block" aria-labelledby="wishlist-recs-title">
@@ -57,7 +70,7 @@ export default function WishlistRecs({ homeExcluded }: { homeExcluded: string[] 
         <h2 id="wishlist-recs-title" className="section-title">찜한 게임과 비슷한 게임</h2>
       </div>
       <div className="people-cards">
-        {shown.map((g) => <div key={g.id} className="people-item"><ResultCard game={g} tree={null} compact /></div>)}
+        {shown.map((g) => <div key={g.id} className="people-item"><ResultCard game={{ ...g, ...extraMap[g.id] }} tree={null} compact rich /></div>)}
       </div>
     </section>
   );
