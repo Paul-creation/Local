@@ -24,6 +24,7 @@ export type HotItem = {
   currentPlayers: number | null;
   price: string | null;   // "₩8,250" / "무료" / "월 구독" (가격 유형 게임)
   discount: number;
+  saleEndsAt: string | null; // 할인 종료 시각(ISO), 모르면 null
   lowest: LowestTiming;   // 역대 최저가 / 최저가 근접
   reviewSummary: string | null;   // 스팀 평가 문구 (매우 긍정적 등)
   reviewPercent: number | null;   // 긍정 %
@@ -92,7 +93,7 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
   const since = addDays(latest, -7 * 26);
 
   const [{ data: games }, { data: weeksRows }] = await Promise.all([
-    selectHomeGames('id, name, hero_image_url, card_image_url, cover_image_url, fun_description, tags, min_players, max_players, current_players, review_summary, review_positive_percent, review_total, is_free, price_type, lowest_price, steam_appid, entry_barrier, difficulty, goty_awards, has_crossplay, korean_support, price_history(price, discount_percent, checked_at, currency, original_price)')
+    selectHomeGames('id, name, hero_image_url, card_image_url, cover_image_url, fun_description, tags, min_players, max_players, current_players, review_summary, review_positive_percent, review_total, is_free, price_type, lowest_price, steam_appid, entry_barrier, difficulty, goty_awards, has_crossplay, korean_support, price_history(price, discount_percent, checked_at, currency, original_price, sale_ends_at)')
       .in('id', ids)
       .gte('price_history.price', 100)
       .order('checked_at', { referencedTable: 'price_history', ascending: false })
@@ -146,6 +147,7 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
         currentPlayers: g.current_players ?? null,
         price: g.is_free ? '무료' : price ? price.formattedFinal : PRICE_TYPE_LABEL[g.price_type] ?? null,
         discount: !g.is_free && price ? price.discount : 0,
+        saleEndsAt: !g.is_free && price && price.discount > 0 ? price.saleEndsAt : null,
         lowest: getLowestTiming(g, price),
         reviewSummary: g.review_summary ?? null,
         reviewPercent: g.review_positive_percent ?? null,

@@ -4,6 +4,8 @@ import BackToList from '../../components/BackToList';
 import DiscountChart from '../../components/DiscountChart';
 import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL } from '../../lib/price';
 import { formatDate } from '../../lib/date';
+import { lowestGauge } from '../../lib/saleEnds';
+import SaleEnds from '../../components/SaleEnds';
 import LowestPriceBadge from '../../components/LowestPriceBadge';
 import { translateGenres } from '../../lib/genreTranslate';
 import { getPlatformCategories, CATEGORY_LABEL } from '../../lib/platformDisplay';
@@ -128,7 +130,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const { id } = await params;
 
   const top10Promise = getTop10Ids().catch(() => [] as string[]);
-    const { data: game, error } = await selectGames('*, price_history(price, discount_percent, checked_at, original_price), game_streamers(streamer_id, streamers(id, name, platform, handle)), game_videos(kind, video_id, title, channel_title, published_at, view_count), streamer_videos(video_id, title, published_at, streamer_channels(channel_title, streamer_name))')
+    const { data: game, error } = await selectGames('*, price_history(price, discount_percent, checked_at, original_price, sale_ends_at), game_streamers(streamer_id, streamers(id, name, platform, handle)), game_videos(kind, video_id, title, channel_title, published_at, view_count), streamer_videos(video_id, title, published_at, streamer_channels(channel_title, streamer_name))')
     .order('published_at', { referencedTable: 'streamer_videos', ascending: false })
     .limit(24, { referencedTable: 'streamer_videos' })
     .eq('id', id)
@@ -184,6 +186,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const timingLine = showPriceRecord && price
     ? buyTimingLine(priceHistory, { currentPrice: price.final, currentDiscount: price.discount, lowestPrice: game.lowest_price ?? null, now: Date.now() })
     : null;
+  // 역대 최저가 게이지 — 정가·현재가·역대 최저가가 모두 있고 앞뒤가 맞을 때만. 아니면 null → 예전 "역대 최저 ..." 줄·문구를 그대로 둔다
+  const gauge = showPriceRecord && price ? lowestGauge(price.regular, price.final, game.lowest_price >= 100 ? game.lowest_price : null) : null;
+  const lowestDate = formatDate(game.lowest_price_date);
   const isMulti = (game.party_max ?? game.max_players ?? 0) > 1;
   const playersChip = game.max_players === 1 ? '혼자' : playersText(game);
   // 제목 아래 한 줄: 주 = 등급 문구 + %, 보조 = 리뷰 수 · Metascore · 현재 동접 · 역대 최고 동접 — 값이 없는 조각은 빠진다
@@ -236,6 +241,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
                 <span className="buy-price-original">{price.formattedOriginal}</span>
               </p>
             )}
+            {price && price.discount > 0 && !game.is_free && <SaleEnds endsAt={price.saleEndsAt} variant="detail" />}
             <p className="price-card-now">
               {game.is_free ? '무료'
                 : price ? price.formattedFinal
@@ -245,7 +251,19 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             </p>
             {timing === 'best' && <span className="lowest-pill">역대 최저가</span>}
             {/* 지금이 역대 최저여도 금액·날짜는 그대로 보여 준다 */}
-            {showPriceRecord && game.lowest_price >= 100 && (
+            {gauge && (
+              <div className="lowest-gauge">
+                <div className="lowest-gauge-track" role="img" aria-label={gauge.atLowest ? '역대 최저가와 같아요' : `역대 최저가까지 ${Math.round(100 - gauge.percent)}% 남음`}>
+                  <div className="lowest-gauge-bar" style={{ width: `${gauge.percent}%` }} />
+                </div>
+                <p className="lowest-gauge-text">
+                  {gauge.atLowest
+                    ? <>역대 최저가와 같아요{lowestDate && ` · ${lowestDate}`}</>
+                    : <>역대 최저가까지 <span className="num">₩{gauge.remaining.toLocaleString('ko-KR')}</span> · 역대 최저 <span className="num">₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}</span>{lowestDate && ` (${lowestDate})`}</>}
+                </p>
+              </div>
+            )}
+            {!gauge && showPriceRecord && game.lowest_price >= 100 && (
               <p className="price-card-lowest">
                 역대 최저 <span className="num">₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}</span>
                 {game.lowest_price_shop && ` · ${game.lowest_price_shop}`}
@@ -253,7 +271,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               </p>
             )}
             {timing === 'near' && <LowestPriceBadge timing={timing} />}
-            {timingLine && <p className="buy-timing">{timingLine}</p>}
+            {timingLine && !(gauge && timingLine === SAME_AS_LOWEST) && <p className="buy-timing">{timingLine}</p>}
             <div className="price-card-buttons">
               {buyUrl && (
                 <a href={buyUrl} target="_blank" rel="noopener noreferrer" className={`btn btn-primary btn-lg price-card-buy${game.steam_appid ? ' is-steam' : ''}`}>

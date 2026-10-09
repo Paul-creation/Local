@@ -16,7 +16,7 @@ export const INDEX_FIELDS = `
   entry_barrier, solo_mode, party_max, session_max, multiplayer_host,
   is_free, price_type, lowest_price, steam_appid, source, cover_image_url, card_image_url, heat_rank,
   spec_parsed,
-  price_history(price, discount_percent, checked_at, currency, original_price)
+  price_history(price, discount_percent, checked_at, currency, original_price, sale_ends_at)
 `;
 
 export async function getGameIndex() {

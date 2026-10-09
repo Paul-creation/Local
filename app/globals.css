@@ -2916,3 +2916,16 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* 링�
 .shots-btn:hover { border-color: var(--accent); }
 .shots-close { font-size: var(--fs-l); }
 .shots-count { min-width: 64px; text-align: center; font-size: var(--fs-s); color: var(--text); }
+
+/* 할인 종료 시각 — 할인 줄 바로 아래 한 줄 (components/SaleEnds). 24시간 안이면 --sale */
+.sale-ends { display: block; min-height: 18px; font-size: 13px; line-height: 18px; font-weight: 600; color: var(--text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sale-ends.is-soon { color: var(--sale); }
+.hc-row-price { flex-direction: column; align-items: flex-end; }
+.hc-row-price .sale-ends { text-align: right; }
+.sale-ends.is-detail { margin-top: -4px; }
+/* 상세 가격 박스 역대 최저가 게이지: 정가 0% → 역대 최저가 100%, 2px 진행 바 */
+.lowest-gauge { display: flex; flex-direction: column; gap: 8px; }
+.lowest-gauge-track { height: 2px; background: var(--border); border-radius: 1px; overflow: hidden; }
+.lowest-gauge-bar { height: 100%; background: var(--accent); transition: width 0.4s ease; }
+.lowest-gauge-text { font-size: var(--fs-m); color: var(--text-muted); line-height: 1.5; }
+@media (prefers-reduced-motion: reduce) { .lowest-gauge-bar { transition: none; } }

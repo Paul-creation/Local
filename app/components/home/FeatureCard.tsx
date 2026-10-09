@@ -2,6 +2,7 @@
 // 메인 "이번주의 게임"·"추천 게임" 카드 — 위: 스팀 헤더 비율(460:215) 이미지가 카드 폭에 꽉 차게, 아래: 라벨·제목·한 줄 소개·뱃지·가격
 import Link from 'next/link';
 import { getPriceInfo } from '../../lib/price';
+import SaleEnds from '../SaleEnds';
 import { playersText } from '../../lib/players';
 import { badgeClass } from '../../lib/badge.mjs';
 import GameImage from '../GameImage';
@@ -43,6 +44,7 @@ export default function FeatureCard({ game, label, sub, priority = false }: { ga
               <span className="price-final">{price.formattedFinal}</span>
             </>
           ) : null}
+          {price && price.discount > 0 && <SaleEnds endsAt={price.saleEndsAt} />}
         </span>
       </span>
     </Link>

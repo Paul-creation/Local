@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { SITE_URL } from '../../lib/site';
 import { parseIdsParam, shareQuery } from '../../lib/wishlist';
+import SaleEnds from '../SaleEnds';
 import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL } from '../../lib/price';
 import LowestPriceBadge from '../LowestPriceBadge';
 import { playersText } from '../../lib/players';
@@ -53,6 +54,7 @@ function Card({ game }: { game: Game }) {
                     <span className="price-original">{price.formattedOriginal}</span>
                   </span>
                 )}
+                {price.discount > 0 && <SaleEnds endsAt={price.saleEndsAt} />}
                 <span className="price-final">{price.formattedFinal}</span>
               </>
             ) : null}

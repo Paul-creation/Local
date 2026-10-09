@@ -36,7 +36,7 @@ const websiteJsonLd = {
 const SECTION_FIELDS = `
   id, name, tags, difficulty, min_players, max_players, is_free, price_type, lowest_price,
   card_image_url, cover_image_url, description, fun_description, featured, category, goty_awards,
-  price_history(price, discount_percent, checked_at, currency, original_price)
+  price_history(price, discount_percent, checked_at, currency, original_price, sale_ends_at)
 `;
 
 // 필터가 담긴 주소(/?sale=1, /?r=1&p=… 등)로 들어오면, React가 그리기 전 첫 HTML에서 홈 섹션을 숨기고 로딩 막대를 보여준다

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import type { HotItem, HotTab, RankChange } from '../../lib/hotChart';
 import LowestPriceBadge from '../LowestPriceBadge';
+import SaleEnds from '../SaleEnds';
 import GameImage from '../GameImage';
 import GameCard from './GameCard';
 import StreamerBadge from './StreamerBadge';
@@ -30,11 +31,14 @@ function Change({ change }: { change: RankChange }) {
 function Price({ item }: { item: HotItem }) {
   if (!item.price) return null;
   return (
-    <span className="hc-price">
-      {item.discount > 0 && <span className="hc-discount">-{item.discount}%</span>}
-      <span className="hc-price-final">{item.price}</span>
-      <LowestPriceBadge timing={item.lowest} />
-    </span>
+    <>
+      <span className="hc-price">
+        {item.discount > 0 && <span className="hc-discount">-{item.discount}%</span>}
+        <span className="hc-price-final">{item.price}</span>
+        <LowestPriceBadge timing={item.lowest} />
+      </span>
+      {item.discount > 0 && <SaleEnds endsAt={item.saleEndsAt} />}
+    </>
   );
 }
 
