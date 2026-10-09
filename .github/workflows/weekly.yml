@@ -8,10 +8,6 @@ on:
 concurrency:
   group: data-jobs
   cancel-in-progress: false
-  
-  concurrency:
-  group: steam-data
-  cancel-in-progress: false
 
 jobs:
   run:
