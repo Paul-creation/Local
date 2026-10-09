@@ -8,7 +8,7 @@ import { isSteamVideo } from '../lib/steamVideo';
 
 // 상세 맨 위 — 넓은 아트워크(잘림 없이 contain + 같은 이미지를 흐리게 깐 배경), 아래 55%가 배경색으로 어두워지는 그라데이션,
 // 가운데 "트레일러 재생"(영상이 있을 때), 왼쪽 아래 뱃지 + 제목. 재생을 누르면 그 자리에서 영상이 바로 재생되고 제목은 아래로
-export default function DetailHero({ image, videoUrl, name, badges }: { image: string | null; videoUrl: string | null; name: string; badges: ReactNode }) {
+export default function DetailHero({ image, videoUrl, name, badges, meta }: { image: string | null; videoUrl: string | null; name: string; badges: ReactNode; meta?: ReactNode }) {
   const [playing, setPlaying] = useState(false);
   const title = `${name} 트레일러`;
 
@@ -16,6 +16,7 @@ export default function DetailHero({ image, videoUrl, name, badges }: { image: s
     <div className="dh-info">
       <div className="dh-badges">{badges}</div>
       <h1 className="dh-title">{name}</h1>
+      {meta && <div className="dh-meta">{meta}</div>}
     </div>
   );
 

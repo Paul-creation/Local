@@ -24,7 +24,9 @@ export type HotItem = {
   price: string | null;   // "₩8,250" / "무료" / "월 구독" (가격 유형 게임)
   discount: number;
   lowest: LowestTiming;   // 역대 최저가 / 최저가 근접
-  spark: number[];        // 최근 7일 동접자 (1~3위만, 기록이 3일 이상인 게임만)
+  reviewSummary: string | null;   // 스팀 평가 문구 (매우 긍정적 등)
+  reviewPercent: number | null;   // 긍정 %
+  reviewTotal: number | null;     // 리뷰 수
   streamers?: string[];   // 이 게임을 플레이한 스트리머 (최근 영상 순, app/page.tsx에서 한 번에 채움)
 };
 
@@ -85,18 +87,16 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
     : [];
 
   const ids = [...new Set([...allIds, ...friendIds, ...risingIds])];
-  const top3 = [...new Set([...allIds.slice(0, 3), ...friendIds.slice(0, 3), ...risingIds.slice(0, 3)])];
   const since = addDays(latest, -7 * 26);
 
-  const [{ data: games }, { data: weeksRows }, { data: playerRows }] = await Promise.all([
-    selectHomeGames('id, name, hero_image_url, card_image_url, cover_image_url, fun_description, tags, min_players, max_players, current_players, is_free, price_type, lowest_price, price_history(price, discount_percent, checked_at, currency)')
+  const [{ data: games }, { data: weeksRows }] = await Promise.all([
+    selectHomeGames('id, name, hero_image_url, card_image_url, cover_image_url, fun_description, tags, min_players, max_players, current_players, review_summary, review_positive_percent, review_total, is_free, price_type, lowest_price, price_history(price, discount_percent, checked_at, currency)')
       .in('id', ids)
       .gte('price_history.price', 100)
       .order('checked_at', { referencedTable: 'price_history', ascending: false })
       .limit(1, { referencedTable: 'price_history' }),
     // N주째 순위권 계산용: 최근 26주 동안 이 게임들이 10위 안에 든 날
     supabase.from('hot_rank_history').select('game_id, snapshot_date').in('game_id', ids).lte('rank', 10).gte('snapshot_date', since),
-    supabase.from('player_history').select('game_id, player_count, recorded_at').in('game_id', top3).gte('recorded_at', new Date(Date.now() - 7 * DAY).toISOString()).order('recorded_at'),
   ]);
 
   const byId = new Map((games || []).map((g) => [g.id, g]));
@@ -117,16 +117,6 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
     }
     return n;
   };
-  const spark = new Map<string, number[]>();
-  const sparkDays = new Map<string, Set<string>>();
-  for (const r of playerRows || []) {
-    if (!spark.has(r.game_id)) { spark.set(r.game_id, []); sparkDays.set(r.game_id, new Set()); }
-    spark.get(r.game_id)!.push(r.player_count);
-    sparkDays.get(r.game_id)!.add(String(r.recorded_at).slice(0, 10));
-  }
-  // 그래프는 기록이 3일 이상 쌓인 게임만 (하루 이틀치는 선이 의미 없음)
-  for (const [id, days] of sparkDays) if (days.size < 3) spark.delete(id);
-
   const changeOf = (id: string): RankChange => {
     if (!prevDate) return null; // 비교할 어제 기록이 없으면 표시 안 함
     const before = prev.get(id);
@@ -155,7 +145,9 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
         price: g.is_free ? '무료' : price ? price.formattedFinal : PRICE_TYPE_LABEL[g.price_type] ?? null,
         discount: !g.is_free && price ? price.discount : 0,
         lowest: getLowestTiming(g, price),
-        spark: i < 3 ? (spark.get(id) || []) : [],
+        reviewSummary: g.review_summary ?? null,
+        reviewPercent: g.review_positive_percent ?? null,
+        reviewTotal: g.review_total ?? null,
       }];
     });
 

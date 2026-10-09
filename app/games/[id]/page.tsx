@@ -7,7 +7,8 @@ import { formatDate } from '../../lib/date';
 import LowestPriceBadge from '../../components/LowestPriceBadge';
 import { translateGenres } from '../../lib/genreTranslate';
 import { getPlatformCategories, CATEGORY_LABEL } from '../../lib/platformDisplay';
-import PlayerChart from '../../components/PlayerChart';
+import ReviewRating from '../../components/ReviewRating';
+import { reviewTone } from '../../lib/review';
 import DetailHero from '../../components/DetailHero';
 import AddToCompare from '../../components/AddToCompare';
 import HeartButton from '../../components/wishlist/HeartButton';
@@ -86,13 +87,6 @@ function ScoreRing({ score }: { score: number }) {
   );
 }
 
-function getReviewClass(summary: string | null) {
-  if (!summary) return '';
-  if (summary.includes('긍정')) return 'positive';
-  if (summary.includes('부정')) return 'negative';
-  return 'mixed';
-}
-
 function parseMinSpec(raw: string | null) {
   if (!raw) return null;
   const lines = raw.split('/').map((s) => s.trim()).filter(Boolean);
@@ -145,7 +139,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const { id } = await params;
 
   const top10Promise = getTop10Ids().catch(() => [] as string[]);
-    const { data: game, error } = await selectGames('*, price_history(price, discount_percent, checked_at), player_history(player_count, recorded_at), game_streamers(streamer_id, streamers(id, name, platform, handle)), game_videos(kind, video_id, title, channel_title, published_at, view_count), streamer_videos(video_id, title, published_at, streamer_channels(channel_title, streamer_name))')
+    const { data: game, error } = await selectGames('*, price_history(price, discount_percent, checked_at), game_streamers(streamer_id, streamers(id, name, platform, handle)), game_videos(kind, video_id, title, channel_title, published_at, view_count), streamer_videos(video_id, title, published_at, streamer_channels(channel_title, streamer_name))')
     .order('published_at', { referencedTable: 'streamer_videos', ascending: false })
     .limit(24, { referencedTable: 'streamer_videos' })
     .eq('id', id)
@@ -203,6 +197,17 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
     : null;
   const isMulti = (game.party_max ?? game.max_players ?? 0) > 1;
   const playersChip = game.max_players === 1 ? '혼자' : playersText(game);
+  // 제목 아래 한 줄: 스팀 평가(등급·%·리뷰 수·Metascore) + 동접 — 값이 없는 조각은 빠진다
+  const ccuParts = [
+    game.current_players > 0 ? `현재 ${game.current_players.toLocaleString('ko-KR')}명` : '',
+    game.peak_players > 0 ? `역대 최고 ${game.peak_players.toLocaleString('ko-KR')}명` : '',
+  ].filter(Boolean);
+  const headMeta = (game.review_positive_percent || ccuParts.length > 0) ? (
+    <>
+      <ReviewRating size="lg" summary={game.review_summary} percent={game.review_positive_percent} total={game.review_total} criticScore={game.critic_score} />
+      {ccuParts.length > 0 && <span className="dh-players num">{ccuParts.join(' · ')}</span>}
+    </>
+  ) : null;
   const hasSteamCard = !!(game.review_positive_percent || game.heat_rank || game.critic_score || game.achievement_count || (game.steam_appid && game.family_sharing != null) || game.has_dlc != null);
   const hasMore = game.has_ending != null || game.server_type || game.activities?.length > 0 || game.story_length || game.is_esports || game.has_workshop || subGenres.length > 0;
 
@@ -214,10 +219,10 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         image={heroImage}
         videoUrl={game.video_url || null}
         name={game.name}
+        meta={headMeta}
         badges={
           <>
             {playersChip && <span className="badge players-chip">{playersChip}</span>}
-            {game.review_summary && <span className={`review-badge ${getReviewClass(game.review_summary)}`}>{game.review_summary}</span>}
             {game.category && <span className={`badge-neutral ${badgeClass(game.category)}`}>{game.category}</span>}
             {game.is_early_access && <span className="badge badge-accent">얼리 액세스</span>}
           </>
@@ -329,7 +334,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
                   <>
                     <p className="steam-pct">
                       <span className="num">{game.review_positive_percent}%</span>
-                      {game.review_summary && <span className={`review-badge ${getReviewClass(game.review_summary)}`}>{game.review_summary}</span>}
+                      {game.review_summary && <span className={`review-badge ${reviewTone(game.review_summary)}`}>{game.review_summary}</span>}
                     </p>
                     {game.review_total && <p className="steam-count">전체 리뷰 <span className="num">{game.review_total.toLocaleString('ko-KR')}</span>개</p>}
                     <div className="steam-bar" role="img" aria-label={`긍정 ${game.review_positive_percent}%`}>
@@ -429,30 +434,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             </section>
           )}
 
-          {/* 플레이어 현황 + 더 자세히 */}
-          {((game.current_players || game.player_history?.length >= 2) || hasMore) && (
+          {/* 더 자세히 */}
+          {hasMore && (
             <div className="detail-two">
-              {(game.current_players || game.player_history?.length >= 2) && (
-                <section className="detail-card">
-                  <h3 className="detail-card-title">플레이어 현황</h3>
-                  <div className="player-stats">
-                    {game.current_players && (
-                      <div className="player-stat-card">
-                        <span className="player-stat-label">지금 접속 중</span>
-                        <span className="player-stat-num">{game.current_players.toLocaleString('ko-KR')}명</span>
-                      </div>
-                    )}
-                    {game.peak_players && (
-                      <div className="player-stat-card">
-                        <span className="player-stat-label">역대 최고</span>
-                        <span className="player-stat-num">{game.peak_players.toLocaleString('ko-KR')}명</span>
-                      </div>
-                    )}
-                  </div>
-                  {game.player_history?.length >= 2 && <PlayerChart data={game.player_history} />}
-                  <p className="detail-card-note">Steam 기준 · 매일 자정 갱신</p>
-                </section>
-              )}
               {hasMore && (
                 <section className="detail-card">
                   <h3 className="detail-card-title">더 자세히</h3>

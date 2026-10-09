@@ -2,10 +2,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useId, useState } from 'react';
+import { useState } from 'react';
 import type { HotItem, HotTab, RankChange } from '../../lib/hotChart';
 import LowestPriceBadge from '../LowestPriceBadge';
 import GameImage from '../GameImage';
+import ReviewRating from '../ReviewRating';
 import StreamerBadge from './StreamerBadge';
 
 // 44396 → 4.4만
@@ -37,32 +38,6 @@ function Price({ item }: { item: HotItem }) {
   );
 }
 
-// 최근 7일 동접자 미니 선 그래프 (기록 3일 이상인 게임만 데이터가 옴)
-function Sparkline({ points }: { points: number[] }) {
-  if (points.length < 2) return null;
-  const w = 64, h = 22;
-  const min = Math.min(...points), max = Math.max(...points);
-  const span = max - min || 1;
-  const d = points.map((p, i) => `${((i / (points.length - 1)) * w).toFixed(1)},${(h - 2 - ((p - min) / span) * (h - 4)).toFixed(1)}`).join(' ');
-  const gid = `spark-${useId().replace(/:/g, '')}`;
-  return (
-    <span className="hc-spark" title="최근 7일 동접자">
-      <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} aria-hidden="true">
-        {/* 선 아래 같은 녹색의 옅은 세로 그라데이션 (위 15% → 아래 0%, 다크에서만 보임) */}
-        <defs>
-          <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="currentColor" stopOpacity="0.15" />
-            <stop offset="1" stopColor="currentColor" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <polygon className="hc-spark-area" points={`0,${h} ${d} ${w},${h}`} fill={`url(#${gid})`} />
-        <polyline points={d} fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-      </svg>
-      <span className="hc-spark-label">7일</span>
-    </span>
-  );
-}
-
 const metaText = (item: HotItem) =>
   [item.players, item.currentPlayers ? `동접 ${formatCount(item.currentPlayers)}` : ''].filter(Boolean).join(' · ');
 
@@ -83,7 +58,7 @@ function BigCard({ item }: { item: HotItem }) {
         {item.fun && <span className="hc-card-fun">{item.fun}</span>}
         <span className="hc-card-foot">
           <span className="hc-card-meta">{metaText(item)}</span>
-          <Sparkline points={item.spark} />
+          <ReviewRating summary={item.reviewSummary} percent={item.reviewPercent} total={item.reviewTotal} />
         </span>
         <Price item={item} />
         <StreamerBadge names={item.streamers} max={2} />
