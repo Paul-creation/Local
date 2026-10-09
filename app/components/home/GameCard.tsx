@@ -87,9 +87,9 @@ export default function GameCard({ game, badge, image, imgProps = { steamSize: '
                   <span className="result-price-off">
                     <span className="discount-badge">-{price.discount}%</span>
                     <span className="price-original">{price.formattedOriginal}</span>
+                    <SaleEnds endsAt={price.saleEndsAt} />
                   </span>
                 )}
-                {price.discount > 0 && <SaleEnds endsAt={price.saleEndsAt} />}
                 <span className="result-price-main">
                   <span className="price-final">{price.formattedFinal}</span>
                   <LowestPriceBadge timing={getLowestTiming(game, price)} />

@@ -187,7 +187,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
     ? buyTimingLine(priceHistory, { currentPrice: price.final, currentDiscount: price.discount, lowestPrice: game.lowest_price ?? null, now: Date.now() })
     : null;
   // 역대 최저가 게이지 — 정가·현재가·역대 최저가가 모두 있고 앞뒤가 맞을 때만. 아니면 null → 예전 "역대 최저 ..." 줄·문구를 그대로 둔다
-  const gauge = showPriceRecord && price ? lowestGauge(price.regular, price.final, game.lowest_price >= 100 ? game.lowest_price : null) : null;
+  const gauge = showPriceRecord && price && price.discount > 0 ? lowestGauge(price.regular, price.final, game.lowest_price >= 100 ? game.lowest_price : null) : null;
   const lowestDate = formatDate(game.lowest_price_date);
   const isMulti = (game.party_max ?? game.max_players ?? 0) > 1;
   const playersChip = game.max_players === 1 ? '혼자' : playersText(game);
@@ -266,8 +266,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             {!gauge && showPriceRecord && game.lowest_price >= 100 && (
               <p className="price-card-lowest">
                 역대 최저 <span className="num">₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}</span>
-                {game.lowest_price_shop && ` · ${game.lowest_price_shop}`}
-                {formatDate(game.lowest_price_date) && ` · ${formatDate(game.lowest_price_date)}`}
+                {lowestDate && ` (${lowestDate})`}
               </p>
             )}
             {timing === 'near' && <LowestPriceBadge timing={timing} />}

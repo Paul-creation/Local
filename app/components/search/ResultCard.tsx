@@ -59,9 +59,9 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
                   <span className="result-price-off">
                     <span className="discount-badge">-{price.discount}%</span>
                     <span className="price-original">{price.formattedOriginal}</span>
+                    <SaleEnds endsAt={price.saleEndsAt} />
                   </span>
                 )}
-                {price.discount > 0 && <SaleEnds endsAt={price.saleEndsAt} />}
                 <span className="price-final">{price.formattedFinal}</span>
               </>
             ) : null}

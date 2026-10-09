@@ -2917,9 +2917,11 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* 링�
 .shots-close { font-size: var(--fs-l); }
 .shots-count { min-width: 64px; text-align: center; font-size: var(--fs-s); color: var(--text); }
 
-/* 할인 종료 시각 — 할인 줄 바로 아래 한 줄 (components/SaleEnds). 24시간 안이면 --sale */
-.sale-ends { display: block; min-height: 18px; font-size: 13px; line-height: 18px; font-weight: 600; color: var(--text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* 할인 종료 시각 (components/SaleEnds) — 카드는 할인 줄(.result-price-off, flex-wrap) 오른쪽 " · 10/14 02:00까지", 모자라면 다음 줄. 24시간 안이면 --sale */
+.sale-ends { font-size: 13px; line-height: 18px; font-weight: 600; color: var(--text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .sale-ends.is-soon { color: var(--sale); }
+.sale-ends.is-row, .sale-ends.is-detail { display: block; min-height: 18px; }
+.feature-price { flex-wrap: wrap; }
 .hc-row-price { flex-direction: column; align-items: flex-end; }
 .hc-row-price .sale-ends { text-align: right; }
 .sale-ends.is-detail { margin-top: -4px; }

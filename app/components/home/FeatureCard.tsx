@@ -41,10 +41,10 @@ export default function FeatureCard({ game, label, sub, priority = false }: { ga
             <>
               {price.discount > 0 && <span className="discount-badge">-{price.discount}%</span>}
               {price.discount > 0 && <span className="price-original">{price.formattedOriginal}</span>}
+              {price.discount > 0 && <SaleEnds endsAt={price.saleEndsAt} />}
               <span className="price-final">{price.formattedFinal}</span>
             </>
           ) : null}
-          {price && price.discount > 0 && <SaleEnds endsAt={price.saleEndsAt} />}
         </span>
       </span>
     </Link>

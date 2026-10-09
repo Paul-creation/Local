@@ -37,7 +37,7 @@ function Price({ item }: { item: HotItem }) {
         <span className="hc-price-final">{item.price}</span>
         <LowestPriceBadge timing={item.lowest} />
       </span>
-      {item.discount > 0 && <SaleEnds endsAt={item.saleEndsAt} />}
+      {item.discount > 0 && <SaleEnds endsAt={item.saleEndsAt} variant="row" />}
     </>
   );
 }
