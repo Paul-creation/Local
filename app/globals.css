@@ -1603,7 +1603,7 @@ a.series-item:hover { border-color: var(--border); }
 .home-event[data-tone="red"]    { --ev-bg: #1F1214; --ev-border: #3A2226; }
 .home-event[data-tone="green"]  { --ev-bg: #121C16; --ev-border: #21352A; }
 .home-event[data-tone="pink"]   { --ev-bg: #1E1419; --ev-border: #36232D; }
-.home-event[data-tone="gold"]   { --ev-bg: #1E1A10; --ev-border: #3A321C; }
+.home-event[data-tone="gold"]   { --ev-bg: var(--card); --ev-border: var(--border); }
 .home-event[data-tone="purple"] { --ev-bg: #17142A; --ev-border: #2A2546; }
 .home-event[data-tone="teal"]   { --ev-bg: #0F1D20; --ev-border: #1C3439; }
 .home-event[data-tone="orange"] { --ev-bg: #1F1610; --ev-border: #3A2A1E; }
@@ -1613,7 +1613,8 @@ a.series-item:hover { border-color: var(--border); }
 :root[data-theme="light"] .home-event[data-tone="red"]    { --ev-bg: #fbeeee; --ev-border: #f0d6d6; }
 :root[data-theme="light"] .home-event[data-tone="green"]  { --ev-bg: #ecf6ef; --ev-border: #d2e8da; }
 :root[data-theme="light"] .home-event[data-tone="pink"]   { --ev-bg: #fbeff4; --ev-border: #f0d5e1; }
-:root[data-theme="light"] .home-event[data-tone="gold"]   { --ev-bg: #faf4e3; --ev-border: #ecdfb8; }
+:root[data-theme="light"] .home-event[data-tone="gold"]   { --ev-bg: var(--card); --ev-border: var(--border); }
+.home-event[data-tone="gold"] .home-event-title { color: var(--accent-text); } /* 강조는 제목에만 */
 :root[data-theme="light"] .home-event[data-tone="purple"] { --ev-bg: #f0eefa; --ev-border: #dcd7f0; }
 :root[data-theme="light"] .home-event[data-tone="teal"]   { --ev-bg: #e8f6f7; --ev-border: #cce6e9; }
 :root[data-theme="light"] .home-event[data-tone="orange"] { --ev-bg: #fbf1e8; --ev-border: #efdcc8; }
