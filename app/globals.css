@@ -1445,21 +1445,22 @@ img { display: block; }
   .coop-video-card { flex: 0 0 78%; scroll-snap-align: start; }
 }
 
-/* 메인 — 스트리머들이 밤새운 협동 게임: 1200px 이상 4칸 · 그 아래 3칸 · 640px 이하 2칸 (게임이 6개뿐이면 4칸에서는 4개만 보여 마지막 줄이 비지 않게) */
-.sg-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 16px; }
-@media (min-width: 1200px) {
-  .sg-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .sg-grid:not(:has(.sg-item:nth-child(7))) .sg-item:nth-child(n+5) { display: none; }
+/* 메인 — 스트리머들이 밤새운 협동 게임: 900px 이상은 4칸 격자(접힘이면 첫 줄 4개만, "더 보기"로 12개) · 900px 미만은 가로 한 줄 스크롤(인원별 추천과 같은 패턴) */
+.sg-grid { list-style: none; margin: 0; padding: 0; display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; margin-right: -16px; padding-right: 16px; }
+.sg-grid::-webkit-scrollbar { display: none; }
+.sg-item { flex: 0 0 min(78%, 280px); scroll-snap-align: start; }
+.sg-more { display: none; }
+@media (min-width: 900px) {
+  .sg-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px 16px; overflow: visible; scroll-snap-type: none; margin-right: 0; padding-right: 0; }
+  .sg-item { flex: none; }
+  .sg-grid.is-collapsed .sg-item:nth-child(n+5) { display: none; }
+  .sg-more { display: flex; justify-content: center; width: 100%; min-height: 44px; margin-top: 12px; }
 }
 .sg-item { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .sg-card { flex: 1; width: 100%; } /* 같은 줄 카드끼리 높이를 맞춰 가격 위치가 같게 (공통 카드 .gc) */
 .sg-card .sc-chip { color: var(--text-2); font-size: var(--fs-xs); }
 .sg-video { padding: 6px 0; font-size: var(--fs-m); font-weight: 700; color: var(--text-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
 .sg-video:hover { text-decoration-thickness: 2px; }
-@media (max-width: 640px) {
-  .sg-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 12px; }
-  .sg-item:nth-child(n+7) { display: none; }
-}
 
 /* TOP 10 배지 (검색 결과 카드·상세 페이지) */
 .top10-badge {
@@ -2875,14 +2876,14 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* 링�
    움직임 줄이기(prefers-reduced-motion: reduce)면 전환·이동 모두 끔
    ============================================================ */
 @media (prefers-reduced-motion: no-preference) {
-  .people-cards, .hc-cards { scroll-behavior: smooth; }
+  .people-cards, .hc-cards, .sg-grid { scroll-behavior: smooth; }
   :root :is(.feature-card, .gc) { transition: transform 150ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out; }
 }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   :root :is(.feature-card, .gc):hover { transform: translateY(-2px); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .people-cards, .hc-cards { scroll-behavior: auto; }
+  .people-cards, .hc-cards, .sg-grid { scroll-behavior: auto; }
   :root :is(.feature-card, .gc), :root :is(.feature-card, .gc):hover { transition: none; transform: none; }
 }
 
