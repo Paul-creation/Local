@@ -84,7 +84,8 @@ export default async function Home() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd).replace(/</g, '\\u003c') }} />
       <GameGrid
         peopleReady={!!peopleRecs}
-        sections={<HomeSections event={<HomeEvent />} featured={featured} hotTabs={hotTabs} popularPosts={popularPosts} streamerTheme={streamerTheme} peopleRecs={peopleRecs} homeExcluded={homeExcluded} />}
+        event={<HomeEvent />}
+        sections={<HomeSections featured={featured} hotTabs={hotTabs} popularPosts={popularPosts} streamerTheme={streamerTheme} peopleRecs={peopleRecs} homeExcluded={homeExcluded} />}
         top10Ids={hot.top10Ids}
       />
     </main>

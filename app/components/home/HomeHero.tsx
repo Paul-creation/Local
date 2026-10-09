@@ -5,8 +5,8 @@ import SearchPanel from '../search/SearchPanel';
 import PeopleSelect from './PeopleSelect';
 import type { GameFilters } from '../../lib/useGameFilters';
 
-// 히어로(제목·한 줄 설명) + 인원 선택 + 검색창·필터·AI 추천. 검색 결과를 볼 때는 검색창 줄만 위에 남긴다.
-// home-only로 감싼 부분은 필터 주소로 들어온 첫 HTML에서 숨김 (globals.css). 이벤트 배너는 홈 섹션(HomeSections)으로 옮겼다
+// 히어로: 제목·한 줄 설명 → 검색창·필터·AI 추천 → 인원 선택·내 PC 바. 검색 결과를 볼 때는 검색창 줄만 위에 남긴다.
+// home-only로 감싼 부분은 필터 주소로 들어온 첫 HTML에서 숨김 (globals.css). 이벤트 배너는 히어로 위(GameGrid)에 있다
 export default function HomeHero({ games, filters, showEvent, sidebar = false }: { games: any[], filters: GameFilters, showEvent: boolean, sidebar?: boolean }) {
   return (
     <div className={`home-hero${showEvent ? ' is-home' : ''}`}>
@@ -19,13 +19,13 @@ export default function HomeHero({ games, filters, showEvent, sidebar = false }:
         </div>
       )}
 
-      {/* 인원 버튼이 주 동작, 검색창은 보조라 그 아래 */}
-      {showEvent && <div className="home-only"><PeopleSelect /></div>}
-
-      {/* 검색창은 모드가 바뀌어도 같은 자리(마지막 칸)에 두어 입력 중 포커스가 유지되게 */}
+      {/* 검색창은 모드가 바뀌어도 같은 자리(둘째 칸, 인원 선택이 숨어도 칸은 그대로)에 두어 입력 중 포커스가 유지되게 */}
       <div className="home-search">
         <SearchPanel games={games} filters={filters} sidebar={sidebar} />
       </div>
+
+      {/* 검색창 아래 인원 버튼 + 내 PC 바 */}
+      {showEvent && <div className="home-only"><PeopleSelect /></div>}
     </div>
   );
 }
