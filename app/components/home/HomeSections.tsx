@@ -1,7 +1,6 @@
 // 담당: Paul(메인 배너·디자인)
 // 서버 컴포넌트 — 메인 첫 HTML에 바로 들어감 (차트처럼 움직이는 부분만 클라이언트 컴포넌트)
 import type { ReactNode } from 'react';
-import Link from 'next/link';
 import HotChart from './HotChart';
 import type { HotTab } from '../../lib/hotChart';
 import type { PostListItem } from '../../lib/community';
@@ -46,11 +45,7 @@ export default function HomeSections({ event, featured, hotTabs, popularPosts = 
       {/* 스트리머들이 밤새운 협동 게임 — 위 섹션에 나온 게임은 뺀 뒤 선정, 6개 미만이면 통째로 숨김 (lib/streamerTheme) */}
       <StreamerSection theme={streamerTheme} />
 
-      {showPopular ? (
-        <PopularPosts posts={popularPosts} />
-      ) : (
-        <div className="home-community-link"><Link href="/community" className="home-more">커뮤니티 가기 →</Link></div>
-      )}
+      {showPopular && <PopularPosts posts={popularPosts} />}
     </>
   );
 }
