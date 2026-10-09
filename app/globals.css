@@ -77,9 +77,6 @@
   --lowest-text: #beee11;
   --verdict-rec: var(--lowest-text);  /* PC 사양 판정: 권장 충족 — 역대 최저가 녹색 */
   --verdict-fail: #f43f5e;           /* PC 사양 판정: 최소 미달 */
-  --lowest-bg: rgba(190, 238, 17, 0.06);
-  --lowest-border: rgba(190, 238, 17, 0.45);
-  --lowest-radius: 999px;
   --tag-radius: 4px;
   --price-surface: var(--card-surface);
   --tag-bg: #0f141b;          /* 카드보다 살짝 어두운 칩 */
@@ -197,12 +194,8 @@
   --discount-text: var(--sale);
   --discount-border: var(--sale-border);
   --discount-radius: var(--radius-badge);
-  --lowest-text: var(--sale);
   --verdict-rec: var(--up);           /* 라이트에서 --lowest-text는 빨강(--sale)이라 미달과 헷갈려서 녹색(--up) */
   --verdict-fail: #f43f5e;
-  --lowest-bg: transparent;
-  --lowest-border: var(--sale-border);
-  --lowest-radius: 5px;
   --tag-radius: var(--radius-badge);
   --price-surface: color-mix(in srgb, var(--card) 82%, transparent);
   --tag-bg: #F1F3F6;           /* 라이트 태그 칩만 예외로 조정 — 흰 카드 위에서 반 톤 낮은 면 + 얇은 테두리 */
@@ -692,7 +685,7 @@ img { display: block; }
 }
 .timing-badge.is-overlay { position: absolute; bottom: 8px; right: 8px; background: var(--card); }
 
-.timing-badge.best { color: var(--lowest-text); background: var(--lowest-bg); border: 1px solid var(--lowest-border); border-radius: var(--lowest-radius); font-size: var(--fs-m); }
+.timing-badge.best { color: var(--accent-text); border: 1px solid var(--accent); font-size: var(--fs-m); }
 .timing-badge.near { color: var(--text-muted); border: 1px solid var(--border); }
 
 .badge-neutral {
@@ -2114,7 +2107,7 @@ a.hc-row:hover { background: var(--card-hover); }
 .buy-price-original { color: var(--text-muted); font-size: var(--fs-m); text-decoration: line-through; font-variant-numeric: tabular-nums; }
 .price-card-now { font-size: 40px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.1; color: var(--text); font-variant-numeric: tabular-nums; }
 .price-card-store { font-size: 22px; color: var(--accent-text); }
-.lowest-pill { align-self: flex-start; padding: 4px 12px; border-radius: var(--radius-chip); border: 1px solid var(--lowest-border); background: var(--lowest-bg); color: var(--lowest-text); font-size: var(--fs-l); font-weight: 800; }
+.lowest-pill { align-self: flex-start; padding: 4px 12px; border-radius: var(--radius-chip); border: 1px solid var(--accent); background: var(--card); color: var(--accent-text); font-size: var(--fs-l); font-weight: 800; }
 .price-card-lowest { font-size: var(--fs-m); color: var(--text-muted); }
 /* 버튼 영역: 세 줄(구매+하트 · 비교 · 비교 상태)이 이 컨테이너 하나의 폭을 같이 쓴다 — 줄마다 폭·여백을 따로 주지 않음 */
 .price-card-buttons { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
