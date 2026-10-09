@@ -39,7 +39,6 @@
   --review-border: rgba(163, 212, 245, 0.45);
   --up: #4ADE80;              /* 순위 상승·활발히 업데이트 중 */
   --down: #FF7A70;
-  --mixed: #E5B84B;
 
   /* 헤더 */
   --header-bg: #1b2838;      /* 히어로 그라데이션 시작색과 같은 값 */
@@ -178,7 +177,6 @@
   --review-border: rgba(10, 95, 180, 0.4);
   --up: #17692f;
   --down: #c62828;
-  --mixed: #7a5800;
   --header-bg: #0a4fae;
   --header-text: #ffffff;
   --header-text-2: rgba(255, 255, 255, 0.88);
@@ -627,7 +625,7 @@ img { display: block; }
 }
 
 .review-badge.positive { color: var(--review); border: 1px solid var(--review-border); }
-.review-badge.mixed { color: var(--mixed); border: 1px solid var(--gold-border); }
+.review-badge.mixed { color: var(--text-muted); border: 1px solid var(--border); }
 .review-badge.negative { color: var(--sale); border: 1px solid var(--sale-border); }
 
 /* ============================================================
@@ -1110,20 +1108,7 @@ img { display: block; }
 
 
 
-/* ============================================================
-   CHARTS
-   ============================================================ */
 
-.chart-wrap { margin-bottom: 8px; }
-.chart-svg { width: 100%; height: 130px; overflow: visible; }
-.chart-area { fill: var(--sale); fill-opacity: 0.08; }
-.chart-line { fill: none; stroke: var(--danger); stroke-width: 2; }
-.chart-dot { fill: var(--bg-card); stroke: var(--text-dimmer); stroke-width: 2; }
-.chart-dot.has-discount { stroke: var(--danger); }
-.chart-labels { display: flex; justify-content: space-between; margin-top: 10px; }
-.chart-label { font-size: var(--fs-sub); color: var(--text-dimmer); text-align: center; }
-.chart-label strong { display: block; font-size: var(--fs-m); color: var(--text-dim); margin-top: 2px; }
-.chart-label strong.has-discount { color: var(--danger); }
 
 /* 할인 전적 그래프 — 색은 모두 변수라 테마를 바꾸면 같이 바뀐다 */
 .dchart-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
@@ -1784,7 +1769,7 @@ a.series-item:hover { border-color: var(--border); }
 .rating { display: inline-flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; }
 .rating-main { display: inline-flex; align-items: baseline; gap: 6px; font-weight: 800; white-space: nowrap; }
 .rating-main.is-positive { color: var(--review); }
-.rating-main.is-negative { color: var(--sale); }
+.rating-main.is-negative { color: var(--down); }
 .rating-main.is-mixed { color: var(--text-muted); }
 .rating.is-sm { flex-shrink: 0; }
 .rating.is-sm .rating-main { font-size: var(--fs-s); }
@@ -2146,9 +2131,8 @@ a.hc-row:hover { background: var(--card-hover); }
 .trio-sub { font-size: var(--fs-s); color: var(--text-muted); line-height: 1.45; }
 
 /* 스팀 카드 */
+.steam-card.is-solo { grid-template-columns: minmax(0, 1fr); }
 .steam-card { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 20px; }
-.steam-pct { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.steam-pct > .num { font-size: 40px; font-weight: 900; letter-spacing: -0.03em; line-height: 1; color: var(--review); }
 .steam-count { font-size: var(--fs-s); color: var(--text-muted); margin-top: 6px; }
 .steam-bar { height: 12px; border-radius: 6px; background: var(--inset); overflow: hidden; margin-top: 10px; }
 .steam-bar span { display: block; height: 100%; background: var(--review); border-radius: 6px; }
@@ -2156,16 +2140,13 @@ a.hc-row:hover { background: var(--card-hover); }
 .steam-recent { margin-top: 16px; }
 .steam-recent-head { font-size: var(--fs-m); font-weight: 800; color: var(--text-2); }
 .steam-trend { margin-top: 6px; font-size: var(--fs-m); font-weight: 700; }
-.steam-trend.is-down { color: var(--sale); }
+.steam-trend.is-down { color: var(--down); }
 .steam-trend.is-up { color: var(--up); }
 .steam-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .steam-cell { display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: var(--radius-card-sm); background: var(--inset); min-width: 0; }
 .steam-cell-label { font-size: var(--fs-xs); font-weight: 700; color: var(--text-muted); }
 .steam-cell-value { font-size: var(--fs-l); font-weight: 700; color: var(--text); line-height: 1.5; }
 .steam-rank { font-size: 28px; font-weight: 900; color: var(--accent-text); letter-spacing: -0.02em; line-height: 1.1; }
-.score-ring-track { fill: none; stroke: var(--border); stroke-width: 5; }
-.score-ring-fill { fill: none; stroke: var(--up); stroke-width: 5; stroke-linecap: round; }
-.score-ring-num { fill: var(--text); font-size: var(--fs-l); font-weight: 900; font-family: inherit; }
 
 /* 게임 정보 가로 한 줄 */
 .info-row { display: flex; flex-wrap: wrap; gap: 0; padding: 6px; }
@@ -2196,8 +2177,6 @@ a.hc-row:hover { background: var(--card-hover); }
 /* 플레이어 현황 + 더 자세히 */
 .detail-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
 .detail-two > :only-child { grid-column: 1 / -1; }
-.chart-label { color: var(--text-muted); font-size: var(--fs-xs); }
-.chart-label strong { color: var(--text-2); }
 .more-list { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px 16px; font-size: var(--fs-l); }
 .more-list dt { color: var(--text-muted); font-weight: 700; white-space: nowrap; }
 .more-list dd { color: var(--text); font-weight: 600; overflow-wrap: anywhere; }
@@ -2571,11 +2550,9 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 .info-value { font-size: var(--fs-l); font-weight: 600; color: var(--text); }
 
 /* 핵심 수치 — PC 32px(순위 28px), 모바일 24px */
-.steam-pct > .num { font-size: 32px; }
 .steam-rank { font-size: 28px; }
 @media (max-width: 760px) {
-  .steam-pct > .num, .steam-rank { font-size: 24px; }
-}
+  }
 
 /* 태그 칩 */
 .category-tag { border-radius: var(--tag-radius); color: var(--tag-text); background: var(--tag-bg); box-shadow: inset 0 0 0 1px var(--tag-border); }
