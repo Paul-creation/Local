@@ -55,7 +55,7 @@ function parseKoreanSupport(languages, fullAudioLanguages) {
 
 function parseFamilySharing(categories) {
   const ids = (categories || []).map((c) => c.id);
-  return !ids.includes(62);
+  return ids.includes(62);
 }
 
 function parseStorage(html) {
