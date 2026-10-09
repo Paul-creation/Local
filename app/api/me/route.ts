@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { clearSessionCookie, getSessionUser } from '../../lib/user';
-import { USER_COOKIE } from '../../lib/user/session';
+import { clearStaleSession, getSessionUser } from '../../lib/user';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,6 +12,6 @@ export async function GET(req: NextRequest) {
   if (user) return NextResponse.json({ id: user.id, persona_name: user.persona_name, avatar_url: user.avatar_url }, { headers: NO_STORE });
   const res = NextResponse.json({ error: '로그인이 필요해요.' }, { status: 401, headers: NO_STORE });
   // 만료·위조·탈퇴로 못 쓰게 된 쿠키가 남아 있으면 치워 둔다
-  if (req.cookies.get(USER_COOKIE)) clearSessionCookie(res);
+  clearStaleSession(req, res);
   return res;
 }

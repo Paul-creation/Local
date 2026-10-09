@@ -28,7 +28,7 @@ export function buildLoginUrl(siteUrl: string, next: string): string {
   return `${STEAM_OPENID_ENDPOINT}?${q.toString()}`;
 }
 
-export type SteamLoginResult = { ok: true; steamId: string; next: string } | { ok: false; reason: string };
+export type SteamLoginResult = { ok: true; steamId: string; next: string; nonce: string } | { ok: false; reason: string };
 const reject = (reason: string): SteamLoginResult => ({ ok: false, reason });
 
 // 스팀이 돌려준 openid.* 값을 우리 쪽에서 먼저 확인 (네트워크 없음)
@@ -55,11 +55,12 @@ export function checkAssertion(query: URLSearchParams, siteUrl: string, nowMs = 
   const signed = (p.signed || '').split(',');
   if (!REQUIRED_SIGNED.every((f) => signed.includes(f))) return reject('unsigned_fields');
 
-  // 같은 응답을 나중에 다시 쓰는 것(재사용) 막기: 스팀의 1회용 확인 + 우리 쪽 시간 제한
-  const t = Date.parse((p.response_nonce || '').slice(0, 20));
-  if (!Number.isFinite(t) || Math.abs(nowMs - t) > NONCE_MAX_AGE_MS) return reject('stale_nonce');
+  // 같은 응답을 나중에 다시 쓰는 것(재사용) 막기: 스팀의 1회용 확인 + 우리 쪽 시간 제한 + 콜백에서 nonce를 DB에 기록해 두 번째는 거부(consumeNonce)
+  const nonce = p.response_nonce || '';
+  const t = Date.parse(nonce.slice(0, 20));
+  if (nonce.length > 255 || !Number.isFinite(t) || Math.abs(nowMs - t) > NONCE_MAX_AGE_MS) return reject('stale_nonce');
 
-  return { ok: true, steamId: m[1], next: sanitizeNext(rt.searchParams.get('next')) };
+  return { ok: true, steamId: m[1], next: sanitizeNext(rt.searchParams.get('next')), nonce };
 }
 
 // 스팀 서버에 되묻기. 받은 openid.* 를 그대로 보내되 mode만 check_authentication으로 바꾼다
@@ -74,7 +75,7 @@ export async function askSteamIsValid(query: URLSearchParams, fetchImpl: typeof 
       body,
       cache: 'no-store',
       redirect: 'error',
-      signal: AbortSignal.timeout(6000),
+      signal: AbortSignal.timeout(5000),
     });
     if (!res.ok) return false;
     return (await res.text()).split(/\r?\n/).some((line) => line.trim() === 'is_valid:true');

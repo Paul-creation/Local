@@ -8,6 +8,7 @@
   - 기록 테이블 삭제 금지의 예외 — 개인정보처리방침에 따른 post_reports·feedback 1년 경과분 삭제(`scripts/purge-old-records.mjs`), ip_hash 90일 경과분 비우기(`scripts/purge-ip-hash.mjs`). 그 외 삭제는 여전히 금지
   - 기록 테이블 삭제 금지의 예외 — `user_owned_games`는 스팀 상태의 사본(캐시)이라 동기화할 때 통째로 교체(삭제 후 다시 채움)해도 된다.
   - 기록 테이블 삭제 금지의 예외 — 회원 탈퇴 시 `users`와 그 하위 표(`on delete cascade`로 따라 지워지는 표) 삭제.
+  - 기록 테이블 삭제 금지의 예외 — `used_openid_nonces`는 기록 테이블이 아니라 보안용 임시 표라, 하루 지난 행은 로그인 콜백이 지워도 된다.
 - 데이터를 채우는 스크립트는 이미 있는 값을 덮어쓰지 않고, 한 번 처리한 항목은 다시 처리하지 않게 만든다.
 - 새 영어 태그는 Supabase `tag_map` 표에 번역을 추가한다. 매주 갱신 때 자동 반영되고, 바로 반영하려면 Supabase에서 `select normalize_tags();` 를 실행한다.
 - 화면에 보이는 문구는 한국어로 쓴다.

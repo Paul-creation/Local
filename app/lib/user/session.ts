@@ -48,3 +48,13 @@ export const userCookieOptions = {
   sameSite: 'lax' as const, // 스팀에서 돌아오는 최상위 이동에는 쿠키가 실려야 하므로 strict 아님
   path: '/api',
 };
+
+// 로그인 표시 쿠키 — 헤더·카드가 "로그인했을 때만" /api/me, /api/me/owned를 부르게 하는 힌트. JS가 읽어야 하므로 httpOnly가 아니다.
+// 값은 항상 1이고 개인정보가 없다. 이것만으로는 아무 권한이 없다 (진짜 확인은 user_session을 받은 서버가 한다). 만료는 user_session과 같다
+export const LOGGED_IN_COOKIE = 'logged_in';
+export const loggedInCookieOptions = {
+  httpOnly: false,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax' as const,
+  path: '/', // 페이지(JS)에서 읽어야 해서 user_session(/api)과 달리 사이트 전체
+};

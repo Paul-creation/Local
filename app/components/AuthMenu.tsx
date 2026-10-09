@@ -1,8 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { clearOwnedCache, hasLoggedInCookie, useOwned } from './owned/useOwned';
 
 // 헤더 오른쪽 로그인 영역 — 로그인 상태는 페이지 캐시(revalidate)를 깨지 않도록 클라이언트에서 /api/me로 가져온다.
+// 로그인 표시 쿠키(logged_in=1)가 없으면 서버에 묻지 않는다 (익명 방문자의 401 호출 없음).
 // 헤더 링크가 전부 a(전체 새로고침)라 매 페이지마다 부르지 않게 결과를 sessionStorage에 잠깐(5분) 기억한다.
 type Me = { id: string; persona_name: string | null; avatar_url: string | null };
 type State = Me | null | undefined; // undefined: 아직 모름
@@ -44,6 +46,11 @@ export default function AuthMenu() {
   }, []);
 
   useEffect(() => {
+    if (!hasLoggedInCookie()) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- 바깥(쿠키)에서 한 번 읽어 오는 초기화
+      setMe(null);
+      return;
+    }
     const cached = readCache();
     if (cached !== undefined) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- 바깥(sessionStorage)에서 한 번 읽어 오는 초기화
@@ -71,9 +78,11 @@ export default function AuthMenu() {
     setOpen(false);
     try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' }); } catch {}
     clearCache();
+    clearOwnedCache();
     setMe(null);
   };
 
+  const { visibility } = useOwned();
   const noticeEl = notice ? <div className="auth-notice" role="status">{notice}</div> : null;
 
   if (me) {
@@ -87,6 +96,7 @@ export default function AuthMenu() {
         </button>
         {open && (
           <div className="auth-pop" role="menu">
+            {visibility === 'private' && <p className="auth-pop-note">스팀 프로필의 게임 세부 정보를 공개로 바꾸면 보유 게임이 표시돼요</p>}
             <button type="button" role="menuitem" className="auth-pop-item" onClick={logout}>로그아웃</button>
           </div>
         )}
@@ -105,6 +115,7 @@ export default function AuthMenu() {
         tabIndex={me === undefined ? -1 : undefined}
         onClick={(e) => {
           clearCache();
+          clearOwnedCache();
           e.currentTarget.href = `/api/auth/steam/login?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
         }}
       >

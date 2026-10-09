@@ -7,6 +7,7 @@ import { cardChips } from '../../lib/tagGroups';
 import type { TagTree } from '../../lib/tagTree';
 import { playersText } from '../../lib/players';
 import GameImage from '../GameImage';
+import OwnedChip from '../owned/OwnedChip';
 
 // 스팀 외 스토어 이름 (games.source)
 const STORE_NAME: Record<string, string> = { epic: 'Epic', battlenet: 'Battle.net', riot: 'Riot', ea: 'EA app', ubisoft: 'Ubisoft Connect', gog: 'GOG' };
@@ -40,6 +41,7 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
           {game.name}
         </span>
         {store && <span className="result-store">{store}</span>}
+        <OwnedChip steamAppid={game.steam_appid} />
         {chips.length > 0 && <span className="result-meta">{chips.map((c) => <span key={c.text} className={`hc-tag${c.kind === 'special' ? ' tag-special' : ''}`}>{c.text}</span>)}</span>}
         {players && <span className="result-players">{players}</span>}
         <span className="result-foot">

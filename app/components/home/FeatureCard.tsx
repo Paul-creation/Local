@@ -6,6 +6,7 @@ import { playersText } from '../../lib/players';
 import { badgeClass } from '../../lib/badge.mjs';
 import GameImage from '../GameImage';
 import GotyBadge from '../GotyBadge';
+import OwnedChip from '../owned/OwnedChip';
 
 const decode = (s: string) => s.replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&#39;/g, "'");
 
@@ -27,6 +28,7 @@ export default function FeatureCard({ game, label, sub, priority = false }: { ga
         <span className="feature-title">{game.name}</span>
         {intro && <span className="feature-intro">{intro}</span>}
         <span className="feature-badges">
+          <OwnedChip steamAppid={game.steam_appid} />
           <GotyBadge awards={game.goty_awards} />
           {game.category && <span className={`badge-neutral ${badgeClass(game.category)}`}>{game.category}</span>}
           {players && <span className="badge">{players}</span>}

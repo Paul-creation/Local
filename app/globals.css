@@ -369,6 +369,14 @@ img { display: block; }
   border-radius: var(--radius-btn);
   z-index: 110;
 }
+.auth-pop-note {
+  max-width: 260px;
+  padding: 8px 12px;
+  color: var(--text-2);
+  font-size: var(--fs-xs);
+  line-height: 1.5;
+  white-space: normal;
+}
 .auth-pop-item {
   display: block;
   width: 100%;
@@ -445,6 +453,10 @@ img { display: block; }
 .chip::after { content: ''; position: absolute; inset: -4px -2px; }
 .chip:hover { border-color: var(--text-faint); color: var(--text); }
 .chip.on, .chip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-text); }
+/* 눌리지 않는 표시용 칩("보유 중") — 색·모양은 .chip.on 그대로, 커서와 터치 영역만 뺀다. 카드·상단 줄에 들어가도록 높이만 작게 */
+.chip.is-static { cursor: default; min-height: 28px; padding: 2px 10px; font-size: var(--fs-xs); }
+.chip.is-static::after { display: none; }
+.result-body > .chip.is-static { align-self: flex-start; }
 
 /* 뱃지: 배경 없이 1px 테두리 + 색 글자 */
 .badge {

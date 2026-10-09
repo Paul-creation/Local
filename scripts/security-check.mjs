@@ -81,8 +81,12 @@ function checkUserLogin(clientFiles) {
   oid.includes('check_authentication') && oid.includes('is_valid:true') && oid.includes("op_endpoint !== STEAM_OPENID_ENDPOINT")
     ? ok('스팀 로그인: 스팀 서버 재검증(check_authentication)·op_endpoint 확인 적용') : bad('스팀 로그인 검증 코드가 빠졌거나 바뀜 (app/lib/user/steamOpenId.ts)');
   read('app/api/auth/steam/callback/route.ts').includes('verifySteamLogin') ? ok('로그인 콜백이 verifySteamLogin을 거침') : bad('로그인 콜백이 검증 없이 통과할 수 있음 (app/api/auth/steam/callback/route.ts)');
+  const cb = read('app/api/auth/steam/callback/route.ts');
+  cb.includes('consumeNonce') && cb.indexOf('consumeNonce') < cb.indexOf('upsertSteamUser') ? ok('로그인 콜백이 nonce 재사용을 막은 뒤에 사용자를 만듦') : bad('로그인 콜백에 nonce 재사용 차단이 없거나 순서가 틀림', 'consumeNonce를 upsertSteamUser보다 먼저 호출');
+  /getSessionUserId/.test(read('app/api/me/owned/route.ts')) ? ok('/api/me/owned가 세션을 확인함') : bad('/api/me/owned에 세션 확인 없음');
+  /LOGGED_IN_COOKIE, '1'/.test(read('app/lib/user/index.ts')) ? ok('logged_in 표시 쿠키 값은 항상 1 (개인정보 없음)') : bad('logged_in 표시 쿠키 값 확인 필요 (app/lib/user/index.ts)');
   const cookieUsers = execSync("grep -rlE \"user_session|USER_COOKIE|USER_SESSION_SECRET\" app proxy.ts --include=*.ts --include=*.tsx || true").toString().trim().split('\n')
-    .filter((f) => f && !f.startsWith('app/lib/user/') && f !== 'app/api/me/route.ts');
+    .filter((f) => f && !f.startsWith('app/lib/user/'));
   cookieUsers.length === 0 ? ok('사용자 세션 쿠키·비밀 키를 app/lib/user/ 밖에서 직접 다루지 않음') : bad(`사용자 세션을 모듈 밖에서 직접 다룸: ${cookieUsers.join(', ')}`, 'app/lib/user의 함수로만 접근');
   const leakyUser = clientFiles.filter((f) => /from\s+['"][./]*(lib\/)?user(\/[a-zA-Z]+)?['"]/.test(read(f)));
   leakyUser.length === 0 ? ok('브라우저 코드가 사용자 모듈을 가져오지 않음') : bad(`브라우저 코드가 사용자 모듈 import: ${leakyUser.join(', ')}`);
@@ -103,6 +107,28 @@ async function checkUsersDb() {
   else { bad('브라우저 키로 users에 쓸 수 있음!', 'revoke all on public.users from anon, authenticated; 실행'); await admin.from('users').delete().eq('steam_id', '00000000000000000'); }
   const upd = await anon.from('users').update({ persona_name: '__security_test__' }).eq('steam_id', '00000000000000000');
   upd.error?.code === '42501' ? ok('브라우저 키로 users 수정 차단됨') : bad(`브라우저 키로 users 수정 권한이 있음${upd.error ? ` (${upd.error.message})` : ''}`, 'revoke update on public.users from anon, authenticated; 실행');
+}
+
+// 보유 게임·nonce 표: 브라우저 키로 읽기·쓰기·교체 함수 실행 모두 차단
+async function checkOwnedDb() {
+  for (const [table, col, row] of [
+    ['used_openid_nonces', 'nonce', { nonce: '__security_test__' }],
+    ['user_owned_games', 'user_id', { user_id: '00000000-0000-0000-0000-000000000000', steam_appid: 1 }],
+  ]) {
+    const probe = await anon.from(table).select(col).limit(1);
+    if (probe.error?.code === '42P01' || /does not exist|schema cache/i.test(probe.error?.message || '')) { note(`${table} 표 없음 — supabase/migrations/20261017090000_owned_games.sql 실행 전`); continue; }
+    probe.error ? ok(`브라우저 키로 ${table} 읽기 차단됨`) : bad(`브라우저 키로 ${table}을 읽을 수 있음!`, `revoke all on public.${table} from anon, authenticated; 실행`);
+    const ins = await anon.from(table).insert(row);
+    if (ins.error?.code === '42501') ok(`브라우저 키로 ${table} 쓰기 차단됨`);
+    else if (ins.error) note(`브라우저 키로 ${table} 쓰기 시도 → 권한이 아닌 다른 이유로 실패 (${ins.error.message})`);
+    else { bad(`브라우저 키로 ${table}에 쓸 수 있음!`, `revoke all on public.${table} from anon, authenticated; 실행`); await admin.from(table).delete().eq(col, row[col]); }
+  }
+  const vis = await anon.from('users').select('owned_visibility').limit(1);
+  if (vis.error && !/does not exist|schema cache/i.test(vis.error.message || '')) ok('브라우저 키로 users.owned_visibility 읽기 차단됨');
+  else if (!vis.error) bad('브라우저 키로 users.owned_visibility를 읽을 수 있음!', 'revoke all on public.users from anon, authenticated; 실행');
+  const rpc = await anon.rpc('replace_owned_games', { p_user: '00000000-0000-0000-0000-000000000000', p_appids: [] });
+  if (/Could not find the function|does not exist/i.test(rpc.error?.message || '')) note('replace_owned_games 함수 없음 — owned_games.sql 실행 전');
+  else rpc.error?.code === '42501' ? ok('브라우저 키로 replace_owned_games 실행 차단됨') : bad(`브라우저 키로 보유 게임 교체 함수를 실행할 수 있음!${rpc.error ? ` (${rpc.error.message})` : ''}`, 'revoke all on function public.replace_owned_games(uuid, bigint[]) from public, anon, authenticated; 실행');
 }
 
 // 디스코드 웹후크 주소는 서버에서만: NEXT_PUBLIC_ 이름 금지, 브라우저 코드에서 안 읽음, 빌드된 브라우저 번들에 없음
@@ -193,6 +219,7 @@ async function checkDb() {
 
   await checkGameCommentsDb(anyGame);
   await checkUsersDb();
+  await checkOwnedDb();
   await checkStreamerDb();
 
   const { count } = await admin.from('compare_cache').select('game_ids', { count: 'exact', head: true });

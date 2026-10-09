@@ -30,6 +30,7 @@ import { selectGames, mergedTargetOf } from '../../lib/visibleGames';
 import ContentNotice from '../../components/ContentNotice';
 import TagHelp from '../../components/search/TagHelp';
 import TagChips from '../../components/TagChips';
+import OwnedChip from '../../components/owned/OwnedChip';
 import { detailChipGroups } from '../../lib/tagGroups';
 import { buildTree, type TagDict } from '../../lib/tagTree';
 import tagDict from '../../lib/tag-search-dict.json';
@@ -213,6 +214,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         meta={headMeta}
         badges={
           <>
+            <OwnedChip steamAppid={game.steam_appid} />
             {playersChip && <span className="badge players-chip">{playersChip}</span>}
             {game.category && <span className={`badge-neutral ${badgeClass(game.category)}`}>{game.category}</span>}
             {game.is_early_access && <span className="badge badge-accent">얼리 액세스</span>}

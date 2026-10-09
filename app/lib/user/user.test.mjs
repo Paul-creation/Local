@@ -60,7 +60,7 @@ const good = (over = {}) => {
 };
 
 test('응답 확인: 정상이면 SteamID와 돌아갈 곳', () => {
-  assert.deepEqual(checkAssertion(good(), SITE, NOW), { ok: true, steamId: STEAM, next: '/wishlist' });
+  assert.deepEqual(checkAssertion(good(), SITE, NOW), { ok: true, steamId: STEAM, next: '/wishlist', nonce: '2026-10-16T12:00:00ZabcDEF' });
 });
 
 test('응답 확인: 하나라도 어긋나면 거부', () => {
@@ -98,7 +98,7 @@ test('스팀 재검증: is_valid:true일 때만 통과, 보내는 값은 mode만
   const now = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
   const q = good({ 'openid.response_nonce': now + 'abc' });
   const r = await verifySteamLogin(q, SITE, mk('ns:http://specs.openid.net/auth/2.0\nis_valid:true\n'));
-  assert.deepEqual(r, { ok: true, steamId: STEAM, next: '/wishlist' });
+  assert.deepEqual(r, { ok: true, steamId: STEAM, next: '/wishlist', nonce: now + 'abc' });
   assert.equal(sent.method, 'POST');
   assert.equal(sent.body.get('openid.mode'), 'check_authentication');
   assert.equal(sent.body.get('openid.sig'), 'c2ln+/=');
@@ -118,4 +118,56 @@ test('프로필 정리: 이름 다듬기, 스팀 이미지 주소만', () => {
   assert.equal(cleanProfile({ avatarmedium: 'https://steamstatic.com.evil.test/a.jpg' }).avatar_url, null);
   assert.equal(cleanProfile(null).persona_name, null);
   assert.equal([...cleanProfile({ personaname: 'a'.repeat(100) }).persona_name].length, 64);
+});
+
+// ── 보유 게임 · nonce ─────────────────────────────────────────
+import { fetchOwnedGames, parseOwnedGames } from './ownedGames.ts';
+
+const KEY = 'k'.repeat(10);
+
+test('보유 게임: 공개 응답 → appid 목록 (중복·이상한 값 제거)', () => {
+  const r = parseOwnedGames({ response: { game_count: 4, games: [{ appid: 440 }, { appid: 440 }, { appid: 570, playtime_forever: 5 }, { appid: 'x' }, { appid: -1 }, { appid: 99999999999 }] } });
+  assert.deepEqual(r, { kind: 'public', appids: [440, 570] });
+});
+
+test('보유 게임: 비공개로 보이는 응답은 모두 private', () => {
+  for (const body of [{ response: {} }, {}, { response: null }, { response: { game_count: 3 } }, { response: { games: 'x' } }, null, 'oops'])
+    assert.deepEqual(parseOwnedGames(body), { kind: 'private' }, JSON.stringify(body));
+});
+
+test('보유 게임: 공개인데 0개(game_count:0)는 public 빈 목록', () => {
+  assert.deepEqual(parseOwnedGames({ response: { game_count: 0 } }), { kind: 'public', appids: [] });
+  assert.deepEqual(parseOwnedGames({ response: { game_count: 0, games: [] } }), { kind: 'public', appids: [] });
+});
+
+test('보유 게임 조회: 요청 주소·오류 처리 (가짜 fetch)', async () => {
+  let url = '';
+  const f = (body, ok = true) => async (u) => { url = u; return { ok, json: async () => body }; };
+  assert.deepEqual(await fetchOwnedGames('76561198000000000', KEY, f({ response: { games: [{ appid: 10 }] } })), { kind: 'public', appids: [10] });
+  assert.match(url, /GetOwnedGames\/v1\//);
+  assert.match(url, /include_played_free_games=1/);
+  assert.match(url, /steamid=76561198000000000/);
+  assert.deepEqual(await fetchOwnedGames('76561198000000000', KEY, f({ response: {} })), { kind: 'private' });
+  assert.deepEqual(await fetchOwnedGames('76561198000000000', KEY, f({}, false)), { kind: 'error' }); // HTTP 오류
+  assert.deepEqual(await fetchOwnedGames('76561198000000000', KEY, async () => { throw new Error('net'); }), { kind: 'error' });
+  assert.deepEqual(await fetchOwnedGames('76561198000000000', KEY, async () => ({ ok: true, json: async () => { throw new Error('bad json'); } })), { kind: 'error' });
+  assert.deepEqual(await fetchOwnedGames('76561198000000000', undefined, f({})), { kind: 'error' }); // 키 없음 → 스팀에 묻지 않음
+  assert.deepEqual(await fetchOwnedGames('abc', KEY, f({})), { kind: 'error' });
+});
+
+test('nonce: 검증 결과에 nonce가 담기고, 너무 긴 nonce는 거부', () => {
+  const r = checkAssertion(good(), SITE, NOW);
+  assert.equal(r.nonce, '2026-10-16T12:00:00ZabcDEF');
+  assert.equal(checkAssertion(good({ 'openid.response_nonce': '2026-10-16T12:00:00Z' + 'a'.repeat(300) }), SITE, NOW).ok, false);
+});
+
+// 콜백이 쓰는 "한 번만" 규칙을 DB 없이 같은 모양(기본키 충돌 → 거부)으로 시험
+test('nonce 재사용: 두 번째는 거부 (기본키 충돌 모사)', async () => {
+  const used = new Set();
+  const consume = async (n) => { if (!n || n.length > 255 || used.has(n)) return false; used.add(n); return true; };
+  const q = good({ 'openid.response_nonce': new Date().toISOString().replace(/\.\d+Z$/, 'Z') + 'once' });
+  const ok = async () => ({ ok: true, text: async () => 'is_valid:true' });
+  const login = async () => { const r = await verifySteamLogin(q, SITE, ok); return r.ok && (await consume(r.nonce)); };
+  assert.equal(await login(), true);
+  assert.equal(await login(), false); // 같은 응답을 다시 보내면 거부
 });
