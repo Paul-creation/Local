@@ -45,7 +45,7 @@ const purgeLine = purge
 const price = readPriceCheck();
 const priceParts = [['스팀', price?.steam], ['스팀 외', price?.other]]
   .filter(([, v]) => v)
-  .map(([label, v]) => `${label} ${v.failed}/${v.checked}`);
+  .map(([label, v]) => `${label} ${v.failed}/${v.checked}${v.unprocessed ? ` · 요청 제한 미처리 ${v.unprocessed}` : ''}`);
 let priceLine = priceParts.length
   ? `💸 가격을 못 받은 게임: ${(price.steam?.failed ?? 0) + (price.other?.failed ?? 0)}개 (${priceParts.join(' · ')})`
   : '💸 가격 수집: 오늘 기록 없음 (가격 단계가 안 돌았거나 실패)';
