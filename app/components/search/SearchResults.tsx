@@ -4,6 +4,8 @@
 import ShareButton from '../ShareButton';
 import { SORTS, type GameFilters } from '../../lib/useGameFilters';
 import { filterConditions } from '../../lib/filterConditions';
+import { getTagDescription } from './TagHelp';
+import { tagKeyLabel } from '../../lib/tagSearch';
 import ResultCard from './ResultCard';
 import PageSkeleton from '../status/PageSkeleton';
 
@@ -36,6 +38,13 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
       {(showResults || normalizedQuery) && loaded && (
         <>
           <div className="results-head">
+            {/* 태그로 들어왔을 때 맨 위 한 줄 — 용어집 설명이 있으면 이름 + 설명, 없으면 이름만 */}
+            {filters.selectedTags.map((t) => {
+              const name = tagKeyLabel(t, tree);
+              if (!name) return null;
+              const desc = getTagDescription(name);
+              return <p key={t} className="results-tag-note"><strong>{name}</strong>{desc && <> {desc}</>}</p>;
+            })}
             <div className="results-head-row">
               <h2 className="results-count">검색 결과 <strong className="num">{filtered.length.toLocaleString('ko-KR')}</strong>개{myPcActive && <>{' '}<span className="results-scope">내 PC 기준</span></>}</h2>
               <div className="results-head-actions">

@@ -2548,7 +2548,9 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 
 /* 태그 칩 */
 .category-tag { border-radius: var(--tag-radius); color: var(--tag-text); background: var(--tag-bg); box-shadow: inset 0 0 0 1px var(--tag-border); }
-.tag-chip-btn { border: none; font-family: inherit; line-height: inherit; cursor: pointer; }
+.tag-chip-btn { border: none; font-family: inherit; line-height: inherit; cursor: pointer; text-decoration: none; }
+.results-tag-note { margin: 0 0 10px; font-size: var(--fs-m); line-height: 1.5; color: var(--text-muted); }
+.results-tag-note strong { color: var(--text); font-weight: 800; }
 .tag-chip-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .main-tag-row .tag-chip-btn:hover, .main-tag-row .tag-chip-btn:focus-visible, .main-tag-row .tag-chip-btn[aria-pressed="true"] { color: var(--accent-text); box-shadow: inset 0 0 0 1px var(--accent-line); }
 
@@ -2654,7 +2656,11 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
    ============================================================ */
 .feature-pair { align-items: stretch; --feature-nav-h: 54px; } /* 이전·다음 줄 높이(버튼 44 + 위 여백 10) */
 .feature-carousel { display: flex; flex-direction: column; min-width: 0; }
-.feature-carousel > .feature-card { flex: 1; }
+.feature-viewport { flex: 1; display: flex; overflow: hidden; padding-top: 4px; margin-top: -4px; } /* 위 4px는 호버로 떠오르는 카드가 잘리지 않게 */
+.feature-track { flex: 1; display: grid; min-width: 0; }
+.feature-slide { grid-area: 1 / 1; display: flex; min-width: 0; }
+.feature-slide:not(.is-near) { visibility: hidden; }
+.feature-slide > .feature-card { flex: 1; min-width: 0; }
 .feature-body { flex: 1; }
 .feature-price { margin-top: auto; padding-top: 2px; }
 @media (min-width: 761px) { .feature-pair:has(.feature-nav) > .feature-card { margin-bottom: var(--feature-nav-h); } } /* 오른쪽 카드 아래 이전·다음 줄만큼 비워 두 카드 높이를 맞춤 */
@@ -2763,4 +2769,23 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 @media (prefers-reduced-motion: reduce) {
   .nav-progress.is-loading { transform: scaleX(1); transition: none; }
   .nav-progress.is-done { transition: none; }
+}
+
+/* ============================================================
+   추천 캐러셀 움직임 — 메인 추천 게임(BannerCarousel)·지금 뜨는 게임(HotChart)·인원별/찜 기반 추천(PeopleRecs·WishlistRecs)
+   슬라이드는 280ms ease-out, 카드 호버는 150ms로 살짝 떠오름(+기존 포인트색 테두리), 터치 스크롤은 snap + smooth.
+   움직임 줄이기(prefers-reduced-motion: reduce)면 전환·이동 모두 끔
+   ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  .feature-slide.is-near { transition: transform 280ms ease-out; }
+  .people-cards, .hc-cards { scroll-behavior: smooth; }
+  :root :is(.feature-card, .hc-card, .people-item > .result-card) { transition: transform 150ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out; }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  :root :is(.feature-card, .hc-card, .people-item > .result-card):hover { transform: translateY(-2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .feature-slide, .feature-slide.is-near { transition: none; }
+  .people-cards, .hc-cards { scroll-behavior: auto; }
+  :root :is(.feature-card, .hc-card, .people-item > .result-card), :root :is(.feature-card, .hc-card, .people-item > .result-card):hover { transition: none; transform: none; }
 }

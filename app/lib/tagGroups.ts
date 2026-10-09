@@ -6,7 +6,7 @@ import { nameToTagId, tagName, type TagTree } from './tagTree';
 import { sortGoty, gotyLabel } from './goty';
 
 export type ChipKind = 'special' | 'play' | 'genre' | 'feature';
-export type Chip = { text: string; kind: ChipKind; desc?: string };
+export type Chip = { text: string; kind: ChipKind; desc?: string; tagId?: number }; // tagId: 태그 나무 칸 번호 (있으면 누를 때 그 태그의 목록으로)
 export type ChipGroup = { label: string; chips: Chip[] };
 
 type GameLike = {
@@ -72,7 +72,7 @@ export function treeChips(tree: TagTree | null, game: GameLike): { genre: Chip[]
     if (PLAY_DUP.has(e.name) || (e.id != null && covered.has(e.id)) || seen.has(e.name)) continue;
     seen.add(e.name);
     const isGenre = tree && e.id != null && rootGroup(tree, e.id) === 'g:genre';
-    (isGenre ? genre : feature).push({ text: e.name, kind: isGenre ? 'genre' : 'feature' });
+    (isGenre ? genre : feature).push({ text: e.name, kind: isGenre ? 'genre' : 'feature', ...(e.id != null ? { tagId: e.id } : {}) });
   }
   return { genre, feature };
 }
