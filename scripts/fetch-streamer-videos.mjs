@@ -3,6 +3,7 @@
 // 실행: node --env-file=.env.local scripts/fetch-streamer-videos.mjs              (미리보기 — 연결 결과만 출력, DB는 안 건드림)
 //       node --env-file=.env.local scripts/fetch-streamer-videos.mjs --apply      (실제 저장, 매일 단계)
 //       --cap=N  이번 실행의 YouTube 상한을 바꿈 (기본 200, 수동 백필용)
+//       --since-days=N  채널의 확인 시각 대신 최근 N일 영상을 다시 훑음 (매칭 규칙을 고친 뒤 놓친 영상 다시 연결하기). 이미 저장된 영상은 그대로 두고 새로 연결되는 것만 추가
 // - supabase/migrations/20261014090000_streamer_videos.sql을 먼저 실행해야 함 (표가 없으면 미리보기는 data/streamers/channels.json으로, --apply는 건너뜀)
 // - --apply: channels.json에 있는데 표에 없는 채널만 추가 (이미 있는 행·켜기/끄기는 그대로)
 // - 켜진 채널만, 오래 확인 안 한 채널부터. 업로드 목록(playlistItems, 50개당 1유닛)에서 uploads_checked_at 이후 영상만
@@ -17,9 +18,8 @@
 // - YouTube 하루 상한 200유닛 (lib/streamer-videos.mjs, 하이라이트 작업이 이 몫을 빼 두고 씀). 상한에 닿으면 그 채널은 확인 시각을 안 바꾸고 멈춤 → 다음 실행 때 이어서
 import fs from 'fs';
 import { createClient } from '@supabase/supabase-js';
-import { buildMatchers, findGameHits, normalize } from '../app/lib/gameMatch.mjs';
-import { GAME_WORDS, isGenericName } from './lib/video-filter.mjs';
-import { DESC_HEAD, gameNameKeys } from './lib/coop-targets.mjs';
+import { buildMatchers } from '../app/lib/gameMatch.mjs';
+import { matchVideo } from './lib/streamer-match.mjs';
 import { STREAMER_UNITS_PER_DAY, recordStreamerVideos } from './lib/streamer-videos.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
@@ -27,6 +27,7 @@ const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
 const APPLY = process.argv.includes('--apply');
 const CAP = Number((process.argv.find((a) => a.startsWith('--cap=')) || '').slice(6)) || STREAMER_UNITS_PER_DAY;
 const BACKFILL_DAYS = 60;
+const SINCE_DAYS = Number((process.argv.find((a) => a.startsWith('--since-days=')) || '').slice(13)) || 0;
 const SHORT_MAX_SEC = 60;
 const PAGE = 1000;
 
@@ -54,8 +55,6 @@ function parseDuration(iso) {
   const m = /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/.exec(iso || '');
   return m ? (Number(m[1] || 0) * 3600 + Number(m[2] || 0) * 60 + Number(m[3] || 0)) : 0;
 }
-
-const norm = (s) => String(s || '').toLowerCase().replace(/[\s\p{P}\p{S}]/gu, '');
 
 async function readAll(table, cols, filter = (q) => q) {
   const rows = [];
@@ -88,58 +87,11 @@ async function loadChannels() {
   return { channels: rows, seed };
 }
 
-// 일반 단어 이름 게임: 제목에 게임 단어(이름 부분 빼고) 또는 영문 원제 + 한국어 이름이 같이 있어야 함
-function genericOk(game, title) {
-  const keys = gameNameKeys(game);
-  let rest = norm(title);
-  for (const k of keys) rest = rest.split(k).join(' ');
-  if (GAME_WORDS.test(rest)) return true;
-  const t = norm(title);
-  const en = norm(String(game.name || '').replace(/[™®©]/g, ''));
-  const ko = keys.filter((k) => /[가-힣]/.test(k));
-  return t.includes(en) && ko.some((k) => t.includes(k));
-}
-
-// 이름 바로 뒤가 비교·후속작 표현("피코파크 같은", "스타듀밸리 감성", "오공 후속작")이거나
-// 따로 떨어진 한 자리 숫자("그레이브야드 키퍼 2", "keeper2는")면 그 게임 영상이 아님
-// "빅워크 3원정대"·"롤 1대1"·"문명6 3화"·"세피리아 2026-08-26"·"스테퍼 레트로 #1"은 그대로 연결
-const COMPARE_AFTER = /^(?:같은|처럼|감성|느낌|스러운|후속|짝퉁|아류)/;
-const SEQUEL_AFTER = /^ ?\d(?=$| |[은는이가을를의도와과로에](?:$| ))/;
-
-// → { hits: 쓸 수 있는 매칭, notIds: 이 글에서 "그 게임이 아니"라고 드러난 게임 }
-function hitsIn(raw, where, matchers) {
-  const text = raw.replace(/#(?=\s?\d)/g, 'ep '); // "#1"은 회차 번호 → 속편 숫자로 안 봄
-  const spaced = normalize(text);
-  const keyText = spaced.replace(/ /g, '');
-  const keyToSpaced = [];
-  for (let i = 0; i < spaced.length; i++) if (spaced[i] !== ' ') keyToSpaced.push(i);
-  const hits = [];
-  const notIds = new Set();
-  for (const h of findGameHits(text, matchers)) {
-    const end = h.start + h.len;
-    if (COMPARE_AFTER.test(keyText.slice(end)) || SEQUEL_AFTER.test(spaced.slice(keyToSpaced[end - 1] + 1))) notIds.add(h.id);
-    else hits.push({ ...h, where });
-  }
-  return { hits, notIds };
-}
-
-function matchVideo(v, matchers, gamesById) {
-  const title = hitsIn(v.title, 'title', matchers);
-  const desc = v.is_short ? { hits: [] } : hitsIn(v.description.slice(0, DESC_HEAD), 'description', matchers);
-  // 제목에서 "그 게임이 아니"라고 드러난 게임은 설명(해시태그 등)에서도 연결하지 않음
-  const hits = [...title.hits, ...desc.hits.filter((h) => !title.notIds.has(h.id))].filter((h) => {
-    const g = gamesById.get(h.id);
-    return !isGenericName(g) || (h.where === 'title' && genericOk(g, v.title));
-  });
-  if (!hits.length) return null;
-  hits.sort((a, b) => b.len - a.len || (a.where === 'title' ? 0 : 1) - (b.where === 'title' ? 0 : 1) || a.start - b.start);
-  return hits[0];
-}
-
 // 한 채널의 새 영상 → { checked, linked: 저장할 행[], unlinked, cursor }
 async function scanChannel(ch, matchers, gamesById) {
   const startedAt = new Date();
-  const since = ch.uploads_checked_at ? Date.parse(ch.uploads_checked_at) : startedAt.getTime() - BACKFILL_DAYS * 24 * 3600 * 1000;
+  const since = SINCE_DAYS ? startedAt.getTime() - SINCE_DAYS * 24 * 3600 * 1000
+    : ch.uploads_checked_at ? Date.parse(ch.uploads_checked_at) : startedAt.getTime() - BACKFILL_DAYS * 24 * 3600 * 1000;
   const playlistId = `UU${ch.channel_id.slice(2)}`;
 
   // 업로드 목록은 최신순 → since보다 오래된 영상이 나오면 멈춤
