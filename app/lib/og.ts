@@ -38,6 +38,12 @@ export const OG_COLOR = {
   discountText: '#beee11', // --discount-text
 };
 
+// 말줄임은 "…"(U+2026) 하나로 통일 — CSS text-overflow·lineClamp에 맡기면 글꼴에 따라 ".." 처럼 찍혀서 글자 수로 직접 자름
+export function clip(text: string, max: number) {
+  const t = (text || '').replace(/\s+/g, ' ').trim();
+  return t.length > max ? `${t.slice(0, max - 1).trimEnd()}…` : t;
+}
+
 // 카드 이미지를 서버에서 미리 받아 data URI로 넘김. 못 받거나 형식이 안 맞으면 null → 그 게임은 이름만 보여줌
 // (ImageResponse에 주소를 그대로 넘기면 이미지 하나만 실패해도 그림 전체가 깨져서 빈 응답이 됨)
 export async function fetchOgImage(url: string | null | undefined): Promise<string | null> {
