@@ -1,10 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import { PEOPLE_CHOICES, type PeopleN } from '../../lib/peopleRecs';
 import { PLAYERS_MAX } from '../../lib/rangeFilter';
 import { peopleHref as href, peopleButtonTarget } from '../../lib/peopleLink';
-import PcSpecPanel from '../pcspec/PcSpecPanel';
+import MyPcLink from '../pcspec/MyPcLink';
 import { useMyPc } from '../pcspec/useMyPc';
 import { usePeople } from './PeopleContext';
 
@@ -15,12 +14,11 @@ export const peopleHref = (n: PeopleN, myPc: boolean) => href(n, myPc, PLAYERS_M
 
 // 검색창 바로 아래 "2인 / 3인 / 4인 / 5인 이상" 한 줄 4칸 + 내 PC 토글
 // 인원별 추천 데이터가 없으면(recsReady 거짓) 버튼은 선택 표시만 바꾸고 바로 그 인원의 검색 결과(/?players=N)로 이동
-// 내 PC 사양이 저장돼 있으면 "내 PC로 돌아가는 게임만"(기본 꺼짐 — 사양을 저장해도 자동으로 켜지 않음), 없으면 사양 입력 패널을 여는 텍스트 버튼
+// 내 PC 사양이 저장돼 있으면 "내 PC로 돌아가는 게임만"(기본 꺼짐 — 사양을 저장해도 자동으로 켜지 않음), 없으면 /my-pc(사양 등록 화면)로 가는 링크
 export default function PeopleSelect() {
   const { n, setN, myPcOn, setMyPcOn, recsReady } = usePeople();
   const { pc, ready } = useMyPc();
   const myPcActive = ready && !!pc && myPcOn;
-  const [panel, setPanel] = useState(false);
   return (
     <div className="people-select">
       <div className="people-btns" role="group" aria-label="몇 명이서 할까요?">
@@ -33,12 +31,9 @@ export default function PeopleSelect() {
           {pc ? (
             <button type="button" className={`chip${myPcOn ? ' on' : ''}`} aria-pressed={myPcOn} onClick={() => setMyPcOn(!myPcOn)}>내 PC로 돌아가는 게임만</button>
           ) : (
-            <button type="button" className="people-link" aria-expanded={panel} onClick={() => setPanel((v) => !v)}>내 PC로 돌아가는 게임 찾기</button>
+            <MyPcLink className="people-link">내 PC로 돌아가는 게임 찾기</MyPcLink>
           )}
         </div>
-      )}
-      {ready && !pc && panel && (
-        <div className="people-panel"><PcSpecPanel onDone={() => setPanel(false)} onCancel={() => setPanel(false)} /></div>
       )}
     </div>
   );

@@ -5,7 +5,7 @@ import { useState, type ReactNode } from 'react';
 import TagHelp, { getTagDescription } from './TagHelp';
 import { useChipHint } from './ChipHint';
 import RangeSlider from './RangeSlider';
-import PcSpecPanel from '../pcspec/PcSpecPanel';
+import MyPcLink from '../pcspec/MyPcLink';
 import { BARRIERS, NETS, type GameFilters } from '../../lib/useGameFilters';
 import { EXCLUDE_TAG_IDS, type TagTree } from '../../lib/tagTree';
 import { PLAYERS_MAX, PRICE_MAX, PRICE_ALL, FREE_ONLY, isAll, playersLabel, priceLabel } from '../../lib/rangeFilter';
@@ -51,8 +51,6 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
   } = filters;
   const [openRoots, setOpenRoots] = useState<number[]>([]);
   const [moreRoots, setMoreRoots] = useState<number[]>([]);
-  // 내 PC 입력 패널 — 사양을 등록해도 필터는 자동으로 켜지지 않는다 (등록 뒤 "내 PC로 돌아가는 게임만" 칩을 직접 눌러 켠다)
-  const [pcPanel, setPcPanel] = useState(false);
   const playHint = useChipHint(PLAY_DESCS, '방식을 누르면 설명이 나와요');
   const soloHint = useChipHint(SOLO_DESCS, '버튼을 누르면 설명이 나와요');
   const barrierHint = useChipHint(BARRIER_DESCS, '단계를 누르면 설명이 나와요');
@@ -77,7 +75,7 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
       </div>
 
       <div className="filter-body">
-        {/* 내 PC로 돌아가는 게임만 — 맨 위(인원보다 위). 최소 사양 미달만 뺀다 (app/lib/specJudge.runsOnMyPc). 사양은 브라우저에만 저장 */}
+        {/* 내 PC로 돌아가는 게임만 — 맨 위(인원보다 위). 최소 사양 미달만 뺀다 (app/lib/specJudge.runsOnMyPc). 사양은 브라우저에만 저장, 등록·수정은 /my-pc */}
         {myPcReady && (
           <section className="filter-section">
             {myPc ? (
@@ -87,17 +85,11 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
                 </div>
                 <p className="pcs-summary">
                   {myPc.gpu.name} / {myPc.cpu.name} / {myPc.ram}GB
-                  <button type="button" className="pcs-link" aria-expanded={pcPanel} onClick={() => setPcPanel(!pcPanel)}>변경</button>
+                  <MyPcLink className="pcs-link">변경</MyPcLink>
                 </p>
               </>
             ) : (
-              <button type="button" className="pcs-link pcs-filter-btn" aria-expanded={pcPanel} onClick={() => setPcPanel(!pcPanel)}>내 PC 사양 입력하기</button>
-            )}
-            {pcPanel && (
-              <PcSpecPanel
-                onDone={() => setPcPanel(false)}
-                onCancel={() => setPcPanel(false)}
-              />
+              <MyPcLink className="pcs-link pcs-filter-btn">내 PC 사양 입력하기</MyPcLink>
             )}
           </section>
         )}

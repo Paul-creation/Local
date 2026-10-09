@@ -1,17 +1,18 @@
 'use client';
 
-import { Fragment, useState, type ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { hasJudgeableSpec, judgePc, LEVEL_TITLE, PART_SHORT, verdictReason, verdictText, type PartLevel, type PcPart, type SpecLike } from '../../lib/specJudge';
 import { toUserPc } from '../../lib/myPc';
-import PcSpecPanel from './PcSpecPanel';
+import MyPcLink from './MyPcLink';
 import { useMyPc } from './useMyPc';
 
 type Row = { label: string; value: string };
 type Parsed = { min?: SpecLike | null; rec?: SpecLike | null };
 
 // 상세 페이지 "내 PC 사양 진단" 카드 하나 — 입력 유도 · 판정 요약 · 부품별 표 · 원문 사양이 모두 이 카드 안에 있다
-// 미입력: 가운데 큰 안내 + "내 PC 사양 입력하기" 버튼(누르면 카드 안에서 입력 패널이 펼쳐짐) → 부품 / 최소 / 권장 표 + 원문 사양 접기 (늘 보임)
-// 입력됨 + 최소 사양을 하나라도 읽은 게임: 제목 오른쪽 "사양 변경" → 판정 요약 · 플래그 → 부품별 표 → 맨 아래 "원문 사양 보기" 접기
+// 사양 등록·수정은 /my-pc에서만 한다 (이 카드는 판정만, 링크는 지금 주소를 ?back=으로 실어 보냄)
+// 미입력: 제목 오른쪽 "내 PC 등록하기 →" + 제목 아래 보조 한 줄 → 부품 / 최소 / 권장 표 + 원문 사양 접기 (늘 보임)
+// 입력됨 + 최소 사양을 하나라도 읽은 게임: 제목 오른쪽 "사양 변경"(/my-pc) → 판정 요약 · 플래그 → 부품별 표 → 맨 아래 "원문 사양 보기" 접기
 // 최소 사양을 전부 못 읽은 게임: 표·판정 없이 원문 사양과 "사양 정보를 읽지 못했어요"만
 // 사양은 브라우저에만 저장돼 있어서 판정은 여기서 한다. 카드 목록에는 판정을 넣지 않는다
 
@@ -81,16 +82,15 @@ function SpecTable({ parsed, minRows, recRows, verdict, mine }: { parsed: Parsed
 
 export default function PcSpecCard({ parsed, minRows, recRows }: { parsed: Parsed | null; minRows: Row[] | null; recRows: Row[] | null }) {
   const { pc, ready } = useMyPc();
-  const [open, setOpen] = useState(false);
   const judgeable = hasJudgeableSpec(parsed);
-  const panel = open && <div className="pcs-panel-wrap"><PcSpecPanel onDone={() => setOpen(false)} onCancel={() => setOpen(false)} /></div>;
   const verdict = ready && judgeable && pc ? judgePc(toUserPc(pc), parsed) : null;
   const state = !judgeable ? 'hidden' : !ready ? 'loading' : verdict ? verdict.level : 'empty'; // 테두리: rec·fail만 색
 
   const title = (
     <div className="pcs-card-head">
       <h3 className="pcs-card-title">내 PC 사양 진단</h3>
-      {verdict && <button type="button" className="pcs-change" aria-expanded={open} onClick={() => setOpen((o) => !o)}>사양 변경</button>}
+      {verdict && <MyPcLink className="pcs-change">사양 변경</MyPcLink>}
+      {state === 'empty' && <MyPcLink className="pcs-link">내 PC 등록하기 →</MyPcLink>}
     </div>
   );
 
@@ -106,18 +106,20 @@ export default function PcSpecCard({ parsed, minRows, recRows }: { parsed: Parse
     // 저장된 값을 읽기 전: 안내 자리만 잡아 화면이 밀리지 않게
     content = (
       <>
-        <div className="pcs-intro pcs-intro-placeholder" aria-hidden="true" />
-        <RawColumns minRows={minRows} recRows={recRows} />
+        <p className="pcs-sub" aria-hidden="true" style={{ visibility: 'hidden' }}>&nbsp;</p>
+        <div className="pcs-game-spec">
+          <SpecTable parsed={parsed} minRows={minRows} recRows={recRows} />
+          <details className="pcs-raw">
+            <summary>원문 사양 보기</summary>
+            <RawColumns minRows={minRows} recRows={recRows} />
+          </details>
+        </div>
       </>
     );
   } else if (!verdict) {
     content = (
       <>
-        <div className="pcs-intro">
-          <p className="pcs-intro-text">내 PC 사양을 입력하면 이 게임이 돌아가는지 바로 알려드려요</p>
-          {!open && <button type="button" className="btn btn-primary pcs-cta" aria-expanded={open} onClick={() => setOpen(true)}>내 PC 사양 입력하기</button>}
-        </div>
-        {panel}
+        <p className="pcs-sub">내 PC를 등록하면 이 게임이 돌아가는지 알려드려요</p>
         <div className="pcs-game-spec">
           <SpecTable parsed={parsed} minRows={minRows} recRows={recRows} />
           <details className="pcs-raw">
@@ -132,7 +134,6 @@ export default function PcSpecCard({ parsed, minRows, recRows }: { parsed: Parse
     const mine: Record<PcPart, string> = { cpu: pc!.cpu.name, gpu: pc!.gpu.name, ram: `${pc!.ram}GB` };
     content = (
       <>
-        {panel}
         <p className={`pcs-verdict is-${verdict.level}`}>{LEVEL_TITLE[verdict.level]}</p>
         <p className={`pcs-reason is-${verdict.level}`}>{verdictReason(verdict)}</p>
         {flags.length > 0 && <p className="pcs-flags">{flags.join(' · ')}</p>}

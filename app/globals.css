@@ -306,6 +306,7 @@ img { display: block; }
 }
 /* 모바일(768px 미만)에서는 홈(로고가 대신함)·의견 보내기(푸터에 있음)를 헤더에서 숨겨 한 줄에 다 들어가게 함 */
 @media (max-width: 767px) { .site-menu .is-desktop-only { display: none; } }
+@media (max-width: 899px) { .site-menu .is-wide-only { display: none; } } /* "내 PC"는 900px 이상에서만 (그보다 좁으면 로그인 영역과 겹침) */
 
 .site-menu a, .theme-toggle {
   /* 터치 영역 44px */
@@ -1741,7 +1742,6 @@ a.series-item:hover { border-color: var(--border); }
 .people-pc { display: flex; justify-content: center; }
 .people-link { min-height: 44px; padding: 0 4px; border: none; background: none; font-family: inherit; font-size: var(--fs-m); font-weight: 700; color: var(--accent-text); cursor: pointer; }
 .people-link:hover { text-decoration: underline; }
-.people-panel { width: 100%; max-width: 560px; margin: 0 auto; }
 /* 인원별·찜 기반 추천 — 데스크톱 3열, 모바일은 가로 스크롤(다음 카드가 일부 보이게) */
 .people-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .people-item { display: flex; min-width: 0; }
@@ -2772,6 +2772,20 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 .pcs-text-empty { color: var(--text-2); }
 .pcs-link { min-height: 44px; padding: 0 4px; border: none; background: none; font-family: inherit; font-size: var(--fs-l); font-weight: 700; color: var(--accent-text); cursor: pointer; }
 .pcs-link:hover { text-decoration: underline; }
+a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* 링크로 쓸 때도 터치 영역 44px */
+.pcs-sub { margin: 0 0 8px; font-size: var(--fs-l); line-height: 1.5; color: var(--text-2); }
+/* /my-pc — 한 열 720px */
+.my-pc { max-width: 720px; margin: 0 auto; padding: 8px 0 24px; }
+.my-pc-title { margin: 0; font-size: 30px; font-weight: 900; letter-spacing: -0.03em; color: var(--text); }
+.my-pc-sub { margin: 8px 0 0; font-size: var(--fs-s); color: var(--text-muted); }
+.my-pc-status { min-height: 22px; margin: 12px 0 8px; font-size: var(--fs-m); font-weight: 700; color: var(--text-2); }
+.my-pc-placeholder { min-height: 300px; }
+.my-pc-rows { display: flex; flex-direction: column; gap: 14px; margin: 0; }
+.my-pc-rows dt { font-size: var(--fs-s); color: var(--text-muted); }
+.my-pc-rows dd { margin: 2px 0 0; font-size: var(--fs-xl); font-weight: 800; color: var(--text); word-break: keep-all; }
+.my-pc-confirm { font-size: var(--fs-l); font-weight: 700; color: var(--text); }
+.my-pc-back { margin-top: 8px; }
+.my-pc-uses { margin: 28px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; font-size: var(--fs-s); line-height: 1.5; color: var(--text-muted); }
 /* PC 사양 카드 — 판정 요약 + 부품별 표 (권장 충족 녹색 · 최소만 충족 기본 글자색 · 미달 --verdict-fail) */
 .pcs-card { display: flex; flex-direction: column; gap: 6px; padding: 44px 36px; margin: 8px 0; } /* 주변 카드보다 확실히 크게 — 위아래 여백을 넉넉히 */
 /* 판정별 상단 테두리 3px — 권장 충족 녹색 · 최소 미달 --verdict-fail, 최소만 충족은 기존 테두리 그대로 */
@@ -2789,11 +2803,6 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 .pcs-reason.is-fail { color: var(--verdict-fail); }
 .pcs-flags { margin: 0; font-size: 14px; line-height: 1.5; color: var(--text-muted); }
 /* 미입력: 가운데 큰 안내 + 큰 주요 버튼, 입력 패널은 같은 카드 안에서 펼쳐짐, 그 아래 게임 사양은 항상 보임 */
-.pcs-intro { display: flex; flex-direction: column; align-items: center; gap: 22px; padding: 20px 0 28px; text-align: center; }
-.pcs-intro-placeholder { min-height: 150px; }
-.pcs-intro-text { margin: 0; max-width: 24em; font-size: 24px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.45; color: var(--text); }
-.pcs-cta { min-height: 56px; padding: 0 36px; font-size: 18px; }
-.pcs-panel-wrap { width: 100%; max-width: 560px; margin: 0 auto 28px; }
 .pcs-game-spec { padding-top: 24px; border-top: 1px solid var(--border-soft); }
 .pcs-card .spec-columns { padding: 4px 0 0; }
 .pcs-table { width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 15px; }
@@ -2811,8 +2820,6 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 .pcs-raw .spec-columns { padding: 4px 0 4px; }
 @media (max-width: 640px) {
   .pcs-card { padding: 32px 20px; }
-  .pcs-intro-text { font-size: 20px; }
-  .pcs-cta { width: 100%; }
   .pcs-verdict { font-size: 24px; }
   .pcs-reason { font-size: 18px; }
   .pcs-table, .pcs-table tbody { display: block; }

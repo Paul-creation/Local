@@ -7,6 +7,7 @@ export default function SiteFooter() {
     <footer className="site-footer">
       <nav className="site-footer-links" aria-label="사이트 정보">
         <Link href="/">{SITE_NAME}</Link>
+        <Link href="/my-pc">내 PC</Link>
         <Link href="/terms">이용약관</Link>
         <Link href="/privacy">개인정보처리방침</Link>
         <Link href="/feedback">의견 보내기</Link>
