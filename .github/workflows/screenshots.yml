@@ -1,0 +1,30 @@
+name: 스크린샷 채우기 (수동 실행)
+
+on:
+  workflow_dispatch:        # Actions 탭에서 직접 실행 (첫 대량 채우기용, 빈 칸만 채움)
+    inputs:
+      max:
+        description: '이번에 처리할 최대 게임 수 (비우면 전부, 2초 간격이라 836개 ≈ 30분)'
+        required: false
+        default: ''
+
+concurrency:
+  group: data-jobs
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: 환경변수 파일 만들기
+        run: printf '%s\n' "$ENV_FILE" > .env.local
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+      - run: node --env-file=.env.local scripts/enrich-screenshots.mjs ${{ inputs.max && format('--max={0}', inputs.max) || '' }}

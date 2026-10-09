@@ -11,7 +11,7 @@ let lastRequestAt = 0;
 
 export class ItadLimitError extends Error {}
 
-async function itadGet(path, params) {
+async function itadGet(path, params, body) {
   const qs = new URLSearchParams({ key: ITAD_KEY, ...params });
   for (let attempt = 0; ; attempt++) {
     const wait = lastRequestAt + REQUEST_GAP_MS - Date.now();
@@ -21,7 +21,9 @@ async function itadGet(path, params) {
     let status = 0;
     let retryAfter = 0;
     try {
-      const res = await fetch(`https://api.isthereanydeal.com${path}?${qs}`);
+      const res = await fetch(`https://api.isthereanydeal.com${path}?${qs}`, body
+        ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }
+        : undefined);
       status = res.status;
       if (res.ok) return await res.json();
       retryAfter = Number(res.headers.get('retry-after')) || 0;
@@ -32,8 +34,31 @@ async function itadGet(path, params) {
     const retryable = status === 0 || status === 429 || status >= 500;
     if (!retryable) throw new Error(`ITAD 응답 ${status}`);
     if (attempt >= MAX_RETRIES) throw new ItadLimitError(`ITAD 응답 ${status || '연결 실패'}`);
-    await sleep(Math.max(retryAfter * 1000, 5000 * (attempt + 1)));
+    // 429는 retry-after(초)만큼, 없거나 다른 오류면 점점 길게 기다림
+    await sleep(status === 429 && retryAfter ? retryAfter * 1000 : 5000 * (attempt + 1));
   }
+}
+
+// 순위·역대 최고 동접·평점. 없으면 null
+export async function getGameInfo(itadId) {
+  const json = await itadGet('/games/info/v2', { id: itadId });
+  const metascore = json?.reviews?.find((r) => r.source === 'Metascore')?.score;
+  return {
+    rank: json?.stats?.rank ?? null,
+    peakPlayers: json?.players?.peak ?? null,
+    metascore: Number.isFinite(metascore) ? metascore : null,
+  };
+}
+
+// 여러 게임의 한국 역대 최저가를 한 번에 → Map(itadId → { price, date, shop })
+export async function getHistoryLows(itadIds) {
+  const json = await itadGet('/games/historylow/v1', { country: 'KR' }, itadIds);
+  const lows = new Map();
+  for (const row of Array.isArray(json) ? json : []) {
+    const amount = row.low?.price?.amount;
+    if (amount >= 100) lows.set(row.id, { price: amount, date: new Date(row.low.timestamp).toISOString(), shop: row.low.shop?.name ?? null });
+  }
+  return lows;
 }
 
 // 찾으면 ITAD ID, 없으면 null. 요청 제한이면 ItadLimitError

@@ -32,6 +32,7 @@ const GROUPS = {
     'enrich-fallback',
     'enrich-igdb',
     'enrich-specs',
+    'enrich-screenshots --max=400', // 스팀 스크린샷 (빈 칸만, 요청 간격 2초라 한 번에 최대 400개 ≈ 14분). 첫 대량 채우기는 "스크린샷 채우기" 워크플로를 수동 실행
     'parse-specs --apply', // 사양 텍스트 → CPU·GPU 등급 등(games.spec_parsed). 새 게임·사양·출시 연도가 바뀐 게임만 처리 (spec_hash), AI 안 씀. 칸이 없으면(마이그레이션 전) 실패로 표시
     'fill-crossplay --apply --true-only', // 스팀 "Cross-Platform Multiplayer" 있는 게임만 true로 (없으면 null 그대로). 칸이 빈 스팀 게임만, AI 안 씀
     'fill-steam-categories', // 협동·대전 칸(스팀 분류) → 배지(category)도 같이 계산. 칸이 빈 새 게임만
