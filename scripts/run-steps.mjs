@@ -11,6 +11,7 @@ const GROUPS = {
     'fix-missing-prices',
     'backfill-price-history',
     'backfill-price-history-other',
+    'fill-sale-ends', // 할인 종료 시각 (ITAD prices/v3 200개씩, 약 4번 요청). 가격 기록 뒤에 실행. 모르면 null, ITAD 오류면 기존 값 유지
     'enrich-players',
     'enrich-recent-reviews', // 스팀 최근 30일 평가 (상점 페이지, 요청 간격 2초, 숨긴 게임 제외)
     'enrich-itad-heat',

@@ -74,3 +74,10 @@ export async function getPriceHistory(itadId) {
     (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
   );
 }
+
+// 여러 게임의 스팀(KR) 현재 할인 딜을 한 번에 → [{ id, deals: [{ shop, price, cut, expiry, ... }] }]
+// 할인 중인 딜만(deals=true). 가격 정보가 없는 게임은 응답에서 빠질 수 있음. 한 번에 200개까지 (780개는 400이라 나눠서 보냄)
+export async function getSteamDeals(itadIds) {
+  const json = await itadGet('/games/prices/v3', { country: 'KR', deals: 'true', shops: '61' }, itadIds);
+  return Array.isArray(json) ? json : [];
+}
