@@ -1,8 +1,8 @@
 // 메인 "인원별 추천" 데이터 — 인원 4종(2·3·4·5인 이상)의 후보를 서버에서 한 번에 골라 메인 HTML에 실어 보낸다
-// 조건: 그 인원이 지원 범위에 들어가는 게임 (최소 인원 ≤ N ≤ 친구끼리 최대 인원, 5인 이상은 최대 인원 5 이상) + 1인 전용 제외 + 스팀 최근 평가가 있는 게임 (docs/recent-reviews.md: 30개 이상)
-// 정렬: ① 최대 인원이 N에 가까운 순 (친구끼리 최대 인원 − N이 작은 순, 최대 인원이 N인 게임이 맨 앞) ② 같으면 인기순 (heat_rank 작은 순, 없으면 뒤로 → 최근 평가 수 많은 순)
-//   5인 이상은 최대 인원 5~8인 게임을 먼저(5에 가까운 순), 그다음 9인 이상을 인기순. 지금 뜨는 게임에 보이는 게임(excludeIds)은 뺀다
-// 내 PC 사양으로 거르는 건 브라우저(PeopleRecs)라 인원마다 3장보다 넉넉히(PER_N) 담는다. 게임 카드 칸은 상세 "비슷한 게임"과 같은 getCardGames
+// 후보: 그 인원이 지원 범위에 들어가는 게임 (최소 인원 ≤ N ≤ 친구끼리 최대 인원, 5인 이상은 최대 인원 5 이상) + 1인 전용 제외
+// 버려진 게임 제외: 접속자 100명 미만이면서 마지막 업데이트가 2년보다 오래된 게임 (둘 다 해당할 때만. 업데이트 날짜를 모르면 거르지 않는다)
+// 풀: 남은 후보 중 접속자 많은 상위 30개 → 그중 9개를 한국 시간 날짜를 시드로 골라 보여준다 (같은 날은 누구에게나 같은 결과). 지금 뜨는 게임에 보이는 게임(excludeIds)은 뺀다
+// 내 PC 사양으로 거르는 건 브라우저(PeopleRecs). 게임 카드 칸은 상세 "비슷한 게임"과 같은 getCardGames
 import { friendsMax } from './playersMatch';
 import type { SpecLike } from './specJudge';
 import { getCardGames } from './gameIndex';
@@ -10,15 +10,17 @@ import { selectGames, selectHomeGames } from './visibleGames';
 
 export const PEOPLE_CHOICES = [2, 3, 4, 5] as const; // 5는 "5인 이상"
 export type PeopleN = (typeof PEOPLE_CHOICES)[number];
-export const PEOPLE_SHOW = 3;
-const PER_N = 12;
-const MIN_RECENT_REVIEWS = 30;
+export const PEOPLE_SHOW = 3; // 찜 기반 추천(WishlistRecs)이 쓰는 개수
+export const PEOPLE_DAILY_SHOW = 9;
+const POOL_SIZE = 30;
+const ABANDONED_PLAYERS = 100;
+const ABANDONED_YEARS = 2;
 
 // 게임 카드 칸은 목록(gameIndex)과 같은 느슨한 모양
 export type CardGame = { id: string; spec_min?: SpecLike | null; [key: string]: unknown };
 export type PeopleRecs = { games: Record<string, CardGame>; ids: Record<PeopleN, string[]> };
 
-type Row = { id: string; min_players: number | null; max_players: number | null; party_max: number | null; heat_rank: number | null; recent_review_count: number | null };
+type Row = { id: string; min_players: number | null; max_players: number | null; party_max: number | null; current_players: number | null; last_updated: string | null };
 
 export const fitsPeople = (g: Pick<Row, 'min_players' | 'max_players' | 'party_max'>, n: PeopleN) => {
   if (g.max_players === 1) return false; // 1인 전용
@@ -27,24 +29,36 @@ export const fitsPeople = (g: Pick<Row, 'min_players' | 'max_players' | 'party_m
   return n >= 5 ? max >= 5 : (g.min_players || 1) <= n && max >= n;
 };
 
-// 정렬 1순위 값 — 작을수록 앞. 5인 이상: 5~8인은 5에 가까운 순(0~3), 9인 이상은 한 덩어리(4)로 두고 인기순에 맡긴다
-const BIG_GROUP = 9;
-const closeness = (g: Pick<Row, 'max_players' | 'party_max'>, n: PeopleN) => {
-  const max = friendsMax(g) ?? Infinity;
-  return n >= 5 ? (max < BIG_GROUP ? max - 5 : BIG_GROUP - 5) : max - n;
+// 한국 시간 기준 오늘 날짜(YYYY-MM-DD) — 로테이션 시드
+const kstDate = (now = new Date()) => new Date(now.getTime() + 9 * 3600_000).toISOString().slice(0, 10);
+
+// 문자열 → 32비트 시드 (FNV-1a), 시드 → 난수 (mulberry32)
+const hashSeed = (str: string) => { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
+const rng = (seed: number) => () => { seed = (seed + 0x6d2b79f5) >>> 0; let t = seed; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+
+// 풀에서 count개를 날짜+인원 시드로 고른다 (Fisher-Yates)
+export const pickDaily = <T,>(pool: T[], count: number, seedKey: string): T[] => {
+  const rand = rng(hashSeed(seedKey));
+  const a = [...pool];
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a.slice(0, count);
 };
 
+// 접속자 적고 2년 넘게 업데이트 없는 게임
+const isAbandoned = (g: Pick<Row, 'current_players' | 'last_updated'>, cutoff: string) =>
+  (g.current_players ?? 0) < ABANDONED_PLAYERS && !!g.last_updated && g.last_updated < cutoff;
+
 export async function getPeopleRecs(excludeIds: string[]): Promise<PeopleRecs | null> {
-  const { data, error } = await selectHomeGames('id, min_players, max_players, party_max, heat_rank, recent_review_count')
-    .gte('recent_review_count', MIN_RECENT_REVIEWS)
-    .limit(2000);
+  const { data, error } = await selectHomeGames('id, min_players, max_players, party_max, current_players, last_updated').order('current_players', { ascending: false, nullsFirst: false })
+    .limit(1000); // 풀이 접속자순 상위라 위쪽만 읽으면 된다 (Supabase 한 번에 최대 1000행)
   if (error || !data?.length) return null;
   const skip = new Set(excludeIds);
-  const sorted = (data as unknown as Row[])
-    .filter((g) => !skip.has(g.id))
-    .sort((a, b) => (a.heat_rank ?? Infinity) - (b.heat_rank ?? Infinity) || (b.recent_review_count ?? 0) - (a.recent_review_count ?? 0));
-  // sorted는 인기순 — 정렬이 안정적이라 가까운 순으로 다시 정렬해도 같은 값끼리는 인기순이 유지된다
-  const picked = Object.fromEntries(PEOPLE_CHOICES.map((n) => [n, sorted.filter((g) => fitsPeople(g, n)).sort((a, b) => closeness(a, n) - closeness(b, n)).slice(0, PER_N).map((g) => g.id)])) as Record<PeopleN, string[]>;
+  const now = new Date();
+  const today = kstDate(now);
+  const cutoff = new Date(now.getTime() + 9 * 3600_000 - ABANDONED_YEARS * 365.25 * 86400_000).toISOString().slice(0, 10);
+  const alive = (data as unknown as Row[]).filter((g) => !skip.has(g.id) && !isAbandoned(g, cutoff));
+  const byPlayers = alive.sort((a, b) => (b.current_players ?? 0) - (a.current_players ?? 0) || a.id.localeCompare(b.id));
+  const picked = Object.fromEntries(PEOPLE_CHOICES.map((n) => [n, pickDaily(byPlayers.filter((g) => fitsPeople(g, n)).slice(0, POOL_SIZE).map((g) => g.id), PEOPLE_DAILY_SHOW, `${today}:${n}`)])) as Record<PeopleN, string[]>;
   const unique = [...new Set(Object.values(picked).flat())];
   try {
     const cards = await getCardGames(unique);
