@@ -4,6 +4,7 @@
 // - 1자 이름과 흔한 낱말(STOP)은 쓰지 않음. 예외는 "롤"뿐 (ONE_CHAR_ALLOWED) — 독립된 단어일 때만(앞이 공백·문장부호·괄호이고, 뒤가 공백·문장부호이거나 조사)
 //   뒤에 카드·TCG·리프트바운드·토체스가 오면 그 게임이 아님 (EXCLUDE_AFTER, "롤 리프트바운드 카드깡"은 카드게임)
 // - 이름 변형 (nameVariants): 앞의 The는 무시하고, "the 2nd"와 "2nd"를 같게 봄. 변형은 오매칭을 막으려고 항상 단어 경계로만 비교
+// - 같은 별칭이 2개 이상 게임의 search_name_ko에 있으면 그 별칭은 쓰지 않음 (사이트 검색은 app/lib/searchMatch.ts라 영향 없음)
 // - 겹치는 이름은 더 긴 쪽 우선 ("Dying Light: The Beast" 안의 "Dying Light"는 따로 안 셈), 글에 먼저 나온 순서로 최대 3개
 
 export const MAX_RELATED = 3;
@@ -57,10 +58,21 @@ const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
  */
 export function buildMatchers(games) {
   const out = [];
+  const aliasKey = (raw) => normalize(raw).replace(/ /g, '');
+  const aliasOwners = new Map();
+  for (const g of games) {
+    for (const raw of String(g.search_name_ko || '').split(',')) {
+      const key = aliasKey(raw);
+      if (!key) continue;
+      if (!aliasOwners.has(key)) aliasOwners.set(key, new Set());
+      aliasOwners.get(key).add(g.id);
+    }
+  }
   for (const g of games) {
     const names = [g.name, ...String(g.search_name_ko || '').split(',')];
     const seen = new Set();
-    for (const raw of names) {
+    for (const [i, raw] of names.entries()) {
+      if (i > 0 && aliasOwners.get(aliasKey(raw))?.size > 1) continue; // 여러 게임이 같이 쓰는 별칭("몬헌")은 어느 게임인지 알 수 없어 건너뜀
       for (const v of nameVariants(normalize(raw))) {
         const spaced = v.spaced;
         const key = spaced.replace(/ /g, '');

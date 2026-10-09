@@ -84,3 +84,15 @@ test('별칭이 없던 때(예전 별칭만)는 오버워치·데바데·좀보�
 test('한 영상에서 겹치는 이름은 긴 쪽 우선, 먼저 나온 순서로 최대 3개', () => {
   assert.deepEqual(ids('롤 하다가 데바데 하고 오버워치까지'), ['lol', 'dbd', 'ow']);
 });
+
+test('여러 게임의 search_name_ko에 같이 있는 별칭은 건너뛰고, 한 게임만 쓰는 별칭은 그대로 쓴다', () => {
+  const m = buildMatchers([
+    { id: 'wilds', name: 'Monster Hunter Wilds', search_name_ko: '몬스터 헌터 와일즈, 몬헌 와일즈, 몬헌' },
+    { id: 'world', name: 'Monster Hunter: World', search_name_ko: '몬스터 헌터 월드, 몬헌' },
+    { id: 'pubg', name: 'PUBG: BATTLEGROUNDS', search_name_ko: '펍지, 배그' },
+  ]);
+  assert.deepEqual(matchGames('몬헌 재밌다', m), []);
+  assert.deepEqual(matchGames('몬헌 와일즈 후기', m), ['wilds']);
+  assert.deepEqual(matchGames('오늘 배그 한판', m), ['pubg']);
+  assert.deepEqual(matchGames('몬스터 헌터 월드 방송', m), ['world']);
+});

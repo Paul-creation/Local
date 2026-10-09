@@ -72,3 +72,16 @@ test('기존 연결 5개는 그대로 유지', () => {
 test('라이어게임은 라이어스 바로 연결하지 않음 (같은 게임인지 확인 전까지 보류)', () => {
   assert.equal(link({ title: '형, 몸이 굳었네? | 라이어게임 (w.삼식,탬탬버린)' }), null);
 });
+
+test('여러 게임이 같이 쓰는 별칭은 영상 연결에 안 쓰고, 한 게임만 쓰는 별칭은 쓴다', () => {
+  const games = [
+    { id: 'wilds', name: 'Monster Hunter Wilds', search_name_ko: '몬스터 헌터 와일즈, 몬헌' },
+    { id: 'rise', name: 'MONSTER HUNTER RISE', search_name_ko: '몬헌 라이즈, 몬헌' },
+    { id: 'pubg', name: 'PUBG: BATTLEGROUNDS', search_name_ko: '펍지, 배그' },
+  ];
+  const map = new Map(games.map((g) => [g.id, g]));
+  const ms = buildMatchers(games);
+  const hit = (title) => matchVideo({ title, description: '', is_short: false }, ms, map)?.id ?? null;
+  assert.equal(hit('몬헌 신작 첫인상'), null);
+  assert.equal(hit('오늘의 배그 솔로 치킨'), 'pubg');
+});
