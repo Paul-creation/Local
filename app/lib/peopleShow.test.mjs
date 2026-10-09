@@ -1,4 +1,4 @@
-// 실행: npm test — 메인 인원별 추천에서 보여줄 게임 고르기 (필터 꺼짐 / 일부 통과 / 전부 실패 — 추천 칸은 후보가 있는 한 비지 않는다)
+// 실행: npm test — 메인 인원별 추천에서 보여줄 게임 고르기 (필터 꺼짐 / 일부 통과 = 통과분만 / 전부 실패 = 전체 앞 3개 + 안내)
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { choosePeopleGames, PEOPLE_SHOW, PEOPLE_CANDIDATES } from './peopleShow.ts';
@@ -24,14 +24,13 @@ test('필터 켜짐·통과 3개 이상 → 통과분 앞 3개 (앞 후보가 �
   assert.equal(r.filteredOut, false);
 });
 
-test('필터 켜짐·일부 통과(1~2개) → 통과분이 앞, 남는 자리는 통과 못 한 후보를 필터 전 순서대로 채움 (안내 없음)', () => {
+test('필터 켜짐·일부 통과(1~2개) → 통과한 게임만 그만큼 (통과 못 한 후보로 채우지 않음, 안내 없음)', () => {
   const one = choosePeopleGames(cands, only('g11'));
-  assert.deepEqual(ids(one), ['g11', 'g1', 'g2']);
+  assert.deepEqual(ids(one), ['g11']);
   assert.equal(one.filteredOut, false);
   const two = choosePeopleGames(cands, only('g2', 'g6'));
-  assert.deepEqual(ids(two), ['g2', 'g6', 'g1']);
+  assert.deepEqual(ids(two), ['g2', 'g6']);
   assert.equal(two.filteredOut, false);
-  assert.equal(one.games.length, 3);
 });
 
 test('필터 켜짐·전부 실패 → 필터 전 앞 3개 + 안내(filteredOut)', () => {
@@ -40,9 +39,9 @@ test('필터 켜짐·전부 실패 → 필터 전 앞 3개 + 안내(filteredOut)
   assert.equal(r.filteredOut, true);
 });
 
-test('후보가 3개보다 적으면 있는 만큼 (채우기도 후보 안에서만)', () => {
+test('후보가 3개보다 적으면 있는 만큼', () => {
   const few = cands.slice(0, 2);
-  assert.deepEqual(ids(choosePeopleGames(few, only('g2'))), ['g2', 'g1']);
+  assert.deepEqual(ids(choosePeopleGames(few, only('g2'))), ['g2']);
   assert.deepEqual(ids(choosePeopleGames(few, () => false)), ['g1', 'g2']);
 });
 
