@@ -9,6 +9,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { gameNameKeys, excludeTerms } from './lib/coop-targets.mjs';
 import { trailerRejectReason, englishNameKeys } from './lib/video-filter.mjs';
+import { steamGet, SteamLimitError } from './lib/steam.mjs';
+import { trailerFromAppdetails } from './lib/steam-trailer.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -25,17 +27,18 @@ const ONLY_NAMES = (process.argv.find((a) => a.startsWith('--names=')) || '').sl
 
 class QuotaError extends Error {}
 
+// 스팀 요청 제한이 이만큼 연달아 풀리지 않으면 남은 게임은 시도하지 않고 멈춤 (막힌 상태로 계속 두드리지 않음)
+const MAX_CONSECUTIVE_LIMITED = 3;
+
 const norm = (s) => String(s || '').toLowerCase().replace(/[\s\p{P}\p{S}]/gu, '');
 
-// 스팀 공식 영상 HLS 주소, 영상이 없으면 null. 요청 실패면 오류 (다음에 다시 시도)
+// 스팀 공식 영상 HLS 주소, 영상이 없으면 null. 요청 제한(429·빈 응답)이면 lib/steam.mjs가 30→60→120초 기다리며 3번 다시 시도하고,
+// 그래도 안 되면 SteamLimitError (그 게임은 video_url을 건드리지 않아 null로 남고 다음 실행이 다시 찾음). 그 밖의 요청 실패는 오류 (다음에 다시 시도)
 async function steamTrailer(appid) {
-  const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${appid}&filters=movies`);
-  if (!res.ok) throw new Error(`스팀 HTTP ${res.status}`);
-  const json = await res.json();
-  const movies = json?.[appid]?.data?.movies || [];
-  const pick = movies.find((m) => m.highlight && m.hls_h264) || movies.find((m) => m.hls_h264);
-  const url = pick?.hls_h264;
-  return url && /^https:\/\/video\.[a-z.]*steamstatic\.com\/.+\.m3u8/.test(url) ? url.replace(/\?.*$/, '') : null;
+  const json = await steamGet(`https://store.steampowered.com/api/appdetails?appids=${appid}&filters=movies`, {
+    retryIf: (j) => trailerFromAppdetails(j, appid) === undefined, // 요청한 앱 번호 칸이 없는 빈 응답
+  });
+  return trailerFromAppdetails(json, appid) ?? null;
 }
 
 // 유튜브 영상 주소, 조건에 맞는 결과가 없으면 null. 한도 초과면 QuotaError
@@ -74,19 +77,22 @@ async function main() {
   let none = 0;
   let failed = 0;
   let ytSearches = 0;
-  for (const game of games) {
+  let limited = 0; // 스팀 요청 제한으로 못 찾은 게임 (null 그대로)
+  let untried = 0; // 요청 제한이 계속돼 아예 시도하지 않은 게임
+  let streak = 0; // 연달아 요청 제한
+  for (const [i, game] of games.entries()) {
     let url = null;
     let source = '';
     try {
       if (game.steam_appid) {
         url = await steamTrailer(game.steam_appid);
         source = '스팀';
+        streak = 0;
       }
       if (!url && STEAM_ONLY) {
         console.log(`➖ ${game.name}: 스팀 영상 없음 (null 그대로)`);
         none++;
-        await new Promise((r) => setTimeout(r, 1000));
-        continue;
+        continue; // 스팀 요청 간격(2초)은 lib/steam.mjs가 지킴
       }
       if (!url) {
         if (!YOUTUBE_API_KEY) {
@@ -102,6 +108,18 @@ async function main() {
         source = '유튜브';
       }
     } catch (e) {
+      if (e instanceof SteamLimitError) {
+        // 재시도해도 안 됨 → ''로 저장하지 않고 null 그대로 둬서 다음 실행이 다시 찾게 함. YouTube 대체 검색도 하지 않음
+        limited++;
+        streak++;
+        console.log(`⏳ 스팀 요청 제한: ${game.name} — ${e.message} (null 그대로, 다음 실행에서 다시 찾음)`);
+        if (streak >= MAX_CONSECUTIVE_LIMITED) {
+          untried = games.length - i - 1;
+          console.log(`⛔ 스팀 요청 제한이 ${streak}번 연달아 풀리지 않아 여기서 멈춤 — 남은 ${untried}개는 시도하지 않음`);
+          break;
+        }
+        continue;
+      }
       if (e instanceof QuotaError) {
         console.log(`⏳ YouTube 하루 한도 초과 — 나머지는 내일 이어서 (${e.message})`);
         break;
@@ -122,10 +140,12 @@ async function main() {
       console.log(`➖ ${game.name}: 영상 없음`);
       none++;
     }
-    await new Promise((r) => setTimeout(r, 1000));
+    if (source === '유튜브') await new Promise((r) => setTimeout(r, 1000)); // 스팀은 lib/steam.mjs가 요청 간격을 지킴
   }
 
-  console.log(`\n완료 — 스팀 공식 영상 ${steam}개 · 유튜브 ${found}개 · 영상 없음 ${none}개${STEAM_ONLY ? '(null 그대로, 매일 작업이 유튜브로 찾음)' : ''} · 오류 ${failed}개`);
+  const unprocessed = limited + untried;
+  if (unprocessed) console.log(`\n⏳ 요청 제한으로 미처리 ${unprocessed}개 (스팀 요청 제한 ${limited}개 + 시도 못 한 ${untried}개) — video_url은 null 그대로라 다음 실행에서 다시 찾음`);
+  console.log(`\n완료 — 스팀 공식 영상 ${steam}개 · 유튜브 ${found}개 · 영상 없음 ${none}개${STEAM_ONLY ? '(null 그대로, 매일 작업이 유튜브로 찾음)' : ''} · 오류 ${failed}개 · 요청 제한으로 미처리 ${unprocessed}개`);
 }
 
 main();
