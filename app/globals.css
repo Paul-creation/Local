@@ -1451,7 +1451,7 @@ img { display: block; }
 .sg-item { flex: 0 0 min(78%, 280px); scroll-snap-align: start; }
 .sg-more { display: none; }
 @media (min-width: 900px) {
-  .sg-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px 16px; overflow: visible; scroll-snap-type: none; margin-right: 0; padding-right: 0; }
+  .sg-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; overflow: visible; scroll-snap-type: none; margin-right: 0; padding-right: 0; }
   .sg-item { flex: none; }
   .sg-grid.is-collapsed .sg-item:nth-child(n+5) { display: none; }
   .sg-more { display: flex; justify-content: center; width: 100%; min-height: 44px; margin-top: 12px; }
@@ -2676,9 +2676,13 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 .gc { display: flex; flex-direction: column; overflow: hidden; background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-card); color: var(--text); }
 .gc-image { position: relative; display: block; aspect-ratio: 460 / 215; background: var(--inset); overflow: hidden; }
 .gc-image img { width: 100%; height: 100%; object-fit: cover; }
-.gc-body { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; flex: 1; min-width: 0; }
+.gc-body { display: flex; flex-direction: column; gap: 4px; padding: 14px 16px; flex: 1; min-width: 0; }
 .gc-name { font-size: var(--fs-xl); font-weight: 800; line-height: 1.35; letter-spacing: -0.01em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.gc-foot { display: flex; margin-top: auto; padding-top: 6px; }
+.gc-foot { display: flex; margin-top: auto; padding-top: 4px; }
+/* 칩 줄은 한 줄 고정 — 넘치면 ChipRow가 +N 칩으로 묶는다 */
+.gc-chips { display: flex; flex-wrap: nowrap; align-items: center; gap: 6px; min-width: 0; overflow: hidden; }
+.gc-chips > * { flex: none; white-space: nowrap; }
+.gc-chips .gc-chip-item { display: inline-flex; align-items: center; gap: 6px; }
 /* 가격 영역: 할인가는 크게, 정가(취소선)는 --text-muted 13px로 작게 */
 .gc .result-price .price-final { font-size: 20px; font-weight: 800; line-height: 1.2; }
 .gc .result-price .price-final.no-discount { font-size: var(--fs-l); }
