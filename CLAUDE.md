@@ -18,3 +18,4 @@
   - main에 강제 푸시(`--force`, `--force-with-lease`) 금지.
 - 보안 관련 코드를 바꾸면 `scripts/security-check.mjs` 실행을 제안한다.
 - 더 빠르거나 간단한 방법이 있으면 먼저 알려준다.
+- worktree에서 빌드할 때는 node_modules 심볼릭 링크를 쓰지 말고(Turbopack이 거부함) 처음부터 npm ci로 설치한다. .env.local은 복사하되 커밋하지 않는다.
