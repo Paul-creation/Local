@@ -24,11 +24,12 @@ const parse = (raw: string | null | undefined): PeopleN => {
 };
 
 // filters: 서버에서 그린 홈 섹션 사이에 놓이는 빠른 칩(HomeQuickLinks)이 메인 필터를 쓰도록 GameGrid가 넘겨 준다
-type Value = { n: PeopleN; setN: (n: PeopleN) => void; myPcOn: boolean; setMyPcOn: (v: boolean) => void; filters: GameFilters | null };
-const Ctx = createContext<Value>({ n: 2, setN: () => {}, myPcOn: true, setMyPcOn: () => {}, filters: null });
+// recsReady: 서버가 인원별 추천 데이터를 보냈는지 — 못 보냈으면 인원 버튼이 아래 추천을 바꾸는 대신 /?players=N 검색으로 이동한다 (PeopleSelect)
+type Value = { n: PeopleN; setN: (n: PeopleN) => void; myPcOn: boolean; setMyPcOn: (v: boolean) => void; filters: GameFilters | null; recsReady: boolean };
+const Ctx = createContext<Value>({ n: 2, setN: () => {}, myPcOn: true, setMyPcOn: () => {}, filters: null, recsReady: true });
 export const usePeople = () => useContext(Ctx);
 
-export default function PeopleProvider({ children, filters }: { children: ReactNode; filters: GameFilters }) {
+export default function PeopleProvider({ children, filters, recsReady = true }: { children: ReactNode; filters: GameFilters; recsReady?: boolean }) {
   const raw = useSyncExternalStore<string | null>(subscribe, readRaw, () => null);
   const [myPcOn, setMyPcOn] = useState(true);
   const setN = useCallback((n: PeopleN) => {
@@ -36,6 +37,6 @@ export default function PeopleProvider({ children, filters }: { children: ReactN
     try { window.localStorage.setItem(KEY, memory); } catch { /* 저장소를 못 쓰면 이 탭에서만 유지 */ }
     window.dispatchEvent(new Event(EVENT));
   }, []);
-  const value = useMemo(() => ({ n: parse(raw), setN, myPcOn, setMyPcOn, filters }), [raw, setN, myPcOn, filters]);
+  const value = useMemo(() => ({ n: parse(raw), setN, myPcOn, setMyPcOn, filters, recsReady }), [raw, setN, myPcOn, filters, recsReady]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

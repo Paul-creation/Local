@@ -5,7 +5,7 @@ import type { GameFilters } from '../../lib/useGameFilters';
 import { FREE_ONLY } from '../../lib/rangeFilter';
 import './quick-links.css';
 
-// "뭐 하지" 빠른 칩 — 지금 할인 중 · 무료만 · 혼자도 충분 · 비교 만들기
+// "뭐 하지" 빠른 칩 — 지금 할인 중 · 무료만 · 혼자도 충분 (비교는 상단 메뉴에 있어 칩에서 뺌)
 // 필터는 주소(?players=·?sale=1·?price=0-0·?story=1)에도 담기므로 결과 화면을 그대로 공유할 수 있다
 export default function QuickLinks({ filters }: { filters: GameFilters }) {
   const show = (apply: () => void) => {
@@ -26,7 +26,6 @@ export default function QuickLinks({ filters }: { filters: GameFilters }) {
         <button type="button" className="chip quick-chip" onClick={() => show(() => filters.setStoryOnly(true))}>
           혼자도 충분
         </button>
-        <a href="/compare" className="chip quick-chip">비교 만들기</a>
       </div>
     </div>
   );

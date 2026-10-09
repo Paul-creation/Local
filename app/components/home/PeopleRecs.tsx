@@ -6,9 +6,8 @@ import { useMyPc } from '../pcspec/useMyPc';
 import { toUserPc } from '../../lib/myPc';
 import { runsOnMyPc } from '../../lib/specJudge';
 import { PEOPLE_SHOW, type PeopleRecs as Data } from '../../lib/peopleRecs';
-import { formatPlayers, PLAYERS_MAX } from '../../lib/rangeFilter';
 import { usePeople } from './PeopleContext';
-import { peopleLabel } from './PeopleSelect';
+import { peopleLabel, peopleHref } from './PeopleSelect';
 
 // 메인 인원별 추천 — 서버가 인원 4종 후보를 한 번에 보냈으므로 버튼을 눌러도 페이지 이동·추가 요청 없이 바로 바뀐다
 // 내 PC 토글이 켜져 있으면(사양 저장 시) 최소 사양 미달 게임을 빼고, 3개가 안 되면 있는 만큼만 보여준다
@@ -24,7 +23,7 @@ export default function PeopleRecs({ recs }: { recs: Data | null }) {
     return (user ? list.filter((g) => runsOnMyPc(user, g)) : list).slice(0, PEOPLE_SHOW);
   }, [recs, n, myPcActive, pc]);
   if (!recs) return null;
-  const href = `/?players=${formatPlayers(n >= 5 ? [5, PLAYERS_MAX] : [n, n])}${myPcActive ? '&mypc=1' : ''}`;
+  const href = peopleHref(n, myPcActive);
   return (
     <section className="home-block people-block" aria-labelledby="people-recs-title">
       <div className="home-block-head">

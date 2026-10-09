@@ -23,9 +23,9 @@ function useWide() {
   return wide;
 }
 
-// 메인 화면 틀 — 이벤트·홈 섹션은 서버에서 그려 받고(event·sections), 검색·필터·결과만 여기서 상태로 다룬다
+// 메인 화면 틀 — 홈 섹션(이벤트 배너 포함)은 서버에서 그려 받고(sections), 검색·필터·결과만 여기서 상태로 다룬다
 // 전체 게임 목록은 첫 화면 뒤에 따로 받아서(useGameIndex) 받은 뒤부터 검색·필터·자동완성이 브라우저에서 바로 동작
-export default function GameGrid({ event, sections, top10Ids = [] }: { event: ReactNode; sections: ReactNode; top10Ids?: string[] }) {
+export default function GameGrid({ sections, top10Ids = [], peopleReady = true }: { sections: ReactNode; top10Ids?: string[]; peopleReady?: boolean }) {
   const index = useGameIndex();
   const filters = useGameFilters(index.games, index.tree);
   const { showResults, normalizedQuery } = filters;
@@ -33,9 +33,9 @@ export default function GameGrid({ event, sections, top10Ids = [] }: { event: Re
   const sidebar = useWide() && !showHome;
 
   return (
-    <PeopleProvider filters={filters}>
-      {/* 이벤트 + 가운데 큰 검색창 */}
-      <HomeHero event={event} games={index.games || []} filters={filters} showEvent={showHome} sidebar={sidebar} />
+    <PeopleProvider filters={filters} recsReady={peopleReady}>
+      {/* 제목 + 가운데 큰 검색창 + 인원 선택 */}
+      <HomeHero games={index.games || []} filters={filters} showEvent={showHome} sidebar={sidebar} />
 
       {/* 히어로/섹션 — 결과 없을 때만 */}
       {showHome && <div className="home-only">{sections}</div>}

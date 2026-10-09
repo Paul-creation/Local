@@ -38,30 +38,26 @@ function Price({ item }: { item: HotItem }) {
   );
 }
 
-const metaText = (item: HotItem) =>
-  [item.players, item.currentPlayers ? `동접 ${formatCount(item.currentPlayers)}` : ''].filter(Boolean).join(' · ');
-
-// 1~3위 큰 카드 — 이미지 좌상단에 작은 순위 배지. 아래: 제목·한 줄 소개·"인원 · 동접"·가격
+// 1~3위 큰 카드 — 이미지 좌상단에 작은 순위 배지. 아래: 제목·인원·가격·평점 % 하나 (변동·소개·동접·N주째·스트리머·최저가 배지는 4~10위 줄이나 상세에서)
 function BigCard({ item }: { item: HotItem }) {
   return (
     <Link href={`/games/${item.id}`} className="hc-card lift" aria-label={`${item.rank}위 ${item.name}`}>
       <span className="hc-card-image">
         <GameImage src={item.image} fallbackWidth={920} alt="" />
         <span className={`hc-rank-badge is-r${item.rank}`} aria-hidden="true">{item.rank}위</span>
-        <span className="hc-card-badges">
-          <Change change={item.change} />
-          {item.weeks >= 2 && <span className="hc-weeks">{item.weeks}주째 순위권</span>}
-        </span>
       </span>
       <span className="hc-card-body">
         <span className="hc-card-name">{item.name}</span>
-        {item.fun && <span className="hc-card-fun">{item.fun}</span>}
         <span className="hc-card-foot">
-          <span className="hc-card-meta">{metaText(item)}</span>
-          <ReviewRating summary={item.reviewSummary} percent={item.reviewPercent} total={item.reviewTotal} />
+          <span className="hc-card-meta">{item.players}</span>
+          <ReviewRating summary={item.reviewSummary} percent={item.reviewPercent} total={item.reviewTotal} showText={false} />
         </span>
-        <Price item={item} />
-        <StreamerBadge names={item.streamers} max={2} />
+        {item.price && (
+          <span className="hc-price">
+            {item.discount > 0 && <span className="hc-discount">-{item.discount}%</span>}
+            <span className="hc-price-final">{item.price}</span>
+          </span>
+        )}
       </span>
     </Link>
   );
@@ -97,6 +93,8 @@ export default function HotChart({ tabs: allTabs }: { tabs: HotTab[] }) {
   const tabs = allTabs.filter((t) => SHOWN_TABS.includes(t.key));
   const [key, setKey] = useState(tabs[0]?.key);
   const tab = tabs.find((t) => t.key === key) || tabs[0];
+  // 모바일에서는 4~10위 줄을 접어 두고 "더 보기"로 10위까지 펼친다 (접힘은 CSS .is-collapsed, 데스크톱은 늘 펼침)
+  const [open, setOpen] = useState(false);
   if (!tab) return null;
 
   return (
@@ -121,12 +119,17 @@ export default function HotChart({ tabs: allTabs }: { tabs: HotTab[] }) {
         </div>
       </div>
       {tab.items.length > 3 && (
-        <div className="hc-rows">
+        <div className={`hc-rows${open ? '' : ' is-collapsed'}`} id="hc-rows">
           <div className="hc-row hc-row-head" aria-hidden="true">
             <span>순위</span><span /><span>게임</span><span className="hc-row-ccu">동접</span><span className="hc-row-price">가격</span>
           </div>
           {tab.items.slice(3, 10).map((item) => <Row key={item.id} item={item} />)}
         </div>
+      )}
+      {tab.items.length > 3 && (
+        <button type="button" className="btn btn-outline hc-more" aria-expanded={open} aria-controls="hc-rows" onClick={() => setOpen((v) => !v)}>
+          {open ? '접기' : '더 보기'}
+        </button>
       )}
     </section>
   );

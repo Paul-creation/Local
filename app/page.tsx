@@ -32,10 +32,10 @@ const websiteJsonLd = {
   inLanguage: 'ko',
 };
 
-// 이번주의 게임(기록이 없을 때 featured 칸)·추천 배너에 쓰는 칸 — 그 게임들만 가져온다
+// 이번주의 게임(기록이 없을 때 featured 칸)에 쓰는 칸 — 그 게임만 가져온다
 const SECTION_FIELDS = `
   id, name, tags, difficulty, min_players, max_players, is_free, price_type, lowest_price,
-  card_image_url, cover_image_url, description, fun_description, featured, is_casual_party, category, goty_awards,
+  card_image_url, cover_image_url, description, fun_description, featured, category, goty_awards,
   price_history(price, discount_percent, checked_at, currency)
 `;
 
@@ -47,9 +47,9 @@ export default async function Home() {
   // 전체 게임 목록은 여기서 보내지 않는다 — 검색·필터용 목록은 첫 화면 뒤에 /api/games/list로 따로 받음 (lib/gameIndex)
   // 🔥 지금 뜨는 게임(lib/hotChart)·이번주의 게임(lib/weeklyFeatured)·인기 게시물(최근 7일 추천+댓글 순 5개)은 필요한 것만 따로
   // 긴 설명(description)은 짧은 소개(fun_description)가 없을 때만 화면에 쓰이므로 그때만 남긴다
-  const [{ data: sectionRows }, hot, weekly, popularPosts, streamerTheme] = await Promise.all([
-    selectHomeGames(SECTION_FIELDS) // 메인 노출 제외 게임은 배너·추천에서 빠짐
-      .or('featured.eq.true,is_casual_party.eq.true')
+  const [{ data: sectionRows }, hot, weekly, popularPosts] = await Promise.all([
+    selectHomeGames(SECTION_FIELDS) // 메인 노출 제외 게임은 추천에서 빠짐
+      .eq('featured', true)
       .gte('price_history.price', 100)
       .order('created_at', { ascending: false })
       .order('checked_at', { referencedTable: 'price_history', ascending: false })
@@ -57,7 +57,6 @@ export default async function Home() {
     getHotChart().catch(() => ({ tabs: [], top10Ids: [] as string[] })),
     getWeeklyFeatured().catch(() => null),
     getPopularPosts().catch(() => []),
-    getStreamerTheme().catch(() => null),
   ]);
 
   // 지금 뜨는 게임에 보이는 게임들의 스트리머를 한 번에 읽어 붙인다 (실패해도 배지만 빠짐)
@@ -70,15 +69,22 @@ export default async function Home() {
 
   const rows = (sectionRows || []).map((g) => flattenGame({ ...g, description: g.fun_description ? null : g.description }));
   const featured: Record<string, any> | null = weekly || rows.find((g) => g.featured) || null;
-  const bannerPool = rows.filter((g) => g.is_casual_party && !g.featured && g.id !== featured?.id);
+
+  // 스트리머 협동은 위 섹션(인원별 추천 4종 전부·지금 뜨는 게임 탭들의 1~10위·이번주의 게임)에 나온 게임을 먼저 빼고 고른다 (기준 미달이면 lib 안에서 중복 제거 없이 다시 고름)
+  const shownAbove = [
+    ...(peopleRecs ? Object.values(peopleRecs.ids).flat() : []),
+    ...hot.tabs.flatMap((t) => t.items.map((i) => i.id)),
+    ...(featured ? [featured.id as string] : []),
+  ];
+  const streamerTheme = await getStreamerTheme(shownAbove).catch(() => null);
 
   return (
     <main className="page">
       <script dangerouslySetInnerHTML={{ __html: HOME_FILTER_SCRIPT }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd).replace(/</g, '\\u003c') }} />
       <GameGrid
-        event={<HomeEvent />}
-        sections={<HomeSections featured={featured} bannerPool={bannerPool} hotTabs={hotTabs} popularPosts={popularPosts} streamerTheme={streamerTheme} peopleRecs={peopleRecs} homeExcluded={homeExcluded} />}
+        peopleReady={!!peopleRecs}
+        sections={<HomeSections event={<HomeEvent />} featured={featured} hotTabs={hotTabs} popularPosts={popularPosts} streamerTheme={streamerTheme} peopleRecs={peopleRecs} homeExcluded={homeExcluded} />}
         top10Ids={hot.top10Ids}
       />
     </main>

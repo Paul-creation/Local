@@ -3,6 +3,7 @@
 // 조건: 스트리머 영상이 1개 이상 + 친구끼리 최대 인원 2명 이상 + 온라인 협동 또는 로컬 협동이 true (null은 제외) + category가 "협동" 또는 "협동·대전"
 // ("대전" 단독·혼자는 제외 — PvP 위주 게임을 거르는 기준. 협동·대전도 위 협동 모드 확인 조건을 통과한 게임만). 개별 제외 목록은 두지 않는다
 // 정렬: 플레이한 스트리머 수 → 인기(heat_rank) 순, 최대 12개 (6개 미만이면 null = 섹션 숨김)
+// excludeIds: 메인 위쪽 섹션에 이미 나온 게임 — 후보에서 먼저 빼고 고른다. 빼고 나서 6개 미만이면 중복 제거 없이 원래대로 고른다
 import { supabase } from './supabase';
 import { friendsMax } from './playersMatch';
 
@@ -26,7 +27,7 @@ type Row = {
   games: One<{ id: string; name: string; card_image_url: string | null; cover_image_url: string | null; category: string | null; min_players: number | null; max_players: number | null; party_max: number | null; has_online_coop: boolean | null; has_local_coop: boolean | null; heat_rank: number | null }>;
 };
 
-export async function getStreamerTheme(): Promise<StreamerTheme | null> {
+export async function getStreamerTheme(excludeIds: string[] = []): Promise<StreamerTheme | null> {
   const rows: Row[] = [];
   for (let from = 0; from < 10000; from += 1000) {
     const { data, error } = await supabase
@@ -41,27 +42,31 @@ export async function getStreamerTheme(): Promise<StreamerTheme | null> {
     if (!data || data.length < 1000) break;
   }
 
-  const byGame = new Map<string, ThemeGame & { rank: number; short: string | null }>();
-  for (const r of rows) { // 최근 영상부터 들어온다
-    const g = first(r.games);
-    if (!g || (friendsMax(g) ?? 0) < 2) continue;
-    if (g.category !== '협동' && g.category !== '협동·대전') continue; // 대전·혼자 제외 (협동·대전은 아래 협동 모드 확인 필수)
-    if (g.has_online_coop !== true && g.has_local_coop !== true) continue; // 협동 모드가 확인된 게임만
-    let item = byGame.get(g.id);
-    if (!item) {
-      item = { id: g.id, name: g.name, image: g.card_image_url || g.cover_image_url || null, streamers: [], videoId: null, rank: g.heat_rank ?? Infinity, short: null };
-      byGame.set(g.id, item);
+  const pick = (skip: Set<string>) => {
+    const byGame = new Map<string, ThemeGame & { rank: number; short: string | null }>();
+    for (const r of rows) { // 최근 영상부터 들어온다
+      const g = first(r.games);
+      if (!g || skip.has(g.id) || (friendsMax(g) ?? 0) < 2) continue;
+      if (g.category !== '협동' && g.category !== '협동·대전') continue; // 대전·혼자 제외 (협동·대전은 아래 협동 모드 확인 필수)
+      if (g.has_online_coop !== true && g.has_local_coop !== true) continue; // 협동 모드가 확인된 게임만
+      let item = byGame.get(g.id);
+      if (!item) {
+        item = { id: g.id, name: g.name, image: g.card_image_url || g.cover_image_url || null, streamers: [], videoId: null, rank: g.heat_rank ?? Infinity, short: null };
+        byGame.set(g.id, item);
+      }
+      const name = first(r.streamer_channels)?.streamer_name;
+      if (name && !item.streamers.includes(name)) item.streamers.push(name);
+      if (r.is_short) item.short ??= r.video_id;
+      else item.videoId ??= r.video_id;
     }
-    const name = first(r.streamer_channels)?.streamer_name;
-    if (name && !item.streamers.includes(name)) item.streamers.push(name);
-    if (r.is_short) item.short ??= r.video_id;
-    else item.videoId ??= r.video_id;
-  }
 
-  const all = [...byGame.values()].map((g) => ({ ...g, videoId: g.videoId ?? g.short }));
-  all.sort((a, b) => b.streamers.length - a.streamers.length || a.rank - b.rank);
-  // 카드는 PC 6칸·태블릿 3칸·모바일 2칸 격자라 6의 배수로만 보여준다 (마지막 줄이 비는 어색한 배치 방지, 6~11개면 6개, 12개면 12개)
-  if (all.length < THEME_MIN) return null;
-  const shown = Math.floor(Math.min(all.length, THEME_MAX) / THEME_MIN) * THEME_MIN;
-  return { games: all.slice(0, shown).map(({ rank, short, ...g }) => g) };
+    const all = [...byGame.values()].map((g) => ({ ...g, videoId: g.videoId ?? g.short }));
+    all.sort((a, b) => b.streamers.length - a.streamers.length || a.rank - b.rank);
+    // 카드는 PC 6칸·태블릿 3칸·모바일 2칸 격자라 6의 배수로만 보여준다 (마지막 줄이 비는 어색한 배치 방지, 6~11개면 6개, 12개면 12개)
+    if (all.length < THEME_MIN) return null;
+    const shown = Math.floor(Math.min(all.length, THEME_MAX) / THEME_MIN) * THEME_MIN;
+    return { games: all.slice(0, shown).map(({ rank, short, ...g }) => g) };
+  };
+  const skip = new Set(excludeIds);
+  return (skip.size > 0 ? pick(skip) : null) ?? pick(new Set());
 }
