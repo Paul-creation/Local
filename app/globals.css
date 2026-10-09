@@ -33,7 +33,7 @@
   /* 기능색 */
   --sale: #FF7A70;            /* 할인율·역대 최저 글자 */
   --sale-border: rgba(255, 90, 79, 0.5);
-  --gold: #E5B84B;            /* GOTY 수상 */
+  --gold: #E5B84B;            /* 관리자 화면 전용 (사용자 화면에서는 쓰지 않음) */
   --gold-border: rgba(229, 184, 75, 0.5);
   --review: #A3D4F5;          /* 스팀 긍정 평가 — 포인트 색과 헷갈리지 않게 한 단계 연하게 */
   --review-border: rgba(163, 212, 245, 0.45);
@@ -384,7 +384,6 @@ img { display: block; }
   font-size: var(--fs-s); font-weight: 700; line-height: 1.4; font-variant-numeric: tabular-nums;
 }
 .badge-accent { color: var(--accent-text); border-color: var(--accent); }
-.badge-gold { color: var(--gold); border-color: var(--gold-border); }
 .badge-review { color: var(--review); border-color: var(--review-border); }
 .badge-sale { color: var(--sale); border-color: var(--sale-border); }
 
@@ -602,7 +601,7 @@ img { display: block; }
 .timing-badge.is-overlay { position: absolute; bottom: 8px; right: 8px; background: var(--card); }
 
 .timing-badge.best { color: var(--lowest-text); background: var(--lowest-bg); border: 1px solid var(--lowest-border); border-radius: var(--lowest-radius); font-size: var(--fs-m); }
-.timing-badge.near { color: var(--gold); border: 1px solid var(--gold-border); }
+.timing-badge.near { color: var(--text-muted); border: 1px solid var(--border); }
 
 .badge-neutral {
   font-size: var(--fs-s);
@@ -1446,7 +1445,7 @@ img { display: block; }
 .cm-error { color: var(--danger); font-size: var(--fs-l); font-weight: 600; }
 .cm-hint { font-size: var(--fs-sub); color: var(--text-dim); }
 .cm-hint a { color: var(--accent); }
-.cm-notice { background: var(--inset); border: 1px solid var(--gold-border); color: var(--gold); border-radius: 10px; padding: 10px 14px; font-size: var(--fs-l); font-weight: 600; }
+.cm-notice { background: var(--inset); border: 1px solid var(--border); color: var(--text-muted); border-radius: 10px; padding: 10px 14px; font-size: var(--fs-l); font-weight: 600; }
 .cm-board-pick { display: flex; flex-wrap: wrap; gap: 6px; }
 .cm-board-pick button { padding: 9px 14px; border-radius: 999px; border: 1px solid var(--border); background: var(--bg-card); font-size: var(--fs-l); font-weight: 600; cursor: pointer; color: var(--text); }
 .cm-board-pick button.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
@@ -1523,7 +1522,7 @@ img { display: block; }
 
 
 
-/* GOTY 배지 — 수상은 금색 채움으로 눈에 띄게, 후보는 테두리만 */
+/* GOTY 배지 — 수상은 포인트색 테두리·글자로 눈에 띄게(특별 칩), 후보는 보조색 테두리만 */
 .goty-row { margin-bottom: 6px; }
 .goty-badge {
   display: inline-flex; align-items: center; white-space: nowrap;
@@ -1531,7 +1530,7 @@ img { display: block; }
   padding: 2px 8px; border-radius: var(--radius-badge);
 }
 .goty-badge.is-winner {
-  color: var(--gold); border: 1px solid var(--gold-border); font-weight: 800;
+  color: var(--accent-text); border: 1px solid var(--accent); font-weight: 800;
 }
 .goty-badge.is-nominee { color: var(--text-muted); border: 1px solid var(--border); }
 
@@ -2143,6 +2142,7 @@ a.hc-row:hover { background: var(--card-hover); }
 .steam-trend.is-down { color: var(--down); }
 .steam-trend.is-up { color: var(--up); }
 .steam-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.steam-grid > .steam-cell:last-child:nth-child(odd) { grid-column: 1 / -1; }
 .steam-cell { display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: var(--radius-card-sm); background: var(--inset); min-width: 0; }
 .steam-cell-label { font-size: var(--fs-xs); font-weight: 700; color: var(--text-muted); }
 .steam-cell-value { font-size: var(--fs-l); font-weight: 700; color: var(--text); line-height: 1.5; }
