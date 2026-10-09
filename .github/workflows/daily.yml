@@ -8,7 +8,11 @@ on:
 concurrency:
   group: data-jobs          # 매일·매주 작업이 겹치지 않게 순서대로
   cancel-in-progress: false
-
+  
+concurrency:
+  group: steam-data
+  cancel-in-progress: false
+  
 jobs:
   run:
     runs-on: ubuntu-latest
