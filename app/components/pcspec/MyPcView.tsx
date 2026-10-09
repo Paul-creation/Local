@@ -56,7 +56,7 @@ export default function MyPcView() {
   return (
     <div className="my-pc">
       <h1 className="my-pc-title">내 PC</h1>
-      <p className="my-pc-sub">등록하면 게임 페이지에서 이 게임이 돌아가는지 알려줘요.</p>
+      <p className="my-pc-sub">등록하면 게임 페이지에서 내 PC로 돌아가는지 알려줘요.</p>
       <p className="my-pc-status" role="status" aria-live="polite">
         {notice === 'saved' && pc ? '저장했어요' : notice === 'cleared' && !pc ? '지웠어요' : ''}
       </p>
