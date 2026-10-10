@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { clearStaleSession, getSessionUser } from '../../lib/user';
+import { clearSessionCookie, clearStaleSession, deleteUserAccount, getSessionUser, getSessionUserId } from '../../lib/user';
+import { isSameOriginRequest } from '../../lib/user/session';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,5 +14,20 @@ export async function GET(req: NextRequest) {
   const res = NextResponse.json({ error: '로그인이 필요해요.' }, { status: 401, headers: NO_STORE });
   // 만료·위조·탈퇴로 못 쓰게 된 쿠키가 남아 있으면 치워 둔다
   clearStaleSession(req, res);
+  return res;
+}
+
+// 내 정보 삭제 — 세션 쿠키의 사용자 본인만 지울 수 있다 (id를 요청에서 받지 않음). 지운 뒤 세션·로그인 표시 쿠키도 같이 지운다
+export async function DELETE(req: NextRequest) {
+  if (!isSameOriginRequest(req.headers.get('origin'), req.headers.get('host'))) {
+    return NextResponse.json({ error: '잘못된 요청이에요.' }, { status: 403, headers: NO_STORE });
+  }
+  const id = getSessionUserId(req);
+  if (!id) return NextResponse.json({ error: '로그인이 필요해요.' }, { status: 401, headers: NO_STORE });
+  if (!(await deleteUserAccount(id))) {
+    return NextResponse.json({ error: '삭제하지 못했어요. 잠시 뒤 다시 시도해 주세요.' }, { status: 500, headers: NO_STORE });
+  }
+  const res = NextResponse.json({ ok: true }, { headers: NO_STORE });
+  clearSessionCookie(res);
   return res;
 }

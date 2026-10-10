@@ -47,6 +47,15 @@ export function clearSessionCookie(res: NextResponse) {
   res.cookies.set(LOGGED_IN_COOKIE, '', { ...loggedInCookieOptions, maxAge: 0 });
 }
 
+// 내 정보 삭제(회원 탈퇴) — 세션의 사용자 한 명만. user_owned_games는 on delete cascade지만 확실히 하려고 먼저 직접 지운다.
+// CLAUDE.md 기록 테이블 삭제 금지의 예외: 회원 탈퇴 시 users와 그 하위 표. 둘 중 하나라도 실패하면 false (쿠키도 그대로 둔다)
+export async function deleteUserAccount(userId: string): Promise<boolean> {
+  const { error: e1 } = await db.from('user_owned_games').delete().eq('user_id', userId);
+  if (e1) return false;
+  const { error: e2 } = await db.from('users').delete().eq('id', userId);
+  return !e2;
+}
+
 // 로그인이 아닌 요청(401)에 낡은 세션 쿠키가 실려 있으면 같이 지운다 — 만료·위조·탈퇴로 못 쓰게 된 쿠키를 치워 두기 위해
 export function clearStaleSession(req: NextRequest, res: NextResponse) {
   if (req.cookies.get(USER_COOKIE) || req.cookies.get(LOGGED_IN_COOKIE)) clearSessionCookie(res);

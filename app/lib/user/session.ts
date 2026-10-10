@@ -42,6 +42,12 @@ export function verifyUserSessionToken(token: string | undefined | null, nowMs =
 
 // 쿠키 속성 — 로그인 때와 로그아웃(삭제) 때 같아야 지워진다.
 // path는 /api: 서버 컴포넌트가 쿠키를 읽으면 페이지 캐시(revalidate)가 깨지므로, API 요청에만 실리게 한다
+// 쓰기 요청(로그아웃·내 정보 삭제)의 Origin 확인 — Origin이 있으면 우리 주소(Host)와 같아야 한다 (다른 사이트에서 몰래 보내는 요청 방지)
+export function isSameOriginRequest(origin: string | null, host: string | null): boolean {
+  if (!origin) return true;
+  try { return !!host && new URL(origin).host === host; } catch { return false; }
+}
+
 export const userCookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production', // 로컬 개발(http)에서도 로그인 시험이 되게 admin_session과 같은 규칙

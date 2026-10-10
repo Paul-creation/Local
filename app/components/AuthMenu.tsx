@@ -12,6 +12,8 @@ const CACHE_KEY = 'auth_me';
 const CACHE_MS = 5 * 60 * 1000;
 const NOTICE: Record<string, string> = {
   failed: '스팀 로그인에 실패했어요. 다시 시도해주세요.',
+  deleted: '내 정보를 삭제했어요.',
+  deleteFailed: '삭제하지 못했어요. 잠시 뒤 다시 시도해 주세요.',
   unavailable: '지금은 로그인을 쓸 수 없어요.',
 };
 
@@ -82,6 +84,21 @@ export default function AuthMenu() {
     setMe(null);
   };
 
+  // 내 정보 삭제 — 확인 창 뒤 서버가 세션의 사용자 행을 지우고 쿠키도 지운다. 성공하면 브라우저에 남은 로그인 기억(sessionStorage)도 비운다
+  const deleteMe = async () => {
+    setOpen(false);
+    if (!window.confirm('내 정보를 삭제할까요?\n저장된 Steam ID, 닉네임, 프로필 사진 주소, 보유 게임 번호가 모두 지워지고 로그아웃돼요. 되돌릴 수 없어요.')) return;
+    let ok = false;
+    try { ok = (await fetch('/api/me', { method: 'DELETE', credentials: 'same-origin' })).ok; } catch {}
+    if (ok) {
+      clearCache();
+      clearOwnedCache();
+      setMe(null);
+    }
+    setNotice(NOTICE[ok ? 'deleted' : 'deleteFailed']);
+    setTimeout(() => setNotice(''), 6000);
+  };
+
   const { visibility } = useOwned();
   const noticeEl = notice ? <div className="auth-notice" role="status">{notice}</div> : null;
 
@@ -98,6 +115,7 @@ export default function AuthMenu() {
           <div className="auth-pop" role="menu">
             {visibility === 'private' && <p className="auth-pop-note">스팀 프로필의 게임 세부 정보를 공개로 바꾸면 보유 게임이 표시돼요</p>}
             <button type="button" role="menuitem" className="auth-pop-item" onClick={logout}>로그아웃</button>
+            <button type="button" role="menuitem" className="auth-pop-item" onClick={deleteMe}>내 정보 삭제</button>
           </div>
         )}
         {noticeEl}

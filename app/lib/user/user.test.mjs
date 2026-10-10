@@ -171,3 +171,12 @@ test('nonce 재사용: 두 번째는 거부 (기본키 충돌 모사)', async ()
   assert.equal(await login(), true);
   assert.equal(await login(), false); // 같은 응답을 다시 보내면 거부
 });
+
+test('쓰기 요청 Origin 확인: 같은 Host만 통과, Origin 없으면 통과, 다른 사이트·깨진 값은 거부', async () => {
+  const { isSameOriginRequest } = await import('./session.ts');
+  assert.equal(isSameOriginRequest(null, 'example.test'), true);
+  assert.equal(isSameOriginRequest('https://example.test', 'example.test'), true);
+  assert.equal(isSameOriginRequest('https://evil.test', 'example.test'), false);
+  assert.equal(isSameOriginRequest('not a url', 'example.test'), false);
+  assert.equal(isSameOriginRequest('https://example.test', null), false);
+});

@@ -12,9 +12,10 @@ export const metadata: Metadata = {
 // 코드 기준 실제 수집 항목으로 작성 (2026-10-10 Steam 로그인 항목 추가). 수집 항목이 바뀌면 이 문서도 같이 고친다.
 // 근거: app/lib/community.ts(ipHash·hashPassword), app/api/**(insert), app/lib/aiGuard.ts(ai_calls), scripts/purge-ip-hash.mjs(90일 파기), app/layout.tsx(Vercel Analytics),
 //       app/lib/user/*(users·user_owned_games·used_openid_nonces, user_session 30일), supabase/migrations/2026101*_users·owned_games
-// 방침 변경은 시행 7일 전 공지: 시행일은 머지(공지 시작)일 + 7일로 맞춘다. 전용 이메일이 생기면 삭제 요청 경로(6번)를 바꾼다
+// 이번 개정(삭제 버튼·1년 자동 파기)은 이미 제공 중인 기능의 처리 내용을 적은 것이라 공지와 동시에 즉시 시행 (일반 변경은 시행 7일 전 공지)
+// 1년 자동 파기는 Supabase pg_cron(매일 04:30 KST)로 하므로 SQL이 등록돼 있어야 방침과 맞는다. 전용 이메일이 생기면 6번의 로그인 불가 안내를 바꾼다
 const NOTICE_DATE = '2026년 10월 10일';
-const EFFECTIVE_DATE = '2026년 10월 17일';
+const EFFECTIVE_DATE = '2026년 10월 10일';
 
 export default function PrivacyPage() {
   const contact = CONTACT_EMAIL ? <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> : CONTACT_TEXT;
@@ -103,6 +104,7 @@ export default function PrivacyPage() {
             </ul>
           </li>
           <li>사이트는 이름·생년월일 같은 정보를 요구하지 않으며(의견 보내기의 연락처는 선택), 만 14세 미만인지 확인하지 않아요.</li>
+          <li>만 14세 미만은 Steam 로그인을 이용할 수 없어요.</li>
         </ul>
 
         <h2 className="cm-h2">2. 보유 기간과 파기</h2>
@@ -111,7 +113,7 @@ export default function PrivacyPage() {
           <li><strong>게시글·댓글·게임 의견</strong>(닉네임·내용·비밀번호 해시 포함): 작성자가 삭제하거나 운영자가 삭제할 때까지. 삭제하면 바로 데이터베이스에서 지워요.</li>
           <li><strong>신고 내역</strong>(대상·사유·처리 시각): 분쟁 대응을 위해 신고일부터 <strong>1년</strong> 보관한 뒤 지워요. 신고자 IP 해시는 위와 같이 90일 뒤 지워요.</li>
           <li><strong>의견 보내기</strong>(내용·연락처): 보낸 날부터 <strong>1년</strong> 보관한 뒤 지워요. IP 해시는 위와 같이 90일 뒤 지워요.</li>
-          <li><strong>Steam 로그인 정보</strong>(Steam ID, 닉네임, 프로필 사진 주소, 보유 게임 번호, 시각들): 자동으로 지우는 기간이 없고, 삭제를 요청하거나 운영자가 지울 때까지 보관해요. 보유 게임 번호는 24시간이 지난 뒤 다시 가져올 때마다 통째로 새 목록으로 바뀌어요. 로그인 상태는 쿠키로 30일 유지돼요. 로그아웃은 이 쿠키만 지우고 저장된 정보는 지우지 않아요. 지금은 사이트 안에 탈퇴 버튼이 없어서 아래 6번 방법으로 삭제를 요청해야 해요.</li>
+          <li><strong>Steam 로그인 정보</strong>(Steam ID, 닉네임, 프로필 사진 주소, 보유 게임 번호, 시각들): <strong>마지막 로그인 후 1년이 지나면 자동으로 삭제</strong>해요. 그 전에도 로그인한 뒤 <strong>[내 정보 삭제] 버튼</strong>으로 바로 지울 수 있어요(6번 참고). 보유 게임 번호는 24시간이 지난 뒤 다시 가져올 때마다 통째로 새 목록으로 바뀌어요. 로그인 상태는 쿠키로 30일 유지돼요. 로그아웃은 이 쿠키만 지우고 저장된 정보는 지우지 않아요.</li>
           <li><strong>서버 접속 기록</strong>: 호스팅 업체(Vercel)의 보관 정책에 따라 자동으로 지워져요.</li>
           <li><strong>방문 통계</strong>: 개인을 알아볼 수 없는 집계 숫자로만 남아요. 같은 방문을 묶는 데 쓰는 임시 값은 하루가 지나면 버려져요.</li>
           <li>파기는 데이터베이스에서 다시 살릴 수 없게 지우는 방식으로 해요. 종이 문서로는 개인정보를 보관하지 않아요.</li>
@@ -190,7 +192,7 @@ export default function PrivacyPage() {
 
         <h2 className="cm-h2">6. 이용자의 권리</h2>
         <ul>
-          <li><strong>Steam 로그인 정보 삭제</strong>: 지금은 사이트 안에 탈퇴 기능이 없어요. <Link href="/feedback">의견 보내기</Link>에서 &ldquo;기타&rdquo;를 골라 &ldquo;Steam 로그인 정보 삭제 요청&rdquo;과 Steam 닉네임을 적어 주세요. 처리 결과를 받고 싶으면 연락처도 남겨 주세요. 확인한 뒤 저장된 Steam ID·닉네임·사진 주소·보유 게임 번호를 한꺼번에 지워요. 전용 이메일이 생기면 이 안내를 바꿔요.</li>
+          <li><strong>Steam 로그인 정보 삭제</strong>: 로그인한 뒤 오른쪽 위 닉네임 메뉴의 <strong>[내 정보 삭제]</strong> 버튼을 누르면 저장된 Steam ID·닉네임·사진 주소·보유 게임 번호를 바로 한꺼번에 지워요. 로그인이 안 되는 경우에만 <Link href="/feedback">의견 보내기</Link>에서 &ldquo;기타&rdquo;를 골라 &ldquo;Steam 로그인 정보 삭제 요청&rdquo;과 Steam 닉네임을 적어 주세요. 처리 결과를 받고 싶으면 연락처도 남겨 주세요.</li>
           <li>내가 쓴 글·댓글·의견은 작성할 때 정한 비밀번호로 언제든 수정·삭제할 수 있어요.</li>
           <li>비밀번호를 잊었거나 내 개인정보가 담긴 글의 삭제를 원하면 해당 글의 <strong>신고</strong> 버튼(개인정보 노출)이나 아래 연락처로 요청해주세요.</li>
           <li>개인정보 열람·정정·삭제·처리정지를 요청할 수 있어요. 다만 사이트는 이름 등 신원 정보를 갖고 있지 않아, 요청한 분이 해당 글의 작성자인지 확인할 수 있는 범위에서 처리해요.</li>
@@ -220,7 +222,7 @@ export default function PrivacyPage() {
         <h2 className="cm-h2">9. 방침 변경</h2>
         <p>이 방침을 바꾸면 시행 7일 전부터 사이트에 알려요. 함께 보기: <Link href="/terms">이용약관</Link> · <Link href="/community/policy">커뮤니티 운영정책</Link></p>
         <p className="legal-date">시행일: {EFFECTIVE_DATE}</p>
-        <p className="legal-date">변경 이력: {NOTICE_DATE} 공지 · {EFFECTIVE_DATE} 시행 — Steam 로그인 수집 항목·보관·삭제 방법 추가 / 2026년 10월 5일 — 최초 시행</p>
+        <p className="legal-date">변경 이력: {NOTICE_DATE} 공지·시행 — Steam 로그인 수집 항목·보관 기간(1년 자동 삭제)·삭제 방법([내 정보 삭제] 버튼)·만 14세 미만 이용 제한 추가. 이미 제공 중인 기능의 처리 내용을 적은 개정이라 즉시 시행 / 2026년 10월 5일 — 최초 시행</p>
       </article>
     </main>
   );
