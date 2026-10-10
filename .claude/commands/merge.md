@@ -8,7 +8,8 @@ $ARGUMENTS 브랜치를 main에 머지한다.
 
 1. git fetch origin 후 로컬 main을 git pull --ff-only로 맞춘다.
 2. rebase 전에 git merge-base origin/main <브랜치>로 merge-base를 구하고, rebase 전 브랜치 끝 커밋 해시(OLD_TIP, git rev-parse <브랜치>)와 함께 기억해 둔다. 원격 브랜치가 없거나 로컬이 앞서 있어도 로컬 브랜치 기준이다.
-3. 그 브랜치의 worktree(없으면 원격 브랜치로 새 worktree)에서 origin/main 위로 rebase한다. 충돌이 나면 양쪽 변경을 모두 살리고 어떻게 해소했는지 적는다.
+3. 그 브랜치의 worktree(없으면 원격 브랜치로 새 worktree)에서 origin/main 위로 rebase한다.
+   - rebase 중 충돌이 나면 해결하지 말고 멈춘다. 충돌 파일 목록과 각 파일의 양쪽 내용(<<<<<<< ======= >>>>>>> 구간)을 보여주고 지시를 기다린다. rebase --abort도 지시가 있을 때만 한다.
 4. npm ci, npm run build, npm test를 돌린다. 하나라도 실패하면 멈추고 보고한다.
 5. 푸시 전에 git range-diff <merge-base>..<OLD_TIP> origin/main..HEAD로 확인한다. 원격 브랜치에 의존하지 않는다. 충돌 해소로 생긴 !는 차이 내용을 보여주고 의도한 해소면 계속한다. 그 밖의 !나 짝 없는 커밋이 있으면 푸시하지 말고 보고한다.
 6. git push origin HEAD:main으로 fast-forward한다. force 금지. 거부되면 이후 단계(삭제 포함)로 가지 말고 1부터 다시 한다.
