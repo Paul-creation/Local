@@ -12,12 +12,12 @@ function getVideoId(url: string | null): string | null {
 
 // 썸네일: 기본은 hqdefault(480×360, 약 15~30KB). 카드가 640px 넘게 보일 때만 maxresdefault(1280×720) — <picture>로 화면 너비에 따라 고른다
 // wide: 페이지 폭을 다 쓰는 카드(상세 맨 위 트레일러). .page 좌우 여백 24px씩이라 화면 689px부터 카드가 640px를 넘음
-//   탭 목록(.coop-videos)은 넓은 화면 3열·좁은 화면 78%라 640px를 넘지 않음 → wide 없이 hqdefault만
+//   영상 목록의 작은 썸네일은 wide 없이 hqdefault만 (상세 영상 섹션의 큰 플레이어는 wide)
 // maxresdefault가 없는 영상은 오류 대신 120×90 회색 이미지가 오므로, 로드 후 폭이 120 이하면 hqdefault로 바꾼다
 // 4:3 위아래 검은 띠는 16:9 상자에서 object-fit: cover로 잘려 나감
 const WIDE_MEDIA = '(min-width: 689px)';
 
-export default function YouTubeLite({ url, title, fallbackImage, wide = false, fetchPriority, autoPlay = false }: { url: string | null; title: string; fallbackImage?: string; wide?: boolean; fetchPriority?: 'high' | 'low' | 'auto'; autoPlay?: boolean }) {
+export default function YouTubeLite({ url, title, fallbackImage, wide = false, fetchPriority, autoPlay = false, onBroken }: { url: string | null; title: string; fallbackImage?: string; wide?: boolean; fetchPriority?: 'high' | 'low' | 'auto'; autoPlay?: boolean; onBroken?: () => void }) {
   // autoPlay: 이미 재생 버튼을 누른 뒤 그려질 때 (상세 맨 위 "트레일러 재생") 바로 재생
   const [playing, setPlaying] = useState(autoPlay);
   const [thumbFailed, setThumbFailed] = useState(false);
@@ -38,6 +38,11 @@ export default function YouTubeLite({ url, title, fallbackImage, wide = false, f
     if (img.naturalWidth === 0) setThumbFailed(true);
     else checkThumb(img);
   }, [id, noMaxres]);
+
+  // 삭제된 영상이면 부모에게 알림 (영상 목록이 그 항목을 빼도록)
+  useEffect(() => {
+    if (thumbFailed) onBroken?.();
+  }, [thumbFailed, onBroken]);
 
   // 영상이 없거나 삭제됐으면 사진으로 대신 (사진도 없으면 아무것도 안 보여줌)
   if (!id || thumbFailed) {

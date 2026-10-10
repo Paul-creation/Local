@@ -1,26 +1,12 @@
 'use client';
 
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import YouTubeLite from './YouTubeLite';
-import { formatDate, formatYearMonth } from '../lib/date';
+import { formatDate } from '../lib/date';
+import type { VideoItem } from '../lib/videoList';
 
-export type CoopVideo = {
-  video_id: string;
-  title: string;
-  channel_title: string | null;
-  published_at: string | null;
-  view_count: number | null;
-};
-
-export type StreamerVideo = {
-  video_id: string;
-  title: string;
-  channel_title: string | null;
-  published_at: string | null;
-};
-
-// 상세 주소 끝에 붙는 해시 — 메인 "스트리머가 플레이한 게임" 카드가 이 탭으로 바로 보냄
-const STREAMER_VIDEOS_HASH = 'streamer-videos';
+// 상세 주소 끝에 붙는 해시 — 메인 "스트리머가 플레이한 게임" 카드가 이 섹션으로 바로 보냄
+const VIDEOS_ANCHOR = 'streamer-videos';
 
 // 12345 → 1.2만, 123456 → 12만, 123456789 → 1.2억
 function formatViews(n: number) {
@@ -30,95 +16,88 @@ function formatViews(n: number) {
   return n.toLocaleString('ko-KR');
 }
 
-function VideoCards({ videos }: { videos: CoopVideo[] }) {
-  return (
-    <>
-      <div className="coop-videos" role="tabpanel">
-        {videos.map((v) => (
-          <div key={v.video_id} className="coop-video-card">
-            <YouTubeLite url={`https://www.youtube.com/embed/${v.video_id}`} title={v.title} />
-            <div className="coop-video-title">{v.title}</div>
-            <div className="coop-video-channel">{v.channel_title}</div>
-            <div className="coop-video-meta">
-              {[v.view_count ? `조회수 ${formatViews(v.view_count)}` : '', formatYearMonth(v.published_at)].filter(Boolean).join(' · ')}
-            </div>
-          </div>
-        ))}
-      </div>
-      <p className="video-source">영상 출처: YouTube</p>
-    </>
-  );
-}
+const metaOf = (v: VideoItem) => [v.view_count ? `조회수 ${formatViews(v.view_count)}` : '', formatDate(v.published_at)].filter(Boolean).join(' · ');
 
-// 스트리머 영상 — 썸네일만 먼저 그리고, 누르면 그 자리에서 youtube-nocookie iframe으로 바뀜 (YouTubeLite). 공식 트레일러와는 별도 탭
-function StreamerVideoCards({ videos }: { videos: StreamerVideo[] }) {
-  return (
-    <>
-      <div className="coop-videos">
-        {videos.map((v) => (
-          <div key={v.video_id} className="coop-video-card">
-            <YouTubeLite url={`https://www.youtube.com/embed/${v.video_id}`} title={v.title} />
-            <div className="coop-video-title">{v.title}</div>
-            <div className="coop-video-channel">{v.channel_title}</div>
-            <div className="coop-video-meta">{formatDate(v.published_at)}</div>
-          </div>
-        ))}
-      </div>
-      <p className="video-source">영상 출처: YouTube</p>
-    </>
-  );
-}
-
-// 상세 페이지 "영상으로 미리 보기" — [하이라이트] [친구랑 플레이] [스트리머](위: 켜진 스트리머 영상, 아래: 이 게임을 플레이한 채널 링크) 탭
-// 내용이 없는 탭은 숨기고, 첫 탭이 기본
-export default function VideoPreviewSection({ highlights, videos, streamerVideos, streamers }: { highlights: CoopVideo[]; videos: CoopVideo[]; streamerVideos: StreamerVideo[]; streamers: ReactNode }) /* streamers: 채널 링크 칩 (없으면 null) */ {
-  const tabs = [
-    highlights.length > 0 && { key: 'highlight', label: '하이라이트' },
-    videos.length > 0 && { key: 'coop', label: '친구랑 플레이' },
-    (streamerVideos.length > 0 || streamers) && { key: STREAMER_VIDEOS_HASH, label: '스트리머' },
-  ].filter(Boolean) as { key: string; label: string }[];
-  const hasStreamerTab = tabs.some((t) => t.key === STREAMER_VIDEOS_HASH);
-  const [tab, setTab] = useState(tabs[0]?.key);
-  // #streamer-videos 로 들어오면 그 탭을 연다 (탭이 없는 게임이면 무시)
+// 목록의 작은 썸네일 (16:9, 320×180). 삭제된 영상은 유튜브가 120×90 회색 이미지를 주므로 그때 부모에게 알려 목록에서 뺌
+function RailThumb({ id, onBroken }: { id: string; onBroken: () => void }) {
+  const ref = useRef<HTMLImageElement>(null);
+  const check = (img: HTMLImageElement) => {
+    if (img.naturalWidth <= 120) onBroken();
+  };
   useEffect(() => {
-    const open = () => {
-      if (location.hash === `#${STREAMER_VIDEOS_HASH}` && hasStreamerTab) setTab(STREAMER_VIDEOS_HASH);
-    };
-    open();
-    window.addEventListener('hashchange', open);
-    return () => window.removeEventListener('hashchange', open);
-  }, [hasStreamerTab]);
-  if (!tabs.length) return null;
+    const img = ref.current;
+    if (img?.complete) check(img); // 서버에서 그린 이미지가 hydration 전에 다 받아진 경우
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img ref={ref} src={`https://i.ytimg.com/vi/${id}/mqdefault.jpg`} alt="" loading="lazy" onLoad={(e) => check(e.currentTarget)} onError={onBroken} />
+  );
+}
+
+// 상세 페이지 "영상으로 미리 보기" — 섹션 폭 전체 16:9 메인 플레이어 1개 + 아래 작은 썸네일 목록
+// 처음엔 목록 첫 영상이 썸네일 상태로 떠 있고, 목록의 썸네일을 누르면 메인이 그 영상으로 바뀌어 바로 재생됨 (새 페이지 이동 없음)
+// 목록 순서·자르기는 lib/videoList, 출처 문구(label)도 거기서 만듦
+export default function VideoPreviewSection({ videos, streamers }: { videos: VideoItem[]; streamers: ReactNode }) /* streamers: 채널 링크 칩 (없으면 null) */ {
+  const [broken, setBroken] = useState<ReadonlySet<string>>(new Set());
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [picks, setPicks] = useState(0); // 썸네일을 누른 횟수 — 0이면 아직 사용자가 고른 적 없음(자동 재생 안 함). 같은 영상을 다시 눌러도 플레이어를 새로 그려 재생
+  const markBroken = (id: string) => setBroken((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
+
+  const list = videos.filter((v) => !broken.has(v.video_id));
+  if (!list.length && !streamers) return null;
+  const current = list.find((v) => v.video_id === selectedId) ?? list[0];
 
   return (
-    <section className="detail-card" id={STREAMER_VIDEOS_HASH}>
+    <section className="detail-card" id={VIDEOS_ANCHOR}>
       <h3 className="detail-card-title">영상으로 미리 보기</h3>
-      <div className="tabs video-tabs" role="tablist" aria-label="영상 종류">
-        {tabs.map((t) => (
-          <button
-            key={t.key}
-            type="button"
-            role="tab"
-            aria-selected={tab === t.key}
-            className={`tab${tab === t.key ? ' is-active' : ''}`}
-            onClick={() => setTab(t.key)}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
 
-      {tab === 'highlight' && <VideoCards videos={highlights} />}
-      {tab === 'coop' && <VideoCards videos={videos} />}
-      {tab === STREAMER_VIDEOS_HASH && (
-        <div role="tabpanel">
-          {streamerVideos.length > 0 && <StreamerVideoCards videos={streamerVideos} />}
-          {streamers && (
-            <div className={streamerVideos.length > 0 ? 'streamer-channels has-videos' : 'streamer-channels'}>
-              <h4 className="streamer-sub">이 게임을 플레이한 채널</h4>
-              {streamers}
+      {current && (
+        <>
+          <div className="video-stage">
+            <YouTubeLite
+              key={`${current.video_id}:${picks}`}
+              url={`https://www.youtube.com/embed/${current.video_id}`}
+              title={current.title}
+              wide
+              autoPlay={picks > 0}
+              onBroken={() => markBroken(current.video_id)}
+            />
+          </div>
+          <div className="video-stage-info">
+            <div className="video-stage-title">{current.title}</div>
+            <div className="video-stage-sub">
+              <span className="chip is-static">{current.label}</span>
+              {metaOf(current) && <span className="coop-video-meta">{metaOf(current)}</span>}
             </div>
+          </div>
+
+          {list.length > 1 && (
+            <ul className="video-rail" aria-label="다른 영상">
+              {list.map((v) => (
+                <li key={v.video_id} className="video-rail-item">
+                  <button
+                    type="button"
+                    className="video-rail-btn"
+                    aria-current={v.video_id === current.video_id ? 'true' : undefined}
+                    onClick={() => { setSelectedId(v.video_id); setPicks((n) => n + 1); }}
+                  >
+                    <span className="video-rail-thumb"><RailThumb id={v.video_id} onBroken={() => markBroken(v.video_id)} /></span>
+                    <span className="coop-video-title">{v.title}</span>
+                    <span className="chip is-static video-rail-chip">{v.label}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
           )}
+          <p className="video-source">영상 출처: YouTube</p>
+        </>
+      )}
+
+      {streamers && (
+        <div className={current ? 'streamer-channels has-videos' : 'streamer-channels'}>
+          <h4 className="streamer-sub">이 게임을 플레이한 채널</h4>
+          {streamers}
         </div>
       )}
     </section>
