@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-10 (main 28297e7)
+기준: 2026-10-10 (main b19ea1d)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/10: feat/streamer-links — 스트리머 칩을 영상 링크로(app/lib/streamerPick.ts 규칙 A: main·edit·game 일반 영상 → 같은 채널 쇼츠 → vod, 같은 단계에선 최근 영상, vod면 aria-label·title에 "(풀영상)"), 칩 툴팁을 사이트 스타일로(data-tip, 터치 기기 제외, 첫 칩은 왼쪽 정렬), 카드 밖 "플레이 영상 보기" 줄 삭제, GameCard stretched 옵션, HotChart 칩은 span 유지
 - 10/10: feat/back-link — 하위 페이지 공통 BackLink(fallbackHref, label, preferList). 서버 HTML은 "← 라벨" 일반 링크, 마운트 뒤 사이트 안 이동이면 "← 뒤로"+history.back(), 아니면 fallback으로 이동. 사이트 안 이동 = NavTracker(layout)가 센 클라이언트 이동 1회 이상, 또는 referrer 출처 같고 history.length>1(새 탭은 fallback, lib/backLink 테스트). 게임 상세·/compare는 sessionStorage list_url 우선 fallback(없으면 /, list_scroll·list_count 복원은 두 경우 모두 동작), /compare/new→/compare. /this-week·/about·/faq·/privacy·/terms→홈, 커뮤니티 게시판·글쓰기·운영정책→/community, 글 상세→그 게시판(기존 아래쪽 cm-btn 삭제). BackToList.tsx 삭제. /compare는 1단계 메뉴지만 기존 뒤로 링크를 BackLink로 교체해 유지(예외). 메뉴 1단계 페이지(홈·내 PC·찜목록·커뮤니티·의견)는 넣지 않음
 - 10/10: chore/remove-light — 라이트 모드 제거, 다크 고정. 헤더 "라이트" 버튼·ThemeToggle·lib/theme.ts·테마 초기화 스크립트·suppressHydrationWarning·[data-theme="light"] 규칙과 라이트 토큰 삭제, :root:not([data-theme="light"]) 접두사는 :root로, viewport colorScheme 'dark'(meta color-scheme). 예전에 저장된 localStorage theme 키는 ThemeKeyCleanup이 접속 시 한 번 지움. 정규식 삭제가 .site-menu a 규칙까지 지워 헤더 메뉴가 깨진 것을 원본 블록으로 복구(fix(header))
 - 10/10: feat/list-view — 검색 결과 카드/행 보기 전환. ResultCard view="row"(썸네일·이름·스토어·인원·진입장벽·보유 칩·가격 블록·+ 비교, 태그 칩 없음), 결과 머리 정렬 탭 줄에 aria-pressed 버튼 2개(.tabs/.tab 재사용), 선택은 localStorage jdn_list_view에만 저장(주소엔 안 담음). 행 높이는 min-height, 375px에서는 가격을 한 줄로 압축(할인율+할인가+"~10/13" 짧은 종료일, 정가·역대 최저 칩 숨김, + 비교 같은 줄 오른쪽, 이름 한 줄)해 할인 큰 순 상위 24행 최대 108px. 375px 정렬 탭은 가로 스크롤+오른쪽 페이드로 "낮은 가격순" 잘림 수정. 평가는 1차 제외(INDEX_FIELDS에 review 칸 없음), 찜 목록·비슷한 게임은 범위 밖
@@ -56,7 +57,7 @@
 - 이전 판단(heat_rank 라벨, 역대 최저가 배지 기준, Metascore만, 스팀 로그인 방식 c 등) 유지
 
 ## 로드맵
-- 다음: fix/steam-confirm(check-delisted가 요청 제한을 판매 중단 후보로 보지 않게, enrich-fallback 빈 응답 크래시, fix-data-gaps·fill-tags-desc 재시도) / 가격 못 받은 2개(동방홍마향, Ori) / itad_id 없는 81개 매일 lookup / 보유 칩 HotChart·할인·찜목록 확장(10/11 확인 후) / 찜 동기화·내 PC 사양 계정 저장(user_pc 표, /api/me/pc)·개인정보 방침("서버로 보내지 않아요" 문구 수정 포함)·탈퇴(방침 변경은 시행 7일 전 공지) / YouTube 할당량 구조 / 스트리머 칩 영상 링크화·푸터 축소 / (일주일 뒤에도 저장 공간이 높으면) OG 폰트 fetch 전환
+- 다음: fix/steam-confirm(check-delisted가 요청 제한을 판매 중단 후보로 보지 않게, enrich-fallback 빈 응답 크래시, fix-data-gaps·fill-tags-desc 재시도) / 가격 못 받은 2개(동방홍마향, Ori) / itad_id 없는 81개 매일 lookup / 보유 칩 HotChart·할인·찜목록 확장(10/11 확인 후) / 찜 동기화·내 PC 사양 계정 저장(user_pc 표, /api/me/pc)·개인정보 방침("서버로 보내지 않아요" 문구 수정 포함)·탈퇴(방침 변경은 시행 7일 전 공지) / YouTube 할당량 구조 / 푸터 축소 / (일주일 뒤에도 저장 공간이 높으면) OG 폰트 fetch 전환
 - 10/10(토) 아침: 매일 갱신 확인(itad-heat, 상점명, 역대 최고 동접, Metascore) / Set up job 로그에 ubuntu-24.04·checkout@v5·setup-node@v5, Node 20 경고 없음 / 요청 제한 미처리 N 확인 / 에픽 전용 가족 공유 칸 숨김 / VALORANT 트레일러 / 정가 missing 0 유지
 - 10/11 휴가: 도메인 구매(Cloudflare) → Vercel 연결 → vercel.app 리다이렉트, NEXT_PUBLIC_SITE_URL=https://jamidunow.com, GitHub ENV_FILE·site.ts·daily-summary.mjs 기본값, 디스코드 웹후크, 이메일 라우팅, 서치콘솔·네이버. 스팀 로그인 시험(로그인 → 아바타·닉네임 → 로그아웃, select steam_id, persona_name, last_login_at from users;, "보유 중" 칩, select count(*) from user_owned_games;, 비공개 프로필 안내. 칩이 안 뜨면 app/lib/user/ownedGames.ts부터)
 - 10/12(월): backup.yml(upload-artifact@v6) 주간 실행 로그 확인
