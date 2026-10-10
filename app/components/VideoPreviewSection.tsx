@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import YouTubeLite from './YouTubeLite';
 import { formatDate } from '../lib/date';
 import type { VideoItem } from '../lib/videoList';
@@ -35,6 +35,37 @@ function RailThumb({ id, onBroken }: { id: string; onBroken: () => void }) {
   );
 }
 
+// 썸네일 목록의 좌우 이동 — 보이는 폭의 약 80%씩 스크롤. 맨 끝이거나 목록이 다 보이면 그쪽 버튼 숨김 (스크롤 이벤트 + ResizeObserver로 갱신)
+// 버튼 자체는 CSS가 마우스 기기(hover: hover)에서만 보여줌. 터치 기기는 스와이프만
+function useRailScroll(count: number) {
+  const ref = useRef<HTMLUListElement>(null);
+  const [edge, setEdge] = useState({ prev: false, next: false });
+  const update = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    const prev = el.scrollLeft > 1;
+    const next = el.scrollLeft + el.clientWidth < el.scrollWidth - 1;
+    setEdge((e) => (e.prev === prev && e.next === next ? e : { prev, next }));
+  }, []);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    update();
+    el.addEventListener('scroll', update, { passive: true });
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    Array.from(el.children).forEach((c) => ro.observe(c));
+    return () => { el.removeEventListener('scroll', update); ro.disconnect(); };
+  }, [update, count]);
+  const move = (dir: 1 | -1) => {
+    const el = ref.current;
+    if (!el) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: reduce ? 'auto' : 'smooth' });
+  };
+  return [ref, edge, move] as const;
+}
+
 // 상세 페이지 "영상으로 미리 보기" — 섹션 폭 전체 16:9 메인 플레이어 1개 + 아래 작은 썸네일 목록
 // 처음엔 목록 첫 영상이 썸네일 상태로 떠 있고, 목록의 썸네일을 누르면 메인이 그 영상으로 바뀌어 바로 재생됨 (새 페이지 이동 없음)
 // 목록 순서·자르기는 lib/videoList, 출처 문구(label)도 거기서 만듦
@@ -45,6 +76,7 @@ export default function VideoPreviewSection({ videos, streamers }: { videos: Vid
   const markBroken = (id: string) => setBroken((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
 
   const list = videos.filter((v) => !broken.has(v.video_id));
+  const [railRef, railEdge, moveRail] = useRailScroll(list.length);
   if (!list.length && !streamers) return null;
   const current = list.find((v) => v.video_id === selectedId) ?? list[0];
 
@@ -73,22 +105,32 @@ export default function VideoPreviewSection({ videos, streamers }: { videos: Vid
           </div>
 
           {list.length > 1 && (
-            <ul className="video-rail" aria-label="다른 영상">
-              {list.map((v) => (
-                <li key={v.video_id} className="video-rail-item">
-                  <button
-                    type="button"
-                    className="video-rail-btn"
-                    aria-current={v.video_id === current.video_id ? 'true' : undefined}
-                    onClick={() => { setSelectedId(v.video_id); setPicks((n) => n + 1); }}
-                  >
-                    <span className="video-rail-thumb"><RailThumb id={v.video_id} onBroken={() => markBroken(v.video_id)} /></span>
-                    <span className="coop-video-title">{v.title}</span>
-                    <span className="chip is-static video-rail-chip">{v.label}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
+            <div className="video-rail-wrap">
+              {railEdge.prev && <button type="button" className="video-rail-arrow is-prev" aria-label="이전 영상" onClick={() => moveRail(-1)}>‹</button>}
+              {railEdge.next && <button type="button" className="video-rail-arrow is-next" aria-label="다음 영상" onClick={() => moveRail(1)}>›</button>}
+              <ul className="video-rail" aria-label="다른 영상" ref={railRef}>
+                {list.map((v) => (
+                  <li key={v.video_id} className="video-rail-item">
+                    <button
+                      type="button"
+                      className="video-rail-btn"
+                      aria-current={v.video_id === current.video_id ? 'true' : undefined}
+                      onClick={(e) => {
+                        setSelectedId(v.video_id);
+                        setPicks((n) => n + 1);
+                        // 가려진 카드면 목록 안에서만 움직여 보이게 (페이지가 세로로 튀지 않게 block도 nearest)
+                        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                        e.currentTarget.closest('li')?.scrollIntoView({ inline: 'nearest', block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+                      }}
+                    >
+                      <span className="video-rail-thumb"><RailThumb id={v.video_id} onBroken={() => markBroken(v.video_id)} /></span>
+                      <span className="coop-video-title">{v.title}</span>
+                      <span className="chip is-static video-rail-chip">{v.label}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
           <p className="video-source">영상 출처: YouTube</p>
         </>

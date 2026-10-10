@@ -1328,8 +1328,18 @@ img { display: block; }
 .video-stage-title { font-size: var(--fs-l); font-weight: 700; line-height: 1.4; color: var(--text); }
 .video-stage-sub { margin-top: 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
 .video-stage-sub .coop-video-meta { margin-top: 0; }
-.video-rail { list-style: none; margin: 12px -4px 0; padding: 4px 4px 6px; display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
-.video-rail::-webkit-scrollbar { display: none; }
+.video-rail-wrap { position: relative; margin: 12px -4px 0; }
+.video-rail { list-style: none; margin: 0; padding: 4px 4px 6px; display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin; scrollbar-color: var(--border) var(--inset); }
+.video-rail::-webkit-scrollbar { height: 6px; }
+.video-rail::-webkit-scrollbar-track { background: var(--inset); border-radius: 3px; }
+.video-rail::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.video-rail::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+/* 좌우 화살표 — 마우스 기기에서만 보임(터치는 스와이프), 썸네일 줄 세로 가운데에 겹침 */
+.video-rail-arrow { display: none; position: absolute; top: 51px; transform: translateY(-50%); z-index: 1; width: 36px; height: 36px; padding: 0 0 3px; border-radius: 50%; border: 1px solid var(--border); background: var(--card); color: var(--text); font: inherit; font-size: 22px; line-height: 1; cursor: pointer; align-items: center; justify-content: center; }
+.video-rail-arrow.is-prev { left: 8px; }
+.video-rail-arrow.is-next { right: 8px; }
+.video-rail-arrow:hover { background: var(--card-hover); border-color: var(--text-faint); }
+@media (hover: hover) { .video-rail-arrow { display: inline-flex; } }
 .video-rail-item { flex: 0 0 168px; min-width: 0; scroll-snap-align: start; }
 .video-rail-btn { display: block; width: 100%; padding: 0; border: none; background: none; font: inherit; text-align: left; color: inherit; cursor: pointer; }
 .video-rail-thumb { display: block; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: var(--inset); border: 2px solid transparent; }
@@ -1339,7 +1349,8 @@ img { display: block; }
 .video-rail-btn .coop-video-title { margin-top: 8px; }
 .video-rail-chip { margin-top: 6px; max-width: 100%; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: top; }
 @media (max-width: 640px) {
-  .video-rail { margin-left: -24px; margin-right: -24px; padding-left: 24px; padding-right: 24px; scroll-padding-left: 24px; }
+  .video-rail-wrap { margin-left: -24px; margin-right: -24px; }
+  .video-rail { padding-left: 24px; padding-right: 24px; scroll-padding-left: 24px; }
   .video-rail-item { flex-basis: 150px; }
 }
 
