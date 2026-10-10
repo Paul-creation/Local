@@ -103,8 +103,7 @@ export default function PrivacyPage() {
               <li>로그인 응답의 재사용을 막으려고 Steam이 준 일회용 확인값(nonce)을 잠깐 기록하고, 하루가 지나면 로그인 때 지워요.</li>
             </ul>
           </li>
-          <li>사이트는 이름·생년월일 같은 정보를 요구하지 않으며(의견 보내기의 연락처는 선택), 만 14세 미만인지 확인하지 않아요.</li>
-          <li>만 14세 미만은 Steam 로그인을 이용할 수 없어요.</li>
+          <li>이름·생년월일 같은 정보는 요구하지 않아요(의견 보내기 연락처는 선택). 만 14세 미만은 Steam 로그인을 이용할 수 없으며, 나이는 따로 확인하지 않아요.</li>
         </ul>
 
         <h2 className="cm-h2">2. 보유 기간과 파기</h2>
@@ -220,7 +219,7 @@ export default function PrivacyPage() {
         </ul>
 
         <h2 className="cm-h2">9. 방침 변경</h2>
-        <p>이 방침을 바꾸면 시행 7일 전부터 사이트에 알려요. 함께 보기: <Link href="/terms">이용약관</Link> · <Link href="/community/policy">커뮤니티 운영정책</Link></p>
+        <p>이 방침을 바꾸면 시행 7일 전부터 사이트에 알려요. 다만 이용자에게 불리하지 않은 변경이나 이미 하고 있는 처리를 적는 변경은 공지와 함께 바로 시행할 수 있어요. 함께 보기: <Link href="/terms">이용약관</Link> · <Link href="/community/policy">커뮤니티 운영정책</Link></p>
         <p className="legal-date">시행일: {EFFECTIVE_DATE}</p>
         <p className="legal-date">변경 이력: {NOTICE_DATE} 공지·시행 — Steam 로그인 수집 항목·보관 기간(1년 자동 삭제)·삭제 방법([내 정보 삭제] 버튼)·만 14세 미만 이용 제한 추가. 이미 제공 중인 기능의 처리 내용을 적은 개정이라 즉시 시행 / 2026년 10월 5일 — 최초 시행</p>
       </article>
