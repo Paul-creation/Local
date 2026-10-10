@@ -1563,7 +1563,7 @@ img { display: block; }
 .site-footer a:hover { color: var(--text); }
 .site-footer-links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; } /* 터치 영역 44px */
 .site-footer-links a + a { border-left: 1px solid var(--card-line); }
-.site-footer p { max-width: 640px; margin-inline: auto; }
+.site-footer p { max-width: 640px; margin-inline: auto; word-break: keep-all; }
 .site-footer-copy { margin-top: 12px; }
 
 /* 개인정보처리방침·이용약관 */
