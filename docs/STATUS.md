@@ -42,16 +42,16 @@
 - 레포는 Public 유지. 배포 저장 공간은 보존 기간(프리뷰 1주, 프로덕션 2주, 실패·취소 최단)과 Ignored Build Step으로 해결
 - 카드 밖 "플레이 영상 보기" 줄은 없애고, 카드 안 스트리머 이름 칩을 누르면 영상으로 이동(카드 클릭은 상세 페이지 유지)
 - 푸터는 비공식 사이트 문장과 Steam 상표 문장 두 줄 + AI 문구로 축소(상표 고지는 유지)
-- 라이트 버튼은 라이트 모드가 완성돼 있으면 유지, 미완성이면 오픈 전까지 숨김(확인 필요)
+- 라이트 모드 오픈 가능 판정(10/10), 버튼 유지
 - enrich-recent-reviews는 1회 300개(한 바퀴 약 3일). 화면에 쓸 때 상한 450 또는 표시 기준 5일 중 결정
 - 이전 판단(heat_rank 라벨, 역대 최저가 배지 기준, Metascore만, 스팀 로그인 방식 c 등) 유지
 
 ## 로드맵
-- 다음: fix/steam-confirm(check-delisted가 요청 제한을 판매 중단 후보로 보지 않게, enrich-fallback 빈 응답 크래시, fix-data-gaps·fill-tags-desc 재시도) / 가격 못 받은 2개(동방홍마향, Ori) / itad_id 없는 81개 매일 lookup / 보유 칩 HotChart·할인·찜목록 확장(10/11 확인 후) / 찜 동기화·내 PC 사양 계정 저장(user_pc 표, /api/me/pc)·개인정보 방침("서버로 보내지 않아요" 문구 수정 포함)·탈퇴(방침 변경은 시행 7일 전 공지) / YouTube 할당량 구조 / 스트리머 칩 영상 링크화·푸터 축소·라이트 버튼 확인 / 이번 주 페이지(할인 마감 타임라인) / 목록 페이지 카드/행 보기 전환 / (일주일 뒤에도 저장 공간이 높으면) OG 폰트 fetch 전환
+- 다음: fix/steam-confirm(check-delisted가 요청 제한을 판매 중단 후보로 보지 않게, enrich-fallback 빈 응답 크래시, fix-data-gaps·fill-tags-desc 재시도) / 가격 못 받은 2개(동방홍마향, Ori) / itad_id 없는 81개 매일 lookup / 보유 칩 HotChart·할인·찜목록 확장(10/11 확인 후) / 찜 동기화·내 PC 사양 계정 저장(user_pc 표, /api/me/pc)·개인정보 방침("서버로 보내지 않아요" 문구 수정 포함)·탈퇴(방침 변경은 시행 7일 전 공지) / YouTube 할당량 구조 / 스트리머 칩 영상 링크화·푸터 축소 / 이번 주 페이지(할인 마감 타임라인) / 목록 페이지 카드/행 보기 전환 / (일주일 뒤에도 저장 공간이 높으면) OG 폰트 fetch 전환
 - 10/10(토) 아침: 매일 갱신 확인(itad-heat, 상점명, 역대 최고 동접, Metascore) / Set up job 로그에 ubuntu-24.04·checkout@v5·setup-node@v5, Node 20 경고 없음 / 요청 제한 미처리 N 확인 / 에픽 전용 가족 공유 칸 숨김 / VALORANT 트레일러 / 정가 missing 0 유지
 - 10/11 휴가: 도메인 구매(Cloudflare) → Vercel 연결 → vercel.app 리다이렉트, NEXT_PUBLIC_SITE_URL=https://jamidunow.com, GitHub ENV_FILE·site.ts·daily-summary.mjs 기본값, 디스코드 웹후크, 이메일 라우팅, 서치콘솔·네이버. 스팀 로그인 시험(로그인 → 아바타·닉네임 → 로그아웃, select steam_id, persona_name, last_login_at from users;, "보유 중" 칩, select count(*) from user_owned_games;, 비공개 프로필 안내. 칩이 안 뜨면 app/lib/user/ownedGames.ts부터)
 - 10/12(월): backup.yml(upload-artifact@v6) 주간 실행 로그 확인
-- 오픈 직전: security-check 3번 구간(실제 배포 점검 포함), 수익화 계획이 있으면 Vercel Pro
+- 오픈 직전: 라이트 모드 375px·로그인 후·찜/비교에 게임 담긴 상태 확인, security-check 3번 구간(실제 배포 점검 포함), 수익화 계획이 있으면 Vercel Pro
 - 오픈 후: "1개로 둘이" 칩, 친구 투표 링크, 캘린더 확장(스팀 무료 주말, 에픽·ITAD 무료 배포, 출시 예정), 스팀 로그인 2단계(친구 목록·찜 공유·다 가진 게임), AI 문장 추천, 자체 지수 이름, 티어·유저 평가, 컬렉션·별점, 모드 인원, 스팀 역대 최저가 별도 수집, 영어 원제 검색, 벤치마크 재시도, 클리어 시간, 라이트 모드, 추천 세팅 투표, DLSS·FSR, 스트리머 기획전, 추천 인원 순위, 고인물 지표, 스팀덱 등급, 디스코드 초대 만료 13개, 진입장벽·혼자 null 10개, 인기 상위 1인용 89개, lint 에러 4개, 파서 원문 6건, 스트리머 한 영상 여러 게임 연결, 시리즈 키워드 표, 미연결 영상 제목 기록, 카탈로그 누락(도깨비의 세계, 쁘띠플래닛, 동방영야초 등)
 
 ## 기각
