@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-10 (main b3c7550)
+기준: 2026-10-10 (main 54de2a9)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/10: fix/privacy-steam — 개인정보처리방침 Steam 로그인 항목 추가, 2026-10-10 즉시 시행(이미 제공 중인 기능의 처리 내용을 적은 개정, 9번에 "불리하지 않은 변경·이미 하는 처리는 공지와 함께 즉시 시행 가능" 명시). 수집 항목·수집하지 않는 것·목적·1년 자동 삭제·삭제 방법·만 14세 미만 이용 불가 문구. 내 정보 삭제(DELETE /api/me, 닉네임 메뉴 "내 정보 삭제", 확인 창 뒤 user_owned_games·users 삭제와 user_session·logged_in 쿠키·sessionStorage 정리, 세션 사용자 본인만·Origin 확인). 1년 자동 파기는 Supabase pg_cron purge-inactive-users(매일 04:30 KST, 마지막 로그인 1년 경과 users와 user_owned_games, SQL은 사용자가 Supabase에서 실행 — 등록 전에는 방침과 어긋남). 전용 이메일이 생기면 6번 "로그인이 안 되는 경우" 안내(/feedback "기타") 교체
 - 10/10: feat/video-stage — 상세 "영상으로 미리 보기"를 큰 플레이어+썸네일 목록으로(탭 삭제, 한 목록). 섹션 폭 16:9 메인 플레이어는 처음엔 첫 영상 썸네일이고, 목록 썸네일을 누르면 메인이 바뀌어 바로 재생(autoplay). 정렬 친구랑 플레이(조회수) → 하이라이트 → 스트리머 일반(tier 1) → 쇼츠(tier 2) → vod(tier 3), 순서·자르기는 lib/videoList(tier는 streamerPick.tierOf). 최대 8개(친구랑 3, 하이라이트 2, 스트리머 1명당 2, vod 2, 같은 video_id 1번). 출처 칩 "멀티 플레이 · 채널", "하이라이트", "스트리머 · 이름"(+ " · 풀영상"/" · 쇼츠"). 목록 좌우 화살표(‹ ›, 보이는 폭 80% 이동, 끝이면 숨김, hover 기기만)와 얇은 스크롤바, 썸네일 loading=eager(삭제된 영상은 목록에서 빠짐), 선택 테두리 --accent, 선택한 카드가 가려져 있으면 scrollIntoView(nearest). #streamer-videos는 섹션 앵커로 유지
 - 10/10: feat/streamer-links — 스트리머 칩을 영상 링크로(app/lib/streamerPick.ts 규칙 A: main·edit·game 일반 영상 → 같은 채널 쇼츠 → vod, 같은 단계에선 최근 영상, vod면 aria-label에 "(풀영상)", title은 쓰지 않음), 칩 툴팁을 사이트 스타일로(data-tip, 터치 기기 제외, 첫 칩은 왼쪽 정렬), 카드 밖 "플레이 영상 보기" 줄 삭제, GameCard stretched 옵션, HotChart 칩은 span 유지
 - 10/10: feat/back-link — 하위 페이지 공통 BackLink(fallbackHref, label, preferList). 서버 HTML은 "← 라벨" 일반 링크, 마운트 뒤 사이트 안 이동이면 "← 뒤로"+history.back(), 아니면 fallback으로 이동. 사이트 안 이동 = NavTracker(layout)가 센 클라이언트 이동 1회 이상, 또는 referrer 출처 같고 history.length>1(새 탭은 fallback, lib/backLink 테스트). 게임 상세·/compare는 sessionStorage list_url 우선 fallback(없으면 /, list_scroll·list_count 복원은 두 경우 모두 동작), /compare/new→/compare. /this-week·/about·/faq·/privacy·/terms→홈, 커뮤니티 게시판·글쓰기·운영정책→/community, 글 상세→그 게시판(기존 아래쪽 cm-btn 삭제). BackToList.tsx 삭제. /compare는 1단계 메뉴지만 기존 뒤로 링크를 BackLink로 교체해 유지(예외). 메뉴 1단계 페이지(홈·내 PC·찜목록·커뮤니티·의견)는 넣지 않음
