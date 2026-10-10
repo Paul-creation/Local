@@ -1,6 +1,5 @@
 // 담당: Paul(메인 배너·디자인)
 import { SITE_NAME } from '../../lib/site';
-import ThemeToggle from '../ThemeToggle';
 import AuthMenu from '../AuthMenu';
 import CompareCount from '../CompareCount';
 import NavProgress from '../NavProgress';
@@ -28,7 +27,6 @@ export default function SiteHeader() {
             <a key={m.href} href={m.href} className={m.desktopOnly ? 'is-desktop-only' : m.wideOnly ? 'is-wide-only' : m.narrowHide ? 'is-narrow-hide' : undefined}>{m.label}{m.href === '/compare' && <CompareCount />}</a>
           ))}
         </nav>
-        <ThemeToggle />
         <AuthMenu />
       </div>
       <NavProgress />

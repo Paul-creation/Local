@@ -1,6 +1,6 @@
 /* ============================================================
-   게임정보허브 디자인 토큰 — 다크가 기본, 라이트는 헤더 토글(html[data-theme="light"])
-   색은 전부 여기 토큰으로만 쓴다. 글자 대비는 두 테마 모두 4.5:1 이상
+   게임정보허브 디자인 토큰 — 다크 고정
+   색은 전부 여기 토큰으로만 쓴다. 글자 대비는 4.5:1 이상
    (--text-faint는 --card-hover 위에서 4.4:1이라 호버 배경 위 글자에는 쓰지 않음)
    ============================================================ */
 
@@ -26,7 +26,7 @@
   --accent-hover: #8FD1F7;
   --accent-ink: #0B0E14;      /* 포인트 위 글자 */
   --accent-soft: #0F2232;     /* 선택 배경 */
-  --accent-text: #66C0F4;     /* 포인트 색 글자 (라이트에서는 더 진한 파랑) */
+  --accent-text: #66C0F4;     /* 포인트 색 글자 */
   --focus-glow: 0 0 0 3px rgba(102, 192, 244, 0.22);
   --focus-glow-color: rgba(102, 192, 244, 0.22);
 
@@ -46,7 +46,7 @@
   --header-text-2: #C3C9D2;
   --header-hover: #1C2331;
 
-  /* 이미지 위 글자·어둡게 깔기 (두 테마 공통) */
+  /* 이미지 위 글자·어둡게 깔기  */
   --on-image: #ffffff;
   --scrim: rgba(0, 0, 0, 0.6);
 
@@ -57,7 +57,7 @@
   --compare-active: #2563eb;
   --on-solid: #ffffff;        /* 위 색 면 위 글자 */
 
-  /* 카드 면·태그·푸터 (라이트 값은 예전 모양 그대로) */
+  /* 카드 면·태그·푸터 */
   --card-surface: linear-gradient(135deg, #202a3a, #1a2230);   /* 배경 #0b0e13 < 패널 #151a23 < 카드 */
   --card-line: rgba(255, 255, 255, 0.06);
   --card-hl: inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -141,87 +141,6 @@
   --fs-sub: var(--fs-m);
 }
 
-/* 라이트 — 지금까지의 사이트 색을 그대로 옮겨 담음 */
-:root[data-theme="light"] {
-  color-scheme: light;
-  --bg: #e8e8ed;
-  --card: #ffffff;
-  --card-hover: #fafafa;
-  --inset: #f5f5f7;
-  --border: #d2d2d7;
-  --border-soft: #e8e8ed;
-  --text: #1d1d1f;
-  --text-2: #3a3a3c;
-  --text-muted: #4a4a4f;
-  --text-faint: #55555a;
-  --accent: #0071e3;
-  --accent-hover: #0077ed;
-  --accent-ink: #ffffff;
-  --accent-soft: #e8f1fd;
-  --accent-text: #0a4fae;
-  --wishlist-active: #f43f5e;
-  --steam-buy: #107c10;
-  --steam-buy-hover: #1b8e27;
-  --compare-active: #2563eb;
-  --on-solid: #ffffff;        /* 위 색 면 위 글자 */
-  --focus-glow: 0 0 0 3px rgba(0, 113, 227, 0.15);
-  --focus-glow-color: rgba(0, 113, 227, 0.15);
-  --sale: #c62828;
-  --sale-border: rgba(198, 40, 40, 0.45);
-  --gold: #7a5800;
-  --gold-border: rgba(160, 120, 0, 0.5);
-  --review: #0a5fb4;
-  --review-border: rgba(10, 95, 180, 0.4);
-  --up: #17692f;
-  --down: #c62828;
-  --header-bg: #0a4fae;
-  --header-text: #ffffff;
-  --header-text-2: rgba(255, 255, 255, 0.88);
-  --header-hover: rgba(255, 255, 255, 0.14);
-  --card-surface: var(--card);
-  --card-line: var(--border-soft);
-  --card-hl: none;
-  --card-shadow: var(--shadow-sm);
-  --card-hover-shadow: none;
-  --card-info: transparent;
-  --panel-bg: var(--card);
-  --panel-line: var(--border-soft);
-  --panel-radius: var(--radius-card);
-  --results-bg: transparent;
-  --results-line: transparent;
-  --results-pad: 0;
-  --discount-bg: transparent;
-  --discount-text: var(--sale);
-  --discount-border: var(--sale-border);
-  --discount-radius: var(--radius-badge);
-  --verdict-rec: var(--up);           /* 라이트에서 --lowest-text는 빨강(--sale)이라 미달과 헷갈려서 녹색(--up) */
-  --verdict-fail: #f43f5e;
-  --tag-radius: var(--radius-badge);
-  --price-surface: color-mix(in srgb, var(--card) 82%, transparent);
-  --tag-bg: #F1F3F6;           /* 라이트 태그 칩만 예외로 조정 — 흰 카드 위에서 반 톤 낮은 면 + 얇은 테두리 */
-  --tag-border: rgba(0, 0, 0, 0.10);
-  --tag-text: #334155;
-  --tag-hover-bg: #E2E8F0;
-  --tag-hover-border: #CBD5E1;
-  --tag-special-text: var(--accent-text);
-  --tag-special-bg: rgba(0, 113, 227, 0.07);
-  --tag-special-border: rgba(0, 113, 227, 0.45);
-  --card-radius-game: var(--radius-card);
-  --card-hover-line: var(--border);
-  --hero-bg: none;
-  --label-size: 14px;
-  --label-weight: 800;
-  --label-color: var(--accent-text);
-  --label-sub-color: var(--text-faint);
-  --sub-size: 15px;
-  --footer-bg: none;
-  --skel-base: #dcdce1;
-  --skel-shine: rgba(255, 255, 255, 0.55);
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
-  --shadow-lg: 0 12px 40px rgba(0,0,0,0.12), 0 4px 8px rgba(0,0,0,0.06);
-}
-
 /* ============================================================
    RESET & BASE
    ============================================================ */
@@ -301,33 +220,8 @@ img { display: block; }
 @media (max-width: 767px) { .site-menu .is-desktop-only { display: none; } }
 @media (max-width: 899px) { .site-menu .is-wide-only { display: none; } } /* "내 PC"는 900px 이상에서만 (그보다 좁으면 로그인 영역과 겹침) */
 
-.site-menu a, .theme-toggle {
-  /* 터치 영역 44px */
-  flex-shrink: 0; /* 글자끼리 겹치지 않게 */
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  min-width: 44px;
-  padding: 8px 12px;
-  border-radius: var(--radius-btn);
-  font-size: var(--fs-l);
-  font-weight: 700;
-  color: var(--header-text-2);
-  white-space: nowrap;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-.site-menu a:hover { background: var(--header-hover); color: var(--header-text); }
+.site-menu a, .site-menu a:hover { background: var(--header-hover); color: var(--header-text); }
 .site-menu a[aria-current="page"] { color: var(--header-text); }
-.theme-toggle {
-  flex-shrink: 0;
-  background: none;
-  border: 1px solid var(--border);
-  font-size: var(--fs-l);
-  padding: 6px 12px;
-}
-:root[data-theme="light"] .theme-toggle { border-color: rgba(255, 255, 255, 0.4); }
-.theme-toggle:hover { background: var(--header-hover); color: var(--header-text); }
 
 /* 헤더 로그인 영역 (AuthMenu) — 새 색 없이 기존 토큰만 */
 .auth-menu { position: relative; flex-shrink: 0; }
@@ -348,7 +242,6 @@ img { display: block; }
   transition: background 0.15s ease;
 }
 .auth-login:hover, .auth-user:hover { background: var(--header-hover); }
-:root[data-theme="light"] .auth-login, :root[data-theme="light"] .auth-user { border-color: rgba(255, 255, 255, 0.4); color: var(--header-text); }
 .auth-user { border-color: var(--border); color: var(--header-text); }
 .auth-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
 .auth-name { max-width: 9em; overflow: hidden; text-overflow: ellipsis; }
@@ -415,14 +308,12 @@ img { display: block; }
   .site-logo { font-size: var(--fs-xl); }
   .site-menu { gap: 0; }
   .site-menu a { padding: 6px 7px; font-size: var(--fs-s); } /* 헤더는 360~390px에서 한 줄이라 올리지 않음 */
-  .theme-toggle { padding: 6px 8px; font-size: var(--fs-xs); }
 }
 /* 400px 이하: 로고·링크·테마 버튼 안쪽 여백과 글자를 조금 줄여 360px까지 메뉴와 로그인 버튼이 겹치지 않게 (링크 글자는 13px 아래로 내리지 않음, 터치 영역 44px은 유지) */
 @media (max-width: 400px) {
   .site-header-inner { padding: 0 8px; gap: 2px; }
   .site-logo { font-size: 15px; }
   .site-menu a { padding: 6px 4px; font-size: var(--fs-xs); }
-  .theme-toggle { padding: 6px 4px; }
 }
 /* 350px 이하: 그래도 자리가 모자라 "커뮤니티"는 헤더에서 빼고 푸터 링크로 */
 @media (max-width: 349px) { .site-menu .is-narrow-hide { display: none; } }
@@ -490,7 +381,6 @@ img { display: block; }
 }
 .tab:hover { color: var(--text); }
 .tab.is-active, .tab[aria-selected="true"], .tab[aria-pressed="true"] { background: var(--card-hover); color: var(--text); }
-:root[data-theme="light"] .tab.is-active, :root[data-theme="light"] .tab[aria-selected="true"], :root[data-theme="light"] .tab[aria-pressed="true"] { background: var(--card); box-shadow: var(--shadow-sm); }
 
 /* 카드 — 호버 시 2px 떠오르고 테두리 밝아짐 */
 .surface { background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-card); }
@@ -1695,9 +1585,9 @@ a.series-item:hover { border-color: var(--border); }
 .home-event-cta { gap: 0.3em; }
 /* 다크: 꽉 찬 포인트 버튼 (AI 추천 버튼과 같은 색·굵기, 모서리만 6px) + 배경에 묻히지 않는 옅은 흰 테두리
    (테마 데이터에는 색 값이 없고 배경 톤 이름만 있어서 테두리는 모든 테마 공통 흰 8%) */
-:root:not([data-theme="light"]) .home-event { border-color: rgba(255, 255, 255, 0.08); }
-:root:not([data-theme="light"]) .home-event-cta { min-height: 46px; padding: 0 24px; border: none; border-radius: 6px; background: var(--accent); color: var(--accent-ink); font-weight: 800; }
-:root:not([data-theme="light"]) .home-event-cta:hover { background: var(--accent-hover); }
+:root .home-event { border-color: rgba(255, 255, 255, 0.08); }
+:root .home-event-cta { min-height: 46px; padding: 0 24px; border: none; border-radius: 6px; background: var(--accent); color: var(--accent-ink); font-weight: 800; }
+:root .home-event-cta:hover { background: var(--accent-hover); }
 
 /* 900px 미만: 이벤트 배너는 제목 + → 한 줄 띠(48px), 띠 전체가 링크 — 작은 화면 첫 화면에 인원 버튼이 보이게 */
 @media (max-width: 899px) {
@@ -1705,7 +1595,7 @@ a.series-item:hover { border-color: var(--border); }
   .home-event-text { flex: 1 1 0; }
   .home-event-label, .home-event-desc, .home-event-cta-text { display: none; }
   .home-event .home-event-title { margin: 0; font-size: var(--fs-l); line-height: 48px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  :root .home-event .home-event-cta, :root:not([data-theme="light"]) .home-event .home-event-cta { min-height: 0; height: 48px; padding: 0; border: none; border-radius: 0; background: none; color: var(--accent-text); font-size: var(--fs-xl); }
+  :root .home-event .home-event-cta { min-height: 0; height: 48px; padding: 0; border: none; border-radius: 0; background: none; color: var(--accent-text); font-size: var(--fs-xl); }
   .home-event-cta::after { content: ""; position: absolute; inset: 0; border-radius: var(--radius-card); }
 }
 
@@ -1813,7 +1703,7 @@ a.series-item:hover { border-color: var(--border); }
 .hc-rank-badge { position: absolute; top: 12px; left: 12px; z-index: 1; padding: 3px 12px; border-radius: 6px; font-size: var(--fs-xxl); font-weight: 800; line-height: 1.4; background: var(--text-2); color: var(--accent-ink); }
 .hc-rank-badge.is-r1 { background: var(--accent); }
 /* 1위 카드는 포인트색 옅은 테두리로 항상 강조 (다크) */
-:root:not([data-theme="light"]) .gc:has(.is-r1) { border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+:root .gc:has(.is-r1) { border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
 /* 스트리머 이름 칩 (components/home/StreamerBadge) — 태그 칩(--tag-bg)보다 한 단계 밝은 면 + 얇은 테두리, 글자는 primary 700. "+N명"은 secondary 400 */
 .sc-row { position: relative; display: flex; flex-wrap: nowrap; gap: 4px; width: 100%; min-width: 0; overflow: hidden; }
 .sc-chip { flex: none; font-size: var(--fs-xs); font-weight: 700; line-height: 1.4; white-space: nowrap; color: var(--text); background: var(--card-hover); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; }
@@ -1845,8 +1735,8 @@ a.series-item:hover { border-color: var(--border); }
 a.hc-row { transition: background 0.15s ease; }
 a.hc-row:hover { background: var(--card-hover); }
 /* 다크 지브라: 5·7·9위(머리 줄 다음 두 번째·네 번째·여섯 번째 행)만 반 톤 밝게, 호버는 한 단계 더 */
-:root:not([data-theme="light"]) a.hc-row:nth-child(odd) { background: color-mix(in srgb, var(--card), var(--card-hover) 50%); }
-:root:not([data-theme="light"]) a.hc-row:nth-child(odd):hover { background: var(--card-hover); }
+:root a.hc-row:nth-child(odd) { background: color-mix(in srgb, var(--card), var(--card-hover) 50%); }
+:root a.hc-row:nth-child(odd):hover { background: var(--card-hover); }
 .hc-row-head { padding-top: 12px; padding-bottom: 8px; }
 .hc-rows.is-collapsed { display: none; } /* 4~10위는 "더 보기"로 펼침 (모바일·데스크톱 같음) */
 .hc-more { display: flex; justify-content: center; width: 100%; min-height: 44px; margin-top: 12px; }
@@ -2233,7 +2123,6 @@ a.hc-row:hover { background: var(--card-hover); }
 .dchart-periods { background: var(--inset); border-radius: 12px; padding: 4px; }
 .dchart-periods button { min-height: 44px; min-width: 52px; border-radius: 9px; color: var(--text-muted); }
 .dchart-periods button.is-on { background: var(--card-hover); color: var(--text); box-shadow: none; }
-:root[data-theme="light"] .dchart-periods button.is-on { background: var(--card); box-shadow: var(--shadow-sm); }
 .dchart-dot { fill: var(--discount-text); stroke: var(--card); stroke-width: 2; }
 .dchart-dot-active { fill: var(--accent); stroke: var(--card); stroke-width: 2; }
 .dchart-tip { background: var(--card-hover); border-color: var(--border); }
@@ -2505,7 +2394,6 @@ a.series-item:hover { border-color: var(--border); }
   width: min(320px, calc(100vw - 32px)); padding: 14px; border-radius: var(--radius-card);
   background: var(--card); border: 1px solid var(--border); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
 }
-:root[data-theme="light"] .ctray-pill, :root[data-theme="light"] .ctray-pop { box-shadow: var(--shadow-lg); }
 .ctray-title { font-size: var(--fs-l); font-weight: 800; color: var(--text); margin-bottom: 8px; }
 .ctray-title .num { color: var(--text-muted); font-weight: 700; margin-left: 4px; }
 .ctray-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
@@ -2529,23 +2417,20 @@ a.series-item:hover { border-color: var(--border); }
    흐림은 페이지마다 1~2곳만 (메인: 지금 뜨는 게임 1위 이미지 / 상세: 맨 위 배경). backdrop-filter는 상세 가격 카드·겹침 글자만
    ============================================================ */
 :root { --accent-line: rgba(102, 192, 244, 0.45); }
-:root[data-theme="light"] { --accent-line: rgba(0, 113, 227, 0.35); }
 /* 화면 폭을 넘는 배경 장식이 가로 스크롤을 만들지 않게 (clip은 sticky 헤더에 영향 없음) */
 html, body { overflow-x: clip; }
 
-/* 메인 상단 — 헤더부터 제목 영역까지 정적 그라데이션 (다크만, 라이트는 없음) */
+/* 메인 상단 — 헤더부터 제목 영역까지 정적 그라데이션 */
 body:has(.home-hero.is-home) {
   background-image: var(--hero-bg);
   background-repeat: no-repeat;
   background-size: 100% var(--hero-h);
 }
-:root[data-theme="light"] body:has(.home-hero.is-home) { background-image: none; }
 
 /* 지금 뜨는 게임 1~3위 — 1위 이미지를 크게 흐리게 */
 .hc-top { position: relative; isolation: isolate; }
 .hc-glow { position: absolute; inset: -8px; z-index: -1; overflow: hidden; border-radius: 24px; pointer-events: none; }
 .hc-glow img { width: 100%; height: 100%; object-fit: cover; filter: blur(44px) saturate(1.2); opacity: 0.13; transform: scale(1.15); }
-:root[data-theme="light"] .hc-glow img { opacity: 0.08; }
 
 /* 상세 맨 위 배경 — 게임 이미지를 크게 흐리게, 아래로 갈수록 배경색으로 */
 .detail-page { position: relative; isolation: isolate; }
@@ -2556,7 +2441,6 @@ body:has(.home-hero.is-home) {
   mask-image: linear-gradient(to bottom, #000 0%, #000 35%, transparent 100%);
 }
 .dh-ambient img { width: 100%; height: 100%; object-fit: cover; filter: blur(48px) saturate(1.3); opacity: 0.16; transform: scale(1.1); }
-:root[data-theme="light"] .dh-ambient img { opacity: 0.1; }
 /* 모바일: 큰 흐림 대신 작게 줄인 이미지를 확대 (흐림 반경을 줄여 그리기 비용을 낮춤) */
 @media (max-width: 760px) {
   .hc-glow img { filter: blur(20px); transform: scale(1.4); }
@@ -2591,7 +2475,7 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 
 
 /* ============================================================
-   다크 가독성 — 카드 면·텍스트 위계·태그 안내 (색은 위 토큰으로만, 라이트 값은 예전 그대로)
+   다크 가독성 — 카드 면·텍스트 위계·태그 안내 (색은 위 토큰으로만)
    ============================================================ */
 .detail-card, .card, .cm-board-card, .cm-card, .cm-list { background: var(--card-surface); border-color: var(--card-line); }
 .detail-card { box-shadow: var(--card-hl); }
@@ -2600,7 +2484,6 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 
 /* 클릭되는 카드만 — 호버 시 떠오름 + 포인트색 옅은 그림자 (움직임은 .lift·.card가 담당) */
 .card:hover, .cm-board-card:hover { box-shadow: var(--card-hover-shadow); }
-:root[data-theme="light"] .card:hover { box-shadow: var(--shadow-sm); }
 @media (prefers-reduced-motion: reduce) {
   .card, .card:hover, .cm-board-card, .cm-board-card:hover { transition: none; transform: none; }
 }
@@ -2634,7 +2517,7 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 
 
 /* ============================================================
-   다크 2차 — 게임 카드 호버·태그 칩·섹션 라벨·빠른 칩 (색·크기는 토큰, 라이트 값은 예전 그대로)
+   다크 2차 — 게임 카드 호버·태그 칩·섹션 라벨·빠른 칩 (색·크기는 토큰)
    ============================================================ */
 @media (max-width: 640px) { :root { --hero-h: 420px; } }
 
@@ -2644,9 +2527,9 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 .feature-title, .result-title, .gc-name, .card-body h3 { transition: color 0.2s ease; }
 
 /* 호버·포커스(다크): 이동·발광 없이 테두리 1px 포인트색 + 제목 포인트색 */
-:root:not([data-theme="light"]) :is(.card, .feature-card, .result-card, .gc):is(:hover, :focus-visible) { transform: none; border-color: var(--card-hover-line); }
-:root:not([data-theme="light"]) :is(.card, .feature-card, .result-card, .gc):focus-visible { outline: none; }
-:root:not([data-theme="light"]) :is(.card, .feature-card, .result-card, .gc):is(:hover, :focus-visible) :is(.feature-title, .result-title, .gc-name, h3) { color: var(--accent); }
+:root :is(.card, .feature-card, .result-card, .gc):is(:hover, :focus-visible) { transform: none; border-color: var(--card-hover-line); }
+:root :is(.card, .feature-card, .result-card, .gc):focus-visible { outline: none; }
+:root :is(.card, .feature-card, .result-card, .gc):is(:hover, :focus-visible) :is(.feature-title, .result-title, .gc-name, h3) { color: var(--accent); }
 
 /* 태그 칩 — 텍스트가 아니라 칩으로 */
 .hc-tag { border-radius: var(--tag-radius); color: var(--tag-text); background: var(--tag-bg); box-shadow: inset 0 0 0 1px var(--tag-border); }
@@ -2707,7 +2590,7 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
    명도 3단계 — 배경(#0b0e13) < 패널(#151a23) < 카드, 카드 안은 이미지 아래 정보 영역만 한 톤 어둡게
    ============================================================ */
 .results-main { background: var(--results-bg); box-shadow: inset 0 0 0 1px var(--results-line); border-radius: var(--panel-radius); padding: var(--results-pad); }
-@media (max-width: 640px) { :root:not([data-theme="light"]) .results-main { padding: 12px; } }
+@media (max-width: 640px) { :root .results-main { padding: 12px; } }
 
 .feature-card, .result-card, .gc { box-shadow: var(--card-hl); }
 .feature-card:hover, .result-card:hover, .gc:hover { box-shadow: var(--card-hover-shadow); }
@@ -2723,32 +2606,32 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
    검색·비교 페이지 다듬기 (다크만) — 메인 전용(테마 배너·순위·메인 필터 버튼)은 건드리지 않음
    배경(#0b0e13) < 결과 패널(#151a23) < 카드 / 필터는 패널 없이 페이지 배경 위에 그룹 구분선만
    ============================================================ */
-:root:not([data-theme="light"]) .results-filter .filter-panel { background: transparent; border-color: transparent; }
-:root:not([data-theme="light"]) .results-filter .filter-head { padding-left: 4px; }
-:root:not([data-theme="light"]) .results-filter .filter-body { padding-left: 4px; padding-right: 12px; }
+:root .results-filter .filter-panel { background: transparent; border-color: transparent; }
+:root .results-filter .filter-head { padding-left: 4px; }
+:root .results-filter .filter-body { padding-left: 4px; padding-right: 12px; }
 
 /* 결과 카드 태그 칩 — 일반: 채도 없는 회색 면 · 특별(올해의 게임·TOP 10): 포인트색 테두리·글자 + 10% 이하 배경, 크기·패딩은 동일 */
-:root:not([data-theme="light"]) .result-meta { gap: 8px 6px; }
-:root:not([data-theme="light"]) .result-meta .hc-tag:not(.tag-special) { background: rgba(255, 255, 255, 0.08); box-shadow: none; color: var(--tag-text); }
-:root:not([data-theme="light"]) .result-meta .hc-tag.tag-special { background: rgba(102, 192, 244, 0.08); }
+:root .result-meta { gap: 8px 6px; }
+:root .result-meta .hc-tag:not(.tag-special) { background: rgba(255, 255, 255, 0.08); box-shadow: none; color: var(--tag-text); }
+:root .result-meta .hc-tag.tag-special { background: rgba(102, 192, 244, 0.08); }
 
 /* "+ 비교" 버튼 */
-:root:not([data-theme="light"]) .compare-btn { min-height: 36px; padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.2); background: transparent; color: var(--text-2); }
-:root:not([data-theme="light"]) .compare-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-text); }
-:root:not([data-theme="light"]) .compare-btn.on { border-color: var(--accent); background: transparent; color: var(--accent-text); }
+:root .compare-btn { min-height: 36px; padding: 6px 12px; border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.2); background: transparent; color: var(--text-2); }
+:root .compare-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-text); }
+:root .compare-btn.on { border-color: var(--accent); background: transparent; color: var(--accent-text); }
 
 /* 비교 만들기 — 빈 칸은 점선 박스 안에 "+"와 안내 문구 (누르면 검색창으로) */
 .cb-slot.is-empty { background: var(--card); font-family: inherit; cursor: pointer; gap: 4px; }
 .cb-slot.is-empty:disabled { cursor: default; }
 .cb-slot-hint { font-size: var(--fs-m); font-weight: 600; color: var(--text-muted); }
-:root:not([data-theme="light"]) .cb-slot.is-empty:hover:not(:disabled) { border-color: var(--accent); }
+:root .cb-slot.is-empty:hover:not(:disabled) { border-color: var(--accent); }
 /* 하단 실행 버튼 — 조건 미충족은 무채색(눌러도 반응 없음), 충족하면 포인트색 꽉 찬 버튼 + 어두운 글자 */
-:root:not([data-theme="light"]) .cb-go:disabled { background: var(--card-hover); color: var(--text-muted); border-color: transparent; opacity: 1; cursor: not-allowed; }
-:root:not([data-theme="light"]) .cb-go:not(:disabled) { background: var(--accent); color: var(--accent-ink); }
-:root:not([data-theme="light"]) .cb-go:not(:disabled):hover { background: var(--accent-hover); }
+:root .cb-go:disabled { background: var(--card-hover); color: var(--text-muted); border-color: transparent; opacity: 1; cursor: not-allowed; }
+:root .cb-go:not(:disabled) { background: var(--accent); color: var(--accent-ink); }
+:root .cb-go:not(:disabled):hover { background: var(--accent-hover); }
 
 /* 상세 가격·구매 박스 — 본문 카드보다 반 톤 밝은 독립 박스 (다크, sticky는 .detail-price 그대로) */
-:root:not([data-theme="light"]) .price-card { background: linear-gradient(rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), var(--card-surface); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; }
+:root .price-card { background: linear-gradient(rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), var(--card-surface); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; }
 
 /* 비교 만들기 "인기 게임 바로 추가" — 제목은 primary·굵게·한 단계 크게, 칩 글자는 secondary 색 토큰(호버 시 primary) */
 .cb-quick-wrap .filter-label { font-size: var(--fs-xxl); font-weight: 800; color: var(--text); margin-bottom: 10px; }
@@ -2771,15 +2654,13 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 
 /* 검색 카드 태그 칩 — 공용 칩 여백(4px 8px), 글자는 한 단계 작게(12px)·줄간격을 넉넉히 줘서 벽에 붙어 보이지 않게 */
 .result-meta .hc-tag { font-size: var(--fs-xs); line-height: 1.4; padding: 4px 8px; }
-:root:not([data-theme="light"]) .result-meta .hc-tag { border-radius: 4px; }
+:root .result-meta .hc-tag { border-radius: 4px; }
 
-/* "이 게임 어떤 상황에서 좋아요?" 칩 — 글자색은 토큰으로 고정(비활성 버튼의 기본 연한 글자색이 라이트에서 묻히지 않게), 다크는 버튼처럼 보이는 얇은 테두리 */
+/* "이 게임 어떤 상황에서 좋아요?" 칩 — 글자색은 토큰으로 고정(비활성 버튼의 기본 연한 글자색이 묻히지 않게), 다크는 버튼처럼 보이는 얇은 테두리 */
 .vote-chip { color: var(--text-2); -webkit-text-fill-color: currentColor; }
 .vote-chip.on { color: var(--accent-text); }
-:root:not([data-theme="light"]) .vote-chip:not(.on) { border-color: rgba(255, 255, 255, 0.12); }
+:root .vote-chip:not(.on) { border-color: rgba(255, 255, 255, 0.12); }
 
-/* 라이트 태그 칩 호버·선택 — 누를 수 있는 칩(설명 보기)만. 다크는 위의 포인트색 호버 그대로 */
-:root[data-theme="light"] .main-tag-row .tag-chip-btn:is(:hover, :focus-visible, [aria-pressed="true"]):not(.tag-special) { background: var(--tag-hover-bg); box-shadow: inset 0 0 0 1px var(--tag-hover-border); color: var(--tag-text); }
 
 /* 내 PC 판정 한 줄 + 입력 패널 (상세 페이지 "PC 사양" 카드 위) — 기존 색 토큰만 */
 .pcs-wrap { display: flex; flex-direction: column; gap: 12px; }
@@ -2940,7 +2821,7 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* 링�
 .lowest-gauge-text { font-size: var(--fs-m); color: var(--text-muted); line-height: 1.5; }
 @media (prefers-reduced-motion: reduce) { .lowest-gauge-bar { transition: none; } }
 
-/* 게임 카드 윤곽: 카드 전체를 페이지·패널보다 한 단계 밝은 표면(--card-surface, 라이트는 --card)으로, 테두리는 --border로 또렷하게. 이미지는 overflow: hidden으로 카드 모서리를 따름. 호버 포인트 테두리는 위 규칙 그대로 */
+/* 게임 카드 윤곽: 카드 전체를 페이지·패널보다 한 단계 밝은 표면(--card-surface)으로, 테두리는 --border로 또렷하게. 이미지는 overflow: hidden으로 카드 모서리를 따름. 호버 포인트 테두리는 위 규칙 그대로 */
 .feature-card, .result-card, .gc { background: var(--card-surface); border-color: var(--border); }
 .feature-body, .result-body, .gc-body { background: transparent; }
 /* 메인은 검색 결과 칸이 항상 마운트돼 있어서, 결과가 없을 때 빈 칸에 패널 배경·테두리·패딩이 그려지던 것을 숨김 */
@@ -2985,9 +2866,9 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* 링�
 .result-row { display: grid; grid-template-columns: 160px minmax(0, 1fr) auto auto; align-items: center; gap: 16px; min-height: 92px; padding: 8px 16px 8px 8px; background: var(--card-surface); border: 1px solid var(--border); border-radius: var(--card-radius-game); color: var(--text); box-shadow: var(--card-hl); transition: border-color 0.2s ease, box-shadow 0.2s ease; }
 .result-row:hover { box-shadow: var(--card-hover-shadow); }
 .result-row.is-picked { border-color: var(--accent); }
-:root:not([data-theme="light"]) .result-row:is(:hover, :focus-visible) { transform: none; border-color: var(--card-hover-line); }
-:root:not([data-theme="light"]) .result-row:focus-visible { outline: none; }
-:root:not([data-theme="light"]) .result-row:is(:hover, :focus-visible) .rr-name { color: var(--accent); }
+:root .result-row:is(:hover, :focus-visible) { transform: none; border-color: var(--card-hover-line); }
+:root .result-row:focus-visible { outline: none; }
+:root .result-row:is(:hover, :focus-visible) .rr-name { color: var(--accent); }
 .rr-thumb { display: block; aspect-ratio: 460 / 215; background: var(--inset); border-radius: 8px; overflow: hidden; }
 .rr-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .rr-main { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 0; }

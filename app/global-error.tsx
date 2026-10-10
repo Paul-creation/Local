@@ -4,15 +4,11 @@ import 'pretendard/dist/web/static/pretendard-dynamic-subset.css';
 import './globals.css';
 import './status-pages.css';
 import StatusSearch from './components/status/StatusSearch';
-import { THEME_SCRIPT } from './lib/theme';
 
 // 최상위 레이아웃까지 오류가 났을 때 — layout을 대신하므로 html·body를 직접 그림
 export default function GlobalError({ error, retry }: { error: Error & { digest?: string }; retry: () => void }) {
   return (
-    <html lang="ko" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
-      </head>
+    <html lang="ko">
       <body>
         <main className="page status-page">
           <div className="status-card">

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import "pretendard/dist/web/static/pretendard-dynamic-subset.css";
 import "./globals.css";
@@ -6,7 +6,10 @@ import { SITE_NAME, SITE_URL, SITE_TITLE, SITE_META_DESCRIPTION, BASE_OG } from 
 import SiteHeader from "./components/home/SiteHeader";
 import SiteFooter from "./components/SiteFooter";
 import CompareTray from "./components/CompareTray";
-import { THEME_SCRIPT } from "./lib/theme";
+import ThemeKeyCleanup from "./components/ThemeKeyCleanup";
+
+// 다크 고정 — <meta name="color-scheme" content="dark">
+export const viewport: Viewport = { colorScheme: 'dark' };
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -28,12 +31,9 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    // 다크가 기본. 라이트를 고른 사람은 첫 HTML 스크립트가 data-theme="light"를 붙임 → html 속성이 서버와 달라도 경고 안 냄
-    <html lang="ko" suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
-      </head>
+    <html lang="ko">
       <body>
+        <ThemeKeyCleanup />
         <SiteHeader />
         {children}
         <SiteFooter />
