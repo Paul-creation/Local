@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 interface Question {
@@ -17,6 +17,16 @@ export default function AIRecommend() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState('');
+
+  // /?ai=1 (사용 가이드의 "AI 추천 열어 보기")로 들어오면 창을 열고, 새로고침해도 다시 열리지 않게 주소에서 지운다
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get('ai') !== '1') return;
+    url.searchParams.delete('ai');
+    window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 주소(바깥)에서 한 번 읽어 오는 초기화
+    setOpen(true);
+  }, []);
 
   const startGame = async () => {
     setStep('asking');

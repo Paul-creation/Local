@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import BackLink from '../components/BackLink';
 import { SITE_NAME, SITE_NAME_FULL, SITE_ALT_NAMES, SITE_URL, BASE_OG } from '../lib/site';
 import { LARGE_LOBBY } from '../lib/players';
+import { FAQ_GUIDE_LINE } from '../lib/guideCopy';
 
 export const metadata: Metadata = {
   title: '자주 묻는 질문',
@@ -78,6 +79,7 @@ export default function FaqPage() {
       <BackLink fallbackHref="/" label="홈으로" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
       <article className="cm-card legal">
+        <p className="cm-sub">{FAQ_GUIDE_LINE.text}<Link href="/guide">{FAQ_GUIDE_LINE.linkLabel}</Link>{FAQ_GUIDE_LINE.tail}</p>
         <h1 className="cm-h1">자주 묻는 질문</h1>
         <p className="cm-sub">찾는 답이 없으면 <Link href="/feedback">의견 보내기</Link>로 물어봐 주세요.</p>
         {FAQS.map((f) => (

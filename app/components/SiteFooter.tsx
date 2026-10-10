@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { SITE_NAME, OPERATOR_NAME } from '../lib/site';
+import { FOOTER_GUIDE_LABEL } from '../lib/guideCopy';
 
 // 모든 페이지 하단 공통 푸터 — 사이트 이름·약관 링크·비공식 고지
 export default function SiteFooter() {
@@ -8,6 +9,7 @@ export default function SiteFooter() {
       <nav className="site-footer-links" aria-label="사이트 정보">
         <Link href="/">{SITE_NAME}</Link>
         <Link href="/this-week">이번 주 할인 마감</Link>
+        <Link href="/guide">{FOOTER_GUIDE_LABEL}</Link>
         <Link href="/my-pc">내 PC</Link>
         <Link href="/community">커뮤니티</Link> {/* 350px 이하에서는 헤더에서 빠짐 */}
         <Link href="/terms">이용약관</Link>

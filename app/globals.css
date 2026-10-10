@@ -2940,3 +2940,44 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* 링�
   .rr-price .price-final { font-size: var(--fs-xl); }
   .result-row .compare-btn { grid-area: cmp; min-height: 36px; }
 }
+
+/* ============================================================
+   사용 가이드(/guide) · 첫 방문 안내 띠 — 새 색 없이 기존 토큰만
+   ============================================================ */
+
+/* 안내 띠 자리(슬롯): 채워지면 높이가 생기고, 안 닫은 사람에게는 app/page.tsx 스크립트가 같은 높이를 미리 잡는다.
+   데스크톱은 배너 아래 여백(36px) 일부(-20px)를 당겨 쓴다 */
+.guide-slot { display: flow-root; --guide-h: 40px; --guide-mt: -20px; --guide-mb: 20px; }
+@media (max-width: 899px) { .guide-slot { --guide-mt: 0px; --guide-mb: 12px; } }
+.guide-strip {
+  display: flex; align-items: center; justify-content: space-between;
+  height: var(--guide-h); margin: var(--guide-mt) 0 var(--guide-mb); padding: 0 0 0 16px;
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-card);
+}
+.guide-strip-link { flex: 1; min-width: 0; display: flex; align-items: center; height: 100%; font-size: var(--fs-m); font-weight: 700; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.guide-strip-link:hover { color: var(--text); }
+.guide-strip-close { flex-shrink: 0; width: 44px; height: 100%; border: 0; background: none; color: var(--text-muted); font-family: inherit; font-size: 20px; line-height: 1; cursor: pointer; }
+.guide-strip-close:hover { color: var(--text); }
+
+/* 가이드 본문 — 데스크톱: 왼쪽 sticky 목차 + 오른쪽 본문 / 900px 미만: 위쪽 sticky 가로 칩 줄 */
+.guide-page { max-width: 1000px; padding-top: 20px; }
+.guide-layout { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 32px; align-items: start; }
+.guide-body { max-width: 720px; min-width: 0; }
+.guide-toc { position: sticky; top: 84px; }
+.guide-toc ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.guide-toc .chip { width: 100%; justify-content: flex-start; }
+.guide-section { scroll-margin-top: 84px; padding: 24px; }
+.guide-section .cm-h2 { margin-top: 0; }
+.guide-section.is-big .cm-h2 { font-size: 22px; }
+.guide-block + .guide-block { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-soft); }
+.guide-h3 { font-size: var(--fs-xl); font-weight: 800; color: var(--text); margin: 0 0 8px; }
+.guide-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.guide-actions .btn { white-space: normal; text-align: center; color: var(--text); text-decoration: none; } /* .legal a(밑줄 링크)보다 우선 */
+@media (max-width: 899px) {
+  .guide-layout { display: block; }
+  .guide-toc { position: sticky; top: 56px; z-index: 5; margin: 0 -24px 16px; padding: 8px 24px; background: var(--bg); }
+  .guide-toc ul { flex-direction: row; gap: 8px; overflow-x: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent); }
+  .guide-toc .chip { width: auto; }
+  .guide-section { scroll-margin-top: 124px; padding: 20px 16px; }
+  .guide-actions .btn { width: 100%; }
+}

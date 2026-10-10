@@ -8,6 +8,7 @@ import SearchResults from './search/SearchResults';
 import PageSkeleton from './status/PageSkeleton';
 import { FilterPanel } from './search/SearchPanel';
 import PeopleProvider from './home/PeopleContext';
+import GuideStrip from './home/GuideStrip';
 
 // 데스크톱(1024px 이상)이면 결과 화면에서 필터를 왼쪽 칸에 늘 펼쳐 둔다. 휴대폰·태블릿은 버튼으로 여는 전체 화면 패널
 const WIDE = '(min-width: 1024px)';
@@ -36,6 +37,9 @@ export default function GameGrid({ event, sections, top10Ids = [], peopleReady =
     <PeopleProvider filters={filters} recsReady={peopleReady}>
       {/* 이벤트 배너 — 페이지 맨 위, 전체 폭. 검색·필터 결과 화면에서는 숨김 */}
       {showHome && <div className="home-only">{event}</div>}
+
+      {/* 첫 방문 안내 띠 — 이벤트 배너 아래, 닫은 적 없을 때만 (마운트 뒤 표시, 자리는 app/page.tsx 스크립트가 미리 잡음) */}
+      {showHome && <div className="home-only"><GuideStrip /></div>}
 
       {/* 제목 → 가운데 검색창 → 인원 선택 → 내 PC 바 */}
       <HomeHero games={index.games || []} filters={filters} showEvent={showHome} sidebar={sidebar} />

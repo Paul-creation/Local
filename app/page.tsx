@@ -9,6 +9,7 @@ import { getWeeklyFeatured } from './lib/weeklyFeatured';
 import { getPopularPosts } from './lib/community';
 import { flattenGame } from './lib/price';
 import { HOME_FILTER_STYLE_ID } from './lib/homeFilter';
+import { GUIDE_RESERVE_SCRIPT } from './lib/guideStrip';
 import { getStreamerNamesByGame } from './lib/streamerVideos';
 import { getStreamerTheme } from './lib/streamerTheme';
 import { selectHomeGames } from './lib/visibleGames';
@@ -81,6 +82,8 @@ export default async function Home() {
   return (
     <main className="page">
       <script dangerouslySetInnerHTML={{ __html: HOME_FILTER_SCRIPT }} />
+      {/* 안내 띠를 아직 안 닫은 사람에게만 띠 자리를 첫 그림 전에 잡아 둔다 (채워질 때 레이아웃이 밀리지 않게, lib/guideStrip) */}
+      <script dangerouslySetInnerHTML={{ __html: GUIDE_RESERVE_SCRIPT }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd).replace(/</g, '\\u003c') }} />
       <GameGrid
         peopleReady={!!peopleRecs}
