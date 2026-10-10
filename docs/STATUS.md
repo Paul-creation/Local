@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-10 (main c14d6fe)
+기준: 2026-10-10 (main 9cf1b32)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/10: feat/this-week — /this-week "이번 주 할인 마감" 세로 타임라인(KST 날짜 마디 오늘/내일/요일, revalidate 300). 데이터 2단계: price_history에서 sale_ends_at이 지금~168시간 안인 game_id만 뽑고 → 그 게임의 최신 가격 1행을 다시 받아 같은 조건(discount>0, 종료일 지금~168시간)으로 다시 거름(옛 행 때문에 끝난 할인 제외, 테스트 포함). 마디마다 6장만 보이고 "N개 더 보기"(오늘 마디는 전부 펼침), 브라우저 시각으로 끝난 카드·빈 마디 숨김(전부 비면 빈 상태 문구). 같은 마감 시각 2차 정렬 heat_rank(작은 순, 없으면 뒤)→할인율→이름. 메인 "이번주의 게임"에 h2 제목 신설(+주차)·카드 안 라벨 제거, 제목 오른쪽에 "이번 주 할인 마감 보기 →"(375px에서 제목 아래 왼쪽), 푸터 링크, sitemap 추가. 헤더 메뉴엔 안 넣음
 - 10/10: docs/merge-conflict-stop — rebase 중 충돌이 나면 해결하지 않고 멈춰 충돌 파일과 양쪽 내용을 보고(/merge 3단계·CLAUDE.md)
 - 10/10: fix/home-order — 메인 이벤트 배너를 히어로 위 맨 위로, 히어로는 카피·검색·인원·PC 바 순, 900px 미만에서 이벤트 배너를 한 줄 띠(48px, 제목 말줄임+→)로 축소(375px 첫 화면에 인원 버튼 보임)
 - 10/10: docs/merge-base — /merge range-diff를 rebase 전 브랜치 끝 커밋(OLD_TIP) 기준으로, 기능 브랜치는 main 푸시 전 푸시 금지, 삭제는 푸시 확인 후 따로 실행
@@ -28,7 +29,7 @@
 - 10/9 밤: 역대 최저가 칩(.timing-badge.best·.lowest-pill)을 라임에서 포인트색(글자 --accent-text·테두리 --accent) 특별 칩으로 분리, 할인율 배지·할인 차트는 그대로, --lowest-bg·border·radius 제거
 - 10/9 밤: 할인 종료일 price_history.sale_ends_at(최신 행만, ITAD prices/v3 200개씩, 모르면 null·ITAD 오류/빈 응답이면 유지) — 매일 갱신 fill-sale-ends 추가, 화면은 아직 안 씀
 - 10/9 이전: 스팀 "보유 중" 칩·nonce 재사용 차단 / OG 가로 배치 / 메인 재배치 / 통일 게임 카드 / 내 PC(/my-pc 한 곳에서 관리, 필터 기본 꺼짐, 등록이 필터를 켜지 않음) / 트레일러(스팀 공식 우선, YouTube 검증 강화, 수동 workflow "트레일러 채우기") / 정가(price_history.original_price, 역산 삭제)
-- 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임 → 스트리머 → 인기 게시물(기준 이상일 때만)
+- 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
 - 없음
@@ -43,7 +44,7 @@
 - 스트리머: 한 영상엔 가장 긴 이름 하나만 연결. "롤"은 제목에서만, 커뮤니티 글에서는 허용. 라이어게임은 라이어스 바와 같은 게임인지 확인 전까지 보류. 게임이 6개뿐이면 데스크톱은 4개만 보이고 버튼 없음. 더 보기 상태는 저장 안 함
 - 할인 종료일은 price_history.sale_ends_at(ITAD prices/v3, 200개씩, 모르면 null, 배치가 통째로 비면 유지). 종료일 표시는 시각까지("10/14 02:00까지"), 24시간 안이면 "오늘·내일 02:00까지" --sale 스타일, 카운트다운은 안 씀
 - 할인 게이지는 상세 페이지에서 할인 중일 때만
-- 캘린더 1차는 할인 마감만, 세로 타임라인, 메인엔 이벤트 섹션 링크만
+- 캘린더 1차는 할인 마감만(/this-week, 세로 타임라인). 메인엔 "이번주의 게임" 제목 옆 링크 1개 + 푸터 링크, 헤더 메뉴엔 안 넣음. 종료일 모르는(null) 할인은 올리지 않음
 - 레포는 Public 유지. 배포 저장 공간은 보존 기간(프리뷰 1주, 프로덕션 2주, 실패·취소 최단)과 Ignored Build Step으로 해결
 - 카드 밖 "플레이 영상 보기" 줄은 없애고, 카드 안 스트리머 이름 칩을 누르면 영상으로 이동(카드 클릭은 상세 페이지 유지)
 - 푸터는 비공식 사이트 문장과 Steam 상표 문장 두 줄 + AI 문구로 축소(상표 고지는 유지)
@@ -52,7 +53,7 @@
 - 이전 판단(heat_rank 라벨, 역대 최저가 배지 기준, Metascore만, 스팀 로그인 방식 c 등) 유지
 
 ## 로드맵
-- 다음: fix/steam-confirm(check-delisted가 요청 제한을 판매 중단 후보로 보지 않게, enrich-fallback 빈 응답 크래시, fix-data-gaps·fill-tags-desc 재시도) / 가격 못 받은 2개(동방홍마향, Ori) / itad_id 없는 81개 매일 lookup / 보유 칩 HotChart·할인·찜목록 확장(10/11 확인 후) / 찜 동기화·내 PC 사양 계정 저장(user_pc 표, /api/me/pc)·개인정보 방침("서버로 보내지 않아요" 문구 수정 포함)·탈퇴(방침 변경은 시행 7일 전 공지) / YouTube 할당량 구조 / 스트리머 칩 영상 링크화·푸터 축소 / 이번 주 페이지(할인 마감 타임라인) / 목록 페이지 카드/행 보기 전환 / (일주일 뒤에도 저장 공간이 높으면) OG 폰트 fetch 전환
+- 다음: fix/steam-confirm(check-delisted가 요청 제한을 판매 중단 후보로 보지 않게, enrich-fallback 빈 응답 크래시, fix-data-gaps·fill-tags-desc 재시도) / 가격 못 받은 2개(동방홍마향, Ori) / itad_id 없는 81개 매일 lookup / 보유 칩 HotChart·할인·찜목록 확장(10/11 확인 후) / 찜 동기화·내 PC 사양 계정 저장(user_pc 표, /api/me/pc)·개인정보 방침("서버로 보내지 않아요" 문구 수정 포함)·탈퇴(방침 변경은 시행 7일 전 공지) / YouTube 할당량 구조 / 스트리머 칩 영상 링크화·푸터 축소 / 목록 페이지 카드/행 보기 전환 / (일주일 뒤에도 저장 공간이 높으면) OG 폰트 fetch 전환
 - 10/10(토) 아침: 매일 갱신 확인(itad-heat, 상점명, 역대 최고 동접, Metascore) / Set up job 로그에 ubuntu-24.04·checkout@v5·setup-node@v5, Node 20 경고 없음 / 요청 제한 미처리 N 확인 / 에픽 전용 가족 공유 칸 숨김 / VALORANT 트레일러 / 정가 missing 0 유지
 - 10/11 휴가: 도메인 구매(Cloudflare) → Vercel 연결 → vercel.app 리다이렉트, NEXT_PUBLIC_SITE_URL=https://jamidunow.com, GitHub ENV_FILE·site.ts·daily-summary.mjs 기본값, 디스코드 웹후크, 이메일 라우팅, 서치콘솔·네이버. 스팀 로그인 시험(로그인 → 아바타·닉네임 → 로그아웃, select steam_id, persona_name, last_login_at from users;, "보유 중" 칩, select count(*) from user_owned_games;, 비공개 프로필 안내. 칩이 안 뜨면 app/lib/user/ownedGames.ts부터)
 - 10/12(월): backup.yml(upload-artifact@v6) 주간 실행 로그 확인
