@@ -2998,16 +2998,25 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* ÎßÅÌÅ
 .rr-price .price-final { font-size: 20px; font-weight: 800; line-height: 1.2; }
 .rr-price .price-final.no-discount { font-size: var(--fs-l); }
 .rr-price .price-original { font-size: var(--fs-s); color: var(--text-muted); }
+.sale-ends.is-short { display: none; }
 @media (max-width: 640px) {
   .results-controls { width: 100%; }
+  .results-sort { max-width: 100%; overflow-x: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent); }
+  .results-sort::-webkit-scrollbar { display: none; }
+  .results-sort::after { content: ''; flex: 0 0 20px; }
   .results-view { margin-left: auto; }
   .results-hint { display: none; }
   .result-list { gap: 10px; }
-  .result-row { grid-template-columns: 112px minmax(0, 1fr) auto; grid-template-areas: "thumb main main" "price price cmp"; align-items: start; gap: 8px 12px; padding: 8px; }
+  .result-row { grid-template-columns: 112px minmax(0, 1fr) auto; grid-template-areas: "thumb main main" "price price cmp"; align-items: center; gap: 6px 12px; min-height: 0; padding: 6px; }
   .rr-thumb { grid-area: thumb; }
-  .rr-main { grid-area: main; }
-  .rr-price { grid-area: price; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 4px 10px; text-align: left; }
-  .rr-off, .rr-final { justify-content: flex-start; }
-  .result-row .compare-btn { grid-area: cmp; align-self: center; }
-  .rr-name { font-size: var(--fs-l); }
+  .rr-main { grid-area: main; align-self: center; }
+  .rr-name { grid-area: auto; font-size: var(--fs-l); -webkit-line-clamp: 1; }
+  .rr-price { grid-area: price; flex-direction: row; flex-wrap: nowrap; align-items: center; justify-content: flex-start; gap: 0 8px; text-align: left; white-space: nowrap; overflow: hidden; }
+  .rr-off, .rr-final { flex-wrap: nowrap; justify-content: flex-start; gap: 0 8px; }
+  .rr-off { order: 1; }
+  .rr-final { order: 2; }
+  .rr-price .price-original, .rr-price .timing-badge, .sale-ends.is-row { display: none; }
+  .sale-ends.is-short { display: inline; order: 3; }
+  .rr-price .price-final { font-size: var(--fs-xl); }
+  .result-row .compare-btn { grid-area: cmp; min-height: 36px; }
 }

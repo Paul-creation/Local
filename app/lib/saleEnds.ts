@@ -28,6 +28,15 @@ export function saleEndsLabel(iso: string | null | undefined, now: number): { te
   return { text: `${d.getUTCMonth() + 1}/${d.getUTCDate()} ${hm}까지`, soon: false };
 }
 
+// 좁은 화면 행용 짧은 형식. 24시간 안이면 위 한 줄과 같은 문구(soon), 아니면 "~10/13"
+export function saleEndsShort(iso: string | null | undefined, now: number): { text: string; soon: boolean } | null {
+  const t = endOf(iso, now);
+  if (t == null) return null;
+  if (t - now <= DAY) return saleEndsLabel(iso, now);
+  const d = kst(t);
+  return { text: `~${d.getUTCMonth() + 1}/${d.getUTCDate()}`, soon: false };
+}
+
 // 상세 가격 박스용: "할인 종료 10/14(화) 02:00"
 export function saleEndsDetail(iso: string | null | undefined, now: number): { text: string; soon: boolean } | null {
   const t = endOf(iso, now);

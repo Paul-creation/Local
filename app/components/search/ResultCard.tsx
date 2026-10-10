@@ -71,6 +71,7 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
                 <LowestPriceBadge timing={getLowestTiming(game, price)} />
               </span>
               {price.discount > 0 && <SaleEnds endsAt={price.saleEndsAt} variant="row" />}
+              {price.discount > 0 && <SaleEnds endsAt={price.saleEndsAt} variant="short" />}
             </>
           ) : null}
         </span>

@@ -67,7 +67,7 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
             </div>
             <div className="results-head-row">
               <div className="results-controls">
-              <div className="tabs" role="tablist" aria-label="정렬">
+              <div className="tabs results-sort" role="tablist" aria-label="정렬">
                 {SORTS.map(([key, label]) => (
                   <button key={key || 'default'} type="button" role="tab" aria-selected={sort === key} className={`tab${sort === key ? ' is-active' : ''}`} onClick={() => setSort(key)}>
                     {label}
