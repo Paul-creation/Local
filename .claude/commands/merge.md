@@ -11,6 +11,7 @@ $ARGUMENTS 브랜치를 main에 머지한다.
 3. 그 브랜치의 worktree(없으면 원격 브랜치로 새 worktree)에서 origin/main 위로 rebase한다.
    - rebase 중 충돌이 나면 해결하지 말고 멈춘다. 충돌 파일 목록과 각 파일의 양쪽 내용(<<<<<<< ======= >>>>>>> 구간)을 보여주고 지시를 기다린다. rebase --abort도 지시가 있을 때만 한다.
 4. npm ci, npm run build, npm test를 돌린다. 하나라도 실패하면 멈추고 보고한다.
+   - build와 test는 반드시 순서대로 실행하고 겹치지 않게 한다. 출력을 head 등으로 자르는 파이프로 build를 돌리지 않는다(프로세스가 남는다).
 5. 푸시 전에 git range-diff <merge-base>..<OLD_TIP> origin/main..HEAD로 확인한다. 원격 브랜치에 의존하지 않는다. 충돌 해소로 생긴 !는 차이 내용을 보여주고 의도한 해소면 계속한다. 그 밖의 !나 짝 없는 커밋이 있으면 푸시하지 말고 보고한다.
 6. git push origin HEAD:main으로 fast-forward한다. force 금지. 거부되면 이후 단계(삭제 포함)로 가지 말고 1부터 다시 한다.
    - 5단계 range-diff 확인과 이 main 푸시가 끝나기 전에는 기능 브랜치를 푸시하지 않는다(--force-with-lease 포함). 원격 브랜치가 없어도 머지할 수 있다.
