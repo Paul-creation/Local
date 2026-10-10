@@ -138,8 +138,8 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     title: '영상으로 미리 보기',
     blocks: [{
       paragraphs: [
-        '게임 상세의 "영상으로 미리 보기"에서 큰 플레이어와 썸네일 목록으로 영상을 볼 수 있어요. 친구랑 플레이한 영상, 하이라이트, 스트리머 영상이 최대 8개까지 나오고, 영상마다 출처 칩이 붙어요.',
-        '카드에서 스트리머 이름 칩을 누르면 그 스트리머의 영상으로 바로 가요. 재생은 YouTube 개인정보 보호 강화 모드로 열려요.',
+        '게임 상세의 "영상으로 미리 보기"에서 큰 플레이어와 썸네일 목록으로 영상을 볼 수 있어요. 멀티 플레이 영상, 하이라이트, 스트리머 영상이 최대 8개까지 나오고, 영상마다 출처 칩이 붙어요.',
+        '메인 스트리머 섹션의 카드에서 스트리머 이름 칩을 누르면 그 스트리머의 영상으로 바로 가요. 재생은 YouTube 개인정보 보호 강화 모드로 열려요.',
       ],
       actions: [{ label: '영상 있는 게임 보기', href: `/games/${EXAMPLE_GAME_TOKEN}#streamer-videos` }],
     }],
@@ -185,7 +185,7 @@ export const GUIDE_FOOT = {
 };
 
 export const GUIDE_ACTION_SUFFIX = ' →';
-export const GUIDE_ACTION_PREFIX = '직접 해 보기 · ';
+export const GUIDE_ACTION_PREFIX = '';
 
 // /faq 맨 위 한 줄
 export const FAQ_GUIDE_LINE = { text: '처음이라면 ', linkLabel: '사용 가이드', tail: '를 먼저 보세요.' };
