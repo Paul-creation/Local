@@ -9,7 +9,7 @@ import { endsWithinWindow, WINDOW_MS } from './saleTimeline';
 
 export type TimelineGame = {
   id: string; name: string; image: string | null; players: string;
-  discount: number; final: number; original: number | null; endsAt: string;
+  heat: number | null; discount: number; final: number; original: number | null; endsAt: string;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- 게임 칸은 목록과 같은 느슨한 모양
@@ -20,7 +20,7 @@ export function toTimelineGame(game: any, now: number): TimelineGame | null {
   return {
     id: game.id, name: game.name,
     image: game.cover_image_url || game.card_image_url || null,
-    players: playersText(game),
+    players: playersText(game), heat: typeof game.heat_rank === 'number' ? game.heat_rank : null,
     discount: price.discount, final: price.final, original: price.original, endsAt: price.saleEndsAt,
   };
 }
@@ -37,7 +37,7 @@ export async function getSaleTimeline(): Promise<{ items: TimelineGame[]; now: n
   const ids = [...new Set(((rows || []) as { game_id: string }[]).map((r) => r.game_id))];
   if (ids.length === 0) return { items: [], now };
   const { data: games } = await selectHomeGames(
-    'id, name, min_players, max_players, is_free, price_type, card_image_url, cover_image_url, price_history(price, discount_percent, checked_at, currency, original_price, sale_ends_at)',
+    'id, name, min_players, max_players, heat_rank, is_free, price_type, card_image_url, cover_image_url, price_history(price, discount_percent, checked_at, currency, original_price, sale_ends_at)',
   )
     .in('id', ids)
     .gte('price_history.price', 100)

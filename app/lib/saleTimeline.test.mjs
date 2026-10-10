@@ -1,7 +1,7 @@
 // 실행: npm test — 이번 주 할인 마감: 168시간 창, 옛 행 때문에 끝난 할인이 섞이지 않는지, 날짜 그룹·빈 마디
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { endsWithinWindow, groupByDay, endTimeText } from './saleTimeline.ts';
+import { endsWithinWindow, groupByDay, endTimeText, compareTimeline } from './saleTimeline.ts';
 import { getPriceInfo, flattenGame } from './price.ts';
 
 // now = 2026-10-12 22:00 KST (= 13:00Z)
@@ -62,4 +62,19 @@ test('시간이 흘러 마디가 비면 그 마디는 사라지고, 전부 비�
 test('시각 표기', () => {
   assert.equal(endTimeText(kst('2026-10-14T02:00:00')), '02:00까지');
   assert.equal(endTimeText(kst('2026-10-14T23:05:00')), '23:05까지');
+});
+
+test('같은 마감 시각 2차 정렬: heat 순위 작은 순 → heat 없으면 할인율 큰 순 → 이름 순', () => {
+  const at = '2026-10-14T02:00:00';
+  const g = (id, o) => ({ ...item(id, at, o.discount ?? 30), heat: o.heat ?? null, name: o.name ?? id });
+  const groups = groupByDay([
+    g('noheat-low', { discount: 20, name: '가' }),
+    g('heat9', { heat: 9, discount: 10 }),
+    g('noheat-b', { discount: 50, name: '나' }),
+    g('heat2', { heat: 2, discount: 10 }),
+    g('noheat-a', { discount: 50, name: '가' }),
+  ], NOW);
+  assert.deepEqual(groups[0].items.map((i) => i.id), ['heat2', 'heat9', 'noheat-a', 'noheat-b', 'noheat-low']);
+  // 마감 시각이 다르면 시각이 먼저
+  assert.ok(compareTimeline({ ...item('x', '2026-10-14T01:00:00'), heat: 99 }, { ...item('y', '2026-10-14T02:00:00'), heat: 1 }) < 0);
 });

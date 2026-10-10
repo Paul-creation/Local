@@ -19,11 +19,22 @@ export function endsWithinWindow(discount: number | null | undefined, endsAt: st
 
 export type TimelineGroup<T> = { dayKey: number; heading: string; today: boolean; items: T[] };
 
-// 마감 시각 순으로 KST 날짜별로 묶는다. 이미 끝난 것·168시간 밖은 빠지고, 비는 날짜는 만들지 않는다
-export function groupByDay<T extends { endsAt: string; discount: number }>(items: T[], now: number): TimelineGroup<T>[] {
+// 마감 시각 순(같은 시각은 아래 compareTimeline)으로 KST 날짜별로 묶는다. 이미 끝난 것·168시간 밖은 빠지고, 비는 날짜는 만들지 않는다
+// 같은 마감 시각끼리는 인기(heat_rank 작은 순, 없으면 뒤로) → 할인율 큰 순 → 이름 순
+export type TimelineSortable = { endsAt: string; discount: number; heat?: number | null; name?: string };
+export function compareTimeline(a: TimelineSortable, b: TimelineSortable): number {
+  const t = new Date(a.endsAt).getTime() - new Date(b.endsAt).getTime();
+  if (t !== 0) return t;
+  const ha = a.heat ?? Infinity, hb = b.heat ?? Infinity;
+  if (ha !== hb) return ha < hb ? -1 : 1;
+  if (a.discount !== b.discount) return b.discount - a.discount;
+  return (a.name ?? '').localeCompare(b.name ?? '', 'ko');
+}
+
+export function groupByDay<T extends TimelineSortable>(items: T[], now: number): TimelineGroup<T>[] {
   const live = items
     .filter((i) => endsWithinWindow(i.discount, i.endsAt, now))
-    .sort((a, b) => new Date(a.endsAt).getTime() - new Date(b.endsAt).getTime());
+    .sort(compareTimeline);
   const groups: TimelineGroup<T>[] = [];
   for (const item of live) {
     const t = new Date(item.endsAt).getTime();

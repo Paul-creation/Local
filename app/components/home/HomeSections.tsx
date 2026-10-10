@@ -38,10 +38,11 @@ export default function HomeSections({ featured, hotTabs, popularPosts = [], str
 
       {featured && (
         <div className="feature-solo">
-          <div className="home-block-head is-end">
+          <div className="home-block-head">
+            <h2 className="section-title">이번주의 게임 <span className="feature-sub">{featured.weekLabel}</span></h2>
             <Link href="/this-week" className="home-more">이번 주 할인 마감 보기 →</Link>
           </div>
-          <FeatureCard game={featured} label="이번주의 게임" sub={featured.weekLabel} />
+          <FeatureCard game={featured} />
         </div>
       )}
 

@@ -11,7 +11,7 @@ import OwnedChip from '../owned/OwnedChip';
 
 const decode = (s: string) => s.replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&#39;/g, "'");
 
-export default function FeatureCard({ game, label, sub, priority = false }: { game: any; label: string; sub?: string | null; priority?: boolean }) {
+export default function FeatureCard({ game, label, sub, priority = false }: { game: any; label?: string; sub?: string | null; priority?: boolean }) {
   const price = getPriceInfo(game);
   const image = game.cover_image_url || game.card_image_url;
   const intro = game.fun_description || (game.description ? `${decode(game.description).slice(0, 90)}…` : '');
@@ -22,10 +22,12 @@ export default function FeatureCard({ game, label, sub, priority = false }: { ga
         <GameImage src={image} fallbackWidth={920} alt={game.name} fetchPriority={priority ? 'high' : undefined} loading={priority ? undefined : 'lazy'} />
       </span>
       <span className="feature-body">
-        <span className="feature-label">
-          {label}
-          {sub && <span className="feature-sub">{sub}</span>}
-        </span>
+        {label && (
+          <span className="feature-label">
+            {label}
+            {sub && <span className="feature-sub">{sub}</span>}
+          </span>
+        )}
         <span className="feature-title">{game.name}</span>
         {intro && <span className="feature-intro">{intro}</span>}
         <span className="feature-badges">

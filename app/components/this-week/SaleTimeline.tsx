@@ -9,6 +9,7 @@ import GameImage from '../GameImage';
 import { groupByDay, endTimeText } from '../../lib/saleTimeline';
 import type { TimelineGame } from '../../lib/saleTimelineData';
 
+const FOLD = 6; // 날짜 마디마다 처음 6장만, 나머지는 "N개 더 보기" (오늘 마디는 처음부터 전부)
 const won = (n: number) => `₩${Math.round(n).toLocaleString('ko-KR')}`;
 
 export default function SaleTimeline({ items, serverNow }: { items: TimelineGame[]; serverNow: number }) {
@@ -20,6 +21,7 @@ export default function SaleTimeline({ items, serverNow }: { items: TimelineGame
     const timer = setInterval(tick, 60_000);
     return () => { clearTimeout(first); clearInterval(timer); };
   }, []);
+  const [opened, setOpened] = useState<number[]>([]);
   const groups = groupByDay(items, now);
 
   if (groups.length === 0) {
@@ -27,11 +29,15 @@ export default function SaleTimeline({ items, serverNow }: { items: TimelineGame
   }
   return (
     <ol className="tl">
-      {groups.map((g) => (
+      {groups.map((g) => {
+        const open = g.today || opened.includes(g.dayKey);
+        const shown = open ? g.items : g.items.slice(0, FOLD);
+        const hidden = g.items.length - shown.length;
+        return (
         <li key={g.dayKey} className={`tl-day${g.today ? ' is-today' : ''}`}>
           <h2 className="tl-heading">{g.heading}</h2>
           <ul className="tl-cards">
-            {g.items.map((game) => {
+            {shown.map((game) => {
               const soon = new Date(game.endsAt).getTime() - now <= 24 * 3600_000;
               return (
                 <li key={game.id}>
@@ -56,8 +62,14 @@ export default function SaleTimeline({ items, serverNow }: { items: TimelineGame
               );
             })}
           </ul>
+          {hidden > 0 && (
+            <button type="button" className="btn btn-outline tl-more" onClick={() => setOpened((v) => [...v, g.dayKey])}>
+              {hidden}개 더 보기
+            </button>
+          )}
         </li>
-      ))}
+        );
+      })}
     </ol>
   );
 }
