@@ -1,8 +1,10 @@
 // scripts/lib/itad.mjs
-// ITAD API 공통 호출 — 요청 간격 유지 + 429·5xx면 기다렸다가 최대 3번 다시 시도
+// ITAD API 공통 호출 — 요청 간격 유지 + 429·5xx·연결 실패·30초 무응답이면 기다렸다가 최대 3번 다시 시도
+// 최악의 경우 한 요청: 4번 시도 × 30초 + 대기 5+10+15초 + 간격 1.5초 × 4 ≈ 2분 35초 (429의 retry-after가 길면 그만큼 더)
 const ITAD_KEY = process.env.ITAD_API_KEY;
-const REQUEST_GAP_MS = 1500; // 요청 사이 최소 간격
 const MAX_RETRIES = 3;
+// 테스트에서만 바꿈
+export const itadTuning = { gapMs: 1500, timeoutMs: 30000, backoffMs: 5000 };
 // history/v2는 since가 없으면 최근 3개월만 준다 (날짜만 넣으면 400이라 시각까지 넣음)
 const HISTORY_SINCE = '2000-01-01T00:00:00Z';
 
@@ -11,31 +13,32 @@ let lastRequestAt = 0;
 
 export class ItadLimitError extends Error {}
 
-async function itadGet(path, params, body) {
+export async function itadGet(path, params, body) {
   const qs = new URLSearchParams({ key: ITAD_KEY, ...params });
   for (let attempt = 0; ; attempt++) {
-    const wait = lastRequestAt + REQUEST_GAP_MS - Date.now();
+    const wait = lastRequestAt + itadTuning.gapMs - Date.now();
     if (wait > 0) await sleep(wait);
     lastRequestAt = Date.now();
 
     let status = 0;
     let retryAfter = 0;
     try {
+      const signal = AbortSignal.timeout(itadTuning.timeoutMs); // 본문 읽는 동안도 적용됨
       const res = await fetch(`https://api.isthereanydeal.com${path}?${qs}`, body
-        ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }
-        : undefined);
+        ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), signal }
+        : { signal });
       status = res.status;
       if (res.ok) return await res.json();
       retryAfter = Number(res.headers.get('retry-after')) || 0;
     } catch {
-      // 네트워크 오류도 다시 시도
+      // 네트워크 오류·타임아웃도 다시 시도
     }
 
     const retryable = status === 0 || status === 429 || status >= 500;
     if (!retryable) throw new Error(`ITAD 응답 ${status}`);
     if (attempt >= MAX_RETRIES) throw new ItadLimitError(`ITAD 응답 ${status || '연결 실패'}`);
     // 429는 retry-after(초)만큼, 없거나 다른 오류면 점점 길게 기다림
-    await sleep(status === 429 && retryAfter ? retryAfter * 1000 : 5000 * (attempt + 1));
+    await sleep(status === 429 && retryAfter ? retryAfter * 1000 : itadTuning.backoffMs * (attempt + 1));
   }
 }
 

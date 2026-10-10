@@ -2,7 +2,7 @@ name: 매일 갱신 (가격·할인·접속자)
 
 on:
   schedule:
-    - cron: '0 18 * * *'   # 매일 한국 시간 새벽 3시
+    - cron: '17 18 * * *'  # 매일 한국 시간 03:17 (정각 혼잡 회피)
   workflow_dispatch:        # Actions 탭에서 직접 실행 가능
 
 concurrency:

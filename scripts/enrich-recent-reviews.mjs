@@ -4,6 +4,7 @@
 //   (지난 30일, 모든 언어 — 상점 페이지에 보이는 숫자와 같음)
 // - 최근 평가 줄이 없으면(스팀은 30일 리뷰 10개 미만이면 안 보여줌) 세 칸을 비우고 확인 시각만 기록
 // - 숨긴 게임은 건너뛰고, 20시간 안에 확인한 게임은 다시 받지 않음 (중간에 멈춰도 다음 실행 때 이어서)
+// - 한 번에 가장 오래된 순으로 최대 MAX_PER_RUN개만 (매일 대상이 전부 20시간을 넘겨서 하루 28분씩 걸리던 것을 제한)
 // - 표시 규칙은 docs/recent-reviews.md
 // 실행: node --env-file=.env.local scripts/enrich-recent-reviews.mjs   (--dry: 저장 없이 출력만, 최대 5개)
 import { createClient } from '@supabase/supabase-js';
@@ -13,6 +14,7 @@ import { onlyIds } from './lib/only-ids.mjs';
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const DRY = process.argv.includes('--dry');
 const RECHECK_HOURS = 20;
+const MAX_PER_RUN = 300; // 2초 간격 기준 약 10~12분
 // 나이 확인 페이지를 건너뛰는 쿠키
 const HEADERS = { Cookie: 'birthtime=0; lastagecheckage=1-0-1990; wants_mature_content=1; Steam_Language=koreana' };
 
@@ -41,8 +43,9 @@ async function main() {
     if (/recent_review/.test(error.message)) console.error('→ supabase/migrations/20261012090100_recent_reviews.sql 을 먼저 실행해 주세요');
     process.exit(1);
   }
-  const games = DRY ? data.slice(0, 5) : data;
-  console.log(`최근 평가 확인할 스팀 게임 ${games.length}개 (요청 간격 2초, 약 ${Math.ceil(games.length * 2.5 / 60)}분)\n`);
+  const games = DRY ? data.slice(0, 5) : data.slice(0, MAX_PER_RUN);
+  const capped = !DRY && data.length > MAX_PER_RUN ? ` — 대상 ${data.length}개 중 오래된 순 ${MAX_PER_RUN}개만` : '';
+  console.log(`최근 평가 확인할 스팀 게임 ${games.length}개${capped} (요청 간격 2초, 약 ${Math.ceil(games.length * 2.5 / 60)}분)\n`);
 
   const count = { saved: 0, none: 0, failed: 0 };
   for (const [i, g] of games.entries()) {
