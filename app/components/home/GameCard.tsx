@@ -28,10 +28,11 @@ type Props = {
   eager?: boolean;
   ariaLabel?: string;
   className?: string;
+  stretched?: boolean;                                    // 카드 안에 링크·버튼(스트리머 칩 등)이 있을 때 — 카드를 <a>로 감싸지 않고 이름 링크의 ::after가 카드 전체를 덮는다(a 안에 a 금지)
   children?: ReactNode;                                   // 가격 아래 추가 줄
 };
 
-export default function GameCard({ game, badge, image, imgProps = { steamSize: 'header' }, eager = false, ariaLabel, className = '', children }: Props) {
+export default function GameCard({ game, badge, image, imgProps = { steamSize: 'header' }, eager = false, ariaLabel, className = '', stretched = false, children }: Props) {
   const price = getPriceInfo(game);
   const players = playersText(game);
   const barrier = barrierLabel(game);
@@ -40,14 +41,14 @@ export default function GameCard({ game, badge, image, imgProps = { steamSize: '
   const store = game.steam_appid ? null : STORE_NAME[game.source] ?? '기타 스토어';
   const pct: number | null = game.review_percent || null;
   const summary: string | null = game.review_summary ?? null;
-  return (
-    <Link href={`/games/${game.id}`} className={`gc lift ${className}`.trim()} aria-label={ariaLabel}>
+  const body = (
+    <>
       <span className="gc-image">
         <GameImage src={image ?? (game.cover_image_url || game.card_image_url)} alt="" loading={eager ? 'eager' : 'lazy'} {...imgProps} />
         {badge}
       </span>
       <span className="gc-body">
-        <span className="gc-name">{game.name}</span>
+        <span className="gc-name">{stretched ? <Link href={`/games/${game.id}`} className="gc-link" aria-label={ariaLabel}>{game.name}</Link> : game.name}</span>
         {store && <span className="result-store">{store}</span>}
         <OwnedChip steamAppid={game.steam_appid} />
         {/* 칸 높이는 CSS로 고정 — 값이 없어도 빈 칸을 남겨 같은 줄 카드의 제목·평가·칩·가격 위치가 맞는다 */}
@@ -100,6 +101,8 @@ export default function GameCard({ game, badge, image, imgProps = { steamSize: '
         </span>
         {children}
       </span>
-    </Link>
+    </>
   );
+  if (stretched) return <div className={`gc lift is-stretched ${className}`.trim()}>{body}</div>;
+  return <Link href={`/games/${game.id}`} className={`gc lift ${className}`.trim()} aria-label={ariaLabel}>{body}</Link>;
 }

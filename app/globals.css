@@ -1358,8 +1358,6 @@ img { display: block; }
 .sg-item { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .sg-card { flex: 1; width: 100%; } /* 같은 줄 카드끼리 높이를 맞춰 가격 위치가 같게 (공통 카드 .gc) */
 .sg-card .sc-chip { color: var(--text-2); font-size: var(--fs-xs); }
-.sg-video { padding: 6px 0; font-size: var(--fs-m); font-weight: 700; color: var(--text-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
-.sg-video:hover { text-decoration-thickness: 2px; }
 
 /* TOP 10 배지 (검색 결과 카드·상세 페이지) */
 .top10-badge {
@@ -1725,6 +1723,11 @@ a.series-item:hover { border-color: var(--border); }
 .sc-chip { flex: none; font-size: var(--fs-xs); font-weight: 700; line-height: 1.4; white-space: nowrap; color: var(--text); background: var(--card-hover); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; }
 .sc-chip.sc-more { font-weight: 400; color: var(--text-muted); }
 .sc-chip.is-off { position: absolute; visibility: hidden; pointer-events: none; }
+/* 영상 링크 칩 — stretched 카드(.gc.is-stretched)의 이름 링크 ::after가 카드 전체를 덮으므로, 칩은 그 위로 올려 따로 눌리게 한다 */
+.sc-chip.is-link { position: relative; z-index: 1; display: inline-flex; align-items: center; }
+.sc-chip.is-link:hover { border-color: var(--accent); color: var(--accent-text); }
+.sc-chip.is-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+@media (max-width: 640px) { .sc-row { gap: 6px; } .sc-chip.is-link { min-height: 32px; padding: 0 10px; } } /* 터치 영역 32px 이상, 칩끼리 간격 */
 .hc-row-sub .sc-row { flex: 1 1 0; width: auto; }
 /* 스팀 평가 — 메인 카드(작게)·상세 맨 위(크게). 색은 기존 토큰만: 긍정 --review, 부정 --sale, 그 외 --text-muted */
 .rating { display: inline-flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; }
@@ -2572,6 +2575,11 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 .gc-image { position: relative; display: block; aspect-ratio: 460 / 215; background: var(--inset); overflow: hidden; }
 .gc-image img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
 .gc-body { display: flex; flex-direction: column; gap: 6px; padding: 16px; flex: 1; min-width: 0; }
+.gc.is-stretched { position: relative; }
+.gc-link { color: inherit; }
+.gc-link::after { content: ''; position: absolute; inset: 0; z-index: 0; } /* stretched link — 카드 어디를 눌러도 상세 페이지 */
+.gc-link:focus-visible { outline: none; }
+.gc-link:focus-visible::after { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: var(--card-radius-game); }
 .gc-name { font-size: var(--fs-xl); font-weight: 800; line-height: 1.35; height: 2.7em; letter-spacing: -0.01em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .gc-foot { display: flex; margin-top: auto; padding-top: 4px; } /* 위 칸이 전부 고정 높이라 가격만 바닥에 붙는다. 덩어리 사이 10px(gap 6 + 4) */
 /* 칩 줄은 한 줄 고정 — 넘치면 ChipRow가 +N 칩으로 묶는다 */

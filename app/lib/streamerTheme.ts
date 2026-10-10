@@ -8,6 +8,7 @@ import { supabase } from './supabase';
 import { friendsMax } from './playersMatch';
 import { getCardGames } from './gameIndex';
 import { getCardExtras } from './cardExtras';
+import { pickStreamerVideo, type PickRow } from './streamerPick';
 
 export const THEME_MIN = 6; // 이보다 적으면 섹션을 숨긴다 (null)
 export const THEME_MAX = 12;
@@ -16,16 +17,18 @@ export type ThemeGame = {
   id: string;
   name: string;
   game: Record<string, unknown>; // 공통 카드(GameCard)가 쓰는 칸 — 카드 조회(getCardGames) + 평가·태그·한국어(getCardExtras)
-  streamers: string[]; // 최근 영상 순, 사람 기준 중복 없음
-  videoId: string | null; // "플레이 영상 보기" — 가장 최근 영상 (쇼츠가 아닌 것 먼저)
+  streamers: StreamerRef[]; // 최근 영상 순, 사람 기준 중복 없음. 칩마다 대표 영상 하나(videoId)
 };
 export type StreamerTheme = { games: ThemeGame[] };
+
+// 칩 하나가 연결할 영상 — 고르는 규칙은 lib/streamerPick (main·edit·game 긴 영상 → 쇼츠 → vod, 같은 단계는 최근). full은 vod 영상(칩 aria-label·title에 "(풀영상)")
+export type StreamerRef = { name: string; videoId: string; full: boolean };
 
 type One<T> = T | T[] | null;
 const first = <T,>(v: One<T>): T | null => (Array.isArray(v) ? v[0] ?? null : v);
 type Row = {
   video_id: string; is_short: boolean; published_at: string;
-  streamer_channels: One<{ streamer_name: string }>;
+  streamer_channels: One<{ streamer_name: string; kind: string }>;
   games: One<{ id: string; name: string; card_image_url: string | null; cover_image_url: string | null; category: string | null; min_players: number | null; max_players: number | null; party_max: number | null; has_online_coop: boolean | null; has_local_coop: boolean | null; heat_rank: number | null }>;
 };
 
@@ -34,7 +37,7 @@ export async function getStreamerTheme(excludeIds: string[] = []): Promise<Strea
   for (let from = 0; from < 10000; from += 1000) {
     const { data, error } = await supabase
       .from('streamer_videos')
-      .select('video_id, is_short, published_at, streamer_channels(streamer_name), games!inner(id, name, card_image_url, cover_image_url, category, min_players, max_players, party_max, has_online_coop, has_local_coop, heat_rank)')
+      .select('video_id, is_short, published_at, streamer_channels(streamer_name, kind), games!inner(id, name, card_image_url, cover_image_url, category, min_players, max_players, party_max, has_online_coop, has_local_coop, heat_rank)')
       .eq('games.hidden', false)
       .eq('games.home_excluded', false)
       .order('published_at', { ascending: false })
@@ -45,7 +48,7 @@ export async function getStreamerTheme(excludeIds: string[] = []): Promise<Strea
   }
 
   const pick = (skip: Set<string>) => {
-    const byGame = new Map<string, ThemeGame & { rank: number; short: string | null }>();
+    const byGame = new Map<string, ThemeGame & { rank: number; rows: Map<string, PickRow[]> }>();
     for (const r of rows) { // 최근 영상부터 들어온다
       const g = first(r.games);
       if (!g || skip.has(g.id) || (friendsMax(g) ?? 0) < 2) continue;
@@ -53,21 +56,26 @@ export async function getStreamerTheme(excludeIds: string[] = []): Promise<Strea
       if (g.has_online_coop !== true && g.has_local_coop !== true) continue; // 협동 모드가 확인된 게임만
       let item = byGame.get(g.id);
       if (!item) {
-        item = { id: g.id, name: g.name, game: {}, streamers: [], videoId: null, rank: g.heat_rank ?? Infinity, short: null };
+        item = { id: g.id, name: g.name, game: {}, streamers: [], rank: g.heat_rank ?? Infinity, rows: new Map() };
         byGame.set(g.id, item);
       }
-      const name = first(r.streamer_channels)?.streamer_name;
-      if (name && !item.streamers.includes(name)) item.streamers.push(name);
-      if (r.is_short) item.short ??= r.video_id;
-      else item.videoId ??= r.video_id;
+      const ch = first(r.streamer_channels);
+      if (!ch?.streamer_name) continue;
+      const list = item.rows.get(ch.streamer_name);
+      const row = { video_id: r.video_id, kind: ch.kind, is_short: r.is_short };
+      if (list) list.push(row);
+      else item.rows.set(ch.streamer_name, [row]); // 맵 순서 = 이름이 처음 나온(최근 영상) 순
     }
 
-    const all = [...byGame.values()].map((g) => ({ ...g, videoId: g.videoId ?? g.short }));
+    const all = [...byGame.values()].map(({ rows: byName, ...g }) => ({
+      ...g,
+      streamers: [...byName].flatMap(([name, list]) => { const v = pickStreamerVideo(list); return v ? [{ name, ...v }] : []; }),
+    }));
     all.sort((a, b) => b.streamers.length - a.streamers.length || a.rank - b.rank);
     // 카드는 PC 6칸·태블릿 3칸·모바일 2칸 격자라 6의 배수로만 보여준다 (마지막 줄이 비는 어색한 배치 방지, 6~11개면 6개, 12개면 12개)
     if (all.length < THEME_MIN) return null;
     const shown = Math.floor(Math.min(all.length, THEME_MAX) / THEME_MIN) * THEME_MIN;
-    return { games: all.slice(0, shown).map(({ rank, short, ...g }) => g) };
+    return { games: all.slice(0, shown).map(({ rank, ...g }) => g) };
   };
   const skip = new Set(excludeIds);
   const theme = (skip.size > 0 ? pick(skip) : null) ?? pick(new Set());

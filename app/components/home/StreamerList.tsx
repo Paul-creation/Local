@@ -18,10 +18,9 @@ export default function StreamerList({ games }: { games: ThemeGame[] }) {
       <ul className={`sg-grid${open && canExpand ? '' : ' is-collapsed'}`} id="sg-grid">
         {games.map((g) => (
           <li key={g.id} className="sg-item">
-            <GameCard game={g.game} className="sg-card">
+            <GameCard game={g.game} className="sg-card" stretched>
               <StreamerBadge names={g.streamers} max={2} />
             </GameCard>
-            {g.videoId && <a href={`https://www.youtube.com/watch?v=${g.videoId}`} target="_blank" rel="noopener noreferrer" className="sg-video">플레이 영상 보기</a>}
           </li>
         ))}
       </ul>
