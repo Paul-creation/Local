@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-10 (main 9cf1b32)
+기준: 2026-10-10 (main 7b5fbe8)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/10: feat/list-view — 검색 결과 카드/행 보기 전환. ResultCard view="row"(썸네일·이름·스토어·인원·진입장벽·보유 칩·가격 블록·+ 비교, 태그 칩 없음), 결과 머리 정렬 탭 줄에 aria-pressed 버튼 2개(.tabs/.tab 재사용), 선택은 localStorage jdn_list_view에만 저장(주소엔 안 담음). 행 높이는 min-height, 375px에서는 가격을 한 줄로 압축(할인율+할인가+"~10/13" 짧은 종료일, 정가·역대 최저 칩 숨김, + 비교 같은 줄 오른쪽, 이름 한 줄)해 할인 큰 순 상위 24행 최대 108px. 375px 정렬 탭은 가로 스크롤+오른쪽 페이드로 "낮은 가격순" 잘림 수정. 평가는 1차 제외(INDEX_FIELDS에 review 칸 없음), 찜 목록·비슷한 게임은 범위 밖
 - 10/10: feat/this-week — /this-week "이번 주 할인 마감" 세로 타임라인(KST 날짜 마디 오늘/내일/요일, revalidate 300). 데이터 2단계: price_history에서 sale_ends_at이 지금~168시간 안인 game_id만 뽑고 → 그 게임의 최신 가격 1행을 다시 받아 같은 조건(discount>0, 종료일 지금~168시간)으로 다시 거름(옛 행 때문에 끝난 할인 제외, 테스트 포함). 마디마다 6장만 보이고 "N개 더 보기"(오늘 마디는 전부 펼침), 브라우저 시각으로 끝난 카드·빈 마디 숨김(전부 비면 빈 상태 문구). 같은 마감 시각 2차 정렬 heat_rank(작은 순, 없으면 뒤)→할인율→이름. 메인 "이번주의 게임"에 h2 제목 신설(+주차)·카드 안 라벨 제거, 제목 오른쪽에 "이번 주 할인 마감 보기 →"(375px에서 제목 아래 왼쪽), 푸터 링크, sitemap 추가. 헤더 메뉴엔 안 넣음
 - 10/10: docs/merge-conflict-stop — rebase 중 충돌이 나면 해결하지 않고 멈춰 충돌 파일과 양쪽 내용을 보고(/merge 3단계·CLAUDE.md)
 - 10/10: fix/home-order — 메인 이벤트 배너를 히어로 위 맨 위로, 히어로는 카피·검색·인원·PC 바 순, 900px 미만에서 이벤트 배너를 한 줄 띠(48px, 제목 말줄임+→)로 축소(375px 첫 화면에 인원 버튼 보임)
@@ -53,7 +54,7 @@
 - 이전 판단(heat_rank 라벨, 역대 최저가 배지 기준, Metascore만, 스팀 로그인 방식 c 등) 유지
 
 ## 로드맵
-- 다음: fix/steam-confirm(check-delisted가 요청 제한을 판매 중단 후보로 보지 않게, enrich-fallback 빈 응답 크래시, fix-data-gaps·fill-tags-desc 재시도) / 가격 못 받은 2개(동방홍마향, Ori) / itad_id 없는 81개 매일 lookup / 보유 칩 HotChart·할인·찜목록 확장(10/11 확인 후) / 찜 동기화·내 PC 사양 계정 저장(user_pc 표, /api/me/pc)·개인정보 방침("서버로 보내지 않아요" 문구 수정 포함)·탈퇴(방침 변경은 시행 7일 전 공지) / YouTube 할당량 구조 / 스트리머 칩 영상 링크화·푸터 축소 / 목록 페이지 카드/행 보기 전환 / (일주일 뒤에도 저장 공간이 높으면) OG 폰트 fetch 전환
+- 다음: fix/steam-confirm(check-delisted가 요청 제한을 판매 중단 후보로 보지 않게, enrich-fallback 빈 응답 크래시, fix-data-gaps·fill-tags-desc 재시도) / 가격 못 받은 2개(동방홍마향, Ori) / itad_id 없는 81개 매일 lookup / 보유 칩 HotChart·할인·찜목록 확장(10/11 확인 후) / 찜 동기화·내 PC 사양 계정 저장(user_pc 표, /api/me/pc)·개인정보 방침("서버로 보내지 않아요" 문구 수정 포함)·탈퇴(방침 변경은 시행 7일 전 공지) / YouTube 할당량 구조 / 스트리머 칩 영상 링크화·푸터 축소 / (일주일 뒤에도 저장 공간이 높으면) OG 폰트 fetch 전환
 - 10/10(토) 아침: 매일 갱신 확인(itad-heat, 상점명, 역대 최고 동접, Metascore) / Set up job 로그에 ubuntu-24.04·checkout@v5·setup-node@v5, Node 20 경고 없음 / 요청 제한 미처리 N 확인 / 에픽 전용 가족 공유 칸 숨김 / VALORANT 트레일러 / 정가 missing 0 유지
 - 10/11 휴가: 도메인 구매(Cloudflare) → Vercel 연결 → vercel.app 리다이렉트, NEXT_PUBLIC_SITE_URL=https://jamidunow.com, GitHub ENV_FILE·site.ts·daily-summary.mjs 기본값, 디스코드 웹후크, 이메일 라우팅, 서치콘솔·네이버. 스팀 로그인 시험(로그인 → 아바타·닉네임 → 로그아웃, select steam_id, persona_name, last_login_at from users;, "보유 중" 칩, select count(*) from user_owned_games;, 비공개 프로필 안내. 칩이 안 뜨면 app/lib/user/ownedGames.ts부터)
 - 10/12(월): backup.yml(upload-artifact@v6) 주간 실행 로그 확인
