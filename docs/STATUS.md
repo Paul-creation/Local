@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-10 (main b19ea1d)
+기준: 2026-10-10 (main 4c015f8)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,7 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
-- 10/10: feat/streamer-links — 스트리머 칩을 영상 링크로(app/lib/streamerPick.ts 규칙 A: main·edit·game 일반 영상 → 같은 채널 쇼츠 → vod, 같은 단계에선 최근 영상, vod면 aria-label·title에 "(풀영상)"), 칩 툴팁을 사이트 스타일로(data-tip, 터치 기기 제외, 첫 칩은 왼쪽 정렬), 카드 밖 "플레이 영상 보기" 줄 삭제, GameCard stretched 옵션, HotChart 칩은 span 유지
+- 10/10: feat/streamer-links — 스트리머 칩을 영상 링크로(app/lib/streamerPick.ts 규칙 A: main·edit·game 일반 영상 → 같은 채널 쇼츠 → vod, 같은 단계에선 최근 영상, vod면 aria-label에 "(풀영상)", title은 쓰지 않음), 칩 툴팁을 사이트 스타일로(data-tip, 터치 기기 제외, 첫 칩은 왼쪽 정렬), 카드 밖 "플레이 영상 보기" 줄 삭제, GameCard stretched 옵션, HotChart 칩은 span 유지
 - 10/10: feat/back-link — 하위 페이지 공통 BackLink(fallbackHref, label, preferList). 서버 HTML은 "← 라벨" 일반 링크, 마운트 뒤 사이트 안 이동이면 "← 뒤로"+history.back(), 아니면 fallback으로 이동. 사이트 안 이동 = NavTracker(layout)가 센 클라이언트 이동 1회 이상, 또는 referrer 출처 같고 history.length>1(새 탭은 fallback, lib/backLink 테스트). 게임 상세·/compare는 sessionStorage list_url 우선 fallback(없으면 /, list_scroll·list_count 복원은 두 경우 모두 동작), /compare/new→/compare. /this-week·/about·/faq·/privacy·/terms→홈, 커뮤니티 게시판·글쓰기·운영정책→/community, 글 상세→그 게시판(기존 아래쪽 cm-btn 삭제). BackToList.tsx 삭제. /compare는 1단계 메뉴지만 기존 뒤로 링크를 BackLink로 교체해 유지(예외). 메뉴 1단계 페이지(홈·내 PC·찜목록·커뮤니티·의견)는 넣지 않음
 - 10/10: chore/remove-light — 라이트 모드 제거, 다크 고정. 헤더 "라이트" 버튼·ThemeToggle·lib/theme.ts·테마 초기화 스크립트·suppressHydrationWarning·[data-theme="light"] 규칙과 라이트 토큰 삭제, :root:not([data-theme="light"]) 접두사는 :root로, viewport colorScheme 'dark'(meta color-scheme). 예전에 저장된 localStorage theme 키는 ThemeKeyCleanup이 접속 시 한 번 지움. 정규식 삭제가 .site-menu a 규칙까지 지워 헤더 메뉴가 깨진 것을 원본 블록으로 복구(fix(header))
 - 10/10: feat/list-view — 검색 결과 카드/행 보기 전환. ResultCard view="row"(썸네일·이름·스토어·인원·진입장벽·보유 칩·가격 블록·+ 비교, 태그 칩 없음), 결과 머리 정렬 탭 줄에 aria-pressed 버튼 2개(.tabs/.tab 재사용), 선택은 localStorage jdn_list_view에만 저장(주소엔 안 담음). 행 높이는 min-height, 375px에서는 가격을 한 줄로 압축(할인율+할인가+"~10/13" 짧은 종료일, 정가·역대 최저 칩 숨김, + 비교 같은 줄 오른쪽, 이름 한 줄)해 할인 큰 순 상위 24행 최대 108px. 375px 정렬 탭은 가로 스크롤+오른쪽 페이드로 "낮은 가격순" 잘림 수정. 평가는 1차 제외(INDEX_FIELDS에 review 칸 없음), 찜 목록·비슷한 게임은 범위 밖
