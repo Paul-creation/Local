@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-10 (main 2ffb76f)
+기준: 2026-10-10 (main 918a6e7)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/10: fix/footer — 푸터 면책 문구를 두 줄로 축소(비공식 사이트·Steam 상표 한 문단 + AI 문구)·word-break keep-all, STATUS 라이트 모드 판정(버튼 유지)·오픈 직전 점검 추가
 - 10/10: fix/itad-retry-cap — ITAD 429 retry-after가 60초를 넘으면 기다리지 않고 ItadLimitError(enrich-itad-heat는 저장한 배치를 남기고 "ITAD 요청 제한으로 중단, 처리 N/전체" 로그), 429·타임아웃 대기마다 "ITAD 429 대기 37초 (재시도 1/3)" 로그. 오늘 밤 03:17 정기 실행에서 확인 예정(수동 재실행 안 함)
 - 10/10: fix/itad-timeout — ITAD 요청 30초 타임아웃(무응답·연결 실패는 기존 재시도, 최악 한 요청 약 2분 35초), enrich-itad-heat 100개마다 진행 로그·배치마다 저장, enrich-recent-reviews 1회 최대 300개(오래된 순), daily cron 17 18 * * *(KST 03:17). 10/10 매일 갱신 #11이 enrich-itad-heat 45분 무응답으로 실패한 것에 대한 수정
 - 10/9: 스트리머 섹션 데스크톱 4개+더 보기·모바일 가로 스크롤(데스크톱 1244→501px, 모바일 1283→469px) / 스트리머 매칭 정규화·"롤" 별칭(카드·TCG·리프트바운드·토체스 제외)·별칭 보강(오버워치, 데바데, 좀보이드, 하늘의 궤적 2nd)·14일 재수집(새 연결 48개, streamer_videos 286행) / 스팀 429 재시도·실패는 null로 재탐색·fix-missing-prices 연속 제한 시 중단·daily timeout 150분 / Actions ubuntu-24.04 고정, checkout·setup-node v5 / /my-pc 문구 / CLAUDE.md·docs/design.md·/merge·STATUS.md 추가 / /merge 실패 시 중단·원격 브랜치 먼저 푸시, 포인트색 용도 목록 통합 / 스트리머 연결 안 된 영상 제목을 실행 로그에 출력 / 별칭 보강(search_name_ko, 상위 게임·통칭) / 여러 게임이 같이 쓰는 별칭(몬헌·바하·그타·유희왕 등)은 영상·게시글 매칭에서 제외(사이트 검색은 전부 표시) / 7일 재수집으로 새 연결 8개
