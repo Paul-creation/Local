@@ -220,7 +220,23 @@ img { display: block; }
 @media (max-width: 767px) { .site-menu .is-desktop-only { display: none; } }
 @media (max-width: 899px) { .site-menu .is-wide-only { display: none; } } /* "내 PC"는 900px 이상에서만 (그보다 좁으면 로그인 영역과 겹침) */
 
-.site-menu a, .site-menu a:hover { background: var(--header-hover); color: var(--header-text); }
+.site-menu a {
+  /* 터치 영역 44px */
+  flex-shrink: 0; /* 글자끼리 겹치지 않게 */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px 12px;
+  border-radius: var(--radius-btn);
+  font-size: var(--fs-l);
+  font-weight: 700;
+  color: var(--header-text-2);
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.site-menu a:hover { background: var(--header-hover); color: var(--header-text); }
 .site-menu a[aria-current="page"] { color: var(--header-text); }
 
 /* 헤더 로그인 영역 (AuthMenu) — 새 색 없이 기존 토큰만 */
