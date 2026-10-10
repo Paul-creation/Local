@@ -18,7 +18,7 @@ function formatViews(n: number) {
 
 const metaOf = (v: VideoItem) => [v.view_count ? `조회수 ${formatViews(v.view_count)}` : '', formatDate(v.published_at)].filter(Boolean).join(' · ');
 
-// 목록의 작은 썸네일 (16:9, 320×180). 삭제된 영상은 유튜브가 120×90 회색 이미지를 주므로 그때 부모에게 알려 목록에서 뺌
+// 목록의 작은 썸네일 (16:9, 320×180, 바로 받음 — 삭제된 영상이 페이지를 열자마자 목록에서 빠지게). 삭제된 영상은 유튜브가 120×90 회색 이미지를 주므로 그때 부모에게 알려 목록에서 뺌
 function RailThumb({ id, onBroken }: { id: string; onBroken: () => void }) {
   const ref = useRef<HTMLImageElement>(null);
   const check = (img: HTMLImageElement) => {
@@ -31,7 +31,7 @@ function RailThumb({ id, onBroken }: { id: string; onBroken: () => void }) {
   }, [id]);
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img ref={ref} src={`https://i.ytimg.com/vi/${id}/mqdefault.jpg`} alt="" loading="lazy" onLoad={(e) => check(e.currentTarget)} onError={onBroken} />
+    <img ref={ref} src={`https://i.ytimg.com/vi/${id}/mqdefault.jpg`} alt="" loading="eager" decoding="async" onLoad={(e) => check(e.currentTarget)} onError={onBroken} />
   );
 }
 

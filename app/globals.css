@@ -1345,7 +1345,7 @@ img { display: block; }
 .video-rail-thumb { display: block; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: var(--inset); border: 2px solid transparent; }
 .video-rail-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .video-rail-btn:hover .video-rail-thumb { border-color: var(--text-faint); }
-.video-rail-btn[aria-current="true"] .video-rail-thumb { border-color: var(--text); }
+.video-rail-btn[aria-current="true"] .video-rail-thumb { border-color: var(--accent); }
 .video-rail-btn .coop-video-title { margin-top: 8px; }
 .video-rail-chip { margin-top: 6px; max-width: 100%; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: top; }
 @media (max-width: 640px) {
