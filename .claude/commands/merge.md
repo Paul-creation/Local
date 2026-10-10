@@ -19,5 +19,5 @@ $ARGUMENTS 브랜치를 main에 머지한다.
    - 그 밖의 !나 짝 없는 커밋이 있으면 삭제하지 말고 보고한다.
    - ExitWorktree가 소유권 문제로 거부하면 git worktree remove로 직접 지운다. 다른 세션이 쓰는 중인 worktree는 건드리지 않는다.
 9. 로컬 main을 git pull --ff-only로 다시 맞춘다.
-10. docs/STATUS.md가 있으면 "main 반영"과 "진행 중" 칸을 갱신하고, 기준 줄(날짜, main 커밋)도 갱신하고, git pull --rebase 후 "docs(status): <브랜치> 반영" 메시지로 main에 바로 커밋·푸시한다(force 금지).
+10. docs/STATUS.md가 있으면 먼저 git pull --rebase로 main을 최신으로 맞춘 뒤(스테이징된 변경이 있으면 pull이 실패하므로 STATUS 수정 전에 한다), "main 반영"과 "진행 중" 칸을 갱신하고, 기준 줄(날짜, main 커밋)도 갱신하고, "docs(status): <브랜치> 반영" 메시지로 main에 바로 커밋·푸시한다(force 금지).
 11. 보고: 머지한 커밋 범위, 테스트 결과, 삭제한 것, 남은 worktree.
