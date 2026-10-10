@@ -7,6 +7,7 @@ export default function SiteFooter() {
     <footer className="site-footer">
       <nav className="site-footer-links" aria-label="사이트 정보">
         <Link href="/">{SITE_NAME}</Link>
+        <Link href="/this-week">이번 주 할인 마감</Link>
         <Link href="/my-pc">내 PC</Link>
         <Link href="/community">커뮤니티</Link> {/* 350px 이하에서는 헤더에서 빠짐 */}
         <Link href="/terms">이용약관</Link>

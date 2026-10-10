@@ -1,6 +1,7 @@
 // 담당: Paul(메인 배너·디자인)
 // 서버 컴포넌트 — 메인 첫 HTML에 바로 들어감 (차트처럼 움직이는 부분만 클라이언트 컴포넌트)
 import type { ReactNode } from 'react';
+import Link from 'next/link';
 import HotChart from './HotChart';
 import type { HotTab } from '../../lib/hotChart';
 import type { PostListItem } from '../../lib/community';
@@ -37,6 +38,9 @@ export default function HomeSections({ featured, hotTabs, popularPosts = [], str
 
       {featured && (
         <div className="feature-solo">
+          <div className="home-block-head is-end">
+            <Link href="/this-week" className="home-more">이번 주 할인 마감 보기 →</Link>
+          </div>
           <FeatureCard game={featured} label="이번주의 게임" sub={featured.weekLabel} />
         </div>
       )}
