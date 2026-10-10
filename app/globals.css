@@ -489,8 +489,8 @@ img { display: block; }
   font-family: inherit; font-size: var(--fs-m); font-weight: 700; color: var(--text-muted); cursor: pointer; white-space: nowrap;
 }
 .tab:hover { color: var(--text); }
-.tab.is-active, .tab[aria-selected="true"] { background: var(--card-hover); color: var(--text); }
-:root[data-theme="light"] .tab.is-active, :root[data-theme="light"] .tab[aria-selected="true"] { background: var(--card); box-shadow: var(--shadow-sm); }
+.tab.is-active, .tab[aria-selected="true"], .tab[aria-pressed="true"] { background: var(--card-hover); color: var(--text); }
+:root[data-theme="light"] .tab.is-active, :root[data-theme="light"] .tab[aria-selected="true"], :root[data-theme="light"] .tab[aria-pressed="true"] { background: var(--card); box-shadow: var(--shadow-sm); }
 
 /* 카드 — 호버 시 2px 떠오르고 테두리 밝아짐 */
 .surface { background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-card); }
@@ -2977,4 +2977,37 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* 링�
   .tl-cards { grid-template-columns: 1fr 1fr; grid-column: 2; }
   .tl-more { grid-column: 2; }
   .tl-thumb { width: 140px; }
+}
+
+/* 검색 결과 행 보기(.result-row, ResultCard view="row") — 높이는 내용대로, min-height만 */
+.results-controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.result-list { display: flex; flex-direction: column; gap: 12px; }
+.result-row { display: grid; grid-template-columns: 160px minmax(0, 1fr) auto auto; align-items: center; gap: 16px; min-height: 92px; padding: 8px 16px 8px 8px; background: var(--card-surface); border: 1px solid var(--border); border-radius: var(--card-radius-game); color: var(--text); box-shadow: var(--card-hl); transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+.result-row:hover { box-shadow: var(--card-hover-shadow); }
+.result-row.is-picked { border-color: var(--accent); }
+:root:not([data-theme="light"]) .result-row:is(:hover, :focus-visible) { transform: none; border-color: var(--card-hover-line); }
+:root:not([data-theme="light"]) .result-row:focus-visible { outline: none; }
+:root:not([data-theme="light"]) .result-row:is(:hover, :focus-visible) .rr-name { color: var(--accent); }
+.rr-thumb { display: block; aspect-ratio: 460 / 215; background: var(--inset); border-radius: 8px; overflow: hidden; }
+.rr-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.rr-main { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; min-width: 0; }
+.rr-name { font-size: var(--fs-xl); font-weight: 800; line-height: 1.35; letter-spacing: -0.01em; max-width: 100%; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; transition: color 0.2s ease; }
+.rr-info { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; min-width: 0; }
+.rr-price { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; min-width: 0; text-align: right; }
+.rr-off, .rr-final { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 4px 8px; }
+.rr-price .price-final { font-size: 20px; font-weight: 800; line-height: 1.2; }
+.rr-price .price-final.no-discount { font-size: var(--fs-l); }
+.rr-price .price-original { font-size: var(--fs-s); color: var(--text-muted); }
+@media (max-width: 640px) {
+  .results-controls { width: 100%; }
+  .results-view { margin-left: auto; }
+  .results-hint { display: none; }
+  .result-list { gap: 10px; }
+  .result-row { grid-template-columns: 112px minmax(0, 1fr) auto; grid-template-areas: "thumb main main" "price price cmp"; align-items: start; gap: 8px 12px; padding: 8px; }
+  .rr-thumb { grid-area: thumb; }
+  .rr-main { grid-area: main; }
+  .rr-price { grid-area: price; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: 4px 10px; text-align: left; }
+  .rr-off, .rr-final { justify-content: flex-start; }
+  .result-row .compare-btn { grid-area: cmp; align-self: center; }
+  .rr-name { font-size: var(--fs-l); }
 }

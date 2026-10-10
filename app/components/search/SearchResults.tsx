@@ -1,6 +1,7 @@
 // 담당: 친구(검색·태그·비교)
 'use client';
 
+import { useEffect, useState } from 'react';
 import ShareButton from '../ShareButton';
 import { SORTS, type GameFilters } from '../../lib/useGameFilters';
 import { filterConditions } from '../../lib/filterConditions';
@@ -8,6 +9,10 @@ import { getTagDescription } from './TagHelp';
 import { tagKeyLabel } from '../../lib/tagSearch';
 import ResultCard from './ResultCard';
 import PageSkeleton from '../status/PageSkeleton';
+
+// 카드/행 보기 — 개인 취향이라 주소에 담지 않고 이 브라우저에만 저장
+const VIEW_KEY = 'jdn_list_view';
+type View = 'card' | 'row';
 
 export default function SearchResults({ filters, top10Ids = [], loadError = false, onRetry }: { filters: GameFilters; top10Ids?: string[]; loadError?: boolean; onRetry?: () => void }) {
   const {
@@ -17,6 +22,14 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
     sort, setSort, clearConditions, setInput, myPcActive,
   } = filters;
   // 결과 위 조건 칩 (태그는 검색창 안 칩으로 보이므로 뺌) / 0개일 때 요약은 태그까지 전부
+  const [view, setView] = useState<View>('card');
+  useEffect(() => {
+    try { if (localStorage.getItem(VIEW_KEY) === 'row') setView('row'); } catch {}
+  }, []);
+  const chooseView = (v: View) => {
+    setView(v);
+    try { localStorage.setItem(VIEW_KEY, v); } catch {}
+  };
   const conditions = filterConditions(filters, { withTags: false });
   const summary = filterConditions(filters).map((c) => c.label);
 
@@ -53,12 +66,19 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
               </div>
             </div>
             <div className="results-head-row">
+              <div className="results-controls">
               <div className="tabs" role="tablist" aria-label="정렬">
                 {SORTS.map(([key, label]) => (
                   <button key={key || 'default'} type="button" role="tab" aria-selected={sort === key} className={`tab${sort === key ? ' is-active' : ''}`} onClick={() => setSort(key)}>
                     {label}
                   </button>
                 ))}
+              </div>
+              <div className="tabs results-view" role="group" aria-label="보기 방식">
+                {([['card', '카드'], ['row', '행']] as const).map(([key, label]) => (
+                  <button key={key} type="button" aria-pressed={view === key} className="tab" onClick={() => chooseView(key)}>{label}</button>
+                ))}
+              </div>
               </div>
               {compareError
                 ? <span className="results-hint is-error" role="alert">{compareError}</span>
@@ -88,7 +108,7 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
             </div>
           ) : (
             <>
-            <div className="result-grid">
+            <div className={view === 'row' ? 'result-list' : 'result-grid'}>
               {filtered.slice(0, visibleCount).map((game, i) => {
                 const isSelected = !!compareList.find(g => g.id === game.id);
                 return (
@@ -98,6 +118,7 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
                     tree={tree}
                     isTop10={top10Ids.includes(game.id)}
                     eager={i < 4}
+                    view={view}
                     onClick={rememberList}
                     compare={{ selected: isSelected, disabled: !isSelected && compareList.length >= 3, onToggle: () => toggleCompare(game) }}
                   />
