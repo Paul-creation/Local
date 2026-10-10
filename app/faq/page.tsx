@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import BackLink from '../components/BackLink';
 import { SITE_NAME, SITE_NAME_FULL, SITE_ALT_NAMES, SITE_URL, BASE_OG } from '../lib/site';
 import { LARGE_LOBBY } from '../lib/players';
 
@@ -74,6 +75,7 @@ const jsonLd = {
 export default function FaqPage() {
   return (
     <main className="page cm-page">
+      <BackLink fallbackHref="/" label="홈으로" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
       <article className="cm-card legal">
         <h1 className="cm-h1">자주 묻는 질문</h1>

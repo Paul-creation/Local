@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { supabase } from '../../lib/supabase';
-import BackToList from '../../components/BackToList';
+import BackLink from '../../components/BackLink';
 import CompareBuilder from '../../components/CompareBuilder';
 import { BUILDER_FIELDS, MAX_COMPARE, compareBlockReason } from '../../lib/compareRule';
 import { UUID } from '../../lib/postLinks';
@@ -26,7 +26,7 @@ export default async function NewComparePage({ searchParams }: { searchParams: P
   }
   return (
     <main className="page">
-      <BackToList />
+      <BackLink fallbackHref="/compare" label="비교로" />
       <CompareBuilder initial={initial} popular={popular || []} />
     </main>
   );

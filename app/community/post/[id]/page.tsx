@@ -6,6 +6,7 @@ import { getIp } from '../../../lib/aiGuard';
 import { BASE_OG } from '../../../lib/site';
 import { BOARDS, boardTitle, timeAgo, type BoardKey } from '../../../lib/communityBoards';
 import { db, ipHash, parseId, PUBLIC_POST, PUBLIC_COMMENT } from '../../../lib/community';
+import BackLink from '../../../components/BackLink';
 import PostActions from '../../../components/community/PostActions';
 import Comments, { type Comment } from '../../../components/community/Comments';
 import PostRelatedCard from '../../../components/community/PostRelatedCard';
@@ -54,6 +55,7 @@ export default async function PostPage({ params }: Props) {
 
   return (
     <>
+      <BackLink fallbackHref={`/community/${post.board}`} label={`${BOARDS[post.board].label} 목록`} />
       <article className="cm-card cm-post">
         <Link href={`/community/${post.board}`} className="cm-board-chip">{boardTitle(post.board)}</Link>
         <h1 className="cm-post-title">{post.title}</h1>
@@ -73,9 +75,6 @@ export default async function PostPage({ params }: Props) {
       <PostRelatedCard postId={post.id} title={post.title} body={post.body} pickedGameId={post.game_id} />
       {/* 숨겨진 댓글은 내용을 내려보내지 않는다 */}
       <Comments postId={post.id} initial={((comments || []) as Comment[]).map((c) => (c.hidden ? { ...c, body: '', nickname: '', is_admin: false } : c))} />
-      <p style={{ marginTop: 16 }}>
-        <Link href={`/community/${post.board}`} className="cm-btn">← {BOARDS[post.board].label} 목록</Link>
-      </p>
     </>
   );
 }

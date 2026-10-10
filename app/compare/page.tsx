@@ -11,7 +11,7 @@ import { getPriceInfo } from '../lib/price';
 import { formatDate } from '../lib/date';
 import CompareChat from '../components/CompareChat';
 import ScrollToTop from '../components/ScrollToTop';
-import BackToList from '../components/BackToList';
+import BackLink from '../components/BackLink';
 import ShareButton from '../components/ShareButton';
 import CompareBuilder from '../components/CompareBuilder';
 import { BUILDER_FIELDS } from '../lib/compareRule';
@@ -171,7 +171,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
     ]);
     return (
       <main className="page">
-        <BackToList />
+        <BackLink fallbackHref="/" label="목록으로" preferList />
         <CompareBuilder initial={initial || []} popular={popular || []} />
       </main>
     );
@@ -237,7 +237,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
     <main className="page cmp-page">
       <ScrollToTop />
 
-      <BackToList />
+      <BackLink fallbackHref="/" label="목록으로" preferList />
       <div className="cmp-head">
         <h1 className="cmp-title">게임 비교</h1>
         <ShareButton

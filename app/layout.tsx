@@ -7,6 +7,7 @@ import SiteHeader from "./components/home/SiteHeader";
 import SiteFooter from "./components/SiteFooter";
 import CompareTray from "./components/CompareTray";
 import ThemeKeyCleanup from "./components/ThemeKeyCleanup";
+import NavTracker from "./components/NavTracker";
 
 // 다크 고정 — <meta name="color-scheme" content="dark">
 export const viewport: Viewport = { colorScheme: 'dark' };
@@ -33,6 +34,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body>
+        <NavTracker />
         <ThemeKeyCleanup />
         <SiteHeader />
         {children}

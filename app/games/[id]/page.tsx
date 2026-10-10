@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { supabase } from '../../lib/supabase';
-import BackToList from '../../components/BackToList';
+import BackLink from '../../components/BackLink';
 import DiscountChart from '../../components/DiscountChart';
 import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL } from '../../lib/price';
 import { formatDate } from '../../lib/date';
@@ -210,7 +210,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
 
   return (
     <main className="page detail-page">
-      <BackToList />
+      <BackLink fallbackHref="/" label="목록으로" preferList />
 
       <DetailHero
         image={heroImage}

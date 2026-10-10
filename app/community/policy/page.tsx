@@ -1,10 +1,13 @@
 import type { Metadata } from 'next';
+import BackLink from '../../components/BackLink';
 import { DAILY_COMMENTS_PER_IP, DAILY_GAME_COMMENTS_PER_IP, DAILY_POSTS_PER_IP, HIDE_AT_REPORTS, MAX_LINKS } from '../../lib/community';
 
 export const metadata: Metadata = { title: '커뮤니티 운영정책', description: '게시판 이용 규칙, 신고·삭제 요청 방법, 저장하는 정보 안내', alternates: { canonical: '/community/policy' } };
 
 export default function PolicyPage() {
   return (
+    <>
+    <BackLink fallbackHref="/community" label="커뮤니티로" />
     <article className="cm-card cm-policy">
       <h1 className="cm-h1">커뮤니티 운영정책</h1>
       <p className="cm-sub">로그인 없이 누구나 쓰는 게시판이라, 모두가 편하게 쓸 수 있도록 아래 규칙을 지켜주세요. 게임 페이지의 &lsquo;의견 달기&rsquo;에도 같은 규칙이 적용돼요.</p>
@@ -41,5 +44,6 @@ export default function PolicyPage() {
         <li>글에 적은 연락처(디스코드 ID 등)는 모두에게 공개되니 주의해주세요.</li>
       </ul>
     </article>
+    </>
   );
 }

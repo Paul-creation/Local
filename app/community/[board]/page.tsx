@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { BOARDS, boardTitle, isBoard } from '../../lib/communityBoards';
 import { listPosts, PAGE_SIZE } from '../../lib/community';
+import BackLink from '../../components/BackLink';
 import PostList from '../../components/community/PostList';
 
 export const dynamic = 'force-dynamic';
@@ -24,6 +25,7 @@ export default async function BoardPage({ params, searchParams }: Props) {
 
   return (
     <>
+      <BackLink fallbackHref="/community" label="커뮤니티로" />
       <div className="cm-head-row">
         <div>
           <h1 className="cm-h1">{boardTitle(board)}</h1>

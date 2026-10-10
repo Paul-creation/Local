@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import BackLink from '../components/BackLink';
 import { SITE_NAME, OPERATOR_NAME, CONTACT_EMAIL, CONTACT_TEXT } from '../lib/site';
 
 export const metadata: Metadata = {
@@ -14,6 +15,7 @@ export default function TermsPage() {
   const contact = CONTACT_EMAIL ? <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> : CONTACT_TEXT;
   return (
     <main className="page cm-page">
+      <BackLink fallbackHref="/" label="홈으로" />
       <article className="cm-card cm-policy legal">
         <h1 className="cm-h1">이용약관</h1>
         <p className="cm-sub">{SITE_NAME}(이하 &lsquo;사이트&rsquo;)를 이용하면 아래 약관에 동의한 것으로 봐요.</p>

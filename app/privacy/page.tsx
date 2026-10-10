@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import BackLink from '../components/BackLink';
 import { SITE_NAME, OPERATOR_NAME, CONTACT_EMAIL, CONTACT_TEXT } from '../lib/site';
 
 export const metadata: Metadata = {
@@ -16,6 +17,7 @@ export default function PrivacyPage() {
   const contact = CONTACT_EMAIL ? <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> : CONTACT_TEXT;
   return (
     <main className="page cm-page">
+      <BackLink fallbackHref="/" label="홈으로" />
       <article className="cm-card cm-policy legal">
         <h1 className="cm-h1">개인정보처리방침</h1>
         <p className="cm-sub">

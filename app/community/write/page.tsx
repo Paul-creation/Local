@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import BackLink from '../../components/BackLink';
 import { isBoard } from '../../lib/communityBoards';
 import { db, parseId } from '../../lib/community';
 import WriteForm from '../../components/community/WriteForm';
@@ -21,6 +22,7 @@ export default async function WritePage({ searchParams }: { searchParams: Promis
   const initialBoard = isBoard(board) ? board : isBoard(p?.board) ? p.board : g ? 'party' : 'free';
   return (
     <>
+      <BackLink fallbackHref="/community" label="커뮤니티로" />
       <h1 className="cm-h1">글쓰기</h1>
       <WriteForm initialBoard={initialBoard} initialGame={g} />
     </>

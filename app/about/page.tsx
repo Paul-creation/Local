@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import BackLink from '../components/BackLink';
 import { SITE_NAME, SITE_META_DESCRIPTION, SITE_DESCRIPTION, OPERATOR_NAME, CONTACT_EMAIL, CONTACT_TEXT, BASE_OG } from '../lib/site';
 
 export const metadata: Metadata = {
@@ -14,6 +15,7 @@ export default function AboutPage() {
   const contact = CONTACT_EMAIL ? <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> : CONTACT_TEXT;
   return (
     <main className="page cm-page">
+      <BackLink fallbackHref="/" label="홈으로" />
       <article className="cm-card legal">
         <h1 className="cm-h1">{SITE_NAME} 소개</h1>
         <p className="cm-sub">{SITE_META_DESCRIPTION}</p>
