@@ -59,7 +59,7 @@ export default function StreamerBadge({ names, max }: { names?: (string | Stream
         if (!s.videoId) return <span key={s.name} data-sc className={cls}>{s.name}</span>;
         const label = `${s.name} 영상 보기(새 탭)${s.full ? ' (풀영상)' : ''}`;
         return (
-          <a key={s.name} data-sc className={cls} href={`https://www.youtube.com/watch?v=${s.videoId}`} target="_blank" rel="noopener noreferrer" aria-label={label} title={s.full ? `${s.name} (풀영상)` : undefined}>{s.name}</a>
+          <a key={s.name} data-sc className={cls} href={`https://www.youtube.com/watch?v=${s.videoId}`} target="_blank" rel="noopener noreferrer" aria-label={label} data-tip={`${s.name} ${s.full ? '풀영상' : '영상'}`}>{s.name}</a>
         );
       })}
       {rest > 0 && <span className="sc-chip sc-more">+{rest}명</span>}

@@ -1727,6 +1727,13 @@ a.series-item:hover { border-color: var(--border); }
 .sc-chip.is-link { position: relative; z-index: 1; display: inline-flex; align-items: center; }
 .sc-chip.is-link:hover { border-color: var(--accent); color: var(--accent-text); }
 .sc-chip.is-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+/* 영상 칩 툴팁 — data-tip + ::after, JS 없음. 칩 위 가운데, hover·키보드 포커스에서만(터치 기기에선 안 보임). 줄이 overflow:hidden이면 잘리므로 링크 칩이 있는 줄은 visible */
+.sc-row:has(.is-link) { overflow: visible; }
+.sc-chip[data-tip]::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%); z-index: 2; padding: 3px 8px; font-size: var(--fs-xs); font-weight: 400; line-height: 1.4; white-space: nowrap; color: var(--text); background: var(--card-hover); border: 1px solid var(--border); border-radius: 6px; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity 0.12s ease; }
+.sc-chip[data-tip]:first-child::after { left: 0; transform: none; } /* 맨 왼쪽 칩은 카드 왼쪽 끝에서 잘리지 않게 칩 왼쪽에 맞춘다 */
+@media (hover: hover) {
+  .sc-chip[data-tip]:hover::after, .sc-chip[data-tip]:focus-visible::after { opacity: 1; visibility: visible; }
+}
 @media (max-width: 640px) { .sc-row { gap: 6px; } .sc-chip.is-link { min-height: 32px; padding: 0 10px; } } /* 터치 영역 32px 이상, 칩끼리 간격 */
 .hc-row-sub .sc-row { flex: 1 1 0; width: auto; }
 /* 스팀 평가 — 메인 카드(작게)·상세 맨 위(크게). 색은 기존 토큰만: 긍정 --review, 부정 --sale, 그 외 --text-muted */
