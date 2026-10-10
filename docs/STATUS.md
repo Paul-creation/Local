@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-10 (main 4c015f8)
+기준: 2026-10-10 (main b3c7550)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/10: feat/video-stage — 상세 "영상으로 미리 보기"를 큰 플레이어+썸네일 목록으로(탭 삭제, 한 목록). 섹션 폭 16:9 메인 플레이어는 처음엔 첫 영상 썸네일이고, 목록 썸네일을 누르면 메인이 바뀌어 바로 재생(autoplay). 정렬 친구랑 플레이(조회수) → 하이라이트 → 스트리머 일반(tier 1) → 쇼츠(tier 2) → vod(tier 3), 순서·자르기는 lib/videoList(tier는 streamerPick.tierOf). 최대 8개(친구랑 3, 하이라이트 2, 스트리머 1명당 2, vod 2, 같은 video_id 1번). 출처 칩 "멀티 플레이 · 채널", "하이라이트", "스트리머 · 이름"(+ " · 풀영상"/" · 쇼츠"). 목록 좌우 화살표(‹ ›, 보이는 폭 80% 이동, 끝이면 숨김, hover 기기만)와 얇은 스크롤바, 썸네일 loading=eager(삭제된 영상은 목록에서 빠짐), 선택 테두리 --accent, 선택한 카드가 가려져 있으면 scrollIntoView(nearest). #streamer-videos는 섹션 앵커로 유지
 - 10/10: feat/streamer-links — 스트리머 칩을 영상 링크로(app/lib/streamerPick.ts 규칙 A: main·edit·game 일반 영상 → 같은 채널 쇼츠 → vod, 같은 단계에선 최근 영상, vod면 aria-label에 "(풀영상)", title은 쓰지 않음), 칩 툴팁을 사이트 스타일로(data-tip, 터치 기기 제외, 첫 칩은 왼쪽 정렬), 카드 밖 "플레이 영상 보기" 줄 삭제, GameCard stretched 옵션, HotChart 칩은 span 유지
 - 10/10: feat/back-link — 하위 페이지 공통 BackLink(fallbackHref, label, preferList). 서버 HTML은 "← 라벨" 일반 링크, 마운트 뒤 사이트 안 이동이면 "← 뒤로"+history.back(), 아니면 fallback으로 이동. 사이트 안 이동 = NavTracker(layout)가 센 클라이언트 이동 1회 이상, 또는 referrer 출처 같고 history.length>1(새 탭은 fallback, lib/backLink 테스트). 게임 상세·/compare는 sessionStorage list_url 우선 fallback(없으면 /, list_scroll·list_count 복원은 두 경우 모두 동작), /compare/new→/compare. /this-week·/about·/faq·/privacy·/terms→홈, 커뮤니티 게시판·글쓰기·운영정책→/community, 글 상세→그 게시판(기존 아래쪽 cm-btn 삭제). BackToList.tsx 삭제. /compare는 1단계 메뉴지만 기존 뒤로 링크를 BackLink로 교체해 유지(예외). 메뉴 1단계 페이지(홈·내 PC·찜목록·커뮤니티·의견)는 넣지 않음
 - 10/10: chore/remove-light — 라이트 모드 제거, 다크 고정. 헤더 "라이트" 버튼·ThemeToggle·lib/theme.ts·테마 초기화 스크립트·suppressHydrationWarning·[data-theme="light"] 규칙과 라이트 토큰 삭제, :root:not([data-theme="light"]) 접두사는 :root로, viewport colorScheme 'dark'(meta color-scheme). 예전에 저장된 localStorage theme 키는 ThemeKeyCleanup이 접속 시 한 번 지움. 정규식 삭제가 .site-menu a 규칙까지 지워 헤더 메뉴가 깨진 것을 원본 블록으로 복구(fix(header))
