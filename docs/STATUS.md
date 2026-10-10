@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-10 (main 7b5fbe8)
+기준: 2026-10-10 (main ab92ce5)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/10: chore/remove-light — 라이트 모드 제거, 다크 고정. 헤더 "라이트" 버튼·ThemeToggle·lib/theme.ts·테마 초기화 스크립트·suppressHydrationWarning·[data-theme="light"] 규칙과 라이트 토큰 삭제, :root:not([data-theme="light"]) 접두사는 :root로, viewport colorScheme 'dark'(meta color-scheme). 예전에 저장된 localStorage theme 키는 ThemeKeyCleanup이 접속 시 한 번 지움. 정규식 삭제가 .site-menu a 규칙까지 지워 헤더 메뉴가 깨진 것을 원본 블록으로 복구(fix(header))
 - 10/10: feat/list-view — 검색 결과 카드/행 보기 전환. ResultCard view="row"(썸네일·이름·스토어·인원·진입장벽·보유 칩·가격 블록·+ 비교, 태그 칩 없음), 결과 머리 정렬 탭 줄에 aria-pressed 버튼 2개(.tabs/.tab 재사용), 선택은 localStorage jdn_list_view에만 저장(주소엔 안 담음). 행 높이는 min-height, 375px에서는 가격을 한 줄로 압축(할인율+할인가+"~10/13" 짧은 종료일, 정가·역대 최저 칩 숨김, + 비교 같은 줄 오른쪽, 이름 한 줄)해 할인 큰 순 상위 24행 최대 108px. 375px 정렬 탭은 가로 스크롤+오른쪽 페이드로 "낮은 가격순" 잘림 수정. 평가는 1차 제외(INDEX_FIELDS에 review 칸 없음), 찜 목록·비슷한 게임은 범위 밖
 - 10/10: feat/this-week — /this-week "이번 주 할인 마감" 세로 타임라인(KST 날짜 마디 오늘/내일/요일, revalidate 300). 데이터 2단계: price_history에서 sale_ends_at이 지금~168시간 안인 game_id만 뽑고 → 그 게임의 최신 가격 1행을 다시 받아 같은 조건(discount>0, 종료일 지금~168시간)으로 다시 거름(옛 행 때문에 끝난 할인 제외, 테스트 포함). 마디마다 6장만 보이고 "N개 더 보기"(오늘 마디는 전부 펼침), 브라우저 시각으로 끝난 카드·빈 마디 숨김(전부 비면 빈 상태 문구). 같은 마감 시각 2차 정렬 heat_rank(작은 순, 없으면 뒤)→할인율→이름. 메인 "이번주의 게임"에 h2 제목 신설(+주차)·카드 안 라벨 제거, 제목 오른쪽에 "이번 주 할인 마감 보기 →"(375px에서 제목 아래 왼쪽), 푸터 링크, sitemap 추가. 헤더 메뉴엔 안 넣음
 - 10/10: docs/merge-conflict-stop — rebase 중 충돌이 나면 해결하지 않고 멈춰 충돌 파일과 양쪽 내용을 보고(/merge 3단계·CLAUDE.md)
@@ -33,7 +34,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
-- 없음
+- feat/back-link — 하위 페이지 공통 BackLink(9fcbc5b), 프리뷰 확인 후 머지 지시 대기
 
 ## 완료된 판단
 - 1~3위 카드에 동접·그래프 안 넣음(상세 헤더에 있음). 4~10위 줄엔 동접 유지
