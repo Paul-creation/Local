@@ -1,10 +1,11 @@
 // scripts/lib/itad.mjs
 // ITAD API 공통 호출 — 요청 간격 유지 + 429·5xx·연결 실패·30초 무응답이면 기다렸다가 최대 3번 다시 시도
-// 최악의 경우 한 요청: 4번 시도 × 30초 + 대기 5+10+15초 + 간격 1.5초 × 4 ≈ 2분 35초 (429의 retry-after가 길면 그만큼 더)
+// 최악의 경우 한 요청: 4번 시도 × 30초 + 대기 5+10+15초(429는 retry-after, 최대 60초) + 간격 1.5초 × 4
+// 429의 retry-after가 60초를 넘으면 기다리지 않고 바로 ItadLimitError. 기다릴 때마다 한 줄 로그
 const ITAD_KEY = process.env.ITAD_API_KEY;
 const MAX_RETRIES = 3;
 // 테스트에서만 바꿈
-export const itadTuning = { gapMs: 1500, timeoutMs: 30000, backoffMs: 5000 };
+export const itadTuning = { gapMs: 1500, timeoutMs: 30000, backoffMs: 5000, maxRetryAfterSec: 60, log: console.log };
 // history/v2는 since가 없으면 최근 3개월만 준다 (날짜만 넣으면 400이라 시각까지 넣음)
 const HISTORY_SINCE = '2000-01-01T00:00:00Z';
 
@@ -22,6 +23,7 @@ export async function itadGet(path, params, body) {
 
     let status = 0;
     let retryAfter = 0;
+    let cause = '';
     try {
       const signal = AbortSignal.timeout(itadTuning.timeoutMs); // 본문 읽는 동안도 적용됨
       const res = await fetch(`https://api.isthereanydeal.com${path}?${qs}`, body
@@ -30,15 +32,21 @@ export async function itadGet(path, params, body) {
       status = res.status;
       if (res.ok) return await res.json();
       retryAfter = Number(res.headers.get('retry-after')) || 0;
-    } catch {
+    } catch (e) {
       // 네트워크 오류·타임아웃도 다시 시도
+      cause = e?.name === 'TimeoutError' ? '타임아웃' : '연결 실패';
     }
 
     const retryable = status === 0 || status === 429 || status >= 500;
     if (!retryable) throw new Error(`ITAD 응답 ${status}`);
-    if (attempt >= MAX_RETRIES) throw new ItadLimitError(`ITAD 응답 ${status || '연결 실패'}`);
+    if (status === 429 && retryAfter > itadTuning.maxRetryAfterSec) {
+      throw new ItadLimitError(`ITAD 429 retry-after ${retryAfter}초 (${itadTuning.maxRetryAfterSec}초 초과라 기다리지 않음)`);
+    }
+    if (attempt >= MAX_RETRIES) throw new ItadLimitError(`ITAD 응답 ${status || cause}`);
     // 429는 retry-after(초)만큼, 없거나 다른 오류면 점점 길게 기다림
-    await sleep(status === 429 && retryAfter ? retryAfter * 1000 : itadTuning.backoffMs * (attempt + 1));
+    const waitMs = status === 429 && retryAfter ? retryAfter * 1000 : itadTuning.backoffMs * (attempt + 1);
+    itadTuning.log(`ITAD ${status === 429 ? '429' : status ? `응답 ${status}` : cause} 대기 ${Math.round(waitMs / 1000)}초 (재시도 ${attempt + 1}/${MAX_RETRIES})`);
+    await sleep(waitMs);
   }
 }
 

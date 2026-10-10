@@ -7,11 +7,12 @@ export async function processHeatBatches({ games, batchSize, collect, getLows, s
   let failed = 0;
   let lowsCount = 0;
   let stopped = false;
+  let processed = 0; // 끝까지 처리한 게임 수 (제한에 걸린 게임부터는 미처리)
 
   for (let start = 0; start < games.length && !stopped; start += batchSize) {
     const batch = games.slice(start, start + batchSize);
     const collected = [];
-    for (const game of batch) {
+    for (const [idx, game] of batch.entries()) {
       try {
         const c = await collect(game);
         if (!c) {
@@ -20,14 +21,16 @@ export async function processHeatBatches({ games, batchSize, collect, getLows, s
         } else collected.push({ game, ...c });
       } catch (e) {
         if (isLimitError(e)) {
-          log(`⏳ ITAD 요청 제한 — 여기서 멈춤: ${e.message}`);
+          log(`⏳ ${e.message}`);
           stopped = true;
+          processed = start + idx;
           break;
         }
         log(`❌ 실패: ${game.name} — ${e.message}`);
         failed++;
       }
     }
+    if (!stopped) processed = start + batch.length;
 
     let lows = new Map();
     if (collected.length > 0) {
@@ -36,7 +39,7 @@ export async function processHeatBatches({ games, batchSize, collect, getLows, s
       } catch (e) {
         log(`❌ 역대 최저가 조회 실패 (${start + 1}~${start + batch.length}번째): ${e.message}`);
         failed++;
-        if (isLimitError(e)) stopped = true;
+        if (isLimitError(e)) { stopped = true; processed = start + batch.length; }
       }
     }
     lowsCount += lows.size;
@@ -50,5 +53,6 @@ export async function processHeatBatches({ games, batchSize, collect, getLows, s
     }
     log(`── 진행 ${Math.min(start + batchSize, games.length)}/${games.length} · 저장 ${saved} · ITAD에 없음 ${noMatch} · 실패 ${failed}`);
   }
-  return { saved, noMatch, failed, lowsCount, stopped };
+  if (stopped) log(`ITAD 요청 제한으로 중단, 처리 ${processed}/${games.length} (저장한 배치는 그대로 남음)`);
+  return { saved, noMatch, failed, lowsCount, stopped, processed };
 }
