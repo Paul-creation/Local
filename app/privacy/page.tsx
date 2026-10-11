@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 //       app/lib/user/*(users·user_owned_games·used_openid_nonces, user_session 30일), supabase/migrations/2026101*_users·owned_games
 // 이번 개정(삭제 버튼·1년 자동 파기)은 이미 제공 중인 기능의 처리 내용을 적은 것이라 공지와 동시에 즉시 시행 (일반 변경은 시행 7일 전 공지)
 // 1년 자동 파기는 Supabase pg_cron(매일 04:30 KST)로 하므로 SQL이 등록돼 있어야 방침과 맞는다. 전용 이메일이 생기면 6번의 로그인 불가 안내를 바꾼다
-const NOTICE_DATE = '2026년 10월 10일';
-const EFFECTIVE_DATE = '2026년 10월 10일';
+const NOTICE_DATE = '2026년 10월 11일';
+const EFFECTIVE_DATE = '2026년 10월 11일';
 
 export default function PrivacyPage() {
   const contact = CONTACT_EMAIL ? <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> : CONTACT_TEXT;
@@ -221,7 +221,7 @@ export default function PrivacyPage() {
         <h2 className="cm-h2">9. 방침 변경</h2>
         <p>이 방침을 바꾸면 시행 7일 전부터 사이트에 알려요. 다만 이용자에게 불리하지 않은 변경이나 이미 하고 있는 처리를 적는 변경은 공지와 함께 바로 시행할 수 있어요. 함께 보기: <Link href="/terms">이용약관</Link> · <Link href="/community/policy">커뮤니티 운영정책</Link></p>
         <p className="legal-date">시행일: {EFFECTIVE_DATE}</p>
-        <p className="legal-date">변경 이력: {NOTICE_DATE} 공지·시행 — Steam 로그인 수집 항목·보관 기간(1년 자동 삭제)·삭제 방법([내 정보 삭제] 버튼)·만 14세 미만 이용 제한 추가. 이미 제공 중인 기능의 처리 내용을 적은 개정이라 즉시 시행 / 2026년 10월 5일 — 최초 시행</p>
+        <p className="legal-date">변경 이력: {NOTICE_DATE} 공지·시행 — 보유 게임 갱신 시점 명확화(비공개·미확인이면 로그인 시 바로 갱신), 이용자에게 불리하지 않은 변경이라 즉시 시행 / 2026년 10월 10일 — Steam 로그인 수집 항목·보관 기간(1년 자동 삭제)·삭제 방법([내 정보 삭제] 버튼)·만 14세 미만 이용 제한 추가. 이미 제공 중인 기능의 처리 내용을 적은 개정이라 즉시 시행 / 2026년 10월 5일 — 최초 시행</p>
       </article>
     </main>
   );

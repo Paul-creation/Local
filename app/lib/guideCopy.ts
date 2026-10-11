@@ -97,7 +97,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
       {
         heading: '가격과 역대 최저가',
         paragraphs: [
-          '가격은 매일 새벽(한국 시간 3시 무렵) 한 번 갱신해요. 구매 전에는 스토어에서 한 번 더 확인해 주세요.',
+          '가격은 매일 새벽 한 번 갱신해요. 구매 전에는 스토어에서 한 번 더 확인해 주세요.',
           '역대 최저가는 IsThereAnyDeal이 기록한 모든 상점의 한국 원화 가격 중 가장 낮았던 값이에요. 지금 Steam 가격이 그 이하면 "역대 최저가", 10% 안쪽으로 비싸면 "최저가 근접"으로 표시해요.',
         ],
         actions: [{ label: '지금 할인 중인 게임', href: '/?sale=1&sort=discount' }],
