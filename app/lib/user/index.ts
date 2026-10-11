@@ -33,8 +33,12 @@ export async function upsertSteamUser(steamId: string, profile: SteamProfile | n
   const row: Record<string, unknown> = { steam_id: steamId, last_login_at: new Date().toISOString() };
   if (profile?.persona_name) row.persona_name = profile.persona_name;
   if (profile?.avatar_url) row.avatar_url = profile.avatar_url;
-  const { data, error } = await db.from('users').upsert(row, { onConflict: 'steam_id' }).select('id').single();
-  return error || !data ? null : (data as { id: string }).id;
+  const { data, error } = await db.from('users').upsert(row, { onConflict: 'steam_id' }).select('id, owned_visibility, owned_synced_at').single();
+  if (error || !data) return null;
+  const u = data as { id: string; owned_visibility: OwnedVisibility; owned_synced_at: string | null };
+  // 비공개·미확인이면 24시간을 기다리지 않고 다음 보유 게임 요청(/api/me/owned)이 바로 다시 가져오게 동기화 시각을 비운다 (프로필을 공개로 바꾼 직후 재로그인 대비)
+  if (u.owned_visibility !== 'public' && u.owned_synced_at) await db.from('users').update({ owned_synced_at: null }).eq('id', u.id);
+  return u.id;
 }
 
 // 세션 쿠키(user_session, httpOnly)와 로그인 표시 쿠키(logged_in=1, JS가 읽음)는 항상 같이 설정·삭제한다
@@ -65,8 +69,11 @@ export function clearStaleSession(req: NextRequest, res: NextResponse) {
 // DB 오류도 false: 확인할 수 없으면 거부한다. 하루 지난 행은 여기서 같이 지운다 (보안용 임시 표, CLAUDE.md 예외)
 export async function consumeNonce(nonce: string): Promise<boolean> {
   if (!nonce || nonce.length > 255) return false;
-  await db.from('used_openid_nonces').delete().lt('used_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
-  const { error } = await db.from('used_openid_nonces').insert({ nonce });
+  // 오래된 행 정리와 기록은 서로 영향이 없어 동시에 보낸다
+  const [, { error }] = await Promise.all([
+    db.from('used_openid_nonces').delete().lt('used_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()),
+    db.from('used_openid_nonces').insert({ nonce }),
+  ]);
   return !error;
 }
 
