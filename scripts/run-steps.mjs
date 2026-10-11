@@ -9,12 +9,13 @@ const GROUPS = {
   // 매일: 가격·할인·접속자처럼 자주 바뀌는 것
   daily: [
     'fix-missing-prices',
-    'backfill-price-history',
-    'backfill-price-history-other',
-    'fill-sale-ends', // 할인 종료 시각 (ITAD prices/v3 200개씩, 약 4번 요청). 가격 기록 뒤에 실행. 모르면 null, ITAD 오류면 기존 값 유지
+    // ITAD 단계는 한 묶음으로 앞에 (5분 창 한도를 사용자 화면에 직접 보이는 것부터 씀, 창 상태는 scripts/.cache/itad-window.json으로 공유)
+    'backfill-price-history-other', // 스팀 외 가격 (약 15건)
+    'fill-sale-ends', // 할인 종료 시각 (ITAD prices/v3 200개씩, 약 4번 요청). 모르면 null, ITAD 오류면 기존 값 유지
+    'backfill-price-history', // 스팀 할인 기록 (증분: 새 게임·기록 5건 미만 + 요일 1/7)
+    'enrich-itad-heat', // 순위·역대 최고 동접·역대 최저가 (약 900건, 한도 안에서 약 1시간)
     'enrich-players',
     'enrich-recent-reviews', // 스팀 최근 30일 평가 (상점 페이지, 요청 간격 2초, 숨긴 게임 제외)
-    'enrich-itad-heat',
     'fetch-streamer-videos --apply', // 스트리머 공식 채널 새 영상 → 게임 연결 (YouTube 하루 200유닛, 하이라이트 작업이 이 몫을 남겨 둠). 트레일러보다 먼저
     'enrich-videos 90', // YouTube 하루 한도 안에서 매일 조금씩
     'snapshot-hot-rank', // 메인 "지금 뜨는 게임" 순위 기록 (heat_rank 갱신 뒤)
@@ -59,6 +60,7 @@ const GROUPS = {
 };
 
 const STEP_TIMEOUT_MIN = 45;
+const STEP_TIMEOUT_OVERRIDE_MIN = { 'enrich-itad-heat': 90 }; // ITAD 5분 창 한도 안에서 약 900건 = 약 1시간
 const group = process.argv[2];
 const steps = GROUPS[group];
 if (!steps) {
@@ -82,11 +84,12 @@ function run(rawStep) {
     const started = Date.now();
     console.log(`\n━━━━━━━━ ▶ ${name} ━━━━━━━━`);
     const child = spawn('node', [...envArgs, file, ...args], { stdio: 'inherit' });
-    const timer = setTimeout(() => child.kill('SIGTERM'), STEP_TIMEOUT_MIN * 60 * 1000);
+    const timeoutMin = STEP_TIMEOUT_OVERRIDE_MIN[name] ?? STEP_TIMEOUT_MIN;
+    const timer = setTimeout(() => child.kill('SIGTERM'), timeoutMin * 60 * 1000);
     child.on('exit', (code, signal) => {
       clearTimeout(timer);
       const sec = Math.round((Date.now() - started) / 1000);
-      if (signal) resolve({ name, status: `시간 초과 (${STEP_TIMEOUT_MIN}분)`, ok: false, sec });
+      if (signal) resolve({ name, status: `시간 초과 (${timeoutMin}분)`, ok: false, sec });
       else resolve({ name, status: code === 0 ? '성공' : `실패 (코드 ${code})`, ok: code === 0, sec });
     });
   });

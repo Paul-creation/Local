@@ -1,11 +1,16 @@
 // scripts/lib/itad.mjs
-// ITAD API 공통 호출 — 요청 간격 유지 + 429·5xx·연결 실패·30초 무응답이면 기다렸다가 최대 3번 다시 시도
-// 최악의 경우 한 요청: 4번 시도 × 30초 + 대기 5+10+15초(429는 retry-after, 최대 60초) + 간격 1.5초 × 4
-// 429의 retry-after가 60초를 넘으면 기다리지 않고 바로 ItadLimitError. 기다릴 때마다 한 줄 로그
+// ITAD API 공통 호출 — 속도 제한기(5분 창 N건, 단계 사이 공유) + 요청 간격 유지 + 429·5xx·연결 실패·30초 무응답이면 기다렸다가 최대 3번 다시 시도
+// ITAD는 5분 창 기준으로 제한한다 (문서 기본 1000건, 이 키는 로그상 약 100건). 한도의 80%(ITAD_REQ_PER_WINDOW, 기본 80)까지만 미리 간격을 두고 보냄
+// 429의 retry-after(초)만큼 기다리고(최대 창 길이 300초), 그보다 길면 바로 ItadLimitError. 기다릴 때마다 한 줄 로그
+import { createLimiter } from './itad-limiter.mjs';
 const ITAD_KEY = process.env.ITAD_API_KEY;
 const MAX_RETRIES = 3;
+const WINDOW_MS = 300000;
+const MAX_PER_WINDOW = Number(process.env.ITAD_REQ_PER_WINDOW) > 0 ? Number(process.env.ITAD_REQ_PER_WINDOW) : 80;
 // 테스트에서만 바꿈
-export const itadTuning = { gapMs: 1500, timeoutMs: 30000, backoffMs: 5000, maxRetryAfterSec: 60, log: console.log };
+export const itadTuning = { gapMs: 1500, timeoutMs: 30000, backoffMs: 5000, maxRetryAfterSec: 300, log: console.log };
+// 요청 시각을 파일에 남겨 daily의 ITAD 단계들이 한 창을 같이 셈 (scripts/.cache는 git 제외)
+export const itadLimiter = createLimiter({ file: process.env.ITAD_WINDOW_FILE ?? 'scripts/.cache/itad-window.json', windowMs: WINDOW_MS, max: MAX_PER_WINDOW, log: (m) => itadTuning.log(m) });
 // history/v2는 since가 없으면 최근 3개월만 준다 (날짜만 넣으면 400이라 시각까지 넣음)
 const HISTORY_SINCE = '2000-01-01T00:00:00Z';
 
@@ -17,6 +22,7 @@ export class ItadLimitError extends Error {}
 export async function itadGet(path, params, body) {
   const qs = new URLSearchParams({ key: ITAD_KEY, ...params });
   for (let attempt = 0; ; attempt++) {
+    await itadLimiter.acquire();
     const wait = lastRequestAt + itadTuning.gapMs - Date.now();
     if (wait > 0) await sleep(wait);
     lastRequestAt = Date.now();
@@ -39,6 +45,7 @@ export async function itadGet(path, params, body) {
 
     const retryable = status === 0 || status === 429 || status >= 500;
     if (!retryable) throw new Error(`ITAD 응답 ${status}`);
+    if (status === 429) itadLimiter.block(Date.now() + Math.min(retryAfter || itadTuning.backoffMs / 1000, WINDOW_MS / 1000) * 1000); // 다음 요청·다음 단계도 같이 기다림
     if (status === 429 && retryAfter > itadTuning.maxRetryAfterSec) {
       throw new ItadLimitError(`ITAD 429 retry-after ${retryAfter}초 (${itadTuning.maxRetryAfterSec}초 초과라 기다리지 않음)`);
     }

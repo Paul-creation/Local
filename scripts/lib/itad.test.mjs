@@ -1,8 +1,9 @@
 // 실행: npm test — itad: 요청 타임아웃·연결 실패 시 재시도, 재시도 소진 시 ItadLimitError / enrich-itad-heat: 배치마다 저장
 process.env.ITAD_API_KEY ??= 'test-key';
+process.env.ITAD_WINDOW_FILE = ''; // 테스트는 속도 제한기 상태를 파일에 남기지 않음
 const { default: test } = await import('node:test');
 const { default: assert } = await import('node:assert/strict');
-const { itadGet, itadTuning, ItadLimitError } = await import('./itad.mjs');
+const { itadGet, itadTuning, itadLimiter, ItadLimitError } = await import('./itad.mjs');
 const { processHeatBatches } = await import('./itad-heat-batch.mjs');
 
 const logs = [];
@@ -37,7 +38,7 @@ test('itadGet: 연결 실패도 다시 시도, 404는 바로 오류', async (t) 
 
 const res429 = (sec) => ({ ok: false, status: 429, headers: new Headers({ 'retry-after': String(sec) }) });
 
-test('itadGet: 429 retry-after가 60초 이하면 기다렸다 재시도하고 대기 로그를 남김', async (t) => {
+test('itadGet: 429 retry-after가 상한 이하면 기다렸다 재시도하고 대기 로그를 남김', async (t) => {
   let calls = 0;
   logs.length = 0;
   t.after(() => { globalThis.fetch = realFetch; });
@@ -49,11 +50,11 @@ test('itadGet: 429 retry-after가 60초 이하면 기다렸다 재시도하고 �
   assert.deepEqual(logs, ['ITAD 429 대기 1초 (재시도 1/3)']);
 });
 
-test('itadGet: 429 retry-after가 60초 초과면 기다리지 않고 바로 ItadLimitError', async (t) => {
+test('itadGet: 429 retry-after가 상한(300초) 초과면 기다리지 않고 바로 ItadLimitError', async (t) => {
   let calls = 0;
   logs.length = 0;
-  t.after(() => { globalThis.fetch = realFetch; });
-  globalThis.fetch = async () => { calls++; return res429(61); };
+  t.after(() => { globalThis.fetch = realFetch; itadLimiter.reset(); });
+  globalThis.fetch = async () => { calls++; return res429(301); };
   const t0 = Date.now();
   await assert.rejects(() => itadGet('/x', {}), ItadLimitError);
   assert.equal(calls, 1);
@@ -61,9 +62,9 @@ test('itadGet: 429 retry-after가 60초 초과면 기다리지 않고 바로 Ita
   assert.deepEqual(logs, []);
 });
 
-test('itadGet: 60초 딱 맞으면 대기 대상 (상한은 초과일 때만)', async (t) => {
+test('itadGet: 상한 딱 맞으면 대기 대상 (상한은 초과일 때만)', async (t) => {
   logs.length = 0;
-  t.after(() => { globalThis.fetch = realFetch; Object.assign(itadTuning, { maxRetryAfterSec: 60 }); });
+  t.after(() => { globalThis.fetch = realFetch; Object.assign(itadTuning, { maxRetryAfterSec: 300 }); });
   Object.assign(itadTuning, { maxRetryAfterSec: 1 });
   let calls = 0;
   globalThis.fetch = async () => (++calls === 1 ? res429(1) : { ok: true, status: 200, json: async () => ({}) });

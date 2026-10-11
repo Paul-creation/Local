@@ -1,9 +1,12 @@
 // scripts/backfill-price-history.mjs
 // 스팀 게임 할인 기록을 ITAD(Steam KRW)에서 가져오기 — 이미 있는 기록은 건너뛰고 새 기록만 추가
+// 증분: 매일은 ITAD ID가 없거나 기록 5건 미만인 게임 + 게임 id 해시 % 7 == 요일(KST)인 게임만 (7일에 한 바퀴). 전부 돌리려면 --all
+// 역대 최저가(lowest_price*)는 쓰지 않음 — enrich-itad-heat(ITAD 전체 상점 기준)만 기록
 // 한 번 찾은 ITAD ID는 games.itad_id에 저장해서 다음부터는 lookup을 건너뜀
 import { createClient } from '@supabase/supabase-js';
 import { lookupItadId, getPriceHistory, ItadLimitError } from './lib/itad.mjs';
 import { onlyIds } from './lib/only-ids.mjs';
+import { isBackfillTarget, kstWeekday } from './lib/backfill-targets.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -22,8 +25,11 @@ async function main() {
     .not('steam_appid', 'is', null);
   if (error) return console.error('조회 실패:', error.message);
 
-  const paid = games.filter((g) => !g.is_free);
-  console.log(`스팀 유료 게임 ${paid.length}개 확인 시작\n`);
+  const allPaid = games.filter((g) => !g.is_free);
+  const weekday = kstWeekday();
+  const all = process.argv.includes('--all');
+  const paid = allPaid.filter((g) => isBackfillTarget(g, weekday, all));
+  console.log(`스팀 유료 게임 ${allPaid.length}개 중 ${paid.length}개 확인 시작 (${all ? '--all' : `새 게임·기록 5건 미만 + 요일 ${weekday} 몫`})\n`);
   let added = 0;
   let touched = 0;
   let notFound = 0;
@@ -75,18 +81,8 @@ async function main() {
         }
       }
 
-      const all = [
-        ...(game.price_history || []).filter((p) => p.price >= 100),
-        ...rows,
-      ];
-      const lowest = all.reduce((a, b) => (b.price < a.price ? b : a));
-      await supabase
-        .from('games')
-        .update({ lowest_price: lowest.price, lowest_price_date: lowest.checked_at })
-        .eq('id', game.id);
-
       if (rows.length > 0) {
-        console.log(`✅ ${game.name}: 새 기록 ${rows.length}개 · 최저 ₩${lowest.price.toLocaleString('ko-KR')}`);
+        console.log(`✅ ${game.name}: 새 기록 ${rows.length}개`);
         added += rows.length;
         touched++;
       }
