@@ -25,7 +25,7 @@ begin
       'Authorization', 'Bearer ' || pat,
       'Accept', 'application/vnd.github+json',
       'X-GitHub-Api-Version', '2022-11-28',
-      'User-Agent', 'supabase-pg-cron',
+      'User-Agent', 'jamidunow-pg-cron',
       'Content-Type', 'application/json'
     ),
     body := jsonb_build_object('ref', 'main'),
