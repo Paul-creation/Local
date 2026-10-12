@@ -3,7 +3,16 @@ name: 매일 갱신 (가격·할인·접속자)
 on:
   schedule:
     - cron: '17 18 * * *'  # 매일 한국 시간 03:17 (정각 혼잡 회피)
-  workflow_dispatch:        # Actions 탭에서 직접 실행 가능
+  workflow_dispatch:        # Supabase pg_cron이 매일 호출 + Actions 탭에서 직접 실행
+    inputs:
+      force:
+        description: '오늘 이미 성공한 실행이 있어도 다시 실행'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  actions: read
 
 concurrency:
   group: data-jobs          # 매일·매주 작업이 겹치지 않게 순서대로
@@ -14,14 +23,38 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 150
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - name: 오늘 성공한 실행이 있으면 건너뛰기
+        id: guard
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          if [ "$FORCE" = "true" ]; then
+            echo "force 실행: 가드 생략"
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          since=$(date -u -d "$(TZ=Asia/Seoul date +%F) 00:00 +0900" +%Y-%m-%dT%H:%M:%SZ)
+          count=$(gh api "repos/${{ github.repository }}/actions/workflows/daily.yml/runs?status=success&created=>=${since}&per_page=1" --jq '.total_count')
+          echo "오늘(KST 0시=${since}) 이후 성공한 실행: ${count}건"
+          if [ "$count" -gt 0 ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.guard.outputs.skip != 'true'
+        uses: actions/checkout@v5
+      - if: steps.guard.outputs.skip != 'true'
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      - if: steps.guard.outputs.skip != 'true'
+        run: npm ci
       - name: 환경변수 파일 만들기
+        if: steps.guard.outputs.skip != 'true'
         run: printf '%s\n' "$ENV_FILE" > .env.local
         env:
           ENV_FILE: ${{ secrets.ENV_FILE }}
-      - run: node scripts/run-steps.mjs daily
+      - if: steps.guard.outputs.skip != 'true'
+        run: node scripts/run-steps.mjs daily
