@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-12 (main 4a4d236)
+기준: 2026-10-12 (main 4053408)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/12: feat/guide-show-steam — GUIDE_SHOW_STEAM=true로 /guide의 Steam 로그인 섹션·목차 칩 공개(jamidunow.com 로그인 전체 시험 통과 후)
 - 10/12: chore/domain-jamidunow — 기본 사이트 주소를 jamidunow.com으로 변경(site.ts·daily-summary.mjs·mobile-check.mjs), 문서 주소 갱신. 커뮤니티 글 url은 상대경로라 metadataBase가 처리해 변경 없음. localStorage 사용처는 도메인별이라 새 도메인에서 비어서 시작
 - 10/11: fix/daily-itad-rate — ITAD 공통 속도 제한기(scripts/lib/itad-limiter.mjs, 최근 300초 80건, ITAD_REQ_PER_WINDOW로 조정, 창 상태는 scripts/.cache/itad-window.json으로 단계 간 공유, 429면 retry-after만큼 대기 상한 300초). daily 순서를 fix-missing-prices → backfill-price-history-other → fill-sale-ends → backfill-price-history → enrich-itad-heat → enrich-players → enrich-recent-reviews로. backfill-price-history는 증분(ITAD ID 없음·기록 5건 미만 매일 + id 해시%7=요일 몫, --all이면 전체)이고 lowest_price는 쓰지 않음(스팀 외는 other가 계속 씀, 역대 최저가는 enrich-itad-heat만). enrich-itad-heat 단계 시간 제한 90분. 하루 ITAD 요청 약 1,090건·약 68분 예상(미확인, 다음 정기 실행에서 확인)
 - 10/10: fix/privacy-steam — 개인정보처리방침 Steam 로그인 항목 추가, 2026-10-10 즉시 시행(이미 제공 중인 기능의 처리 내용을 적은 개정, 9번에 "불리하지 않은 변경·이미 하는 처리는 공지와 함께 즉시 시행 가능" 명시). 수집 항목·수집하지 않는 것·목적·1년 자동 삭제·삭제 방법·만 14세 미만 이용 불가 문구. 내 정보 삭제(DELETE /api/me, 닉네임 메뉴 "내 정보 삭제", 확인 창 뒤 user_owned_games·users 삭제와 user_session·logged_in 쿠키·sessionStorage 정리, 세션 사용자 본인만·Origin 확인). 1년 자동 파기는 Supabase pg_cron purge-inactive-users(매일 04:30 KST, 마지막 로그인 1년 경과 users와 user_owned_games, SQL은 사용자가 Supabase에서 실행 — 등록 전에는 방침과 어긋남). 전용 이메일이 생기면 6번 "로그인이 안 되는 경우" 안내(/feedback "기타") 교체
@@ -63,7 +64,7 @@
 - 이전 판단(heat_rank 라벨, 역대 최저가 배지 기준, Metascore만, 스팀 로그인 방식 c 등) 유지
 
 ## 로드맵
-- 다음: 보유 중 칩 지연(owned 약 1.75초) 개선(/api/me/owned의 DB 읽기 줄이기: users 조회 2번 합치기, user_owned_games 페이징 읽기를 한 번에) / Steam 가이드 섹션 공개(로그인 시험 10/11 뒤 app/lib/guideCopy.ts의 GUIDE_SHOW_STEAM을 true로, 방침은 10/10 시행 완료, pg_cron SQL 실행 확인 포함) / fix/steam-confirm(check-delisted가 요청 제한을 판매 중단 후보로 보지 않게, enrich-fallback 빈 응답 크래시, fix-data-gaps·fill-tags-desc 재시도) / 가격 못 받은 2개(동방홍마향, Ori) / itad_id 없는 81개 매일 lookup / 보유 칩 HotChart·할인·찜목록 확장(10/11 확인 후) / 찜 동기화·내 PC 사양 계정 저장(user_pc 표, /api/me/pc)·개인정보 방침("서버로 보내지 않아요" 문구 수정 포함)·탈퇴(방침 변경은 시행 7일 전 공지) / YouTube 할당량 구조 / 푸터 축소 / (일주일 뒤에도 저장 공간이 높으면) OG 폰트 fetch 전환
+- 다음: 보유 중 칩 지연(owned 약 1.75초) 개선(/api/me/owned의 DB 읽기 줄이기: users 조회 2번 합치기, user_owned_games 페이징 읽기를 한 번에) / fix/steam-confirm(check-delisted가 요청 제한을 판매 중단 후보로 보지 않게, enrich-fallback 빈 응답 크래시, fix-data-gaps·fill-tags-desc 재시도) / 가격 못 받은 2개(동방홍마향, Ori) / itad_id 없는 81개 매일 lookup / 보유 칩 HotChart·할인·찜목록 확장(10/11 확인 후) / 찜 동기화·내 PC 사양 계정 저장(user_pc 표, /api/me/pc)·개인정보 방침("서버로 보내지 않아요" 문구 수정 포함)·탈퇴(방침 변경은 시행 7일 전 공지) / YouTube 할당량 구조 / 푸터 축소 / (일주일 뒤에도 저장 공간이 높으면) OG 폰트 fetch 전환
 - 10/10(토) 아침: 매일 갱신 확인(itad-heat, 상점명, 역대 최고 동접, Metascore) / Set up job 로그에 ubuntu-24.04·checkout@v5·setup-node@v5, Node 20 경고 없음 / 요청 제한 미처리 N 확인 / 에픽 전용 가족 공유 칸 숨김 / VALORANT 트레일러 / 정가 missing 0 유지
 - 전용 이메일이 생기면 CONTACT_EMAIL과 개인정보처리방침 6번의 "로그인이 안 되는 경우" 안내(지금은 /feedback "기타")를 바꿈. 방침은 2026-10-10 즉시 시행(이미 제공 중인 기능의 처리 내용을 적은 개정). 1년 자동 파기는 Supabase pg_cron(매일 04:30 KST) SQL을 사용자가 실행해야 방침과 맞음
 - 10/11 휴가: 도메인 구매(Cloudflare) → Vercel 연결 → vercel.app 리다이렉트, NEXT_PUBLIC_SITE_URL=https://jamidunow.com, GitHub ENV_FILE·site.ts·daily-summary.mjs 기본값, 디스코드 웹후크, 이메일 라우팅, 서치콘솔·네이버. 스팀 로그인 시험(로그인 → 아바타·닉네임 → 로그아웃, select steam_id, persona_name, last_login_at from users;, "보유 중" 칩, select count(*) from user_owned_games;, 비공개 프로필 안내. 칩이 안 뜨면 app/lib/user/ownedGames.ts부터)
