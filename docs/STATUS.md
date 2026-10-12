@@ -5,7 +5,7 @@
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
 - 저장소 Paul-creation/Local, Next.js + Supabase + Vercel(Hobby)
-- 주소 game-info-hub.vercel.app, 도메인 jamidunow.com(10/11 구매 예정). 오픈·홍보는 11월쯤
+- 주소 jamidunow.com(game-info-hub.vercel.app은 NEXT_PUBLIC_SITE_URL 재배포 뒤 jamidunow.com으로 308). 오픈·홍보는 11월쯤
 - 화면엔 "JamiDuNow"만, "재밌드나"는 구조화 데이터에만. 푸터 "© 2026 The Circles"
 
 ## 일하는 방식

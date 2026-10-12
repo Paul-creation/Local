@@ -1,6 +1,6 @@
 // scripts/mobile-check.mjs
 // 모바일 화면 자동 점검: 가로 스크롤 · 화면 밖으로 넘치는 요소 · 44px 미만 터치 영역을 찾아 표로 출력
-// 실행: node scripts/mobile-check.mjs                                  (기본 https://game-info-hub.vercel.app)
+// 실행: node scripts/mobile-check.mjs                                  (기본 https://jamidunow.com)
 //       node scripts/mobile-check.mjs https://새도메인
 //       node scripts/mobile-check.mjs http://localhost:3000
 // - 스크린샷은 scripts/.cache/mobile-check/<시각>/ 에 저장 (gitignore 됨)
@@ -13,7 +13,7 @@
 import fs from 'fs';
 import { chromium } from 'playwright';
 
-const SITE = (process.argv[2] || 'https://game-info-hub.vercel.app').replace(/\/$/, '');
+const SITE = (process.argv[2] || 'https://jamidunow.com').replace(/\/$/, '');
 const VIEWPORTS = [
   { name: '375', width: 375, height: 812 },
   { name: '390', width: 390, height: 844 },

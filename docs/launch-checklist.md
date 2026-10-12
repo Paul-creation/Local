@@ -9,7 +9,7 @@
 ### 1. 보안 점검 (배포 사이트 포함)
 
 ```bash
-node --env-file=.env.local scripts/security-check.mjs https://game-info-hub.vercel.app
+node --env-file=.env.local scripts/security-check.mjs https://jamidunow.com
 ```
 
 - 주소를 빼면 배포 사이트 점검은 건너뛴다. (`SITE_URL` 환경변수로도 줄 수 있음 — `scripts/security-check.mjs:8`)
@@ -29,7 +29,7 @@ npm run build
 
 ```bash
 npm ci                                                     # 처음 한 번 (playwright 포함)
-node scripts/mobile-check.mjs                              # 기본: https://game-info-hub.vercel.app
+node scripts/mobile-check.mjs                              # 기본: https://jamidunow.com
 node scripts/mobile-check.mjs https://새도메인              # 도메인 연결 뒤
 ```
 

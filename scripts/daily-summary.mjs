@@ -10,7 +10,7 @@ import { readPriceCheck } from './lib/price-check.mjs';
 import { readStreamerVideos } from './lib/streamer-videos.mjs';
 
 const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
-const SITE = (process.env.NEXT_PUBLIC_SITE_URL || 'https://game-info-hub.vercel.app').replace(/\/$/, '');
+const SITE = (process.env.NEXT_PUBLIC_SITE_URL || 'https://jamidunow.com').replace(/\/$/, '');
 const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
 async function count(table, apply) {
