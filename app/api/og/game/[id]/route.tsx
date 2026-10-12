@@ -11,9 +11,11 @@ const IMG_W = 540;
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { data: game } = await selectGames('name, fun_description, description, min_players, max_players, difficulty, entry_barrier, review_summary, review_positive_percent, is_free, price_type, card_image_url, cover_image_url, price_history(price, discount_percent, checked_at, original_price)')
+  const { data: game, error } = await selectGames('name, fun_description, description, min_players, max_players, difficulty, entry_barrier, review_summary, review_positive_percent, is_free, price_type, card_image_url, cover_image_url, price_history(price, discount_percent, checked_at, original_price)')
     .eq('id', id)
     .maybeSingle();
+  // 조회 오류는 없는 게임(404)과 구분 — 일시 오류가 404로 캐시돼 공유 미리보기가 깨지지 않게 5xx로 응답
+  if (error) return new Response('게임 정보를 불러오지 못했어요', { status: 503 });
   if (!game) return new Response('게임을 찾을 수 없어요', { status: 404 });
   const [fonts, image] = await Promise.all([loadOgFonts(), fetchOgImage(game.card_image_url || game.cover_image_url)]);
 

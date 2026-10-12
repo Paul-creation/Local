@@ -38,7 +38,8 @@ import OwnedChip from '../../components/owned/OwnedChip';
 import { detailChipGroups } from '../../lib/tagGroups';
 import { buildTree, type TagDict } from '../../lib/tagTree';
 import tagDict from '../../lib/tag-search-dict.json';
-import { permanentRedirect } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
+import { isUuid } from '../../lib/uuid';
 import SimilarGames from '../../components/SimilarGames';
 import { getCardGames } from '../../lib/gameIndex';
 import ScreenshotGallery, { type Screenshot } from '../../components/ScreenshotGallery';
@@ -98,14 +99,17 @@ function parseMinSpec(raw: string | null) {
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  const { data: game } = await selectGames('name, description, fun_description, min_players, max_players, difficulty, tags, is_free, price_type, price_history(price, discount_percent, checked_at, original_price)')
+  if (!isUuid(id)) notFound();
+  const { data: game, error } = await selectGames('name, description, fun_description, min_players, max_players, difficulty, tags, is_free, price_type, price_history(price, discount_percent, checked_at, original_price)')
     .eq('id', id)
     .maybeSingle();
+  // 조회 오류는 없는 게임(404)과 구분해 던진다 — 일시 오류가 404로 나가 색인에서 빠지면 안 됨
+  if (error) throw new Error(`게임 조회 실패(${id}): ${error.message}`);
   if (!game) {
     // 숨긴 중복 게임이면 남긴 게임으로 영구 이동 (메타데이터 단계에서 먼저 처리해야 308 응답이 됨)
     const target = await mergedTargetOf(id);
     if (target) permanentRedirect(`/games/${target}`);
-    return { title: '게임을 찾을 수 없어요' };
+    notFound();
   }
 
   const players = playersText(game);
@@ -130,18 +134,20 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function GameDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  if (!isUuid(id)) notFound();
 
   const top10Promise = getTop10Ids().catch(() => [] as string[]);
     const { data: game, error } = await selectGames('*, price_history(price, discount_percent, checked_at, original_price, sale_ends_at), game_streamers(streamer_id, streamers(id, name, platform, handle)), game_videos(kind, video_id, title, channel_title, published_at, view_count), streamer_videos(video_id, title, published_at, view_count, is_short, streamer_channels(channel_title, streamer_name, kind))')
     .order('published_at', { referencedTable: 'streamer_videos', ascending: false })
     .limit(24, { referencedTable: 'streamer_videos' })
     .eq('id', id)
-    .single();
+    .maybeSingle();
 
-  if (error || !game) {
+  if (error) throw new Error(`게임 조회 실패(${id}): ${error.message}`);
+  if (!game) {
     const target = await mergedTargetOf(id);
     if (target) permanentRedirect(`/games/${target}`);
-    return <div className="page">게임을 찾을 수 없어요.</div>;
+    notFound();
   }
   const [top10, tagIds, similarGames] = await Promise.all([top10Promise, getGameTagIds(game), getSimilarGames(game.id)]);
   const isTop10 = top10.includes(game.id);

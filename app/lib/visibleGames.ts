@@ -20,6 +20,7 @@ export function selectHomeGames(columns = '*', options?: SelectOptions, db: Supa
 
 // 숨긴 게임이면 남긴 게임 id(merged_into)를, 아니면 null — 상세 주소 이동용
 export async function mergedTargetOf(id: string, db: SupabaseClient = supabase): Promise<string | null> {
-  const { data } = await db.from('games').select('merged_into').eq('id', id).eq('hidden', true).maybeSingle();
+  const { data, error } = await db.from('games').select('merged_into').eq('id', id).eq('hidden', true).maybeSingle();
+  if (error) throw new Error(`숨긴 게임 조회 실패(${id}): ${error.message}`);
   return (data?.merged_into as string | null) ?? null;
 }
