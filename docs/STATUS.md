@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-12 (main 9f1cb75)
+기준: 2026-10-12 (main 51da4f2)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/12: fix/game-not-found — 없는 게임 id의 상세(/games/[id])와 OG 이미지(/api/og/game/[id])를 noindex 404 화면으로 처리하고, DB 조회 오류는 404가 아니라 에러로 분리(uuid 형식 검사 app/lib/uuid.ts, visibleGames 조정). 프리뷰 확인 여부는 기록 없음
 - 10/12: feat/daily-external-trigger — daily 외부 트리거. Supabase pg_cron `daily-workflow-dispatch`(18:17 UTC = 03:17 KST)가 public.trigger_daily_workflow()(security definer, search_path 빈 값, Vault `github_actions_pat`을 이름으로 읽어 GitHub API workflow_dispatch ref main 호출)를 실행. 마이그레이션 20261020090000_daily_external_trigger.sql은 실제 적용본에 맞춤(chore/db-trigger-sync: pg_net은 with schema extensions, User-Agent jamidunow-pg-cron). PAT은 Vault에 직접 등록. daily.yml은 schedule 예비 유지, 첫 step 가드(KST 오늘 성공 실행이 있으면 나머지 step 건너뜀, 실패·취소는 무시, permissions actions: read), force 입력으로 가드 우회, DISCORD_WEBHOOK_URL을 secrets에서 env로 넘김(비면 unset해 ENV_FILE 값 유지). 가드의 API 호출·dispatch는 실제 실행 미확인
 - 10/12: feat/guide-show-steam — GUIDE_SHOW_STEAM=true로 /guide의 Steam 로그인 섹션·목차 칩 공개(jamidunow.com 로그인 전체 시험 통과 후)
 - 10/12: chore/domain-jamidunow — 기본 사이트 주소를 jamidunow.com으로 변경(site.ts·daily-summary.mjs·mobile-check.mjs), 문서 주소 갱신. 커뮤니티 글 url은 상대경로라 metadataBase가 처리해 변경 없음. localStorage 사용처는 도메인별이라 새 도메인에서 비어서 시작
