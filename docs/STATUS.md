@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-11 (main 9c1a413)
+기준: 2026-10-12 (main 4a4d236)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/12: chore/domain-jamidunow — 기본 사이트 주소를 jamidunow.com으로 변경(site.ts·daily-summary.mjs·mobile-check.mjs), 문서 주소 갱신. 커뮤니티 글 url은 상대경로라 metadataBase가 처리해 변경 없음. localStorage 사용처는 도메인별이라 새 도메인에서 비어서 시작
 - 10/11: fix/daily-itad-rate — ITAD 공통 속도 제한기(scripts/lib/itad-limiter.mjs, 최근 300초 80건, ITAD_REQ_PER_WINDOW로 조정, 창 상태는 scripts/.cache/itad-window.json으로 단계 간 공유, 429면 retry-after만큼 대기 상한 300초). daily 순서를 fix-missing-prices → backfill-price-history-other → fill-sale-ends → backfill-price-history → enrich-itad-heat → enrich-players → enrich-recent-reviews로. backfill-price-history는 증분(ITAD ID 없음·기록 5건 미만 매일 + id 해시%7=요일 몫, --all이면 전체)이고 lowest_price는 쓰지 않음(스팀 외는 other가 계속 씀, 역대 최저가는 enrich-itad-heat만). enrich-itad-heat 단계 시간 제한 90분. 하루 ITAD 요청 약 1,090건·약 68분 예상(미확인, 다음 정기 실행에서 확인)
 - 10/10: fix/privacy-steam — 개인정보처리방침 Steam 로그인 항목 추가, 2026-10-10 즉시 시행(이미 제공 중인 기능의 처리 내용을 적은 개정, 9번에 "불리하지 않은 변경·이미 하는 처리는 공지와 함께 즉시 시행 가능" 명시). 수집 항목·수집하지 않는 것·목적·1년 자동 삭제·삭제 방법·만 14세 미만 이용 불가 문구. 내 정보 삭제(DELETE /api/me, 닉네임 메뉴 "내 정보 삭제", 확인 창 뒤 user_owned_games·users 삭제와 user_session·logged_in 쿠키·sessionStorage 정리, 세션 사용자 본인만·Origin 확인). 1년 자동 파기는 Supabase pg_cron purge-inactive-users(매일 04:30 KST, 마지막 로그인 1년 경과 users와 user_owned_games, SQL은 사용자가 Supabase에서 실행 — 등록 전에는 방침과 어긋남). 전용 이메일이 생기면 6번 "로그인이 안 되는 경우" 안내(/feedback "기타") 교체
 - 10/10: feat/guide — /guide 사용 가이드(스크롤형 7섹션+Steam 섹션은 GUIDE_SHOW_STEAM=false로 숨김, 문구(제목·본문·버튼 라벨·띠·푸터·FAQ 한 줄)는 전부 app/lib/guideCopy.ts, 버튼은 "라벨 →"만, 딥링크는 일반 a, ⑥ 예시 게임은 영상 있는 heat_rank 최상위 게임을 서버가 골라 revalidate 3600) + 메인 첫 방문 안내 띠(이벤트 배너 아래, localStorage jdn_guide_seen, 서버는 빈 슬롯만·안 닫은 사람에게만 스크립트가 자리 예약) + /?ai=1로 AI 추천 창 열기. 진입점은 띠·푸터·/faq 맨 위, 헤더 메뉴엔 안 넣음. Steam 섹션은 로그인 시험(10/11)과 방침 개정(fix/privacy-steam) 뒤에 플래그를 true로
