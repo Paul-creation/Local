@@ -57,4 +57,8 @@ jobs:
         env:
           ENV_FILE: ${{ secrets.ENV_FILE }}
       - if: steps.guard.outputs.skip != 'true'
-        run: node scripts/run-steps.mjs daily
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          [ -n "$DISCORD_WEBHOOK_URL" ] || unset DISCORD_WEBHOOK_URL
+          node scripts/run-steps.mjs daily
