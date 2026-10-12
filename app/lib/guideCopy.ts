@@ -3,7 +3,7 @@
 // 서버·브라우저 어느 쪽에서든 import할 수 있게 비밀 값·서버 전용 코드를 넣지 않는다.
 
 // Steam 섹션(⑧)과 목차 칩 공개 여부. 로그인 시험(10/11)과 개인정보처리방침 개정(fix/privacy-steam)이 끝나면 true로 바꾼다
-export const GUIDE_SHOW_STEAM = false;
+export const GUIDE_SHOW_STEAM = true;
 
 // 링크 주소 안의 {exampleGame}은 서버가 고른 예시 게임 상세 주소로 바뀐다 (lib/guideExample). 못 골랐으면 그 버튼은 숨긴다
 export const EXAMPLE_GAME_TOKEN = '{exampleGame}';
