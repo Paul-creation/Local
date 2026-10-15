@@ -20,7 +20,7 @@ export const ACTIVITIES = [
   { key: 'ride', label: '탑승', group: '이동', def: '동물·탈것에 올라타 이동한다', check: '말·펫·호버보드 등에 탑승해 이동(차량 운전은 drive)' },
   { key: 'train', label: '기차', group: '이동', def: '열차를 놓거나 운전한다', check: '철도 부설이나 열차 운행이 게임 기능' },
   { key: 'sail', label: '항해', group: '이동', def: '배를 몰고 항해한다', check: '보트·함선을 조작하거나 바다를 건넘' },
-  { key: 'swim_dive', label: '수영·잠수', group: '이동', def: '수영·잠수로 이동하고 탐사한다', check: '수중 구간이 핵심이거나 잠수 장비가 있음' },
+  { key: 'swim_dive', label: '수영·잠수', group: '이동', def: '수영·잠수로 이동하고 탐사한다', check: '수영이나 잠수로 이동·탐사하는 구간이 있음' },
   { key: 'parkour', label: '파쿠르', group: '이동', def: '달리기·점프·클라이밍 이동 자체가 재미다', check: '클라이밍·그래플링·월런 등 이동 조작이 핵심 메커니즘' },
 
   { key: 'cook', label: '요리', group: '생활', def: '재료로 요리한다', check: '레시피나 조리 시스템이 있음(먹기만 하면 제외)' },

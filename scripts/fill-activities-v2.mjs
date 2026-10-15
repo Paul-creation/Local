@@ -45,6 +45,7 @@ const readJson = (p, fallback) => (existsSync(p) ? JSON.parse(readFileSync(p, 'u
 const writeJson = (p, v) => { mkdirSync(CACHE_DIR, { recursive: true }); writeFileSync(p, JSON.stringify(v, null, 1) + '\n'); };
 
 // ---------- 프롬프트 ----------
+const CORE_KEYS = ACTIVITIES.filter((a) => /핵심|중심/.test(a.def + a.check)).map((a) => a.key);
 const SYSTEM = `너는 게임이 "어떤 활동을 직접 할 수 있게 해 주는지"를 입력 자료를 우선 근거로 판정하는 분류기다. 한국 사이트에서 친구와 할 게임을 고르는 데 쓰인다.
 
 [활동 키 목록] key | 라벨 | 정의 | 체크 기준
@@ -57,13 +58,13 @@ ${ACTIVITIES.map((a) => `${a.key} | ${a.label} | ${a.def} | ${a.check}`).join('\
   · "input": 입력 자료(설명·태그·카테고리·장르)에 직접 드러남. 이때 quote에 입력에서 글자 그대로 복사한 문구(영어 원문 그대로, 120자 이내)를 적는다. 요약·번역·바꿔 쓰기 금지.
   · "knowledge": 입력에는 없지만 널리 알려진 사실로 확신함. quote는 빈 문자열.
 - yes마다 strength를 정한다.
-  · "strong": 그 quote(또는 확신하는 지식)가 이 키의 체크 기준을 직접 뒷받침한다.
-  · "weak": 인용이 그 키를 직접 뒷받침하지 않거나(분위기·일반 소개 문장, 여러 키에 같은 문장을 돌려 씀), 간접 추정이거나, 체크 기준에 못 미친다(있기는 하나 중심이 아님 등). 확신이 없으면 weak다.
-  · 예: 위쳐 3의 hunt에 "journey across a dark fantasy open world"를 인용하면 사냥을 말하지 않으므로 weak. Palworld의 sail에 "Pals can be mounted to traverse the land, sea and sky"를 인용하면 배를 조종한다는 말이 없으므로 weak.
+  · "strong": 그 활동이 이 게임에 실제로 있다고 인용(또는 확신하는 지식)으로 뒷받침된다. 부가 기능이나 소소한 기능이어도 실제로 있으면 strong이다. 예: ATS의 "Capture your favorite moments with a photo mode offering rich set of editing options."를 인용하면 photo는 strong.
+  · "weak": 그 활동이 이 게임에 있는지 자체가 불확실할 때만. 인용이 그 활동을 말하지 않거나(분위기·일반 소개 문장, 여러 키에 같은 문장을 돌려 씀) 간접 추정일 때가 여기에 든다. 예: 위쳐 3의 hunt에 "journey across a dark fantasy open world"를 인용하면 사냥이 있다는 말이 아니므로 weak. Palworld의 sail에 "Pals can be mounted to traverse the land, sea and sky"를 인용하면 배를 조종한다는 말이 없으므로 weak.
+  · 단 체크 기준에 "핵심"·"중심"이 들어 있는 키(${CORE_KEYS.join(', ')})는 있기만 해서는 안 되고, 그 기준을 충족할 때만 strong이다. 부수적이면 weak.
   · 한 문장을 여러 키의 근거로 쓸 때는 키마다 그 문장이 그 키를 직접 말하는지 따로 판단한다.
 - 입력에 언급이 없어도 그 게임의 널리 알려진 기능이라 확신하면 basis "knowledge", strength "strong"으로 yes다. 입력에 없다는 이유만으로 unknown으로 두지 않는다. 그런 기능이 있는지 정말 모르거나 기억이 불분명할 때만 unknown, 있기는 하나 부수적이면 weak다.
-- 스팀 카테고리 칸의 문구(예: Online PvP, Steam Workshop, Includes level editor)만 인용한 근거는 약한 근거다. 설명이나 태그에 같은 내용이 없으면 weak로 한다. 특히 pvp는 설명·태그에 플레이어 간 대전 내용이 있어야 strong이다.
-- mod_edit: 게임이 에디터·제작 도구를 직접 제공한다는 문구가 있을 때만 yes다. 모드 설치 지원, Steam Workshop 이용, 사용자 모드 언급은 해당하지 않는다(no 또는 unknown).
+- 스팀 카테고리 칸의 문구(예: Online PvP, Steam Workshop)만 인용한 근거는 약한 근거다. 설명이나 태그에 같은 내용이 없으면 weak로 한다. 특히 pvp는 설명·태그에 플레이어 간 대전 내용이 있어야 strong이다. 단 카테고리 "Includes level editor"는 mod_edit의 근거로 인정한다(strong 가능).
+- mod_edit: 게임이 에디터·제작 도구를 직접 제공한다는 근거(설명 문구 또는 "Includes level editor" 카테고리)가 있을 때만 yes다. 모드 설치 지원, Steam Workshop 이용, 사용자 모드 언급만으로는 weak다.
 - boss_raid: 보스전이 전투 콘텐츠로 있을 때만 yes다. 리듬·퍼즐 게임의 연출상 보스 스테이지는 boss_raid가 아니다.
 - no: 이 활동이 없다고 확신할 때. 확신이 없으면 unknown.
 - 협동·대전·싱글 같은 모드나 장르(스토리, RPG, 로그라이크, 전략)는 활동이 아니므로 고려하지 않는다.

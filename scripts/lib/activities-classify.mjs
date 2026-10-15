@@ -4,7 +4,11 @@
 // - knowledge+strong, 또는 input인데 인용이 입력에 없음 → unsure
 // - weak(근거가 그 키를 직접 뒷받침하지 않음) → 어디에도 넣지 않고 evidence에만 기록
 // - 스팀 카테고리 칸 문구(예: "Online PvP", "Steam Workshop")만 인용한 근거는 strength를 weak로 내림
+//   단 "Includes level editor"는 mod_edit의 근거로 인정
 import { ACTIVITY_KEYS } from '../../app/lib/activities.ts';
+
+// 카테고리 문구만으로도 인정하는 (키, 문구) — 에디터 카테고리는 mod_edit 근거
+const CATEGORY_OK = { mod_edit: ['includesleveleditor'] };
 
 // 비교용 정규화: 대소문자·공백·따옴표·문장부호 차이를 무시
 export const norm = (s) => String(s || '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
@@ -24,7 +28,7 @@ export function classify(parsed, haystack, categories = []) {
     const verified = e.basis === 'input' && nq.length >= 4 && hay.includes(nq);
     if (e.basis === 'input' && !verified) quoteFail++;
     let strong = e.strength === 'strong'; // strength가 없거나 이상하면 약한 근거로 본다
-    if (strong && verified && cats.has(nq)) { strong = false; categoryOnly++; }
+    if (strong && verified && cats.has(nq) && !CATEGORY_OK[key]?.includes(nq)) { strong = false; categoryOnly++; }
     const note = String(e.note || '').slice(0, 80);
     if (!strong) { weak.push(key); evidence[key] = { basis: verified ? 'input' : 'knowledge', strength: 'weak', quote: verified ? quote : '', note }; continue; }
     (verified ? confirmed : unsure).push(key);

@@ -54,6 +54,18 @@ test('스팀 카테고리 문구만 인용하면 strong이어도 weak', () => {
   assert.deepEqual(r.confirmed, []);
 });
 
+test('"Includes level editor" 카테고리는 mod_edit 근거로 인정, 다른 키나 Workshop은 weak', () => {
+  const hay = 'Includes level editor. Steam Workshop.';
+  const cats = ['Includes level editor', 'Steam Workshop'];
+  let r = classify({ v: { mod_edit: 'yes' }, e: { mod_edit: yes('input', 'Includes level editor') } }, hay, cats);
+  assert.deepEqual(r.confirmed, ['mod_edit']);
+  assert.equal(r.categoryOnly, 0);
+  r = classify({ v: { mod_edit: 'yes' }, e: { mod_edit: yes('input', 'Steam Workshop') } }, hay, cats);
+  assert.deepEqual(r.weak, ['mod_edit']);
+  r = classify({ v: { build: 'yes' }, e: { build: yes('input', 'Includes level editor') } }, hay, cats);
+  assert.deepEqual(r.weak, ['build']);
+});
+
 test('대소문자·따옴표·공백 차이는 같은 인용으로 본다. 짧은 인용·모르는 키는 확정하지 않는다', () => {
   let r = classify({ v: { build: 'yes' }, e: { build: yes('input', 'build a  RAIL network') } }, HAY);
   assert.deepEqual(r.confirmed, ['build']);
