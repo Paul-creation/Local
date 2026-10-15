@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-12 (main 51da4f2)
+기준: 2026-10-15 (main effdd62)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/15: fix/brand-icons — 검색 결과에 나오던 create-next-app 기본 아이콘 교체. 임시 텍스트 아이콘(--accent-soft 배경 + --accent 굵은 "J", sharp로 생성): app/favicon.ico(16·32·48), app/icon.png(512), app/apple-icon.png(180, 모서리 둥글림 없음). public/의 기본 svg 5개 삭제(참조 없음). WebSite JSON-LD alternateName에 jamidunow.com 추가(SITE_ALT_NAMES = 재밌드나, JDN, jamidunow.com). 진짜 로고가 생기면 같은 파일명으로 교체. 구글 검색 결과 아이콘 반영은 재수집 뒤라 확인 못 함
 - 10/12: fix/game-not-found — 없는 게임 id의 상세(/games/[id])와 OG 이미지(/api/og/game/[id])를 noindex 404 화면으로 처리하고, DB 조회 오류는 404가 아니라 에러로 분리(uuid 형식 검사 app/lib/uuid.ts, visibleGames 조정). 프리뷰 확인 여부는 기록 없음
 - 10/12: feat/daily-external-trigger — daily 외부 트리거. Supabase pg_cron `daily-workflow-dispatch`(18:17 UTC = 03:17 KST)가 public.trigger_daily_workflow()(security definer, search_path 빈 값, Vault `github_actions_pat`을 이름으로 읽어 GitHub API workflow_dispatch ref main 호출)를 실행. 마이그레이션 20261020090000_daily_external_trigger.sql은 실제 적용본에 맞춤(chore/db-trigger-sync: pg_net은 with schema extensions, User-Agent jamidunow-pg-cron). PAT은 Vault에 직접 등록. daily.yml은 schedule 예비 유지, 첫 step 가드(KST 오늘 성공 실행이 있으면 나머지 step 건너뜀, 실패·취소는 무시, permissions actions: read), force 입력으로 가드 우회, DISCORD_WEBHOOK_URL을 secrets에서 env로 넘김(비면 unset해 ENV_FILE 값 유지). 가드의 API 호출·dispatch는 실제 실행 미확인
 - 10/12: feat/guide-show-steam — GUIDE_SHOW_STEAM=true로 /guide의 Steam 로그인 섹션·목차 칩 공개(jamidunow.com 로그인 전체 시험 통과 후)
@@ -45,7 +46,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
-- 다음: ITAD 한도 확인(이메일 인증·앱 설정 페이지) 뒤 ITAD_REQ_PER_WINDOW 조정 / 외부 트리거 적용(PAT 발급·Vault 등록·마이그레이션 실행·시험 호출·cron 기록 확인, 만료일 캘린더 등록, 첫 실행에서 가드 동작 확인) / enrich-itad-heat 커서(DB 칸 필요, 보류) / heat가 무료 게임 62개를 매일 lookup하는 낭비 / lowest_price_shop 빈 765개는 heat 최저가가 성공하면 채워짐 / 10/12 아침 매일 갱신 확인(순서·소요 시간·429 대기 로그·가격 못 받은 게임)
+- 다음: 진짜 로고가 생기면 아이콘 3개 교체 / 구글 검색 결과 아이콘 반영 확인 / ITAD 한도 확인(이메일 인증·앱 설정 페이지) 뒤 ITAD_REQ_PER_WINDOW 조정 / 외부 트리거 적용(PAT 발급·Vault 등록·마이그레이션 실행·시험 호출·cron 기록 확인, 만료일 캘린더 등록, 첫 실행에서 가드 동작 확인) / enrich-itad-heat 커서(DB 칸 필요, 보류) / heat가 무료 게임 62개를 매일 lookup하는 낭비 / lowest_price_shop 빈 765개는 heat 최저가가 성공하면 채워짐 / 10/12 아침 매일 갱신 확인(순서·소요 시간·429 대기 로그·가격 못 받은 게임)
 
 ## 완료된 판단
 - 1~3위 카드에 동접·그래프 안 넣음(상세 헤더에 있음). 4~10위 줄엔 동접 유지
