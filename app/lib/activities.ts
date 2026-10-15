@@ -43,7 +43,7 @@ export const ACTIVITIES = [
   { key: 'collect', label: '수집', group: '탐험', def: '수집품·도감을 채운다', check: '수집이 진행의 중심(카드·몬스터·장비 도감 등)' },
 
   { key: 'pve_fight', label: '전투', group: '전투', def: '몬스터·적과 싸운다', check: '적과 싸우는 전투가 있음(협동·단독 불문)' },
-  { key: 'boss_raid', label: '보스 레이드', group: '전투', def: '보스·레이드를 공략한다', check: '보스전이나 레이드 콘텐츠가 명시되어 있음(리듬·퍼즐 게임의 연출상 보스 스테이지는 제외)' },
+  { key: 'boss_raid', label: '보스전', group: '전투', def: '보스·레이드를 공략한다', check: '보스전이나 레이드 콘텐츠가 명시되어 있음(리듬·퍼즐 게임의 연출상 보스 스테이지는 제외)' },
   { key: 'pvp', label: '대인전', group: '전투', def: '사람끼리 겨룬다', check: '플레이어 대 플레이어 모드가 있음' },
   { key: 'shoot', label: '사격', group: '전투', def: '총기로 쏜다', check: '총기가 핵심 전투 수단' },
   { key: 'defend', label: '방어', group: '전투', def: '거점·타워를 지킨다', check: '웨이브 방어나 타워 디펜스가 있음' },
@@ -52,10 +52,11 @@ export const ACTIVITIES = [
   { key: 'trade', label: '거래', group: '경영', def: '사고팔거나 교역한다', check: '플레이어 상점·무역·경매 등 거래 시스템이 있음' },
 
   { key: 'role_split', label: '역할 분담', group: '사회', def: '역할을 나눠 협력한다', check: '직업·역할 분담이 승패나 진행에 영향(탱/힐/딜, 운전수/사수 등)' },
-  { key: 'deduction', label: '추리·속이기', group: '사회', def: '정체를 숨기거나 거짓말쟁이를 찾는다', check: '마피아·어몽어스형 추리나 은닉 규칙이 있음' },
+  { key: 'deduction', label: '추리·속이기', group: '사회', def: '정체를 숨기거나 거짓말쟁이를 찾는 마피아형만 해당. 범인 추리·수사는 해당 아님(dialogue_choice나 puzzle로 판단)', check: '마피아·어몽어스형처럼 정체를 숨기거나 거짓말쟁이를 찾는 규칙이 있음(범인 추리·수사 스토리는 제외)' },
   { key: 'voice_chat', label: '음성 소통', group: '사회', def: '말로 소통하는 것이 게임의 핵심이다', check: '근접 음성이나 말로 하는 협력이 게임 기능에 포함' },
   { key: 'minigame', label: '미니게임', group: '사회', def: '가벼운 파티 미니게임을 즐긴다', check: '짧은 규칙의 미니게임 모음이 있음' },
   { key: 'social_hang', label: '사교', group: '사회', def: '같이 어울리며 논다', check: '소셜 공간·이모트·모임 활동이 게임 기능에 포함' },
+  { key: 'dialogue_choice', label: '대화·선택지', group: '사회', def: '대화에서 선택지를 고르고 그에 따라 결과·전개가 달라진다', check: '선택형 대화나 분기 결과가 게임 기능으로 있음(단순 대사 넘기기는 제외)' },
 
   { key: 'sports', label: '스포츠', group: '기타', def: '스포츠 종목을 플레이한다', check: '축구·농구·골프 등 실제 스포츠나 스포츠형 경기를 함(레이싱은 drive)' },
   { key: 'music', label: '음악·리듬', group: '기타', def: '음악에 맞춰 연주하거나 박자를 맞춘다', check: '리듬 게임이나 악기 연주가 핵심 플레이' },

@@ -37,8 +37,19 @@ export function classify(parsed, haystack, categories = []) {
   return { confirmed, unsure, weak, evidence, no, unknown, quoteFail, categoryOnly };
 }
 
+// 모델 답에서 JSON을 읽음. 틀린 JSON을 쓴 뒤 "수정본"을 이어 쓰는 경우가 있어서, 최상위 { } 덩어리를 모두 찾아 마지막 것부터 파싱 시도
 export function parseJson(text) {
-  const s = text.indexOf('{'), e = text.lastIndexOf('}');
-  if (s < 0 || e < 0) throw new Error('JSON 없음');
-  return JSON.parse(text.slice(s, e + 1));
+  const spans = [];
+  let depth = 0, start = -1, inStr = false, esc = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inStr) { if (esc) esc = false; else if (c === '\\') esc = true; else if (c === '"') inStr = false; continue; }
+    if (c === '"' && depth > 0) inStr = true;
+    else if (c === '{') { if (depth === 0) start = i; depth++; }
+    else if (c === '}' && depth > 0) { depth--; if (depth === 0) spans.push([start, i + 1]); }
+  }
+  for (let i = spans.length - 1; i >= 0; i--) {
+    try { return JSON.parse(text.slice(spans[i][0], spans[i][1])); } catch { /* 앞 덩어리를 시도 */ }
+  }
+  throw new Error('JSON 없음');
 }

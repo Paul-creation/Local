@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { classify, parseJson } from './activities-classify.mjs';
+import { ACTIVITY_KEYS } from '../../app/lib/activities.ts';
 
 const HAY = 'Drive trucks across Europe. Build a rail network with "Train" tags (120). Online PvP. Steam Workshop.';
 const yes = (basis, quote, strength = 'strong') => ({ basis, strength, quote, note: '' });
@@ -15,7 +16,7 @@ test('input+strong은 confirmed, knowledge+strong은 unsure', () => {
   assert.deepEqual(r.unsure, ['train']);
   assert.deepEqual(r.weak, []);
   assert.equal(r.no, 1);
-  assert.equal(r.unknown, 36); // 답하지 않은 키 35개 + unknown 1개
+  assert.equal(r.unknown, ACTIVITY_KEYS.length - 3); // yes 2개·no 1개를 뺀 나머지(답하지 않은 키 + unknown)
 });
 
 test('weak는 confirmed·unsure 어디에도 넣지 않고 evidence에만 남긴다', () => {
@@ -77,4 +78,12 @@ test('대소문자·따옴표·공백 차이는 같은 인용으로 본다. 짧�
 test('parseJson: 앞뒤 설명이 붙어도 JSON만 읽는다', () => {
   assert.deepEqual(parseJson('결과:\n{"v":{}}\n끝'), { v: {} });
   assert.throws(() => parseJson('없음'));
+});
+
+test('parseJson: 틀린 JSON 뒤에 수정본이 이어지면 마지막 정상 덩어리를 읽는다', () => {
+  const bad = '{"v":{"drive":"yes"},"e":{}}\n\nCorrection: 위가 틀렸어요.\n\n';
+  const good = '{"v":{"drive":"no"},"e":{"x":{"quote":"a } b \\" c","note":"{중괄호}"}}}';
+  assert.deepEqual(parseJson(bad + good), JSON.parse(good));
+  assert.deepEqual(parseJson('{"a":1}\n{"a":2}'), { a: 2 });
+  assert.deepEqual(parseJson('{"a":1}\n{"a":'), { a: 1 }); // 마지막이 깨졌으면 앞 정상 덩어리
 });

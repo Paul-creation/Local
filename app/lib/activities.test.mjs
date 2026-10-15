@@ -15,7 +15,12 @@ test('키·라벨은 겹치지 않고 모든 칸이 채워져 있다', () => {
 
 test('모드·장르성 키는 없고 새 키는 있다', () => {
   for (const k of ['story', 'rpg_grow', 'roguelike', 'strategy', 'compete_rank']) assert.equal(isActivityKey(k), false, k);
-  for (const k of ['sports', 'music', 'photo', 'horror_scare', 'drive', 'train']) assert.equal(isActivityKey(k), true, k);
+  for (const k of ['sports', 'music', 'photo', 'horror_scare', 'drive', 'train', 'dialogue_choice']) assert.equal(isActivityKey(k), true, k);
+});
+
+test('보스 레이드 키의 라벨은 "보스전"', () => {
+  assert.equal(activityLabel('boss_raid'), '보스전');
+  assert.equal(activityLabel('dialogue_choice'), '대화·선택지');
 });
 
 test('라벨 조회: 모르는 키는 그대로 돌려준다', () => {
