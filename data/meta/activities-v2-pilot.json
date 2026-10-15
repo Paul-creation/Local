@@ -1,0 +1,242 @@
+[
+ {
+  "id": "ad8ae98d-f9a7-4f08-97c8-4ca74eb2386a",
+  "name": "Satisfactory",
+  "steam_appid": "526870",
+  "group": "지정",
+  "activities_now": 5,
+  "heat_rank": 46
+ },
+ {
+  "id": "dbbe5a71-09d8-4b5b-9ee7-3c406dbf5900",
+  "name": "Valheim",
+  "steam_appid": "892970",
+  "group": "지정",
+  "activities_now": 5,
+  "heat_rank": 80
+ },
+ {
+  "id": "c36a74f3-6933-4eb7-9066-f8ff9eb706b3",
+  "name": "Palworld / 팰월드",
+  "steam_appid": "1623730",
+  "group": "지정",
+  "activities_now": 5,
+  "heat_rank": 147
+ },
+ {
+  "id": "267c9472-52e0-4c1b-ab97-6d904c8fd123",
+  "name": "Grounded",
+  "steam_appid": "962130",
+  "group": "지정",
+  "activities_now": 5,
+  "heat_rank": 353
+ },
+ {
+  "id": "70cdb9c5-e821-486c-9ecb-585db6a8d3c7",
+  "name": "Cyberpunk 2077",
+  "steam_appid": "1091500",
+  "group": "지정",
+  "activities_now": 0,
+  "heat_rank": 2
+ },
+ {
+  "id": "fffc708e-96c7-41b4-8c29-637d49016c07",
+  "name": "더 위쳐 3: 와일드 헌트 - 컴플리트 에디션",
+  "steam_appid": "292030",
+  "group": "지정",
+  "activities_now": 0,
+  "heat_rank": 9
+ },
+ {
+  "id": "7f748d36-579d-456d-9441-8003d718eb04",
+  "name": "The Elder Scrolls V: Skyrim Special Edition",
+  "steam_appid": "489830",
+  "group": "지정",
+  "activities_now": 0,
+  "heat_rank": 18
+ },
+ {
+  "id": "3e9bef5f-6c6e-40aa-976f-92d1d07b351c",
+  "name": "서브노티카",
+  "steam_appid": "264710",
+  "group": "지정",
+  "activities_now": 0,
+  "heat_rank": 34
+ },
+ {
+  "id": "c3d403f5-dafb-4a0c-a95c-00908da0b945",
+  "name": "RimWorld",
+  "steam_appid": "294100",
+  "group": "지정",
+  "activities_now": 0,
+  "heat_rank": 21
+ },
+ {
+  "id": "9ee5b0ac-76ec-49a0-b6df-bedf8d5bd131",
+  "name": "Hades",
+  "steam_appid": "1145360",
+  "group": "지정",
+  "activities_now": 0,
+  "heat_rank": 25
+ },
+ {
+  "id": "6cf16233-0071-4e70-8632-dc7fbb581dca",
+  "name": "Portal",
+  "steam_appid": "400",
+  "group": "활동0·인기",
+  "activities_now": 0,
+  "heat_rank": 10
+ },
+ {
+  "id": "1c992d46-79b1-4c56-8172-6c068a17515f",
+  "name": "NieR:Automata™",
+  "steam_appid": "524220",
+  "group": "활동0·인기",
+  "activities_now": 0,
+  "heat_rank": 12
+ },
+ {
+  "id": "4403144f-f55a-4661-ab5f-300926051e4b",
+  "name": "Hollow Knight",
+  "steam_appid": "367520",
+  "group": "활동0·인기",
+  "activities_now": 0,
+  "heat_rank": 15
+ },
+ {
+  "id": "c1ed8167-fa7e-41ba-b2ab-77bbb6f322ec",
+  "name": "Fallout 4",
+  "steam_appid": "377160",
+  "group": "활동0·인기",
+  "activities_now": 0,
+  "heat_rank": 20
+ },
+ {
+  "id": "f5db4d61-d161-469d-9d78-3d0d72674881",
+  "name": "Outer Wilds",
+  "steam_appid": "753640",
+  "group": "활동0·인기",
+  "activities_now": 0,
+  "heat_rank": 27
+ },
+ {
+  "id": "f112b6f8-188e-41bf-89cb-bd95ac607bfd",
+  "name": "Ghost of Tsushima 디렉터스 컷",
+  "steam_appid": "2215430",
+  "group": "활동0·인기",
+  "activities_now": 0,
+  "heat_rank": 31
+ },
+ {
+  "id": "1989041f-4648-44e5-8924-5495910386af",
+  "name": "Stray",
+  "steam_appid": "1332010",
+  "group": "활동0·인기",
+  "activities_now": 0,
+  "heat_rank": 35
+ },
+ {
+  "id": "50c3e7b6-889e-43b7-a8a5-0312a9a47cbf",
+  "name": "Cities: Skylines",
+  "steam_appid": "255710",
+  "group": "활동0·인기",
+  "activities_now": 0,
+  "heat_rank": 48
+ },
+ {
+  "id": "1ba44c14-b098-4002-aac1-fa441c3baa80",
+  "name": "American Truck Simulator",
+  "steam_appid": "270880",
+  "group": "키 검증·운전",
+  "activities_now": 4,
+  "heat_rank": 505
+ },
+ {
+  "id": "4a500ace-62a1-4ac7-9770-c89646d2eaf9",
+  "name": "Forza Horizon 5",
+  "steam_appid": "1551360",
+  "group": "키 검증·운전",
+  "activities_now": 5,
+  "heat_rank": 496
+ },
+ {
+  "id": "deb9dc26-a2aa-4eaa-8425-f9f54852bad0",
+  "name": "Sea of Thieves: 2026 Edition",
+  "steam_appid": "1172620",
+  "group": "키 검증·항해",
+  "activities_now": 5,
+  "heat_rank": 413
+ },
+ {
+  "id": "248e309e-c740-4a08-bea7-4ac7d739674d",
+  "name": "Rocket League®",
+  "steam_appid": "252950",
+  "group": "키 검증·스포츠",
+  "activities_now": 4,
+  "heat_rank": 135
+ },
+ {
+  "id": "22e5d8ee-7350-46ec-b803-edf88b7da8c5",
+  "name": "리듬 닥터 (Rhythm Doctor)",
+  "steam_appid": "774181",
+  "group": "키 검증·음악",
+  "activities_now": 3,
+  "heat_rank": 1492
+ },
+ {
+  "id": "6fd162c2-d35f-4791-855a-6ad468e2f073",
+  "name": "Overcooked! 2",
+  "steam_appid": "728880",
+  "group": "키 검증·요리",
+  "activities_now": 5,
+  "heat_rank": 411
+ },
+ {
+  "id": "6cb45606-5b7f-422a-90a2-bb4bf1f55c2f",
+  "name": "Lost Castle 2",
+  "steam_appid": "2445690",
+  "group": "랜덤(시드 20261015)",
+  "activities_now": 4,
+  "heat_rank": 2744
+ },
+ {
+  "id": "87e472b1-2c60-4e5b-a7c4-f6bac0b2cd20",
+  "name": "Shroom and Gloom",
+  "steam_appid": "3271280",
+  "group": "랜덤(시드 20261015)",
+  "activities_now": 0,
+  "heat_rank": 2414
+ },
+ {
+  "id": "9250f3d5-cd34-46b1-863b-f790bfc944b6",
+  "name": "Red Dead Redemption 2",
+  "steam_appid": "1174180",
+  "group": "랜덤(시드 20261015)",
+  "activities_now": 5,
+  "heat_rank": 6
+ },
+ {
+  "id": "86b308ea-71ce-41d8-b8ef-7c7b5c2d8e20",
+  "name": "뿌요뿌요™테트리스® 2　",
+  "steam_appid": "1259790",
+  "group": "랜덤(시드 20261015)",
+  "activities_now": 5,
+  "heat_rank": 2540
+ },
+ {
+  "id": "e871e7ca-0ea1-4fa9-bc8c-9ff61aa9cba7",
+  "name": "Skul: The Hero Slayer",
+  "steam_appid": "1147560",
+  "group": "랜덤(시드 20261015)",
+  "activities_now": 0,
+  "heat_rank": 830
+ },
+ {
+  "id": "54ee82c1-94bb-4cbd-a069-7924843b1372",
+  "name": "Limbus Company",
+  "steam_appid": "1973530",
+  "group": "랜덤(시드 20261015)",
+  "activities_now": 0,
+  "heat_rank": 2544
+ }
+]
