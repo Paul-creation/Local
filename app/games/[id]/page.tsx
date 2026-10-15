@@ -487,6 +487,11 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
                     )}
                   </dl>
                   {game.ending_note && <p className="accordion-note">{game.ending_note}</p>}
+                  {hasV2Activities && (
+                    <p className="ai-note" style={{ marginTop: 14, marginBottom: 0 }}>
+                      AI가 분류한 활동이에요 · 틀리면 <Link href={`/feedback?kind=info&from=${encodeURIComponent(`/games/${game.id}`)}`}>의견함</Link>으로 알려주세요
+                    </p>
+                  )}
                 </section>
               )}
             </div>

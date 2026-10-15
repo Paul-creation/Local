@@ -277,6 +277,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
       {activeSituations.length > 0 && situationScores.length > 0 && (
         <section className="cmp-section">
           <h2 className="cmp-h2">상황별 추천도</h2>
+          <p className="ai-note">AI가 만든 값</p>
           <div className="cmp-table">
             {/* PC: 표 */}
             <div className="compare-desktop">

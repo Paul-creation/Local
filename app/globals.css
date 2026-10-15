@@ -2176,6 +2176,8 @@ a.hc-row:hover { background: var(--card-hover); }
 button.activity-chip.activity-more { cursor: pointer; font-family: inherit; }
 button.activity-chip.activity-more:hover { border-color: var(--text-faint); color: var(--text); }
 .ai-note { font-size: var(--fs-xs); color: var(--text-faint); font-weight: 500; line-height: 1.5; margin: 0 0 10px; }
+.ai-note a { color: inherit; text-decoration: underline; }
+.ai-note a:hover { color: var(--text); }
 .accordion-note { color: var(--text-muted); font-size: var(--fs-m); line-height: 1.6; margin-top: 14px; }
 
 /* PC 사양 접기 */
