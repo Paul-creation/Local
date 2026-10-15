@@ -6,6 +6,7 @@ import { supabase } from '../../lib/supabase';
 import { BOARD_KEYS, BOARDS, LIMITS, type BoardKey } from '../../lib/communityBoards';
 import { send, loadNickname, saveNickname } from './api';
 import { selectGames } from '../../lib/visibleGames';
+import { looseIlikePattern, matchRank } from '../../lib/searchMatch';
 
 type Game = { id: string; name: string };
 
@@ -72,12 +73,20 @@ function GamePicker({ game, onChange }: { game: Game | null; onChange: (g: Game 
 
   useEffect(() => {
     clearTimeout(timer.current);
-    const term = q.replace(/[%,()*\\]/g, '').trim();
-    if (term.length < 1) { setResults([]); return; }
+    const term = q.trim();
+    const pattern = looseIlikePattern(term);
+    if (!pattern) { setResults([]); return; }
     timer.current = setTimeout(async () => {
-      const { data } = await selectGames('id, name')
-        .or(`name.ilike.%${term}%,search_name_ko.ilike.%${term}%`).limit(8);
-      setResults(data || []);
+      // 영어·한국어 이름 모두 느슨하게 받아온 뒤 공통 규칙(searchMatch)으로 다시 거르고 정렬
+      const { data } = await selectGames('id, name, search_name_ko')
+        .or(`name.ilike.${pattern},search_name_ko.ilike.${pattern}`)
+        .order('heat_rank', { ascending: true, nullsFirst: false }).limit(40);
+      setResults((data || [])
+        .map((g) => ({ g, rank: matchRank(g, term) }))
+        .filter((x) => x.rank >= 0)
+        .sort((a, b) => a.rank - b.rank)
+        .slice(0, 8)
+        .map((x) => x.g));
     }, 250);
   }, [q]);
 
