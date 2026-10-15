@@ -42,6 +42,8 @@ import { notFound, permanentRedirect } from 'next/navigation';
 import { isUuid } from '../../lib/uuid';
 import SimilarGames from '../../components/SimilarGames';
 import { getCardGames } from '../../lib/gameIndex';
+import ActivityChips from '../../components/ActivityChips';
+import { ACTIVITIES, isActivityKey } from '../../lib/activities';
 import ScreenshotGallery, { type Screenshot } from '../../components/ScreenshotGallery';
 
 // 게임마다 처음 열릴 때 만들고 1시간 동안 재사용 (ISR). 가격·접속자는 하루 한 번 갱신되므로 충분
@@ -214,7 +216,16 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const shots: Screenshot[] = Array.isArray(game.screenshots)
     ? game.screenshots.filter((s: any) => typeof s?.path_thumbnail === 'string' && typeof s?.path_full === 'string').slice(0, 10)
     : [];
-  const hasMore = game.has_ending != null || game.server_type || game.activities?.length > 0 || game.story_length || game.is_esports || game.has_workshop || subGenres.length > 0;
+  // 가능한 활동 v2 — 분류표 순서대로 정렬, 둘 다 비면 기존 activities(자유 문구)를 그대로 보여줌
+  const orderActivities = (keys: unknown) => {
+    const set = new Set(Array.isArray(keys) ? keys.filter(isActivityKey) : []);
+    return ACTIVITIES.filter((a) => set.has(a.key)).map((a) => a.label);
+  };
+  const activityConfirmed = orderActivities(game.activities_confirmed);
+  const activityUnsure = orderActivities(game.activities_unsure);
+  const hasV2Activities = activityConfirmed.length + activityUnsure.length > 0;
+  const hasActivities = hasV2Activities || game.activities?.length > 0;
+  const hasMore = game.has_ending != null || game.server_type || hasActivities || game.story_length || game.is_esports || game.has_workshop || subGenres.length > 0;
 
   return (
     <main className="page detail-page">
@@ -310,6 +321,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           {/* 소개 */}
           <section className="detail-card">
             {game.fun_description && <p className="detail-fun">{game.fun_description}</p>}
+            {game.fun_description && <p className="ai-note">AI가 정리한 내용</p>}
             {game.description && <p className="detail-description-v2">{game.description}</p>}
             {chipGroups.length > 0 && <TagChips groups={chipGroups} />}
             <ContentNotice ids={game.content_descriptor_ids} />
@@ -465,7 +477,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
                     {game.story_length && (<><dt>클리어까지</dt><dd>{game.story_length}</dd></>)}
                     {game.is_esports && (<><dt>e스포츠</dt><dd>공식 대회 있음</dd></>)}
                     {game.has_workshop && (<><dt>모드 지원</dt><dd>Steam 창작마당</dd></>)}
-                    {game.activities?.length > 0 && (
+                    {hasV2Activities ? (
+                      <><dt>가능한 활동</dt><dd className="more-chips"><ActivityChips confirmed={activityConfirmed} unsure={activityUnsure} /></dd></>
+                    ) : game.activities?.length > 0 && (
                       <><dt>가능한 활동</dt><dd className="more-chips">{game.activities.map((a: string) => <span key={a} className="activity-chip">{a}</span>)}</dd></>
                     )}
                     {subGenres.length > 0 && (

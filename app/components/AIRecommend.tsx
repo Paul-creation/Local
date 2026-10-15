@@ -170,6 +170,7 @@ export default function AIRecommend() {
 
             {step === 'result' && result && (
               <div className="ai-result">
+                <p className="ai-note">AI 추천</p>
                 {result.results ? (
                   <>
                     <p style={{ fontSize: 'var(--fs-xl)', fontWeight: 700, marginBottom: 16, color: 'var(--text)' }}>
