@@ -6,7 +6,7 @@ export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'JamiDuNow';
 export const SITE_NAME_KO = process.env.NEXT_PUBLIC_SITE_NAME_KO || '재밌드나';
 export const SITE_NAME_FULL = SITE_NAME;
 // 구조화 데이터(WebSite) alternateName — 검색에서 이 이름들로도 사이트를 찾게
-export const SITE_ALT_NAMES = [SITE_NAME_KO, 'JDN'];
+export const SITE_ALT_NAMES = [SITE_NAME_KO, 'JDN', 'jamidunow.com'];
 export const SITE_TITLE = `${SITE_NAME_FULL} - 친구랑 할 게임 찾기`;
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://jamidunow.com').replace(/\/$/, '');
 // 운영자(저작권 표시·개인정보 보호책임자 표기에 사용)
