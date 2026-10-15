@@ -14,6 +14,8 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.
 // app/lib/searchMatch.ts의 normalizeSearch와 같은 기준
 const norm = (s) => String(s || '').toLowerCase().replace(/[\s\p{P}\p{S}]/gu, '');
 const clean = (s) => String(s || '').replace(/[™®©]/g, '').replace(/\s+/g, ' ').trim();
+// 스팀이 영어 이름을 주지 않는 게임의 수동 영어 이름 (steam_appid → 이름)
+const MANUAL = { 1825750: 'SoulWorker' };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function englishName(appid) {
@@ -39,7 +41,7 @@ async function main() {
 
   let saved = 0, same = 0, failed = 0;
   for (const g of todo) {
-    const en = await englishName(g.steam_appid);
+    const en = (await englishName(g.steam_appid)) || MANUAL[g.steam_appid] || null;
     await sleep(1500);
     if (!en) { failed++; console.log(`⚠️ ${g.name} (${g.steam_appid}): 영어 이름을 못 받음`); continue; }
     const existing = g.search_name_ko ? g.search_name_ko.split(',').map((s) => s.trim()).filter(Boolean) : [clean(g.name)];

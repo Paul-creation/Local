@@ -49,6 +49,7 @@ const GROUPS = {
     'enrich-hero-images',
     'write-fun-descriptions 300',
     'fill-search-names', // 합방 영상 검색용 한국어 이름 (새 대상만, Haiku 1번)
+    'fill-english-names --apply', // 한국어 이름 게임에 스팀 영어 이름을 search_name_ko 뒤에 덧붙임 (영어로 안 찾히는 새 게임만, AI 안 씀, 요청 간격 1.5초)
     'fetch-coop-videos', // 인기 멀티 게임 50개의 합방 영상 (YouTube 게임당 101~202 사용)
     'enrich-update-date',
     'pick-weekly-featured', // 메인 "이번주의 게임" 선정 (이번 주 기록이 이미 있으면 건너뜀)
