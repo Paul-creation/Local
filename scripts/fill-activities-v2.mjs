@@ -1,7 +1,8 @@
 // scripts/fill-activities-v2.mjs
 // "가능한 활동" v2 채우기 — 분류표 키(app/lib/activities.ts)마다 yes/no/unknown + 근거를 Message Batches API로 받아 저장
 // - 입력: 스팀 영어 상점 설명 전체 + 사용자 태그(득표 수) + 카테고리·장르 + 사이트 description (웹 검색 없음)
-// - 입력 문구를 그대로 인용한 근거가 있으면 activities_confirmed, 모델 지식뿐이거나 인용이 입력에 없으면 activities_unsure
+// - 저장 규칙: input+strong(입력에서 그대로 인용) → activities_confirmed, knowledge+strong → activities_unsure("확인 중"으로 노출 예정),
+//   weak(근거가 그 키를 직접 뒷받침하지 않음) → 어디에도 넣지 않고 activities_evidence에만 기록
 // - 기존 games.activities는 건드리지 않음. activities_ai_at이 있는 게임은 --apply에서 다시 처리하지 않음
 // 사용:
 //   node --env-file=.env.local scripts/fill-activities-v2.mjs --dry-run --ids data/meta/activities-v2-pilot.json   (추정 비용만 출력)
@@ -44,7 +45,7 @@ const readJson = (p, fallback) => (existsSync(p) ? JSON.parse(readFileSync(p, 'u
 const writeJson = (p, v) => { mkdirSync(CACHE_DIR, { recursive: true }); writeFileSync(p, JSON.stringify(v, null, 1) + '\n'); };
 
 // ---------- 프롬프트 ----------
-const SYSTEM = `너는 게임이 "어떤 활동을 직접 할 수 있게 해 주는지"를 입력 자료만 보고 판정하는 분류기다. 한국 사이트에서 친구와 할 게임을 고르는 데 쓰인다.
+const SYSTEM = `너는 게임이 "어떤 활동을 직접 할 수 있게 해 주는지"를 입력 자료를 우선 근거로 판정하는 분류기다. 한국 사이트에서 친구와 할 게임을 고르는 데 쓰인다.
 
 [활동 키 목록] key | 라벨 | 정의 | 체크 기준
 ${ACTIVITIES.map((a) => `${a.key} | ${a.label} | ${a.def} | ${a.check}`).join('\n')}
@@ -55,12 +56,21 @@ ${ACTIVITIES.map((a) => `${a.key} | ${a.label} | ${a.def} | ${a.check}`).join('\
 - yes의 근거 basis는 둘 중 하나다.
   · "input": 입력 자료(설명·태그·카테고리·장르)에 직접 드러남. 이때 quote에 입력에서 글자 그대로 복사한 문구(영어 원문 그대로, 120자 이내)를 적는다. 요약·번역·바꿔 쓰기 금지.
   · "knowledge": 입력에는 없지만 널리 알려진 사실로 확신함. quote는 빈 문자열.
+- yes마다 strength를 정한다.
+  · "strong": 그 quote(또는 확신하는 지식)가 이 키의 체크 기준을 직접 뒷받침한다.
+  · "weak": 인용이 그 키를 직접 뒷받침하지 않거나(분위기·일반 소개 문장, 여러 키에 같은 문장을 돌려 씀), 간접 추정이거나, 체크 기준에 못 미친다(있기는 하나 중심이 아님 등). 확신이 없으면 weak다.
+  · 예: 위쳐 3의 hunt에 "journey across a dark fantasy open world"를 인용하면 사냥을 말하지 않으므로 weak. Palworld의 sail에 "Pals can be mounted to traverse the land, sea and sky"를 인용하면 배를 조종한다는 말이 없으므로 weak.
+  · 한 문장을 여러 키의 근거로 쓸 때는 키마다 그 문장이 그 키를 직접 말하는지 따로 판단한다.
+- 입력에 언급이 없어도 그 게임의 널리 알려진 기능이라 확신하면 basis "knowledge", strength "strong"으로 yes다. 입력에 없다는 이유만으로 unknown으로 두지 않는다. 그런 기능이 있는지 정말 모르거나 기억이 불분명할 때만 unknown, 있기는 하나 부수적이면 weak다.
+- 스팀 카테고리 칸의 문구(예: Online PvP, Steam Workshop, Includes level editor)만 인용한 근거는 약한 근거다. 설명이나 태그에 같은 내용이 없으면 weak로 한다. 특히 pvp는 설명·태그에 플레이어 간 대전 내용이 있어야 strong이다.
+- mod_edit: 게임이 에디터·제작 도구를 직접 제공한다는 문구가 있을 때만 yes다. 모드 설치 지원, Steam Workshop 이용, 사용자 모드 언급은 해당하지 않는다(no 또는 unknown).
+- boss_raid: 보스전이 전투 콘텐츠로 있을 때만 yes다. 리듬·퍼즐 게임의 연출상 보스 스테이지는 boss_raid가 아니다.
 - no: 이 활동이 없다고 확신할 때. 확신이 없으면 unknown.
 - 협동·대전·싱글 같은 모드나 장르(스토리, RPG, 로그라이크, 전략)는 활동이 아니므로 고려하지 않는다.
 - 탈것이 나와도 플레이어가 직접 조작하지 않으면 drive/fly/ride/sail/train은 no 또는 unknown.
 
 [출력] JSON 한 덩어리만. 코드블록·설명 금지.
-{"v":{"<key>":"yes|no|unknown", ...모든 키},"e":{"<yes인 key>":{"basis":"input|knowledge","quote":"...","note":"한국어 한 줄 40자 이내"}}}`;
+{"v":{"<key>":"yes|no|unknown", ...모든 키},"e":{"<yes인 key>":{"basis":"input|knowledge","strength":"strong|weak","quote":"...","note":"한국어 한 줄 40자 이내"}}}`;
 
 const stripHtml = (s) => String(s || '')
   .replace(/<img[^>]*>/gi, ' ').replace(/<br\s*\/?>|<\/p>|<\/li>|<\/h\d>/gi, '\n').replace(/<[^>]+>/g, ' ')
@@ -107,16 +117,20 @@ async function collectInput(g, cache) {
 }
 
 // ---------- 비용 추정 ----------
+// 글자 수 → 토큰 어림값(estTokens)에 2026-10-15 시험 30개 실측 보정을 곱함: 시스템 약 2,800토큰(어림 1,684), 사용자 평균 약 1,300토큰(어림 852)
+// 출력·생각은 실측 평균 약 650토큰 → 500~1,000토큰으로 가정 (strength 칸이 늘어난 뒤 실측으로 다시 맞출 것)
+const CAL = { system: 2800 / 1684, user: 1300 / 852 };
+const OUT_TOKENS = [500, 1000];
 const estTokens = (s) => { let a = 0, k = 0; for (const ch of s) { if (ch.charCodeAt(0) < 128) a++; else k++; } return Math.ceil(a / 4 + k / 1.2); };
 function estimate(texts) {
-  const sys = estTokens(SYSTEM);
-  const user = texts.reduce((n, t) => n + estTokens(t), 0);
+  const sys = Math.round(estTokens(SYSTEM) * CAL.system);
+  const user = Math.round(texts.reduce((n, t) => n + estTokens(t), 0) * CAL.user);
   const n = texts.length;
   const cost = (outPer, cached) => {
     const sysCost = cached ? (sys * PRICE.cacheWrite + (n - 1) * sys * PRICE.cacheRead) : n * sys * PRICE.input;
     return (sysCost + user * PRICE.input + n * outPer * PRICE.output) / 1e6;
   };
-  return { n, sys, userAvg: Math.round(user / Math.max(n, 1)), low: cost(900, true), high: cost(2500, false) };
+  return { n, sys, userAvg: Math.round(user / Math.max(n, 1)), low: cost(OUT_TOKENS[0], true), high: cost(OUT_TOKENS[1], false) };
 }
 
 // ---------- 배치 API ----------
@@ -186,7 +200,7 @@ async function main() {
 
   const est = estimate(items.map((x) => x.text));
   console.log(`예상 비용(모델 ${MODEL}, 배치 할인 적용, 추정치): $${est.low.toFixed(2)} ~ $${est.high.toFixed(2)}`);
-  console.log(`  (${est.n}개 × 시스템 약 ${est.sys}토큰 + 사용자 평균 약 ${est.userAvg}토큰, 출력·생각 900~2,500토큰으로 가정. 가격표 2026-10-15 기준)`);
+  console.log(`  (${est.n}개 × 시스템 약 ${est.sys}토큰 + 사용자 평균 약 ${est.userAvg}토큰, 출력·생각 ${OUT_TOKENS[0]}~${OUT_TOKENS[1]}토큰으로 가정. 가격표 2026-10-15 기준)`);
 
   let batchId = COLLECT;
   if (!COLLECT) {
@@ -212,7 +226,7 @@ async function main() {
     try {
       if (m.stop_reason === 'refusal' || m.stop_reason === 'max_tokens') throw new Error(`stop_reason ${m.stop_reason}`);
       const parsed = parseJson((m.content || []).filter((b) => b.type === 'text').map((b) => b.text).join(''));
-      const c = classify(parsed, it.text);
+      const c = classify(parsed, it.text, it.inp.categories);
       out.push({ id: it.g.id, name: it.g.name, steam_appid: it.g.steam_appid, input_thin: !!it.inp.missing || !it.inp.desc, ...c });
     } catch (e) { out.push({ id: it.g.id, name: it.g.name, error: e.message }); }
   }
@@ -224,7 +238,7 @@ async function main() {
   const label = (k) => ACTIVITIES.find((a) => a.key === k)?.label || k;
   for (const o of out) {
     if (o.error) { console.log(`❌ ${o.name} — ${o.error}`); continue; }
-    console.log(`${o.confirmed.length ? '✅' : '➖'} ${o.name}${o.input_thin ? ' (입력 빈약)' : ''}\n     확정: ${o.confirmed.map(label).join(', ') || '-'}\n     확인 필요: ${o.unsure.map(label).join(', ') || '-'}${o.quoteFail ? `   (인용 불일치 ${o.quoteFail}개는 확인 필요로)` : ''}`);
+    console.log(`${o.confirmed.length ? '✅' : '➖'} ${o.name}${o.input_thin ? ' (입력 빈약)' : ''}\n     확정: ${o.confirmed.map(label).join(', ') || '-'}\n     확인 필요: ${o.unsure.map(label).join(', ') || '-'}${o.quoteFail ? `   (인용 불일치 ${o.quoteFail}개는 확인 필요로)` : ''}\n     근거 약함(저장 안 함): ${o.weak.map(label).join(', ') || '-'}${o.categoryOnly ? `   (카테고리 문구만 인용 ${o.categoryOnly}개 포함)` : ''}`);
   }
   console.log(`\n실제 사용: 입력 ${usage.input} / 캐시 쓰기 ${usage.cacheWrite} / 캐시 읽기 ${usage.cacheRead} / 출력 ${usage.output} 토큰 → 약 $${cost.toFixed(3)}`);
   console.log(`결과 파일: ${file}`);

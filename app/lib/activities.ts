@@ -35,7 +35,7 @@ export const ACTIVITIES = [
   { key: 'build', label: '건축', group: '제작', def: '구조물·기지를 직접 짓는다', check: '자유 건축이나 구조물 배치 시스템이 있음' },
   { key: 'automate', label: '자동화', group: '제작', def: '생산·물류를 자동화한다', check: '컨베이어·파이프·로직으로 생산 라인을 구성' },
   { key: 'program', label: '프로그래밍', group: '제작', def: '코드나 회로를 짠다', check: '프로그래밍·논리 회로 설계가 플레이의 일부' },
-  { key: 'mod_edit', label: '맵 제작', group: '제작', def: '맵·콘텐츠를 직접 만들고 공유한다', check: '게임 안 에디터나 사용자 제작 콘텐츠 도구가 있음' },
+  { key: 'mod_edit', label: '맵 제작', group: '제작', def: '맵·콘텐츠를 직접 만들고 공유한다', check: '게임이 에디터·제작 도구를 직접 제공(모드 설치나 Steam Workshop 이용만이면 제외)' },
 
   { key: 'explore', label: '탐험', group: '탐험', def: '열린 공간을 돌아다니며 발견한다', check: '오픈월드나 탐사가 핵심 재미' },
   { key: 'puzzle', label: '퍼즐', group: '탐험', def: '퍼즐·수수께끼를 푼다', check: '퍼즐 풀이가 진행의 핵심' },
@@ -43,7 +43,7 @@ export const ACTIVITIES = [
   { key: 'collect', label: '수집', group: '탐험', def: '수집품·도감을 채운다', check: '수집이 진행의 중심(카드·몬스터·장비 도감 등)' },
 
   { key: 'pve_fight', label: '전투', group: '전투', def: '몬스터·적과 싸운다', check: '적과 싸우는 전투가 있음(협동·단독 불문)' },
-  { key: 'boss_raid', label: '보스 레이드', group: '전투', def: '보스·레이드를 공략한다', check: '보스전이나 레이드 콘텐츠가 명시되어 있음' },
+  { key: 'boss_raid', label: '보스 레이드', group: '전투', def: '보스·레이드를 공략한다', check: '보스전이나 레이드 콘텐츠가 명시되어 있음(리듬·퍼즐 게임의 연출상 보스 스테이지는 제외)' },
   { key: 'pvp', label: '대인전', group: '전투', def: '사람끼리 겨룬다', check: '플레이어 대 플레이어 모드가 있음' },
   { key: 'shoot', label: '사격', group: '전투', def: '총기로 쏜다', check: '총기가 핵심 전투 수단' },
   { key: 'defend', label: '방어', group: '전투', def: '거점·타워를 지킨다', check: '웨이브 방어나 타워 디펜스가 있음' },
@@ -71,5 +71,7 @@ export const isActivityKey = (v: unknown): v is ActivityKey => typeof v === 'str
 export const activityLabel = (key: string) => BY_KEY.get(key)?.label ?? key;
 
 // 키별 근거 (games.activities_evidence jsonb의 한 칸)
-// basis: input = 입력(스팀 설명·태그 등)에 직접 근거가 있음 → confirmed, knowledge = 모델 지식뿐 → unsure
-export type ActivityEvidence = { basis: 'input' | 'knowledge'; quote: string; note: string };
+// basis: input = 입력(스팀 설명·태그 등)에 직접 근거가 있음, knowledge = 모델 지식뿐
+// 저장: input+strong → confirmed, knowledge+strong → unsure, weak → activities_evidence에만 기록
+// strength: strong = 근거가 그 키를 직접 뒷받침, weak = 간접·부족(어디에도 노출하지 않고 근거로만 기록)
+export type ActivityEvidence = { basis: 'input' | 'knowledge'; strength: 'strong' | 'weak'; quote: string; note: string };
