@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-15 (main 3eeacca)
+기준: 2026-10-16 (main cd04f76)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/16: feat/activities-v2 — 가능한 활동 v2. 분류표 app/lib/activities.ts(키·라벨·정의·체크 기준 한 곳), games.activities_confirmed·activities_unsure·activities_evidence 저장 칸과 재채움 스크립트, 상세 "가능한 활동"을 v2 데이터로 교체(확정 칩은 전부, 확인 중은 흐린 칩 3개+"+N"), 활동 카드·상황별 추천도에 AI 표시. "확인 중" 옆 ⓘ 툴팁(hover·포커스·탭)과 확인 중 칩 끝 "?", photo 라벨 "사진 모드". 프리뷰의 Vercel 툴바 INP 경고(dd.more-chips 5.7초)는 로컬·프리뷰 어디서도 재현 안 됨(핸들러 14ms 이하, 6배 CPU) — 툴바 영향 가능성, 미확인
 - 10/15: fix/search-english-name — 한글 이름 게임이 영어로 안 찾히던 것(games에 영어 이름 칸이 없고 search_name_ko도 비어 있었음)을 데이터로 해결. scripts/fill-english-names.mjs가 스팀 appdetails(l=english) 영어 이름을 search_name_ko 맨 뒤에 덧붙임(한국어 이름이 첫 자리 유지, 미리보기 기본·--apply로 저장, 이미 영문이 있으면 건너뜀, AI 안 씀, 요청 간격 1.5초, 소울워커는 MANUAL로 SoulWorker). 135개 저장 완료(미메시스 → "미메시스, MIMESIS"), weekly에 fill-search-names 다음 단계로 추가. 커뮤니티 글쓰기 "관련 게임" 검색도 공통 규칙(looseIlikePattern·matchRank)으로 통일해 영어·공백 무시 지원. 남은 미처리: 고스트러너 2(스팀 ID 없음, 수동). 프리뷰 확인 여부는 기록 없음
 - 10/15: fix/brand-icons — 검색 결과에 나오던 create-next-app 기본 아이콘 교체. 임시 텍스트 아이콘(--accent-soft 배경 + --accent 굵은 "J", sharp로 생성): app/favicon.ico(16·32·48), app/icon.png(512), app/apple-icon.png(180, 모서리 둥글림 없음). public/의 기본 svg 5개 삭제(참조 없음). WebSite JSON-LD alternateName에 jamidunow.com 추가(SITE_ALT_NAMES = 재밌드나, JDN, jamidunow.com). 진짜 로고가 생기면 같은 파일명으로 교체. 구글 검색 결과 아이콘 반영은 재수집 뒤라 확인 못 함
 - 10/12: fix/game-not-found — 없는 게임 id의 상세(/games/[id])와 OG 이미지(/api/og/game/[id])를 noindex 404 화면으로 처리하고, DB 조회 오류는 404가 아니라 에러로 분리(uuid 형식 검사 app/lib/uuid.ts, visibleGames 조정). 프리뷰 확인 여부는 기록 없음
@@ -47,6 +48,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- 게임 목록 API(app/lib/gameIndex.ts getGameIndex)가 Supabase 1000행 상한에 걸려 노출 게임 1,060개 중 60개(9/21~9/24 등록, Satisfactory 등)가 검색·필터·추천에서 빠짐. 프로덕션도 동일. .range() 페이지 읽기로 고치는 fix 브랜치 필요(미착수) / feat/similar-v2 머지 대기(game_similar 18,252행 적용 완료)
 - 고스트러너 2 영어 이름(Ghostrunner 2) 수동 추가 필요(스팀 ID 없어 스크립트 대상 아님) / 다음 weekly 실행에서 fill-english-names 단계 동작·소요 시간 확인
 - 다음: 진짜 로고가 생기면 아이콘 3개 교체 / 구글 검색 결과 아이콘 반영 확인 / ITAD 한도 확인(이메일 인증·앱 설정 페이지) 뒤 ITAD_REQ_PER_WINDOW 조정 / 외부 트리거 적용(PAT 발급·Vault 등록·마이그레이션 실행·시험 호출·cron 기록 확인, 만료일 캘린더 등록, 첫 실행에서 가드 동작 확인) / enrich-itad-heat 커서(DB 칸 필요, 보류) / heat가 무료 게임 62개를 매일 lookup하는 낭비 / lowest_price_shop 빈 765개는 heat 최저가가 성공하면 채워짐 / 10/12 아침 매일 갱신 확인(순서·소요 시간·429 대기 로그·가격 못 받은 게임)
 
