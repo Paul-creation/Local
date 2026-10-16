@@ -67,13 +67,13 @@ async function getGameTagIds(game: { id: string }) {
   return !error && data?.length ? data.map((r) => r.tag_id as number) : [];
 }
 
-// 비슷한 게임 후보 — similar_games(태그 희귀도 점수순). 내 PC 사양으로 거르는 건 브라우저(SimilarGames)라 4장보다 넉넉히 받는다
-// 함수가 아직 없거나 실패하면 빈 목록 = 섹션 숨김
-const SIMILAR_CANDIDATES = 12;
+// 비슷한 게임 후보 — game_similar(태그 득표·확인된 활동 코사인 유사도, 주간 scripts/build-similar-games.mjs). 내 PC 사양으로 거르는 건 브라우저(SimilarGames)라 6장보다 넉넉히 18개를 받는다
+// 표가 아직 없거나 비어 있거나 실패하면 빈 목록 = 섹션 숨김. 숨긴 게임은 getCardGames가 뺀다
+const SIMILAR_CANDIDATES = 18;
 async function getSimilarGames(gameId: string) {
-  const { data, error } = await supabase.rpc('similar_games', { p_game_id: gameId, p_limit: SIMILAR_CANDIDATES });
+  const { data, error } = await supabase.from('game_similar').select('similar_id').eq('game_id', gameId).order('rank').limit(SIMILAR_CANDIDATES);
   if (error || !data?.length) return [];
-  try { return await getCardGames(data.map((r: { game_id: string }) => r.game_id)); } catch { return []; }
+  try { return await getCardGames(data.map((r: { similar_id: string }) => r.similar_id)); } catch { return []; }
 }
 
 // 마지막 업데이트로부터 지난 날 → 표시 (30일 안: 활발히 업데이트 중)

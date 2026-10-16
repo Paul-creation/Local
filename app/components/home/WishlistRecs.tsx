@@ -13,12 +13,11 @@ import { getCardExtras } from '../../lib/cardExtras';
 import type { CardExtras } from '../../lib/cardInfo';
 import { usePeople } from './PeopleContext';
 
-// 메인 "찜한 게임과 비슷한 게임" — 찜목록(localStorage)이 있을 때만. 가장 최근에 찜한 3개마다 similar_games(상세 "비슷한 게임"과 같은 함수)를 불러
+// 메인 "찜한 게임과 비슷한 게임" — 찜목록(localStorage)이 있을 때만. 가장 최근에 찜한 3개마다 game_similar(상세 "비슷한 게임"과 같은 표)를 읽어
 // 점수를 합치고, 찜한 게임 자체는 뺀 뒤 상위 3개를 보여준다. 카드는 메인 검색용 전체 목록(useGameIndex, 이미 받아 둔 것)에서 가져온다
 // 메인 노출 제외 게임(homeExcluded)은 뺀다. 내 PC 토글이 켜져 있으면 최소 사양 미달도 뺀다. 못 가져오면 줄 자체를 숨김
 const SEEDS = 3;
-const CANDIDATES = 12;
-type Row = { game_id: string; score: number };
+type Row = { similar_id: string; score: number };
 
 export default function WishlistRecs({ homeExcluded }: { homeExcluded: string[] }) {
   const { ids, ready } = useWishlist();
@@ -32,9 +31,9 @@ export default function WishlistRecs({ homeExcluded }: { homeExcluded: string[] 
   useEffect(() => {
     if (!seedKey) return;
     let alive = true;
-    Promise.all(seedKey.split(',').map((id) => supabase.rpc('similar_games', { p_game_id: id, p_limit: CANDIDATES })))
-      .then((res) => { if (alive) setScored({ key: seedKey, rows: res.flatMap((r) => (r.error ? [] : (r.data as Row[]) || [])) }); })
-      .catch(() => { if (alive) setScored({ key: seedKey, rows: [] }); });
+    supabase.from('game_similar').select('similar_id, score').in('game_id', seedKey.split(','))
+      .then((res) => { if (alive) setScored({ key: seedKey, rows: res.error ? [] : ((res.data as Row[]) || []) }); })
+      .then(undefined, () => { if (alive) setScored({ key: seedKey, rows: [] }); });
     return () => { alive = false; };
   }, [seedKey]);
 
@@ -43,7 +42,7 @@ export default function WishlistRecs({ homeExcluded }: { homeExcluded: string[] 
     const byId = new Map((index as CardGame[]).map((g) => [g.id, g]));
     const skip = new Set([...ids, ...homeExcluded]);
     const total = new Map<string, number>();
-    for (const r of scored.rows) if (!skip.has(r.game_id)) total.set(r.game_id, (total.get(r.game_id) || 0) + r.score);
+    for (const r of scored.rows) if (!skip.has(r.similar_id)) total.set(r.similar_id, (total.get(r.similar_id) || 0) + r.score);
     const user = pcReady && pc && myPcOn ? toUserPc(pc) : null;
     return [...total.entries()]
       .sort((a, b) => b[1] - a[1])

@@ -52,6 +52,7 @@ const GROUPS = {
     'fill-english-names --apply', // 한국어 이름 게임에 스팀 영어 이름을 search_name_ko 뒤에 덧붙임 (영어로 안 찾히는 새 게임만, AI 안 씀, 요청 간격 1.5초)
     'fetch-coop-videos', // 인기 멀티 게임 50개의 합방 영상 (YouTube 게임당 101~202 사용)
     'enrich-update-date',
+    'build-similar-games --apply', // 상세·찜 추천의 "비슷한 게임"(game_similar): 태그 득표·활동 코사인 상위 18개. 바뀐 게임만 저장, AI·외부 요청 없음. 표가 없으면(마이그레이션 전) 실패로 표시
     'pick-weekly-featured', // 메인 "이번주의 게임" 선정 (이번 주 기록이 이미 있으면 건너뜀)
   ],
   // 매일 17:10 KST: YouTube 한도 초기화(태평양 자정) 직후, 새벽·주간 몫을 남기고 하이라이트 영상 수집 (한도 초과 시 조용히 멈춤)
