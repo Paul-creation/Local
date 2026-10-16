@@ -60,7 +60,7 @@ export const ACTIVITIES = [
 
   { key: 'sports', label: '스포츠', group: '기타', def: '스포츠 종목을 플레이한다', check: '축구·농구·골프 등 실제 스포츠나 스포츠형 경기를 함(레이싱은 drive)' },
   { key: 'music', label: '음악·리듬', group: '기타', def: '음악에 맞춰 연주하거나 박자를 맞춘다', check: '리듬 게임이나 악기 연주가 핵심 플레이' },
-  { key: 'photo', label: '사진', group: '기타', def: '사진을 찍거나 촬영한다', check: '카메라로 찍는 행동이 목표이거나 주요 기능' },
+  { key: 'photo', label: '사진 모드', group: '기타', def: '사진을 찍거나 촬영한다', check: '카메라로 찍는 행동이 목표이거나 주요 기능' },
   { key: 'horror_scare', label: '공포·스릴', group: '기타', def: '무서운 상황을 함께 겪는다', check: '공포 연출이나 호러 분위기가 플레이 경험의 중심' },
 ] as const satisfies readonly ActivityDef[];
 
