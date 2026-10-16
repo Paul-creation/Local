@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { isAdmin } from '../../../lib/adminAuth';
 import { badgeFor } from '../../../lib/badge.mjs';
+import { readAllPages } from '../../../lib/paged';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -14,11 +15,13 @@ const unauthorized = () => NextResponse.json({ error: 'Unauthorized' }, { status
 
 export async function GET(req: NextRequest) {
   if (!isAdmin(req)) return unauthorized();
-  const { data } = await supabase
+  const { data } = await readAllPages((from, to) => supabase
     .from('games')
-    // 관리자 화면은 숨긴 게임(중복 정리 등)도 보여줌 — hidden·merged_into로 표시
+    // 관리자 화면은 숨긴 게임(중복 정리 등)도 보여줌 — hidden·merged_into로 표시. 1,000개 넘어도 끝까지 읽는다(정렬은 이름+id로 고정)
     .select('id, name, tags, difficulty, min_players, max_players, recommended_players, solo_playable, category, hidden, merged_into')
-    .order('name');
+    .order('name')
+    .order('id')
+    .range(from, to));
   return NextResponse.json(data || []);
 }
 

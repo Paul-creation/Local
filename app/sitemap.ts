@@ -3,11 +3,12 @@ import { supabase } from './lib/supabase';
 import { SITE_URL } from './lib/site';
 import { BOARD_KEYS } from './lib/communityBoards';
 import { selectGames } from './lib/visibleGames';
+import { readAllPages } from './lib/paged';
 
 export const revalidate = 86400; // 하루에 한 번 새로 만들기
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const { data: games } = await selectGames('id, created_at');
+  const { data: games } = await readAllPages((from, to) => selectGames('id, created_at').order('id').range(from, to)); // 1,000개 넘는 게임도 모두
   return [
     { url: SITE_URL, changeFrequency: 'daily', priority: 1 },
     { url: `${SITE_URL}/this-week`, changeFrequency: 'daily', priority: 0.7 },

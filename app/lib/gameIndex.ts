@@ -8,6 +8,7 @@
 import { supabase } from './supabase';
 import { flattenGame } from './price';
 import { selectGames } from './visibleGames';
+import { readAllPages } from './paged';
 
 export const INDEX_FIELDS = `
   id, name, search_name_ko, tags, category, difficulty,
@@ -22,16 +23,19 @@ export const INDEX_FIELDS = `
 export async function getGameIndex() {
   // GOTY 배지(goty_awards)는 기록 있는 게임만 따로 — 칸이 아직 없으면 오류를 무시하고 배지 없이
   // 크로스플레이(has_crossplay)도 지원하는 게임 id만 따로 — 마이그레이션 전이라 칸이 없으면 오류를 무시하고 빈 목록
+  // 노출 게임이 1,000개를 넘으면 한 번에 다 못 받으므로 모두 1,000행씩 끝까지 읽는다 (정렬은 created_at 최신순 + id로 고정해 페이지가 겹치지 않게)
   const [{ data: list, error }, { data: goty }, { data: cross }] = await Promise.all([
-    selectGames(INDEX_FIELDS)
+    readAllPages((from, to) => selectGames(INDEX_FIELDS)
       .gte('price_history.price', 100)
       .order('created_at', { ascending: false })
+      .order('id')
       .order('checked_at', { referencedTable: 'price_history', ascending: false })
-      .limit(1, { referencedTable: 'price_history' }),
-    selectGames('id, goty_awards').not('goty_awards', 'is', null),
-    selectGames('id').eq('has_crossplay', true),
+      .limit(1, { referencedTable: 'price_history' })
+      .range(from, to)),
+    readAllPages((from, to) => selectGames('id, goty_awards').not('goty_awards', 'is', null).order('id').range(from, to)),
+    readAllPages((from, to) => selectGames('id').eq('has_crossplay', true).order('id').range(from, to)),
   ]);
-  if (error) throw new Error(`게임 목록 조회 실패: ${error.message}`);
+  if (error || !list) throw new Error(`게임 목록 조회 실패: ${error?.message}`);
   const gotyById = new Map((goty || []).map((g) => [g.id, g.goty_awards]));
   const crossIds = new Set((cross || []).map((g) => g.id));
   const tagIds = await getGameTagIds();
@@ -79,15 +83,12 @@ export function specMinOf(parsed: { min?: Partial<SpecMin> | null } | null | und
 // 게임 id → 태그 번호 (rank 순). 표가 없거나 비어 있으면 null
 async function getGameTagIds() {
   const map = new Map<string, number[]>();
-  for (let from = 0; ; from += 1000) {
-    const { data, error } = await supabase.from('game_tags').select('game_id, tag_id, rank').order('game_id').order('rank').range(from, from + 999);
-    if (error) return null;
-    for (const r of data) {
-      const list = map.get(r.game_id) || [];
-      list.push(Number(r.tag_id));
-      map.set(r.game_id, list);
-    }
-    if (data.length < 1000) break;
+  const { data, error } = await readAllPages((from, to) => supabase.from('game_tags').select('game_id, tag_id, rank').order('game_id').order('rank').range(from, to));
+  if (error || !data) return null;
+  for (const r of data) {
+    const list = map.get(r.game_id) || [];
+    list.push(Number(r.tag_id));
+    map.set(r.game_id, list);
   }
   return map.size ? map : null;
 }

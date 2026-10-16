@@ -3,6 +3,7 @@ import { guardedClaudeFetch, AiLimitError } from '../../lib/aiGuard';
 import { createClient } from '@supabase/supabase-js';
 import { badgeMatches } from '../../lib/badge.mjs';
 import { selectGames } from '../../lib/visibleGames';
+import { readAllPages } from '../../lib/paged';
 import { normalizeSearch, searchNames } from '../../lib/searchMatch';
 
 const supabase = createClient(
@@ -123,7 +124,7 @@ async function handlePOST(req: NextRequest) {
   // 한 번의 추천에서 AI는 질문마다 불리므로 첫 AI 호출(답 1개)만 추천 1회로 셈
   const kind = answers.length <= 1 ? 'recommend' : 'recommend-step';
 
-  const { data: allGames, error } = await selectGames('id, name, search_name_ko, home_excluded, cover_image_url, category, tags, min_players, max_players, difficulty, is_free, solo_playable, korean_support', undefined, supabase);
+  const { data: allGames, error } = await readAllPages((from, to) => selectGames('id, name, search_name_ko, home_excluded, cover_image_url, category, tags, min_players, max_players, difficulty, is_free, solo_playable, korean_support', undefined, supabase).order('id').range(from, to));
 
   if (error || !allGames) {
     return NextResponse.json({ error: '게임 목록을 불러오지 못했어요.' }, { status: 500 });
@@ -253,7 +254,7 @@ JSON만 출력:
 async function handleLegacy(body: any) {
   const { mood, groupSize, vibe } = body;
 
-  const { data: allGames } = await selectGames('id, name, search_name_ko, home_excluded, cover_image_url, category, tags, min_players, max_players, difficulty', undefined, supabase);
+  const { data: allGames } = await readAllPages((from, to) => selectGames('id, name, search_name_ko, home_excluded, cover_image_url, category, tags, min_players, max_players, difficulty', undefined, supabase).order('id').range(from, to));
 
   if (!allGames) return NextResponse.json({ error: '게임 목록을 불러오지 못했어요.' }, { status: 500 });
   const games = dropHomeExcluded(allGames, [mood, groupSize, vibe].map((v) => String(v || '')));
