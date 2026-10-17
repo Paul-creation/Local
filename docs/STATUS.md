@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-17 (main 0dfe2ed)
+기준: 2026-10-17 (main 1d4e074)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/17: fix/ai-note-description — 게임 상세 소개 문구 아래 "AI가 정리한 내용" 줄 삭제, 소개 섹션에 "소개" 제목(detail-card-title)을 새로 두고 옆에 작은 ⓘ(hover·포커스·탭, 문구 "AI가 정리한 소개예요", fun_description 있을 때만). 활동 칩 ⓘ를 app/components/InfoTip.tsx로 뽑아 같은 컴포넌트·CSS를 재사용(칩은 한 번에 하나만 열리는 규칙 유지). 소개·약관 페이지의 AI 안내는 그대로. build·test 270개 통과, 프리뷰 1440·375 확인, 실기기 터치·바깥 탭 닫힘은 확인 못 함
 - 10/17: perf/daily-heat-cursor — enrich-itad-heat가 매일 전체 대신 ITAD ID 없는 새 게임 + heat_rank 목록 상위 150개 + 게임 id 해시 % 7 == 요일(KST) 몫만 조회(--all이면 전체). 상위 150개는 메인 "지금 뜨는 게임"·snapshot-hot-rank가 쓰는 상위 50개(heat_rank 값 75까지)의 3배(값 286까지). ITAD에 없다고 확인된 게임은 scripts/.cache/itad-missing.json에 30일 기록해 lookup 건너뜀(daily.yml에 actions/cache@v4 단계 추가). 하루 ITAD 요청 약 1,044건·최소 65분 → 270~292건·최소 17~18분(80건/5분 한도 기준 하한). 상위 150 밖 게임의 heat_rank는 최대 6일 묵을 수 있음. build·test 270개 통과, 실제 ITAD 호출·Actions 캐시 복원은 확인 못 함
 - 10/17: fix/specs-entity-decode — enrich-specs.mjs가 사양 저장 때 태그를 지운 뒤 HTML 엔티티를 글자로 풀어 저장(scripts/lib/html-entities.mjs). 기존 저장값 중 엔티티가 남은 행 43개(min_spec 42·recommended_spec 38)는 정리 SQL을 사용자가 Supabase에서 실행해야 함(미실행, 화면은 표시 직전 디코딩이라 지금도 정상). parse-specs는 AI를 안 써서 비용 없음, 사양이 바뀐 행만 spec_hash로 다시 계산. build·test 263개 통과
 - 10/17: chore/security-check-update — security-check.mjs에 game_activity_reports 점검 추가(anon 키로 select·insert 차단, authenticated는 마이그레이션의 RLS·revoke 문구로 확인) + privacy/page.tsx의 user_session 오탐 정리(<code>user_session</code> 본문·주석 언급만 예외). 프로덕션(jamidunow.com) 실행 ✅ 118 · ❌ 0 · ⚠️ 4, build·test 261개 통과. authenticated 역할 직접 시도는 못 함
