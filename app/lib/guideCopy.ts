@@ -1,4 +1,4 @@
-// 사용 가이드(/guide)와 첫 방문 안내 띠의 화면 문구 — 문구만 고칠 때는 이 파일만 고친다.
+// 사용 가이드(/guide)와 메인 가이드 링크의 화면 문구 — 문구만 고칠 때는 이 파일만 고친다.
 // 화면에는 데이터·코드로 확인되는 사실만 쓴다. 근거: docs/STATUS.md, app/faq/page.tsx, app/lib/aiGuard.ts, app/lib/compareRule.ts, app/lib/user/*
 // 서버·브라우저 어느 쪽에서든 import할 수 있게 비밀 값·서버 전용 코드를 넣지 않는다.
 
@@ -8,10 +8,10 @@ export const GUIDE_SHOW_STEAM = true;
 // 링크 주소 안의 {exampleGame}은 서버가 고른 예시 게임 상세 주소로 바뀐다 (lib/guideExample). 못 골랐으면 그 버튼은 숨긴다
 export const EXAMPLE_GAME_TOKEN = '{exampleGame}';
 
+// 메인 헤드라인 아래 글자 링크 (닫기 없음)
 export const GUIDE_STRIP = {
-  text: '처음이세요? 1분 가이드 →',
+  text: '1분 사용 가이드 →',
   href: '/guide',
-  closeLabel: '안내 닫기',
 };
 
 export const GUIDE_META = {

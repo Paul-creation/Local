@@ -20,13 +20,12 @@ export default function SearchPanel({ games, filters, sidebar = false }: { games
 
   return (
     <>
-      {/* 검색창 + 필터(테두리 버튼) + AI 추천(포인트 버튼) */}
+      {/* 큰 상자는 검색창 하나(필터는 안쪽 오른쪽) + 옆에 강조 버튼 AI 추천 */}
       <div className="search-row">
-        <SearchBox games={games} filters={filters} />
-        <div className="search-actions">
-          {!sidebar && <button
+        <SearchBox games={games} filters={filters} trailing={!sidebar && (
+          <button
             type="button"
-            className={`btn btn-outline filter-toggle${filterOpen ? ' open' : ''}`}
+            className={`filter-toggle${filterOpen ? ' open' : ''}`}
             aria-expanded={filterOpen}
             aria-controls="filter-panel"
             onPointerEnter={() => { loadFilterPanel(); }}
@@ -35,7 +34,9 @@ export default function SearchPanel({ games, filters, sidebar = false }: { games
           >
             필터
             {selectedCount > 0 && <span className="filter-count" aria-label={`${selectedCount}개 선택됨`}>{selectedCount}</span>}
-          </button>}
+          </button>
+        )} />
+        <div className="search-actions">
           <AIRecommend />
         </div>
       </div>

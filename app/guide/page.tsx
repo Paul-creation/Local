@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import BackLink from '../components/BackLink';
-import GuideSeen from '../components/guide/GuideSeen';
 import GuideToc from '../components/guide/GuideToc';
 import { BASE_OG } from '../lib/site';
 import { getExampleVideoGameId } from '../lib/guideExample';
@@ -28,7 +27,6 @@ export default async function GuidePage() {
   return (
     <main className="page guide-page">
       <BackLink fallbackHref="/" label="홈으로" />
-      <GuideSeen />
       <div className="guide-layout">
         <GuideToc items={sections.map((s) => ({ id: s.id, label: s.tocLabel }))} label={GUIDE_HEAD.tocLabel} />
         <article className="guide-body">

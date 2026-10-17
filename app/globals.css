@@ -1627,9 +1627,14 @@ a.series-item:hover { border-color: var(--border); }
 /* 히어로 */
 .home-hero.is-home { margin-bottom: 32px; }
 .home-intro { text-align: center; margin-bottom: 8px; }
-.home-intro-title { font-size: 42px; font-weight: 900; letter-spacing: -0.035em; line-height: 1.2; color: var(--text); word-break: keep-all; }
-.home-intro-desc { margin-top: 4px; font-size: var(--fs-s); color: var(--text-muted); word-break: keep-all; } /* 14px 한 줄 */
-.home-hero.is-home .home-search { max-width: 820px; margin: 8px auto 0; }
+.home-intro-title { font-size: 52px; font-weight: 900; letter-spacing: -0.035em; line-height: 1.2; color: var(--text); word-break: keep-all; }
+.hero-label { display: flex; justify-content: center; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin: 0 0 14px; font-size: var(--fs-s); font-weight: 700; color: var(--text-muted); }
+.hero-label b { color: var(--accent-text); font-weight: 800; }
+.hero-label a { color: var(--text-2); text-decoration: underline; text-underline-offset: 3px; }
+.hero-label a:hover { color: var(--text); }
+.hero-guide { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--fs-m); font-weight: 700; color: var(--accent-text); }
+.hero-guide:hover { color: var(--accent-hover); }
+.home-hero.is-home .home-search { max-width: 820px; margin: 12px auto 0; }
 .home-hero.is-home .search-row { margin-bottom: 0; }
 
 /* 검색창 줄: [검색창][필터][AI 추천] — 높이 56px */
@@ -1638,8 +1643,9 @@ a.series-item:hover { border-color: var(--border); }
 .search-bar-clean { height: 56px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 0 18px; }
 .search-bar-clean:focus-within { border-color: var(--accent); box-shadow: var(--focus-glow); }
 .search-bar-clean input { height: 54px; font-size: var(--fs-xl); }
-.filter-toggle { min-height: 56px; padding: 0 18px; border-radius: 12px; background: var(--card); }
-.filter-toggle.open { border-color: var(--accent); }
+.filter-toggle { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; min-height: 40px; padding: 0 12px; background: none; border: none; border-radius: var(--radius-btn); color: var(--text-muted); font-family: inherit; font-size: var(--fs-m); font-weight: 700; cursor: pointer; }
+.filter-toggle:hover { color: var(--text); background: var(--card-hover); }
+.filter-toggle.open { color: var(--accent-text); }
 .filter-count { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: var(--radius-chip); background: var(--accent); color: var(--accent-ink); font-size: var(--fs-xs); font-weight: 800; }
 .ai-trigger-clean {
   height: 56px; display: flex; align-items: center; padding: 0 20px; border: none; border-radius: 12px;
@@ -1647,10 +1653,10 @@ a.series-item:hover { border-color: var(--border); }
 }
 .ai-trigger-clean:hover { background: var(--accent-hover); }
 @media (max-width: 640px) {
-  .home-intro-title { font-size: 30px; }
+  .home-intro-title { font-size: 32px; }
   .search-row { flex-direction: column; align-items: stretch; }
   .search-actions > * { flex: 1; justify-content: center; }
-  .filter-toggle, .ai-trigger-clean { min-height: 48px; height: 48px; }
+  .ai-trigger-clean { min-height: 48px; height: 48px; }
 }
 
 /* 섹션 머리 */
@@ -1660,16 +1666,16 @@ a.series-item:hover { border-color: var(--border); }
 .home-more { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--fs-m); font-weight: 700; color: var(--text-muted); }
 .home-more:hover { color: var(--text); }
 
-/* 메인 인원 선택 — 검색창 아래 4칸 한 줄 (선택: 포인트색 테두리 + 기본 글자 / 비선택: 카드 배경 + 보조 글자) */
-.people-select { max-width: 820px; margin: 8px auto 0; display: flex; flex-direction: column; gap: 6px; }
-.people-btns { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
-.people-btn { min-height: 56px; padding: 0 8px; background: var(--card); border: 2px solid var(--border-soft); border-radius: var(--radius-btn); color: var(--text-2); font-family: inherit; font-size: var(--fs-xl); font-weight: 800; white-space: nowrap; cursor: pointer; }
-.people-btn:hover { border-color: var(--border); color: var(--text); }
-.people-btn.on { border-color: var(--accent); color: var(--text); }
+/* 메인 인원 선택 — 작은 pill 세그먼트 한 줄 + 내 PC 토글 칩 (선택: 포인트색 테두리·--accent-soft 배경 / 비선택: 보조 글자) */
+.people-select { max-width: 820px; margin: 16px auto 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 12px; }
+.people-btns { display: inline-flex; padding: 3px; background: var(--inset); border: 1px solid var(--border-soft); border-radius: var(--radius-chip); }
+.people-btn { min-height: 34px; padding: 0 16px; background: none; border: none; border-radius: var(--radius-chip); color: var(--text-muted); font-family: inherit; font-size: var(--fs-s); font-weight: 700; white-space: nowrap; cursor: pointer; }
+.people-btn:hover { color: var(--text); }
+.people-btn.on { background: var(--accent-soft); color: var(--accent-text); box-shadow: inset 0 0 0 1px var(--accent); }
 .people-pc { display: flex; justify-content: center; }
-.people-pc:has(.people-bar) { display: block; }
-.people-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 44px; padding: 0 16px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-btn); color: var(--text-2); font-size: var(--fs-m); font-weight: 700; }
+.people-bar { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 14px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-chip); color: var(--text-2); font-size: var(--fs-s); font-weight: 700; }
 .people-bar:hover { border-color: var(--accent); color: var(--text); }
+@media (max-width: 640px) { .people-btn { padding: 0 12px; } }
 /* 인원별·찜 기반 추천 — 데스크톱 3열, 모바일은 가로 스크롤(다음 카드가 일부 보이게) */
 .people-cards { display: grid; align-items: stretch; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .people-item { display: flex; min-width: 0; }
@@ -2946,20 +2952,6 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* 링�
 /* ============================================================
    사용 가이드(/guide) · 첫 방문 안내 띠 — 새 색 없이 기존 토큰만
    ============================================================ */
-
-/* 안내 띠 자리(슬롯): 채워지면 높이가 생기고, 안 닫은 사람에게는 app/page.tsx 스크립트가 같은 높이를 미리 잡는다.
-   데스크톱은 배너 아래 여백(36px) 일부(-20px)를 당겨 쓴다 */
-.guide-slot { display: flow-root; --guide-h: 40px; --guide-mt: -20px; --guide-mb: 20px; }
-@media (max-width: 899px) { .guide-slot { --guide-mt: 0px; --guide-mb: 12px; } }
-.guide-strip {
-  display: flex; align-items: center; justify-content: space-between;
-  height: var(--guide-h); margin: var(--guide-mt) 0 var(--guide-mb); padding: 0 0 0 16px;
-  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-card);
-}
-.guide-strip-link { flex: 1; min-width: 0; display: flex; align-items: center; height: 100%; font-size: var(--fs-m); font-weight: 700; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.guide-strip-link:hover { color: var(--text); }
-.guide-strip-close { flex-shrink: 0; width: 44px; height: 100%; border: 0; background: none; color: var(--text-muted); font-family: inherit; font-size: 20px; line-height: 1; cursor: pointer; }
-.guide-strip-close:hover { color: var(--text); }
 
 /* 가이드 본문 — 데스크톱: 왼쪽 sticky 목차 + 오른쪽 본문 / 900px 미만: 위쪽 sticky 가로 칩 줄 */
 .guide-page { max-width: 1000px; padding-top: 20px; }

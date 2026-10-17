@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import type { GameFilters } from '../../lib/useGameFilters';
 import { matchRank } from '../../lib/searchMatch';
@@ -17,7 +17,7 @@ const playersLabel = (g: any) => playersText(g);
 
 // 검색창 + 자동완성. 입력 중에는 결과 화면으로 넘어가지 않고, 맞는 태그·게임만 아래에 보여준다.
 // 태그 단어(예: "좀비, 협동")는 엔터나 후보 선택으로 태그 조건이 되어 검색창 아래 칩으로 보인다 (app/lib/tagSearch)
-export default function SearchBox({ games, filters }: { games: any[], filters: GameFilters }) {
+export default function SearchBox({ games, filters, trailing }: { games: any[], filters: GameFilters, trailing?: ReactNode }) {
   const { input, setInput, submitSearch, rememberList, selectedTags, toggleTag, addTags, tagLookup, splitInput, tree } = filters;
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -125,7 +125,7 @@ export default function SearchBox({ games, filters }: { games: any[], filters: G
         <input
           ref={inputRef}
           type="text"
-          placeholder={selectedTags.length ? '검색어 더하기' : '게임 이름이나 태그로 검색 (예: 좀비, 협동)'}
+          placeholder={selectedTags.length ? '검색어 더하기' : '게임 이름이나 태그로 검색'}
           value={input}
           onChange={(e) => { setInput(e.target.value); setOpen(true); setActive(-1); }}
           onFocus={() => setOpen(true)}
@@ -137,6 +137,8 @@ export default function SearchBox({ games, filters }: { games: any[], filters: G
           aria-activedescendant={showList && active >= 0 ? `search-suggest-${active}` : undefined}
         />
         {input && <button type="button" className="search-clear" aria-label="입력 지우기" onClick={() => { setInput(''); setActive(-1); }}>×</button>}
+        {/* 검색창 안쪽 오른쪽 — 필터 버튼 (SearchPanel) */}
+        {trailing}
       </div>
 
       {showList && (
