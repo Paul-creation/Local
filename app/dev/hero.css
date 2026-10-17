@@ -1,0 +1,74 @@
+/* 메인 상단 시안 (임시, /dev/hero-a·b·c) — 실제 화면에는 쓰지 않음. 색은 globals.css 토큰만 */
+.hx { padding: 8px 16px 48px; }
+.hx-note { max-width: 880px; margin: 0 auto 24px; font-size: var(--fs-xs); color: var(--text-faint); text-align: center; }
+.hx-label { display: inline-flex; align-items: center; gap: 8px; font-size: var(--fs-s); font-weight: 700; color: var(--text-muted); }
+.hx-label b { color: var(--accent-text); font-weight: 800; }
+.hx-label a { color: var(--text-2); text-decoration: underline; text-underline-offset: 3px; }
+.hx-label a:hover { color: var(--text); }
+.hx-title { font-weight: 900; letter-spacing: -0.04em; line-height: 1.15; color: var(--text); word-break: keep-all; }
+.hx-guide { display: inline-block; margin-top: 10px; font-size: var(--fs-m); font-weight: 700; color: var(--accent-text); }
+.hx-guide:hover { color: var(--accent-hover); }
+
+.hx-bar { display: flex; align-items: center; gap: 8px; height: 60px; padding: 0 8px 0 20px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; }
+.hx-bar:focus-within { border-color: var(--accent); box-shadow: var(--focus-glow); }
+.hx-bar input { flex: 1; min-width: 0; height: 56px; background: none; border: none; outline: none; color: var(--text); font-family: inherit; font-size: var(--fs-xxl); }
+.hx-bar input::placeholder { color: var(--text-faint); }
+.hx-inline-btn { flex-shrink: 0; min-height: 40px; padding: 0 14px; background: none; border: none; border-radius: var(--radius-btn); color: var(--text-muted); font-family: inherit; font-size: var(--fs-m); font-weight: 700; cursor: pointer; }
+.hx-inline-btn:hover { color: var(--text); background: var(--card-hover); }
+.hx-inline-btn .n { margin-left: 6px; padding: 1px 7px; border-radius: var(--radius-chip); background: var(--accent); color: var(--accent-ink); font-size: var(--fs-xs); font-weight: 800; }
+.hx-ai { flex-shrink: 0; min-height: 60px; padding: 0 22px; background: var(--accent); color: var(--accent-ink); border: none; border-radius: 14px; font-family: inherit; font-size: var(--fs-l); font-weight: 800; white-space: nowrap; cursor: pointer; }
+.hx-ai:hover { background: var(--accent-hover); }
+.hx-bar .hx-ai { min-height: 44px; border-radius: 10px; }
+
+.hx-seg { display: inline-flex; padding: 3px; background: var(--inset); border: 1px solid var(--border-soft); border-radius: var(--radius-chip); }
+.hx-seg button { min-height: 34px; padding: 0 16px; background: none; border: none; border-radius: var(--radius-chip); color: var(--text-muted); font-family: inherit; font-size: var(--fs-s); font-weight: 700; white-space: nowrap; cursor: pointer; }
+.hx-seg button:hover { color: var(--text); }
+.hx-seg button[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent-text); box-shadow: inset 0 0 0 1px var(--accent); }
+.hx-row { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px 12px; }
+.hx-q { font-size: var(--fs-s); font-weight: 700; color: var(--text-muted); }
+
+/* A — 가운데 정렬, 작은 라벨 + 큰 헤드라인 + 가이드 글자 링크, 검색창 + 옆에 AI 버튼 */
+.hx-a { text-align: center; }
+.hx-a .hx-label { margin-bottom: 14px; }
+.hx-a .hx-title { font-size: 52px; }
+.hx-a .hx-search { display: flex; gap: 10px; max-width: 820px; margin: 28px auto 0; text-align: left; }
+.hx-a .hx-bar { flex: 1; min-width: 0; }
+.hx-a .hx-row { margin-top: 18px; }
+
+/* B — 왼쪽 정렬, 맨 위 얇은 한 줄 공지, 검색창 하나에 AI 버튼까지 안쪽에 */
+.hx-b-notice { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 16px; margin: 0 -16px 36px; background: var(--inset); border-bottom: 1px solid var(--border-soft); font-size: var(--fs-s); color: var(--text-muted); }
+.hx-b-notice b { color: var(--accent-text); font-weight: 800; white-space: nowrap; }
+.hx-b-notice span.t { color: var(--text-2); font-weight: 700; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hx-b-notice a { margin-left: auto; color: var(--text-2); font-weight: 700; white-space: nowrap; }
+.hx-b-notice a:hover { color: var(--text); }
+.hx-b .wrap { max-width: 860px; margin: 0 auto; }
+.hx-b .hx-title { font-size: 60px; }
+.hx-b .hx-bar { margin-top: 28px; height: 64px; }
+.hx-b .hx-bar .hx-ai { min-height: 48px; }
+.hx-b .hx-row { justify-content: flex-start; margin-top: 16px; }
+
+/* C — 가운데 정렬, 헤드라인 크게, 검색창 안에 필터·AI, 아래 "몇 명이서?" 한 줄에 PC 토글 */
+.hx-c { text-align: center; }
+.hx-c .hx-label { margin-bottom: 18px; padding: 5px 14px; border: 1px solid var(--border); border-radius: var(--radius-chip); }
+.hx-c .hx-title { font-size: 56px; }
+.hx-c .hx-title em { font-style: normal; color: var(--accent-text); }
+.hx-c .hx-bar { max-width: 780px; margin: 28px auto 0; height: 68px; border-radius: 16px; text-align: left; }
+.hx-c .hx-bar .hx-ai { min-height: 52px; border-radius: 12px; }
+.hx-c .hx-row { margin-top: 20px; }
+.hx-c .hx-guide { margin-top: 22px; }
+
+@media (max-width: 640px) {
+  .hx-a .hx-title { font-size: 32px; }
+  .hx-b .hx-title { font-size: 34px; }
+  .hx-c .hx-title { font-size: 34px; }
+  .hx-a .hx-search { flex-direction: column; margin-top: 20px; }
+  .hx-a .hx-ai { min-height: 48px; }
+  .hx-bar, .hx-b .hx-bar, .hx-c .hx-bar { height: 52px; padding-left: 14px; }
+  .hx-bar input { height: 48px; font-size: var(--fs-l); }
+  .hx-bar .hx-ai, .hx-b .hx-bar .hx-ai, .hx-c .hx-bar .hx-ai { min-height: 40px; padding: 0 14px; }
+  .hx-inline-btn { padding: 0 8px; }
+  .hx-seg button { padding: 0 12px; }
+  .hx-b-notice { margin-bottom: 24px; }
+  .hx-b-notice a { display: none; }
+  .hx-c .hx-label { margin-bottom: 12px; }
+}
