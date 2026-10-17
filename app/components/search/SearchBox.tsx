@@ -8,17 +8,20 @@ import type { GameFilters } from '../../lib/useGameFilters';
 import { matchRank } from '../../lib/searchMatch';
 import { playersText } from '../../lib/players';
 import { splitWords, suggestTags, tagKeyLabel } from '../../lib/tagSearch';
+import { suggestActivities } from '../../lib/activitySearch';
+import { activityLabel } from '../../lib/activities';
 import GameImage from '../GameImage';
 
 const MAX_SUGGESTIONS = 6;
 const MAX_TAG_SUGGESTIONS = 4;
+const MAX_ACT_SUGGESTIONS = 2;
 
 const playersLabel = (g: any) => playersText(g);
 
 // 검색창 + 자동완성. 입력 중에는 결과 화면으로 넘어가지 않고, 맞는 태그·게임만 아래에 보여준다.
 // 태그 단어(예: "좀비, 협동")는 엔터나 후보 선택으로 태그 조건이 되어 검색창 아래 칩으로 보인다 (app/lib/tagSearch)
 export default function SearchBox({ games, filters, trailing }: { games: any[], filters: GameFilters, trailing?: ReactNode }) {
-  const { input, setInput, submitSearch, rememberList, selectedTags, toggleTag, addTags, tagLookup, splitInput, tree } = filters;
+  const { input, setInput, submitSearch, rememberList, selectedTags, toggleTag, addTags, selectedActs, toggleAct, tagLookup, splitInput, tree } = filters;
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const boxRef = useRef<HTMLDivElement>(null);
@@ -44,8 +47,11 @@ export default function SearchBox({ games, filters, trailing }: { games: any[], 
   const words = splitWords(input);
   const lastWord = /[,\s]$/.test(input) ? '' : words[words.length - 1] || '';
   const tagSuggestions = suggestTags(lastWord, tagLookup, selectedTags, MAX_TAG_SUGGESTIONS);
+  // 활동 라벨("운전"·"낚시")을 치면 그 활동 필터를 후보로 — 고르면 "가능한 활동" 조건이 걸린다 (app/lib/activitySearch)
+  const actSuggestions = suggestActivities(lastWord, selectedActs, MAX_ACT_SUGGESTIONS);
   const suggestions = [
     ...tagSuggestions.map((tag) => ({ kind: 'tag' as const, tag })),
+    ...actSuggestions.map((act) => ({ kind: 'act' as const, act })),
     ...gameSuggestions.map((g) => ({ kind: 'game' as const, g })),
   ];
   const showList = open && suggestions.length > 0;
@@ -67,6 +73,14 @@ export default function SearchBox({ games, filters, trailing }: { games: any[], 
   // 태그 후보를 고르면 입력 중이던 마지막 단어를 지우고 태그 칩으로
   const pickTag = (tag: string) => {
     addTags([tag]);
+    const kept = words.slice(0, lastWord ? -1 : undefined).join(' ');
+    setInput(kept ? `${kept} ` : '');
+    setActive(-1);
+    inputRef.current?.focus();
+  };
+
+  const pickAct = (key: string) => {
+    toggleAct(key);
     const kept = words.slice(0, lastWord ? -1 : undefined).join(' ');
     setInput(kept ? `${kept} ` : '');
     setActive(-1);
@@ -102,6 +116,8 @@ export default function SearchBox({ games, filters, trailing }: { games: any[], 
       const picked = showList && active >= 0 ? suggestions[active] : null;
       if (picked?.kind === 'tag') {
         pickTag(picked.tag);
+      } else if (picked?.kind === 'act') {
+        pickAct(picked.act);
       } else if (picked?.kind === 'game') {
         goToGame(picked.g);
       } else {
@@ -143,7 +159,19 @@ export default function SearchBox({ games, filters, trailing }: { games: any[], 
 
       {showList && (
         <ul className="search-suggest" id="search-suggest" role="listbox">
-          {suggestions.map((s, i) => s.kind === 'tag' ? (
+          {suggestions.map((s, i) => s.kind === 'act' ? (
+            <li key={`act-${s.act}`} role="option" id={`search-suggest-${i}`} aria-selected={i === active}>
+              <button
+                type="button"
+                className={`search-suggest-item search-suggest-tag${i === active ? ' is-active' : ''}`}
+                onClick={() => pickAct(s.act)}
+                onMouseEnter={() => setActive(i)}
+              >
+                <span className="search-suggest-tag-mark">활동</span>
+                <span className="search-suggest-name">{activityLabel(s.act)}</span>
+              </button>
+            </li>
+          ) : s.kind === 'tag' ? (
             <li key={`tag-${s.tag}`} role="option" id={`search-suggest-${i}`} aria-selected={i === active}>
               <button
                 type="button"

@@ -8,6 +8,7 @@ import RangeSlider from './RangeSlider';
 import MyPcLink from '../pcspec/MyPcLink';
 import { BARRIERS, NETS, type GameFilters } from '../../lib/useGameFilters';
 import { EXCLUDE_TAG_IDS, type TagTree } from '../../lib/tagTree';
+import { ACTIVITY_BY_GROUP } from '../../lib/activitySearch';
 import { PLAYERS_MAX, PRICE_MAX, PRICE_ALL, FREE_ONLY, isAll, playersLabel, priceLabel } from '../../lib/rangeFilter';
 
 // 배지(category) 값으로 거름 — '협동'·'대전'은 '협동·대전' 게임도 포함 (app/lib/badge.mjs)
@@ -44,6 +45,7 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
     selectedBarriers, toggleBarrier,
     storyOnly, setStoryOnly,
     selectedNet, toggleNet,
+    selectedActs, toggleAct, actIncludeUnsure, setActIncludeUnsure, actCounts,
     playersRange, setPlayersRange,
     soloOnly, setSoloOnly,
     duoOnly, setDuoOnly,
@@ -173,6 +175,30 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
               </li>
             ))}
           </ul>
+        </FoldSection>
+
+        {/* 가능한 활동 — 묶음별 칩(app/lib/activities.ts), 고른 활동을 모두 가진 게임. 기본은 확정만, "확인 중 포함"을 켜면 확인 중 활동도 같은 활동으로 봄. 칩 옆 숫자는 그 활동이 있는 게임 수(0이면 흐리게) */}
+        <FoldSection title="가능한 활동" count={selectedActs.length}>
+          <div className="filter-chips">
+            <button type="button" className={`chip${actIncludeUnsure ? ' on' : ''}`} aria-pressed={actIncludeUnsure} onClick={() => setActIncludeUnsure(!actIncludeUnsure)}>확인 중 포함</button>
+          </div>
+          <p className="filter-note">{actIncludeUnsure ? 'AI가 있을 것으로 판단했지만 공식 설명에서 확인하지 못한 활동도 포함해요' : '설명에서 확인된 활동만 보여줘요'}</p>
+          {ACTIVITY_BY_GROUP.map(({ group, items }) => (
+            <div key={group} className="act-group">
+              <p className="filter-label">{group}</p>
+              <div className="filter-chips">
+                {items.map((a) => {
+                  const n = actCounts.get(a.key) ?? 0;
+                  const on = selectedActs.includes(a.key);
+                  return (
+                    <button key={a.key} type="button" className={`chip${on ? ' on' : ''}${n === 0 ? ' is-zero' : ''}`} aria-pressed={on} disabled={n === 0 && !on} onClick={() => toggleAct(a.key)}>
+                      {a.label}<span className="chip-n">{n}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </FoldSection>
 
         {/* 분류 — 큰 칸을 고르면 그 아래 태그 중 하나라도 있는 게임, 서로 다른 칸끼리는 모두 만족 */}

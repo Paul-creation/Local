@@ -3,6 +3,7 @@
 // 칸을 새로 쓰면 INDEX_FIELDS에 추가. 가격은 게임마다 최신 원화 1건만 (getPriceInfo와 같은 기준: 100 이상)
 // 브라우저로 보내는 양을 줄이려고 가격 기록은 최신 가격 두 칸으로 펴고 빈 칸은 뺀다 (flattenGame)
 // PC 사양은 spec_parsed 전체가 아니라 판정에 필요한 최소 사양의 세 칸(cpu·gpu·ram_gb)만 spec_min으로 보낸다 (읽은 칸이 하나도 없으면 칸 자체를 뺌) — 검색의 "내 PC로 돌아가는 게임" 필터용
+// 가능한 활동(activities_confirmed·activities_unsure)은 키 배열 그대로, 비어 있으면 칸 자체를 뺀다 — 필터 "가능한 활동"용
 // 태그는 이름 대신 번호(tag_ids, game_tags 표 순서대로)만 보낸다 — 이름·나무는 브라우저가 app/lib/tag-search-dict.json에서 한 번 받음
 // game_tags 표가 아직 없거나 비어 있으면(마이그레이션 전) 예전 한국어 태그(tags)를 그대로 보낸다
 import { supabase } from './supabase';
@@ -16,9 +17,14 @@ export const INDEX_FIELDS = `
   has_online_coop, has_local_coop, has_pvp,
   entry_barrier, solo_mode, party_max, session_max, multiplayer_host,
   is_free, price_type, lowest_price, steam_appid, source, cover_image_url, card_image_url, heat_rank,
-  spec_parsed,
+  spec_parsed, activities_confirmed, activities_unsure,
   price_history(price, discount_percent, checked_at, currency, original_price, sale_ends_at)
 `;
+
+const activitiesOf = (confirmed?: string[] | null, unsure?: string[] | null) => ({
+  ...(confirmed?.length ? { activities_confirmed: confirmed } : {}),
+  ...(unsure?.length ? { activities_unsure: unsure } : {}),
+});
 
 export async function getGameIndex() {
   // GOTY 배지(goty_awards)는 기록 있는 게임만 따로 — 칸이 아직 없으면 오류를 무시하고 배지 없이
@@ -40,9 +46,9 @@ export async function getGameIndex() {
   const crossIds = new Set((cross || []).map((g) => g.id));
   const tagIds = await getGameTagIds();
   return (list || []).map((g) => {
-    const { tags, spec_parsed, ...rest } = g as typeof g & { tags?: string[] | null };
+    const { tags, spec_parsed, activities_confirmed, activities_unsure, ...rest } = g as typeof g & { tags?: string[] | null };
     const ids = tagIds?.get(g.id);
-    return flattenGame({ ...rest, ...(tagIds ? { tag_ids: ids || [] } : { tags }), spec_min: specMinOf(spec_parsed), goty_awards: gotyById.get(g.id), ...(crossIds.has(g.id) ? { has_crossplay: true } : {}) });
+    return flattenGame({ ...rest, ...(tagIds ? { tag_ids: ids || [] } : { tags }), spec_min: specMinOf(spec_parsed), ...activitiesOf(activities_confirmed, activities_unsure), goty_awards: gotyById.get(g.id), ...(crossIds.has(g.id) ? { has_crossplay: true } : {}) });
   });
 }
 
@@ -65,9 +71,9 @@ export async function getCardGames(ids: string[]) {
   const tagIds = new Map<string, number[]>();
   for (const r of tagRows || []) tagIds.set(r.game_id, [...(tagIds.get(r.game_id) || []), Number(r.tag_id)]);
   const byId = new Map((list || []).map((g) => {
-    const { tags, spec_parsed, ...rest } = g as typeof g & { tags?: string[] | null };
+    const { tags, spec_parsed, activities_confirmed, activities_unsure, ...rest } = g as typeof g & { tags?: string[] | null };
     void tags; // 번호(tag_ids)만 보낸다
-    return [g.id, flattenGame({ ...rest, tag_ids: tagIds.get(g.id) || [], spec_min: specMinOf(spec_parsed), goty_awards: gotyById.get(g.id), ...(crossIds.has(g.id) ? { has_crossplay: true } : {}) })] as const;
+    return [g.id, flattenGame({ ...rest, tag_ids: tagIds.get(g.id) || [], spec_min: specMinOf(spec_parsed), ...activitiesOf(activities_confirmed, activities_unsure), goty_awards: gotyById.get(g.id), ...(crossIds.has(g.id) ? { has_crossplay: true } : {}) })] as const;
   }));
   return ids.map((id) => byId.get(id)).filter((g): g is NonNullable<typeof g> => !!g);
 }
