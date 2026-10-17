@@ -16,6 +16,7 @@ import { HOME_FILTER_STYLE_ID } from './homeFilter';
 import { matchesActivities, countActivities } from './activityFilter';
 import { parseActivities } from './activitySearch';
 import { ACTIVITIES, ACTIVITY_TAG_MAP, activityForTag, type ActivityKey } from './activities';
+import { splitSearchInput } from './searchSplit';
 import { BADGES, badgeMatches } from './badge.mjs';
 import { runsOnMyPc } from './specJudge';
 import { toUserPc } from './myPc';
@@ -116,11 +117,13 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     const cat = sp.get('cat') || '';
     setSelectedCategory(BADGES.includes(cat) ? cat : '');
     // 칸 번호·협동·대전은 그대로, 예전 주소의 태그 이름(?tags=좀비)은 나무가 도착하면 번호로 바꾼다 (아래 효과)
-    setSelectedTags((sp.get('tags') || '').split(',').filter(Boolean));
+    // 예전 공유 링크의 ?tags=1644처럼 활동과 같은 뜻의 태그(ACTIVITY_TAG_MAP)는 활동 조건으로 바꿔 적용한다 (주소는 아래 URL_STATE 효과가 ?act=drive로 교체)
+    const urlTags = (sp.get('tags') || '').split(',').filter(Boolean);
+    setSelectedTags(urlTags.filter((t) => !activityForTag(t)));
     setExcludedTags((sp.get('ex') || '').split(',').filter(isTreeTag));
     setSelectedBarriers(barrierFromUrl(sp.get('barrier')));
     setSelectedNet(netFromUrl(sp.get('net')));
-    setSelectedActs(parseActivities(sp.get('act')));
+    setSelectedActs([...new Set([...parseActivities(sp.get('act')), ...urlTags.map(activityForTag).filter((a): a is ActivityKey => !!a)])]);
     setActIncludeUnsure(sp.get('actu') === '1');
     setStoryOnly(sp.get('story') === '1');
     // players=2-7 · players=5(5~5) / 예전 인원 칸 주소 p=3-4인도 비슷한 범위로
@@ -238,6 +241,9 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     setSelectedNet(prev => prev.includes(k) ? prev.filter(x => x !== k) : [...prev, k]);
   const toggleBarrier = (b: string) =>
     setSelectedBarriers(prev => prev.includes(b) ? prev.filter(x => x !== b) : [...prev, b]);
+  const addActs = (keys: string[]) => {
+    if (keys.length) setSelectedActs(prev => [...prev, ...keys.filter(k => !prev.includes(k))]);
+  };
   const toggleAct = (k: string) =>
     setSelectedActs(prev => prev.includes(k) ? prev.filter(x => x !== k) : [...prev, k]);
   // 활동과 같은 뜻의 태그(운전·낚시 등, ACTIVITY_TAG_MAP)는 태그가 아니라 활동 조건 하나로 — 같은 이름이 태그·활동 둘로 잡히지 않게
@@ -272,29 +278,35 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     const next = selectedTags
       .map((t) => (isTreeTag(t) || FLAG_TAGS[t] ? t : nameToTagId(tree, t) != null ? String(nameToTagId(tree, t)) : null))
       .filter((t, i, arr): t is string => !!t && arr.indexOf(t) === i);
+    // 이름이 활동과 같은 뜻의 태그 번호로 바뀐 것도 활동 조건으로 (?tags=운전 → 활동 운전)
+    const nextActs = next.map(activityForTag).filter((a): a is ActivityKey => !!a);
+    const nextTags = next.filter((t) => !activityForTag(t));
     // eslint-disable-next-line react-hooks/set-state-in-effect -- 주소에서 읽은 예전 태그 이름을 나무 도착 후 한 번 바꾸는 것
-    if (next.join(',') !== selectedTags.join(',')) setSelectedTags(next);
+    if (nextTags.join(',') !== selectedTags.join(',')) setSelectedTags(nextTags);
+    if (nextActs.length) setSelectedActs((prev) => [...prev, ...nextActs.filter((a) => !prev.includes(a))]);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- 처음 한 번만
   }, [inited, tree]);
 
   // 입력을 태그와 게임 이름으로 나눈다. 게임 이름과 똑같이 입력했으면(예: "Party Animals") 나누지 않고 이름으로
-  const splitInput = (text: string) => {
-    const key = normalizeSearch(text);
-    if (!key || (games || []).some((g) => searchNames(g).some((n) => normalizeSearch(n) === key))) {
-      return { tags: [] as string[], rest: text.trim() };
-    }
-    return parseSearchInput(text, tagLookup);
-  };
+  // 활동 라벨과 정확히 같을 때만 활동 조건으로, 활동과 같은 뜻의 태그 단어는 태그로 옮기지 않고 이름 검색에 남긴다 (app/lib/searchSplit)
+  const plainTagLookup = useMemo(() => new Map([...tagLookup].filter(([, key]) => !activityForTag(key))), [tagLookup]);
+  const splitInput = (text: string) => splitSearchInput(text, {
+    normalize: normalizeSearch,
+    isGameName: (key) => (games || []).some((g) => searchNames(g).some((n) => normalizeSearch(n) === key)),
+    activityOf: (key) => ACTIVITIES.find((a) => normalizeSearch(a.label) === key)?.key,
+    parse: (t) => parseSearchInput(t, plainTagLookup),
+  });
 
   // 예전 주소(?q=좀비)로 들어온 경우에도 목록이 도착하면 태그 단어를 태그 조건으로 옮긴다
   const convertedQuery = useRef(false);
   useEffect(() => {
     if (convertedQuery.current || !inited || !games) return;
     convertedQuery.current = true;
-    const { tags, rest } = splitInput(query);
-    if (!tags.length) return;
+    const { tags, acts, rest } = splitInput(query);
+    if (!tags.length && !acts.length) return;
     /* eslint-disable react-hooks/set-state-in-effect -- 주소에서 읽은 검색어를 목록 도착 후 한 번 나누는 것 */
     addTags(tags);
+    addActs(acts);
     setInput(rest);
     setQuery(rest);
     /* eslint-enable react-hooks/set-state-in-effect */
@@ -376,8 +388,9 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
   // 엔터(또는 결과 보기)로 지금 입력한 글자를 검색어로 확정하고 결과 화면 맨 위로
   // 태그로 알아본 단어는 태그 조건(칩)으로 옮기고, 나머지만 이름 검색어로 남긴다
   const submitSearch = () => {
-    const { tags, rest } = splitInput(input);
+    const { tags, acts, rest } = splitInput(input);
     if (tags.length) addTags(tags);
+    addActs(acts);
     setInput(rest);
     setQuery(rest);
     setShowResults(true);

@@ -9,6 +9,7 @@ import MyPcLink from '../pcspec/MyPcLink';
 import { BARRIERS, NETS, type GameFilters } from '../../lib/useGameFilters';
 import { EXCLUDE_TAG_IDS, type TagTree } from '../../lib/tagTree';
 import { ACTIVITY_BY_GROUP } from '../../lib/activitySearch';
+import { activityForTag } from '../../lib/activities';
 import { PLAYERS_MAX, PRICE_MAX, PRICE_ALL, FREE_ONLY, isAll, playersLabel, priceLabel } from '../../lib/rangeFilter';
 
 // 배지(category) 값으로 거름 — '협동'·'대전'은 '협동·대전' 게임도 포함 (app/lib/badge.mjs)
@@ -213,7 +214,7 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
                 const node = tree.nodes.get(id)!;
                 const open = openRoots.includes(id);
                 const picked = selectedTags.filter((t) => isUnder(tree, Number(t), id)).length;
-                const kids = node.children.filter((c) => tagCounts.get(c));
+                const kids = shownKids(tree, node.children, tagCounts);
                 // 많은 칸은 처음 일부만 — 숨겨진 칸에 고른 게 있으면 처음부터 다 보임
                 const foldable = kids.length - MORE_LIMIT >= 2;
                 const hiddenPicked = foldable && kids.slice(MORE_LIMIT).some((c) => selectedTags.some((t) => isUnder(tree, Number(t), c)));
@@ -282,6 +283,12 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
   );
 }
 
+// 분류 트리에 보일 칸들 — 게임이 있는 칸만. 활동과 같은 뜻의 태그(ACTIVITY_TAG_MAP: 운전·낚시 등)는 "가능한 활동"에서만 고르므로 숨기고,
+// 그 아래 칸이 있으면(예: 스포츠 아래 팀 구기 종목) 사라지지 않게 그 자리로 올려 보인다
+function shownKids(tree: TagTree, ids: number[], counts: Map<number, number>): number[] {
+  return ids.filter((c) => counts.get(c)).flatMap((c) => (activityForTag(String(c)) ? shownKids(tree, tree.nodes.get(c)?.children ?? [], counts) : [c]));
+}
+
 // 접을 수 있는 필터 섹션 — 기본은 접힘, 제목 줄 전체가 토글. 고른 값이 있으면 처음부터 펼침(직접 접으면 제목 옆에 개수만 남김)
 function FoldSection({ title, count, children }: { title: string; count: number; children: ReactNode }) {
   const [userOpen, setUserOpen] = useState<boolean | null>(null);
@@ -309,7 +316,7 @@ function TagRow({ id, tree, counts, selected, onToggle }: {
   id: number; tree: TagTree; counts: Map<number, number>; selected: string[]; onToggle: (key: string) => void;
 }) {
   const node = tree.nodes.get(id)!;
-  const kids = node.children.filter((c) => counts.get(c));
+  const kids = shownKids(tree, node.children, counts);
   // 아래 칸 중 고른 게 있으면 처음부터 펼쳐 둔다
   const [open, setOpen] = useState(() => selected.some((t) => Number(t) !== id && isUnder(tree, Number(t), id)));
   const key = String(id);
