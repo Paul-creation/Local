@@ -13,7 +13,7 @@ const GROUPS = {
     'backfill-price-history-other', // 스팀 외 가격 (약 15건)
     'fill-sale-ends', // 할인 종료 시각 (ITAD prices/v3 200개씩, 약 4번 요청). 모르면 null, ITAD 오류면 기존 값 유지
     'backfill-price-history', // 스팀 할인 기록 (증분: 새 게임·기록 5건 미만 + 요일 1/7)
-    'enrich-itad-heat', // 순위·역대 최고 동접·역대 최저가 (요일 몫 약 150건, 한도 안에서 약 10분)
+    'enrich-itad-heat', // 순위·역대 최고 동접·역대 최저가 (상위 150개 + 요일 몫 약 280건, 한도 안에서 약 17분)
     'enrich-players',
     'enrich-recent-reviews', // 스팀 최근 30일 평가 (상점 페이지, 요청 간격 2초, 숨긴 게임 제외)
     'fetch-streamer-videos --apply', // 스트리머 공식 채널 새 영상 → 게임 연결 (YouTube 하루 200유닛, 하이라이트 작업이 이 몫을 남겨 둠). 트레일러보다 먼저

@@ -2,7 +2,7 @@
 // ITAD에서 매일 갱신: 인기 순위(heat_rank)·역대 최고 동접(peak_players)·한국 역대 최저가(상점 포함)
 // 현재 동접(current_players)은 enrich-players(스팀 실시간)만 씀 — 여기선 건드리지 않음
 // 고정 값인 메타스코어는 빈 칸일 때만 채움. 한 번 찾은 ITAD ID는 games.itad_id에 저장해 lookup을 건너뜀
-// 증분: 매일은 ITAD ID가 없는 게임 + 게임 id 해시 % 7 == 요일(KST)인 게임만 (7일에 한 바퀴). ITAD에 없다고 확인된 게임은 30일간 lookup을 건너뜀
+// 증분: 매일은 ITAD ID가 없는 게임 + heat_rank 상위 150개 + 게임 id 해시 % 7 == 요일(KST)인 게임만 (7일에 한 바퀴). ITAD에 없다고 확인된 게임은 30일간 lookup을 건너뜀
 // 실행: node --env-file=.env.local scripts/enrich-itad-heat.mjs [--ids 파일.json] [--dry] [--all]
 //   --dry: 저장하지 않고 저장할 값만 출력
 //   --all: 요일과 상관없이 전체 (없음 캐시도 무시)
@@ -11,7 +11,7 @@ import { lookupItadId, getGameInfo, getHistoryLows, ItadLimitError } from './lib
 import { processHeatBatches } from './lib/itad-heat-batch.mjs';
 import { onlyIds } from './lib/only-ids.mjs';
 import { kstWeekday } from './lib/backfill-targets.mjs';
-import { isHeatTarget, loadMissing, saveMissing } from './lib/heat-targets.mjs';
+import { isHeatTarget, hotIds, HOT_TOP_N, loadMissing, saveMissing } from './lib/heat-targets.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -26,7 +26,7 @@ async function main() {
 
   const { data: allGames, error } = await onlyIds(supabase
     .from('games')
-    .select('id, name, steam_appid, itad_id, metascore')
+    .select('id, name, steam_appid, itad_id, metascore, heat_rank')
     .eq('hidden', false)
     .not('steam_appid', 'is', null));
   if (error) return console.error(`❌ 게임 목록을 못 불러옴: ${error.message}`);
@@ -34,8 +34,9 @@ async function main() {
   const weekday = kstWeekday();
   const missing = loadMissing();
   let missingChanged = false;
-  const games = allGames.filter((g) => isHeatTarget(g, weekday, { all: ALL, missing }));
-  console.log(`스팀 게임 ${allGames.length}개 중 ${games.length}개 확인 시작 (${ALL ? '--all' : `새 게임 + 요일 ${weekday} 몫`}, ITAD 미등록으로 건너뜀 ${allGames.filter((g) => !g.itad_id).length - games.filter((g) => !g.itad_id).length}개)\n`);
+  const hot = hotIds(allGames);
+  const games = allGames.filter((g) => isHeatTarget(g, weekday, { all: ALL, missing, hot }));
+  console.log(`스팀 게임 ${allGames.length}개 중 ${games.length}개 확인 시작 (${ALL ? '--all' : `새 게임 + heat 상위 ${HOT_TOP_N}개 + 요일 ${weekday} 몫`}, ITAD 미등록으로 건너뜀 ${allGames.filter((g) => !g.itad_id).length - games.filter((g) => !g.itad_id).length}개)\n`);
 
   const collect = async (game) => {
     let itadId = game.itad_id;
