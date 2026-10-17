@@ -2171,14 +2171,11 @@ a.hc-row:hover { background: var(--card-hover); }
 .more-list dd { color: var(--text); font-weight: 600; overflow-wrap: anywhere; }
 .more-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .activity-chip { padding: 2px 8px; border: none; border-radius: var(--radius-badge); background: var(--inset); font-size: var(--fs-s); font-weight: 600; color: var(--text-2); }
-.activity-chip.is-unsure { background: transparent; border: 1px dashed var(--border); color: var(--text-muted); font-weight: 500; }
-.activity-unsure-label { display: inline-flex; align-items: center; gap: 2px; font-size: var(--fs-xs); color: var(--text-faint); font-weight: 500; padding: 0 2px; align-self: center; }
+.activity-chip.is-unsure { display: inline-flex; align-items: center; gap: 2px; background: transparent; border: 1px dashed var(--border); color: var(--text-muted); font-weight: 500; }
 .activity-info { position: relative; display: inline-flex; }
-.activity-info-btn { padding: 2px 4px; border: none; background: none; color: var(--text-faint); font: inherit; font-size: var(--fs-s); line-height: 1; cursor: pointer; }
+.activity-info-btn { padding: 2px 2px 2px 4px; border: none; background: none; color: var(--text-muted); font: inherit; font-size: var(--fs-s); line-height: 1; cursor: pointer; }
 .activity-info-btn:hover, .activity-info-btn:focus-visible, .activity-info.is-open .activity-info-btn { color: var(--text); }
-.activity-info-tip { position: absolute; left: 50%; bottom: calc(100% + 6px); margin-left: -110px; z-index: 3; width: 220px; padding: 6px 10px; font-size: var(--fs-xs); font-weight: 400; line-height: 1.5; color: var(--text); background: var(--card-hover); border: 1px solid var(--border); border-radius: 6px; pointer-events: none; opacity: 0; visibility: hidden; transition: opacity 0.12s ease; }
-.activity-info.is-open .activity-info-tip, .activity-info:focus-within .activity-info-tip { opacity: 1; visibility: visible; }
-@media (hover: hover) { .activity-info:hover .activity-info-tip { opacity: 1; visibility: visible; } }
+.activity-info-tip { position: absolute; left: 50%; bottom: calc(100% + 6px); margin-left: -110px; z-index: 3; width: 220px; padding: 6px 10px; font-size: var(--fs-xs); font-weight: 400; line-height: 1.5; color: var(--text); background: var(--card-hover); border: 1px solid var(--border); border-radius: 6px; pointer-events: none; }
 button.activity-chip.activity-more { cursor: pointer; font-family: inherit; }
 button.activity-chip.activity-more:hover { border-color: var(--text-faint); color: var(--text); }
 .ai-note { font-size: var(--fs-xs); color: var(--text-faint); font-weight: 500; line-height: 1.5; margin: 0 0 10px; }

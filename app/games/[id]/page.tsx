@@ -43,6 +43,7 @@ import { isUuid } from '../../lib/uuid';
 import SimilarGames from '../../components/SimilarGames';
 import { getCardGames } from '../../lib/gameIndex';
 import ActivityChips from '../../components/ActivityChips';
+import { decodeEntities } from '../../lib/htmlEntities';
 import { ACTIVITIES, isActivityKey } from '../../lib/activities';
 import ScreenshotGallery, { type Screenshot } from '../../components/ScreenshotGallery';
 
@@ -85,7 +86,7 @@ function updateState(date: string) {
 
 function parseMinSpec(raw: string | null) {
   if (!raw) return null;
-  const lines = raw.split('/').map((s) => s.trim()).filter(Boolean);
+  const lines = decodeEntities(raw).split('/').map((s) => s.trim()).filter(Boolean);
   const result: { label: string; value: string }[] = [];
   for (const line of lines) {
     const colonIdx = line.indexOf(':');
