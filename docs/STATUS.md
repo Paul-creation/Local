@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-17 (main 22cad63)
+기준: 2026-10-17 (main b583607)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/17: feat/owned-hide — 목록 필터 "보유 게임 빼고 보기" 칩(내 PC 칩 옆, 로그인+공개 보유 목록 1개 이상일 때만 표시, 선택은 localStorage jdn_hide_owned에만 저장·주소엔 안 담음, 결과 위 조건 칩 "보유 게임 제외", useGameFilters가 steam_appid로 거름, 내 PC 사양이 없어도 칩이 보이도록 필터 상단 구조 정리). /api/recommend는 세션 쿠키로 getOwnedAppids(user_owned_games 읽기 전용, 스팀 재동기화 없음, 공개+1개 이상일 때만)를 읽어 후보에서 제외(app/lib/ownedFilter.ts dropOwned, 새 질문·예전 흐름 둘 다, 사용자가 답에 게임 이름을 직접 쓴 경우는 예외, 보유 목록은 AI 프롬프트에 안 넣음). 로그인 안 함·비공개·0개면 기존 동작. 가이드 Steam 문구 갱신. security-check ❌ 1개는 privacy/page.tsx의 user_session 오탐. 프리뷰에서 칩 켜고 끈 화면(1440·375, 가짜 보유 목록)만 확인, AI 추천 제외는 단위 테스트만
 - 10/17: docs/privacy-owned-use — 개인정보처리방침에 보유 게임 이용 목적 추가(Steam 로그인 행 목적에 "보유 게임을 활용한 추천(내 라이브러리, 취향 비슷한 게임), 목록·AI 추천에서 보유 게임 제외", Steam 항목에 "취향 추천 계산은 내 브라우저 안에서 이뤄지고 AI 추천에 보유 게임 목록을 외부 AI 서비스로 보내지 않아요" 한 줄), 수집 항목은 그대로라 이용자에게 불리하지 않은 변경으로 2026-10-17 즉시 시행(시행일·변경 이력 갱신, 플레이 시간 미수집 문구 유지). 가이드 Steam 섹션에 "내 라이브러리(/library)·취향 비슷한 게임 추천·목록/AI 추천에서 보유 게임 빼기는 곧 추가" 안내와 같은 브라우저 계산·AI 미전송 문구 추가. 프리뷰 /privacy에서 새 문구 확인, 가이드 화면은 확인 못 함
 - 10/17: feat/similar-v2 — "비슷한 게임"을 태그 득표·활동 기반으로 교체. app/lib/taste.ts(코사인), scripts/build-similar-games.mjs(게임별 상위 18개를 game_similar에 저장, 바뀐 게임만, AI·외부 요청 없음, 표가 없으면 실패로 표시)를 weekly의 enrich-update-date 뒤·pick-weekly-featured 앞 단계로 추가(run-steps.mjs). 상세 SimilarGames·찜 추천(WishlistRecs)이 game_similar를 사용. 마이그레이션 supabase/migrations/20261022090000_game_similar.sql(버전 중복 때문에 이름 변경, game_similar 18,252행은 이미 적용). PC 사양 필터는 10/9 결정대로 제거. weekly 실행 시간·DB 쓰기에 영향이 있는 변경이라 다음 weekly에서 확인 필요
 - 10/17: fix/game-index-paging — 게임 목록 API(getGameIndex)가 Supabase 1,000행 상한에 걸려 노출 게임 1,060개 중 60개(9/21~9/24 등록, Satisfactory 등)가 검색·필터·추천에서 빠지던 것을 페이지 읽기로 해결. app/lib/paged.ts readAllPages(1,000행씩 끝까지, 서버 Max rows가 달라도 동작, 오류면 모은 행을 버리고 error 반환해 직전 캐시 사용, 상한 20만 행)를 gameIndex(목록·GOTY·크로스플레이·태그)·/api/admin/games·/api/recommend·sitemap에 적용, 정렬은 created_at 최신순+id로 고정. paged.test.mjs 추가. 프로덕션 반영은 확인 못 함
@@ -52,7 +53,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
-- 방침은 보유 게임 추천·제외를 이미 적었지만 기능은 아직 없음(현재는 "보유 중" 칩만). /library·취향 추천·보유 게임 제외를 만들 때 방침 문구대로 구현(취향 계산은 브라우저 안, AI에 보유 목록 미전송)하고 가이드의 "곧 추가" 문구를 바꿈
+- 방침에 적은 보유 게임 기능 중 "보유 게임 빼고 보기"·AI 추천 제외는 feat/owned-hide로 구현됨. 남은 것: /library(내 라이브러리)·취향 비슷한 게임 추천 — 만들 때 방침대로(취향 계산은 브라우저 안, AI에 보유 목록 미전송) 구현하고 가이드의 "곧 추가" 문구를 바꿈 / feat/owned-hide 프로덕션 확인: 로그인한 상태로 AI 추천에서 보유 게임이 후보에서 빠지는지, 필터 칩 켜고 끄기(미확인)
 - fix/game-index-paging 머지 뒤 프로덕션에서 Satisfactory 등 60개가 검색·필터·추천에 나오는지, 노출 게임 수가 1,060개와 맞는지 확인(미확인) / feat/similar-v2 머지 뒤 다음 weekly에서 build-similar-games --apply 단계 동작·소요 시간 확인, 프리뷰·프로덕션의 상세 "비슷한 게임"·찜 추천 표시 확인(미확인)
 - 고스트러너 2 영어 이름(Ghostrunner 2) 수동 추가 필요(스팀 ID 없어 스크립트 대상 아님) / 다음 weekly 실행에서 fill-english-names 단계 동작·소요 시간 확인
 - 다음: 진짜 로고가 생기면 아이콘 3개 교체 / 구글 검색 결과 아이콘 반영 확인 / ITAD 한도 확인(이메일 인증·앱 설정 페이지) 뒤 ITAD_REQ_PER_WINDOW 조정 / 외부 트리거 적용(PAT 발급·Vault 등록·마이그레이션 실행·시험 호출·cron 기록 확인, 만료일 캘린더 등록, 첫 실행에서 가드 동작 확인) / enrich-itad-heat 커서(DB 칸 필요, 보류) / heat가 무료 게임 62개를 매일 lookup하는 낭비 / lowest_price_shop 빈 765개는 heat 최저가가 성공하면 채워짐 / 10/12 아침 매일 갱신 확인(순서·소요 시간·429 대기 로그·가격 못 받은 게임)
