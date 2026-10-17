@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-17 (main 5f63988)
+기준: 2026-10-17 (main 0d9ecba)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/17: chore/security-check-update — security-check.mjs에 game_activity_reports 점검 추가(anon 키로 select·insert 차단, authenticated는 마이그레이션의 RLS·revoke 문구로 확인) + privacy/page.tsx의 user_session 오탐 정리(<code>user_session</code> 본문·주석 언급만 예외). 프로덕션(jamidunow.com) 실행 ✅ 118 · ❌ 0 · ⚠️ 4, build·test 261개 통과. authenticated 역할 직접 시도는 못 함
 - 10/17: feat/activity-report — 가능한 활동 제보. 상세 페이지에서 로그인 없이 빠진 활동·틀린 활동을 제보(POST /api/activity-reports, IP 해시 기준 하루 20건·같은 게임·활동·종류 중복 무시, 이미 반영된 활동은 거부), 브라우저는 표에 직접 못 씀(RLS, service role만). 관리자 화면 "활동 제보"(GET·PATCH /api/admin/activity-reports)에서 게임·활동·종류별로 묶어 보고(서로 다른 제보자 3명 이상이 위) 승인하면 games.activities_confirmed/unsure에 반영, 무시는 표시만(제보 기록은 안 지움). 표 game_activity_reports는 마이그레이션 20261023090000(game_id on delete cascade 포함)을 DB에 적용 완료, voter_hash는 purge-ip-hash가 90일 뒤 비움. build·test 261개 통과, security-check ❌ 1개는 privacy/page.tsx user_session 오탐(기존), 관리자 API 인증 없음 401·빈 본문 POST 400은 프리뷰에서 확인. 제보 화면(1440·375)·실제 제보 저장·승인 반영은 확인 못 함
 - 10/17: fix/search-tag-activity-merge — 검색 후보에서 같은 이름의 태그·활동을 하나로 합침(app/lib/searchSplit.ts), 필터 분류 트리에서 활동과 겹치는 태그는 숨기고 예전 태그 링크(?tags=…)는 해당 활동(?act=…)으로 변환(activityFilter.ts·useGameFilters.ts·activities.ts). build·test 257개 통과, 프리뷰 화면은 확인 못 함
 - 10/17: feat/activity-filter — 필터 "가능한 활동" 섹션. app/lib/activities.ts의 묶음(이동·생활·제작·탐험·전투·경영·사회·기타)·라벨로 칩을 나열하고 고른 활동을 모두 가진 게임만(AND, app/lib/activityFilter.ts), 칩 옆에 게임 수(전체 목록 기준, 0이면 --text-faint로 흐리게+비활성). "확인 중 포함" 토글을 켜면 activities_unsure도 같은 활동으로 보고 개수도 합산(기본은 확정만). 주소 ?act=drive,train(+ &actu=1, /games 리다이렉트·첫 HTML 홈 숨김 목록 포함, 모르는 키 무시), 결과 위 조건 칩에 활동 표시(확인 중 포함이면 "(확인 중 포함)"). 검색창에 활동 라벨("운전"·"낚시")을 치면 "활동" 후보가 나와 고르면 조건이 걸림(태그 후보가 먼저, Enter만으로는 이름 검색, app/lib/activitySearch.ts). /api/games/list에 activities_confirmed·activities_unsure 추가(빈 배열은 칸 자체 생략): 원문 +66KB, gzip +약 10KB(br 전송 프리뷰 181.5KB vs 프로덕션 170.6KB), 확정 있는 게임 815·확인 중 있는 게임 306(전체 1,060). 프리뷰 1440·375에서 운전+기차 = 2개(Satisfactory·Rust), 확인 중 포함 4개 확인. 실기기·Safari 미확인, 주소 변환·자동완성 함수는 단위 테스트 없음(import 경로 문제로 프리뷰에서 확인)
@@ -59,7 +60,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
-- 활동 제보 머지 뒤 프로덕션에서 상세 제보 UI·제보 저장·관리자 승인 반영 확인(미확인) / security-check에 game_activity_reports 점검 추가 검토 / 프리뷰 주소는 배포 보호 때문에 [3] 배포 점검이 건너뛰어짐
+- 활동 제보 머지 뒤 프로덕션에서 상세 제보 UI·제보 저장·관리자 승인 반영 확인(미확인) / 프리뷰 주소는 배포 보호 때문에 [3] 배포 점검이 건너뛰어짐
 - 검색·필터 태그/활동 합침 머지 뒤 프로덕션에서 같은 이름 후보가 하나로 나오는지, 예전 태그 링크가 활동으로 바뀌는지 확인(미확인)
 - 활동 필터 머지 뒤 프로덕션에서 /api/games/list 크기·칩 개수·자동완성 확인(미확인) / 확인 중 게임 수를 "확인 중 포함" 끄고도 따로 흐리게 보여줄지 결정 필요
 - 필터: 데스크톱 사이드바에도 내부 스크롤 없이 펼칠지 결정 필요 / "중간 합류 가능" 칩을 AI 판단으로 만들지 결정 필요 / 메인 상단 개편 머지 뒤 프로덕션에서 이벤트 라벨 줄바꿈·내 PC 칩·/library 인원 버튼 확인(미확인)
