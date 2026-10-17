@@ -9,6 +9,7 @@
 //   ... --dry-run --ids ... --yes     (배치 실행, DB 쓰기 없이 scripts/.cache/에 결과 파일)
 //   ... --apply [--ids 파일] [--limit N] --yes   (배치 실행 + DB 저장. 마이그레이션 20261021090000 적용 뒤)
 //   ... --collect <배치 id> --dry-run|--apply    (이미 제출한 배치의 결과만 받아 처리)
+//   ... --apply --new-days 14 --yes   (최근 14일 안에 들어온 새 게임만 — 매주 갱신이 쓰는 방식. 예전 미처리 게임은 대상 아님)
 // 스크립트라서 api.anthropic.com을 직접 부름 (aiGuard 예외 대상)
 import { createClient } from '@supabase/supabase-js';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -37,6 +38,7 @@ const APPLY = flag('--apply');
 const YES = flag('--yes');
 const LIMIT = arg('--limit') ? Number(arg('--limit')) : null;
 const COLLECT = arg('--collect');
+const NEW_DAYS = arg('--new-days') ? Number(arg('--new-days')) : null;
 const MODEL = arg('--model') || DEFAULT_MODEL;
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
@@ -183,6 +185,7 @@ async function main() {
   let q = supabase.from('games').select(cols).eq('hidden', false).not('steam_appid', 'is', null).order('heat_rank', { ascending: true, nullsFirst: false });
   q = onlyIds(q);
   if (APPLY) q = q.is('activities_ai_at', null);
+  if (NEW_DAYS) q = q.gte('created_at', new Date(Date.now() - NEW_DAYS * 24 * 60 * 60 * 1000).toISOString());
   if (COLLECT) { const meta = readJson(`${CACHE_DIR}/activities-v2-batch-${COLLECT}.json`, null); if (!meta) return console.error('그 배치의 메타 파일이 없어요'); q = q.in('id', meta.ids); }
   const { data, error } = await q;
   if (error) return console.error('조회 실패:', error.message);

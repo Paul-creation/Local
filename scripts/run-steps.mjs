@@ -49,6 +49,7 @@ const GROUPS = {
     'enrich-hero-images',
     'write-fun-descriptions 300',
     'fill-search-names', // 합방 영상 검색용 한국어 이름 (새 대상만, Haiku 1번)
+    'fill-activities-v2 --apply --yes --new-days 14', // 최근 14일 안에 들어온 새 게임의 "가능한 활동" (Message Batches, Sonnet 5.5, 게임당 약 $0.01~0.02). 예전 미처리 게임은 대상 아님, 처리한 게임은 다시 안 함
     'fill-english-names --apply', // 한국어 이름 게임에 스팀 영어 이름을 search_name_ko 뒤에 덧붙임 (영어로 안 찾히는 새 게임만, AI 안 씀, 요청 간격 1.5초)
     'fetch-coop-videos', // 인기 멀티 게임 50개의 합방 영상 (YouTube 게임당 101~202 사용)
     'enrich-update-date',
@@ -62,7 +63,7 @@ const GROUPS = {
 };
 
 const STEP_TIMEOUT_MIN = 45;
-const STEP_TIMEOUT_OVERRIDE_MIN = { 'enrich-itad-heat': 90 }; // ITAD 5분 창 한도 안에서 약 900건 = 약 1시간
+const STEP_TIMEOUT_OVERRIDE_MIN = { 'enrich-itad-heat': 90, 'fill-activities-v2': 90 }; // 배치 결과를 기다리는 시간이 길 수 있음 // ITAD 5분 창 한도 안에서 약 900건 = 약 1시간
 const group = process.argv[2];
 const steps = GROUPS[group];
 if (!steps) {

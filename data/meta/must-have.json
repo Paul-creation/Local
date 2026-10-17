@@ -288,5 +288,16 @@
     "name": "Horizon Zero Dawn Remastered",
     "steam_appid": "2561580",
     "reason": "앱 번호 확인용"
+  },
+  {
+    "name": "Euro Truck Simulator 2",
+    "steam_appid": "227300",
+    "reason": "트럭 운전 시뮬레이션의 대표작, 한국 판매 124위·동접 상위 (2012년 출시라 연도 조건에 걸렸음)"
+  },
+  {
+    "name": "Escape from Tarkov",
+    "steam_appid": "3932890",
+    "force": true,
+    "reason": "한국 판매 40위·동접 상위 (긍정 50%라 긍정률 조건에 걸려 force)"
   }
 ]

@@ -50,6 +50,6 @@ export async function steamGet(url, { text = false, headers, retryIf, waits = RE
   }
 }
 
-export function appdetailsUrl(appid, lang = 'korean') {
-  return `https://store.steampowered.com/api/appdetails?appids=${appid}&cc=kr&l=${lang}`;
+export function appdetailsUrl(appid, lang = 'korean', cc = 'kr') {
+  return `https://store.steampowered.com/api/appdetails?appids=${appid}&cc=${cc}&l=${lang}`;
 }
