@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-17 (main 0d9ecba)
+기준: 2026-10-17 (main 0dfe2ed)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,8 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/17: perf/daily-heat-cursor — enrich-itad-heat가 매일 전체 대신 ITAD ID 없는 새 게임 + heat_rank 목록 상위 150개 + 게임 id 해시 % 7 == 요일(KST) 몫만 조회(--all이면 전체). 상위 150개는 메인 "지금 뜨는 게임"·snapshot-hot-rank가 쓰는 상위 50개(heat_rank 값 75까지)의 3배(값 286까지). ITAD에 없다고 확인된 게임은 scripts/.cache/itad-missing.json에 30일 기록해 lookup 건너뜀(daily.yml에 actions/cache@v4 단계 추가). 하루 ITAD 요청 약 1,044건·최소 65분 → 270~292건·최소 17~18분(80건/5분 한도 기준 하한). 상위 150 밖 게임의 heat_rank는 최대 6일 묵을 수 있음. build·test 270개 통과, 실제 ITAD 호출·Actions 캐시 복원은 확인 못 함
+- 10/17: fix/specs-entity-decode — enrich-specs.mjs가 사양 저장 때 태그를 지운 뒤 HTML 엔티티를 글자로 풀어 저장(scripts/lib/html-entities.mjs). 기존 저장값 중 엔티티가 남은 행 43개(min_spec 42·recommended_spec 38)는 정리 SQL을 사용자가 Supabase에서 실행해야 함(미실행, 화면은 표시 직전 디코딩이라 지금도 정상). parse-specs는 AI를 안 써서 비용 없음, 사양이 바뀐 행만 spec_hash로 다시 계산. build·test 263개 통과
 - 10/17: chore/security-check-update — security-check.mjs에 game_activity_reports 점검 추가(anon 키로 select·insert 차단, authenticated는 마이그레이션의 RLS·revoke 문구로 확인) + privacy/page.tsx의 user_session 오탐 정리(<code>user_session</code> 본문·주석 언급만 예외). 프로덕션(jamidunow.com) 실행 ✅ 118 · ❌ 0 · ⚠️ 4, build·test 261개 통과. authenticated 역할 직접 시도는 못 함
 - 10/17: feat/activity-report — 가능한 활동 제보. 상세 페이지에서 로그인 없이 빠진 활동·틀린 활동을 제보(POST /api/activity-reports, IP 해시 기준 하루 20건·같은 게임·활동·종류 중복 무시, 이미 반영된 활동은 거부), 브라우저는 표에 직접 못 씀(RLS, service role만). 관리자 화면 "활동 제보"(GET·PATCH /api/admin/activity-reports)에서 게임·활동·종류별로 묶어 보고(서로 다른 제보자 3명 이상이 위) 승인하면 games.activities_confirmed/unsure에 반영, 무시는 표시만(제보 기록은 안 지움). 표 game_activity_reports는 마이그레이션 20261023090000(game_id on delete cascade 포함)을 DB에 적용 완료, voter_hash는 purge-ip-hash가 90일 뒤 비움. build·test 261개 통과, security-check ❌ 1개는 privacy/page.tsx user_session 오탐(기존), 관리자 API 인증 없음 401·빈 본문 POST 400은 프리뷰에서 확인. 제보 화면(1440·375)·실제 제보 저장·승인 반영은 확인 못 함
 - 10/17: fix/search-tag-activity-merge — 검색 후보에서 같은 이름의 태그·활동을 하나로 합침(app/lib/searchSplit.ts), 필터 분류 트리에서 활동과 겹치는 태그는 숨기고 예전 태그 링크(?tags=…)는 해당 활동(?act=…)으로 변환(activityFilter.ts·useGameFilters.ts·activities.ts). build·test 257개 통과, 프리뷰 화면은 확인 못 함
@@ -67,7 +69,7 @@
 - 방침에 적은 보유 게임 기능은 모두 구현됨(보유 게임 빼고 보기·AI 추천 제외·/library). 프로덕션 확인 필요(미확인): 로그인한 상태로 /library 두 탭(친구랑 할 게임·취향 비슷한 게임), AI 추천에서 보유 게임이 후보에서 빠지는지, 필터 칩 켜고 끄기, 메인 인원별 추천 아래 "내 라이브러리" 링크, 닉네임 메뉴 "내 라이브러리" / /library 상태별 문구(로그인 안 함·비공개·못 가져옴·0개·보유 5개 미만)는 보고서 3번 표 없이 임의로 정함 — 표와 다르면 수정 / /api/games/taste 크기(원본 약 219KB, 프리뷰 gzip 약 84KB·br 약 83KB)가 커지면 줄일 방법(태그 수 제한 등) 검토
 - fix/game-index-paging 머지 뒤 프로덕션에서 Satisfactory 등 60개가 검색·필터·추천에 나오는지, 노출 게임 수가 1,060개와 맞는지 확인(미확인) / feat/similar-v2 머지 뒤 다음 weekly에서 build-similar-games --apply 단계 동작·소요 시간 확인, 프리뷰·프로덕션의 상세 "비슷한 게임"·찜 추천 표시 확인(미확인)
 - 고스트러너 2 영어 이름(Ghostrunner 2) 수동 추가 필요(스팀 ID 없어 스크립트 대상 아님) / 다음 weekly 실행에서 fill-english-names 단계 동작·소요 시간 확인
-- 다음: 진짜 로고가 생기면 아이콘 3개 교체 / 구글 검색 결과 아이콘 반영 확인 / ITAD 한도 확인(이메일 인증·앱 설정 페이지) 뒤 ITAD_REQ_PER_WINDOW 조정 / 외부 트리거 적용(PAT 발급·Vault 등록·마이그레이션 실행·시험 호출·cron 기록 확인, 만료일 캘린더 등록, 첫 실행에서 가드 동작 확인) / enrich-itad-heat 커서(DB 칸 필요, 보류) / heat가 무료 게임 62개를 매일 lookup하는 낭비 / lowest_price_shop 빈 765개는 heat 최저가가 성공하면 채워짐 / 10/12 아침 매일 갱신 확인(순서·소요 시간·429 대기 로그·가격 못 받은 게임)
+- 다음: 진짜 로고가 생기면 아이콘 3개 교체 / 구글 검색 결과 아이콘 반영 확인 / ITAD 한도 확인(이메일 인증·앱 설정 페이지) 뒤 ITAD_REQ_PER_WINDOW 조정 / 외부 트리거 적용(PAT 발급·Vault 등록·마이그레이션 실행·시험 호출·cron 기록 확인, 만료일 캘린더 등록, 첫 실행에서 가드 동작 확인) / (10/17 DB 확인: ITAD ID 없는 노출 게임 0개 — 무료 게임 62개 lookup 낭비 메모는 옛 것으로 보임) / daily.yml 외 실제 확인 필요: 다음 daily에서 enrich-itad-heat 대상 수·소요 시간·itad-missing 캐시 복원 로그, 엔티티 정리 SQL 실행 뒤 parse-specs 재계산 / lowest_price_shop 빈 765개는 heat 최저가가 성공하면 채워짐 / 10/12 아침 매일 갱신 확인(순서·소요 시간·429 대기 로그·가격 못 받은 게임)
 
 ## 완료된 판단
 - 1~3위 카드에 동접·그래프 안 넣음(상세 헤더에 있음). 4~10위 줄엔 동접 유지
