@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-17 (main f5bc63e)
+기준: 2026-10-17 (main 9e74e1e)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/17: feat/similar-v2 — "비슷한 게임"을 태그 득표·활동 기반으로 교체. app/lib/taste.ts(코사인), scripts/build-similar-games.mjs(게임별 상위 18개를 game_similar에 저장, 바뀐 게임만, AI·외부 요청 없음, 표가 없으면 실패로 표시)를 weekly의 enrich-update-date 뒤·pick-weekly-featured 앞 단계로 추가(run-steps.mjs). 상세 SimilarGames·찜 추천(WishlistRecs)이 game_similar를 사용. 마이그레이션 supabase/migrations/20261022090000_game_similar.sql(버전 중복 때문에 이름 변경, game_similar 18,252행은 이미 적용). PC 사양 필터는 10/9 결정대로 제거. weekly 실행 시간·DB 쓰기에 영향이 있는 변경이라 다음 weekly에서 확인 필요
 - 10/17: fix/game-index-paging — 게임 목록 API(getGameIndex)가 Supabase 1,000행 상한에 걸려 노출 게임 1,060개 중 60개(9/21~9/24 등록, Satisfactory 등)가 검색·필터·추천에서 빠지던 것을 페이지 읽기로 해결. app/lib/paged.ts readAllPages(1,000행씩 끝까지, 서버 Max rows가 달라도 동작, 오류면 모은 행을 버리고 error 반환해 직전 캐시 사용, 상한 20만 행)를 gameIndex(목록·GOTY·크로스플레이·태그)·/api/admin/games·/api/recommend·sitemap에 적용, 정렬은 created_at 최신순+id로 고정. paged.test.mjs 추가. 프로덕션 반영은 확인 못 함
 - 10/17: fix/activity-unsure-chip — 상세 "더 자세히" 활동 표시 수정. "확인 중" 라벨·옆 ⓘ·칩 끝 "?" 삭제, 확인 중 칩마다 안쪽 오른쪽 끝에 ⓘ(PC hover·포커스, 모바일 탭 열고 닫기, 바깥 탭·Esc로 닫힘, 툴팁은 한 번에 하나, 문구 "AI가 있을 것으로 판단했지만 공식 설명에서 확인하지 못한 활동이에요"), 점선 테두리+--text-muted는 유지·확정 칩 뒤 같은 줄·3개 넘으면 +N. 활동 라벨 13개 명확화(PvE 전투·PvP 대전·총기 사격·아이템 제작·에디터·창작·거점 방어·수집 요소·탈것 타기·기차 운행·공장 자동화·같이 어울리기·집 꾸미기·동물 길들이기, 키 그대로). 사양표 "&amp;" 원인은 이중 이스케이프가 아니라 저장값(스팀 pc_requirements의 엔티티가 태그만 지우고 저장됨)이라 app/lib/htmlEntities.ts로 상세에서 표시 직전에 풀게 함(DB 그대로, &quot;·&gt;·&lt;·&reg; 있던 40여 게임도 해결). enrich-specs.mjs 저장 시 디코딩은 미적용. 모바일 실기기 탭·바깥 탭 닫힘은 확인 못 함
 - 10/16: feat/activities-v2 — 가능한 활동 v2. 분류표 app/lib/activities.ts(키·라벨·정의·체크 기준 한 곳), games.activities_confirmed·activities_unsure·activities_evidence 저장 칸과 재채움 스크립트, 상세 "가능한 활동"을 v2 데이터로 교체(확정 칩은 전부, 확인 중은 흐린 칩 3개+"+N"), 활동 카드·상황별 추천도에 AI 표시. "확인 중" 옆 ⓘ 툴팁(hover·포커스·탭)과 확인 중 칩 끝 "?", photo 라벨 "사진 모드". 프리뷰의 Vercel 툴바 INP 경고(dd.more-chips 5.7초)는 로컬·프리뷰 어디서도 재현 안 됨(핸들러 14ms 이하, 6배 CPU) — 툴바 영향 가능성, 미확인
@@ -50,7 +51,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
-- feat/similar-v2 머지 대기(game_similar 18,252행 적용 완료) / fix/game-index-paging 머지 뒤 프로덕션에서 Satisfactory 등 60개가 검색·필터·추천에 나오는지, 노출 게임 수가 1,060개와 맞는지 확인(미확인)
+- fix/game-index-paging 머지 뒤 프로덕션에서 Satisfactory 등 60개가 검색·필터·추천에 나오는지, 노출 게임 수가 1,060개와 맞는지 확인(미확인) / feat/similar-v2 머지 뒤 다음 weekly에서 build-similar-games --apply 단계 동작·소요 시간 확인, 프리뷰·프로덕션의 상세 "비슷한 게임"·찜 추천 표시 확인(미확인)
 - 고스트러너 2 영어 이름(Ghostrunner 2) 수동 추가 필요(스팀 ID 없어 스크립트 대상 아님) / 다음 weekly 실행에서 fill-english-names 단계 동작·소요 시간 확인
 - 다음: 진짜 로고가 생기면 아이콘 3개 교체 / 구글 검색 결과 아이콘 반영 확인 / ITAD 한도 확인(이메일 인증·앱 설정 페이지) 뒤 ITAD_REQ_PER_WINDOW 조정 / 외부 트리거 적용(PAT 발급·Vault 등록·마이그레이션 실행·시험 호출·cron 기록 확인, 만료일 캘린더 등록, 첫 실행에서 가드 동작 확인) / enrich-itad-heat 커서(DB 칸 필요, 보류) / heat가 무료 게임 62개를 매일 lookup하는 낭비 / lowest_price_shop 빈 765개는 heat 최저가가 성공하면 채워짐 / 10/12 아침 매일 갱신 확인(순서·소요 시간·429 대기 로그·가격 못 받은 게임)
 
