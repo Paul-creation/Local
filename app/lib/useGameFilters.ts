@@ -15,6 +15,7 @@ import {
 import { HOME_FILTER_STYLE_ID } from './homeFilter';
 import { matchesActivities, countActivities } from './activityFilter';
 import { parseActivities } from './activitySearch';
+import { ACTIVITIES, ACTIVITY_TAG_MAP, activityForTag, type ActivityKey } from './activities';
 import { BADGES, badgeMatches } from './badge.mjs';
 import { runsOnMyPc } from './specJudge';
 import { toUserPc } from './myPc';
@@ -239,11 +240,25 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     setSelectedBarriers(prev => prev.includes(b) ? prev.filter(x => x !== b) : [...prev, b]);
   const toggleAct = (k: string) =>
     setSelectedActs(prev => prev.includes(k) ? prev.filter(x => x !== k) : [...prev, k]);
-  const addTags = (tags: string[]) =>
-    setSelectedTags(prev => [...prev, ...tags.filter(t => !prev.includes(t))]);
+  // 활동과 같은 뜻의 태그(운전·낚시 등, ACTIVITY_TAG_MAP)는 태그가 아니라 활동 조건 하나로 — 같은 이름이 태그·활동 둘로 잡히지 않게
+  const addTags = (tags: string[]) => {
+    const acts = tags.map(activityForTag).filter((a): a is ActivityKey => !!a);
+    if (acts.length) setSelectedActs(prev => [...prev, ...acts.filter(a => !prev.includes(a))]);
+    const rest = tags.filter(t => !activityForTag(t));
+    if (rest.length) setSelectedTags(prev => [...prev, ...rest.filter(t => !prev.includes(t))]);
+  };
 
   // 활동마다 게임 수 (전체 목록 기준, "확인 중 포함"이면 확인 중 게임도 센다)
-  const actCounts = useMemo(() => countActivities(games || [], actIncludeUnsure), [games, actIncludeUnsure]);
+  // 같은 뜻의 스팀 태그가 있는 게임도 그 활동이 있는 것으로 본다 (활동 OR 태그, ACTIVITY_TAG_MAP)
+  const actAlsoHas = (g: any, k: string) => {
+    const t = ACTIVITY_TAG_MAP[k as ActivityKey];
+    return !!t && hasTag(g, String(t.tagId), tree);
+  };
+  const actCounts = useMemo(
+    () => countActivities(games || [], actIncludeUnsure, ACTIVITIES.map((a) => a.key), actAlsoHas),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- actAlsoHas는 tree만 읽는다
+    [games, actIncludeUnsure, tree],
+  );
   // 칸마다 게임 수 (0개인 칸은 아코디언·검색에서 숨김)
   const tagCounts = useMemo(() => (tree && games ? countByNode(tree, games) : new Map<number, number>()), [tree, games]);
   // 검색창 태그 입력용 — 태그 나무 이름·영문·별칭 + 협동·대전 (app/lib/tagSearch)
@@ -305,7 +320,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     if (selectedTags.length > 0 && !selectedTags.every(t => hasTag(g, t, tree))) return false;
     // 빼고 보기: 고른 칸(선정성·폭력·고어·유혈) 중 하나라도 있으면 뺀다
     if (excludedTags.length > 0 && excludedTags.some(t => hasTag(g, t, tree))) return false;
-    if (selectedActs.length > 0 && !matchesActivities(g, selectedActs, actIncludeUnsure)) return false;
+    if (selectedActs.length > 0 && !matchesActivities(g, selectedActs, actIncludeUnsure, actAlsoHas)) return false;
     if (selectedBarriers.length > 0 && !selectedBarriers.includes(g.entry_barrier)) return false;
     if (storyOnly && g.solo_mode !== 'story') return false;
     if (selectedNet.includes('crossplay') && g.has_crossplay !== true) return false;

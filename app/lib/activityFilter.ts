@@ -3,19 +3,22 @@
 
 type ActGame = { activities_confirmed?: string[] | null; activities_unsure?: string[] | null };
 
-export const hasActivity = (g: ActGame, key: string, includeUnsure: boolean) =>
-  !!g.activities_confirmed?.includes(key) || (includeUnsure && !!g.activities_unsure?.includes(key));
+// alsoHas: 같은 뜻의 스팀 태그가 있으면 있는 것으로 보는 추가 판정 (ACTIVITY_TAG_MAP — 활동 OR 태그)
+type AlsoHas<G> = ((g: G, key: string) => boolean) | undefined;
 
-export const matchesActivities = (g: ActGame, keys: string[], includeUnsure: boolean) =>
-  keys.every((k) => hasActivity(g, k, includeUnsure));
+export const hasActivity = <G extends ActGame>(g: G, key: string, includeUnsure: boolean, alsoHas?: AlsoHas<G>) =>
+  !!g.activities_confirmed?.includes(key) || (includeUnsure && !!g.activities_unsure?.includes(key)) || !!alsoHas?.(g, key);
 
-// 활동 키마다 그 활동이 있는 게임 수 (전체 목록 기준)
-export function countActivities(games: ActGame[], includeUnsure: boolean) {
+export const matchesActivities = <G extends ActGame>(g: G, keys: string[], includeUnsure: boolean, alsoHas?: AlsoHas<G>) =>
+  keys.every((k) => hasActivity(g, k, includeUnsure, alsoHas));
+
+// 활동 키마다 그 활동이 있는 게임 수 (전체 목록 기준). keys: 센 대상 키(같은 뜻의 태그만 있는 활동도 세려면 분류표 전체를 넘긴다)
+export function countActivities<G extends ActGame>(games: G[], includeUnsure: boolean, keys: readonly string[], alsoHas?: AlsoHas<G>) {
   const counts = new Map<string, number>();
-  for (const g of games) {
-    for (const k of new Set([...(g.activities_confirmed || []), ...(includeUnsure ? g.activities_unsure || [] : [])])) {
-      counts.set(k, (counts.get(k) || 0) + 1);
-    }
+  for (const k of keys) {
+    let n = 0;
+    for (const g of games) if (hasActivity(g, k, includeUnsure, alsoHas)) n++;
+    if (n) counts.set(k, n);
   }
   return counts;
 }

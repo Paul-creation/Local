@@ -71,6 +71,41 @@ const BY_KEY = new Map<string, ActivityDef>(ACTIVITIES.map((a) => [a.key, a]));
 export const isActivityKey = (v: unknown): v is ActivityKey => typeof v === 'string' && BY_KEY.has(v);
 export const activityLabel = (key: string) => BY_KEY.get(key)?.label ?? key;
 
+// 활동과 같은 뜻의 스팀 태그 (태그 나무 칸 번호 — app/lib/tag-search-dict.json, en은 그 칸의 영어 이름으로 테스트가 대조). 검색창·필터에서 같은 이름을 하나로 합쳐 다루는 데 쓴다
+// 활동을 고르면 "활동이 확정(확인 중 포함이면 확인 중도)인 게임 OR 이 태그(아래 칸 포함)가 있는 게임"으로 걸린다 (app/lib/useGameFilters)
+// 뜻이 넓거나 다른 태그(전투·슈팅·동물·던전 탐험 등)는 일부러 넣지 않았다
+export const ACTIVITY_TAG_MAP: Partial<Record<ActivityKey, { tagId: number; en: string }>> = {
+  drive: { tagId: 1644, en: 'Driving' },
+  fly: { tagId: 15045, en: 'Flight' },
+  train: { tagId: 1616, en: 'Trains' },
+  sail: { tagId: 13577, en: 'Sailing' },
+  parkour: { tagId: 4036, en: 'Parkour' },
+  cook: { tagId: 3920, en: 'Cooking' },
+  farm: { tagId: 87918, en: 'Farming Sim' },
+  fish: { tagId: 15564, en: 'Fishing' },
+  hunt: { tagId: 9564, en: 'Hunting' },
+  decorate: { tagId: 889937, en: 'Decorating' },
+  craft: { tagId: 1702, en: 'Crafting' },
+  build: { tagId: 1643, en: 'Building' },
+  automate: { tagId: 255534, en: 'Automation' },
+  program: { tagId: 5432, en: 'Programming' },
+  explore: { tagId: 3834, en: 'Exploration' },
+  puzzle: { tagId: 1664, en: 'Puzzle' },
+  stealth: { tagId: 1687, en: 'Stealth' },
+  trade: { tagId: 4202, en: 'Trading' },
+  deduction: { tagId: 745697, en: 'Social Deduction' },
+  minigame: { tagId: 8093, en: 'Minigames' },
+  sports: { tagId: 701, en: 'Sports' },
+  music: { tagId: 1752, en: 'Rhythm' },
+  manage: { tagId: 12472, en: 'Management' },
+};
+
+const ACTIVITY_BY_TAG = new Map<string, ActivityKey>(
+  (Object.entries(ACTIVITY_TAG_MAP) as [ActivityKey, { tagId: number }][]).map(([k, v]) => [String(v.tagId), k]),
+);
+// 태그 키(칸 번호 문자열)가 활동과 같은 뜻이면 그 활동 키
+export const activityForTag = (tagKey: string): ActivityKey | undefined => ACTIVITY_BY_TAG.get(tagKey);
+
 // 키별 근거 (games.activities_evidence jsonb의 한 칸)
 // basis: input = 입력(스팀 설명·태그 등)에 직접 근거가 있음, knowledge = 모델 지식뿐
 // 저장: input+strong → confirmed, knowledge+strong → unsure, weak → activities_evidence에만 기록

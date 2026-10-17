@@ -23,7 +23,7 @@ export function filterConditions(f: GameFilters, { withTags = true } = {}): Cond
   if (f.saleOnly) out.push({ key: 'sale', label: '할인 중', clear: () => f.setSaleOnly(false) });
   if (f.myPcActive) out.push({ key: 'mypc', label: '내 PC로 돌아가는 게임', clear: () => f.setMyPcOnly(false) });
   if (f.hideOwnedActive) out.push({ key: 'owned', label: '보유 게임 제외', clear: () => f.setHideOwned(false) });
-  for (const k of f.selectedActs) out.push({ key: `a${k}`, label: f.actIncludeUnsure ? `${activityLabel(k)} (확인 중 포함)` : activityLabel(k), clear: () => f.toggleAct(k) });
+  if (withTags) for (const k of f.selectedActs) out.push({ key: `a${k}`, label: f.actIncludeUnsure ? `${activityLabel(k)} (확인 중 포함)` : activityLabel(k), clear: () => f.toggleAct(k) });
   for (const [k, label] of NETS) if (f.selectedNet.includes(k)) out.push({ key: `n${k}`, label, clear: () => f.toggleNet(k) });
   for (const b of f.selectedBarriers) out.push({ key: `b${b}`, label: `진입장벽 ${b}`, clear: () => f.toggleBarrier(b) });
   if (withTags) for (const t of f.selectedTags) out.push({ key: `t${t}`, label: tagKeyLabel(t, f.tree) || '알 수 없는 태그', clear: () => f.toggleTag(t) });
