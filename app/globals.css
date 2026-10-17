@@ -1847,7 +1847,7 @@ a.hc-row:hover { background: var(--card-hover); }
 .search-suggest-tag-mark { color: var(--accent-text); background: var(--accent-soft); border-radius: var(--radius-badge); }
 
 /* 필터 카드 */
-.filter-wrap { margin-bottom: 24px; }
+.filter-wrap { margin: 12px 0 24px; }
 .filter-panel { background: var(--panel-bg); border: 1px solid var(--panel-line); border-radius: var(--panel-radius); }
 .filter-loading { padding: 20px; }
 .filter-head { display: flex; align-items: center; gap: 8px; min-height: 56px; padding: 6px 8px 6px 20px; }
