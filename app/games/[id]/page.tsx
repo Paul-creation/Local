@@ -43,6 +43,7 @@ import { isUuid } from '../../lib/uuid';
 import SimilarGames from '../../components/SimilarGames';
 import { getCardGames } from '../../lib/gameIndex';
 import ActivityChips from '../../components/ActivityChips';
+import InfoTip from '../../components/InfoTip';
 import ActivityReport from '../../components/ActivityReport';
 import { decodeEntities } from '../../lib/htmlEntities';
 import { ACTIVITIES, isActivityKey } from '../../lib/activities';
@@ -322,8 +323,11 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
 
           {/* 소개 */}
           <section className="detail-card">
+            <h3 className="detail-card-title">
+              소개
+              {game.fun_description && <InfoTip label="AI가 정리한 소개 안내" text="AI가 정리한 소개예요" />}
+            </h3>
             {game.fun_description && <p className="detail-fun">{game.fun_description}</p>}
-            {game.fun_description && <p className="ai-note">AI가 정리한 내용</p>}
             {game.description && <p className="detail-description-v2">{game.description}</p>}
             {chipGroups.length > 0 && <TagChips groups={chipGroups} />}
             <ContentNotice ids={game.content_descriptor_ids} />

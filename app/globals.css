@@ -3017,3 +3017,4 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* 링�
 /* 로딩 틀 — 정지된 틀만, 200ms 안에 끝나면 보이지 않게 */
 .lib-skel { height: 320px; margin-top: 8px; background: var(--card); border-radius: var(--radius-card); opacity: 0; animation: lib-skel-in 0s linear 200ms forwards; }
 @keyframes lib-skel-in { to { opacity: 1; } }
+.detail-card-title .activity-info { margin-left: 4px; vertical-align: middle; font-size: var(--fs-s); font-weight: 400; }
