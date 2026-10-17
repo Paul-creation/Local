@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import { onlyIds } from './lib/only-ids.mjs';
 import { steamGet, appdetailsUrl, SteamLimitError } from './lib/steam.mjs';
 import { refreshCategory } from './lib/category.mjs';
+import { decodeEntities } from './lib/html-entities.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -13,7 +14,8 @@ const supabase = createClient(
 
 function parseMinSpecOnly(html) {
   if (!html) return null;
-  return html
+  // 태그를 지운 뒤 &amp; 같은 엔티티를 글자로 풀어 저장 (풀고 나서 태그를 지우면 &lt;b&gt;가 태그로 오인됨)
+  return decodeEntities(html
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/<ul[^>]*>/gi, '')
     .replace(/<\/ul>/gi, '')
@@ -23,7 +25,7 @@ function parseMinSpecOnly(html) {
     .replace(/<strong>Minimum[:：]<\/strong>/gi, '')
     .replace(/<strong>/gi, '')
     .replace(/<\/strong>/gi, '')
-    .replace(/<[^>]+>/g, '')
+    .replace(/<[^>]+>/g, ''))
     .split('\n')
     .map(s => s.trim())
     .filter(s => s.length > 0 && !s.includes('64비트 프로세서'))
