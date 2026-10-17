@@ -9,13 +9,13 @@ export const metadata: Metadata = {
   alternates: { canonical: '/privacy' },
 };
 
-// 코드 기준 실제 수집 항목으로 작성 (2026-10-10 Steam 로그인 항목 추가). 수집 항목이 바뀌면 이 문서도 같이 고친다.
+// 코드 기준 실제 수집 항목으로 작성 (2026-10-10 Steam 로그인 항목 추가, 2026-10-17 보유 게임 이용 목적에 추천·제외 추가). 수집 항목이 바뀌면 이 문서도 같이 고친다.
 // 근거: app/lib/community.ts(ipHash·hashPassword), app/api/**(insert), app/lib/aiGuard.ts(ai_calls), scripts/purge-ip-hash.mjs(90일 파기), app/layout.tsx(Vercel Analytics),
 //       app/lib/user/*(users·user_owned_games·used_openid_nonces, user_session 30일), supabase/migrations/2026101*_users·owned_games
 // 이번 개정(삭제 버튼·1년 자동 파기)은 이미 제공 중인 기능의 처리 내용을 적은 것이라 공지와 동시에 즉시 시행 (일반 변경은 시행 7일 전 공지)
 // 1년 자동 파기는 Supabase pg_cron(매일 04:30 KST)로 하므로 SQL이 등록돼 있어야 방침과 맞는다. 전용 이메일이 생기면 6번의 로그인 불가 안내를 바꾼다
-const NOTICE_DATE = '2026년 10월 11일';
-const EFFECTIVE_DATE = '2026년 10월 11일';
+const NOTICE_DATE = '2026년 10월 17일';
+const EFFECTIVE_DATE = '2026년 10월 17일';
 
 export default function PrivacyPage() {
   const contact = CONTACT_EMAIL ? <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> : CONTACT_TEXT;
@@ -74,7 +74,7 @@ export default function PrivacyPage() {
               <tr>
                 <td>Steam 로그인(선택)</td>
                 <td>Steam ID, Steam 닉네임, 프로필 사진 주소, 보유 게임 번호(이 사이트에 등록된 게임만), 가입·마지막 로그인·보유 목록 갱신 시각, 보유 목록 공개 여부</td>
-                <td>로그인 유지, 내 닉네임·사진 표시, 게임 카드·상세의 &ldquo;보유 중&rdquo; 표시</td>
+                <td>로그인 유지, 내 닉네임·사진 표시, 게임 카드·상세의 &ldquo;보유 중&rdquo; 표시, 보유 게임을 활용한 추천(내 라이브러리, 취향 비슷한 게임), 목록·AI 추천에서 보유 게임 제외</td>
               </tr>
               <tr>
                 <td>사이트 접속</td>
@@ -98,6 +98,7 @@ export default function PrivacyPage() {
             <ul>
               <li>로그인은 Steam 공식 로그인 화면에서 해요. Steam 비밀번호는 Steam에서만 입력하고 사이트는 받지 않아요.</li>
               <li>받아서 저장하는 정보는 위 표의 항목뿐이에요. Steam 보유 게임은 게임 번호만 저장하고, 플레이 시간은 저장하지 않아요. Steam ID는 내 브라우저로도 내려보내지 않아요.</li>
+              <li>취향 추천 계산은 내 브라우저 안에서 이뤄지고, AI 추천에 보유 게임 목록을 외부 AI 서비스로 보내지 않아요.</li>
               <li><strong>받지 않는 정보</strong>: 이메일, 친구 목록, 플레이 시간, 위시리스트, 결제 정보, Steam 비밀번호.</li>
               <li>보유 게임은 Steam 프로필의 게임 세부 정보가 공개일 때만 가져와요. 비공개이면 가져오지 못하고 공개 여부만 기록해요.</li>
               <li>로그인 응답의 재사용을 막으려고 Steam이 준 일회용 확인값(nonce)을 잠깐 기록하고, 하루가 지나면 로그인 때 지워요.</li>
@@ -221,7 +222,7 @@ export default function PrivacyPage() {
         <h2 className="cm-h2">9. 방침 변경</h2>
         <p>이 방침을 바꾸면 시행 7일 전부터 사이트에 알려요. 다만 이용자에게 불리하지 않은 변경이나 이미 하고 있는 처리를 적는 변경은 공지와 함께 바로 시행할 수 있어요. 함께 보기: <Link href="/terms">이용약관</Link> · <Link href="/community/policy">커뮤니티 운영정책</Link></p>
         <p className="legal-date">시행일: {EFFECTIVE_DATE}</p>
-        <p className="legal-date">변경 이력: {NOTICE_DATE} 공지·시행 — 보유 게임 갱신 시점 명확화(비공개·미확인이면 로그인 시 바로 갱신), 이용자에게 불리하지 않은 변경이라 즉시 시행 / 2026년 10월 10일 — Steam 로그인 수집 항목·보관 기간(1년 자동 삭제)·삭제 방법([내 정보 삭제] 버튼)·만 14세 미만 이용 제한 추가. 이미 제공 중인 기능의 처리 내용을 적은 개정이라 즉시 시행 / 2026년 10월 5일 — 최초 시행</p>
+        <p className="legal-date">변경 이력: {NOTICE_DATE} 공지·시행 — 보유 게임 이용 목적 추가(보유 게임을 활용한 추천, 목록·AI 추천에서 보유 게임 제외), 수집 항목은 그대로이고 이용자에게 불리하지 않은 변경이라 즉시 시행 / 2026년 10월 11일 공지·시행 — 보유 게임 갱신 시점 명확화(비공개·미확인이면 로그인 시 바로 갱신), 이용자에게 불리하지 않은 변경이라 즉시 시행 / 2026년 10월 10일 — Steam 로그인 수집 항목·보관 기간(1년 자동 삭제)·삭제 방법([내 정보 삭제] 버튼)·만 14세 미만 이용 제한 추가. 이미 제공 중인 기능의 처리 내용을 적은 개정이라 즉시 시행 / 2026년 10월 5일 — 최초 시행</p>
       </article>
     </main>
   );
