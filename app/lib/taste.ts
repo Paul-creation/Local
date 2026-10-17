@@ -39,3 +39,49 @@ export function topSimilar<T extends { id: string; vec: TasteVector }>(source: T
   scored.sort((x, y) => y.score - x.score || x.at - y.at);
   return scored.slice(0, Math.max(0, k)).map(({ id, score }) => ({ id, score }));
 }
+
+// ── 내 라이브러리 "취향 비슷한 게임" (브라우저에서 계산) ──
+// 취향 벡터 = 보유 게임 벡터를 각각 길이 1로 맞춘 뒤 더한 것 (태그가 많은 게임이 취향을 혼자 끌고 가지 않게). 후보와는 코사인
+// 최종 점수 = 코사인 × (1 + 0.15 × min(할인율, 50) / 50) — 할인은 가산점일 뿐 코사인이 0이면 후보가 아니다
+export const SALE_BONUS = 0.15;
+export const SALE_BONUS_CAP = 50;
+export const MIN_OWNED_FOR_TASTE = 5;
+
+export function profileVector(vecs: readonly TasteVector[]): TasteVector {
+  const w = new Map<string, number>();
+  for (const v of vecs) {
+    if (!v.norm) continue;
+    for (const [k, x] of v.w) w.set(k, (w.get(k) ?? 0) + x / v.norm);
+  }
+  let sq = 0;
+  for (const x of w.values()) sq += x * x;
+  return { w, norm: Math.sqrt(sq) };
+}
+
+export const saleBoost = (score: number, discountPercent: number | null | undefined) =>
+  score * (1 + (SALE_BONUS * Math.min(Math.max(discountPercent || 0, 0), SALE_BONUS_CAP)) / SALE_BONUS_CAP);
+
+// /api/games/taste 한 줄: [게임 id, [[태그 번호, 득표], …], [확인된 활동 키, …]]
+export type TasteRow = [string, [number, number][], string[]];
+
+// 보유하지 않은 게임을 취향 점수순으로. 동점은 popularity(작을수록 인기)가 작은 게임이 먼저, 그다음 id
+// 보유 게임 중 벡터가 있는 게임이 하나도 없으면 빈 목록
+export function rankByTaste(
+  rows: readonly TasteRow[],
+  ownedIds: ReadonlySet<string>,
+  discountOf: (id: string) => number,
+  popularityOf: (id: string) => number,
+  limit = Infinity,
+): { id: string; score: number }[] {
+  const vecs = rows.map(([id, tags, acts]) => ({ id, vec: gameVector(tags.map(([tag_id, votes]) => ({ tag_id, votes })), acts) }));
+  const profile = profileVector(vecs.filter((x) => ownedIds.has(x.id)).map((x) => x.vec));
+  if (!profile.norm) return [];
+  const out: { id: string; score: number; pop: number }[] = [];
+  for (const x of vecs) {
+    if (ownedIds.has(x.id)) continue;
+    const c = cosine(profile, x.vec);
+    if (c > 0) out.push({ id: x.id, score: saleBoost(c, discountOf(x.id)), pop: popularityOf(x.id) });
+  }
+  out.sort((a, b) => b.score - a.score || a.pop - b.pop || (a.id < b.id ? -1 : 1));
+  return out.slice(0, limit).map(({ id, score }) => ({ id, score }));
+}

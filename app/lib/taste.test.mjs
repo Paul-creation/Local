@@ -51,3 +51,48 @@ test('topSimilar: 자기 자신·유사도 0 제외, k개 제한, 동점은 앞 
   assert.deepEqual(topSimilar(src, list, 10).map((x) => x.id), ['x', 'y', 'w']);
   assert.deepEqual(topSimilar(src, list, 0), []);
 });
+
+import { profileVector, saleBoost, rankByTaste } from './taste.ts';
+
+test('취향 벡터는 보유 게임 벡터를 길이 1로 맞춰 더한다', () => {
+  const a = gameVector([{ tag_id: 1, votes: 10 }], []);
+  const b = gameVector([{ tag_id: 1, votes: 10 }, { tag_id: 2, votes: 10 }, { tag_id: 3, votes: 10 }], []);
+  const p = profileVector([a, b]);
+  close(p.w.get('t1'), 1 + 1 / Math.sqrt(3));
+  close(p.w.get('t2'), 1 / Math.sqrt(3));
+  assert.equal(profileVector([]).norm, 0);
+});
+
+test('할인 가산점: 코사인 × (1 + 0.15 × min(할인율, 50) / 50)', () => {
+  close(saleBoost(0.5, 0), 0.5);
+  close(saleBoost(0.5, 25), 0.5 * 1.075);
+  close(saleBoost(0.5, 50), 0.5 * 1.15);
+  close(saleBoost(0.5, 90), 0.5 * 1.15);
+  close(saleBoost(0.5, null), 0.5);
+  close(saleBoost(0.5, -10), 0.5);
+});
+
+test('보유하지 않은 게임을 취향 점수순으로, 할인이 점수를 조금 올린다', () => {
+  const rows = [
+    ['own1', [[1, 100]], []],
+    ['own2', [[1, 100], [2, 25]], []],
+    ['near', [[1, 100], [2, 25]], []],
+    ['mid', [[1, 100], [3, 100]], []],
+    ['far', [[9, 100]], []],
+  ];
+  const none = () => 0;
+  const pop = () => 0;
+  const r = rankByTaste(rows, new Set(['own1', 'own2']), none, pop);
+  assert.deepEqual(r.map((x) => x.id), ['near', 'mid']); // far는 겹치는 태그가 없어 후보가 아님
+  const withSale = rankByTaste(rows, new Set(['own1', 'own2']), (id) => (id === 'mid' ? 50 : 0), pop);
+  assert.ok(withSale.find((x) => x.id === 'mid').score > r.find((x) => x.id === 'mid').score);
+  assert.deepEqual(rankByTaste(rows, new Set(['own1', 'own2']), none, pop, 1).map((x) => x.id), ['near']);
+});
+
+test('동점은 인기순(popularity 작은 쪽)이 먼저, 보유 게임에 벡터가 없으면 빈 목록', () => {
+  const rows = [['own', [[1, 10]], []], ['a', [[1, 10]], []], ['b', [[1, 10]], []]];
+  const r = rankByTaste(rows, new Set(['own']), () => 0, (id) => (id === 'b' ? 1 : 5));
+  assert.deepEqual(r.map((x) => x.id), ['b', 'a']);
+  assert.deepEqual(rankByTaste(rows, new Set(['zzz']), () => 0, () => 0), []);
+  assert.deepEqual(rankByTaste([['own', [], []], ['a', [[1, 10]], []]], new Set(['own']), () => 0, () => 0), []);
+});

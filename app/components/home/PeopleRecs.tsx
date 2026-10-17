@@ -9,6 +9,7 @@ import type { PeopleRecs as Data } from '../../lib/peopleRecs';
 import { choosePeopleGames } from '../../lib/peopleShow';
 import { usePeople } from './PeopleContext';
 import { peopleLabel, peopleHref } from './PeopleSelect';
+import LibraryLink from './LibraryLink';
 
 // 메인 인원별 추천 — 서버가 인원 4종 후보를 한 번에 보냈으므로 버튼을 눌러도 페이지 이동·추가 요청 없이 바로 바뀐다
 // 서버가 인원별 후보 12개를 날짜 시드 순서로 보냄 — 내 PC 토글(기본 꺼짐)이 꺼져 있거나 사양이 없으면 앞 3개, 켜져 있으면 최소 사양 통과 게임을 앞에서부터 3개
@@ -47,7 +48,10 @@ export default function PeopleRecs({ recs }: { recs: Data | null }) {
       ) : (
         <p className="people-empty">조건에 맞는 추천 게임이 아직 없어요</p>
       )}
-      <a href={href} className="people-more">{peopleLabel(n)} 게임 전체 보기 →</a>
+      <div className="people-links">
+        <a href={href} className="people-more">{peopleLabel(n)} 게임 전체 보기 →</a>
+        <LibraryLink />
+      </div>
     </section>
   );
 }

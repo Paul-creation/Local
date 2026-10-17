@@ -29,7 +29,7 @@ type Value = { n: PeopleN; setN: (n: PeopleN) => void; myPcOn: boolean; setMyPcO
 const Ctx = createContext<Value>({ n: 2, setN: () => {}, myPcOn: false, setMyPcOn: () => {}, filters: null, recsReady: true });
 export const usePeople = () => useContext(Ctx);
 
-export default function PeopleProvider({ children, filters, recsReady = true }: { children: ReactNode; filters: GameFilters; recsReady?: boolean }) {
+export default function PeopleProvider({ children, filters, recsReady = true }: { children: ReactNode; filters: GameFilters | null; recsReady?: boolean }) {
   const raw = useSyncExternalStore<string | null>(subscribe, readRaw, () => null);
   const [myPcOn, setMyPcOn] = useState(false); // 기본 꺼짐 — 사양을 저장해 뒀어도 사용자가 메인에서 직접 켜기 전에는 거르지 않는다
   const setN = useCallback((n: PeopleN) => {
