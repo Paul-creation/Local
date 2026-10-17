@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-16 (main cd04f76)
+기준: 2026-10-17 (main 1faced5)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/17: fix/activity-unsure-chip — 상세 "더 자세히" 활동 표시 수정. "확인 중" 라벨·옆 ⓘ·칩 끝 "?" 삭제, 확인 중 칩마다 안쪽 오른쪽 끝에 ⓘ(PC hover·포커스, 모바일 탭 열고 닫기, 바깥 탭·Esc로 닫힘, 툴팁은 한 번에 하나, 문구 "AI가 있을 것으로 판단했지만 공식 설명에서 확인하지 못한 활동이에요"), 점선 테두리+--text-muted는 유지·확정 칩 뒤 같은 줄·3개 넘으면 +N. 활동 라벨 13개 명확화(PvE 전투·PvP 대전·총기 사격·아이템 제작·에디터·창작·거점 방어·수집 요소·탈것 타기·기차 운행·공장 자동화·같이 어울리기·집 꾸미기·동물 길들이기, 키 그대로). 사양표 "&amp;" 원인은 이중 이스케이프가 아니라 저장값(스팀 pc_requirements의 엔티티가 태그만 지우고 저장됨)이라 app/lib/htmlEntities.ts로 상세에서 표시 직전에 풀게 함(DB 그대로, &quot;·&gt;·&lt;·&reg; 있던 40여 게임도 해결). enrich-specs.mjs 저장 시 디코딩은 미적용. 모바일 실기기 탭·바깥 탭 닫힘은 확인 못 함
 - 10/16: feat/activities-v2 — 가능한 활동 v2. 분류표 app/lib/activities.ts(키·라벨·정의·체크 기준 한 곳), games.activities_confirmed·activities_unsure·activities_evidence 저장 칸과 재채움 스크립트, 상세 "가능한 활동"을 v2 데이터로 교체(확정 칩은 전부, 확인 중은 흐린 칩 3개+"+N"), 활동 카드·상황별 추천도에 AI 표시. "확인 중" 옆 ⓘ 툴팁(hover·포커스·탭)과 확인 중 칩 끝 "?", photo 라벨 "사진 모드". 프리뷰의 Vercel 툴바 INP 경고(dd.more-chips 5.7초)는 로컬·프리뷰 어디서도 재현 안 됨(핸들러 14ms 이하, 6배 CPU) — 툴바 영향 가능성, 미확인
 - 10/15: fix/search-english-name — 한글 이름 게임이 영어로 안 찾히던 것(games에 영어 이름 칸이 없고 search_name_ko도 비어 있었음)을 데이터로 해결. scripts/fill-english-names.mjs가 스팀 appdetails(l=english) 영어 이름을 search_name_ko 맨 뒤에 덧붙임(한국어 이름이 첫 자리 유지, 미리보기 기본·--apply로 저장, 이미 영문이 있으면 건너뜀, AI 안 씀, 요청 간격 1.5초, 소울워커는 MANUAL로 SoulWorker). 135개 저장 완료(미메시스 → "미메시스, MIMESIS"), weekly에 fill-search-names 다음 단계로 추가. 커뮤니티 글쓰기 "관련 게임" 검색도 공통 규칙(looseIlikePattern·matchRank)으로 통일해 영어·공백 무시 지원. 남은 미처리: 고스트러너 2(스팀 ID 없음, 수동). 프리뷰 확인 여부는 기록 없음
 - 10/15: fix/brand-icons — 검색 결과에 나오던 create-next-app 기본 아이콘 교체. 임시 텍스트 아이콘(--accent-soft 배경 + --accent 굵은 "J", sharp로 생성): app/favicon.ico(16·32·48), app/icon.png(512), app/apple-icon.png(180, 모서리 둥글림 없음). public/의 기본 svg 5개 삭제(참조 없음). WebSite JSON-LD alternateName에 jamidunow.com 추가(SITE_ALT_NAMES = 재밌드나, JDN, jamidunow.com). 진짜 로고가 생기면 같은 파일명으로 교체. 구글 검색 결과 아이콘 반영은 재수집 뒤라 확인 못 함
