@@ -51,6 +51,13 @@ jobs:
           cache: npm
       - if: steps.guard.outputs.skip != 'true'
         run: npm ci
+      - name: ITAD 미등록 게임 목록 불러오기
+        if: steps.guard.outputs.skip != 'true'
+        uses: actions/cache@v4
+        with:
+          path: scripts/.cache/itad-missing.json
+          key: itad-missing-${{ github.run_id }}
+          restore-keys: itad-missing-
       - name: 환경변수 파일 만들기
         if: steps.guard.outputs.skip != 'true'
         run: printf '%s\n' "$ENV_FILE" > .env.local
