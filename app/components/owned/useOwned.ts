@@ -56,5 +56,5 @@ export function useOwned() {
   );
   useEffect(() => { load(); }, []);
   // steam_appid는 목록·상세에서 문자열로 오므로 숫자로 바꿔 비교한다
-  return { ready: s.ready, visibility: s.visibility, has: (appid: string | number | null | undefined) => appid != null && s.set.has(Number(appid)) };
+  return { ready: s.ready, visibility: s.visibility, count: s.set.size, has: (appid: string | number | null | undefined) => appid != null && s.set.has(Number(appid)) };
 }

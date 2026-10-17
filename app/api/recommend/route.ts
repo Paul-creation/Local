@@ -5,6 +5,8 @@ import { badgeMatches } from '../../lib/badge.mjs';
 import { selectGames } from '../../lib/visibleGames';
 import { readAllPages } from '../../lib/paged';
 import { normalizeSearch, searchNames } from '../../lib/searchMatch';
+import { getOwnedAppids, getSessionUserId } from '../../lib/user';
+import { dropOwned } from '../../lib/ownedFilter';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -17,6 +19,17 @@ function dropHomeExcluded<T extends { name?: string | null; search_name_ko?: str
   const said = normalizeSearch(userTexts.join(' '));
   return games.filter((g) => !g.home_excluded ||
     (!!said && searchNames(g).some((n) => { const name = normalizeSearch(n); return name.length >= 2 && said.includes(name); })));
+}
+
+// 로그인한 사용자의 보유 게임(저장된 목록, 스팀 재동기화 없음)을 후보에서 뺀다. 로그인 안 함·비공개·0개면 그대로
+// 보유 목록은 후보 거르기에만 쓰고 AI 프롬프트·응답에는 넣지 않는다. 사용자가 답에 게임 이름을 직접 쓴 경우는 남긴다
+async function dropOwnedForUser<T extends { steam_appid?: string | number | null; name?: string | null; search_name_ko?: string | null }>(req: NextRequest, games: T[], userTexts: string[]) {
+  const userId = getSessionUserId(req);
+  if (!userId) return games;
+  const owned = await getOwnedAppids(userId).catch(() => null);
+  if (!owned) return games;
+  const said = normalizeSearch(userTexts.join(' '));
+  return dropOwned(games, owned, (g) => !!said && searchNames(g).some((n) => { const name = normalizeSearch(n); return name.length >= 2 && said.includes(name); }));
 }
 
 function filterGames(games: any[], answers: { question: string; answer: string }[]) {
@@ -118,19 +131,20 @@ async function handlePOST(req: NextRequest) {
   const body = await req.json();
   body.__h = req.headers;
 
-  if (body.mood) return handleLegacy(body);
+  if (body.mood) return handleLegacy(req, body);
 
   const { answers = [] } = body;
   // 한 번의 추천에서 AI는 질문마다 불리므로 첫 AI 호출(답 1개)만 추천 1회로 셈
   const kind = answers.length <= 1 ? 'recommend' : 'recommend-step';
 
-  const { data: allGames, error } = await readAllPages((from, to) => selectGames('id, name, search_name_ko, home_excluded, cover_image_url, category, tags, min_players, max_players, difficulty, is_free, solo_playable, korean_support', undefined, supabase).order('id').range(from, to));
+  const { data: allGames, error } = await readAllPages((from, to) => selectGames('id, name, search_name_ko, steam_appid, home_excluded, cover_image_url, category, tags, min_players, max_players, difficulty, is_free, solo_playable, korean_support', undefined, supabase).order('id').range(from, to));
 
   if (error || !allGames) {
     return NextResponse.json({ error: '게임 목록을 불러오지 못했어요.' }, { status: 500 });
   }
 
-  const games = dropHomeExcluded(allGames, answers.map((a: { answer?: string }) => String(a?.answer || '')));
+  const answerTexts = answers.map((a: { answer?: string }) => String(a?.answer || ''));
+  const games = await dropOwnedForUser(req, dropHomeExcluded(allGames, answerTexts), answerTexts);
   const filtered = filterGames(games, answers);
 
   // 첫 질문 고정
@@ -251,13 +265,14 @@ JSON만 출력:
   });
 }
 
-async function handleLegacy(body: any) {
+async function handleLegacy(req: NextRequest, body: any) {
   const { mood, groupSize, vibe } = body;
 
-  const { data: allGames } = await readAllPages((from, to) => selectGames('id, name, search_name_ko, home_excluded, cover_image_url, category, tags, min_players, max_players, difficulty', undefined, supabase).order('id').range(from, to));
+  const { data: allGames } = await readAllPages((from, to) => selectGames('id, name, search_name_ko, steam_appid, home_excluded, cover_image_url, category, tags, min_players, max_players, difficulty', undefined, supabase).order('id').range(from, to));
 
   if (!allGames) return NextResponse.json({ error: '게임 목록을 불러오지 못했어요.' }, { status: 500 });
-  const games = dropHomeExcluded(allGames, [mood, groupSize, vibe].map((v) => String(v || '')));
+  const legacyTexts = [mood, groupSize, vibe].map((v) => String(v || ''));
+  const games = await dropOwnedForUser(req, dropHomeExcluded(allGames, legacyTexts), legacyTexts);
 
   const gameList = games.map((g) =>
     `- id: ${g.id}, 이름: ${g.name}, 카테고리: ${g.category}, 태그: ${(g.tags || []).join(', ')}, 인원: ${g.min_players ?? '?'}-${g.max_players ?? '?'}, 난이도: ${g.difficulty}`

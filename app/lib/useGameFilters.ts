@@ -17,6 +17,9 @@ import { BADGES, badgeMatches } from './badge.mjs';
 import { runsOnMyPc } from './specJudge';
 import { toUserPc } from './myPc';
 import { useMyPc } from '../components/pcspec/useMyPc';
+import { useOwned } from '../components/owned/useOwned';
+
+export const HIDE_OWNED_KEY = 'jdn_hide_owned';
 
 // 검색 결과는 처음 이만큼만 그리고, 더 보기로 이만큼씩 늘린다
 export const PAGE_SIZE = 24;
@@ -72,6 +75,16 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
   const [myPcOnly, setMyPcOnly] = useState(false);
   const { pc: myPc, ready: myPcReady } = useMyPc();
   const myPcActive = myPcOnly && !!myPc;
+  // 보유 게임 빼고 보기 — 로그인했고 공개 보유 목록이 1개 이상일 때만 칩이 보이고 걸린다. 선택은 localStorage(jdn_hide_owned)에만 저장하고 주소엔 안 담는다
+  const owned = useOwned();
+  const [hideOwned, setHideOwnedState] = useState(false);
+  useEffect(() => { try { setHideOwnedState(localStorage.getItem(HIDE_OWNED_KEY) === '1'); } catch {} }, []);
+  const setHideOwned = (v: boolean) => {
+    setHideOwnedState(v);
+    try { if (v) localStorage.setItem(HIDE_OWNED_KEY, '1'); else localStorage.removeItem(HIDE_OWNED_KEY); } catch {}
+  };
+  const ownedAvailable = owned.ready && owned.visibility === 'public' && owned.count > 0;
+  const hideOwnedActive = hideOwned && ownedAvailable;
   const [sort, setSort] = useState<SortKey>('');
   const [compareList, setCompareList] = useState<any[]>([]);
   const [compareError, setCompareError] = useState('');
@@ -253,8 +266,8 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
   const normalizedQuery = query.trim().toLowerCase();
   const playersOn = !isAll(playersRange, PLAYERS_ALL);
   const priceOn = !isAll(priceRange, PRICE_ALL);
-  const selectedCount = [selectedCategory, playersOn ? '인원' : '', soloOnly ? '1인 전용' : '', storyOnly ? '혼자도' : '', priceOn ? '가격' : '', saleOnly ? '할인' : '', myPcActive ? '내 PC' : '', ...selectedBarriers, ...selectedNet, ...selectedTags, ...excludedTags].filter(Boolean).length;
-  const hasFilters = !!(normalizedQuery || selectedCategory || selectedTags.length > 0 || excludedTags.length > 0 || selectedBarriers.length > 0 || selectedNet.length > 0 || storyOnly || playersOn || soloOnly || priceOn || saleOnly || myPcActive);
+  const selectedCount = [selectedCategory, playersOn ? '인원' : '', soloOnly ? '1인 전용' : '', storyOnly ? '혼자도' : '', priceOn ? '가격' : '', saleOnly ? '할인' : '', myPcActive ? '내 PC' : '', hideOwnedActive ? '보유 제외' : '', ...selectedBarriers, ...selectedNet, ...selectedTags, ...excludedTags].filter(Boolean).length;
+  const hasFilters = !!(normalizedQuery || selectedCategory || selectedTags.length > 0 || excludedTags.length > 0 || selectedBarriers.length > 0 || selectedNet.length > 0 || storyOnly || playersOn || soloOnly || priceOn || saleOnly || myPcActive || hideOwnedActive);
 
   const matched = (games || []).filter((g) => {
     // 지금 실제 가격(할인 중이면 할인가) 기준
@@ -262,6 +275,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     if (saleOnly && !((getPriceInfo(g)?.discount ?? 0) > 0)) return false;
     // 내 PC 기준: 최소 사양 미달만 뺀다 (판정 없음은 남김) — 전체 목록에서 먼저 거른 뒤 정렬·24개씩 나누므로 개수·더 보기가 필터 후 기준
     if (myPcActive && myPc && !runsOnMyPc(toUserPc(myPc), g)) return false;
+    if (hideOwnedActive && owned.has(g.steam_appid)) return false;
     if (selectedCategory && !badgeMatches(g.category, selectedCategory)) return false;
     // 고른 칸을 전부 만족하는 게임만 (AND). 상위 칸은 그 아래 태그 중 하나라도 있으면,
     // 협동·대전은 스팀 카테고리 플래그(has_online_coop 등)로 (app/lib/tagSearch)
@@ -292,7 +306,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
         : [...matched].sort((a, b) => (a.heat_rank ?? Infinity) - (b.heat_rank ?? Infinity));
 
   // 검색어·필터가 바뀌면 다시 처음 24개부터 (처음 열 때는 그대로)
-  const filterKey = [query, selectedCategory, selectedTags.join(','), excludedTags.join(','), selectedBarriers.join(','), selectedNet.join(','), storyOnly, playersRange.join('-'), soloOnly, priceRange.join('-'), saleOnly, myPcActive ? `${myPc?.gpu.key}/${myPc?.cpu.key}/${myPc?.ram}` : '', sort].join('|');
+  const filterKey = [query, selectedCategory, selectedTags.join(','), excludedTags.join(','), selectedBarriers.join(','), selectedNet.join(','), storyOnly, playersRange.join('-'), soloOnly, priceRange.join('-'), saleOnly, myPcActive ? `${myPc?.gpu.key}/${myPc?.cpu.key}/${myPc?.ram}` : '', hideOwnedActive, sort].join('|');
   const prevFilterKey = useRef<string | null>(null);
   useEffect(() => {
     if (prevFilterKey.current !== null && prevFilterKey.current !== filterKey) setVisibleCount(PAGE_SIZE);
@@ -342,6 +356,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     setPriceRange(PRICE_ALL);
     setSaleOnly(false);
     setMyPcOnly(false);
+    setHideOwned(false);
   };
 
   const resetFilters = () => {
@@ -358,6 +373,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     setPriceRange(PRICE_ALL);
     setSaleOnly(false);
     setMyPcOnly(false);
+    setHideOwned(false);
     setShowResults(false);
     setFilterOpen(false);
     setCompareList([]);
@@ -380,6 +396,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     priceRange, setPriceRange,
     saleOnly, setSaleOnly,
     myPcOnly, setMyPcOnly, myPc, myPcReady, myPcActive,
+    hideOwned, setHideOwned, ownedAvailable, hideOwnedActive,
     sort, setSort,
     compareList, setCompareList, compareError, toggleCompare,
     rememberList,

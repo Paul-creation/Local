@@ -47,6 +47,7 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
     priceRange, setPriceRange,
     saleOnly, setSaleOnly,
     myPcOnly, setMyPcOnly, myPc, myPcReady,
+    hideOwned, setHideOwned, ownedAvailable,
     selectedCount, clearConditions, filtered, loaded,
   } = filters;
   const [openRoots, setOpenRoots] = useState<number[]>([]);
@@ -76,21 +77,23 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
 
       <div className="filter-body">
         {/* 내 PC로 돌아가는 게임만 — 맨 위(인원보다 위). 최소 사양 미달만 뺀다 (app/lib/specJudge.runsOnMyPc). 사양은 브라우저에만 저장, 등록·수정은 /my-pc */}
-        {myPcReady && (
+        {(myPcReady || ownedAvailable) && (
           <section className="filter-section">
-            {myPc ? (
-              <>
-                <div className="filter-chips">
-                  <button type="button" className={`chip${myPcOnly ? ' on' : ''}`} aria-pressed={myPcOnly} onClick={() => setMyPcOnly((v) => !v)}>내 PC로 돌아가는 게임만</button>
-                </div>
-                <p className="pcs-summary">
-                  {myPc.gpu.name} / {myPc.cpu.name} / {myPc.ram}GB
-                  <MyPcLink className="pcs-link">변경</MyPcLink>
-                </p>
-              </>
+            {(myPc || ownedAvailable) && (
+              <div className="filter-chips">
+                {myPc && <button type="button" className={`chip${myPcOnly ? ' on' : ''}`} aria-pressed={myPcOnly} onClick={() => setMyPcOnly((v) => !v)}>내 PC로 돌아가는 게임만</button>}
+                {/* 보유 게임 빼고 보기 — 로그인했고 공개 보유 목록이 있을 때만. 선택은 브라우저에만 저장(jdn_hide_owned), 주소엔 안 담음 */}
+                {ownedAvailable && <button type="button" className={`chip${hideOwned ? ' on' : ''}`} aria-pressed={hideOwned} onClick={() => setHideOwned(!hideOwned)}>보유 게임 빼고 보기</button>}
+              </div>
+            )}
+            {myPcReady && (myPc ? (
+              <p className="pcs-summary">
+                {myPc.gpu.name} / {myPc.cpu.name} / {myPc.ram}GB
+                <MyPcLink className="pcs-link">변경</MyPcLink>
+              </p>
             ) : (
               <MyPcLink className="pcs-link pcs-filter-btn">내 PC 사양 입력하기</MyPcLink>
-            )}
+            ))}
           </section>
         )}
 

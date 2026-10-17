@@ -7,6 +7,7 @@ import type { NextRequest, NextResponse } from 'next/server';
 import { LOGGED_IN_COOKIE, USER_COOKIE, USER_SESSION_MAX_AGE, createUserSessionToken, loggedInCookieOptions, userCookieOptions, verifyUserSessionToken } from './session';
 import { fetchOwnedGames, type OwnedFetch } from './ownedGames';
 import type { SteamProfile } from './steamProfile';
+import { readAllPages } from '../paged';
 
 export { isSessionConfigured } from './session';
 
@@ -120,4 +121,13 @@ export async function getOwned(userId: string): Promise<OwnedInfo | null> {
     if ((data?.length ?? 0) < 1000) break;
   }
   return { visibility: ((after?.owned_visibility as OwnedVisibility) ?? 'unknown'), appids };
+}
+
+// /api/recommend용 읽기 전용 — 스팀 재동기화 없이 저장된 목록만 읽는다. 공개 목록이고 1개 이상일 때만 돌려주고, 아니면 null(기존 동작 유지)
+export async function getOwnedAppids(userId: string): Promise<Set<number> | null> {
+  const { data: u } = await db.from('users').select('owned_visibility').eq('id', userId).maybeSingle();
+  if (!u || u.owned_visibility !== 'public') return null;
+  const { data, error } = await readAllPages((from, to) => db.from('user_owned_games').select('steam_appid').eq('user_id', userId).order('steam_appid').range(from, to));
+  if (error || !data || data.length === 0) return null;
+  return new Set(data.map((r) => Number(r.steam_appid)));
 }
