@@ -3,7 +3,7 @@
 
 create table if not exists public.game_activity_reports (
   id bigint generated always as identity primary key,
-  game_id uuid not null references public.games(id),
+  game_id uuid not null references public.games(id) on delete cascade,
   activity_key text not null check (activity_key ~ '^[a-z_]{2,30}$'),     -- 분류표 키 (app/lib/activities.ts, 서버가 목록으로 한 번 더 검사)
   kind text not null check (kind in ('missing', 'wrong')),               -- missing = 빠진 활동 / wrong = 틀린 활동
   voter_hash text,                                                        -- IP 해시 (원본 IP 저장 안 함, 90일 뒤 purge-ip-hash가 비움)
