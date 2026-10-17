@@ -24,6 +24,9 @@ export const HIDE_OWNED_KEY = 'jdn_hide_owned';
 // 검색 결과는 처음 이만큼만 그리고, 더 보기로 이만큼씩 늘린다
 export const PAGE_SIZE = 24;
 
+// "8인 이상" 칩 — 최대 인원이 이 값 이상인 게임
+export const LARGE_MIN = 8;
+
 // 결과 정렬 (?sort=recent·discount·price). 기본은 인기순(ITAD heat_rank, 순위 없는 게임은 뒤에 받은 순서대로)
 export const SORTS = [['', '인기순'], ['recent', '최근 추가순'], ['discount', '할인 큰 순'], ['price', '낮은 가격순']] as const;
 export type SortKey = (typeof SORTS)[number][0];
@@ -68,6 +71,9 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
   const [playersRange, setPlayersRange] = useState<Range>(PLAYERS_ALL);
   // 1인 전용(최대 인원 1) — 메인 "혼자" 바로가기용. 슬라이더와 따로 걸린다
   const [soloOnly, setSoloOnly] = useState(false);
+  // 2인 전용(최대 인원 2) · 8인 이상(최대 인원 8 이상) — 1인 전용과 같은 방식으로 슬라이더와 따로 걸린다
+  const [duoOnly, setDuoOnly] = useState(false);
+  const [largeOnly, setLargeOnly] = useState(false);
   const [priceRange, setPriceRange] = useState<Range>(PRICE_ALL);
   const [saleOnly, setSaleOnly] = useState(false);
   // 내 PC로 돌아가는 게임만 (?mypc=1) — 최소 사양 미달만 뺀다. 내 PC 사양(localStorage)이 있을 때만 실제로 걸리고,
@@ -92,12 +98,37 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
   // 주소의 비교 선택(cmp)은 목록이 온 뒤에 게임 정보로 바꿔 채운다
   const pendingCmp = useRef<string[]>([]);
 
+  // 필터 전체 화면 — 열 때 history 항목을 하나 쌓아서 브라우저 뒤로가기가 필터를 닫게 하고, 열기 전 스크롤 위치를 기억해 닫을 때 되돌린다
+  const filterPushed = useRef(false);
+  const filterScroll = useRef(0);
+  const filterWasOpen = useRef(false);
+  const openFilter = () => {
+    filterScroll.current = window.scrollY;
+    try { window.history.pushState({ jdnFilter: 1 }, '', window.location.href); filterPushed.current = true; } catch {}
+    setFilterOpen(true);
+  };
+  const closeFilter = () => {
+    // 쌓아 둔 항목이 있으면 뒤로 가기로 걷어 낸다 — 닫기는 아래 popstate에서 (주소 기록이 늘어나지 않게)
+    if (filterPushed.current) window.history.back();
+    else setFilterOpen(false);
+  };
+  useEffect(() => {
+    const onPop = () => { filterPushed.current = false; setFilterOpen(false); };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+  // 열리면 맨 위에서 시작, 닫히면 열기 전 위치로 (보던 화면은 hidden으로만 가려 두어 그대로 남아 있다)
+  useLayoutEffect(() => {
+    if (filterOpen) { filterWasOpen.current = true; window.scrollTo({ top: 0, behavior: 'instant' }); }
+    else if (filterWasOpen.current) { filterWasOpen.current = false; window.scrollTo({ top: filterScroll.current, behavior: 'instant' }); }
+  }, [filterOpen]);
+
   // 주소 → 상태 (화면에 그리기 전에 한 번). 클라이언트 이동으로 돌아온 경우도 같은 자리에서 처리
   useLayoutEffect(() => {
     const sp = new URLSearchParams(window.location.search);
     /* eslint-disable react-hooks/set-state-in-effect -- 바깥(주소)에서 한 번 읽어 오는 초기화라 의도된 setState */
     // players·price·sale로 바로 들어오면(바로가기·공유 링크) 결과 화면부터
-    setShowResults(sp.get('r') === '1' || sp.has('players') || sp.has('price') || sp.get('sale') === '1' || sp.has('tags') || sp.has('barrier') || sp.has('ex') || sp.get('story') === '1' || sp.has('net') || sp.get('mypc') === '1');
+    setShowResults(sp.get('r') === '1' || sp.has('players') || sp.has('price') || sp.get('sale') === '1' || sp.has('tags') || sp.has('barrier') || sp.has('ex') || sp.get('story') === '1' || sp.has('net') || sp.get('mypc') === '1' || sp.get('duo') === '1' || sp.get('large') === '1');
     setInput(sp.get('q') || '');
     setQuery(sp.get('q') || '');
     // 예전 주소의 cat=파티·퍼즐·서바이벌처럼 지금 배지에 없는 값은 무시 (결과가 0개로 보이지 않게)
@@ -113,6 +144,8 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     setPlayersRange(sp.has('players') ? parsePlayers(sp.get('players')) : legacyPlayers(sp.get('p')));
     // 예전 인원 칸 주소의 1인(p=1인)도 1인 전용
     setSoloOnly(sp.get('solo') === '1' || sp.get('p') === '1인');
+    setDuoOnly(sp.get('duo') === '1');
+    setLargeOnly(sp.get('large') === '1');
     // 예전 난이도 주소(?d=쉬움)는 진입장벽과 기준이 달라서 무시
     // 예전 "무료 게임만" 주소(free=1)는 무료~무료
     setPriceRange(sp.has('price') ? parsePrice(sp.get('price')) : sp.get('free') === '1' ? FREE_ONLY : PRICE_ALL);
@@ -148,6 +181,8 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     if (selectedNet.length) q.set('net', NETS.filter(([k]) => selectedNet.includes(k)).map(([k]) => k).join(','));
     if (formatPlayers(playersRange)) q.set('players', formatPlayers(playersRange));
     if (soloOnly) q.set('solo', '1');
+    if (duoOnly) q.set('duo', '1');
+    if (largeOnly) q.set('large', '1');
     if (formatPrice(priceRange)) q.set('price', formatPrice(priceRange));
     if (saleOnly) q.set('sale', '1');
     if (myPcOnly) q.set('mypc', '1');
@@ -160,7 +195,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     if (window.location.pathname === '/' && window.location.pathname + window.location.search !== url) {
       window.history.replaceState(null, '', url);
     }
-  }, [inited, showResults, query, selectedCategory, selectedTags, excludedTags, selectedBarriers, storyOnly, selectedNet, playersRange, soloOnly, priceRange, saleOnly, myPcOnly, sort, compareList]);
+  }, [inited, showResults, filterOpen, query, selectedCategory, selectedTags, excludedTags, selectedBarriers, storyOnly, selectedNet, playersRange, soloOnly, duoOnly, largeOnly, priceRange, saleOnly, myPcOnly, sort, compareList]);
 
   // 카드나 비교하기를 누를 때 지금 목록 주소와 스크롤 위치를 기억
   const rememberList = () => {
@@ -266,8 +301,8 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
   const normalizedQuery = query.trim().toLowerCase();
   const playersOn = !isAll(playersRange, PLAYERS_ALL);
   const priceOn = !isAll(priceRange, PRICE_ALL);
-  const selectedCount = [selectedCategory, playersOn ? '인원' : '', soloOnly ? '1인 전용' : '', storyOnly ? '혼자도' : '', priceOn ? '가격' : '', saleOnly ? '할인' : '', myPcActive ? '내 PC' : '', hideOwnedActive ? '보유 제외' : '', ...selectedBarriers, ...selectedNet, ...selectedTags, ...excludedTags].filter(Boolean).length;
-  const hasFilters = !!(normalizedQuery || selectedCategory || selectedTags.length > 0 || excludedTags.length > 0 || selectedBarriers.length > 0 || selectedNet.length > 0 || storyOnly || playersOn || soloOnly || priceOn || saleOnly || myPcActive || hideOwnedActive);
+  const selectedCount = [selectedCategory, playersOn ? '인원' : '', soloOnly ? '1인 전용' : '', duoOnly ? '2인 전용' : '', largeOnly ? '8인 이상' : '', storyOnly ? '혼자도' : '', priceOn ? '가격' : '', saleOnly ? '할인' : '', myPcActive ? '내 PC' : '', hideOwnedActive ? '보유 제외' : '', ...selectedBarriers, ...selectedNet, ...selectedTags, ...excludedTags].filter(Boolean).length;
+  const hasFilters = !!(normalizedQuery || selectedCategory || selectedTags.length > 0 || excludedTags.length > 0 || selectedBarriers.length > 0 || selectedNet.length > 0 || storyOnly || playersOn || soloOnly || duoOnly || largeOnly || priceOn || saleOnly || myPcActive || hideOwnedActive);
 
   const matched = (games || []).filter((g) => {
     // 지금 실제 가격(할인 중이면 할인가) 기준
@@ -290,6 +325,8 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     if (hosts.length && !(onlineMulti(g) && hosts.includes(g.multiplayer_host))) return false;
     if (!matchesPlayers(g, playersRange)) return false;
     if (soloOnly && g.max_players !== 1) return false;
+    if (duoOnly && g.max_players !== 2) return false;
+    if (largeOnly && !(g.max_players >= LARGE_MIN)) return false;
     // 영어 이름·한국어 이름·별명 (띄어쓰기·대소문자·기호 무시). 태그 단어는 확정할 때 태그 조건으로 옮겨 둠
     if (normalizedQuery) return matchesGame(g, normalizedQuery);
     return true;
@@ -306,7 +343,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
         : [...matched].sort((a, b) => (a.heat_rank ?? Infinity) - (b.heat_rank ?? Infinity));
 
   // 검색어·필터가 바뀌면 다시 처음 24개부터 (처음 열 때는 그대로)
-  const filterKey = [query, selectedCategory, selectedTags.join(','), excludedTags.join(','), selectedBarriers.join(','), selectedNet.join(','), storyOnly, playersRange.join('-'), soloOnly, priceRange.join('-'), saleOnly, myPcActive ? `${myPc?.gpu.key}/${myPc?.cpu.key}/${myPc?.ram}` : '', hideOwnedActive, sort].join('|');
+  const filterKey = [query, selectedCategory, selectedTags.join(','), excludedTags.join(','), selectedBarriers.join(','), selectedNet.join(','), storyOnly, playersRange.join('-'), soloOnly, duoOnly, largeOnly, priceRange.join('-'), saleOnly, myPcActive ? `${myPc?.gpu.key}/${myPc?.cpu.key}/${myPc?.ram}` : '', hideOwnedActive, sort].join('|');
   const prevFilterKey = useRef<string | null>(null);
   useEffect(() => {
     if (prevFilterKey.current !== null && prevFilterKey.current !== filterKey) setVisibleCount(PAGE_SIZE);
@@ -334,13 +371,13 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
 
   // 엔터(또는 결과 보기)로 지금 입력한 글자를 검색어로 확정하고 결과 화면 맨 위로
   // 태그로 알아본 단어는 태그 조건(칩)으로 옮기고, 나머지만 이름 검색어로 남긴다
-  const submitSearch = () => {
+  const submitSearch = (scrollTop = true) => {
     const { tags, rest } = splitInput(input);
     if (tags.length) addTags(tags);
     setInput(rest);
     setQuery(rest);
     setShowResults(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (scrollTop) window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // 필터 조건만 지우기 (검색어·비교 선택·결과 화면은 그대로) — 필터 패널의 "전체 지우기"
@@ -353,6 +390,8 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     setStoryOnly(false);
     setPlayersRange(PLAYERS_ALL);
     setSoloOnly(false);
+    setDuoOnly(false);
+    setLargeOnly(false);
     setPriceRange(PRICE_ALL);
     setSaleOnly(false);
     setMyPcOnly(false);
@@ -370,19 +409,21 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     setStoryOnly(false);
     setPlayersRange(PLAYERS_ALL);
     setSoloOnly(false);
+    setDuoOnly(false);
+    setLargeOnly(false);
     setPriceRange(PRICE_ALL);
     setSaleOnly(false);
     setMyPcOnly(false);
     setHideOwned(false);
     setShowResults(false);
-    setFilterOpen(false);
+    closeFilter();
     setCompareList([]);
   };
 
   return {
     loaded: !!games,
     showResults, setShowResults,
-    filterOpen, setFilterOpen,
+    filterOpen, openFilter, closeFilter,
     input, setInput,
     query, submitSearch,
     selectedCategory, setSelectedCategory,
@@ -393,6 +434,8 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     selectedNet, toggleNet,
     playersRange, setPlayersRange,
     soloOnly, setSoloOnly,
+    duoOnly, setDuoOnly,
+    largeOnly, setLargeOnly,
     priceRange, setPriceRange,
     saleOnly, setSaleOnly,
     myPcOnly, setMyPcOnly, myPc, myPcReady, myPcActive,

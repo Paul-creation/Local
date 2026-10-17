@@ -1841,10 +1841,9 @@ a.hc-row:hover { background: var(--card-hover); }
 .search-suggest-tag-mark { color: var(--accent-text); background: var(--accent-soft); border-radius: var(--radius-badge); }
 
 /* 필터 카드 */
-.filter-wrap { margin-bottom: 24px; }
-.filter-panel { background: var(--panel-bg); border: 1px solid var(--panel-line); border-radius: var(--panel-radius); }
+.filter-panel { max-width: 760px; margin: 0 auto 24px; padding-bottom: calc(88px + env(safe-area-inset-bottom)); background: var(--panel-bg); border: 1px solid var(--panel-line); border-radius: var(--panel-radius); }
 .filter-loading { padding: 20px; }
-.filter-head { display: flex; align-items: center; gap: 8px; min-height: 56px; padding: 6px 8px 6px 20px; }
+.filter-head { position: sticky; top: 60px; z-index: 5; display: flex; align-items: center; gap: 8px; min-height: 56px; padding: 6px 8px 6px 20px; background: var(--panel-bg); border-bottom: 1px solid var(--border-soft); border-radius: var(--panel-radius) var(--panel-radius) 0 0; }
 .filter-head-title { font-size: var(--fs-xxl); font-weight: 900; margin-right: auto; }
 .filter-clear-all { min-height: 44px; padding: 0 10px; border: none; background: none; color: var(--text-muted); font-family: inherit; font-size: var(--fs-m); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .filter-clear-all:hover { color: var(--text); }
@@ -1907,24 +1906,12 @@ a.hc-row:hover { background: var(--card-hover); }
 .tag-check-count { color: var(--text-muted); font-size: var(--fs-xs); font-weight: 600; font-variant-numeric: tabular-nums; }
 .tag-expand { min-width: 44px; height: 44px; padding: 0 8px; flex-shrink: 0; border: none; background: none; border-radius: var(--radius-btn); font-family: inherit; font-size: var(--fs-xs); font-weight: 700; color: var(--text-muted); cursor: pointer; }
 .tag-expand:hover { color: var(--text); }
-.filter-foot { display: flex; gap: 8px; padding: 12px 20px 20px; }
-.filter-apply { flex: 1; }
+/* "N개 게임 보기" — 화면 아래 고정. 내용이 가려지지 않게 .filter-panel 아래쪽에 같은 높이만큼 여백 */
+.filter-foot { position: fixed; left: 0; right: 0; bottom: 0; z-index: 900; display: flex; justify-content: center; padding: 12px 20px calc(12px + env(safe-area-inset-bottom)); background: var(--panel-bg); border-top: 1px solid var(--panel-line); }
+.filter-apply { flex: 1; max-width: 720px; }
 .tag-help-btn { border: 1px solid var(--border); background: var(--card); color: var(--text-muted); }
 .tag-help-btn:hover, .tag-help-btn[aria-expanded="true"] { border-color: var(--accent); color: var(--accent-text); }
 .spec-sub { display: block; margin-top: 2px; font-size: var(--fs-s); font-weight: 500; color: var(--text-muted); }
-
-/* 데스크톱: 왼쪽 필터 + 오른쪽 결과 */
-.results-layout { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 24px; align-items: start; }
-.results-filter { position: sticky; top: 76px; max-height: calc(100vh - 92px); overflow-y: auto; border-radius: var(--panel-radius); scrollbar-width: thin; }
-.results-filter .filter-body { padding-bottom: 12px; }
-
-/* 데스크톱 메인 필터 카드 — 헤더 아래 고정 + 카드 안에서만 스크롤 (끝에 닿아도 페이지로 안 넘어감), "N개 게임 보기" 버튼은 카드 하단 고정 */
-.results-filter { overscroll-behavior: contain; }
-@media (min-width: 641px) {
-  .filter-wrap { position: sticky; top: 76px; z-index: 5; }
-  .filter-wrap .filter-panel.is-sheet { max-height: calc(100vh - 92px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
-  .filter-wrap .filter-foot { position: sticky; bottom: 0; background: var(--panel-bg); border-top: 1px solid var(--panel-line); padding-bottom: 12px; }
-}
 
 /* 결과 머리: "검색 결과 N개" + 정렬 탭 + 고른 조건 칩 */
 .results-head { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
@@ -1976,18 +1963,11 @@ a.hc-row:hover { background: var(--card-hover); }
 
 /* 하단 비교 바 */
 
-@media (max-width: 1023px) {
-  .results-layout { display: block; }
-}
 @media (max-width: 640px) {
-  .filter-panel.is-sheet {
-    position: fixed; inset: 0; z-index: 900; border: none; border-radius: 0;
-    display: flex; flex-direction: column; overscroll-behavior: contain;
-  }
-  .filter-panel.is-sheet .filter-head { border-bottom: 1px solid var(--border-soft); padding-left: 16px; }
-  .filter-panel.is-sheet .filter-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 4px 16px 8px; }
-  .filter-panel.is-sheet .filter-foot { padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--border-soft); }
-  body.filter-open { overflow: hidden; }
+  .filter-panel { margin-bottom: 0; border: none; border-radius: 0; }
+  .filter-head { top: 56px; padding-left: 16px; border-radius: 0; }
+  .filter-body { padding: 4px 16px 8px; }
+  .filter-foot { padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); }
   .result-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
   .result-body { padding: 12px; }
   .result-foot { flex-wrap: wrap; }
@@ -2657,9 +2637,6 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
    검색·비교 페이지 다듬기 (다크만) — 메인 전용(테마 배너·순위·메인 필터 버튼)은 건드리지 않음
    배경(#0b0e13) < 결과 패널(#151a23) < 카드 / 필터는 패널 없이 페이지 배경 위에 그룹 구분선만
    ============================================================ */
-:root .results-filter .filter-panel { background: transparent; border-color: transparent; }
-:root .results-filter .filter-head { padding-left: 4px; }
-:root .results-filter .filter-body { padding-left: 4px; padding-right: 12px; }
 
 /* 결과 카드 태그 칩 — 일반: 채도 없는 회색 면 · 특별(올해의 게임·TOP 10): 포인트색 테두리·글자 + 10% 이하 배경, 크기·패딩은 동일 */
 :root .result-meta { gap: 8px 6px; }
