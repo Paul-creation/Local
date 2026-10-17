@@ -13,9 +13,10 @@ export const FilterPanel = dynamic(loadFilterPanel, {
   loading: () => <div className="filter-panel filter-loading"><p className="filter-note">필터 불러오는 중…</p></div>,
 });
 
-// 검색창 + 필터 버튼 + AI 추천. 필터를 열면 메인 콘텐츠 자리를 FilterPanel 전체 화면이 대신한다 (GameGrid)
-export default function SearchPanel({ games, filters }: { games: any[], filters: GameFilters }) {
-  const { filterOpen, openFilter, closeFilter, selectedCount } = filters;
+// 검색창 + 필터 버튼 + AI 추천. 필터 본문은 FilterPanel
+// sidebar: 데스크톱 결과 화면 — 필터가 왼쪽 칸에 늘 펼쳐져 있으므로 여기서는 버튼·펼침을 숨김 (GameGrid)
+export default function SearchPanel({ games, filters, sidebar = false }: { games: any[], filters: GameFilters, sidebar?: boolean }) {
+  const { filterOpen, setFilterOpen, selectedCount } = filters;
 
   return (
     <>
@@ -23,21 +24,23 @@ export default function SearchPanel({ games, filters }: { games: any[], filters:
       <div className="search-row">
         <SearchBox games={games} filters={filters} />
         <div className="search-actions">
-          <button
+          {!sidebar && <button
             type="button"
             className={`btn btn-outline filter-toggle${filterOpen ? ' open' : ''}`}
             aria-expanded={filterOpen}
             aria-controls="filter-panel"
             onPointerEnter={() => { loadFilterPanel(); }}
             onFocus={() => { loadFilterPanel(); }}
-            onClick={() => (filterOpen ? closeFilter() : openFilter())}
+            onClick={() => setFilterOpen(v => !v)}
           >
             필터
             {selectedCount > 0 && <span className="filter-count" aria-label={`${selectedCount}개 선택됨`}>{selectedCount}</span>}
-          </button>
+          </button>}
           <AIRecommend />
         </div>
       </div>
+
+      {filterOpen && !sidebar && <div className="filter-wrap"><FilterPanel filters={filters} /></div>}
     </>
   );
 }

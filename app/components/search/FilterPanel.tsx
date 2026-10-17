@@ -32,12 +32,12 @@ const BARRIER_DESCS: Record<string, string> = {
 
 // 필터 카드 — "필터" + 전체 지우기 / 같이 하는 방식 / 인원 + 1인 전용·혼자도 충분 / 가격 + 무료만·지금 할인 중 /
 // 진입장벽 3칸 / 분류 아코디언 / 빼고 보기
-// 필터 전용 전체 화면 — 열면 메인 콘텐츠 자리를 대신하고(GameGrid), 스크롤은 페이지 하나만. "N개 게임 보기"는 화면 아래 고정
-// 필터를 처음 열 때 따로 받는다 (SearchPanel의 dynamic import) — 태그 설명·나무 화면 코드를 메인 첫 로드에서 뺌
-export default function FilterPanel({ filters }: { filters: GameFilters }) {
+// variant: sheet = 메인에서 펼치는 카드 (휴대폰은 화면 전체를 덮고 아래 "N개 게임 보기"), sidebar = 데스크톱 결과 왼쪽 칸
+// 필터를 처음 열 때 따로 받는다 (SearchPanel·GameGrid의 dynamic import) — 태그 설명·나무 화면 코드를 메인 첫 로드에서 뺌
+export default function FilterPanel({ filters, variant = 'sheet' }: { filters: GameFilters; variant?: 'sheet' | 'sidebar' }) {
   const {
     submitSearch,
-    closeFilter,
+    setFilterOpen,
     selectedCategory, setSelectedCategory,
     selectedTags, toggleTag, tagCounts, tree,
     excludedTags, toggleExcluded,
@@ -60,6 +60,7 @@ export default function FilterPanel({ filters }: { filters: GameFilters }) {
   const soloHint = useChipHint(SOLO_DESCS, '버튼을 누르면 설명이 나와요');
   const barrierHint = useChipHint(BARRIER_DESCS, '단계를 누르면 설명이 나와요');
   const freeOnly = isAll(priceRange, FREE_ONLY);
+  const sheet = variant === 'sheet';
 
   // 1인 전용·2인 전용·8인 이상은 최대 인원 조건이라 동시에 걸 수 없다 — 하나를 켜면 나머지는 끈다
   const pickMax = (which: 'solo' | 'duo' | 'large') => {
@@ -78,11 +79,11 @@ export default function FilterPanel({ filters }: { filters: GameFilters }) {
   const excludable = tree ? EXCLUDE_TAG_IDS.filter((id) => tree.nodes.has(id) && tagCounts.get(id)) : [];
 
   return (
-    <div id="filter-panel" className="filter-panel" role="region" aria-label="필터">
+    <div id="filter-panel" className={`filter-panel is-${variant}`} role="region" aria-label="필터">
       <div className="filter-head">
         <strong className="filter-head-title">필터</strong>
         {selectedCount > 0 && <button type="button" className="filter-clear-all" onClick={clearConditions}>전체 지우기</button>}
-        <button type="button" className="filter-close" onClick={closeFilter} aria-label="필터 닫기">×</button>
+        {sheet && <button type="button" className="filter-close" onClick={() => setFilterOpen(false)} aria-label="필터 닫기">×</button>}
       </div>
 
       <div className="filter-body">
@@ -240,15 +241,17 @@ export default function FilterPanel({ filters }: { filters: GameFilters }) {
         )}
       </div>
 
-      <div className="filter-foot">
-        <button
-          type="button"
-          className="btn btn-primary btn-lg filter-apply"
-          onClick={() => { submitSearch(false); closeFilter(); /* 입력해 둔 검색어도 함께 적용, 스크롤은 열기 전 위치로 */ }}
-        >
-          {!loaded ? '결과 보기 →' : selectedCount > 0 ? `${filtered.length.toLocaleString('ko-KR')}개 게임 보기 →` : '전체 게임 보기 →'}
-        </button>
-      </div>
+      {sheet && (
+        <div className="filter-foot">
+          <button
+            type="button"
+            className="btn btn-primary btn-lg filter-apply"
+            onClick={() => { submitSearch(); setFilterOpen(false); /* SHOW_TOP — 입력해 둔 검색어도 함께 적용 */ }}
+          >
+            {!loaded ? '결과 보기 →' : selectedCount > 0 ? `${filtered.length.toLocaleString('ko-KR')}개 게임 보기 →` : '전체 게임 보기 →'}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

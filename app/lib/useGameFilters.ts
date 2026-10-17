@@ -98,39 +98,6 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
   // 주소의 비교 선택(cmp)은 목록이 온 뒤에 게임 정보로 바꿔 채운다
   const pendingCmp = useRef<string[]>([]);
 
-  // 필터 전체 화면 — 열 때 history 항목을 하나 쌓아서 브라우저 뒤로가기가 필터를 닫게 하고, 열기 전 스크롤 위치를 기억해 닫을 때 되돌린다
-  const filterPushed = useRef(false);
-  const filterScroll = useRef(0);
-  const filterWasOpen = useRef(false);
-  const openFilter = () => {
-    filterScroll.current = window.scrollY;
-    try { window.history.pushState({ jdnFilter: 1 }, '', window.location.href); filterPushed.current = true; } catch {}
-    setFilterOpen(true);
-  };
-  const closeFilter = () => {
-    // 쌓아 둔 항목이 있으면 뒤로 가기로 걷어 낸다 — 닫기는 아래 popstate에서 (주소 기록이 늘어나지 않게)
-    if (filterPushed.current) window.history.back();
-    else setFilterOpen(false);
-  };
-  useEffect(() => {
-    const onPop = () => { filterPushed.current = false; setFilterOpen(false); };
-    window.addEventListener('popstate', onPop);
-    return () => window.removeEventListener('popstate', onPop);
-  }, []);
-  // 열리면 맨 위에서 시작, 닫히면 열기 전 위치로 (보던 화면은 hidden으로만 가려 두어 그대로 남아 있다)
-  useLayoutEffect(() => {
-    if (filterOpen) { filterWasOpen.current = true; window.scrollTo({ top: 0, behavior: 'instant' }); }
-    else if (filterWasOpen.current) {
-      filterWasOpen.current = false;
-      const y = filterScroll.current;
-      const restore = () => window.scrollTo({ top: y, behavior: 'instant' });
-      restore();
-      // 뒤로가기(popstate)로 닫힐 때는 Next 라우터·브라우저가 뒤늦게 위치를 건드릴 수 있어 한 번 더 맞춘다
-      const t = window.setTimeout(restore, 80);
-      return () => window.clearTimeout(t);
-    }
-  }, [filterOpen]);
-
   // 주소 → 상태 (화면에 그리기 전에 한 번). 클라이언트 이동으로 돌아온 경우도 같은 자리에서 처리
   useLayoutEffect(() => {
     const sp = new URLSearchParams(window.location.search);
@@ -203,7 +170,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     if (window.location.pathname === '/' && window.location.pathname + window.location.search !== url) {
       window.history.replaceState(null, '', url);
     }
-  }, [inited, showResults, filterOpen, query, selectedCategory, selectedTags, excludedTags, selectedBarriers, storyOnly, selectedNet, playersRange, soloOnly, duoOnly, largeOnly, priceRange, saleOnly, myPcOnly, sort, compareList]);
+  }, [inited, showResults, query, selectedCategory, selectedTags, excludedTags, selectedBarriers, storyOnly, selectedNet, playersRange, soloOnly, duoOnly, largeOnly, priceRange, saleOnly, myPcOnly, sort, compareList]);
 
   // 카드나 비교하기를 누를 때 지금 목록 주소와 스크롤 위치를 기억
   const rememberList = () => {
@@ -379,13 +346,13 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
 
   // 엔터(또는 결과 보기)로 지금 입력한 글자를 검색어로 확정하고 결과 화면 맨 위로
   // 태그로 알아본 단어는 태그 조건(칩)으로 옮기고, 나머지만 이름 검색어로 남긴다
-  const submitSearch = (scrollTop = true) => {
+  const submitSearch = () => {
     const { tags, rest } = splitInput(input);
     if (tags.length) addTags(tags);
     setInput(rest);
     setQuery(rest);
     setShowResults(true);
-    if (scrollTop) window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // 필터 조건만 지우기 (검색어·비교 선택·결과 화면은 그대로) — 필터 패널의 "전체 지우기"
@@ -424,14 +391,14 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     setMyPcOnly(false);
     setHideOwned(false);
     setShowResults(false);
-    closeFilter();
+    setFilterOpen(false);
     setCompareList([]);
   };
 
   return {
     loaded: !!games,
     showResults, setShowResults,
-    filterOpen, openFilter, closeFilter,
+    filterOpen, setFilterOpen,
     input, setInput,
     query, submitSearch,
     selectedCategory, setSelectedCategory,
