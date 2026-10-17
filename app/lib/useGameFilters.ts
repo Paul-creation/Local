@@ -120,7 +120,15 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
   // 열리면 맨 위에서 시작, 닫히면 열기 전 위치로 (보던 화면은 hidden으로만 가려 두어 그대로 남아 있다)
   useLayoutEffect(() => {
     if (filterOpen) { filterWasOpen.current = true; window.scrollTo({ top: 0, behavior: 'instant' }); }
-    else if (filterWasOpen.current) { filterWasOpen.current = false; window.scrollTo({ top: filterScroll.current, behavior: 'instant' }); }
+    else if (filterWasOpen.current) {
+      filterWasOpen.current = false;
+      const y = filterScroll.current;
+      const restore = () => window.scrollTo({ top: y, behavior: 'instant' });
+      restore();
+      // 뒤로가기(popstate)로 닫힐 때는 Next 라우터·브라우저가 뒤늦게 위치를 건드릴 수 있어 한 번 더 맞춘다
+      const t = window.setTimeout(restore, 80);
+      return () => window.clearTimeout(t);
+    }
   }, [filterOpen]);
 
   // 주소 → 상태 (화면에 그리기 전에 한 번). 클라이언트 이동으로 돌아온 경우도 같은 자리에서 처리
