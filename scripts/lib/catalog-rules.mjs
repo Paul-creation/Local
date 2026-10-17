@@ -18,14 +18,14 @@ export function parseChart(json) {
 }
 
 // 한 게임이 기준에 맞는지. 맞으면 { ok: true, via }, 아니면 { ok: false, reason }
-// - info: { type, year(모르면 NaN/null), genres(영어), reviews, positive(0~1) }
+// - info: { type, year(모르면 NaN/null), genres(영어), reviews, positive(0~1), name·categories(영어, 있으면 도구류 규칙까지 적용) }
 // - opts: { fromList(--appids 목록), force(목록 항목의 force), ccu(차트 동접, 없으면 0), legacy(true면 예전 기준만) }
 // 리뷰 개수(1,000개 이상)·종류·장르 조건은 예외 없이 항상 적용 (force는 긍정률·연도만 면제)
 export function judge(info, opts = {}) {
   const { fromList = false, force = false, ccu = 0, legacy = false } = opts;
-  const { type, year, genres = [], reviews, positive } = info;
+  const { type, year, genres = [], reviews, positive, name, categories } = info;
   if (type !== 'game') return { ok: false, reason: `스팀 종류가 game이 아님 (${type})` };
-  if (EXCLUDE_GENRES.some((e) => genres.includes(e)) || isNonGame(genres)) return { ok: false, reason: `제외 장르 (${genres.join(', ')})` };
+  if (EXCLUDE_GENRES.some((e) => genres.includes(e)) || isNonGame(genres, { name, categories })) return { ok: false, reason: `제외 장르 (${genres.join(', ')})` };
   if (!reviews) return { ok: false, reason: '리뷰 정보 없음' };
   if (reviews < MIN_REVIEWS) return { ok: false, reason: `리뷰 ${reviews.toLocaleString('ko-KR')}개 · 긍정 ${Math.round(positive * 100)}%` };
 

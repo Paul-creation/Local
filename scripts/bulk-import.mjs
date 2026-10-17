@@ -102,14 +102,15 @@ async function check(item) {
     const type = enData.type;
 
     // 종류·장르에서 이미 탈락이면 리뷰 요청은 아낌
-    const pre = judge({ type, year, genres: enGenres, reviews: 1e9, positive: 1 }, { fromList: !!APPIDS_FILE });
+    const enCategories = (enData.categories || []).map((c) => c.description);
+    const pre = judge({ type, year, genres: enGenres, reviews: 1e9, positive: 1, name: enData.name, categories: enCategories }, { fromList: !!APPIDS_FILE });
     if (!pre.ok) return skip(pre.reason);
 
     const reviews = await steamGet(`https://store.steampowered.com/appreviews/${appid}?json=1&filter=summary&language=all&purchase_type=all`);
     const qs = reviews?.query_summary;
     if (!qs || !qs.total_reviews) return skip('리뷰 정보 없음');
     const positive = qs.total_positive / qs.total_reviews;
-    const info = { type, year, genres: enGenres, reviews: qs.total_reviews, positive };
+    const info = { type, year, genres: enGenres, reviews: qs.total_reviews, positive, name: enData.name, categories: enCategories };
     const ccu = chartCcu.get(appid) || 0;
     const verdict = judge(info, { fromList: !!APPIDS_FILE, force: item.force, ccu });
     if (!verdict.ok) return skip(verdict.reason);

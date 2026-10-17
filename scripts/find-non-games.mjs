@@ -26,9 +26,11 @@ console.log(`${scope} 스팀 게임 ${games.length}개 확인 (약 ${Math.ceil(g
 const found = [];
 for (const g of games) {
   try {
-    const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${g.steam_appid}&cc=kr&l=english&filters=genres`);
-    const genres = ((await res.json())?.[g.steam_appid]?.data?.genres || []).map((x) => x.description);
-    if (isNonGame(genres)) {
+    const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${g.steam_appid}&cc=kr&l=english&filters=basic,genres,categories`);
+    const d = (await res.json())?.[g.steam_appid]?.data;
+    const genres = (d?.genres || []).map((x) => x.description);
+    const categories = (d?.categories || []).map((x) => x.description);
+    if (isNonGame(genres, { name: d?.name, categories })) {
       found.push(g);
       console.log(`🔧 ${g.name} — ${genres.join(', ')}`);
     }
