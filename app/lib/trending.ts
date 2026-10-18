@@ -1,6 +1,6 @@
 // 메인 인원별 추천의 "인기 급상승" 규칙 — 순수 함수만 (다른 파일을 import하지 않아 trending.test.mjs가 .ts를 바로 불러온다)
 // 신호: 동접 증가율(player_history) · 최근 리뷰 속도(games 현재값) · 스트리머 영상(streamer_videos 최근 14일)
-// 칸: 재부상(신작이 아니고 현재 동접 1,000 이상, 증가율 1.2 이상 — 동접 10만 이상은 2.5 이상) · 신작(출시 90일 이내 + 리뷰 10만 미만). 인원별로 재부상 5 + 신작 3
+// 칸: 재부상(신작이 아니고 현재 동접 1,000 이상, 증가율 1.2 이상 — 동접 10만 이상은 2.5 이상) · 신작(출시 90일 이내 + 리뷰 10만 미만). 인원별로 재부상 4 + 신작 4
 
 export const MIN_PLAYERS = 300;          // 이 아래 동접은 증가율이 노이즈라 후보에서 뺀다 (신작)
 export const RISING_MIN_PLAYERS = 1000;  // 재부상 칸은 현재 동접 1,000 이상만
@@ -13,10 +13,11 @@ export const NEW_DAYS = 90;              // 신작: 출시 90일 이내
 export const NEW_MAX_REVIEWS = 100_000;  // 신작: 리뷰 10만 미만 (이미 큰 게임의 새 버전은 신작이 아님)
 export const STREAMER_DAYS = 14;         // 스트리머 영상은 14일 안, 하루 지날 때마다 1/14씩 줄어든다
 export const STREAMER_BADGE_SUM = 3;     // "스트리머 화제": 14일 가중 합 3 이상
-export const RISING_SLOTS = 5;
-export const NEW_SLOTS = 3;
+export const RISING_SLOTS = 4;
+export const NEW_SLOTS = 4;
+export const NEW_FIXED = 3;              // 신작은 점수 상위 3개를 날짜와 무관하게 고정
 export const RISING_POOL = 12;           // 점수 상위 12개 중 날짜 시드로 5개
-export const NEW_POOL = 6;               // 점수 상위 6개 중 날짜 시드로 3개
+export const NEW_POOL = 6;               // 나머지 1개는 4~6위 중 날짜 시드로
 
 export type TrendBadge = '다시 뜨는 중' | '요즘 뜨는 중' | '신작' | '스트리머 화제';
 export type Sample = { age: number; count: number }; // age: 기록한 지 며칠 지났는지
@@ -115,14 +116,14 @@ export const pickDaily = <T,>(pool: T[], count: number, seedKey: string): T[] =>
   return a.slice(0, count);
 };
 
-// 보여줄 순서 — 앞 3개가 재부상 2 + 신작 1이 되게 섞는다 (내 PC 필터로 걸러져도 섞임이 유지됨)
-const ORDER = 'RRNRRNRN';
+// 보여줄 순서 — 앞 3개가 재부상 2 + 신작 1, 4번째부터 신작·재부상을 번갈아 (내 PC 필터로 걸러져도 섞임이 유지됨)
+const ORDER = 'RRNNRNRN';
 
-// 점수 순 id 배열 두 개(재부상·신작)에서 날짜 시드로 5 + 3개를 골라 ORDER대로 늘어놓는다
+// 점수 순 id 배열 두 개(재부상·신작)에서 재부상 4개(상위 12개 풀에서 날짜 시드로)와 신작 4개(상위 3개 고정 + 4~6위 중 날짜 시드로 1개)를 골라 ORDER대로 늘어놓는다
 // 한쪽이 모자라면 모자란 만큼 다른 쪽에서 채운다 (총 8개 유지)
 export function pickSlots(rising: string[], fresh: string[], seedKey: string): string[] {
   const rs = pickDaily(rising.slice(0, RISING_POOL), RISING_POOL, `${seedKey}:r`);
-  const ns = pickDaily(fresh.slice(0, NEW_POOL), NEW_POOL, `${seedKey}:n`);
+  const ns = [...fresh.slice(0, NEW_FIXED), ...pickDaily(fresh.slice(NEW_FIXED, NEW_POOL), NEW_POOL - NEW_FIXED, `${seedKey}:n`)];
   const r = rs.slice(0, Math.min(rs.length, RISING_SLOTS + Math.max(0, NEW_SLOTS - ns.length)));
   const n = ns.slice(0, Math.min(ns.length, NEW_SLOTS + Math.max(0, RISING_SLOTS - rs.length)));
   const out: string[] = [];

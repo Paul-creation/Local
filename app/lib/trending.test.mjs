@@ -1,7 +1,7 @@
 // 실행: npm test — 인원별 추천 "인기 급상승" 규칙 (동접 증가율·리뷰 속도·스트리머 감쇠·칸 분류·배지·슬롯 뽑기)
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { median, playerGrowth, reviewSpeed, streamerSum, classify, pickSlots, pickDaily, RISING_SLOTS, NEW_SLOTS } from './trending.ts';
+import { median, playerGrowth, reviewSpeed, streamerSum, classify, pickSlots, pickDaily, RISING_SLOTS, NEW_SLOTS, NEW_FIXED } from './trending.ts';
 
 const s = (age, count) => ({ age, count });
 
@@ -151,18 +151,32 @@ test('스트리머 신호는 점수를 올린다', () => {
 
 const ids = (p, n) => Array.from({ length: n }, (_, i) => `${p}${i + 1}`);
 
-test('슬롯: 재부상 5 + 신작 3 = 8개, 앞 3개는 재부상 2 + 신작 1', () => {
+test('슬롯: 재부상 4 + 신작 4 = 8개, 앞 3개는 재부상 2 + 신작 1, 4번째부터 신작·재부상 번갈아', () => {
   const out = pickSlots(ids('r', 20), ids('n', 10), '2026-10-24:3');
   assert.equal(out.length, RISING_SLOTS + NEW_SLOTS);
-  assert.deepEqual(out.slice(0, 3).map((x) => x[0]), ['r', 'r', 'n']);
-  assert.equal(out.filter((x) => x[0] === 'r').length, 5);
+  assert.deepEqual(out.map((x) => x[0]), ['r', 'r', 'n', 'n', 'r', 'n', 'r', 'n']);
   assert.equal(new Set(out).size, 8);
 });
 
-test('슬롯: 풀은 점수 상위 12·6개만, 같은 시드는 같은 결과, 다른 날은 다른 순서', () => {
+test('슬롯: 신작 상위 3개는 날짜와 무관하게 항상 포함, 나머지 1개는 4~6위에서만', () => {
+  const seen = new Set();
+  for (let d = 1; d <= 30; d++) {
+    const out = pickSlots(ids('r', 20), ids('n', 20), `2026-10-${String(d).padStart(2, '0')}:3`);
+    const news = out.filter((x) => x[0] === 'n');
+    assert.equal(news.length, NEW_SLOTS);
+    for (const top of ids('n', NEW_FIXED)) assert.ok(news.includes(top), `${top} 빠짐`);
+    const rest = news.filter((x) => !ids('n', NEW_FIXED).includes(x));
+    assert.equal(rest.length, 1);
+    assert.ok(['n4', 'n5', 'n6'].includes(rest[0]));
+    seen.add(rest[0]);
+  }
+  assert.equal(seen.size, 3); // 30일 동안 4~6위가 돌아가며 나온다
+});
+
+test('슬롯: 재부상은 상위 12개 풀에서만, 같은 시드는 같은 결과, 다른 날은 다른 순서', () => {
   const a = pickSlots(ids('r', 40), ids('n', 20), '2026-10-24:3');
   assert.deepEqual(a, pickSlots(ids('r', 40), ids('n', 20), '2026-10-24:3'));
-  assert.ok(a.every((x) => (x[0] === 'r' ? Number(x.slice(1)) <= 12 : Number(x.slice(1)) <= 6)));
+  assert.ok(a.filter((x) => x[0] === 'r').every((x) => Number(x.slice(1)) <= 12));
   assert.notDeepEqual(a, pickSlots(ids('r', 40), ids('n', 20), '2026-10-25:3'));
 });
 
