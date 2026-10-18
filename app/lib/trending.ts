@@ -8,7 +8,7 @@ export const BIG_PLAYERS = 100_000;      // 동접이 이 이상인 큰 게임�
 export const BIG_MIN_GP = 2.5;           // 증가율 2.5 이상일 때만 재부상 후보·배지
 export const RISING_MIN_GP = 1.2;        // 재부상 칸 후보 하한 (동접 증가율)
 export const BADGE_GP = 1.5;             // "다시 뜨는 중" 배지 (출시 1년 이상 + 이 이상)
-export const BADGE_MIN_AGE_DAYS = 365;
+export const BADGE_MIN_AGE_DAYS = 365;  // 출시 1년 이상 → "다시 뜨는 중", 91~364일 → "요즘 뜨는 중" (둘 다 증가율 1.5 이상)
 export const NEW_DAYS = 90;              // 신작: 출시 90일 이내
 export const NEW_MAX_REVIEWS = 100_000;  // 신작: 리뷰 10만 미만 (이미 큰 게임의 새 버전은 신작이 아님)
 export const STREAMER_DAYS = 14;         // 스트리머 영상은 14일 안, 하루 지날 때마다 1/14씩 줄어든다
@@ -18,7 +18,7 @@ export const NEW_SLOTS = 3;
 export const RISING_POOL = 12;           // 점수 상위 12개 중 날짜 시드로 5개
 export const NEW_POOL = 6;               // 점수 상위 6개 중 날짜 시드로 3개
 
-export type TrendBadge = '다시 뜨는 중' | '신작' | '스트리머 화제';
+export type TrendBadge = '다시 뜨는 중' | '요즘 뜨는 중' | '신작' | '스트리머 화제';
 export type Sample = { age: number; count: number }; // age: 기록한 지 며칠 지났는지
 
 const clamp = (x: number, lo = 0, hi = 1) => Math.max(lo, Math.min(hi, x));
@@ -95,7 +95,10 @@ export function classify(t: TrendInput): Trend | null {
     const gr = reviewSpeed(t.recentReviews, t.reviewTotal, t.ageDays);
     const R = gr != null ? clamp(Math.log2(gr) / 2) : null; // 리뷰 속도는 점수 보정에만 (후보 조건·배지에는 안 씀)
     score = weighted([[P, 0.5], [R, 0.3], [S, 0.2]]);
-    if (t.ageDays != null && t.ageDays >= BADGE_MIN_AGE_DAYS && t.gp >= BADGE_GP) badges.push('다시 뜨는 중');
+    if (t.ageDays != null && t.gp >= BADGE_GP) {
+      if (t.ageDays >= BADGE_MIN_AGE_DAYS) badges.push('다시 뜨는 중');
+      else if (t.ageDays > NEW_DAYS) badges.push('요즘 뜨는 중');
+    }
   }
   if (t.streamer >= STREAMER_BADGE_SUM) badges.push('스트리머 화제');
   return { kind, score, badges };

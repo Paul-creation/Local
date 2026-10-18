@@ -79,8 +79,16 @@ test('분류: 재부상은 증가율 1.2 이상만 (1.2 포함), 없거나 낮�
 test('배지: "다시 뜨는 중"은 출시 1년 이상 + 증가율 1.5 이상', () => {
   assert.deepEqual(classify({ ...base, gp: 1.5 }).badges, ['다시 뜨는 중']);
   assert.deepEqual(classify({ ...base, gp: 1.49 }).badges, []);
-  assert.deepEqual(classify({ ...base, gp: 3, ageDays: 364 }).badges, []);
   assert.deepEqual(classify({ ...base, gp: 3, ageDays: null }).badges, []);
+});
+
+test('배지: 출시 91~364일은 증가율 1.5 이상일 때 "요즘 뜨는 중" (경계 포함)', () => {
+  assert.deepEqual(classify({ ...base, gp: 1.5, ageDays: 364 }).badges, ['요즘 뜨는 중']);
+  assert.deepEqual(classify({ ...base, gp: 1.5, ageDays: 365 }).badges, ['다시 뜨는 중']);
+  assert.deepEqual(classify({ ...base, gp: 1.5, ageDays: 91 }).badges, ['요즘 뜨는 중']);
+  assert.deepEqual(classify({ ...base, gp: 1.49, ageDays: 200 }).badges, []);
+  assert.deepEqual(classify({ ...base, gp: 3, ageDays: 200, streamer: 3 }).badges, ['요즘 뜨는 중', '스트리머 화제']);
+  assert.deepEqual(classify({ ...base, gp: 3, ageDays: 60, reviewTotal: 560000 }).badges, []); // 90일 이내 큰 게임(신작 아님)은 해당 없음
 });
 
 test('리뷰 속도는 점수만 올리고 후보 조건·배지에는 안 쓴다', () => {
