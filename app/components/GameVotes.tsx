@@ -46,7 +46,7 @@ export default function GameVotes({ gameId }: { gameId: string }) {
   return (
     <section className="detail-card is-roomy">
       <h3 className="detail-card-title">이 게임 어떤 상황에서 좋아요?</h3>
-      <p className="detail-card-sub">해당하는 상황을 모두 눌러 주세요 · <span className="num">{totalVotes}</span>명 참여</p>
+      <p className="detail-card-sub">해당하는 상황을 모두 눌러 주세요 · 총 <span className="num">{totalVotes}</span>표</p>
       {lowVotes && <p className="detail-card-sub vote-low">아직 투표가 적어요. 첫 투표를 남겨주세요</p>}
       {VOTE_GROUPS.map(group => {
         const items = orderBase ? sortGroupItems(group.items, orderBase) : group.items;
