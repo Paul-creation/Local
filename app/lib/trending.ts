@@ -30,18 +30,17 @@ export function median(values: number[]): number | null {
   return a.length % 2 ? a[mid] : (a[mid - 1] + a[mid]) / 2;
 }
 
-// 동접 증가율 = 최근 3일 중앙값 ÷ 7일 전 같은 3일 중앙값 (요일 효과를 맞춤). 각 구간 기록이 2개 미만이면
-// 최근 3일 ÷ 4~11일 전 중앙값(기록 3개 이상)으로 대체, 그것도 안 되면 null. 분모는 50 아래로 내려가지 않게 (작은 동접의 폭주 방지)
-export function playerGrowth(samples: Sample[]): { gp: number; method: 'weekday' | 'window' } | null {
-  const pick = (from: number, to: number) => samples.filter((s) => s.age > from && s.age <= to).map((s) => s.count);
+// 동접 증가율 = 최근 3일 중앙값 ÷ 7일 전 같은 3일 중앙값 (요일 효과를 맞춤). 분모는 50 아래로 내려가지 않게 (작은 동접의 폭주 방지)
+// 두 구간 모두 3일 중 기록이 있는 날이 2일 이상이어야 한다 (한 날에 두 번 기록돼도 1일). 모자라면 null = 후보에서 뺌 (대체 구간 없음)
+// 동접 0 이하는 기록 실패로 보고 없는 값으로 친다 (0이 분모·중앙값에 들어가 증가율이 튀는 것 방지)
+export const MIN_COMPARE_DAYS = 2;
+export function playerGrowth(samples: Sample[]): { gp: number } | null {
+  const pick = (from: number, to: number) => samples.filter((s) => s.age > from && s.age <= to && s.count > 0);
+  const days = (list: Sample[], from: number) => new Set(list.map((s) => Math.ceil(s.age - from) - 1)).size;
   const recent = pick(0, 3);
-  if (recent.length < 2) return null;
-  const now = median(recent)!;
   const same = pick(7, 10);
-  if (same.length >= 2) return { gp: now / Math.max(median(same)!, 50), method: 'weekday' };
-  const wide = pick(4, 11);
-  if (wide.length >= 3) return { gp: now / Math.max(median(wide)!, 50), method: 'window' };
-  return null;
+  if (days(recent, 0) < MIN_COMPARE_DAYS || days(same, 7) < MIN_COMPARE_DAYS) return null;
+  return { gp: median(recent.map((s) => s.count))! / Math.max(median(same.map((s) => s.count))!, 50) };
 }
 
 // 리뷰 속도 = (최근 30일 리뷰 ÷ 전체 리뷰) ÷ (30일 ÷ 나이) — 평생 평균 대비 배율. 최근 리뷰 30개 미만이면 null

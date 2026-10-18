@@ -13,22 +13,45 @@ test('median: 홀수·짝수·빈 배열', () => {
 
 test('동접 증가율: 최근 3일 중앙값 ÷ 7일 전 같은 3일 중앙값 (요일 맞춤)', () => {
   const g = playerGrowth([s(0.5, 300), s(1.5, 300), s(2.5, 300), s(7.5, 100), s(8.5, 100), s(9.5, 100), s(5, 9999)]);
-  assert.deepEqual(g, { gp: 3, method: 'weekday' });
+  assert.deepEqual(g, { gp: 3 });
 });
 
-test('동접 증가율: 7일 전 같은 구간 기록이 부족하면 4~11일 전 중앙값으로 대체', () => {
-  const g = playerGrowth([s(0.5, 200), s(1.5, 200), s(2.5, 200), s(5, 100), s(6, 100), s(8, 100)]);
-  assert.deepEqual(g, { gp: 2, method: 'window' });
+test('동접 증가율: 7일 전 같은 구간에 기록 있는 날이 2일 미만이면 null (4~11일 전 대체 없음)', () => {
+  assert.equal(playerGrowth([s(0.5, 200), s(1.5, 200), s(2.5, 200), s(5, 100), s(6, 100), s(8, 100)]), null); // 7~10일 전은 8일 1개뿐
+  assert.equal(playerGrowth([s(0.5, 200), s(1.5, 200), s(2.5, 200), s(5, 100), s(6, 100), s(6.5, 100)]), null); // 7~10일 전 없음
+  assert.equal(playerGrowth([s(0.5, 200), s(1.5, 200), s(2.5, 200), s(8.2, 100), s(8.4, 100), s(8.6, 100)]), null); // 같은 날에 세 번 기록돼도 1일
 });
 
-test('동접 증가율: 최근 기록이 2개 미만이거나 비교 기록이 모자라면 null', () => {
-  assert.equal(playerGrowth([s(0.5, 100), s(8, 100), s(9, 100)]), null);
-  assert.equal(playerGrowth([s(0.5, 100), s(1.5, 100), s(5, 100), s(6, 100)]), null);
+test('동접 증가율: 최근 3일에 기록 있는 날이 2일 미만이면 null', () => {
+  assert.equal(playerGrowth([s(0.5, 200), s(7.5, 100), s(8.5, 100), s(9.5, 100)]), null);       // 1일만
+  assert.equal(playerGrowth([s(0.3, 200), s(0.8, 200), s(7.5, 100), s(8.5, 100)]), null);       // 같은 날 두 번 = 1일
+  assert.equal(playerGrowth([s(3.5, 200), s(4, 200), s(7.5, 100), s(8.5, 100)]), null);         // 최근 3일 안에 기록 없음
+});
+
+test('동접 증가율: 기록이 아예 없으면 null', () => {
   assert.equal(playerGrowth([]), null);
 });
 
+test('동접 증가율: 2일씩이면 계산 (경계 age 3·7·10 포함 규칙)', () => {
+  assert.deepEqual(playerGrowth([s(1.5, 300), s(3, 300), s(7.01, 100), s(10, 100)]), { gp: 3 });
+  assert.equal(playerGrowth([s(1.5, 300), s(3, 300), s(7, 100), s(10, 100)]), null); // 정확히 7일 전은 구간 밖
+});
+
+test('동접 증가율: 0값은 기록 실패로 보고 없는 값 취급 (분모 0 폭주·중앙값 왜곡 방지)', () => {
+  // 7일 전 3일 중 2일이 0 → 유효한 날 1일 → null
+  assert.equal(playerGrowth([s(0.5, 300), s(1.5, 300), s(7.5, 100), s(8.5, 0), s(9.5, 0)]), null);
+  // 최근 값이 0이어도 유효한 날이 2일이면 0은 빼고 계산
+  assert.deepEqual(playerGrowth([s(0.5, 0), s(1.5, 300), s(2.5, 300), s(7.5, 100), s(8.5, 100)]), { gp: 3 });
+  // 전부 0
+  assert.equal(playerGrowth([s(0.5, 0), s(1.5, 0), s(7.5, 0), s(8.5, 0)]), null);
+});
+
 test('동접 증가율: 분모는 50 아래로 내려가지 않는다', () => {
-  const g = playerGrowth([s(0.5, 100), s(1.5, 100), s(7.5, 5), s(8.5, 5)]);
+  assert.equal(playerGrowth([s(0.5, 100), s(1.5, 100), s(7.5, 5), s(8.5, 5)]).gp, 2);
+});
+
+test('동접 증가율: 하루 두 번 기록돼도 중앙값은 기록 전체로 (요일 맞춘 3일)', () => {
+  const g = playerGrowth([s(0.5, 600), s(1.5, 600), s(2.5, 600), s(8.2, 100), s(8.4, 300), s(9.5, 300)]);
   assert.equal(g.gp, 2);
 });
 

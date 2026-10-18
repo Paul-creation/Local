@@ -73,7 +73,7 @@ export default async function Home() {
   // 스트리머 협동은 위 섹션(인원별 추천 4종 전부·지금 뜨는 게임 탭들의 1~10위·이번주의 게임)에 나온 게임을 먼저 빼고 고른다 (기준 미달이면 lib 안에서 중복 제거 없이 다시 고름)
   const shownAbove = [
     ...(peopleRecs ? Object.values(peopleRecs.ids).flat() : []),
-    ...hot.tabs.flatMap((t) => t.items.map((i) => i.id)),
+    ...hotShown,
     ...(featured ? [featured.id as string] : []),
   ];
   const streamerTheme = await getStreamerTheme(shownAbove).catch(() => null);
