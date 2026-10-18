@@ -1,8 +1,11 @@
 // 메인 인원별 추천의 "인기 급상승" 규칙 — 순수 함수만 (다른 파일을 import하지 않아 trending.test.mjs가 .ts를 바로 불러온다)
 // 신호: 동접 증가율(player_history) · 최근 리뷰 속도(games 현재값) · 스트리머 영상(streamer_videos 최근 14일)
-// 칸: 재부상(신작이 아니고 동접 증가율 1.2 이상) · 신작(출시 90일 이내 + 리뷰 10만 미만). 인원별로 재부상 5 + 신작 3
+// 칸: 재부상(신작이 아니고 현재 동접 1,000 이상, 증가율 1.2 이상 — 동접 10만 이상은 2.5 이상) · 신작(출시 90일 이내 + 리뷰 10만 미만). 인원별로 재부상 5 + 신작 3
 
-export const MIN_PLAYERS = 300;          // 이 아래 동접은 증가율이 노이즈라 후보에서 뺀다
+export const MIN_PLAYERS = 300;          // 이 아래 동접은 증가율이 노이즈라 후보에서 뺀다 (신작)
+export const RISING_MIN_PLAYERS = 1000;  // 재부상 칸은 현재 동접 1,000 이상만
+export const BIG_PLAYERS = 100_000;      // 동접이 이 이상인 큰 게임은
+export const BIG_MIN_GP = 2.5;           // 증가율 2.5 이상일 때만 재부상 후보·배지
 export const RISING_MIN_GP = 1.2;        // 재부상 칸 후보 하한 (동접 증가율)
 export const BADGE_GP = 1.5;             // "다시 뜨는 중" 배지 (출시 1년 이상 + 이 이상)
 export const BADGE_MIN_AGE_DAYS = 365;
@@ -85,7 +88,8 @@ export function classify(t: TrendInput): Trend | null {
     score = weighted([[P, 0.5], [R, 0.3], [S, 0.2]]);
     badges.push('신작');
   } else {
-    if (t.gp == null || t.gp < RISING_MIN_GP) return null;
+    if (cur < RISING_MIN_PLAYERS || t.gp == null || t.gp < RISING_MIN_GP) return null;
+    if (cur >= BIG_PLAYERS && t.gp < BIG_MIN_GP) return null;
     kind = 'rising';
     const P = clamp(Math.log2(t.gp) / 2);
     const gr = reviewSpeed(t.recentReviews, t.reviewTotal, t.ageDays);

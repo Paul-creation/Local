@@ -58,6 +58,18 @@ test('분류: 동접 300 미만은 후보 아님', () => {
   assert.equal(classify({ ...base, current: null }), null);
 });
 
+test('재부상은 현재 동접 1,000 이상만 (신작은 300 유지)', () => {
+  assert.equal(classify({ ...base, current: 999, gp: 5 }), null);
+  assert.equal(classify({ ...base, current: 1000, gp: 5 }).kind, 'rising');
+  assert.equal(classify({ current: 300, ageDays: 10, reviewTotal: 100, recentReviews: 50, gp: null, streamer: 0 }).kind, 'new');
+});
+
+test('동접 10만 이상 큰 게임은 증가율 2.5 이상일 때만 후보 (배지도 그때만)', () => {
+  assert.equal(classify({ ...base, current: 100000, gp: 2.49 }), null);
+  assert.deepEqual(classify({ ...base, current: 100000, gp: 2.5 }).badges, ['다시 뜨는 중']);
+  assert.equal(classify({ ...base, current: 99999, gp: 1.6 }).kind, 'rising');
+});
+
 test('분류: 재부상은 증가율 1.2 이상만 (1.2 포함), 없거나 낮으면 제외', () => {
   assert.equal(classify({ ...base, gp: 1.19 }), null);
   assert.equal(classify({ ...base, gp: null }), null);
