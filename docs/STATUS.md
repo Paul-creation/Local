@@ -68,7 +68,7 @@
 
 ## 진행 중
 - feat/people-carousel 머지 뒤 프로덕션에서 캐러셀 화살표·모바일 스와이프·신작 고정 3개 노출 확인(미확인)
-- feat/people-trending 머지 뒤 확인(미확인): 프로덕션 인원별 추천 화면·배지 / 첫 daily에서 snapshot-review-history 동작·소요 시간(review_history가 쌓이는지) / review_history가 8일 이상 쌓이면 리뷰 속도를 주간 증가량 기준으로 바꿀지 검토 / 빌드(Vercel 포함)에서 /api/games/list 프리렌더 타임아웃이 다시 나는지 / 프리뷰에서 본 CS2·Dota 2 노출은 구 배포로 추정, 재현 안 됨
+- feat/people-trending 머지 뒤 확인(미확인): 프로덕션 인원별 추천 화면·배지 / 첫 daily에서 snapshot-review-history 동작·소요 시간(review_history가 쌓이는지) / review_history가 8일 이상 쌓이면 리뷰 속도를 주간 증가량 기준으로 바꿀지 검토 / 빌드(Vercel 포함)에서 /api/games/list 프리렌더 타임아웃이 다시 나는지
 - fix/judge-retry 머지 뒤 후속(미확인): 10/17 weekly에서 판정 실패한 20개(filter_ai_at 비어 있어 judge-new-games --apply 대상)와 보류 3개·오버워치·AION 2 태그는 SQL(tags_linked_at·filter_ai_at 비우기)을 사용자가 실행한 뒤 스크립트로 채움 / 다음 weekly에서 tool use 전환 뒤 judge 비용(예상 호출당 +약 $0.0006) 확인
 - feat/catalog-popular 머지 뒤 첫 weekly에서 확인(미확인): bulk-import가 동접 차트·무료 폴백 게임을 넣는지·40분 제한 안에 끝나는지, fill-activities-v2 단계가 ANTHROPIC_API_KEY로 돌고 90분 안에 끝나는지, 무료 폴백 게임(한국 상점 없음)의 korean_support·가격 표시 / Bongo Cat(데스크톱 펫형)은 non-game 규칙에 안 걸림, 필요하면 수동 숨김 판단 / Fall Guys가 delisted_appids에 맞게 들어 있는지 확인 필요
 - 활동 제보 머지 뒤 프로덕션에서 상세 제보 UI·제보 저장·관리자 승인 반영 확인(미확인) / 프리뷰 주소는 배포 보호 때문에 [3] 배포 점검이 건너뛰어짐

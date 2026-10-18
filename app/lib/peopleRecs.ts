@@ -22,6 +22,7 @@ export { pickDaily } from './trending';
 // 인원별 친구끼리 최대 인원 상한 — 대규모 멀티가 소규모 추천에 섞이지 않게
 const MAX_CAP: Record<PeopleN, number> = { 2: 4, 3: 6, 4: 8, 5: 16 };
 const DAY = 86400_000;
+const PLAYER_PAGE_SIZE = 2000; // player_history 11일치(약 1만 1천 행)를 2,000행씩 — 서버 Max rows가 2,000 이상이어야 실제로 2,000씩 온다 (모자라면 readAllPages가 받은 만큼만 이어 읽음)
 const HISTORY_DAYS = 11; // 동접 증가율이 보는 가장 먼 기록 (7일 전 같은 3일 = 7~10일 전, 대체 구간 4~11일 전)
 
 // 게임 카드 칸은 목록(gameIndex)과 같은 느슨한 모양
@@ -45,7 +46,7 @@ const kstDate = (now = new Date()) => new Date(now.getTime() + 9 * 3600_000).toI
 async function readPlayerSamples(now: number): Promise<Map<string, Sample[]> | null> {
   const since = new Date(now - HISTORY_DAYS * DAY).toISOString();
   const { data, error } = await readAllPages<{ game_id: string; player_count: number; recorded_at: string }>((from, to) =>
-    supabase.from('player_history').select('game_id, player_count, recorded_at').gte('recorded_at', since).order('recorded_at').order('id').range(from, to));
+    supabase.from('player_history').select('game_id, player_count, recorded_at').gte('recorded_at', since).order('recorded_at').order('id').range(from, to), PLAYER_PAGE_SIZE);
   if (error || !data) return null;
   const out = new Map<string, Sample[]>();
   for (const r of data) {
