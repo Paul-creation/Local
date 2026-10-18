@@ -151,10 +151,10 @@ test('스트리머 신호는 점수를 올린다', () => {
 
 const ids = (p, n) => Array.from({ length: n }, (_, i) => `${p}${i + 1}`);
 
-test('슬롯: 재부상 4 + 신작 4 = 8개, 앞 3개는 재부상 2 + 신작 1, 4번째부터 신작·재부상 번갈아', () => {
+test('슬롯: 재부상 4 + 신작 4 = 8개, 앞 3개는 재부상 2 + 신작 1, 4~6번째는 재부상·신작 번갈아, 신작 연속은 맨 끝', () => {
   const out = pickSlots(ids('r', 20), ids('n', 10), '2026-10-24:3');
   assert.equal(out.length, RISING_SLOTS + NEW_SLOTS);
-  assert.deepEqual(out.map((x) => x[0]), ['r', 'r', 'n', 'n', 'r', 'n', 'r', 'n']);
+  assert.deepEqual(out.map((x) => x[0]), ['r', 'r', 'n', 'r', 'n', 'r', 'n', 'n']);
   assert.equal(new Set(out).size, 8);
 });
 
