@@ -12,7 +12,8 @@ import { peopleLabel, peopleHref } from './PeopleSelect';
 import LibraryLink from './LibraryLink';
 
 // 메인 인원별 추천 — 서버가 인원 4종 후보를 한 번에 보냈으므로 버튼을 눌러도 페이지 이동·추가 요청 없이 바로 바뀐다
-// 서버가 인원별 후보 12개를 날짜 시드 순서로 보냄 — 내 PC 토글(기본 꺼짐)이 꺼져 있거나 사양이 없으면 앞 3개, 켜져 있으면 최소 사양 통과 게임을 앞에서부터 3개
+// 서버가 인원별 후보 8개(재부상 5 + 신작 3, 앞 3개가 재부상 2 + 신작 1)를 날짜 시드로 골라 보냄. 카드 왼쪽 위 배지는 다시 뜨는 중·신작·스트리머 화제 (recs.badges)
+// 내 PC 토글(기본 꺼짐)이 꺼져 있거나 사양이 없으면 앞 3개, 켜져 있으면 최소 사양 통과 게임을 앞에서부터 3개
 // (통과가 1~2개면 그만큼만 보여주고, 0개면 필터 전 앞 3개 + 안내 한 줄과 필터 끄기 버튼. 후보 자체가 없을 때만 "추천 게임이 아직 없어요")
 // "전체 보기"는 메인 검색 주소(?players=)에 같은 조건(내 PC 포함)을 담아 연결
 export default function PeopleRecs({ recs }: { recs: Data | null }) {
@@ -43,7 +44,11 @@ export default function PeopleRecs({ recs }: { recs: Data | null }) {
       )}
       {games.length > 0 ? (
         <div className="people-cards" ref={rowRef}>
-          {games.map((g, i) => <div key={g.id} className="people-item"><GameCard game={g} eager={i === 0} /></div>)}
+          {games.map((g, i) => (
+            <div key={g.id} className="people-item">
+              <GameCard game={g} eager={i === 0} badge={recs.badges[g.id]?.length ? <span className="gc-trend">{recs.badges[g.id].map((b) => <span key={b}>{b}</span>)}</span> : undefined} />
+            </div>
+          ))}
         </div>
       ) : (
         <p className="people-empty">조건에 맞는 추천 게임이 아직 없어요</p>

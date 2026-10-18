@@ -19,6 +19,7 @@ const GROUPS = {
     'fetch-streamer-videos --apply', // 스트리머 공식 채널 새 영상 → 게임 연결 (YouTube 하루 200유닛, 하이라이트 작업이 이 몫을 남겨 둠). 트레일러보다 먼저
     'enrich-videos 90', // YouTube 하루 한도 안에서 매일 조금씩
     'snapshot-hot-rank', // 메인 "지금 뜨는 게임" 순위 기록 (heat_rank 갱신 뒤)
+    'snapshot-review-history', // 리뷰 수·긍정률 날짜별 기록 (enrich-players 뒤, 인원별 추천 급상승용. review_history 표가 없으면 실패로 표시)
     'purge-ip-hash', // 90일 지난 IP 해시 칸 비우기 (개인정보처리방침, 행은 지우지 않음)
     'purge-old-records', // 생성 1년 지난 신고·의견함 행 삭제 (개인정보처리방침, 한 번 최대 200개)
     'daily-summary', // 디스코드 일일 요약 (웹후크 없으면 출력만)

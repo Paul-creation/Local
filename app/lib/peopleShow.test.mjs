@@ -7,8 +7,8 @@ const cands = Array.from({ length: PEOPLE_CANDIDATES }, (_, i) => ({ id: `g${i +
 const ids = (r) => r.games.map((g) => g.id);
 const only = (...pass) => (g) => pass.includes(g.id);
 
-test('후보 12개, 보여주는 건 3개', () => {
-  assert.equal(PEOPLE_CANDIDATES, 12);
+test('후보 8개(재부상 5 + 신작 3), 보여주는 건 3개', () => {
+  assert.equal(PEOPLE_CANDIDATES, 8);
   assert.equal(PEOPLE_SHOW, 3);
 });
 
@@ -19,14 +19,14 @@ test('필터 꺼짐(사양 없음 포함) → 앞 3개, 예전과 같은 순서'
 });
 
 test('필터 켜짐·통과 3개 이상 → 통과분 앞 3개 (앞 후보가 미달이어도 뒤에서 채움)', () => {
-  const r = choosePeopleGames(cands, only('g2', 'g5', 'g7', 'g9', 'g12'));
-  assert.deepEqual(ids(r), ['g2', 'g5', 'g7']);
+  const r = choosePeopleGames(cands, only('g2', 'g5', 'g7', 'g8', 'g4'));
+  assert.deepEqual(ids(r), ['g2', 'g4', 'g5']);
   assert.equal(r.filteredOut, false);
 });
 
 test('필터 켜짐·일부 통과(1~2개) → 통과한 게임만 그만큼 (통과 못 한 후보로 채우지 않음, 안내 없음)', () => {
-  const one = choosePeopleGames(cands, only('g11'));
-  assert.deepEqual(ids(one), ['g11']);
+  const one = choosePeopleGames(cands, only('g8'));
+  assert.deepEqual(ids(one), ['g8']);
   assert.equal(one.filteredOut, false);
   const two = choosePeopleGames(cands, only('g2', 'g6'));
   assert.deepEqual(ids(two), ['g2', 'g6']);

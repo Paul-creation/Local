@@ -63,9 +63,9 @@ export default async function Home() {
   const names = await getStreamerNamesByGame([...new Set(hot.tabs.flatMap((t) => t.items.map((i) => i.id)))]).catch(() => new Map<string, string[]>());
   const hotTabs = hot.tabs.map((t) => ({ ...t, items: t.items.map((i) => ({ ...i, streamers: names.get(i.id) ?? [] })) }));
 
-  // 인원별 추천 — 지금 뜨는 게임(모든 탭 1~3위)과 겹치는 건 뺀다. 실패하면 줄만 빠짐
-  const hotTop3 = [...new Set(hot.tabs.flatMap((t) => t.items.slice(0, 3).map((i) => i.id)))];
-  const [peopleRecs, homeExcluded] = await Promise.all([getPeopleRecs(hotTop3).catch(() => null), getHomeExcludedIds().catch(() => [] as string[])]);
+  // 인원별 추천 — 지금 뜨는 게임(모든 탭 10위까지)과 겹치는 건 뺀다. 실패하면 줄만 빠짐
+  const hotShown = [...new Set(hot.tabs.flatMap((t) => t.items.map((i) => i.id)))];
+  const [peopleRecs, homeExcluded] = await Promise.all([getPeopleRecs(hotShown).catch(() => null), getHomeExcludedIds().catch(() => [] as string[])]);
 
   const rows = (sectionRows || []).map((g) => flattenGame({ ...g, description: g.fun_description ? null : g.description }));
   const featured: Record<string, any> | null = weekly || rows.find((g) => g.featured) || null;

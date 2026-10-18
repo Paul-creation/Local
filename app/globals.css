@@ -2625,6 +2625,9 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 .gc { display: flex; flex-direction: column; overflow: hidden; background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-card); color: var(--text); }
 .gc-image { position: relative; display: block; aspect-ratio: 460 / 215; background: var(--inset); overflow: hidden; }
 .gc-image img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+/* 인원별 추천 카드의 급상승 배지(다시 뜨는 중·신작·스트리머 화제) — 이미지 왼쪽 위, 순위 배지(.hc-rank-badge)와 같은 중립색 */
+.gc-trend { position: absolute; top: 8px; left: 8px; z-index: 1; display: flex; flex-wrap: wrap; gap: 4px; max-width: calc(100% - 16px); }
+.gc-trend > span { padding: 2px 8px; border-radius: var(--radius-badge); font-size: var(--fs-xs); font-weight: 800; line-height: 1.4; background: var(--text-2); color: var(--accent-ink); }
 .gc-body { display: flex; flex-direction: column; gap: 6px; padding: 16px; flex: 1; min-width: 0; }
 .gc.is-stretched { position: relative; }
 .gc-link { color: inherit; }

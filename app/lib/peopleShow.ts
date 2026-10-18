@@ -4,7 +4,7 @@
 // - 켜짐·통과 1개 이상 → 통과한 게임만 앞에서부터 최대 3개 (1~2개면 그만큼만 — 통과 못 한 후보로 채우지 않는다)
 // - 켜짐·통과 0개 → 필터 전 앞 3개 + filteredOut(화면이 "사양을 통과한 추천이 없어 전체 추천을 보여줘요" 안내와 필터 끄기 버튼을 보임)
 export const PEOPLE_SHOW = 3;
-export const PEOPLE_CANDIDATES = 12;
+export const PEOPLE_CANDIDATES = 8; // 재부상 5 + 신작 3 (lib/trending pickSlots)
 
 export function choosePeopleGames<T>(candidates: T[], runs: ((g: T) => boolean) | null, show = PEOPLE_SHOW): { games: T[]; filteredOut: boolean } {
   if (!runs) return { games: candidates.slice(0, show), filteredOut: false };
