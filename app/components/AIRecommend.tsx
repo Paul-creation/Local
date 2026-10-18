@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { gameName } from '../lib/gameName';
 
 interface Question {
   question: string;
@@ -182,12 +183,12 @@ export default function AIRecommend() {
                         padding: '12px 0', borderBottom: '1px solid var(--border-light)',
                         textDecoration: 'none',
                       }}>
-                        <img src={r.game.cover_image_url} alt={r.game.name} style={{
+                        <img src={r.game.cover_image_url} alt={gameName(r.game)} style={{
                           width: 60, height: 34, objectFit: 'cover', borderRadius: 6, flexShrink: 0
                         }} />
                         <div>
                           <div style={{ fontSize: 'var(--fs-l)', fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>
-                            {r.game.name}
+                            {gameName(r.game)}
                           </div>
                           <div style={{ fontSize: 'var(--fs-m)', color: 'var(--text-dim)' }}>{r.hook}</div>
                         </div>
@@ -199,8 +200,8 @@ export default function AIRecommend() {
                   </>
                 ) : (
                   <>
-                    <img src={result.game?.cover_image_url} alt={result.game?.name} className="ai-result-image" />
-                    <h4>{result.game?.name}</h4>
+                    <img src={result.game?.cover_image_url} alt={result.game ? gameName(result.game) : ''} className="ai-result-image" />
+                    <h4>{result.game ? gameName(result.game) : ''}</h4>
                     <p className="ai-result-reason">{result.reason}</p>
                     <div className="ai-result-actions">
                       <Link href={`/games/${result.game?.id}`} className="ai-result-link">자세히 보기 →</Link>

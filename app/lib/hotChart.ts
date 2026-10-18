@@ -7,6 +7,7 @@ import { getPriceInfo, getLowestTiming, flattenGame, PRICE_TYPE_LABEL, type Lowe
 import { isNoKorean } from './cardInfo';
 import { translateTag } from './tagTranslate';
 import { selectHomeGames } from './visibleGames';
+import { gameName } from './gameName';
 
 export type RankChange = { type: 'up' | 'down'; n: number } | { type: 'same' } | { type: 'new' } | null;
 
@@ -93,7 +94,7 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
   const since = addDays(latest, -7 * 26);
 
   const [{ data: games }, { data: weeksRows }] = await Promise.all([
-    selectHomeGames('id, name, hero_image_url, card_image_url, cover_image_url, fun_description, tags, min_players, max_players, current_players, review_summary, review_positive_percent, review_total, is_free, price_type, lowest_price, steam_appid, entry_barrier, difficulty, goty_awards, has_crossplay, korean_support, price_history(price, discount_percent, checked_at, currency, original_price, sale_ends_at)')
+    selectHomeGames('id, name, display_name, hero_image_url, card_image_url, cover_image_url, fun_description, tags, min_players, max_players, current_players, review_summary, review_positive_percent, review_total, is_free, price_type, lowest_price, steam_appid, entry_barrier, difficulty, goty_awards, has_crossplay, korean_support, price_history(price, discount_percent, checked_at, currency, original_price, sale_ends_at)')
       .in('id', ids)
       .gte('price_history.price', 100)
       .order('checked_at', { referencedTable: 'price_history', ascending: false })
@@ -135,7 +136,7 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
       const price = getPriceInfo(g);
       return [{
         id,
-        name: g.name,
+        name: gameName(g),
         rank: i + 1,
         change: rising ? { type: 'up' as const, n: risingDelta.get(id)! } : changeOf(id),
         weeks: weeksOf(id),
@@ -153,7 +154,7 @@ export async function getHotChart(): Promise<{ tabs: HotTab[]; top10Ids: string[
         reviewPercent: g.review_positive_percent ?? null,
         reviewTotal: g.review_total ?? null,
         card: flattenGame({
-          id, name: g.name, steam_appid: g.steam_appid, min_players: g.min_players, max_players: g.max_players,
+          id, name: g.name, display_name: g.display_name, steam_appid: g.steam_appid, min_players: g.min_players, max_players: g.max_players,
           is_free: g.is_free, price_type: g.price_type, lowest_price: g.lowest_price, price_history: g.price_history,
           entry_barrier: g.entry_barrier, difficulty: g.difficulty, goty_awards: g.goty_awards,
           has_crossplay: g.has_crossplay === true ? true : null,

@@ -7,8 +7,9 @@ import { BOARD_KEYS, BOARDS, LIMITS, type BoardKey } from '../../lib/communityBo
 import { send, loadNickname, saveNickname } from './api';
 import { selectGames } from '../../lib/visibleGames';
 import { looseIlikePattern, matchRank } from '../../lib/searchMatch';
+import { gameName } from '../../lib/gameName';
 
-type Game = { id: string; name: string };
+type Game = { id: string; name: string; display_name?: string | null };
 
 export default function WriteForm({ initialBoard, initialGame }: { initialBoard: BoardKey; initialGame: Game | null }) {
   const router = useRouter();
@@ -78,8 +79,8 @@ function GamePicker({ game, onChange }: { game: Game | null; onChange: (g: Game 
     if (!pattern) { setResults([]); return; }
     timer.current = setTimeout(async () => {
       // 영어·한국어 이름 모두 느슨하게 받아온 뒤 공통 규칙(searchMatch)으로 다시 거르고 정렬
-      const { data } = await selectGames('id, name, search_name_ko')
-        .or(`name.ilike.${pattern},search_name_ko.ilike.${pattern}`)
+      const { data } = await selectGames('id, name, display_name, search_name_ko')
+        .or(`name.ilike.${pattern},display_name.ilike.${pattern},search_name_ko.ilike.${pattern}`)
         .order('heat_rank', { ascending: true, nullsFirst: false }).limit(40);
       setResults((data || [])
         .map((g) => ({ g, rank: matchRank(g, term) }))
@@ -93,7 +94,7 @@ function GamePicker({ game, onChange }: { game: Game | null; onChange: (g: Game 
   if (game) {
     return (
       <div className="cm-picked-game">
-        관련 게임: <strong>{game.name}</strong>
+        관련 게임: <strong>{gameName(game)}</strong>
         <button type="button" className="cm-link-btn" onClick={() => onChange(null)}>빼기</button>
       </div>
     );
@@ -104,7 +105,7 @@ function GamePicker({ game, onChange }: { game: Game | null; onChange: (g: Game 
       {results.length > 0 && (
         <ul className="cm-suggest">
           {results.map((g) => (
-            <li key={g.id}><button type="button" onClick={() => { onChange(g); setQ(''); setResults([]); }}>{g.name}</button></li>
+            <li key={g.id}><button type="button" onClick={() => { onChange(g); setQ(''); setResults([]); }}>{gameName(g)}</button></li>
           ))}
         </ul>
       )}

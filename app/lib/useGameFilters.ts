@@ -22,6 +22,7 @@ import { runsOnMyPc } from './specJudge';
 import { toUserPc } from './myPc';
 import { useMyPc } from '../components/pcspec/useMyPc';
 import { useOwned } from '../components/owned/useOwned';
+import { gameName } from './gameName';
 
 export const HIDE_OWNED_KEY = 'jdn_hide_owned';
 
@@ -201,7 +202,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     if (!inited) return;
     const ids = compareList.map((g: any) => g.id).join(',');
     if ((ids || prevPick.current) && ids !== readPick().join(',')) {
-      writePick(compareList.map((g: any) => g.id), { source: 'filters', meta: compareList.map((g: any) => ({ id: g.id, name: g.name, thumb: g.cover_image_url || g.card_image_url })) });
+      writePick(compareList.map((g: any) => g.id), { source: 'filters', meta: compareList.map((g: any) => ({ id: g.id, name: gameName(g), thumb: g.cover_image_url || g.card_image_url })) });
     }
     prevPick.current = ids;
   }, [inited, compareList]);

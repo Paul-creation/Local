@@ -137,7 +137,7 @@ async function handlePOST(req: NextRequest) {
   // 한 번의 추천에서 AI는 질문마다 불리므로 첫 AI 호출(답 1개)만 추천 1회로 셈
   const kind = answers.length <= 1 ? 'recommend' : 'recommend-step';
 
-  const { data: allGames, error } = await readAllPages((from, to) => selectGames('id, name, search_name_ko, steam_appid, home_excluded, cover_image_url, category, tags, min_players, max_players, difficulty, is_free, solo_playable, korean_support', undefined, supabase).order('id').range(from, to));
+  const { data: allGames, error } = await readAllPages((from, to) => selectGames('id, name, display_name, search_name_ko, steam_appid, home_excluded, cover_image_url, category, tags, min_players, max_players, difficulty, is_free, solo_playable, korean_support', undefined, supabase).order('id').range(from, to));
 
   if (error || !allGames) {
     return NextResponse.json({ error: '게임 목록을 불러오지 못했어요.' }, { status: 500 });
@@ -268,7 +268,7 @@ JSON만 출력:
 async function handleLegacy(req: NextRequest, body: any) {
   const { mood, groupSize, vibe } = body;
 
-  const { data: allGames } = await readAllPages((from, to) => selectGames('id, name, search_name_ko, steam_appid, home_excluded, cover_image_url, category, tags, min_players, max_players, difficulty', undefined, supabase).order('id').range(from, to));
+  const { data: allGames } = await readAllPages((from, to) => selectGames('id, name, display_name, search_name_ko, steam_appid, home_excluded, cover_image_url, category, tags, min_players, max_players, difficulty', undefined, supabase).order('id').range(from, to));
 
   if (!allGames) return NextResponse.json({ error: '게임 목록을 불러오지 못했어요.' }, { status: 500 });
   const legacyTexts = [mood, groupSize, vibe].map((v) => String(v || ''));

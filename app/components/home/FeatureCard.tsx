@@ -8,6 +8,7 @@ import { badgeClass } from '../../lib/badge.mjs';
 import GameImage from '../GameImage';
 import GotyBadge from '../GotyBadge';
 import OwnedChip from '../owned/OwnedChip';
+import { gameName } from '../../lib/gameName';
 
 const decode = (s: string) => s.replace(/&quot;/g, '"').replace(/&amp;/g, '&').replace(/&#39;/g, "'");
 
@@ -19,7 +20,7 @@ export default function FeatureCard({ game, label, sub, priority = false }: { ga
   return (
     <Link href={`/games/${game.id}`} className="feature-card lift">
       <span className="feature-image">
-        <GameImage src={image} fallbackWidth={920} alt={game.name} fetchPriority={priority ? 'high' : undefined} loading={priority ? undefined : 'lazy'} />
+        <GameImage src={image} fallbackWidth={920} alt={gameName(game)} fetchPriority={priority ? 'high' : undefined} loading={priority ? undefined : 'lazy'} />
       </span>
       <span className="feature-body">
         {label && (
@@ -28,7 +29,7 @@ export default function FeatureCard({ game, label, sub, priority = false }: { ga
             {sub && <span className="feature-sub">{sub}</span>}
           </span>
         )}
-        <span className="feature-title">{game.name}</span>
+        <span className="feature-title">{gameName(game)}</span>
         {intro && <span className="feature-intro">{intro}</span>}
         <span className="feature-badges">
           <OwnedChip steamAppid={game.steam_appid} />

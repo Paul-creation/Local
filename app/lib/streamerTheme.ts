@@ -9,6 +9,7 @@ import { friendsMax } from './playersMatch';
 import { getCardGames } from './gameIndex';
 import { getCardExtras } from './cardExtras';
 import { pickStreamerVideo, type PickRow } from './streamerPick';
+import { gameName } from './gameName';
 
 export const THEME_MIN = 6; // 이보다 적으면 섹션을 숨긴다 (null)
 export const THEME_MAX = 12;
@@ -29,7 +30,7 @@ const first = <T,>(v: One<T>): T | null => (Array.isArray(v) ? v[0] ?? null : v)
 type Row = {
   video_id: string; is_short: boolean; published_at: string;
   streamer_channels: One<{ streamer_name: string; kind: string }>;
-  games: One<{ id: string; name: string; card_image_url: string | null; cover_image_url: string | null; category: string | null; min_players: number | null; max_players: number | null; party_max: number | null; has_online_coop: boolean | null; has_local_coop: boolean | null; heat_rank: number | null }>;
+  games: One<{ id: string; name: string; display_name?: string | null; card_image_url: string | null; cover_image_url: string | null; category: string | null; min_players: number | null; max_players: number | null; party_max: number | null; has_online_coop: boolean | null; has_local_coop: boolean | null; heat_rank: number | null }>;
 };
 
 export async function getStreamerTheme(excludeIds: string[] = []): Promise<StreamerTheme | null> {
@@ -37,7 +38,7 @@ export async function getStreamerTheme(excludeIds: string[] = []): Promise<Strea
   for (let from = 0; from < 10000; from += 1000) {
     const { data, error } = await supabase
       .from('streamer_videos')
-      .select('video_id, is_short, published_at, streamer_channels(streamer_name, kind), games!inner(id, name, card_image_url, cover_image_url, category, min_players, max_players, party_max, has_online_coop, has_local_coop, heat_rank)')
+      .select('video_id, is_short, published_at, streamer_channels(streamer_name, kind), games!inner(id, name, display_name, card_image_url, cover_image_url, category, min_players, max_players, party_max, has_online_coop, has_local_coop, heat_rank)')
       .eq('games.hidden', false)
       .eq('games.home_excluded', false)
       .order('published_at', { ascending: false })
@@ -56,7 +57,7 @@ export async function getStreamerTheme(excludeIds: string[] = []): Promise<Strea
       if (g.has_online_coop !== true && g.has_local_coop !== true) continue; // 협동 모드가 확인된 게임만
       let item = byGame.get(g.id);
       if (!item) {
-        item = { id: g.id, name: g.name, game: {}, streamers: [], rank: g.heat_rank ?? Infinity, rows: new Map() };
+        item = { id: g.id, name: gameName(g), game: {}, streamers: [], rank: g.heat_rank ?? Infinity, rows: new Map() };
         byGame.set(g.id, item);
       }
       const ch = first(r.streamer_channels);

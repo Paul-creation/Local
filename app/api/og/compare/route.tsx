@@ -3,6 +3,7 @@ import { SITE_NAME } from '../../../lib/site';
 import { getPriceInfo } from '../../../lib/price';
 import { loadOgFonts, fetchOgImage, clip, OG_SIZE, OG_CACHE, OG_COLOR, playersText } from '../../../lib/og';
 import { selectGames } from '../../../lib/visibleGames';
+import { gameName } from '../../../lib/gameName';
 
 // 비교 링크 공유 미리보기 — 게임 2~4개의 카드 이미지·이름·인원·가격, 캔버스 가로 전체 사용
 // 이미지를 못 받은 게임은 이름만 (그림 전체가 깨지지 않게 fetchOgImage로 미리 받음)
@@ -27,7 +28,7 @@ function Meta({ g, size }: { g: Item; size: number }) {
 export async function GET(request: Request) {
   const ids = [...new Set((new URL(request.url).searchParams.get('ids') || '').split(',').filter((x) => UUID.test(x)))].slice(0, MAX_OG_GAMES);
   const { data } = ids.length
-    ? await selectGames('id, name, min_players, max_players, is_free, price_type, card_image_url, cover_image_url, price_history(price, discount_percent, checked_at, original_price)').in('id', ids)
+    ? await selectGames('id, name, display_name, min_players, max_players, is_free, price_type, card_image_url, cover_image_url, price_history(price, discount_percent, checked_at, original_price)').in('id', ids)
     : { data: [] };
   const found = ids.map((id) => (data || []).find((g: any) => g.id === id)).filter(Boolean) as any[];
   const [fonts, images] = await Promise.all([
@@ -38,7 +39,7 @@ export async function GET(request: Request) {
     const price = getPriceInfo(g);
     return {
       id: g.id,
-      name: g.name,
+      name: gameName(g),
       image: images[i],
       players: playersText(g),
       price: g.is_free ? '무료' : price ? price.formattedFinal : '',

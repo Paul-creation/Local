@@ -10,6 +10,7 @@ import BackLink from '../../../components/BackLink';
 import PostActions from '../../../components/community/PostActions';
 import Comments, { type Comment } from '../../../components/community/Comments';
 import PostRelatedCard from '../../../components/community/PostRelatedCard';
+import { gameName } from '../../../lib/gameName';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,7 +18,7 @@ type Props = { params: Promise<{ id: string }> };
 type Post = {
   id: number; board: BoardKey; title: string; body: string; nickname: string; is_admin: boolean; game_id: string | null;
   like_count: number; comment_count: number; hidden: boolean; created_at: string; updated_at: string | null;
-  games: { id: string; name: string } | null;
+  games: { id: string; name: string; display_name?: string | null } | null;
 };
 
 async function getPost(raw: string) {
@@ -66,7 +67,7 @@ export default async function PostPage({ params }: Props) {
           {post.updated_at && <span>· 수정됨</span>}
         </div>
         {post.games && (
-          <Link href={`/games/${post.games.id}`} className="cm-game-link">관련 게임 · {post.games.name}</Link>
+          <Link href={`/games/${post.games.id}`} className="cm-game-link">관련 게임 · {gameName(post.games)}</Link>
         )}
         {/* 본문은 글자 그대로 출력 (HTML로 해석하지 않음) */}
         <div className="cm-post-body">{post.body}</div>

@@ -19,6 +19,7 @@ import { playersText } from '../lib/players';
 import GameImage from '../components/GameImage';
 import HeartButton from '../components/wishlist/HeartButton';
 import { selectGames } from '../lib/visibleGames';
+import { gameName } from '../lib/gameName';
 
 export const dynamic = 'force-dynamic';
 
@@ -132,9 +133,9 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
   const { ids: idsParam } = await searchParams;
   const ids = idsParam?.split(',').slice(0, 3) || [];
   if (ids.length < 2) return { title: '게임 비교 만들기' };
-  const { data } = await selectGames('id, name').in('id', ids);
+  const { data } = await selectGames('id, name, display_name').in('id', ids);
   const games = ids.map((id) => (data || []).find((g) => g.id === id)).filter(Boolean) as any[];
-  const names = games.map((g) => g.name).join(' vs ');
+  const names = games.map((g) => gameName(g)).join(' vs ');
   const ogTitle = `게임 ${games.length}개 비교 — 우리 뭐 할래?`;
   const desc = `${names} — 상황별 추천도·인원·가격을 한눈에 비교해보세요`;
   const image = `/api/og/compare?ids=${games.map((g) => g.id).join(',')}`;
@@ -242,7 +243,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
         <h1 className="cmp-title">게임 비교</h1>
         <ShareButton
           title={`게임 ${games.length}개 비교 — 우리 뭐 할래?`}
-          text={`${games.map((g: any) => g.name).join(' vs ')} 중에 뭐 할래?`}
+          text={`${games.map((g: any) => gameName(g)).join(' vs ')} 중에 뭐 할래?`}
         />
       </div>
 
@@ -259,7 +260,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
               {/* 썸네일 우측 상단 하트 — 카드 전체가 링크라서 클릭이 이동으로 번지지 않게 막는다 (HeartButton) */}
               <HeartButton gameId={g.id} variant="overlay" />
               <span className="cmp-poster-body">
-                <span className="cmp-poster-name">{g.name}</span>
+                <span className="cmp-poster-name">{gameName(g)}</span>
                 <span className="cmp-poster-meta">
                   {[playersText(g), g.is_free ? '무료' : price?.formattedFinal].filter(Boolean).join(' · ')}
                   {price && price.discount > 0 && !g.is_free && <span className="discount-badge">-{price.discount}%</span>}
@@ -300,7 +301,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
                     const gameScore = situationScores.find((s: any) => s.game === g.name);
                     return (
                       <div key={g.id} className="cmp-mitem">
-                        <span className="cmp-mname">{g.name}</span>
+                        <span className="cmp-mname">{gameName(g)}</span>
                         <Meter score={gameScore?.scores?.[si] ?? 0} />
                       </div>
                     );
@@ -333,7 +334,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
                 <div className="cmp-mgrid">
                   {games.map((g: any) => (
                     <div key={g.id} className="cmp-mbox">
-                      <span className="cmp-mname">{g.name}</span>
+                      <span className="cmp-mname">{gameName(g)}</span>
                       <span className="num">{row.render ? row.render(g) : (g[row.key!] || '-')}</span>
                     </div>
                   ))}

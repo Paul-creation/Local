@@ -34,7 +34,7 @@ const websiteJsonLd = {
 
 // 이번주의 게임(기록이 없을 때 featured 칸)에 쓰는 칸 — 그 게임만 가져온다
 const SECTION_FIELDS = `
-  id, name, tags, difficulty, min_players, max_players, is_free, price_type, lowest_price,
+  id, name, display_name, tags, difficulty, min_players, max_players, is_free, price_type, lowest_price,
   card_image_url, cover_image_url, description, fun_description, featured, category, goty_awards,
   price_history(price, discount_percent, checked_at, currency, original_price, sale_ends_at)
 `;

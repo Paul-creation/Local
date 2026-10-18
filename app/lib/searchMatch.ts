@@ -1,16 +1,16 @@
 // 담당: 친구(검색·태그·비교)
 // 게임 이름 검색 공통 규칙 — 메인 검색 결과, 검색창 자동완성, 비교 만들기 화면이 같이 쓴다
 // 소문자로 바꾸고 띄어쓰기·기호(™ ® © : - . 등)를 전부 지운 뒤 포함 여부로 판단
-// 영어 이름(name)과 한국어 이름·별명(search_name_ko, 쉼표로 여러 개) 중 하나라도 맞으면 찾은 것으로 본다
+// 영어 이름(name)·화면 표시명(display_name)과 한국어 이름·별명(search_name_ko, 쉼표로 여러 개) 중 하나라도 맞으면 찾은 것으로 본다
 
-type Searchable = { name?: string | null; search_name_ko?: string | null };
+type Searchable = { name?: string | null; display_name?: string | null; search_name_ko?: string | null };
 
 export function normalizeSearch(text: string | null | undefined) {
   return String(text || '').toLowerCase().replace(/[\s\p{P}\p{S}]/gu, '');
 }
 
 export function searchNames(game: Searchable) {
-  return [game.name || '', ...String(game.search_name_ko || '').split(',')].map((n) => n.trim()).filter(Boolean);
+  return [game.name || '', game.display_name || '', ...String(game.search_name_ko || '').split(',')].map((n) => n.trim()).filter(Boolean);
 }
 
 // 0: 이름이 검색어로 시작, 1: 이름 중간에 포함, -1: 안 맞음 (자동완성 정렬용)

@@ -12,7 +12,7 @@ import { selectGames } from './visibleGames';
 import { readAllPages } from './paged';
 
 export const INDEX_FIELDS = `
-  id, name, search_name_ko, tags, category, difficulty,
+  id, name, display_name, search_name_ko, tags, category, difficulty,
   min_players, max_players, recommended_players, solo_playable,
   has_online_coop, has_local_coop, has_pvp,
   entry_barrier, solo_mode, party_max, session_max, multiplayer_host,

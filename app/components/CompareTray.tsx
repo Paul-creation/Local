@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { MAX_COMPARE } from '../lib/compareRule';
 import { readMeta, writePick, useComparePick, type PickMeta } from '../lib/compareStore';
 import GameImage from './GameImage';
+import { gameName } from '../lib/gameName';
 
 // 모든 페이지 오른쪽 아래 작은 알약 "비교 N/3" (1개 이상 담겼을 때만). 누르면 작은 팝오버:
 // 담긴 게임(썸네일 + 이름 + × 빼기), "비교하기", "모두 비우기". 바깥을 누르거나 Esc면 닫힘
@@ -28,11 +29,11 @@ export default function CompareTray() {
     if (!missing.length) return;
     let alive = true;
     // DB 조회 코드는 필요할 때만 받는다 (모든 페이지 첫 로드 JS에 싣지 않음)
-    import('../lib/visibleGames').then(({ selectGames }) => selectGames('id, name, cover_image_url').in('id', missing)).then(({ data }) => {
+    import('../lib/visibleGames').then(({ selectGames }) => selectGames('id, name, display_name, cover_image_url').in('id', missing)).then(({ data }) => {
       if (!alive || !data) return;
       setMeta((m) => {
         const next = { ...m };
-        for (const g of data as { id: string; name: string; cover_image_url: string | null }[]) next[g.id] = { id: g.id, name: g.name, thumb: g.cover_image_url };
+        for (const g of data as { id: string; name: string; display_name?: string | null; cover_image_url: string | null }[]) next[g.id] = { id: g.id, name: gameName(g), thumb: g.cover_image_url };
         return next;
       });
     });

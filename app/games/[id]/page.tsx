@@ -48,6 +48,7 @@ import ActivityReport from '../../components/ActivityReport';
 import { decodeEntities } from '../../lib/htmlEntities';
 import { ACTIVITIES, isActivityKey } from '../../lib/activities';
 import ScreenshotGallery, { type Screenshot } from '../../components/ScreenshotGallery';
+import { gameName } from '../../lib/gameName';
 
 // 게임마다 처음 열릴 때 만들고 1시간 동안 재사용 (ISR). 가격·접속자는 하루 한 번 갱신되므로 충분
 // 의견 작성·수정·삭제(api/game-comments)와 신고 자동 숨김(api/community/report)은 그 게임 페이지를 바로 새로 만든다
@@ -105,7 +106,7 @@ function parseMinSpec(raw: string | null) {
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   if (!isUuid(id)) notFound();
-  const { data: game, error } = await selectGames('name, description, fun_description, min_players, max_players, difficulty, tags, is_free, price_type, price_history(price, discount_percent, checked_at, original_price)')
+  const { data: game, error } = await selectGames('name, display_name, description, fun_description, min_players, max_players, difficulty, tags, is_free, price_type, price_history(price, discount_percent, checked_at, original_price)')
     .eq('id', id)
     .maybeSingle();
   // 조회 오류는 없는 게임(404)과 구분해 던진다 — 일시 오류가 404로 나가 색인에서 빠지면 안 됨
@@ -129,11 +130,11 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const image = `/api/og/game/${id}`;
 
   return {
-    title: summary ? `${game.name} — ${summary}` : game.name,
+    title: summary ? `${gameName(game)} — ${summary}` : gameName(game),
     description: desc,
     alternates: { canonical: `/games/${id}` },
-    openGraph: { title: game.name, description: desc, url: `/games/${id}`, type: 'website', images: [{ url: image, width: 1200, height: 630 }] },
-    twitter: { card: 'summary_large_image', title: game.name, description: desc, images: [image] },
+    openGraph: { title: gameName(game), description: desc, url: `/games/${id}`, type: 'website', images: [{ url: image, width: 1200, height: 630 }] },
+    twitter: { card: 'summary_large_image', title: gameName(game), description: desc, images: [image] },
   };
 }
 
@@ -163,7 +164,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const friendsMax = game.party_max ?? game.max_players;
   // 같은 시리즈 (series_id가 있을 때만, 출시순)
   const { data: seriesGames } = game.series_id
-    ? await selectGames('id, name, card_image_url, cover_image_url, series_order').eq('series_id', game.series_id).order('series_order')
+    ? await selectGames('id, name, display_name, card_image_url, cover_image_url, series_order').eq('series_id', game.series_id).order('series_order')
     : { data: null };
   const { data: series } = game.series_id && (seriesGames?.length ?? 0) > 1
     ? await supabase.from('series').select('name_ko').eq('id', game.series_id).maybeSingle()
@@ -237,7 +238,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       <DetailHero
         image={heroImage}
         videoUrl={game.video_url || null}
-        name={game.name}
+        name={gameName(game)}
         meta={headMeta}
         badges={
           <>
@@ -299,7 +300,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
                   {buyLabel}에서 {game.is_free ? '플레이하기' : '구매하기'}
                 </a>
               )}
-              <AddToCompare gameId={game.id} name={game.name} thumb={game.cover_image_url || game.card_image_url} />
+              <AddToCompare gameId={game.id} name={gameName(game)} thumb={game.cover_image_url || game.card_image_url} />
             </div>
             <p className="price-card-note">가격·할인 정보는 실제와 다를 수 있어요. 가격은 하루 한 번 갱신되니 구매 전 스토어에서 확인해 주세요.</p>
           </div>
@@ -309,13 +310,13 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </aside>
 
         <div className="detail-main">
-          {shots.length > 0 && <ScreenshotGallery shots={shots} name={game.name} />}
+          {shots.length > 0 && <ScreenshotGallery shots={shots} name={gameName(game)} />}
 
           {/* 링크 줄 */}
           <div className="detail-links">
             <a href={namuUrl} target="_blank" rel="noopener nofollow" className="detail-link">나무위키 ↗</a>
             <a href={nexusUrl} target="_blank" rel="noopener nofollow" className="detail-link">넥서스 모드 ↗</a>
-            <ShareButton variant="text" title={game.name} text={game.fun_description || `${game.name} 같이 할래?`} />
+            <ShareButton variant="text" title={gameName(game)} text={game.fun_description || `${gameName(game)} 같이 할래?`} />
             {platformCategories.length > 0 && (
               <span className="detail-platforms">플랫폼 · {platformCategories.map((c) => CATEGORY_LABEL[c]).join(' · ')}</span>
             )}
@@ -544,7 +545,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
                   const inner = (
                     <>
                       <GameImage src={sg.cover_image_url || sg.card_image_url} steamSize="header_292x136" loading="lazy" alt="" />
-                      <span className="series-name">{sg.name}</span>
+                      <span className="series-name">{gameName(sg)}</span>
                     </>
                   );
                   return (

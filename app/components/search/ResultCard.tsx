@@ -10,6 +10,7 @@ import { playersText } from '../../lib/players';
 import GameImage from '../GameImage';
 import OwnedChip from '../owned/OwnedChip';
 import { barrierLabel } from '../../lib/cardInfo';
+import { gameName } from '../../lib/gameName';
 
 // 스팀 외 스토어 이름 (games.source)
 const STORE_NAME: Record<string, string> = { epic: 'Epic', battlenet: 'Battle.net', riot: 'Riot', ea: 'EA app', ubisoft: 'Ubisoft Connect', gog: 'GOG' };
@@ -43,7 +44,7 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
           <GameImage src={game.cover_image_url || game.card_image_url} steamSize="header" alt="" loading={eager ? 'eager' : 'lazy'} />
         </span>
         <span className="rr-main">
-          <span className="rr-name">{game.name}</span>
+          <span className="rr-name">{gameName(game)}</span>
           {(store || players || barrier) && (
             <span className="rr-info">
               {store && <span className="result-store">{store}</span>}
@@ -81,7 +82,7 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
             className={`compare-btn${isSelected ? ' on' : ''}`}
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); compare.onToggle(); }}
             aria-pressed={isSelected}
-            aria-label={`${game.name} ${isSelected ? '비교에서 빼기' : '비교에 담기'}`}
+            aria-label={`${gameName(game)} ${isSelected ? '비교에서 빼기' : '비교에 담기'}`}
             disabled={compare.disabled}
           >
             {isSelected ? '비교 중' : '+ 비교'}
@@ -97,7 +98,7 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
       </span>
       <span className="result-body">
         <span className="result-title">
-          {game.name}
+          {gameName(game)}
         </span>
         {store && <span className="result-store">{store}</span>}
         <OwnedChip steamAppid={game.steam_appid} />
@@ -131,7 +132,7 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
               className={`compare-btn${isSelected ? ' on' : ''}`}
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); compare.onToggle(); }}
               aria-pressed={isSelected}
-              aria-label={`${game.name} ${isSelected ? '비교에서 빼기' : '비교에 담기'}`}
+              aria-label={`${gameName(game)} ${isSelected ? '비교에서 빼기' : '비교에 담기'}`}
               disabled={compare.disabled}
             >
               {isSelected ? '비교 중' : '+ 비교'}

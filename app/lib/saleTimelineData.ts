@@ -6,6 +6,7 @@ import { selectHomeGames } from './visibleGames';
 import { flattenGame, getPriceInfo } from './price';
 import { playersText } from './players';
 import { endsWithinWindow, WINDOW_MS } from './saleTimeline';
+import { gameName } from './gameName';
 
 export type TimelineGame = {
   id: string; name: string; image: string | null; players: string;
@@ -18,7 +19,7 @@ export function toTimelineGame(game: any, now: number): TimelineGame | null {
   if (!price || game.is_free || !price.saleEndsAt) return null;
   if (!endsWithinWindow(price.discount, price.saleEndsAt, now)) return null;
   return {
-    id: game.id, name: game.name,
+    id: game.id, name: gameName(game),
     image: game.cover_image_url || game.card_image_url || null,
     players: playersText(game), heat: typeof game.heat_rank === 'number' ? game.heat_rank : null,
     discount: price.discount, final: price.final, original: price.original, endsAt: price.saleEndsAt,
@@ -37,7 +38,7 @@ export async function getSaleTimeline(): Promise<{ items: TimelineGame[]; now: n
   const ids = [...new Set(((rows || []) as { game_id: string }[]).map((r) => r.game_id))];
   if (ids.length === 0) return { items: [], now };
   const { data: games } = await selectHomeGames(
-    'id, name, min_players, max_players, heat_rank, is_free, price_type, card_image_url, cover_image_url, price_history(price, discount_percent, checked_at, currency, original_price, sale_ends_at)',
+    'id, name, display_name, min_players, max_players, heat_rank, is_free, price_type, card_image_url, cover_image_url, price_history(price, discount_percent, checked_at, currency, original_price, sale_ends_at)',
   )
     .in('id', ids)
     .gte('price_history.price', 100)

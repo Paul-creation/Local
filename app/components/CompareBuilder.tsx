@@ -10,16 +10,17 @@ import { matchRank, looseIlikePattern } from '../lib/searchMatch';
 import { playersText } from '../lib/players';
 import GameImage from './GameImage';
 import { selectGames } from '../lib/visibleGames';
+import { gameName } from '../lib/gameName';
 
 const MAX_SUGGESTIONS = 6;
 const QUICK_COUNT = 6;
 
-type Pick = { id: string; name: string; search_name_ko?: string | null; card_image_url?: string | null; cover_image_url?: string | null; min_players?: number | null; max_players?: number | null };
+type Pick = { id: string; name: string; display_name?: string | null; search_name_ko?: string | null; card_image_url?: string | null; cover_image_url?: string | null; min_players?: number | null; max_players?: number | null };
 
 const playersLabel = (g: Pick) => playersText(g);
 
 const savePicks = (picks: Pick[]) =>
-  writePick(picks.map((g) => g.id), { source: 'builder', meta: picks.map((g) => ({ id: g.id, name: g.name, thumb: g.cover_image_url || g.card_image_url })) });
+  writePick(picks.map((g) => g.id), { source: 'builder', meta: picks.map((g) => ({ id: g.id, name: gameName(g), thumb: g.cover_image_url || g.card_image_url })) });
 
 // ids를 받은 순서대로 정렬
 function inOrder(ids: string[], rows: Pick[]) {
@@ -83,7 +84,7 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
       const pattern = looseIlikePattern(q);
       if (!pattern) { if (!cancelled) { setResults([]); setSearching(false); } return; }
       const { data } = await selectGames(BUILDER_FIELDS)
-        .or(`name.ilike.${pattern},search_name_ko.ilike.${pattern}`)
+        .or(`name.ilike.${pattern},display_name.ilike.${pattern},search_name_ko.ilike.${pattern}`)
         .order('heat_rank', { ascending: true, nullsFirst: false })
         .limit(40);
       const ranked = (data || [])
@@ -164,9 +165,9 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
           const g = picks[i];
           return g ? (
             <div key={g.id} className="cb-slot is-filled">
-              <GameImage src={g.card_image_url || g.cover_image_url} alt={g.name} />
-              <div className="cb-slot-name">{g.name}</div>
-              <button type="button" className="cb-slot-remove" aria-label={`${g.name} 빼기`} onClick={() => remove(g.id)}>×</button>
+              <GameImage src={g.card_image_url || g.cover_image_url} alt={gameName(g)} />
+              <div className="cb-slot-name">{gameName(g)}</div>
+              <button type="button" className="cb-slot-remove" aria-label={`${gameName(g)} 빼기`} onClick={() => remove(g.id)}>×</button>
             </div>
           ) : (
             // 빈 칸을 누르면 아래 검색창으로 (키보드·화면 낭독기도 누를 수 있게 버튼)
@@ -211,7 +212,7 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
                     data-picked={picked || undefined}
                   >
                     {g.cover_image_url ? <GameImage src={g.cover_image_url} steamSize="header_292x136" /> : <span className="search-suggest-noimg" />}
-                    <span className="search-suggest-name">{g.name}</span>
+                    <span className="search-suggest-name">{gameName(g)}</span>
                     <span className="search-suggest-players">{picked ? '담음' : playersLabel(g)}</span>
                   </button>
                 </li>
@@ -234,7 +235,7 @@ export default function CompareBuilder({ initial, popular }: { initial: Pick[]; 
             {/* 인기 순, 이미 담은 게임은 빼고 6개 — 누르면 다음 빈 칸에 들어감 */}
             {popular.filter((g) => !picks.some((p) => p.id === g.id)).slice(0, QUICK_COUNT).map((g) => (
               <button key={g.id} type="button" className="chip cb-quick-btn" onClick={() => add(g)}>
-                {g.name}
+                {gameName(g)}
               </button>
             ))}
           </div>

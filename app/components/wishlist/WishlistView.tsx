@@ -14,6 +14,7 @@ import GameImage from '../GameImage';
 import PageSkeleton from '../status/PageSkeleton';
 import WishlistButton from './WishlistButton';
 import { useWishlist } from './useWishlist';
+import { gameName } from '../../lib/gameName';
 
 // 찜목록 페이지 — 내 목록(localStorage) 또는 공유 주소(?ids=)로 받은 목록을 읽기 전용으로 보여 준다
 // 목록 카드는 검색 결과 카드(result-card)와 같은 모양, 판정은 넣지 않음. 없는 게임 id는 목록에서 빠진다
@@ -22,7 +23,7 @@ const STORE_NAME: Record<string, string> = { epic: 'Epic', battlenet: 'Battle.ne
 
 // 카드에 쓰는 열만 적은 타입 (목록 API가 주는 게임 줄)
 type Game = {
-  id: string; name: string; source: string; steam_appid?: number | null; is_free?: boolean; price_type: string; lowest_price?: number | null;
+  id: string; name: string; display_name?: string | null; source: string; steam_appid?: number | null; is_free?: boolean; price_type: string; lowest_price?: number | null;
   cover_image_url?: string | null; card_image_url?: string | null; min_players?: number | null; max_players?: number | null;
 };
 
@@ -36,7 +37,7 @@ function Card({ game }: { game: Game }) {
         <GameImage src={game.cover_image_url || game.card_image_url} steamSize="header" alt="" />
       </span>
       <span className="result-body">
-        <span className="result-title">{game.name}</span>
+        <span className="result-title">{gameName(game)}</span>
         {store && <span className="result-store">{store}</span>}
         {players && <span className="result-players">{players}</span>}
         <span className="result-foot">

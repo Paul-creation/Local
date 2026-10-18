@@ -3,6 +3,7 @@ import { SITE_NAME } from '../../../../lib/site';
 import { getPriceInfo } from '../../../../lib/price';
 import { loadOgFonts, fetchOgImage, clip, OG_SIZE, OG_CACHE, OG_COLOR, playersText } from '../../../../lib/og';
 import { selectGames } from '../../../../lib/visibleGames';
+import { gameName } from '../../../../lib/gameName';
 
 // 게임 상세 공유 미리보기 — 캔버스 전체를 쓰는 가로 배치 (왼쪽 대표 이미지, 오른쪽 정보)
 // 카톡·디스코드 썸네일처럼 작게 보여도 제목·가격이 읽히게 큰 글자로, 값이 없는 칸은 통째로 숨긴다
@@ -11,7 +12,7 @@ const IMG_W = 540;
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { data: game, error } = await selectGames('name, fun_description, description, min_players, max_players, difficulty, entry_barrier, review_summary, review_positive_percent, is_free, price_type, card_image_url, cover_image_url, price_history(price, discount_percent, checked_at, original_price)')
+  const { data: game, error } = await selectGames('name, display_name, fun_description, description, min_players, max_players, difficulty, entry_barrier, review_summary, review_positive_percent, is_free, price_type, card_image_url, cover_image_url, price_history(price, discount_percent, checked_at, original_price)')
     .eq('id', id)
     .maybeSingle();
   // 조회 오류는 없는 게임(404)과 구분 — 일시 오류가 404로 캐시돼 공유 미리보기가 깨지지 않게 5xx로 응답
@@ -27,7 +28,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
   const barrier = game.entry_barrier || game.difficulty; // 사이트 비교표와 같은 기준
   // 스팀 평가 — 등급과 퍼센트가 둘 다 있을 때만
   const review = game.review_summary && game.review_positive_percent != null ? `${game.review_summary} ${game.review_positive_percent}%` : '';
-  const name = clip(game.name, 40);
+  const name = clip(gameName(game), 40);
   const titleSize = name.length <= 14 ? 68 : name.length <= 26 ? 56 : 46;
   const intro = clip(game.fun_description || game.description || '', 60);
 

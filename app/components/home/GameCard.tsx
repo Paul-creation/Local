@@ -15,6 +15,7 @@ import GotyBadge from '../GotyBadge';
 import GameImage, { type SteamSize } from '../GameImage';
 import OwnedChip from '../owned/OwnedChip';
 import ChipRow from './ChipRow';
+import { gameName } from '../../lib/gameName';
 
 // 스팀 외 스토어 이름 (games.source)
 const STORE_NAME: Record<string, string> = { epic: 'Epic', battlenet: 'Battle.net', riot: 'Riot', ea: 'EA app', ubisoft: 'Ubisoft Connect', gog: 'GOG' };
@@ -48,7 +49,7 @@ export default function GameCard({ game, badge, image, imgProps = { steamSize: '
         {badge}
       </span>
       <span className="gc-body">
-        <span className="gc-name">{stretched ? <Link href={`/games/${game.id}`} className="gc-link" aria-label={ariaLabel}>{game.name}</Link> : game.name}</span>
+        <span className="gc-name">{stretched ? <Link href={`/games/${game.id}`} className="gc-link" aria-label={ariaLabel}>{gameName(game)}</Link> : gameName(game)}</span>
         {store && <span className="result-store">{store}</span>}
         <OwnedChip steamAppid={game.steam_appid} />
         {/* 칸 높이는 CSS로 고정 — 값이 없어도 빈 칸을 남겨 같은 줄 카드의 제목·평가·칩·가격 위치가 맞는다 */}

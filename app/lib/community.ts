@@ -12,8 +12,8 @@ export const db = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-export const PUBLIC_POST_LIST = 'id, board, title, nickname, is_admin, game_id, like_count, comment_count, created_at, games(id, name)';
-export const PUBLIC_POST = 'id, board, title, body, nickname, is_admin, game_id, like_count, comment_count, hidden, created_at, updated_at, games(id, name)';
+export const PUBLIC_POST_LIST = 'id, board, title, nickname, is_admin, game_id, like_count, comment_count, created_at, games(id, name, display_name)';
+export const PUBLIC_POST = 'id, board, title, body, nickname, is_admin, game_id, like_count, comment_count, hidden, created_at, updated_at, games(id, name, display_name)';
 export const PUBLIC_COMMENT = 'id, post_id, body, nickname, is_admin, hidden, created_at';
 // 게임별 의견(game_comments) — 게임 상세에서만 보이고 게시판 목록에는 안 나온다
 export const PUBLIC_GAME_COMMENT = 'id, game_id, body, nickname, is_admin, created_at';
@@ -28,7 +28,7 @@ export const PAGE_SIZE = 20;
 export type PostListItem = {
   id: number; board: BoardKey; title: string; nickname: string; is_admin: boolean; game_id: string | null;
   like_count: number; comment_count: number; created_at: string;
-  games: { id: string; name: string } | null;
+  games: { id: string; name: string; display_name?: string | null } | null;
 };
 
 export const fail = (error: string, status = 400) => NextResponse.json({ error }, { status });

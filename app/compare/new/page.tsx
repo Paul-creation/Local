@@ -8,7 +8,7 @@ import { selectGames } from '../../lib/visibleGames';
 
 export const metadata: Metadata = { title: '게임 비교 만들기', robots: { index: false } };
 
-type Pick = { id: string; name: string; min_players?: number | null; max_players?: number | null };
+type Pick = { id: string; name: string; display_name?: string | null; min_players?: number | null; max_players?: number | null };
 
 // /compare/new?games=id1,id2 — 게임을 칸에 미리 채운 "비교 만들기" 화면 (바로 결과로 가지 않고, 확인 후 비교하기)
 // 싱글·멀티 섞인 조합은 비교 규칙(compareBlockReason)에 맞는 게임만 남긴다

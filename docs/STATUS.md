@@ -98,9 +98,9 @@
 - 라이트 모드는 없앰(다크 고정, 헤더 토글·테마 코드 제거, 저장된 theme 키는 접속 시 한 번 지움)
 - enrich-recent-reviews는 1회 300개(한 바퀴 약 3일). 화면에 쓸 때 상한 450 또는 표시 기준 5일 중 결정
 - 이전 판단(heat_rank 라벨, 역대 최저가 배지 기준, Metascore만, 스팀 로그인 방식 c 등) 유지
+- 게임 이름 한/영 중복 표시 정리(완료): games.display_name 칸(스팀명이 "영문 + 한글 음역"으로 겹친 51개에 사용자가 값 입력)을 화면 표시에만 씀 — app/lib/gameName.ts gameName(g) = display_name ?? name 한 곳(카드·캐러셀·상세·메타 title/OG·비교·핫차트·세일 타임라인·커뮤니티 등). 검색은 name·search_name_ko에 display_name도 매칭. AI 프롬프트·외부 검색 링크·관리자 화면은 name 그대로. 어떤 스크립트도 name·display_name을 갱신하지 않음(bulk-import는 새 행 insert만). player_history 읽기 2000 페이지는 chore/player-history-page로 완료
 
 ## 로드맵
-- 인원별 추천 후속: 게임 이름 한/영 중복 표시 정리(에이스 컴뱃 8, 엔들리스 레전드 2, 히어로즈 올든 에라 등 스팀 이름에 한글+영문이 같이 들어간 경우) / player_history 읽기 페이지 크기를 2000으로 올려 왕복 횟수 줄이기(Max rows 2000 설정 활용, 13회 → 6회, 지금 최근 11일 읽기 약 2.6~3.7초가 왕복 시간)
 - 다음: pg_cron SQL 실행 확인(1년 자동 파기, 매일 04:30 KST) / 보유 중 칩 지연(owned 약 1.75초) 개선(/api/me/owned의 DB 읽기 줄이기: users 조회 2번 합치기, user_owned_games 페이징 읽기를 한 번에) / fix/steam-confirm(check-delisted가 요청 제한을 판매 중단 후보로 보지 않게, enrich-fallback 빈 응답 크래시, fix-data-gaps·fill-tags-desc 재시도) / 가격 못 받은 2개(동방홍마향, Ori) / itad_id 없는 81개 매일 lookup / 보유 칩 HotChart·할인·찜목록 확장(10/11 확인 후) / 찜 동기화·내 PC 사양 계정 저장(user_pc 표, /api/me/pc)·개인정보 방침("서버로 보내지 않아요" 문구 수정 포함)·탈퇴(방침 변경은 시행 7일 전 공지) / YouTube 할당량 구조 / 푸터 축소 / (일주일 뒤에도 저장 공간이 높으면) OG 폰트 fetch 전환
 - 10/10(토) 아침: 매일 갱신 확인(itad-heat, 상점명, 역대 최고 동접, Metascore) / Set up job 로그에 ubuntu-24.04·checkout@v5·setup-node@v5, Node 20 경고 없음 / 요청 제한 미처리 N 확인 / 에픽 전용 가족 공유 칸 숨김 / VALORANT 트레일러 / 정가 missing 0 유지
 - 전용 이메일이 생기면 CONTACT_EMAIL과 개인정보처리방침 6번의 "로그인이 안 되는 경우" 안내(지금은 /feedback "기타")를 바꿈. 방침은 2026-10-10 즉시 시행(이미 제공 중인 기능의 처리 내용을 적은 개정). 1년 자동 파기는 Supabase pg_cron(매일 04:30 KST) SQL을 사용자가 실행해야 방침과 맞음

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { BOARDS, timeAgo } from '../../lib/communityBoards';
 import type { PostListItem } from '../../lib/community';
+import { gameName } from '../../lib/gameName';
 
 // 게시글 목록 (서버 컴포넌트). showBoard: 여러 게시판 글이 섞여 있을 때 게시판 표시
 export default function PostList({ posts, showBoard = false, empty = '아직 글이 없어요.' }: { posts: PostListItem[]; showBoard?: boolean; empty?: string }) {
@@ -17,7 +18,7 @@ export default function PostList({ posts, showBoard = false, empty = '아직 글
               {p.comment_count > 0 && <span className="cm-row-count">[{p.comment_count}]</span>}
             </span>
             <span className="cm-row-meta">
-              {p.games?.name && <span className="cm-game-chip">{p.games.name}</span>}
+              {p.games && <span className="cm-game-chip">{gameName(p.games)}</span>}
               <span>{p.nickname}</span>
               {p.is_admin && <span className="cm-admin-badge">운영자</span>}
               <span>· {timeAgo(p.created_at, now)}</span>
