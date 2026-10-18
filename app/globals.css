@@ -2163,6 +2163,13 @@ a.hc-row:hover { background: var(--card-hover); }
 .vote-chips { display: flex; flex-wrap: wrap; gap: 10px 8px; }
 .vote-chip { min-height: 40px; }
 .vote-chip:disabled { cursor: default; }
+.vote-group + .vote-group { margin-top: 16px; }
+.vote-group-title { margin: 0 0 8px; font-size: var(--fs-s); font-weight: 700; color: var(--text-muted); }
+.vote-low { font-size: var(--fs-xs); }
+/* 게이지: 최다 득표 대비 비율만큼 왼쪽부터 포인트 색을 옅게 채운다 */
+.vote-chip.has-gauge {
+  background-image: linear-gradient(to right, color-mix(in srgb, var(--accent) 18%, transparent) calc(var(--vote-ratio, 0) * 100%), transparent calc(var(--vote-ratio, 0) * 100%));
+}
 .vote-count { font-size: var(--fs-xs); font-weight: 800; color: var(--text-muted); font-variant-numeric: tabular-nums; }
 .vote-chip.on .vote-count { color: var(--accent-text); }
 
