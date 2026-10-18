@@ -4,7 +4,6 @@ import { isBoard } from '../../lib/communityBoards';
 import { db, parseId } from '../../lib/community';
 import WriteForm from '../../components/community/WriteForm';
 import { selectGames } from '../../lib/visibleGames';
-import { gameName } from '../../lib/gameName';
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: '글쓰기', robots: { index: false } };
