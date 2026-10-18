@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-17 (main d82d1c3)
+기준: 2026-10-18 (main 2829246)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/18: fix/judge-retry — judge-new-games 응답을 tool use(record_judgments 스키마, scripts/lib/judge-batches.mjs)로 받고, 파싱·호출 실패 시 같은 묶음 1회 재시도 → 반으로 나눠 각각 재시도 → 최종 실패하면 원문 앞 2,000자를 로그에 남김(10/17 weekly #6에서 2번째 묶음 20개가 깨진 JSON으로 실패한 것). 스팀 태그(steam-tags.mjs·fetch-steam-tags.mjs)는 한국 상점(cc=kr)에 태그가 없으면 미국 상점(cc=us)으로 한 번 더 받음(오버워치·AION 2가 이 경우). link-new-game-tags의 "태그 데이터 없음"은 ⚠️ 경고로 분리(단계 실패 아님). 테스트 293개 통과
 - 10/17: feat/catalog-popular — 새 게임 수집 기준 개편(scripts/lib/catalog-rules.mjs 한 곳, 테스트 있음). bulk-import 후보에 스팀 공식 동접 차트 상위 100을 판매 순위보다 먼저 추가, 차트 현재 동접 5,000 이상이면 긍정률·연도 조건 면제(리뷰 1,000개·종류·장르는 그대로, 긍정률 하한 없음). 2013년 이전 출시도 리뷰 10,000개 이상이면 통과. --appids 목록 항목에 "force": true(긍정률·연도 면제), must-have.json에 ETS2(227300)·Tarkov(3932890, force) 추가. 한국 상점에 없는 게임은 무료일 때만 cc=us로 정보 폴백(가격 기록 없음, is_free true), 유료는 제외. --dry-run은 이번 변경으로 새로 들어오는 게임(이름·동접·긍정률·연도·통과 이유)을 따로 출력. non-game 규칙에 이름(overlay·crosshair·benchmark 등)·카테고리 기준 추가(Crosshair X 제외, find-non-games도 같은 규칙). 주간 갱신에 fill-activities-v2 --apply --yes --new-days 14 단계 추가(최근 14일 새 게임만, 단계 제한 90분, 게임당 약 $0.005~0.01). build·test 283개 통과. dry-run(40분 제한으로 179개에서 멈춤): 변경 덕에 새로 들어오는 게임 23개(동접 예외 14·연도 완화 9). 실제 --apply·주간 워크플로 실행은 확인 못 함
 - 10/17: fix/ai-note-description — 게임 상세 소개 문구 아래 "AI가 정리한 내용" 줄 삭제, 소개 섹션에 "소개" 제목(detail-card-title)을 새로 두고 옆에 작은 ⓘ(hover·포커스·탭, 문구 "AI가 정리한 소개예요", fun_description 있을 때만). 활동 칩 ⓘ를 app/components/InfoTip.tsx로 뽑아 같은 컴포넌트·CSS를 재사용(칩은 한 번에 하나만 열리는 규칙 유지). 소개·약관 페이지의 AI 안내는 그대로. build·test 270개 통과, 프리뷰 1440·375 확인, 실기기 터치·바깥 탭 닫힘은 확인 못 함
 - 10/17: perf/daily-heat-cursor — enrich-itad-heat가 매일 전체 대신 ITAD ID 없는 새 게임 + heat_rank 목록 상위 150개 + 게임 id 해시 % 7 == 요일(KST) 몫만 조회(--all이면 전체). 상위 150개는 메인 "지금 뜨는 게임"·snapshot-hot-rank가 쓰는 상위 50개(heat_rank 값 75까지)의 3배(값 286까지). ITAD에 없다고 확인된 게임은 scripts/.cache/itad-missing.json에 30일 기록해 lookup 건너뜀(daily.yml에 actions/cache@v4 단계 추가). 하루 ITAD 요청 약 1,044건·최소 65분 → 270~292건·최소 17~18분(80건/5분 한도 기준 하한). 상위 150 밖 게임의 heat_rank는 최대 6일 묵을 수 있음. build·test 270개 통과, 실제 ITAD 호출·Actions 캐시 복원은 확인 못 함
@@ -64,6 +65,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- fix/judge-retry 머지 뒤 후속(미확인): 10/17 weekly에서 판정 실패한 20개(filter_ai_at 비어 있어 judge-new-games --apply 대상)와 보류 3개·오버워치·AION 2 태그는 SQL(tags_linked_at·filter_ai_at 비우기)을 사용자가 실행한 뒤 스크립트로 채움 / 다음 weekly에서 tool use 전환 뒤 judge 비용(예상 호출당 +약 $0.0006) 확인
 - feat/catalog-popular 머지 뒤 첫 weekly에서 확인(미확인): bulk-import가 동접 차트·무료 폴백 게임을 넣는지·40분 제한 안에 끝나는지, fill-activities-v2 단계가 ANTHROPIC_API_KEY로 돌고 90분 안에 끝나는지, 무료 폴백 게임(한국 상점 없음)의 korean_support·가격 표시 / Bongo Cat(데스크톱 펫형)은 non-game 규칙에 안 걸림, 필요하면 수동 숨김 판단 / Fall Guys가 delisted_appids에 맞게 들어 있는지 확인 필요
 - 활동 제보 머지 뒤 프로덕션에서 상세 제보 UI·제보 저장·관리자 승인 반영 확인(미확인) / 프리뷰 주소는 배포 보호 때문에 [3] 배포 점검이 건너뛰어짐
 - 검색·필터 태그/활동 합침 머지 뒤 프로덕션에서 같은 이름 후보가 하나로 나오는지, 예전 태그 링크가 활동으로 바뀌는지 확인(미확인)
