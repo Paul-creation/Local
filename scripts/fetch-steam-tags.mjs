@@ -5,6 +5,7 @@
 //   · 이미 받은 게임은 다시 받지 않음 (중간에 끊겨도 다시 실행하면 이어서 받음). 실패한 게임만 다시 시도
 //   · 스팀 앱 번호 없는 게임은 no_appid, 실패한 게임은 failed 목록에
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { parseTagModal } from './lib/steam-tags.mjs';
 
 const OUT_DIR = 'data/tags';
 const TAGS_FILE = `${OUT_DIR}/steam-tags.json`;
@@ -84,11 +85,16 @@ let n = 0;
 for (const g of targets) {
   n++;
   try {
-    const { url, body } = await get(`https://store.steampowered.com/app/${g.steam_appid}/?l=english&cc=kr`);
-    if (!url.includes(`/app/${g.steam_appid}/`)) throw new Error('상점 페이지 없음 (다른 곳으로 이동됨)');
-    const m = body.match(/InitAppTagModal\(\s*\d+,\s*(\[[\s\S]*?\])\s*,/);
-    if (!m) throw new Error('태그 데이터 없음');
-    const list = JSON.parse(m[1]).map((t) => ({
+    // 한국 상점 페이지에 태그가 없으면 미국 상점(cc=us)으로 한 번 더
+    let modalTags = null;
+    for (const cc of ['kr', 'us']) {
+      const { url, body } = await get(`https://store.steampowered.com/app/${g.steam_appid}/?l=english&cc=${cc}`);
+      if (!url.includes(`/app/${g.steam_appid}/`)) { if (cc === 'kr') throw new Error('상점 페이지 없음 (다른 곳으로 이동됨)'); continue; }
+      modalTags = parseTagModal(body);
+      if (modalTags) break;
+    }
+    if (!modalTags) throw new Error('태그 데이터 없음 (한국·미국 상점 모두)');
+    const list = modalTags.map((t) => ({
       id: t.tagid,
       en: tagById.get(t.tagid)?.en ?? t.name,
       ko: tagById.get(t.tagid)?.ko ?? null,

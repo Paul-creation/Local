@@ -1,6 +1,6 @@
 // scripts/lib/steam-tags.mjs
 // 게임별 스팀 태그(투표 수 포함) 받기 + data/tags/game-tags.json과 같은 규칙으로 태그 나무에 연결
-// - 받기: fetch-steam-tags.mjs와 같은 방식 (상점 페이지 InitAppTagModal, 한국 상점 cc=kr, 요청 간격 1.5초, 막히면 기다렸다 재시도)
+// - 받기: fetch-steam-tags.mjs와 같은 방식 (상점 페이지 InitAppTagModal, 한국 상점 cc=kr — 태그가 없으면 미국 상점 cc=us로 한 번 더, 요청 간격 1.5초, 막히면 기다렸다 재시도)
 // - 변환 규칙 (game-tags.json의 rule):
 //   제외 태그(excluded.json) 빼고, 합친 태그(merged.json)는 같은 칸으로 모은 뒤(투표 수는 큰 쪽),
 //   투표 10표 이상이면서 그 게임 1위 태그(제외 전 원본 기준) 투표의 20% 이상, 투표 많은 순 최대 15개
@@ -11,6 +11,7 @@ const REQUEST_GAP_MS = 1500;
 const RETRY_WAIT_MS = [30000, 60000, 120000];
 // 성인 인증 페이지 건너뛰기
 const COOKIE = 'birthtime=0; lastagecheckage=1-0-1990; wants_mature_content=1; mature_content=1';
+export const STORE_REGIONS = ['kr', 'us']; // 한국 상점 먼저, 태그가 없으면 미국 상점
 export const MIN_VOTES = 10;
 export const MIN_RATIO = 0.2;
 export const MAX_TAGS = 15;
@@ -43,13 +44,27 @@ async function get(url, asJson) {
   }
 }
 
+// 상점 페이지 HTML에서 태그 [{ tagid, name, count, browseable }] 꺼내기 (없으면 null)
+export function parseTagModal(html) {
+  const m = html.match(/InitAppTagModal\(\s*\d+,\s*(\[[\s\S]*?\])\s*,/);
+  return m ? JSON.parse(m[1]) : null;
+}
+
 // 게임 하나의 스팀 태그 [{ id, en, votes }] (투표 많은 순, 스팀이 주는 순서 그대로)
+// 한국 상점 페이지에 태그가 없으면(한국 상점에 없어 미국 상점 정보로 넣은 무료 게임 등) 미국 상점(cc=us)으로 한 번 더 받음
 export async function fetchSteamTags(appid) {
-  const { url, body } = await get(`https://store.steampowered.com/app/${appid}/?l=english&cc=kr`);
-  if (!url.includes(`/app/${appid}/`)) throw new SteamTagsMissing('상점 페이지 없음 (다른 곳으로 이동됨)');
-  const m = body.match(/InitAppTagModal\(\s*\d+,\s*(\[[\s\S]*?\])\s*,/);
-  if (!m) throw new SteamTagsMissing('태그 데이터 없음');
-  return JSON.parse(m[1]).map((t) => ({ id: t.tagid, en: t.name, votes: t.count }));
+  let list = null;
+  for (const cc of STORE_REGIONS) {
+    const { url, body } = await get(`https://store.steampowered.com/app/${appid}/?l=english&cc=${cc}`);
+    if (!url.includes(`/app/${appid}/`)) {
+      if (cc === STORE_REGIONS[0]) throw new SteamTagsMissing('상점 페이지 없음 (다른 곳으로 이동됨)');
+      continue;
+    }
+    list = parseTagModal(body);
+    if (list) break;
+  }
+  if (!list) throw new SteamTagsMissing('태그 데이터 없음 (한국·미국 상점 모두)');
+  return list.map((t) => ({ id: t.tagid, en: t.name, votes: t.count }));
 }
 
 // 스팀 태그 한국어 이름 (분류 안 된 새 태그 기록용) — 한 번만 받아 둠

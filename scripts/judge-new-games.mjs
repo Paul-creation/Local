@@ -14,11 +14,13 @@
 // - 이미 값이 있는 칸은 덮어쓰지 않음. party_max·session_max는 건드리지 않음
 // - AI: Haiku, 20개씩 묶어 1번 (scripts/는 CLAUDE.md 규칙상 guardedClaudeFetch 예외 — 사이트 하루 AI 상한을 쓰지 않도록 직접 호출)
 //   200개 기준 약 10번 호출, 예상 $0.1 안팎. 누적 $1를 넘으면 멈춤
+//   답은 tool use(record_judgments, lib/judge-batches.mjs의 스키마)로 받아 깨진 JSON을 막음. 실패하면 같은 묶음 1회 재시도 → 반으로 나눠 각각 재시도 → 그래도 실패하면 원문 앞 2,000자를 로그에 남기고 다음 실행으로
 // - 스팀 태그는 link-new-game-tags.mjs가 남긴 scripts/.cache/new-game-steam-tags.json을 쓰고, 없으면 직접 받음
 import fs from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { fetchSteamTags } from './lib/steam-tags.mjs';
 import { onlyIds } from './lib/only-ids.mjs';
+import { JUDGE_TOOL, extractRows, runWithRetry, RAW_LOG_CHARS } from './lib/judge-batches.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const APPLY = process.argv.includes('--apply');
@@ -61,8 +63,7 @@ const PROMPT_HEAD = `너는 한국 게임 정보 사이트의 필터 데이터�
 게임 목록 (스팀 태그는 영어 이름(투표 수), 투표 많은 순):
 `;
 const PROMPT_TAIL = `
-번호 순서대로 JSON으로만 답해. 설명이나 코드블록은 쓰지 마.
-{"games": [{"index": 1, "barrier": "낮음", "reason": "줍고 나르고 도망치는 간단한 협동", "solo": "possible", "solo_reason": "혼자 할 수 있지만 협동이 핵심"}]}`;
+번호 순서대로 record_judgments 도구를 불러서 답해. 예: {"games": [{"index": 1, "barrier": "낮음", "reason": "줍고 나르고 도망치는 간단한 협동", "solo": "possible", "solo_reason": "혼자 할 수 있지만 협동이 핵심"}]}`;
 
 const clean = (s, max) => String(s || '').replace(/\s+/g, ' ').trim().slice(0, max);
 
@@ -86,16 +87,15 @@ async function askHaiku(prompt) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
-    body: JSON.stringify({ model: MODEL, max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }),
+    body: JSON.stringify({ model: MODEL, max_tokens: 4000, tools: [JUDGE_TOOL], tool_choice: { type: 'tool', name: JUDGE_TOOL.name }, messages: [{ role: 'user', content: prompt }] }),
     signal: AbortSignal.timeout(120000),
   });
   const json = await res.json();
   if (json.error) throw new Error(`HTTP ${res.status} ${json.error.message}`);
-  if (json.stop_reason === 'max_tokens') throw new Error('답이 중간에 잘림 (max_tokens)');
-  const text = (json.content || []).map((c) => c.text || '').join('');
-  const parsed = JSON.parse(text.slice(text.indexOf('{'), text.lastIndexOf('}') + 1));
+  if (json.stop_reason === 'max_tokens') throw Object.assign(new Error('답이 중간에 잘림 (max_tokens)'), { raw: JSON.stringify(json.content).slice(0, RAW_LOG_CHARS) });
+  const rows = extractRows(json);
   const u = json.usage || {};
-  return { rows: parsed.games || [], cost: (u.input_tokens || 0) * PRICE.input + (u.output_tokens || 0) * PRICE.output, usage: u };
+  return { rows, cost: (u.input_tokens || 0) * PRICE.input + (u.output_tokens || 0) * PRICE.output, usage: u };
 }
 
 async function hasMigration() {
@@ -181,11 +181,12 @@ async function main() {
   const failed = [];
   for (const [bi, batch] of batches.entries()) {
     if (totalCost > MAX_COST_USD) { console.log(`💸 누적 $${totalCost.toFixed(3)} — 상한 $${MAX_COST_USD} 넘어서 멈춤`); break; }
-    try {
-      const { rows, cost, usage } = await askHaiku(buildPrompt(batch));
+    const run = await runWithRetry(batch, (items) => askHaiku(buildPrompt(items)), (m) => console.log(`[${bi + 1}/${batches.length}] ${m}`));
+    for (const { batch: part, result } of run.parts) {
+      const { rows, cost, usage } = result;
       totalCost += cost;
-      console.log(`[${bi + 1}/${batches.length}] Haiku 입력 ${usage.input_tokens} · 출력 ${usage.output_tokens} 토큰 (약 $${cost.toFixed(4)})`);
-      batch.forEach((it, i) => {
+      console.log(`[${bi + 1}/${batches.length}] Haiku 입력 ${usage.input_tokens} · 출력 ${usage.output_tokens} 토큰 (약 $${cost.toFixed(4)})${part.length < batch.length ? ` — 나눠 받은 ${part.length}개` : ''}`);
+      part.forEach((it, i) => {
         const r = rows.find((x) => Number(x.index) === i + 1) || {};
         if (it.askBarrier && BARRIERS.includes(r.barrier)) {
           it.patch.entry_barrier = r.barrier;
@@ -195,8 +196,11 @@ async function main() {
         if (it.askSolo) it.soloReason = clean(r.solo_reason, 60); // 저장 안 함, 미리보기 표시용
         it.asked = true;
       });
-    } catch (e) {
-      failed.push(`${bi + 1}번째 묶음 (${batch.map((it) => it.game.name).join(', ')}): ${e.message}`);
+    }
+    if (!run.ok) {
+      const last = run.errors.at(-1);
+      console.log(`   마지막 실패 원문 앞 ${RAW_LOG_CHARS}자: ${last?.raw ?? '(응답 없음)'}`);
+      failed.push(`${bi + 1}번째 묶음 중 ${run.lost.length}개 (${run.lost.map((it) => it.game.name).join(', ')}): ${last?.message}`);
     }
   }
 

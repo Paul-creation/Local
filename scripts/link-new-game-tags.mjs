@@ -140,7 +140,7 @@ async function main() {
 
   const cache = { date: new Date().toISOString().slice(0, 10), games: {} };
   const unknown = new Map(); // steam tag id → { en, games: [이름] }
-  const failed = [];
+  const failed = [], warned = [];
   let saved = 0, rows = 0, same = 0;
   for (const [i, g] of targets.entries()) {
     if (Date.now() - startedAt > TIME_BUDGET_MS) { console.log(`⏱️ 시간 예산 초과 — 남은 ${targets.length - i}개는 다음 실행에`); break; }
@@ -149,8 +149,9 @@ async function main() {
     try {
       steamTags = await fetchSteamTags(g.steam_appid);
     } catch (e) {
-      failed.push(`${g.name} (${g.steam_appid}): ${e.message}`);
-      console.log(`${head}: ❌ ${e.message}`);
+      // 태그가 없는 건 경고만 (단계 실패 아님), 연결 실패·막힘은 실패로 셈
+      (e instanceof SteamTagsMissing ? warned : failed).push(`${g.name} (${g.steam_appid}): ${e.message}`);
+      console.log(`${head}: ${e instanceof SteamTagsMissing ? '⚠️' : '❌'} ${e.message}`);
       // 상점 페이지·태그가 없는 게임은 처리 완료로 표시 (다시 받아도 같음), 연결 실패·막힘은 다음 주에 다시
       if (APPLY && migrated && e instanceof SteamTagsMissing) await supabase.from('games').update({ tags_linked_at: new Date().toISOString() }).eq('id', g.id);
       continue;
@@ -198,6 +199,10 @@ async function main() {
   if (COMPARE) console.log(`✅ 비교: ${targets.length}개 중 ${same}개가 DB 값과 같음`);
   else console.log(`✅ ${saved}개 게임 · ${rows}줄 ${APPLY ? '저장' : '저장 예정'}`);
   if (unknown.size) console.log(`🆕 분류 안 된 새 태그 ${unknown.size}개: ${[...unknown].map(([id, u]) => `${u.en}(${id}, ${u.games.length}개 게임)`).join(', ')}`);
+  if (warned.length) {
+    console.log(`⚠️ 태그를 찾지 못한 게임 ${warned.length}개 (한국·미국 상점 모두 확인, 처리 완료로 표시)`);
+    for (const f of warned) console.log(`  - ${f}`);
+  }
   if (failed.length) {
     console.log(`❌ 실패 ${failed.length}개`);
     for (const f of failed) console.log(`  - ${f}`);
