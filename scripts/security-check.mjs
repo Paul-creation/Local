@@ -152,6 +152,37 @@ async function checkActivityReportsDb() {
     : bad(`${table} 마이그레이션에 RLS·revoke 문구가 없음`, 'enable row level security; revoke all ... from anon, authenticated; 추가');
 }
 
+// 큐레이터 표: 브라우저 키(anon)로 읽기는 가능, insert·update·delete는 차단 (쓰기는 service role만)
+// update는 값을 그대로 다시 쓰는 무해한 시도, delete는 아무 행도 안 맞는 조건으로만 시도 (막혀 있지 않아도 실제 데이터는 안 바뀜)
+async function checkCuratorsDb() {
+  const ZERO = '00000000-0000-0000-0000-000000000000';
+  const { data: g } = await admin.from('games').select('id').limit(1).single();
+  const { data: c } = await admin.from('curators').select('id, handle, display_name').limit(1).maybeSingle();
+  const { data: p } = await admin.from('curator_posts').select('id, post_url').limit(1).maybeSingle();
+  const cases = [
+    { table: 'curators', row: { handle: '__security_test__', display_name: 'test', instagram_url: 'https://example.com' }, same: c && { id: c.id, patch: { display_name: c.display_name } }, cleanup: (a) => a.from('curators').delete().eq('handle', '__security_test__') },
+    { table: 'curator_posts', row: { curator_id: c?.id, game_id: g?.id, post_url: 'https://example.com/__security_test__', post_type: 'single' }, same: p && { id: p.id, patch: { post_url: p.post_url } }, cleanup: (a) => a.from('curator_posts').delete().eq('post_url', 'https://example.com/__security_test__') },
+  ];
+  for (const { table, row, same, cleanup } of cases) {
+    const probe = await anon.from(table).select('id').limit(1);
+    if (probe.error?.code === '42P01' || /does not exist|schema cache/i.test(probe.error?.message || '')) { note(`${table} 표 없음 — supabase/migrations/20261025090000_curators.sql 실행 전`); continue; }
+    probe.error ? bad(`브라우저 키(anon)로 ${table}을 읽을 수 없음 — 화면에 안 나옴`, `grant select on public.${table} to anon; 와 select 정책 확인`) : ok(`브라우저 키(anon)로 ${table} 읽기 가능 (공개 정보)`);
+    const ins = await anon.from(table).insert(row);
+    if (ins.error?.code === '42501') ok(`브라우저 키(anon)로 ${table} insert 차단됨`);
+    else if (ins.error) note(`브라우저 키(anon)로 ${table} insert 시도 → 권한이 아닌 다른 이유로 실패 (${ins.error.message})`);
+    else { bad(`브라우저 키(anon)로 ${table}에 insert할 수 있음!`, `revoke all on public.${table} from anon, authenticated; 후 select만 grant`); await cleanup(admin); }
+    if (same) {
+      const upd = await anon.from(table).update(same.patch).eq('id', same.id).select('id');
+      if (upd.error?.code === '42501') ok(`브라우저 키(anon)로 ${table} update 차단됨`);
+      else if (upd.error) note(`브라우저 키(anon)로 ${table} update 시도 → 권한이 아닌 다른 이유로 실패 (${upd.error.message})`);
+      else if (upd.data?.length) bad(`브라우저 키(anon)로 ${table}을 update할 수 있음!`, `revoke all on public.${table} from anon, authenticated; 후 select만 grant`);
+      else note(`${table} update가 오류 없이 0행 — 권한 회수(revoke) 없이 RLS만으로 막힌 상태`);
+    } else note(`${table}에 행이 없어 update 점검을 건너뜀`);
+    const del = await anon.from(table).delete().eq('id', ZERO);
+    del.error?.code === '42501' ? ok(`브라우저 키(anon)로 ${table} delete 차단됨`) : del.error ? note(`브라우저 키(anon)로 ${table} delete 시도 → 권한이 아닌 다른 이유로 실패 (${del.error.message})`) : bad(`브라우저 키(anon)로 ${table}에 delete를 시도할 수 있음 (권한 회수 안 됨)`, `revoke all on public.${table} from anon, authenticated; 후 select만 grant`);
+  }
+}
+
 // 디스코드 웹후크 주소는 서버에서만: NEXT_PUBLIC_ 이름 금지, 브라우저 코드에서 안 읽음, 빌드된 브라우저 번들에 없음
 function checkWebhook(clientFiles) {
   const pub = execSync("grep -rlE 'NEXT_PUBLIC_[A-Z_]*(DISCORD|WEBHOOK)' app scripts proxy.ts next.config.ts .env.local 2>/dev/null || true").toString().trim();
@@ -242,6 +273,7 @@ async function checkDb() {
   await checkUsersDb();
   await checkOwnedDb();
   await checkActivityReportsDb();
+  await checkCuratorsDb();
   await checkStreamerDb();
 
   const { count } = await admin.from('compare_cache').select('game_ids', { count: 'exact', head: true });

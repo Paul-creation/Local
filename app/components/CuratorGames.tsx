@@ -22,7 +22,7 @@ export default function CuratorGames({ entries }: { entries: Entry[] }) {
           <div className="curator-game-posts">
             {posts.map((p) => (
               <a key={p.id} href={p.url} target="_blank" rel="noopener noreferrer" className="curator-link">
-                원본 게시물 보기{p.collection ? ' (여러 게임 소개)' : ''} ↗
+                원본 게시물 보기 ↗
               </a>
             ))}
           </div>
