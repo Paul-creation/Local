@@ -1,6 +1,6 @@
 // 검색 "지금 뜨는 게임" 필터 — 순수 함수라 trendFilter.test.mjs가 .ts를 바로 불러온다 (다른 파일을 import하지 않는다)
-// 하위 선택 둘: 신작(trend_badge = new) · 다시 뜨는 중(rising_old + rising_recent). 둘 다 켜면 합집합. 주소는 ?trend=new,rising
-export const TRENDS = [['new', '신작'], ['rising', '다시 뜨는 중']] as const;
+// 하위 선택 둘: 신작(trend_badge = new) · 인기 급상승(rising_old + rising_recent). 둘 다 켜면 합집합. 주소는 ?trend=new,rising
+export const TRENDS = [['new', '신작'], ['rising', '인기 급상승']] as const;
 export type TrendKey = (typeof TRENDS)[number][0];
 
 const BADGES_OF: Record<TrendKey, string[]> = { new: ['new'], rising: ['rising_old', 'rising_recent'] };

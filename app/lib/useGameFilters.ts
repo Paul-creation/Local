@@ -74,7 +74,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
   // 가능한 활동 (?act=drive,train — 고른 활동을 모두 가진 게임) + 확인 중(activities_unsure)도 같은 활동으로 볼지 (?actu=1)
   const [selectedActs, setSelectedActs] = useState<string[]>([]);
   const [actIncludeUnsure, setActIncludeUnsure] = useState(false);
-  // 지금 뜨는 게임 (?trend=new,rising — 신작 / 다시 뜨는 중, 둘 다 켜면 합집합). 켜면 기본 정렬이 판정 점수순 (app/lib/trendFilter)
+  // 지금 뜨는 게임 (?trend=new,rising — 신작 / 인기 급상승, 둘 다 켜면 합집합). 켜면 기본 정렬이 판정 점수순 (app/lib/trendFilter)
   const [selectedTrend, setSelectedTrend] = useState<TrendKey[]>([]);
   // 네트워크: 크로스플레이 지원 · 전용 서버 · P2P
   const [selectedNet, setSelectedNet] = useState<NetKey[]>([]);
