@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-19 (main 026565f)
+기준: 2026-10-19 (main f0750df)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/19: chore/curators-cleanup — curators.ts의 avatar_url 대체 조회(열 없이 재조회) 제거(getCurator·getHomeCurators). avatar_url·show_on_home 열이 프로덕션에 있다는 전제. UI 변경 없음, build·test 328개 통과
 - 10/19: feat/curator-header — 계정 페이지(/c/handle) 헤더 카드(avatar 자리·인스타 링크). 마이그레이션 20261026090000(curators.avatar_url) 포함. build·test 328개 통과, 프리뷰 확인은 못 함
 - 10/19: feat/curators-home — 메인 "인스타에서 봤던 그 게임" 섹션(CuratorsHome). 인원별 추천 바로 아래, show_on_home=true이고 연결 게임(숨긴 게임 제외)이 1개 이상인 계정이 2개 이상일 때만 렌더링(getHomeCurators, HOME_CURATORS_MIN). 계정 카드 가로 나열(모바일 가로 스크롤)·카드 전체가 /c/handle 링크, avatar_url 있으면 원형 이미지. 마이그레이션 20261026100000(curators.show_on_home) 포함. build·test 328개 통과. 프리뷰 미확인, 로컬에서 조건을 낮춰 375px·1440px만 확인(avatar 있는 카드는 못 봄)
 - 10/19: feat/curators — 인스타 큐레이터 연결. 상세 "이 게임을 소개한 계정" 카드(CuratorsOfGame)는 오른쪽 사이드바 Steam 가격 카드 바로 아래 독립 카드(가격 카드와 같은 너비·radius·안쪽 여백 22px, 모바일은 가격 카드 다음 순서). 줄마다 "인스타그램"(13px 보조색) + @계정명(/c/handle) + 아웃라인 "게시물 보기 ↗"(높이 36px·13px, 새 탭). 계정이 없으면 카드 없음. 계정 페이지 /c/[handle]·CuratorGames, 표 curators(마이그레이션 20261025090000) 포함. build·test 328개 통과, 프리뷰 확인(1440px 첫 화면 900px에는 카드가 안 보임: 카드 상단 y=915). 마이그레이션 적용 여부·여러 계정 줄 배치는 확인 못 함
@@ -73,7 +74,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
-- feat/curator-header 머지 뒤: avatar_url 마이그레이션을 사용자가 SQL 에디터에서 실행 / 열이 생기면 curators.ts의 getHomeCurators·getCurator 열 없이 재조회하는 대체 경로 정리 여부 결정 / 로컬 브랜치·worktree(/workspaces/wt-curator-header)는 다른 세션 소유일 수 있어 남김
+- feat/curator-header 머지 뒤: avatar_url 마이그레이션을 사용자가 SQL 에디터에서 실행 (avatar_url 열은 프로덕션 추가 완료, 대체 경로는 제거함)
 - feat/curators-home 머지 뒤: show_on_home 마이그레이션을 사용자가 SQL 에디터에서 실행 / 동의받은 계정만 true로 바꾸고 2개 이상일 때 프로덕션 메인 섹션 확인(미확인) / feat/curator-header 머지로 avatar_url 열이 생기면 curators.ts의 열 없이 재조회하는 대체 경로 정리 여부 결정
 - feat/curators 머지 뒤 프로덕션에서 curators 표(마이그레이션)가 적용돼 있는지, 상세 카드·/c/handle 확인(미확인)
 - feat/vote-section 머지 뒤 프로덕션 상세 투표 섹션에서 실제 투표 데이터의 게이지·그룹 정렬·375px 줄바꿈 확인(미확인)
