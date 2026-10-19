@@ -18,7 +18,7 @@ import type { CardExtras } from '../../lib/cardInfo';
 import { usePeople } from './PeopleContext';
 
 // 메인 개인 추천 — 위에서부터 먼저 맞는 것 하나만 보인다
-// 1) 로그인 + 보유 목록 있음(공개 또는 예전 목록) + 보유 5개 이상: "내 취향 비슷한 게임" — /library 취향 탭과 같은 계산(rankByTaste). 찜한 게임은 취향에 보유 게임과 같은 가중치로 더하고, 보유·찜한 게임은 결과에서 뺀다
+// 1) 로그인 + 보유 목록 있음(공개 또는 예전 목록) + 보유 5개 이상: "취향에 맞는 게임" — /library 취향 탭과 같은 계산(rankByTaste)과 같은 결과. 보유 게임만으로 취향을 만들고 보유 게임은 결과에서 뺀다(찜은 계산에도 제외에도 쓰지 않음)
 // 2) 찜목록(localStorage)이 있음: "찜한 게임과 비슷한 게임" — 가장 최근에 찜한 3개마다 game_similar(상세 "비슷한 게임"과 같은 표)를 읽어 점수를 합치고 찜한 게임 자체는 뺀다
 // 3) 둘 다 없으면 숨김. 취향 정보를 못 받았거나 겹치는 취향이 없으면 2)로 넘어간다
 // /api/games/taste는 1) 조건을 채운 로그인 사용자만 부른다. 카드는 메인 검색용 전체 목록(useGameIndex)에서 가져온다
@@ -43,11 +43,11 @@ export default function PersonalRecs({ homeExcluded }: { homeExcluded: string[] 
     if (!tasteWanted || !tasteRows || !index) return null;
     const list = index as CardGame[];
     const byId = new Map(list.map((g) => [g.id, g]));
-    const profileIds = new Set<string>([...ids, ...list.filter((g) => owned.has((g as any).steam_appid)).map((g) => g.id)]); // eslint-disable-line @typescript-eslint/no-explicit-any
+    const profileIds = new Set<string>(list.filter((g) => owned.has((g as any).steam_appid)).map((g) => g.id)); // eslint-disable-line @typescript-eslint/no-explicit-any
     return rankByTaste(tasteRows, profileIds, (id) => { const g = byId.get(id) as any; return (g && getPriceInfo(g)?.discount) || 0; }, (id) => (byId.get(id) as any)?.heat_rank ?? Infinity) // eslint-disable-line @typescript-eslint/no-explicit-any
       .map((r) => byId.get(r.id))
       .filter((g): g is CardGame => !!g);
-  }, [tasteWanted, tasteRows, index, ids, owned]);
+  }, [tasteWanted, tasteRows, index, owned]);
 
   const tasteFailed = tasteError || (!!tasteRanked && tasteRanked.length === 0);
   const tasteMode = tasteWanted && !tasteFailed;
@@ -121,7 +121,7 @@ export default function PersonalRecs({ homeExcluded }: { homeExcluded: string[] 
       </div>
     );
   }
-  const title = tasteMode ? '내 취향 비슷한 게임' : '찜한 게임과 비슷한 게임';
+  const title = tasteMode ? '취향에 맞는 게임' : '찜한 게임과 비슷한 게임';
   return (
     <section className="home-block people-block" aria-labelledby="personal-recs-title">
       <div className="home-block-head">
