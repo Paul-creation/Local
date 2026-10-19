@@ -3067,6 +3067,14 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* ë§í
 .curator-post { min-height: 36px; padding: 6px 12px; font-size: 13px; flex-shrink: 0; }
 .curator-link { font-size: 13px; color: var(--text-2); text-decoration: underline; text-underline-offset: 3px; }
 .curator-link:hover { color: var(--text); }
+.curator-head { display: flex; align-items: center; gap: 18px; margin: 12px 0 24px; padding: 22px; background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-card); }
+.curator-avatar { width: 64px; height: 64px; flex-shrink: 0; border-radius: 50%; border: 1px solid var(--border); object-fit: cover; }
+.curator-head-body { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; min-width: 0; flex: 1; }
+.curator-head-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; }
+.curator-head-title { margin: 0; font-size: var(--fs-xl); font-weight: 800; line-height: 1.3; color: var(--accent-text); overflow-wrap: anywhere; }
+.curator-head-desc { margin: 0; word-break: keep-all; font-size: var(--fs-m); line-height: 1.5; color: var(--text-2); }
+.curator-head-link { min-height: 40px; padding: 8px 14px; font-size: 14px; }
+@media (max-width: 720px) { .curator-head { padding: 16px; gap: 14px; } .curator-head-top { flex-wrap: wrap; justify-content: flex-start; } }
 .curator-games { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
 .curator-game { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .curator-game > .result-card { flex: 1 1 auto; }

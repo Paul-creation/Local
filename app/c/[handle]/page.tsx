@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import BackLink from '../../components/BackLink';
 import CuratorGames from '../../components/CuratorGames';
@@ -42,10 +43,17 @@ export default async function CuratorPage({ params }: { params: Promise<{ handle
   return (
     <main className="page">
       <BackLink fallbackHref="/" label="홈으로" />
-      <h1 className="section-title">{titleOf(curator.display_name)}</h1>
-      <p className="tl-note">
-        <a href={curator.instagram_url} target="_blank" rel="noopener noreferrer" className="curator-link">인스타그램 계정 보기 ↗</a>
-      </p>
+      <section className="curator-head">
+        {curator.avatar_url && <Image src={curator.avatar_url} alt="" width={64} height={64} className="curator-avatar" />}
+        <div className="curator-head-body">
+          <div className="curator-head-top">
+            <h1 className="curator-head-title">{titleOf(curator.display_name)}</h1>
+            <span className="chip is-static">게임 {entries.length}개</span>
+          </div>
+          <p className="curator-head-desc">{curator.display_name}님이 인스타그램에 소개한 게임이에요. 가격·할인·인원은 매일 갱신돼요.</p>
+          <a href={curator.instagram_url} target="_blank" rel="noopener noreferrer" className="btn compare-add curator-head-link">인스타그램에서 보기 ↗</a>
+        </div>
+      </section>
       {entries.length === 0 ? <p className="tl-note">아직 연결된 게임이 없어요.</p> : <CuratorGames entries={entries} />}
     </main>
   );

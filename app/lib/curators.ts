@@ -4,7 +4,7 @@ import { supabase } from './supabase';
 import { selectGames } from './visibleGames';
 import { gameName } from './gameName';
 
-export type Curator = { id: string; handle: string; display_name: string; instagram_url: string };
+export type Curator = { id: string; handle: string; display_name: string; instagram_url: string; avatar_url: string | null };
 export type CuratorPost = { id: string; game_id: string; post_url: string; post_type: 'single' | 'collection'; posted_at: string };
 
 // 게임을 소개한 계정 — 게시물 단위, posted_at 최신순
@@ -21,8 +21,11 @@ export async function getCuratorsOfGame(gameId: string) {
 }
 
 export async function getCurator(handle: string): Promise<Curator | null> {
-  const { data, error } = await supabase.from('curators').select('id, handle, display_name, instagram_url').eq('handle', handle).maybeSingle();
-  return error ? null : (data as Curator | null);
+  const { data, error } = await supabase.from('curators').select('id, handle, display_name, instagram_url, avatar_url').eq('handle', handle).maybeSingle();
+  if (!error) return data as Curator | null;
+  // avatar_url 열이 아직 없으면(마이그레이션 전) 열 없이 다시 조회
+  const { data: legacy, error: err2 } = await supabase.from('curators').select('id, handle, display_name, instagram_url').eq('handle', handle).maybeSingle();
+  return err2 || !legacy ? null : ({ ...legacy, avatar_url: null } as Curator);
 }
 
 export async function getCuratorPosts(curatorId: string): Promise<CuratorPost[]> {
