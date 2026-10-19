@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-19 (main b3c0705)
+기준: 2026-10-19 (main b5728f4)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/19: feat/curators-home — 메인 "인스타에서 봤던 그 게임" 섹션(CuratorsHome). 인원별 추천 바로 아래, show_on_home=true이고 연결 게임(숨긴 게임 제외)이 1개 이상인 계정이 2개 이상일 때만 렌더링(getHomeCurators, HOME_CURATORS_MIN). 계정 카드 가로 나열(모바일 가로 스크롤)·카드 전체가 /c/handle 링크, avatar_url 있으면 원형 이미지. 마이그레이션 20261026100000(curators.show_on_home) 포함. build·test 328개 통과. 프리뷰 미확인, 로컬에서 조건을 낮춰 375px·1440px만 확인(avatar 있는 카드는 못 봄)
 - 10/19: feat/curators — 인스타 큐레이터 연결. 상세 "이 게임을 소개한 계정" 카드(CuratorsOfGame)는 오른쪽 사이드바 Steam 가격 카드 바로 아래 독립 카드(가격 카드와 같은 너비·radius·안쪽 여백 22px, 모바일은 가격 카드 다음 순서). 줄마다 "인스타그램"(13px 보조색) + @계정명(/c/handle) + 아웃라인 "게시물 보기 ↗"(높이 36px·13px, 새 탭). 계정이 없으면 카드 없음. 계정 페이지 /c/[handle]·CuratorGames, 표 curators(마이그레이션 20261025090000) 포함. build·test 328개 통과, 프리뷰 확인(1440px 첫 화면 900px에는 카드가 안 보임: 카드 상단 y=915). 마이그레이션 적용 여부·여러 계정 줄 배치는 확인 못 함
 - 10/18: feat/vote-section — 상세 상황별 투표 개편. 13개 선택지를 누구랑·분위기·플레이 길이·난이도 4그룹(헤더 14px)으로 나누고(술 한 잔 하면서는 분위기), 칩 배경에 최다 득표 대비 비율만큼 --accent 18% 게이지, 투표수 13px 숫자(0표는 숫자·게이지 없음). 그룹 안은 투표 많은 순·동률은 기존 순서, 정렬은 페이지 로드 시점 기준 한 번만(투표 직후엔 게이지만 즉시 반영). 총 투표 5표 미만(MIN_VOTES_FOR_GAUGE, app/lib/situations.ts)이면 게이지·정렬 끄고 안내 문구. 표기는 "총 N표"(합계 기준). 게이지 위 글자 대비 최저 4.76:1. build·test 327개 통과, 프리뷰 확인
 - 10/18: fix/display-name — games.display_name 칸(스팀명이 "영문 + 한글 음역"으로 겹친 51개, 사용자가 SQL로 입력)을 화면 표시에 적용. app/lib/gameName.ts gameName(g) = display_name ?? name 한 곳으로 카드·캐러셀·상세·메타 title/OG·비교·핫차트·세일 타임라인·커뮤니티 등에 사용, 이름 쿼리에 display_name 추가. 검색은 name·search_name_ko에 display_name도 매칭(클라이언트·서버 ilike 모두). AI 프롬프트·비교 점수 매칭·외부 검색 링크·관리자 화면·게시글 자동 연결(gameMatch)은 name 그대로. 어떤 스크립트도 name·display_name을 갱신하지 않음 확인. build·test 324개 통과, 프리뷰 확인. 변경 파일 eslint는 main 대비 새 오류 없음(미사용 import 1건 정리)
@@ -71,6 +72,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- feat/curators-home 머지 뒤: show_on_home 마이그레이션을 사용자가 SQL 에디터에서 실행 / 동의받은 계정만 true로 바꾸고 2개 이상일 때 프로덕션 메인 섹션 확인(미확인) / feat/curator-header 머지로 avatar_url 열이 생기면 curators.ts의 열 없이 재조회하는 대체 경로 정리 여부 결정
 - feat/curators 머지 뒤 프로덕션에서 curators 표(마이그레이션)가 적용돼 있는지, 상세 카드·/c/handle 확인(미확인)
 - feat/vote-section 머지 뒤 프로덕션 상세 투표 섹션에서 실제 투표 데이터의 게이지·그룹 정렬·375px 줄바꿈 확인(미확인)
 - fix/display-name 머지 뒤 프로덕션에서 표시명 51개가 카드·상세·검색에 맞게 나오는지, 표시명으로 검색이 되는지 확인(미확인)
