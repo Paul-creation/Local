@@ -30,7 +30,8 @@ export async function getGameIndex() {
   // GOTY 배지(goty_awards)는 기록 있는 게임만 따로 — 칸이 아직 없으면 오류를 무시하고 배지 없이
   // 크로스플레이(has_crossplay)도 지원하는 게임 id만 따로 — 마이그레이션 전이라 칸이 없으면 오류를 무시하고 빈 목록
   // 노출 게임이 1,000개를 넘으면 한 번에 다 못 받으므로 모두 1,000행씩 끝까지 읽는다 (정렬은 created_at 최신순 + id로 고정해 페이지가 겹치지 않게)
-  const [{ data: list, error }, { data: goty }, { data: cross }] = await Promise.all([
+  // 지금 뜨는 게임 판정(trend_badge·trend_score)도 판정된 게임만 따로 — 칸이 아직 없으면 오류를 무시하고 필터에 걸리는 게임이 없음
+  const [{ data: list, error }, { data: goty }, { data: cross }, { data: trend }] = await Promise.all([
     readAllPages((from, to) => selectGames(INDEX_FIELDS)
       .gte('price_history.price', 100)
       .order('created_at', { ascending: false })
@@ -40,15 +41,17 @@ export async function getGameIndex() {
       .range(from, to)),
     readAllPages((from, to) => selectGames('id, goty_awards').not('goty_awards', 'is', null).order('id').range(from, to)),
     readAllPages((from, to) => selectGames('id').eq('has_crossplay', true).order('id').range(from, to)),
+    readAllPages((from, to) => selectGames('id, trend_badge, trend_score').not('trend_badge', 'is', null).order('id').range(from, to)),
   ]);
   if (error || !list) throw new Error(`게임 목록 조회 실패: ${error?.message}`);
   const gotyById = new Map((goty || []).map((g) => [g.id, g.goty_awards]));
   const crossIds = new Set((cross || []).map((g) => g.id));
+  const trendById = new Map((trend || []).map((g) => [g.id, { trend_badge: g.trend_badge, trend_score: g.trend_score }]));
   const tagIds = await getGameTagIds();
   return (list || []).map((g) => {
     const { tags, spec_parsed, activities_confirmed, activities_unsure, ...rest } = g as typeof g & { tags?: string[] | null };
     const ids = tagIds?.get(g.id);
-    return flattenGame({ ...rest, ...(tagIds ? { tag_ids: ids || [] } : { tags }), spec_min: specMinOf(spec_parsed), ...activitiesOf(activities_confirmed, activities_unsure), goty_awards: gotyById.get(g.id), ...(crossIds.has(g.id) ? { has_crossplay: true } : {}) });
+    return flattenGame({ ...rest, ...(tagIds ? { tag_ids: ids || [] } : { tags }), spec_min: specMinOf(spec_parsed), ...activitiesOf(activities_confirmed, activities_unsure), goty_awards: gotyById.get(g.id), ...(crossIds.has(g.id) ? { has_crossplay: true } : {}), ...trendById.get(g.id) });
   });
 }
 

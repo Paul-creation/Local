@@ -2,7 +2,7 @@
 
 import { PEOPLE_CHOICES, type PeopleN } from '../../lib/peopleRecs';
 import { PLAYERS_MAX } from '../../lib/rangeFilter';
-import { peopleHref as href, peopleButtonTarget } from '../../lib/peopleLink';
+import { peopleHref as href, trendingHref as trend, peopleButtonTarget } from '../../lib/peopleLink';
 import MyPcLink from '../pcspec/MyPcLink';
 import { useMyPc } from '../pcspec/useMyPc';
 import { usePeople } from './PeopleContext';
@@ -11,6 +11,7 @@ export const peopleLabel = (n: number) => (n >= 5 ? '5인 이상' : `${n}인`);
 
 // 메인 검색 주소(?players=)에 인원과 내 PC 조건을 담은 "전체 보기" 주소 — 인원별 추천의 전체 보기 링크와, 추천 데이터가 없을 때의 인원 버튼 이동이 같이 쓴다
 export const peopleHref = (n: PeopleN, myPc: boolean) => href(n, myPc, PLAYERS_MAX);
+export const trendingHref = (n: PeopleN, myPc: boolean) => trend(n, myPc, PLAYERS_MAX);
 
 // 히어로의 "2인 / 3인 / 4인 / 5인 이상" 한 줄 4칸 + 내 PC 토글
 // 인원별 추천 데이터가 없으면(recsReady 거짓) 버튼은 선택 표시만 바꾸고 바로 그 인원의 검색 결과(/?players=N)로 이동

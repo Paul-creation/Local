@@ -8,3 +8,6 @@ export const peopleHref = (n: number, myPc: boolean, playersMax: number) =>
 // 인원 버튼을 눌렀을 때 이동할 주소. 인원별 추천 데이터가 있으면(recsReady) null — 이동 없이 아래 추천만 바뀐다
 export const peopleButtonTarget = (recsReady: boolean, n: number, myPc: boolean, playersMax: number): string | null =>
   recsReady ? null : peopleHref(n, myPc, playersMax);
+
+// 인원별 추천 "전체 보기 →" — 같은 인원 검색에 "지금 뜨는 게임" 필터(신작·다시 뜨는 중)를 더한 주소
+export const trendingHref = (n: number, myPc: boolean, playersMax: number) => `${peopleHref(n, myPc, playersMax)}&trend=new,rising`;

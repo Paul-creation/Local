@@ -19,7 +19,7 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
     loaded, showResults, normalizedQuery, filtered,
     compareList, compareError, toggleCompare,
     rememberList, resetFilters, visibleCount, showMore, tree,
-    sort, setSort, clearConditions, setInput, myPcActive,
+    sort, setSort, clearConditions, setInput, myPcActive, selectedTrend,
   } = filters;
   // 결과 위 조건 칩 (태그는 검색창 안 칩으로 보이므로 뺌) / 0개일 때 요약은 태그까지 전부
   const [view, setView] = useState<View>('card');
@@ -70,7 +70,7 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
               <div className="tabs results-sort" role="tablist" aria-label="정렬">
                 {SORTS.map(([key, label]) => (
                   <button key={key || 'default'} type="button" role="tab" aria-selected={sort === key} className={`tab${sort === key ? ' is-active' : ''}`} onClick={() => setSort(key)}>
-                    {label}
+                    {!key && selectedTrend.length ? '뜨는 순' : label}
                   </button>
                 ))}
               </div>

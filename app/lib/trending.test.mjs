@@ -196,3 +196,13 @@ test('pickDaily: 개수만큼, 원본은 안 바뀜', () => {
   assert.equal(pickDaily(pool, 4, 'k').length, 4);
   assert.deepEqual(pool, ids('x', 10));
 });
+
+test('trendBadgeKey: 배지를 저장값으로 (신작·다시 뜨는 중·요즘 뜨는 중), 배지 없는 후보는 null', async () => {
+  const { trendBadgeKey } = await import('./trending.ts');
+  const base = { current: 5000, reviewTotal: 20000, recentReviews: 500, streamer: 0 };
+  assert.equal(trendBadgeKey(classify({ ...base, ageDays: 30, gp: null })), 'new');
+  assert.equal(trendBadgeKey(classify({ ...base, ageDays: 800, gp: 1.8 })), 'rising_old');
+  assert.equal(trendBadgeKey(classify({ ...base, ageDays: 200, gp: 1.8 })), 'rising_recent');
+  assert.equal(trendBadgeKey(classify({ ...base, ageDays: 800, gp: 1.3 })), null); // 후보지만 배지 없음
+  assert.equal(trendBadgeKey(null), null);
+});

@@ -1,6 +1,7 @@
 // 담당: 친구(검색·태그·비교)
 // 고른 필터 조건을 칩 목록으로 — 결과 위 조건 칩, 0개일 때 조건 요약에서 같이 쓴다
 // 누르면 그 조건만 해제(clear). 태그(selectedTags)는 검색창 안 칩으로도 보이므로 withTags로 넣을지 고른다
+import { TRENDS } from './trendFilter';
 import { NETS, type GameFilters } from './useGameFilters';
 import { tagKeyLabel } from './tagSearch';
 import { activityLabel } from './activities';
@@ -23,6 +24,7 @@ export function filterConditions(f: GameFilters, { withTags = true } = {}): Cond
   if (f.saleOnly) out.push({ key: 'sale', label: '할인 중', clear: () => f.setSaleOnly(false) });
   if (f.myPcActive) out.push({ key: 'mypc', label: '내 PC로 돌아가는 게임', clear: () => f.setMyPcOnly(false) });
   if (f.hideOwnedActive) out.push({ key: 'owned', label: '보유 게임 제외', clear: () => f.setHideOwned(false) });
+  for (const [k, label] of TRENDS) if (f.selectedTrend.includes(k)) out.push({ key: `trend${k}`, label: `지금 뜨는 게임 · ${label}`, clear: () => f.toggleTrend(k) });
   if (withTags) for (const k of f.selectedActs) out.push({ key: `a${k}`, label: f.actIncludeUnsure ? `${activityLabel(k)} (확인 중 포함)` : activityLabel(k), clear: () => f.toggleAct(k) });
   for (const [k, label] of NETS) if (f.selectedNet.includes(k)) out.push({ key: `n${k}`, label, clear: () => f.toggleNet(k) });
   for (const b of f.selectedBarriers) out.push({ key: `b${b}`, label: `진입장벽 ${b}`, clear: () => f.toggleBarrier(b) });

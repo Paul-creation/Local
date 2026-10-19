@@ -104,6 +104,14 @@ export function classify(t: TrendInput): Trend | null {
   return { kind, score, badges };
 }
 
+// 검색 "지금 뜨는 게임" 필터용 저장값 (games.trend_badge) — classify 배지 그대로: 신작 / 다시 뜨는 중(출시 1년 이상) / 요즘 뜨는 중(91~364일). 배지가 없는 후보(증가율 1.2~1.5)는 null
+export type TrendBadgeKey = 'new' | 'rising_old' | 'rising_recent';
+const BADGE_KEY: Partial<Record<TrendBadge, TrendBadgeKey>> = { '신작': 'new', '다시 뜨는 중': 'rising_old', '요즘 뜨는 중': 'rising_recent' };
+export function trendBadgeKey(t: Trend | null): TrendBadgeKey | null {
+  for (const b of t?.badges ?? []) if (BADGE_KEY[b]) return BADGE_KEY[b]!;
+  return null;
+}
+
 // 문자열 → 32비트 시드 (FNV-1a), 시드 → 난수 (mulberry32)
 const hashSeed = (str: string) => { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; };
 const rng = (seed: number) => () => { seed = (seed + 0x6d2b79f5) >>> 0; let t = seed; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };

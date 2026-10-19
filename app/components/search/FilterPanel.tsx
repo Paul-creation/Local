@@ -7,6 +7,7 @@ import { useChipHint } from './ChipHint';
 import RangeSlider from './RangeSlider';
 import MyPcLink from '../pcspec/MyPcLink';
 import { BARRIERS, NETS, type GameFilters } from '../../lib/useGameFilters';
+import { TRENDS } from '../../lib/trendFilter';
 import { EXCLUDE_TAG_IDS, type TagTree } from '../../lib/tagTree';
 import { ACTIVITY_BY_GROUP } from '../../lib/activitySearch';
 import { activityForTag } from '../../lib/activities';
@@ -46,6 +47,7 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
     selectedBarriers, toggleBarrier,
     storyOnly, setStoryOnly,
     selectedNet, toggleNet,
+    selectedTrend, toggleTrend,
     selectedActs, toggleAct, actIncludeUnsure, setActIncludeUnsure, actCounts,
     playersRange, setPlayersRange,
     soloOnly, setSoloOnly,
@@ -110,6 +112,15 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
             ))}
           </section>
         )}
+
+        {/* 지금 뜨는 게임 — 매일 판정해 저장한 값(games.trend_badge, app/lib/trending)으로 거름. 켜면 기본 정렬이 판정 점수순 */}
+        <FoldSection title="지금 뜨는 게임" count={selectedTrend.length}>
+          <div className="filter-chips">
+            {TRENDS.map(([k, label]) => (
+              <button key={k} type="button" className={`chip${selectedTrend.includes(k) ? ' on' : ''}`} aria-pressed={selectedTrend.includes(k)} onClick={() => toggleTrend(k)}>{label}</button>
+            ))}
+          </div>
+        </FoldSection>
 
         <FoldSection title="같이 하는 방식" count={selectedCategory ? 1 : 0}>
           <div className="filter-chips">

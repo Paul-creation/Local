@@ -22,6 +22,7 @@ const GROUPS = {
     'snapshot-review-history', // 리뷰 수·긍정률 날짜별 기록 (enrich-players 뒤, 인원별 추천 급상승용. review_history 표가 없으면 실패로 표시)
     'purge-ip-hash', // 90일 지난 IP 해시 칸 비우기 (개인정보처리방침, 행은 지우지 않음)
     'purge-old-records', // 생성 1년 지난 신고·의견함 행 삭제 (개인정보처리방침, 한 번 최대 200개)
+    'update-trending --apply', // 검색 "지금 뜨는 게임" 필터용 판정 저장 (games.trend_badge·trend_score, 전체 게임·app/lib/trending 규칙, 읽기 몇 번 + 판정된 게임·초기화할 게임 update. 칸이 없으면(마이그레이션 전) 실패로 표시)
     'daily-summary', // 디스코드 일일 요약 (웹후크 없으면 출력만)
   ],
   // 매주: 새 게임 수집 + 게임 정보 보강

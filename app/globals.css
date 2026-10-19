@@ -1683,6 +1683,7 @@ a.series-item:hover { border-color: var(--border); }
 .people-item { display: flex; min-width: 0; flex: 0 0 calc((100% - 48px) / 3.5); scroll-snap-align: start; }
 .people-end-card { display: flex; flex: 1; align-items: center; justify-content: center; padding: 16px; text-align: center; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-card); color: var(--text); font-size: var(--fs-xl); font-weight: 700; }
 .people-end-card:hover { border-color: var(--accent); }
+.people-head-right { display: flex; align-items: center; gap: 16px; margin-left: auto; }
 .people-arrows { display: flex; gap: 8px; margin-left: auto; }
 .people-arrow { width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-chip); color: var(--text); font-family: inherit; font-size: 22px; line-height: 1; cursor: pointer; }
 .people-arrow:hover:not(:disabled) { border-color: var(--accent); }
