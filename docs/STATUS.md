@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-19 (main f0750df)
+기준: 2026-10-19 (main 09d4852)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/19: feat/trending-filter — 검색 필터 "지금 뜨는 게임"(신작 / 인기 급상승 = rising_old+rising_recent, 둘 다 켜면 합집합, ?trend=new,rising, 켜면 기본 정렬 trend_score 내림차순·정렬 탭 첫 칸 "뜨는 순"). games.trend_badge·trend_score·trend_at(마이그레이션 20261027090000, 사용자 실행 완료) + 부분 인덱스. scripts/update-trending.mjs(기본 미리보기, --apply 저장)가 daily 끝(daily-summary 앞)에서 전체 게임(숨김 제외)을 app/lib/trending.ts 규칙 그대로 판정(인원 조건·핫차트 제외 없음), 해당 없으면 null 초기화. 10/19 수동 --apply로 158개 저장(신작 88·다시 뜨는 중 61·요즘 뜨는 중 9). 메인 인원별 추천 제목 줄 오른쪽 "전체 보기 →"는 현재 인원(+내 PC) 검색에 trend=new,rising. /api/games/list는 판정 값을 별도 쿼리로 읽고 칸이 없으면 무시. build·test 335개 통과, 프리뷰에서 카드가 trend_score 순임을 확인
 - 10/19: chore/curators-cleanup — curators.ts의 avatar_url 대체 조회(열 없이 재조회) 제거(getCurator·getHomeCurators). avatar_url·show_on_home 열이 프로덕션에 있다는 전제. UI 변경 없음, build·test 328개 통과
 - 10/19: feat/curator-header — 계정 페이지(/c/handle) 헤더 카드(avatar 자리·인스타 링크). 마이그레이션 20261026090000(curators.avatar_url) 포함. build·test 328개 통과, 프리뷰 확인은 못 함
 - 10/19: feat/curators-home — 메인 "인스타에서 봤던 그 게임" 섹션(CuratorsHome). 인원별 추천 바로 아래, show_on_home=true이고 연결 게임(숨긴 게임 제외)이 1개 이상인 계정이 2개 이상일 때만 렌더링(getHomeCurators, HOME_CURATORS_MIN). 계정 카드 가로 나열(모바일 가로 스크롤)·카드 전체가 /c/handle 링크, avatar_url 있으면 원형 이미지. 마이그레이션 20261026100000(curators.show_on_home) 포함. build·test 328개 통과. 프리뷰 미확인, 로컬에서 조건을 낮춰 375px·1440px만 확인(avatar 있는 카드는 못 봄)
@@ -74,6 +75,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- feat/trending-filter 머지 뒤: 첫 daily에서 update-trending 단계 동작·소요 시간 확인(미확인) / 프로덕션 ?trend=new,rising 화면 확인(미확인) / 메인 "전체 보기 →"는 내 PC 토글이 켜져 있으면 mypc=1도 붙음(의도)
 - feat/curator-header 머지 뒤: avatar_url 마이그레이션을 사용자가 SQL 에디터에서 실행 (avatar_url 열은 프로덕션 추가 완료, 대체 경로는 제거함)
 - feat/curators-home 머지 뒤: show_on_home 마이그레이션을 사용자가 SQL 에디터에서 실행 / 동의받은 계정만 true로 바꾸고 2개 이상일 때 프로덕션 메인 섹션 확인(미확인) / feat/curator-header 머지로 avatar_url 열이 생기면 curators.ts의 열 없이 재조회하는 대체 경로 정리 여부 결정
 - feat/curators 머지 뒤 프로덕션에서 curators 표(마이그레이션)가 적용돼 있는지, 상세 카드·/c/handle 확인(미확인)
