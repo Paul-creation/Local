@@ -20,7 +20,7 @@ type Tab = 'friends' | 'taste';
 
 // 내 라이브러리 (/library) — 로그인한 사용자의 보유 게임으로 "친구랑 할 게임"과 "취향 비슷한 게임"을 보여준다
 // 보유 목록과 취향 계산은 전부 브라우저 안에서 — 서버로 보내지 않는다 (취향 탭은 게임별 태그·득표·활동만 받아 온다, /api/games/taste)
-// 상태: 확인 중(정지된 틀) / 로그인 안 함 / 비공개·미확인(공개 방법 안내, 예전 목록이 있으면 친구랑 할 게임만) / 보유 0개 / 정상
+// 상태: 확인 중(정지된 틀) / 로그인 안 함 / 비공개·미확인(공개 방법 안내, 예전 목록이 있으면 두 탭 다 그 목록으로) / 보유 0개 / 정상
 export default function LibraryView() {
   return (
     <PeopleProvider filters={null}>
@@ -59,7 +59,9 @@ function Library() {
   }
   const hint = stale ? (
     <div className="lib-state">
-      <p>스팀 프로필의 게임 세부 정보를 공개로 바꾸면 최신 보유 게임을 볼 수 있어요. 공개로 바꾼 뒤 다시 로그인하면 바로 가져와요.</p>
+      {owned.visibility === 'unknown'
+        ? <p>Steam에서 보유 게임을 가져오지 못했어요. 프로필의 게임 세부 정보가 비공개라면 공개로 바꿔 주세요. 공개인데도 이렇다면 잠시 뒤 다시 열어 보세요.</p>
+        : <p>스팀 프로필의 게임 세부 정보를 공개로 바꾸면 최신 보유 게임을 볼 수 있어요. 공개로 바꾼 뒤 다시 로그인하면 바로 가져와요.</p>}
       {owned.count > 0 && <p className="lib-note">아래는 예전에 가져온 목록이라 최신이 아닐 수 있어요.</p>}
     </div>
   ) : null;
@@ -75,13 +77,11 @@ function Library() {
     <>
       {head}
       {hint}
-      {!stale && (
-        <div className="tabs lib-tabs" role="group" aria-label="보기">
-          <button type="button" className="tab" aria-pressed={tab === 'friends'} onClick={() => setTab('friends')}>친구랑 할 게임</button>
-          <button type="button" className="tab" aria-pressed={tab === 'taste'} onClick={() => setTab('taste')}>취향 비슷한 게임</button>
-        </div>
-      )}
-      {!index ? <div className="lib-skel" aria-hidden="true" /> : (stale || tab === 'friends') ? <FriendsTab games={ownedGames} /> : <TasteTab ownedGames={ownedGames} index={index} ownedCount={owned.count} />}
+      <div className="tabs lib-tabs" role="group" aria-label="보기">
+        <button type="button" className="tab" aria-pressed={tab === 'friends'} onClick={() => setTab('friends')}>친구랑 할 게임</button>
+        <button type="button" className="tab" aria-pressed={tab === 'taste'} onClick={() => setTab('taste')}>취향 비슷한 게임</button>
+      </div>
+      {!index ? <div className="lib-skel" aria-hidden="true" /> : tab === 'friends' ? <FriendsTab games={ownedGames} /> : <TasteTab ownedGames={ownedGames} index={index} ownedCount={owned.count} />}
     </>
   );
 }
