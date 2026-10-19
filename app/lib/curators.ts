@@ -22,10 +22,7 @@ export async function getCuratorsOfGame(gameId: string) {
 
 export async function getCurator(handle: string): Promise<Curator | null> {
   const { data, error } = await supabase.from('curators').select('id, handle, display_name, instagram_url, avatar_url').eq('handle', handle).maybeSingle();
-  if (!error) return data as Curator | null;
-  // avatar_url 열이 아직 없으면(마이그레이션 전) 열 없이 다시 조회
-  const { data: legacy, error: err2 } = await supabase.from('curators').select('id, handle, display_name, instagram_url').eq('handle', handle).maybeSingle();
-  return err2 || !legacy ? null : ({ ...legacy, avatar_url: null } as Curator);
+  return error ? null : (data as Curator | null);
 }
 
 export async function getCuratorPosts(curatorId: string): Promise<CuratorPost[]> {
@@ -43,11 +40,8 @@ export const HOME_CURATOR_NAMES = 3;
 export type HomeCurator = { handle: string; displayName: string; avatarUrl: string | null; gameCount: number; recentNames: string[] };
 
 export async function getHomeCurators(): Promise<HomeCurator[]> {
-  let res = await supabase.from('curators').select('id, handle, display_name, avatar_url').eq('show_on_home', true);
-  // avatar_url 열이 아직 없으면(마이그레이션 전) 열 없이 다시 조회
-  if (res.error) res = (await supabase.from('curators').select('id, handle, display_name').eq('show_on_home', true)) as typeof res;
-  if (res.error || !res.data?.length) return [];
-  const curators = res.data as unknown as { id: string; handle: string; display_name: string; avatar_url?: string | null }[];
+  const { data: curators, error: cErr } = await supabase.from('curators').select('id, handle, display_name, avatar_url').eq('show_on_home', true);
+  if (cErr || !curators?.length) return [];
 
   const { data: posts, error } = await supabase
     .from('curator_posts')
