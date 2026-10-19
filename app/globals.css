@@ -3038,10 +3038,14 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* 링�
 .detail-card-title .activity-info { margin-left: 4px; vertical-align: middle; font-size: var(--fs-s); font-weight: 400; }
 
 /* 인스타 큐레이터 — 상세 "이 게임을 소개한 계정", 계정 페이지(/c/[handle]) */
-.curator-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-.curator-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-.curator-name { font-size: var(--fs-m); font-weight: 700; color: var(--text); }
+.curators-card { padding: 22px; background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-card); }
+.curator-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.curator-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.curator-who { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.curator-platform { font-size: 13px; color: var(--text-muted); }
+.curator-name { font-size: var(--fs-m); font-weight: 700; color: var(--text); overflow-wrap: anywhere; }
 .curator-name:hover { text-decoration: underline; text-underline-offset: 3px; }
+.curator-post { min-height: 36px; padding: 6px 12px; font-size: 13px; flex-shrink: 0; }
 .curator-link { font-size: 13px; color: var(--text-2); text-decoration: underline; text-underline-offset: 3px; }
 .curator-link:hover { color: var(--text); }
 .curator-games { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }

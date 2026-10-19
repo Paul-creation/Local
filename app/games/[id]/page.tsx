@@ -306,6 +306,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             </div>
             <p className="price-card-note">가격·할인 정보는 실제와 다를 수 있어요. 가격은 하루 한 번 갱신되니 구매 전 스토어에서 확인해 주세요.</p>
           </div>
+          <CuratorsOfGame items={curators} />
           {game.discord_url && (
             <a href={game.discord_url} target="_blank" rel="noopener nofollow" className="detail-card discord-card">공식 디스코드 ↗</a>
           )}
@@ -538,7 +539,6 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
 
           <GameOpinions gameId={game.id} />
           <RelatedPosts gameId={game.id} />
-          <CuratorsOfGame items={curators} />
           {seriesGames && seriesGames.length > 1 && (
             <section className="detail-card series-section">
               <h3 className="detail-card-title">같은 시리즈{series?.name_ko ? ` · ${series.name_ko}` : ''}</h3>

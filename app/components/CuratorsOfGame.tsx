@@ -6,13 +6,16 @@ type Item = { id: string; postUrl: string; handle: string; displayName: string }
 export default function CuratorsOfGame({ items }: { items: Item[] }) {
   if (!items.length) return null;
   return (
-    <section className="detail-card" aria-labelledby="curators-title">
+    <section className="curators-card" aria-labelledby="curators-title">
       <h3 id="curators-title" className="detail-card-title">이 게임을 소개한 계정</h3>
       <ul className="curator-list">
         {items.map((c) => (
           <li key={c.id} className="curator-row">
-            <Link href={`/c/${encodeURIComponent(c.handle)}`} className="curator-name">@{c.displayName}</Link>
-            <a href={c.postUrl} target="_blank" rel="noopener noreferrer" className="curator-link">게시물 보기 ↗</a>
+            <div className="curator-who">
+              <span className="curator-platform">인스타그램</span>
+              <Link href={`/c/${encodeURIComponent(c.handle)}`} className="curator-name">@{c.displayName}</Link>
+            </div>
+            <a href={c.postUrl} target="_blank" rel="noopener noreferrer" className="btn compare-add curator-post">게시물 보기 ↗</a>
           </li>
         ))}
       </ul>
