@@ -3,13 +3,13 @@
 // - 게임마다 스팀 영어 카테고리(싱글/멀티 구분), 현재 접속자·순위, IGDB 최대 인원 "후보값"을 함께 담는다. 후보값은 참고용이며 DB에 쓰지 않는다
 //   인원은 이 목록을 보고 직접 검증해 결정 파일(data/verification/*.json)로 만들고 apply-verified-players.mjs로 넣는다 (기준: docs/verification-rules.md)
 // - 스팀 카테고리는 scripts/.cache/steam-categories.json(fill-steam-categories와 같은 파일)에 있으면 그대로 쓰고, 없으면 appdetails로 받는다 (요청 간격 2초, 한 번에 최대 --max-steam개, 기본 300)
-// - IGDB는 스팀 앱 ID로만 찾는다(후보 신뢰). 스팀 앱 ID가 없는 게임만 이름 검색(limit 1)이고 igdb_via에 "name"으로 표시
+// - IGDB는 스팀 앱 ID로 찾는다(후보 신뢰). 스팀 앱 ID가 없는 게임만 이름 검색(limit 1)이고, 공백·기호·대소문자를 뺀 이름이 정확히 같을 때만 쓰며 igdb_via에 "name"으로 표시
 // - 매주 갱신 workflow가 이 파일을 아티팩트로 올린다 (scripts/.cache가 숨김 폴더라 include-hidden-files)
 // 실행: node --env-file=.env.local scripts/list-players-pending.mjs
 import fs from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { steamGet, appdetailsUrl, SteamLimitError } from './lib/steam.mjs';
-import { getIgdbToken, igdbQuery, steamLookupBody, candidateMax } from './lib/igdb.mjs';
+import { getIgdbToken, igdbQuery, steamLookupBody, candidateMax, sameName } from './lib/igdb.mjs';
 import { buildRow, sortPending } from './lib/players-pending.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
@@ -66,7 +66,7 @@ async function igdbCandidate(game, token) {
       via = 'appid';
     } else {
       const data = await igdbQuery('games', `fields name, ${MODES}; search "${game.name.replace(/"/g, '')}"; limit 1;`, token);
-      ig = data[0] || null;
+      ig = data[0] && sameName(game.name, data[0].name) ? data[0] : null; // 정규화한 이름이 정확히 같을 때만
       via = 'name';
     }
     return ig ? { name: ig.name, via, max: candidateMax(ig.multiplayer_modes) } : null;

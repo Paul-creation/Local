@@ -1,20 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 import { onlyIds } from './lib/only-ids.mjs';
-import { getIgdbToken, igdbQuery, steamLookupBody } from './lib/igdb.mjs';
+import { getIgdbToken, igdbQuery, steamLookupBody, igdbValues, derivePlatform, isBlank, sameName } from './lib/igdb.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-const PLATFORM_MAP = {
-  'pc (microsoft windows)': 'steam', 'mac': 'steam', 'linux': 'steam',
-  'playstation 4': 'ps4', 'playstation 5': 'ps5',
-  'xbox one': 'xbox', 'xbox series x|s': 'xbox',
-  'nintendo switch': 'switch',
-};
-
-// 장르·개발사 등만 가져온다. 최대 인원은 여기서 DB에 쓰지 않는다 (후보값은 list-players-pending이 따로 읽어 "인원 검증 대기" 목록에만 담음)
+// 장르·테마·평점·개발사·배급사는 빈칸만 채운다(이미 값이 있으면 덮어쓰지 않음). 최대 인원은 여기서 DB에 쓰지 않는다 (후보값은 list-players-pending이 따로 읽어 "인원 검증 대기" 목록에만 담음)
 const GAME_FIELDS = `game.name, game.genres.name, game.themes.name, game.aggregated_rating,
   game.platforms.name, game.involved_companies.company.name,
   game.involved_companies.developer, game.involved_companies.publisher`;
@@ -35,15 +28,6 @@ async function fetchByName(name, token) {
   return data[0] || null;
 }
 
-function mapPlatforms(igdbPlatforms = []) {
-  const codes = new Set();
-  igdbPlatforms.forEach((p) => {
-    const code = PLATFORM_MAP[p.name?.toLowerCase()];
-    if (code) codes.add(code);
-  });
-  return Array.from(codes);
-}
-
 async function main() {
   const token = await getIgdbToken();
   if (!token) {
@@ -53,17 +37,25 @@ async function main() {
 
   const { data: games } = await onlyIds(supabase
     .from('games')
-    .select('id, name, steam_appid, platform').eq('hidden', false));
+    .select('id, name, steam_appid, platform, genres, themes, critic_score, developer, publisher').eq('hidden', false));
 
   if (!games) return;
 
   for (const game of games) {
-    let igdbGame = await fetchByAppid(game.steam_appid, token);
+    let igdbGame = game.steam_appid ? await fetchByAppid(game.steam_appid, token) : null;
     let matchedVia = 'appid';
 
+    // 앱 ID로 못 찾으면 이름 검색 — 공백·기호·대소문자를 뺀 이름이 정확히 같을 때만 쓴다 (limit 1이 엉뚱한 게임을 잡아 장르·개발사를 덮어쓰던 문제)
     if (!igdbGame) {
-      igdbGame = await fetchByName(game.name, token);
-      matchedVia = 'name';
+      const byName = await fetchByName(game.name, token);
+      if (byName && sameName(game.name, byName.name)) {
+        igdbGame = byName;
+        matchedVia = 'name';
+      } else if (byName) {
+        console.log(`이름 불일치로 건너뜀: ${game.name} ≠ IGDB "${byName.name}"`);
+        await new Promise((r) => setTimeout(r, 300));
+        continue;
+      }
     }
 
     if (!igdbGame) {
@@ -72,23 +64,23 @@ async function main() {
       continue;
     }
 
-    const genres = igdbGame.genres?.map((g) => g.name) || [];
-    const themes = igdbGame.themes?.map((t) => t.name) || [];
-    const developer = igdbGame.involved_companies?.find((c) => c.developer)?.company?.name || null;
-    const publisher = igdbGame.involved_companies?.find((c) => c.publisher)?.company?.name || null;
-    const criticScore = igdbGame.aggregated_rating ? Math.round(igdbGame.aggregated_rating) : null;
-
-    const update = { genres, themes, critic_score: criticScore, developer, publisher };
+    const found = igdbValues(igdbGame);
+    const update = {};
+    for (const [field, value] of Object.entries(found)) {
+      if (isBlank(game[field]) && !isBlank(value)) update[field] = value;
+    }
 
     // 플랫폼 — 기본값(steam만)일 때만 덮어씀
     const isDefaultPlatform = !game.platform || (game.platform.length === 1 && game.platform[0] === 'steam');
     if (isDefaultPlatform) {
-      const detected = mapPlatforms(igdbGame.platforms);
-      if (detected.length > 0) {
-        const stores = (game.platform || []).filter((c) => ['epic', 'battlenet', 'riot'].includes(c));
-        const mapped = game.steam_appid ? detected : detected.filter((c) => c !== 'steam');
-        update.platform = Array.from(new Set([...stores, ...mapped]));
-      }
+      const platform = derivePlatform(game.platform, igdbGame.platforms, !!game.steam_appid);
+      if (platform) update.platform = platform;
+    }
+
+    if (Object.keys(update).length === 0) {
+      console.log(`채울 빈칸 없음 [${matchedVia}]: ${game.name}`);
+      await new Promise((r) => setTimeout(r, 300));
+      continue;
     }
 
     const { error } = await supabase.from('games').update(update).eq('id', game.id);
@@ -96,7 +88,7 @@ async function main() {
     if (error) {
       console.error(`업데이트 실패 (${game.name}):`, error.message);
     } else {
-      console.log(`업데이트 성공 [${matchedVia}]: ${game.name} | 플랫폼: ${update.platform?.join(',') || '(유지)'}`);
+      console.log(`업데이트 성공 [${matchedVia}]: ${game.name} | 채운 칸: ${Object.keys(update).join(',')}`);
     }
 
     await new Promise((r) => setTimeout(r, 300));
