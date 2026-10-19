@@ -1655,7 +1655,7 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
 .people-bar { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 14px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-chip); color: var(--text-2); font-size: var(--fs-s); font-weight: 700; }
 .people-bar:hover { border-color: var(--accent); color: var(--text); }
 @media (max-width: 640px) { .people-btn { padding: 0 12px; } }
-/* 인원별·찜 기반 추천 — 데스크톱 3열, 모바일은 가로 스크롤(다음 카드가 일부 보이게) */
+/* 인원별·개인(취향·찜) 추천 — 데스크톱 3열, 모바일은 가로 스크롤(다음 카드가 일부 보이게) */
 .people-cards { display: flex; align-items: stretch; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
 .people-cards::-webkit-scrollbar { display: none; }
 .people-cards:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
@@ -1672,6 +1672,9 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
 .people-more:hover { text-decoration: underline; }
 .people-links { display: flex; flex-wrap: wrap; align-items: center; gap: 0 24px; }
 .people-chips { margin-bottom: 44px; }
+/* 개인 추천 받는 중 빈 틀 — 200ms 안에 끝나면 보이지 않음 */
+.personal-skel { opacity: 0; animation: lib-skel-in 0s linear 200ms forwards; }
+.personal-skel-card { flex: 1; height: 390px; background: var(--card); border-radius: var(--radius-card); }
 .people-empty-box { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 12px; }
 .people-empty-box .people-empty { margin: 0; }
 .people-empty { margin: 0 0 4px; font-size: var(--fs-m); color: var(--text-muted); }
@@ -2828,7 +2831,7 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* 링�
 }
 
 /* ============================================================
-   추천 캐러셀 움직임 — 메인 추천 게임(BannerCarousel)·지금 뜨는 게임(HotChart)·인원별/찜 기반 추천(PeopleRecs·WishlistRecs)
+   추천 캐러셀 움직임 — 메인 추천 게임(BannerCarousel)·지금 뜨는 게임(HotChart)·인원별/개인 추천(PeopleRecs·PersonalRecs)
    슬라이드는 280ms ease-out, 카드 호버는 150ms로 살짝 떠오름(+기존 포인트색 테두리), 터치 스크롤은 snap + smooth.
    움직임 줄이기(prefers-reduced-motion: reduce)면 전환·이동 모두 끔
    ============================================================ */

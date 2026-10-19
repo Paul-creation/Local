@@ -11,7 +11,7 @@ import StreamerSection from './StreamerSection';
 import PeopleRecs from './PeopleRecs';
 import CuratorsHome from './CuratorsHome';
 import type { HomeCurator } from '../../lib/curators';
-import WishlistRecs from './WishlistRecs';
+import PersonalRecs from './PersonalRecs';
 import HomeQuickLinks from './HomeQuickLinks';
 import type { PeopleRecs as PeopleRecsData } from '../../lib/peopleRecs';
 import type { StreamerTheme } from '../../lib/streamerTheme';
@@ -28,13 +28,13 @@ export default function HomeSections({ featured, hotTabs, popularPosts = [], str
 
   const showPopular = popularPosts.length >= POPULAR_MIN;
 
-  // 순서: 인원별 추천 → 인스타 큐레이터 계정(동의 계정 2개 이상일 때만) → 빠른 칩 줄 → 찜 기반 추천(찜이 있을 때) → 지금 뜨는 게임 → 이번주의 게임 → 스트리머 → 인기 게시물 또는 커뮤니티 링크 (인원 버튼은 검색창 바로 아래, HomeHero)
+  // 순서: 인원별 추천 → 인스타 큐레이터 계정(동의 계정 2개 이상일 때만) → 빠른 칩 줄 → 개인 추천(취향 또는 찜이 있을 때) → 지금 뜨는 게임 → 이번주의 게임 → 스트리머 → 인기 게시물 또는 커뮤니티 링크 (인원 버튼은 검색창 바로 아래, HomeHero)
   return (
     <>
       <PeopleRecs recs={peopleRecs} />
       <CuratorsHome curators={curators} />
       <HomeQuickLinks />
-      <WishlistRecs homeExcluded={homeExcluded} />
+      <PersonalRecs homeExcluded={homeExcluded} />
 
       {/* 지금 뜨는 게임 — 데이터는 page.tsx에서 따로 가져옴 (lib/hotChart) */}
       {hotTabs.length > 0 && <HotChart tabs={hotTabs} />}

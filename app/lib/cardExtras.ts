@@ -1,4 +1,4 @@
-// 메인 추천 카드(인원별·찜 기반)에 덧붙일 칸을 게임 id들로 한 번에 읽는다 — 서버(getPeopleRecs)와 브라우저(WishlistRecs) 모두 쓴다
+// 메인 추천 카드(인원별·개인 추천)에 덧붙일 칸을 게임 id들로 한 번에 읽는다 — 서버(getPeopleRecs)와 브라우저(PersonalRecs) 모두 쓴다
 // 게임 목록(gameIndex)에는 평가·한국어 지원·태그 이름이 없어서 카드 몇 장 몫만 따로 읽는다. 못 읽으면 빈 객체 → 그 줄들이 숨는다
 import { supabase } from './supabase';
 import { translateTag } from './tagTranslate';

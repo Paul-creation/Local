@@ -32,7 +32,7 @@ export default function LibraryView() {
 function Library() {
   const owned = useOwned();
   const { games: index, error: indexError, retry } = useGameIndex();
-  const [tab, setTab] = useState<Tab>('friends');
+  const [tab, setTab] = useState<Tab>(() => (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('tab') === 'taste' ? 'taste' : 'friends')) // ?tab=taste: 메인 "더 보기"에서 취향 탭으로;
   // 비공개·미확인이어도 예전에 가져온 목록이 있으면 그 목록으로 쓴다(친구랑 할 게임만, "최신이 아닐 수 있어요" 표시)
   const stale = owned.ready && (owned.visibility === 'private' || owned.visibility === 'unknown');
   const ok = owned.ready && (owned.visibility === 'public' || stale) && owned.count > 0;
