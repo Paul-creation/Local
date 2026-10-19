@@ -40,6 +40,7 @@ const GROUPS = {
     'parse-specs --apply', // 사양 텍스트 → CPU·GPU 등급 등(games.spec_parsed). 새 게임·사양·출시 연도가 바뀐 게임만 처리 (spec_hash), AI 안 씀. 칸이 없으면(마이그레이션 전) 실패로 표시
     'fill-crossplay --apply --true-only', // 스팀 "Cross-Platform Multiplayer" 있는 게임만 true로 (없으면 null 그대로). 칸이 빈 스팀 게임만, AI 안 씀
     'fill-steam-categories', // 협동·대전 칸(스팀 분류) → 배지(category)도 같이 계산. 칸이 빈 새 게임만
+    'list-players-pending', // 노출 게임 중 최대 인원이 빈 게임 목록("인원 검증 대기", scripts/.cache/pending-players.json) — 스팀 카테고리·접속자·IGDB 후보값 포함. DB 쓰기·AI 없음, 직접 검증 결정 파일로 채움. 스팀 카테고리 최대 300개 요청(2초 간격)
     'enrich-tags',
     'fix-data-gaps',
     'fill-tags-desc',

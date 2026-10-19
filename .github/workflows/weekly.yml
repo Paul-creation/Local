@@ -25,3 +25,12 @@ jobs:
         env:
           ENV_FILE: ${{ secrets.ENV_FILE }}
       - run: node scripts/run-steps.mjs weekly
+      # 인원 검증 대기 목록(scripts/.cache/pending-players.json)을 내려받을 수 있게 올림 (숨김 폴더라 include-hidden-files)
+      - if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: pending-players-${{ github.run_number }}
+          path: scripts/.cache/pending-players.json
+          include-hidden-files: true
+          retention-days: 30
+          if-no-files-found: ignore

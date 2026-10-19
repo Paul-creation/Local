@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
-import { refreshCategory } from './lib/category.mjs';
 import { onlyIds } from './lib/only-ids.mjs';
+import { getIgdbToken, igdbQuery, steamLookupBody } from './lib/igdb.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -14,40 +14,13 @@ const PLATFORM_MAP = {
   'nintendo switch': 'switch',
 };
 
+// 장르·개발사 등만 가져온다. 최대 인원은 여기서 DB에 쓰지 않는다 (후보값은 list-players-pending이 따로 읽어 "인원 검증 대기" 목록에만 담음)
 const GAME_FIELDS = `game.name, game.genres.name, game.themes.name, game.aggregated_rating,
   game.platforms.name, game.involved_companies.company.name,
-  game.involved_companies.developer, game.involved_companies.publisher,
-  game.multiplayer_modes.onlinecoopmax, game.multiplayer_modes.offlinecoopmax,
-  game.multiplayer_modes.onlinemax`;
-
-async function getIgdbToken() {
-  const res = await fetch(
-    `https://id.twitch.tv/oauth2/token?client_id=${process.env.IGDB_CLIENT_ID}&client_secret=${process.env.IGDB_CLIENT_SECRET}&grant_type=client_credentials`,
-    { method: 'POST' }
-  );
-  const data = await res.json();
-  return data.access_token;
-}
-
-async function igdbQuery(endpoint, body, token) {
-  const res = await fetch(`https://api.igdb.com/v4/${endpoint}`, {
-    method: 'POST',
-    headers: {
-      'Client-ID': process.env.IGDB_CLIENT_ID,
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/json',
-    },
-    body,
-  });
-  return res.json();
-}
+  game.involved_companies.developer, game.involved_companies.publisher`;
 
 async function fetchByAppid(appid, token) {
-  const data = await igdbQuery(
-    'external_games',
-    `fields ${GAME_FIELDS}; where uid = "${appid}" & category = 1;`,
-    token
-  );
+  const data = await igdbQuery('external_games', steamLookupBody(appid, GAME_FIELDS), token);
   return data[0]?.game || null;
 }
 
@@ -55,8 +28,7 @@ async function fetchByName(name, token) {
   const data = await igdbQuery(
     'games',
     `fields name, genres.name, themes.name, aggregated_rating, platforms.name,
-     involved_companies.company.name, involved_companies.developer, involved_companies.publisher,
-     multiplayer_modes.onlinecoopmax, multiplayer_modes.offlinecoopmax, multiplayer_modes.onlinemax;
+     involved_companies.company.name, involved_companies.developer, involved_companies.publisher;
      search "${name}"; limit 1;`,
     token
   );
@@ -81,7 +53,7 @@ async function main() {
 
   const { data: games } = await onlyIds(supabase
     .from('games')
-    .select('id, name, steam_appid, platform, min_players').eq('hidden', false));
+    .select('id, name, steam_appid, platform').eq('hidden', false));
 
   if (!games) return;
 
@@ -119,25 +91,12 @@ async function main() {
       }
     }
 
-    // 인원수 — 아직 안 채워진 게임만
-    const modes = igdbGame.multiplayer_modes?.[0];
-    if (modes && !game.min_players) {
-      const maxPlayers = modes.onlinecoopmax || modes.offlinecoopmax || modes.onlinemax || null;
-      if (maxPlayers) {
-        update.min_players = 1;
-        update.max_players = maxPlayers;
-      }
-    }
-
     const { error } = await supabase.from('games').update(update).eq('id', game.id);
 
     if (error) {
       console.error(`업데이트 실패 (${game.name}):`, error.message);
     } else {
-      if (update.max_players) await refreshCategory(supabase, game.id);
-      console.log(
-        `업데이트 성공 [${matchedVia}]: ${game.name} — 인원 ${update.max_players ? `최대 ${update.max_players}인` : '(유지)'} | 플랫폼: ${update.platform?.join(',') || '(유지)'}`
-      );
+      console.log(`업데이트 성공 [${matchedVia}]: ${game.name} | 플랫폼: ${update.platform?.join(',') || '(유지)'}`);
     }
 
     await new Promise((r) => setTimeout(r, 300));
