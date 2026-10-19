@@ -21,10 +21,8 @@ import { buyTimingLine, SAME_AS_LOWEST } from '../../lib/buyTiming';
 import VideoPreviewSection from '../../components/VideoPreviewSection';
 import { buildVideoList, type VideoInput } from '../../lib/videoList';
 import { tierOf } from '../../lib/streamerPick';
-import Link from 'next/link';
 import PcSpecCard from '../../components/pcspec/PcSpecCard';
 import ShareButton from '../../components/ShareButton';
-import GameImage from '../../components/GameImage';
 import { getTop10Ids } from '../../lib/hotChart';
 import { playersText } from '../../lib/players';
 import { badgeClass } from '../../lib/badge.mjs';
@@ -41,6 +39,7 @@ import tagDict from '../../lib/tag-search-dict.json';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { isUuid } from '../../lib/uuid';
 import SimilarGames from '../../components/SimilarGames';
+import SeriesGames from '../../components/SeriesGames';
 import { getCardGames } from '../../lib/gameIndex';
 import ActivityChips from '../../components/ActivityChips';
 import InfoTip from '../../components/InfoTip';
@@ -75,8 +74,11 @@ async function getGameTagIds(game: { id: string }) {
 // 비슷한 게임 후보 — game_similar(태그 득표·확인된 활동 코사인 유사도, 주간 scripts/build-similar-games.mjs). 화면에는 앞 6장만 쓰고 18개를 받아 둔다(나머지는 숨긴 게임이 빠질 때를 대비)
 // 표가 아직 없거나 비어 있거나 실패하면 빈 목록 = 섹션 숨김. 숨긴 게임은 getCardGames가 뺀다
 const SIMILAR_CANDIDATES = 18;
-async function getSimilarGames(gameId: string) {
-  const { data, error } = await supabase.from('game_similar').select('similar_id').eq('game_id', gameId).order('rank').limit(SIMILAR_CANDIDATES);
+// 같은 시리즈 게임은 "시리즈" 섹션에 따로 나오므로 후보에서 빼고 다음 순위로 채운다
+async function getSimilarGames(gameId: string, excludeIds: string[]) {
+  let q = supabase.from('game_similar').select('similar_id').eq('game_id', gameId);
+  if (excludeIds.length) q = q.not('similar_id', 'in', `(${excludeIds.join(',')})`);
+  const { data, error } = await q.order('rank').limit(SIMILAR_CANDIDATES);
   if (error || !data?.length) return [];
   try { return await getCardGames(data.map((r: { similar_id: string }) => r.similar_id)); } catch { return []; }
 }
@@ -157,21 +159,26 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
     if (target) permanentRedirect(`/games/${target}`);
     notFound();
   }
-  const [top10, tagIds, similarGames, curators] = await Promise.all([top10Promise, getGameTagIds(game), getSimilarGames(game.id), getCuratorsOfGame(game.id)]);
+  // 같은 시리즈 (series_id가 있을 때만, series_order 순). 숨긴 게임은 selectGames가 뺀다
+  const { data: seriesGames } = game.series_id
+    ? await selectGames('id').eq('series_id', game.series_id).order('series_order')
+    : { data: null };
+  const seriesIds: string[] = (seriesGames ?? []).map((g: { id: string }) => g.id);
+  const showSeries = seriesIds.length > 1 && seriesIds.includes(game.id);
+  const seriesOthers = seriesIds.filter((sid) => sid !== game.id);
+  const [top10, tagIds, similarGames, curators, series, seriesCards] = await Promise.all([
+    top10Promise, getGameTagIds(game), getSimilarGames(game.id, seriesOthers), getCuratorsOfGame(game.id),
+    showSeries ? supabase.from('series').select('name_ko').eq('id', game.series_id).maybeSingle().then((r) => r.data) : null,
+    showSeries ? getCardGames(seriesOthers).catch(() => []) : [],
+  ]);
+  const cardsById = new Map((seriesCards as { id: string }[]).map((g) => [g.id, g]));
+  const seriesItems = seriesIds.map((sid) => ({ id: sid, current: sid === game.id, game: cardsById.get(sid) })).filter((it) => it.current || it.game);
   const isTop10 = top10.includes(game.id);
   const chipGroups = detailChipGroups(TAG_TREE, { ...game, tag_ids: tagIds }, isTop10);
   // 멀티 방식(전용 서버/P2P)은 온라인 협동·대전이 있는 게임만
   const showHost = !!game.multiplayer_host && (game.has_online_coop === true || game.has_pvp === true);
   // 친구랑: 팀 인원(party_max), 없으면 최대 인원 + 같은 서버 인원(session_max)
   const friendsMax = game.party_max ?? game.max_players;
-  // 같은 시리즈 (series_id가 있을 때만, 출시순)
-  const { data: seriesGames } = game.series_id
-    ? await selectGames('id, name, display_name, card_image_url, cover_image_url, series_order').eq('series_id', game.series_id).order('series_order')
-    : { data: null };
-  const { data: series } = game.series_id && (seriesGames?.length ?? 0) > 1
-    ? await supabase.from('series').select('name_ko').eq('id', game.series_id).maybeSingle()
-    : { data: null };
-
   const price = getPriceInfo(game);
   // 100원 미만은 잘못 들어온 기록이라 할인 전적에서 제외
   const priceHistory = (game.price_history || []).filter((p: any) => p.price >= 100);
@@ -539,31 +546,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
 
           <GameOpinions gameId={game.id} />
           <RelatedPosts gameId={game.id} />
-          {seriesGames && seriesGames.length > 1 && (
-            <section className="detail-card series-section">
-              <h3 className="detail-card-title">같은 시리즈{series?.name_ko ? ` · ${series.name_ko}` : ''}</h3>
-              <ol className="series-list">
-                {seriesGames.map((sg) => {
-                  const current = sg.id === game.id;
-                  const inner = (
-                    <>
-                      <GameImage src={sg.cover_image_url || sg.card_image_url} steamSize="header_292x136" loading="lazy" alt="" />
-                      <span className="series-name">{gameName(sg)}</span>
-                    </>
-                  );
-                  return (
-                    <li key={sg.id}>
-                      {current ? (
-                        <div className="series-item is-current" aria-current="page">{inner}</div>
-                      ) : (
-                        <Link href={`/games/${sg.id}`} className="series-item">{inner}</Link>
-                      )}
-                    </li>
-                  );
-                })}
-              </ol>
-            </section>
-          )}
+          {showSeries && seriesItems.length > 1 && <SeriesGames name={series?.name_ko ?? null} currentName={gameName(game)} items={seriesItems} />}
           {similarGames.length > 0 && <SimilarGames games={similarGames} />}
         </div>
       </div>
