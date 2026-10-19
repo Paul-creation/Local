@@ -12,6 +12,7 @@ import { HOME_FILTER_STYLE_ID } from './lib/homeFilter';
 import { getStreamerNamesByGame } from './lib/streamerVideos';
 import { getStreamerTheme } from './lib/streamerTheme';
 import { selectHomeGames } from './lib/visibleGames';
+import { getHomeCurators } from './lib/curators';
 import { getPeopleRecs, getHomeExcludedIds } from './lib/peopleRecs';
 
 // 5분마다 새로 만든 결과를 모두에게 보여준다 (방문마다 DB를 조회하지 않도록). 인기 글·가격도 최대 5분 늦게 반영
@@ -65,7 +66,7 @@ export default async function Home() {
 
   // 인원별 추천 — 지금 뜨는 게임(모든 탭 10위까지)과 겹치는 건 뺀다. 실패하면 줄만 빠짐
   const hotShown = [...new Set(hot.tabs.flatMap((t) => t.items.map((i) => i.id)))];
-  const [peopleRecs, homeExcluded] = await Promise.all([getPeopleRecs(hotShown).catch(() => null), getHomeExcludedIds().catch(() => [] as string[])]);
+  const [peopleRecs, homeExcluded, curators] = await Promise.all([getPeopleRecs(hotShown).catch(() => null), getHomeExcludedIds().catch(() => [] as string[]), getHomeCurators().catch(() => [])]);
 
   const rows = (sectionRows || []).map((g) => flattenGame({ ...g, description: g.fun_description ? null : g.description }));
   const featured: Record<string, any> | null = weekly || rows.find((g) => g.featured) || null;
@@ -85,7 +86,7 @@ export default async function Home() {
       <GameGrid
         peopleReady={!!peopleRecs}
         event={<HomeEventLabel />}
-        sections={<HomeSections featured={featured} hotTabs={hotTabs} popularPosts={popularPosts} streamerTheme={streamerTheme} peopleRecs={peopleRecs} homeExcluded={homeExcluded} />}
+        sections={<HomeSections featured={featured} hotTabs={hotTabs} popularPosts={popularPosts} streamerTheme={streamerTheme} peopleRecs={peopleRecs} homeExcluded={homeExcluded} curators={curators} />}
         top10Ids={hot.top10Ids}
       />
     </main>

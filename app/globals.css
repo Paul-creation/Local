@@ -2869,6 +2869,25 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* 링�
   :root :is(.feature-card, .gc), :root :is(.feature-card, .gc):hover { transition: none; transform: none; }
 }
 
+/* 메인 "인스타에서 봤던 그 게임" — 계정 카드 가로 나열, 모바일은 인원별 추천처럼 가로 스크롤 */
+.curators-home-head { flex-direction: column; align-items: flex-start; gap: 4px; }
+.curators-home-sub { margin: 0; font-size: var(--fs-s); line-height: 1.5; color: var(--text-2); word-break: keep-all; }
+.curators-home-row { list-style: none; margin: 0; padding: 0; display: flex; align-items: stretch; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.curators-home-row::-webkit-scrollbar { display: none; }
+.curators-home-item { display: flex; flex: 0 0 calc((100% - 48px) / 3.5); min-width: 0; scroll-snap-align: start; }
+.curators-home-card { display: flex; flex: 1; flex-direction: column; gap: 12px; min-width: 0; padding: 18px; background: var(--card); border: 1px solid var(--border-soft); border-radius: var(--radius-card); color: var(--text); }
+.curators-home-card:hover { border-color: var(--accent); }
+.curators-home-top { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.curators-home-avatar { width: 44px; height: 44px; flex-shrink: 0; border-radius: 50%; border: 1px solid var(--border); object-fit: cover; }
+.curators-home-who { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.curators-home-name { font-size: var(--fs-l); font-weight: 800; color: var(--text); overflow-wrap: anywhere; }
+.curators-home-count { font-size: var(--fs-xs); color: var(--text-2); }
+.curators-home-games { font-size: var(--fs-s); line-height: 1.5; color: var(--text-2); word-break: keep-all; overflow-wrap: anywhere; }
+@media (max-width: 720px) {
+  .curators-home-row { gap: 12px; margin-right: -16px; padding-right: 16px; }
+  .curators-home-item { flex: 0 0 min(78%, 280px); }
+}
+
 /* 스크린샷 갤러리 — 썸네일 줄(scroll-snap)과 라이트박스. 로딩 전에는 같은 비율의 정지된 빈 틀 */
 .shots-row { display: flex; gap: 10px; list-style: none; margin: 12px 0 0; padding: 0 0 4px; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; }
 .shots-row { scrollbar-width: none; -ms-overflow-style: none; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent); }
