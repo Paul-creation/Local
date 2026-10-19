@@ -20,7 +20,7 @@ type Tab = 'friends' | 'taste';
 
 // 내 라이브러리 (/library) — 로그인한 사용자의 보유 게임으로 "친구랑 할 게임"과 "취향 비슷한 게임"을 보여준다
 // 보유 목록과 취향 계산은 전부 브라우저 안에서 — 서버로 보내지 않는다 (취향 탭은 게임별 태그·득표·활동만 받아 온다, /api/games/taste)
-// 상태: 확인 중(정지된 틀) / 로그인 안 함 / 스팀 프로필 비공개 / 아직 못 가져옴 / 보유 0개 / 정상
+// 상태: 확인 중(정지된 틀) / 로그인 안 함 / 비공개·미확인(공개 방법 안내, 예전 목록이 있으면 친구랑 할 게임만) / 보유 0개 / 정상
 export default function LibraryView() {
   return (
     <PeopleProvider filters={null}>
@@ -33,7 +33,9 @@ function Library() {
   const owned = useOwned();
   const { games: index, error: indexError, retry } = useGameIndex();
   const [tab, setTab] = useState<Tab>('friends');
-  const ok = owned.ready && owned.visibility === 'public' && owned.count > 0;
+  // 비공개·미확인이어도 예전에 가져온 목록이 있으면 그 목록으로 쓴다(친구랑 할 게임만, "최신이 아닐 수 있어요" 표시)
+  const stale = owned.ready && (owned.visibility === 'private' || owned.visibility === 'unknown');
+  const ok = owned.ready && (owned.visibility === 'public' || stale) && owned.count > 0;
 
   const ownedGames = useMemo(() => (index && ok ? (index as any[]).filter((g) => owned.has(g.steam_appid)) : []), [index, ok, owned]); // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -55,12 +57,13 @@ function Library() {
       </>
     );
   }
-  if (owned.visibility === 'private') {
-    return <>{head}<div className="lib-state"><p>스팀 프로필의 게임 세부 정보를 공개로 바꾸면 내 라이브러리를 볼 수 있어요. 공개로 바꾼 뒤 다시 로그인하면 바로 가져와요.</p></div></>;
-  }
-  if (owned.visibility === 'unknown') {
-    return <>{head}<div className="lib-state"><p>보유 게임을 아직 가져오지 못했어요. 잠시 뒤 다시 열어 보세요.</p></div></>;
-  }
+  const hint = stale ? (
+    <div className="lib-state">
+      <p>스팀 프로필의 게임 세부 정보를 공개로 바꾸면 최신 보유 게임을 볼 수 있어요. 공개로 바꾼 뒤 다시 로그인하면 바로 가져와요.</p>
+      {owned.count > 0 && <p className="lib-note">아래는 예전에 가져온 목록이라 최신이 아닐 수 있어요.</p>}
+    </div>
+  ) : null;
+  if (stale && owned.count === 0) return <>{head}{hint}</>;
   if (owned.count === 0) {
     return <>{head}<div className="lib-state"><p>이 사이트에 등록된 게임 중 가진 게임이 아직 없어요.</p></div></>;
   }
@@ -71,11 +74,14 @@ function Library() {
   return (
     <>
       {head}
-      <div className="tabs lib-tabs" role="group" aria-label="보기">
-        <button type="button" className="tab" aria-pressed={tab === 'friends'} onClick={() => setTab('friends')}>친구랑 할 게임</button>
-        <button type="button" className="tab" aria-pressed={tab === 'taste'} onClick={() => setTab('taste')}>취향 비슷한 게임</button>
-      </div>
-      {!index ? <div className="lib-skel" aria-hidden="true" /> : tab === 'friends' ? <FriendsTab games={ownedGames} /> : <TasteTab ownedGames={ownedGames} index={index} ownedCount={owned.count} />}
+      {hint}
+      {!stale && (
+        <div className="tabs lib-tabs" role="group" aria-label="보기">
+          <button type="button" className="tab" aria-pressed={tab === 'friends'} onClick={() => setTab('friends')}>친구랑 할 게임</button>
+          <button type="button" className="tab" aria-pressed={tab === 'taste'} onClick={() => setTab('taste')}>취향 비슷한 게임</button>
+        </div>
+      )}
+      {!index ? <div className="lib-skel" aria-hidden="true" /> : (stale || tab === 'friends') ? <FriendsTab games={ownedGames} /> : <TasteTab ownedGames={ownedGames} index={index} ownedCount={owned.count} />}
     </>
   );
 }
