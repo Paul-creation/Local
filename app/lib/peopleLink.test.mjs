@@ -27,7 +27,7 @@ test('"전체 보기" 링크와 같은 주소를 쓴다', () => {
   assert.equal(peopleHref(2, true, 8), '/?players=2-2&mypc=1');
 });
 
-test('인원별 추천 "전체 보기 →"는 같은 인원 검색에 trend=new,rising을 더한다', async () => {
+test('인원별 추천 "뜨는 게임 더 보기 →"는 같은 인원 검색에 trend=new,rising을 더한다', async () => {
   const { trendingHref } = await import('./peopleLink.ts');
   assert.equal(trendingHref(3, false, MAX), '/?players=3-3&trend=new,rising');
   assert.equal(trendingHref(5, true, MAX), `/?players=5-${MAX}&mypc=1&trend=new,rising`);
