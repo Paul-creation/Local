@@ -2718,6 +2718,15 @@
     "reason": "1인 FPS"
   },
   {
+    "game_id": "7dd8dafb-c30e-40ba-a7ca-7499cc42e67b",
+    "steam_appid": "1284210",
+    "name": "Guild Wars 2®",
+    "solo": null,
+    "party_max": 5,
+    "session_max": null,
+    "reason": "MMORPG 파티 최대 5명 (Guild Wars 2 위키). 서버 인원은 맵마다 달라 null"
+  },
+  {
     "game_id": "7e4b5d46-a6fa-444e-bfee-90448dc67c77",
     "steam_appid": null,
     "name": "Heroes of the Storm",
