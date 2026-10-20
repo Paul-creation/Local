@@ -46,7 +46,8 @@ export async function POST(req: NextRequest) {
   }
 
   const { error } = await supabase.from('game_votes').insert({ game_id: gameId, situation, voter_hash: voter });
-  // 같은 사람이 같은 상황에 또 투표 → 조용히 무시 (중복 방지 인덱스)
-  if (error && error.code !== '23505') return NextResponse.json({ error: '저장 실패' }, { status: 500 });
+  // 같은 사람이 같은 상황에 또 투표 → 저장은 중복 방지 인덱스가 막고, 화면이 방금 올린 +1을 되돌리도록 duplicate로 알림
+  if (error?.code === '23505') return NextResponse.json({ ok: true, duplicate: true });
+  if (error) return NextResponse.json({ error: '저장 실패' }, { status: 500 });
   return NextResponse.json({ ok: true });
 }

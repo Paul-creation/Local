@@ -30,11 +30,14 @@ export default function GameVotes({ gameId }: { gameId: string }) {
     localStorage.setItem(`votes_${gameId}`, JSON.stringify(newMyVotes));
     setVotes(prev => ({ ...prev, [situation]: (prev[situation] || 0) + 1 }));
 
-    await fetch('/api/votes', {
+    const res = await fetch('/api/votes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ gameId, situation }),
-    });
+    }).catch(() => null);
+    const body = await res?.json().catch(() => null);
+    // 서버에 이미 있는 투표(다른 브라우저·저장소를 지운 같은 사람)면 방금 올린 +1만 되돌리고, 내 투표 표시는 그대로 둔다
+    if (body?.duplicate) setVotes(prev => ({ ...prev, [situation]: Math.max(0, (prev[situation] || 0) - 1) }));
   };
 
   const loadedTotal = loadedVotes ? Object.values(loadedVotes).reduce((a, b) => a + b, 0) : 0;
