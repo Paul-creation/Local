@@ -153,8 +153,14 @@ async function main() {
     .filter((c) => c.enabled)
     .sort((a, b) => (a.uploads_checked_at ? Date.parse(a.uploads_checked_at) : 0) - (b.uploads_checked_at ? Date.parse(b.uploads_checked_at) : 0));
 
-  let games = await readAll('games', 'id, name, search_name_ko', (q) => q.eq('hidden', false)).catch(() => null);
-  if (!games) games = await readAll('games', 'id, name, search_name_ko'); // hidden 칸이 아직 없을 때
+  // 숨긴 게임은 후보에서 뺀다. 읽기가 실패하면 조건 없이 다시 읽지 않고 멈춤 (숨긴 게임에 새 영상이 붙는 것을 막음)
+  let games;
+  try {
+    games = await readAll('games', 'id, name, search_name_ko', (q) => q.eq('hidden', false));
+  } catch (e) {
+    console.error(`❌ 후보 게임을 못 읽어 중단: ${e.message}`);
+    process.exit(1);
+  }
   const gamesById = new Map(games.map((g) => [g.id, g]));
   const matchers = buildMatchers(games);
   console.log(`${APPLY ? '저장' : '미리보기'} · 켜진 채널 ${todo.length}개 · 게임 ${games.length}개 · 상한 ${CAP}유닛\n`);
