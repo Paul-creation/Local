@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-19 (main a001ca9)
+기준: 2026-10-20 (main 80c3c1c)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/20: fix/price-bundle-note — price_check_note가 "묶음 전용"으로 시작하는 게임은 fix-missing-prices(markPriceStatus)가 실패 메모를 덮어쓰지 않고, daily-summary 3일 연속 실패 목록에서도 뺌(스크립트 기본 메모 "가격 없음 (...묶음 전용...)"은 접두어가 달라 해당 없음). 동방홍마향 New Classic은 appdetails에 가격이 없고 package_groups도 빈 배열(묶음 구매 영역에만 ₩19,000)이라 가격 수집 자체는 포기. build·test 349개 통과, or 필터 문법은 실제 DB 읽기로 확인. 일일 알림 동작이 바뀌는 변경
 - 10/19: fix/fill-players — 노출 게임 중 max_players가 빈 221개 원인 정리(enrich-specs가 싱글+멀티 게임에 min=1만 넣고, enrich-igdb는 min이 비어야 인원을 채워 영영 안 채워짐 + IGDB 앱 ID 조회가 category 필드 폐지로 항상 빈 결과). 주간 list-players-pending 단계 추가(scripts/.cache/pending-players.json, 스팀 카테고리·접속자·IGDB 후보값, DB 쓰기·AI 없음, weekly.yml이 아티팩트로 30일 보관), enrich-igdb는 인원을 DB에 쓰지 않고 장르·테마·평점·개발사·배급사는 빈칸만 채움, IGDB 앱 ID 조회를 external_game_source = 1로 수정, 앱 ID 없는 게임의 이름 검색은 정규화한 이름이 정확히 같을 때만, 일일 요약에 "노출 게임 중 인원 빈칸 N개" 한 줄. 일회성 scripts/fix-igdb-mismatch.mjs --apply로 이름 검색 오매칭 163개 중 160개(639칸: 장르 118·테마 123·평점 126·개발사 92·배급사 97·플랫폼 83) 정정 완료, 28개 게임은 일부 칸을 나중에 값이 바뀐 것으로 보고 유지. build·test 347개 통과
 - 10/19: feat/home-personal + fix/home-personal-owned — 메인 "찜 기반 추천"을 개인 추천 하나(PersonalRecs)로 합침. 로그인+보유 5개 이상이면 "취향에 맞는 게임"(보유 게임만으로 /library 취향 탭과 같은 계산, 보유 게임만 제외·찜은 제외하지 않음, 오른쪽 "더 보기 →"는 /library?tab=taste), 아니면 찜 모드("찜한 게임과 비슷한 게임"), 둘 다 없으면 숨김. 인원별 추천과 같은 가로 캐러셀 8장, taste 요청은 취향 조건을 채운 로그인 상태에서만. build·test 335개 통과, 가짜 보유 목록으로 1440·375px 로컬 확인(프리뷰 미확인)
 - 10/19: fix/trend-link-label — 메인 인원별 추천 제목 줄 오른쪽 "전체 보기 →"를 "뜨는 게임 더 보기 →"로 바꿔 아래 "N인 게임 전체 보기 →"와 구분(링크 주소는 그대로). build·test 335개 통과
@@ -80,7 +81,9 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
-- fix/fill-players 머지 뒤: 221개 인원 빈칸은 직접 검증 라운드(docs/verification-rules.md → 결정 파일 → apply-verified-players)로 인기순으로 채움(미실행) / 다음 weekly에서 list-players-pending 단계 동작·소요 시간(첫 실행 스팀 요청 약 219건, 약 8분)·pending-players 아티팩트 확인(미확인) / enrich-igdb 앱 ID 조회 수정 뒤 첫 weekly에서 빈칸 채움·이름 불일치 건너뜀 로그 확인(미확인) / 다음 daily 요약에 인원 빈칸 줄이 나오는지 확인(미확인)
+- fix/price-bundle-note 머지 뒤: 동방홍마향(0ab1e427…) price_check_note를 "묶음 전용 (...)"으로 바꾸는 SQL을 사용자가 실행(머지·배포 전에 하면 데일리가 덮어씀) / 다음 daily 요약의 3일 연속 실패 목록에서 이 게임이 빠지는지 확인(미확인) / Pixel Worlds 실패 표시 비우기·Home 숨김·Bad Cheese 스팀(3094480) 연결 SQL은 사용자 실행 대기
+- 인원 검증 11차(docs/verification/round11-top50.md): 상위 50개 중 22개 + ETS2·ATS·GW2 3개 반영, 27개 보류 / 오버워치(스팀 행)와 Overwatch 2(배틀넷 행) 합치는 SQL은 사용자 실행 대기 / WoW 1~40·AION 2·알비온은 공식 근거를 못 찾아 그대로(WoW는 파티 5 공식 문서가 생기면 1~5로) / 나머지 약 170개 빈칸은 다음 라운드
+- fix/fill-players 머지 뒤: 221개 인원 빈칸은 직접 검증 라운드(docs/verification-rules.md → 결정 파일 → apply-verified-players)로 인기순으로 채움(11차 상위 50개 진행, 아래 줄 참고) / 다음 weekly에서 list-players-pending 단계 동작·소요 시간(첫 실행 스팀 요청 약 219건, 약 8분)·pending-players 아티팩트 확인(미확인) / enrich-igdb 앱 ID 조회 수정 뒤 첫 weekly에서 빈칸 채움·이름 불일치 건너뜀 로그 확인(미확인) / 다음 daily 요약에 인원 빈칸 줄이 나오는지 확인(미확인)
 - feat/home-personal·fix/home-personal-owned 머지 뒤 프로덕션 메인에서 개인 추천 확인(미확인): 로그인+보유 5개 이상이면 "취향에 맞는 게임"(/library 취향 탭과 같은 결과, 오른쪽 "더 보기 →"), 그 외 찜이 있으면 "찜한 게임과 비슷한 게임", 둘 다 없으면 숨김 / 비로그인 첫 로딩에 /api/games/taste 요청이 없는지 / 내 PC 토글은 취향·찜 모드 모두 적용(메인 다른 섹션과 같게, /library 취향 탭은 적용 안 함)
 - fix/series-section 머지 뒤 프로덕션 상세에서 시리즈 섹션·비슷한 게임 제외 확인(미확인) / series_id 빈칸 정리 SQL(31행 실행함, 스핀오프 7행·디아블로 II 병합·Ori 숨김 SQL은 사용자 실행 대기)
 - fix/library-states 머지 뒤 프로덕션에서 비공개·미확인 계정으로 /library 상태 문구와 예전 목록 표시 확인(미확인)
