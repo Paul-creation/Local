@@ -32,6 +32,11 @@ export async function noPriceIds(supabase) {
   return new Set(error ? [] : data.map((g) => g.id));
 }
 
+// 묶음 전용으로 직접 확인한 게임은 price_check_note를 "묶음 전용 ..."으로 시작하게 적어 둔다 (스팀 appdetails에 가격이 없고 묶음 구매 영역에만 있음)
+// → 매일 실패 메모를 덮어쓰지 않고, 일일 요약의 3일 연속 실패 목록에서도 뺀다 (스크립트가 쓰는 "가격 없음 (...묶음 전용...)"은 이 접두어가 아님)
+export const BUNDLE_NOTE_PREFIX = '묶음 전용';
+export const NOT_BUNDLE_NOTE = `price_check_note.is.null,price_check_note.not.like.${BUNDLE_NOTE_PREFIX}*`;
+
 // 게임별 성공·실패를 DB에 표시. 실패가 이어지면 처음 실패한 시각을 유지한다
 export async function markPriceStatus(supabase, { okIds, failed }) {
   const now = new Date().toISOString();
@@ -44,7 +49,7 @@ export async function markPriceStatus(supabase, { okIds, failed }) {
       if (error) throw error;
     }
     for (const { id, note } of failed) {
-      const { error } = await supabase.from('games').update({ price_check_note: note }).eq('id', id);
+      const { error } = await supabase.from('games').update({ price_check_note: note }).eq('id', id).or(NOT_BUNDLE_NOTE);
       if (error) throw error;
     }
     for (const ids of chunks(failed.map((f) => f.id))) {

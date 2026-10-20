@@ -6,7 +6,7 @@
 import fs from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { readPurge } from './lib/privacy-purge.mjs';
-import { readPriceCheck } from './lib/price-check.mjs';
+import { readPriceCheck, NOT_BUNDLE_NOTE } from './lib/price-check.mjs';
 import { readStreamerVideos } from './lib/streamer-videos.mjs';
 
 const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
@@ -49,10 +49,10 @@ const priceParts = [['스팀', price?.steam], ['스팀 외', price?.other]]
 let priceLine = priceParts.length
   ? `💸 가격을 못 받은 게임: ${(price.steam?.failed ?? 0) + (price.other?.failed ?? 0)}개 (${priceParts.join(' · ')})`
   : '💸 가격 수집: 오늘 기록 없음 (가격 단계가 안 돌았거나 실패)';
-// 3일 연속 실패 = 처음 실패한 날의 실행부터 오늘 실행까지 계속 못 받는 중 (매일 1번 실행 기준, 숨긴 게임·가격 유형 있는 게임 제외)
+// 3일 연속 실패 = 처음 실패한 날의 실행부터 오늘 실행까지 계속 못 받는 중 (매일 1번 실행 기준, 숨긴 게임·가격 유형 있는 게임·메모가 "묶음 전용"으로 시작하는 게임 제외)
 const streakSince = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000 + 6 * 60 * 60 * 1000).toISOString();
 const streakQuery = () => db.from('games').select('name, price_check_note, price_check_failed_since')
-  .lte('price_check_failed_since', streakSince).is('price_type', null).order('price_check_failed_since');
+  .lte('price_check_failed_since', streakSince).is('price_type', null).or(NOT_BUNDLE_NOTE).order('price_check_failed_since');
 let streak = await streakQuery().eq('hidden', false);
 if (streak.error) streak = await streakQuery(); // hidden 칸이 아직 없을 때
 if (streak.error) {
