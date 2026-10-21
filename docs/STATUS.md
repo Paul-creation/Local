@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-21 (main 3aa7d0c)
+기준: 2026-10-21 (main 0c8a6f6)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/21: chore/curator-games-nugget — curator-games.json에 너겟(nugget_zine) 소개 게임 3개 추가: 소시지에 관한 이상한 게임(4691990)·인보키어: 마의 주사위(Invokyr, 3883570, 영문명은 웹 검색+스팀 한국어 이름 일치로 확정)·A Gentlemen's Dispute(2820700). --curator로 미리보기→추가→--ids enrich 실행(enrich-other-stores·ai-other·videos는 다음 weekly). 게시물 4개(The Outlast Trials 1304930 포함)를 curator_posts에 연결하는 SQL은 사용자가 SQL 에디터에서 실행. 코드 변경 없음, build·test 351개 통과
 - 10/21: feat/import-curator-games — bulk-import에 `--curator <파일>` 추가(--appids와 같은 JSON, data/meta/curator-games.json). 이 목록의 appid는 리뷰 수·긍정률·연도 기준을 면제(리뷰 0개도 통과), 출시된 게임(coming soon 아님)·스팀 종류 game·제외 장르·한국 상점 정보는 그대로 적용. 기본 수집·--appids 기준은 변화 없음, 정기 흐름(add-games·weekly)에는 넣지 않고 수동 실행만. Tasty Chef(5019920)를 미리보기→추가→--ids enrich까지 실행. build·test 351개 통과
 - 10/21: fix/vote-duplicate — 투표 API(app/api/votes/route.ts)가 중복 insert(23505)에 200 { ok: true, duplicate: true }로 응답(다른 에러는 그대로 500). GameVotes.tsx는 duplicate면 방금 올린 +1만 되돌리고(0 미만 안 내려감) localStorage의 내 투표 표시는 유지. 이미 DB에 있던 부분 유니크 인덱스를 마이그레이션 20261021100000_game_votes_one_per_voter.sql(game_id, situation, voter_hash where voter_hash is not null, if not exists)로 기록만 함(실행 X, 20261021090000은 activities_v2가 써서 100000으로). build·test 349개 통과, 프리뷰에서 투표 조회 API 응답만 확인
 - 10/20: fix/streamer-hidden-fallback — fetch-streamer-videos의 후보 게임 읽기에서 hidden 조건 없는 두 번째 폴백을 삭제하고, 읽기가 실패하면 에러를 출력하고 exit 1로 중단(일시 오류에도 숨긴 게임이 후보에 섞여 새 영상이 붙던 경로 차단). 저장은 원래 upsert(onConflict video_id, ignoreDuplicates)라 이미 있는 영상의 game_id는 덮어쓰지 않음. 다른 영상·스크린샷 스크립트는 모두 hidden=false 조건이 있음. build·test 349개 통과, 실제 수집 실행은 확인 못 함
@@ -84,6 +85,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- chore/curator-games-nugget 머지 뒤: curator_posts 연결 SQL 실행 여부 확인(미확인) / 실행 후 프로덕션에서 4개 게임 상세의 큐레이터 카드·/c/nugget_zine 확인(미확인)
 - feat/import-curator-games 머지 뒤: 프로덕션에서 Tasty Chef 노출 확인(미확인) / enrich-other-stores·enrich-ai-other·enrich-videos는 --ids가 없어 다음 weekly에서 처리 / 큐레이터 게임은 data/meta/curator-games.json에 추가해 --curator로 수동 실행
 - fix/price-bundle-note 머지 뒤: 동방홍마향 메모·Pixel Worlds 실패 표시 비우기·Home 숨김은 DB에 반영됨(10/20 확인) / 다음 daily 요약의 3일 연속 실패 목록에서 동방홍마향이 빠지는지 확인(미확인) / Bad Cheese 스팀(3094480) 연결 SQL은 사용자 실행 대기
 - fix/streamer-hidden-fallback 머지 뒤: 다음 daily의 fetch-streamer-videos 로그에서 후보 게임 수가 노출 게임 수와 같은지, 일시 오류 때 "후보 게임을 못 읽어 중단"으로 멈추는지 확인(미확인) / fix/vote-duplicate 머지 뒤 프로덕션 상세에서 같은 항목을 다른 브라우저로 다시 눌렀을 때 숫자가 +1 뒤 바로 되돌아오는지 확인(미확인, 실제 중복 투표는 DB에 쓰기가 생겨 시험하지 않음) / 저장소에 같은 버전 번호 마이그레이션이 이미 2쌍(20261009090000·20261014090000) 있음 — Supabase CLI로 적용하지 않고 SQL 에디터로 실행하는 방식이라 지금은 문제 없지만 정리 여부 결정
