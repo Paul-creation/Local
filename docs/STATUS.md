@@ -85,7 +85,9 @@
 ## 진행 중
 - fix/price-bundle-note 머지 뒤: 동방홍마향 메모·Pixel Worlds 실패 표시 비우기·Home 숨김은 DB에 반영됨(10/20 확인) / 다음 daily 요약의 3일 연속 실패 목록에서 동방홍마향이 빠지는지 확인(미확인) / Bad Cheese 스팀(3094480) 연결 SQL은 사용자 실행 대기
 - fix/streamer-hidden-fallback 머지 뒤: 다음 daily의 fetch-streamer-videos 로그에서 후보 게임 수가 노출 게임 수와 같은지, 일시 오류 때 "후보 게임을 못 읽어 중단"으로 멈추는지 확인(미확인) / fix/vote-duplicate 머지 뒤 프로덕션 상세에서 같은 항목을 다른 브라우저로 다시 눌렀을 때 숫자가 +1 뒤 바로 되돌아오는지 확인(미확인, 실제 중복 투표는 DB에 쓰기가 생겨 시험하지 않음) / 저장소에 같은 버전 번호 마이그레이션이 이미 2쌍(20261009090000·20261014090000) 있음 — Supabase CLI로 적용하지 않고 SQL 에디터로 실행하는 방식이라 지금은 문제 없지만 정리 여부 결정
+- 인원 검증 12차(docs/verification/round12-top50.md): 후보 10개 모두 반영(Anno 117 1~16·party_max 4·session_max 16 포함, DB 확인 10/21), 40개 보류 / 약한 근거로 넣은 Anno 1800 4·TABS 2·토탈워: 삼국 8·World War Z 4·Stronghold Crusader 8은 공식 문서가 생기면 재확인
 - 인원 검증 11차(docs/verification/round11-top50.md): 상위 50개 중 22개 + ETS2·ATS·GW2 3개 반영, 27개 보류 / 오버워치(스팀 행)와 Overwatch 2(배틀넷 행) 합치기는 DB에 반영됨(영상 5·투표 9 이동, 10/20 확인) / WoW 1~40·AION 2·알비온은 공식 근거를 못 찾아 그대로(WoW는 파티 5 공식 문서가 생기면 1~5로) / 나머지 약 170개 빈칸은 다음 라운드
+- 인원 라운드는 12차로 일단 종료. 이후 새 게임만 월 1회 라운드, 보류분은 빈칸 유지 (10/21)
 - fix/fill-players 머지 뒤: 221개 인원 빈칸은 직접 검증 라운드(docs/verification-rules.md → 결정 파일 → apply-verified-players)로 인기순으로 채움(11차 상위 50개 진행, 아래 줄 참고) / 다음 weekly에서 list-players-pending 단계 동작·소요 시간(첫 실행 스팀 요청 약 219건, 약 8분)·pending-players 아티팩트 확인(미확인) / enrich-igdb 앱 ID 조회 수정 뒤 첫 weekly에서 빈칸 채움·이름 불일치 건너뜀 로그 확인(미확인) / 다음 daily 요약에 인원 빈칸 줄이 나오는지 확인(미확인)
 - feat/home-personal·fix/home-personal-owned 머지 뒤 프로덕션 메인에서 개인 추천 확인(미확인): 로그인+보유 5개 이상이면 "취향에 맞는 게임"(/library 취향 탭과 같은 결과, 오른쪽 "더 보기 →"), 그 외 찜이 있으면 "찜한 게임과 비슷한 게임", 둘 다 없으면 숨김 / 비로그인 첫 로딩에 /api/games/taste 요청이 없는지 / 내 PC 토글은 취향·찜 모드 모두 적용(메인 다른 섹션과 같게, /library 취향 탭은 적용 안 함)
 - fix/series-section 머지 뒤 프로덕션 상세에서 시리즈 섹션·비슷한 게임 제외 확인(미확인) / series_id 빈칸 정리 SQL(31행 실행함, 스핀오프 7행·디아블로 II 병합·Ori 숨김 SQL은 사용자 실행 대기)
