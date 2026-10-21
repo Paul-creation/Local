@@ -4977,6 +4977,15 @@
     "reason": "판단 보류"
   },
   {
+    "game_id": "df86b261-71a8-4e54-a9cd-ba861b732962",
+    "steam_appid": "3274580",
+    "name": "Anno 117: Pax Romana",
+    "solo": null,
+    "party_max": 4,
+    "session_max": 16,
+    "reason": "협동 최대 4명, 4v4v4v4 등 최대 16명 세션(Ubisoft 공식 기사)"
+  },
+  {
     "game_id": "dfee86ab-df57-443c-ae72-b463fdad6916",
     "steam_appid": "1325200",
     "name": "Nioh 2 – The Complete Edition",
