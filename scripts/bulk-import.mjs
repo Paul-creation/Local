@@ -5,6 +5,9 @@
 //       node --env-file=.env.local scripts/bulk-import.mjs --appids data/meta/must-have.json         (꼭 넣을 게임 목록만 미리보기)
 //       node --env-file=.env.local scripts/bulk-import.mjs --appids data/meta/must-have.json --apply (꼭 넣을 게임 목록만 추가)
 // - 기준(두 방식 같음): 이미 있는 게임·판매 중단 목록 제외, 스팀 종류가 game, 성인·프로그램 장르 제외, 리뷰 1,000개 이상·긍정 65% 이상
+//       node --env-file=.env.local scripts/bulk-import.mjs --curator data/meta/curator-games.json         (인스타 큐레이터가 소개한 게임 목록 미리보기)
+//       node --env-file=.env.local scripts/bulk-import.mjs --curator data/meta/curator-games.json --apply (큐레이터 목록 추가)
+// - --curator 목록(--appids와 같은 JSON 형식)은 리뷰 수·긍정률·연도 기준 면제 (리뷰 적은 신작·인디용). 단 출시된 게임(coming soon 아님)이고 스팀 상점 정보가 있어야 하며 종류 game·제외 장르 조건은 그대로. 일반 수집 경로(기본·--appids)의 기준은 그대로
 //   --appids는 손으로 고른 목록이라 긍정 60% 이상까지 받음 (판매 순위 수집은 65% 그대로)
 //   판매 순위 수집만 2013년 이후 출시 조건 추가 (--appids는 손으로 고른 목록이라 연도 무관). 단 리뷰 10,000개 이상이면 그 전 출시도 통과
 //   판정은 scripts/lib/catalog-rules.mjs (테스트 있음)
@@ -30,6 +33,10 @@ const APPLY = process.argv.includes('--apply');
 const DRY_RUN = process.argv.includes('--dry-run');
 if (APPLY && DRY_RUN) { console.error('--apply와 --dry-run은 같이 쓸 수 없어요'); process.exit(1); }
 const APPIDS_FILE = process.argv.includes('--appids') ? process.argv[process.argv.indexOf('--appids') + 1] : null;
+const CURATOR_FILE = process.argv.includes('--curator') ? process.argv[process.argv.indexOf('--curator') + 1] : null;
+if (APPIDS_FILE && CURATOR_FILE) { console.error('--appids와 --curator는 같이 쓸 수 없어요'); process.exit(1); }
+const LIST_FILE = APPIDS_FILE || CURATOR_FILE; // 목록 파일로 들어오는 경로
+const CURATOR = !!CURATOR_FILE;
 
 const REVIEW_LABELS = {
   'Overwhelmingly Positive': '압도적으로 긍정적', 'Very Positive': '매우 긍정적',
@@ -103,22 +110,24 @@ async function check(item) {
 
     // 종류·장르에서 이미 탈락이면 리뷰 요청은 아낌
     const enCategories = (enData.categories || []).map((c) => c.description);
-    const pre = judge({ type, year, genres: enGenres, reviews: 1e9, positive: 1, name: enData.name, categories: enCategories }, { fromList: !!APPIDS_FILE });
+    const comingSoon = enData.release_date?.coming_soon === true;
+    const pre = judge({ type, year, genres: enGenres, reviews: 1e9, positive: 1, name: enData.name, categories: enCategories, comingSoon }, { fromList: !!LIST_FILE, curator: CURATOR });
     if (!pre.ok) return skip(pre.reason);
 
     const reviews = await steamGet(`https://store.steampowered.com/appreviews/${appid}?json=1&filter=summary&language=all&purchase_type=all`);
     const qs = reviews?.query_summary;
-    if (!qs || !qs.total_reviews) return skip('리뷰 정보 없음');
-    const positive = qs.total_positive / qs.total_reviews;
-    const info = { type, year, genres: enGenres, reviews: qs.total_reviews, positive, name: enData.name, categories: enCategories };
+    if (!CURATOR && (!qs || !qs.total_reviews)) return skip('리뷰 정보 없음');
+    const totalReviews = qs?.total_reviews || 0; // 큐레이터 목록은 리뷰가 없어도 들어옴
+    const positive = totalReviews ? qs.total_positive / totalReviews : 0;
+    const info = { type, year, genres: enGenres, reviews: totalReviews, positive, name: enData.name, categories: enCategories, comingSoon };
     const ccu = chartCcu.get(appid) || 0;
-    const verdict = judge(info, { fromList: !!APPIDS_FILE, force: item.force, ccu });
+    const verdict = judge(info, { fromList: !!LIST_FILE, force: item.force, ccu, curator: CURATOR });
     if (!verdict.ok) return skip(verdict.reason);
-    const legacyOk = judge(info, { fromList: !!APPIDS_FILE, legacy: true }).ok; // 이번 변경 전 기준으로도 들어왔을까
+    const legacyOk = judge(info, { fromList: !!LIST_FILE, legacy: true }).ok; // 이번 변경 전 기준으로도 들어왔을까
 
     const ko = (await steamGet(appdetailsUrl(appid, 'korean', cc)))?.[appid];
     if (!ko?.success) return skip(cc === 'kr' ? '한국 상점 정보 없음' : '미국 상점 한국어 정보 없음');
-    return { data: ko.data, year: isNaN(year) ? null : year, reviewSummary: REVIEW_LABELS[qs.review_score_desc] || null, via: verdict.via, legacyOk, positive, ccu, usFallback: cc === 'us' };
+    return { data: ko.data, year: isNaN(year) ? null : year, reviewSummary: REVIEW_LABELS[qs?.review_score_desc] || null, via: verdict.via, legacyOk, positive, ccu, usFallback: cc === 'us' };
   } catch (e) {
     failed.push({ ...item, reason: e.message });
     return null;
@@ -169,7 +178,7 @@ async function main() {
   const { data: delisted } = await supabase.from('delisted_appids').select('steam_appid');
   const delistedAppids = new Set((delisted || []).map((d) => String(d.steam_appid)));
 
-  console.log(`${APPLY ? '반영' : '미리보기'} — ${APPIDS_FILE ? `${APPIDS_FILE}의 게임만` : `한국 최고 판매 순위에서 새 게임 최대 ${MAX_NEW_GAMES}개`}\n`);
+  console.log(`${APPLY ? '반영' : '미리보기'} — ${LIST_FILE ? `${LIST_FILE}의 게임만` : `한국 최고 판매 순위에서 새 게임 최대 ${MAX_NEW_GAMES}개`}\n`);
 
   const added = [];
   const already = [];
@@ -189,9 +198,9 @@ async function main() {
     console.log(`${APPLY ? '✅ 추가됨' : '➕ 추가 예정'}: ${ok.data.name} (${item.appid}) — ${ok.year ?? '출시일 모름'} · ${ok.via}${ok.usFallback ? ' · 미국 상점 정보(무료)' : ''}`);
   };
 
-  if (APPIDS_FILE) {
+  if (LIST_FILE) {
     chartCcu = await getChart(); // 목록 게임이 차트에 있으면 같은 인기 예외를 받음
-    for (const item of readAppidsFile(APPIDS_FILE)) {
+    for (const item of readAppidsFile(LIST_FILE)) {
       if (Date.now() - startedAt > TIME_BUDGET_MS) { stoppedByTime = true; break; }
       await handle(item);
     }
@@ -216,7 +225,7 @@ async function main() {
   }
 
   console.log(`\n${APPLY ? '추가' : '추가 예정'} ${added.length}개`);
-  if (APPIDS_FILE) {
+  if (LIST_FILE) {
     if (already.length) console.log(`이미 있음 ${already.length}개: ${already.map((x) => x.name || x.appid).join(', ')}`);
     if (skipped.length) {
       console.log(`\n기준에 안 맞아 뺀 게임 ${skipped.length}개:`);

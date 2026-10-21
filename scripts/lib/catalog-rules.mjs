@@ -18,14 +18,19 @@ export function parseChart(json) {
 }
 
 // 한 게임이 기준에 맞는지. 맞으면 { ok: true, via }, 아니면 { ok: false, reason }
-// - info: { type, year(모르면 NaN/null), genres(영어), reviews, positive(0~1), name·categories(영어, 있으면 도구류 규칙까지 적용) }
-// - opts: { fromList(--appids 목록), force(목록 항목의 force), ccu(차트 동접, 없으면 0), legacy(true면 예전 기준만) }
+// - info: { type, year(모르면 NaN/null), genres(영어), reviews, positive(0~1), name·categories(영어, 있으면 도구류 규칙까지 적용), comingSoon(출시 예정이면 true) }
+// - opts: { fromList(--appids 목록), force(목록 항목의 force), ccu(차트 동접, 없으면 0), legacy(true면 예전 기준만), curator(--curator 목록) }
 // 리뷰 개수(1,000개 이상)·종류·장르 조건은 예외 없이 항상 적용 (force는 긍정률·연도만 면제)
+// 큐레이터 목록(curator)은 리뷰 수·긍정률·연도를 모두 면제. 종류·장르와 출시 여부(coming soon 아님)는 그대로 적용
 export function judge(info, opts = {}) {
-  const { fromList = false, force = false, ccu = 0, legacy = false } = opts;
-  const { type, year, genres = [], reviews, positive, name, categories } = info;
+  const { fromList = false, force = false, ccu = 0, legacy = false, curator = false } = opts;
+  const { type, year, genres = [], reviews, positive, name, categories, comingSoon = false } = info;
   if (type !== 'game') return { ok: false, reason: `스팀 종류가 game이 아님 (${type})` };
   if (EXCLUDE_GENRES.some((e) => genres.includes(e)) || isNonGame(genres, { name, categories })) return { ok: false, reason: `제외 장르 (${genres.join(', ')})` };
+  if (curator && !legacy) {
+    if (comingSoon) return { ok: false, reason: '출시 예정 (coming soon)' };
+    return { ok: true, via: '큐레이터 목록 (리뷰 수·긍정률·연도 면제)' };
+  }
   if (!reviews) return { ok: false, reason: '리뷰 정보 없음' };
   if (reviews < MIN_REVIEWS) return { ok: false, reason: `리뷰 ${reviews.toLocaleString('ko-KR')}개 · 긍정 ${Math.round(positive * 100)}%` };
 

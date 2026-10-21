@@ -58,3 +58,19 @@ test('parseChart: 공식 차트 응답 → appid별 동접', () => {
   assert.equal(parseChart(null).size, 0);
   assert.equal(parseChart({ response: {} }).size, 0);
 });
+
+test('큐레이터 목록: 리뷰 수·긍정률·연도 면제, 출시 여부·종류·장르는 그대로', () => {
+  const tiny = { ...base, reviews: 3, positive: 0.4, year: 2012 };
+  assert.equal(judge(tiny, { fromList: true }).ok, false);
+  assert.equal(judge(tiny, { fromList: true, curator: true }).ok, true);
+  assert.equal(judge({ ...tiny, reviews: 0 }, { fromList: true, curator: true }).ok, true);
+  assert.equal(judge({ ...tiny, comingSoon: true }, { fromList: true, curator: true }).ok, false);
+  assert.equal(judge({ ...tiny, type: 'dlc' }, { fromList: true, curator: true }).ok, false);
+  assert.equal(judge({ ...tiny, genres: ['Sexual Content'] }, { fromList: true, curator: true }).ok, false);
+  assert.equal(judge(tiny, { fromList: true, curator: true, legacy: true }).ok, false);
+});
+
+test('큐레이터 옵션이 없으면 일반 경로 기준 그대로 (출시 예정 표시도 영향 없음)', () => {
+  assert.equal(judge({ ...base, reviews: 3 }).ok, false);
+  assert.equal(judge({ ...base, comingSoon: true }).ok, true);
+});
