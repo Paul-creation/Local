@@ -30,7 +30,9 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: pending-players-${{ github.run_number }}
-          path: scripts/.cache/pending-players.json
+          path: |
+            scripts/.cache/pending-players.json
+            scripts/.cache/players-store-pending.json
           include-hidden-files: true
           retention-days: 30
           if-no-files-found: ignore

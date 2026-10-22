@@ -1,6 +1,6 @@
 // scripts/daily-summary.mjs
 // 디스코드 일일 요약: 지난 24시간 새 글·댓글·게임 의견·의견함·신고 수 + 지금 숨김 중인 항목 수
-// + 노출 게임 중 인원(최대 인원) 빈칸 수 + 오늘 가격을 못 받은 게임 수 (3일 연속 실패한 게임은 이름까지) + 스트리머 영상 새로 연결된 수 + 분류 안 된 새 스팀 태그 수 (있을 때만)
+// + 노출 게임 중 인원(최대 인원) 빈칸 수(+ 이번 주 상점 소개문 자동 채움 수) + 오늘 가격을 못 받은 게임 수 (3일 연속 실패한 게임은 이름까지) + 스트리머 영상 새로 연결된 수 + 분류 안 된 새 스팀 태그 수 (있을 때만)
 // DISCORD_WEBHOOK_URL이 없으면 화면에만 출력. 개인정보(IP 해시·연락처·본문)는 보내지 않고 숫자만 보낸다
 // 사용: node --env-file=.env.local scripts/daily-summary.mjs
 import fs from 'node:fs';
@@ -85,6 +85,11 @@ let playersLine;
 try {
   const blank = await count('games', (q) => q.eq('hidden', false).is('max_players', null));
   playersLine = `🔢 노출 게임 중 인원 빈칸 ${blank}개`;
+  // 상점 소개문에서 자동으로 채운 수 (fill-players-from-store가 players_auto_at에 남김, 최근 7일). 칸이 아직 없으면 줄에서만 뺌
+  try {
+    const auto = await count('games', (q) => q.gte('players_auto_at', new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString()));
+    playersLine += ` · 이번 주 자동 채움 ${auto}개`;
+  } catch { /* 마이그레이션 전 */ }
 } catch (e) {
   playersLine = `🔢 노출 게임 중 인원 빈칸: 확인 불가 (${e.message})`;
 }
