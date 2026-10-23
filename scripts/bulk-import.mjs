@@ -7,7 +7,7 @@
 // - 기준(두 방식 같음): 이미 있는 게임·판매 중단 목록 제외, 스팀 종류가 game, 성인·프로그램 장르 제외, 리뷰 1,000개 이상·긍정 65% 이상
 //       node --env-file=.env.local scripts/bulk-import.mjs --curator data/meta/curator-games.json         (인스타 큐레이터가 소개한 게임 목록 미리보기)
 //       node --env-file=.env.local scripts/bulk-import.mjs --curator data/meta/curator-games.json --apply (큐레이터 목록 추가)
-// - --curator 목록(--appids와 같은 JSON 형식)은 리뷰 수·긍정률·연도 기준 면제 (리뷰 적은 신작·인디용). 단 출시된 게임(coming soon 아님)이고 스팀 상점 정보가 있어야 하며 종류 game·제외 장르 조건은 그대로. 일반 수집 경로(기본·--appids)의 기준은 그대로
+// - --curator 목록(--appids와 같은 JSON 형식)은 리뷰 수·긍정률·연도 기준 면제 (리뷰 적은 신작·인디용). appreviews 조회가 실패(302·차단)하면 재시도 없이 건너뛰고 리뷰 없이 넣음 — 리뷰는 데일리가 채움. 단 출시된 게임(coming soon 아님)이고 스팀 상점 정보가 있어야 하며 종류 game·제외 장르 조건은 그대로. 일반 수집 경로(기본·--appids)의 기준은 그대로
 //   --appids는 손으로 고른 목록이라 긍정 60% 이상까지 받음 (판매 순위 수집은 65% 그대로)
 //   판매 순위 수집만 2013년 이후 출시 조건 추가 (--appids는 손으로 고른 목록이라 연도 무관). 단 리뷰 10,000개 이상이면 그 전 출시도 통과
 //   판정은 scripts/lib/catalog-rules.mjs (테스트 있음)
@@ -23,6 +23,7 @@ import { readFileSync } from 'node:fs';
 import { isNonGame } from './lib/non-game.mjs';
 import { steamGet, appdetailsUrl } from './lib/steam.mjs';
 import { judge, parseChart } from './lib/catalog-rules.mjs';
+import { fetchReviewSummary } from './lib/review-fetch.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -114,8 +115,8 @@ async function check(item) {
     const pre = judge({ type, year, genres: enGenres, reviews: 1e9, positive: 1, name: enData.name, categories: enCategories, comingSoon }, { fromList: !!LIST_FILE, curator: CURATOR });
     if (!pre.ok) return skip(pre.reason);
 
-    const reviews = await steamGet(`https://store.steampowered.com/appreviews/${appid}?json=1&filter=summary&language=all&purchase_type=all`);
-    const qs = reviews?.query_summary;
+    // 큐레이터 경로는 appreviews가 막혀도 재시도 없이 건너뛰고 review 칸을 비운 채 넣음 (리뷰는 데일리가 채움). 일반 경로는 리뷰 필수
+    const qs = await fetchReviewSummary(appid, { curator: CURATOR });
     if (!CURATOR && (!qs || !qs.total_reviews)) return skip('리뷰 정보 없음');
     const totalReviews = qs?.total_reviews || 0; // 큐레이터 목록은 리뷰가 없어도 들어옴
     const positive = totalReviews ? qs.total_positive / totalReviews : 0;
