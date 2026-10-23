@@ -33,9 +33,23 @@ test('같은 숫자가 여러 문장에 있어도 하나로 본다', () => {
   assert.deepEqual([r.status, r.max], ['fill', 4]);
 });
 
-test('숫자가 여럿인데 협동·대전으로 나뉘면 같은 판 최대(큰 값)', () => {
+test('협동·대전 숫자가 달라도 큰 값으로 채우지 않고 대기', () => {
   const r = run('Cooperative campaign for 4 players. Competitive PvP matches for 8 players.');
-  assert.deepEqual([r.status, r.max], ['fill', 8]);
+  assert.deepEqual([r.status, r.reason, r.values], ['pending', 'multi', [4, 8]]);
+});
+
+test('2인 확정 표현: you and a friend, co-op for two, two-player co-op', () => {
+  for (const t of ['Grab a controller and play with you and a friend.', 'A puzzle game built as co-op for two.', 'Enjoy two-player co-op throughout.']) {
+    const r = run(t);
+    assert.deepEqual([r.status, r.max], ['fill', 2], t);
+  }
+  assert.equal(run('Co-op for two to four players.').max, 4);
+  assert.equal(run('You and a friend, or up to 4 players online.').reason, 'multi');
+});
+
+test('로컬 협동만 있는 문장은 대기', () => {
+  assert.equal(run('Local co-op for up to 4 players on the couch.').reason, 'local-only');
+  assert.equal(run('Up to 4 players online co-op. Local co-op for 2 players.').reason, 'local-only');
 });
 
 test('숫자가 여럿이고 라벨이 없으면 대기 + 근거 문장', () => {
@@ -79,4 +93,16 @@ test('협동 숫자뿐인데 다른 문장에 대전이 있으면 대기, 숫자
 test('친구 N명 표기가 있어도 "N players"가 따로 있으면 그 숫자로 정한다', () => {
   const r = run('Solo or co-op with up to 4 friends.', 'A base-building game for up to 4 players.');
   assert.deepEqual([r.status, r.max], ['fill', 4]);
+});
+
+test('특정 모드의 인원만 적혀 있고 다른 문장에 멀티 언급이 있으면 대기', () => {
+  const r = run('Relive history together, where you and a friend take on 9 scenario-driven missions.', 'Jump online to play with friends or test your skills against AI.');
+  assert.deepEqual([r.status, r.reason], ['pending', 'mode-only']);
+  assert.equal(run('Last Bot Standing - a Battle-Royale-like game mode with up to 15 players.', 'Multiplayer skins to unlock.').reason, 'mode-only');
+  assert.equal(run('Play a 2-player co-op campaign.').status, 'fill');
+});
+
+test('대전 숫자뿐인데 다른 문장에 협동이 있으면 대기', () => {
+  assert.equal(run('The full campaign can also be experienced in co-op.', 'Take the fight online in competitive 16-player battles.').reason, 'also-coop');
+  assert.equal(run('Competitive 8-player matches.').status, 'fill');
 });

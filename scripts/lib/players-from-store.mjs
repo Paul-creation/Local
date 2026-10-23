@@ -1,7 +1,7 @@
 // scripts/lib/players-from-store.mjs — 스팀 상점 소개문에서 인원을 명시한 문장 뽑기 (순수 함수, DB·네트워크·AI 없음)
 // 결과 status
-//  - fill: 숫자가 하나로 확실하거나, 협동·대전 숫자가 라벨로 나뉘어 최대 인원(같은 판 기준)을 정할 수 있음 → max(+ 범위의 min)
-//  - pending: 숫자가 여러 개라 못 나누거나, 서버·대규모 숫자(LARGE_FROM 이상) → 자동 반영 안 하고 근거 문장과 함께 대기 목록으로
+//  - fill: 숫자가 하나로 확실함 → max(+ 범위의 min)
+//  - pending: 숫자가 여러 개(협동·대전 숫자가 달라도 큰 값으로 안 채움), 로컬 협동만, 서버·대규모 숫자(LARGE_FROM 이상) → 자동 반영 안 하고 근거 문장과 함께 대기 목록으로
 //  - none: 인원을 명시한 문장이 없음
 import { decodeEntities } from './html-entities.mjs';
 
@@ -17,6 +17,7 @@ const UPTO_EN = new RegExp(`\\bup to ${NUM}(?:\\s+(?:local|online|co-?op|coopera
 const PLAYERS_EN = new RegExp(`\\b${NUM}[- ]players?\\b`, 'gi');
 const VERSUS = /\b(\d{1,2})\s?v\s?(\d{1,2})\b/gi;
 const FRIENDS_EN = new RegExp(`\\b(?:up to|with|invite) ${NUM} (?:other )?(?:friends|people)\\b`, 'gi'); // "친구 N명"은 본인 포함 여부가 애매해 숫자로 못 씀
+const TWO_EN = /\b(?:you and (?:a|one) (?:friend|buddy|partner)|co-?op(?:erative)? for (?:two|2)(?! (?:to|-))|(?:two|2)[- ]player co-?op)\b/gi; // 2인이 확실한 표현
 const RANGE_KO = /(\d{1,3})\s*[~\-–]\s*(\d{1,3})\s*(?:인|명)/g;
 const MAX_KO = /최대\s*(\d{1,3})\s*(?:인|명)/g;
 const N_KO = /(\d{1,3})\s*(?:인|명)\s*(?:협동|코옵|멀티|대전|까지|플레이)/g;
@@ -26,6 +27,8 @@ const PVP = /pvp|versus|\bvs\b|compet|deathmatch|arena|ranked|match|대전|경�
 const SERVER = /server|mmo|battle royale|massive|concurrent|persistent|서버|배틀로얄/i;
 const HEDGE = /recommend|or more|more than|at least|minimum|unlimited|no limit|welcome|무제한|권장|이상/i; // "up to 3 (더 해도 됨)" 같은 말 — 숫자가 상한이 아님
 const LOCAL_ONLY = /split[- ]?screen|local|couch|same screen|shared screen|hot ?seat|분할|로컬/i;
+const MODE_ONLY = /\b(?:campaigns?|modes?|missions?|special ops)\b/i; // 한 모드의 인원일 수 있음 ("2-player co-op campaign")
+const MULTI_ELSE = /multiplayer|online|friends|멀티|온라인/i;
 const COMPETE = /pvp|versus|\bvs\b|competitive|deathmatch|ranked|대전|경쟁/i;
 
 // 소개문 HTML → 문장 목록
@@ -62,6 +65,7 @@ function numbersIn(sentence) {
   for (const m of sentence.matchAll(MAX_KO)) add(m, null, Number(m[1]));
   for (const m of sentence.matchAll(VERSUS)) add(m, null, Number(m[1]) + Number(m[2]), 'versus'); // 팀 대전 표기는 친구끼리 내전 인원인지 모름
   for (const m of sentence.matchAll(FRIENDS_EN)) add(m, null, toNum(m[1]), 'friends');
+  for (const m of sentence.matchAll(TWO_EN)) add(m, null, 2);
   for (const m of sentence.matchAll(PLAYERS_EN)) add(m, null, toNum(m[1]));
   for (const m of sentence.matchAll(N_KO)) add(m, null, Number(m[1]));
   return out;
@@ -91,19 +95,18 @@ export function extractPlayers(texts) {
   const values = [...new Set(solid.map((f) => f.max))].sort((a, b) => a - b);
   if (values.some((v) => v >= LARGE_FROM)) return pending('large', values);
   if (solid.some((f) => HEDGE.test(f.sentence))) return pending('hedge', values);
-  if (solid.every((f) => LOCAL_ONLY.test(f.sentence) && !/online|온라인/i.test(f.sentence))) return pending('local-only', values);
+  if (solid.some((f) => LOCAL_ONLY.test(f.sentence) && !/online|온라인/i.test(f.sentence))) return pending('local-only', values);
   // 협동·불명 숫자 하나뿐인데 숫자 없는 다른 문장에 대전 요소가 있으면 대전 쪽 인원이 더 클 수 있음
   const numbered = new Set(solid.map((f) => f.sentence));
   if (solid.every((f) => f.kind !== 'pvp') && texts.some((t) => toSentences(t).some((x) => !numbered.has(x) && COMPETE.test(x)))) return pending('also-versus', values);
+  // 반대로 숫자 문장이 전부 대전인데 숫자 없는 다른 문장에 협동이 있으면 협동 인원은 모름
+  if (solid.every((f) => f.kind === 'pvp') && texts.some((t) => toSentences(t).some((x) => !numbered.has(x) && /co-?op|cooperative|협동|코옵/i.test(x)))) return pending('also-coop', values);
+  // 숫자 문장이 전부 특정 모드(캠페인·미션·게임 모드) 설명인데 숫자 없는 다른 문장에 멀티 언급이 있으면 게임 전체 인원이 아닐 수 있음
+  if (solid.every((f) => MODE_ONLY.test(f.sentence)) && texts.some((t) => toSentences(t).some((x) => !numbered.has(x) && MULTI_ELSE.test(x)))) return pending('mode-only', values);
   if (values.length === 1) {
     const mins = solid.map((f) => f.min).filter((m) => m != null);
     return { status: 'fill', max: values[0], min: mins.length ? Math.min(...mins) : null, reason: 'single', evidence };
   }
-  // 숫자가 여럿: 협동 숫자 하나 + 대전 숫자 하나로 라벨이 갈릴 때만 같은 판 최대(둘 중 큰 값)로 정함. 그 외는 대기
-  const by = (k) => [...new Set(solid.filter((f) => f.kind === k).map((f) => f.max))];
-  const coop = by('coop');
-  const pvp = by('pvp');
-  const labeled = solid.every((f) => f.kind === 'coop' || f.kind === 'pvp');
-  if (labeled && coop.length === 1 && pvp.length === 1) return { status: 'fill', max: Math.max(coop[0], pvp[0]), min: null, reason: `split coop ${coop[0]} / pvp ${pvp[0]}`, evidence };
+  // 숫자가 여럿이면 협동·대전 라벨이 갈려도 큰 값으로 채우지 않고 대기 (보수적)
   return pending('multi', values);
 }

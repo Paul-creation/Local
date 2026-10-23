@@ -6,7 +6,7 @@
 // - 채운 게임은 players_auto_at에 시각을 남김 (일일 요약의 "이번 주 자동 채움")
 // - 미리보기가 기본(DB 쓰기 없음). --apply일 때만 DB에 씀. --all은 이미 본 게임도 다시 봄(미리보기용)
 // - 소개문은 scripts/.cache/store-text.json에 캐시 (미리보기 뒤 --apply 때 다시 받지 않음)
-// 실행: node --env-file=.env.local scripts/fill-players-from-store.mjs [--apply] [--all] [--max-steam=300]
+// 실행: node --env-file=.env.local scripts/fill-players-from-store.mjs [--apply] [--all] [--max-steam=300] [--hold=게임id,게임id]
 import fs from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { steamGet, appdetailsUrl, SteamLimitError } from './lib/steam.mjs';
@@ -16,6 +16,7 @@ import { refreshCategory } from './lib/category.mjs';
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const APPLY = process.argv.includes('--apply');
 const ALL = process.argv.includes('--all');
+const HOLD = new Set((process.argv.find((a) => a.startsWith('--hold='))?.slice(7) || '').split(',').filter(Boolean)); // 규칙으로 못 거른 의심 게임 id: 채우지 않고 대기로
 const maxArg = process.argv.find((a) => a.startsWith('--max-steam='));
 const MAX_STEAM = maxArg ? Number(maxArg.slice(12)) : 300;
 const CACHE = 'scripts/.cache/store-text.json';
@@ -78,7 +79,7 @@ async function main() {
   for (const g of games) {
     const t = cache[g.steam_appid];
     if (!t) { stat.nodata++; continue; } // 아직 못 받은 게임은 다음에
-    const r = extractPlayers([t.short, t.about]);
+    const r = HOLD.has(g.id) ? { status: 'pending', reason: 'manual', values: [], evidence: ['수동 대기'] } : extractPlayers([t.short, t.about]);
     stat[r.status]++;
     const failed = APPLY ? await save(g, r) : null;
     if (failed) { stat.failed++; console.log(`❌ ${g.name}: ${failed}`); continue; }
