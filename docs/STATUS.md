@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-23 (main ef71166)
+기준: 2026-10-23 (main ed8e8bf)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/23: chore/curator-games-drawer — bulk-import --curator 경로에서 appreviews 조회가 실패(302·차단·빈 응답)하면 재시도 없이 건너뛰고 review_summary를 비운 채 넣음(scripts/lib/review-fetch.mjs, 일반 수집 경로는 리뷰 필수 그대로, 리뷰는 데일리가 채움). 게임서랍장 소개 게임 9개(우리는 여기에 있었다 582500·LEGO Voyagers 1538550·WheelMates 3905450·Forever Ago 1215940·Colorbound 3778610·Moonfrost 2561630·Legion Was Here 3492120·파멸의 오타쿠 3318210·원피스 그랜드 레스토랑 3905010)를 미리보기→추가→--ids enrich(itad-heat·fallback·igdb·tags·fix-data-gaps·fill-tags-desc·fill-game-details·judge-new-games·card/hero-images·screenshots·search-names·update-date·가격 3종·write-fun-descriptions·fill-activities-v2·specs·players·recent-reviews)까지 실행. enrich-other-stores·ai-other·videos는 --ids가 없어 다음 weekly. build·test 373개 통과
 - 10/23: feat/players-from-store — 최대 인원이 빈 게임을 스팀 상점 소개문(영어)에서 자동 추출(scripts/fill-players-from-store.mjs, 파서 scripts/lib/players-from-store.mjs, AI 안 씀). 보수적 규칙: 숫자가 하나로 확실할 때만 채우고, 숫자가 여럿(협동·대전이 달라도 큰 값으로 안 채움)·17명 이상·친구 N명·NvN뿐·권장 표현·로컬만·특정 모드 인원·대전/협동 한쪽만 숫자인 경우는 대기 목록(scripts/.cache/players-store-pending.json)으로. "you and a friend"·"co-op for two"·"two-player co-op"는 2인 확정. weekly 단계에 추가(players_store_checked_at·players_auto_at 마이그레이션 실행됨, daily 요약에 이번 주 자동 채움). 첫 실행 --apply: 302개 중 59개 채움·51개 대기·192개 문장 없음(Throne and Liberty·Man of Medan은 --hold로 수동 대기). build·test 368개 통과
 - 10/21: chore/curator-games-nugget — curator-games.json에 너겟(nugget_zine) 소개 게임 3개 추가: 소시지에 관한 이상한 게임(4691990)·인보키어: 마의 주사위(Invokyr, 3883570, 영문명은 웹 검색+스팀 한국어 이름 일치로 확정)·A Gentlemen's Dispute(2820700). --curator로 미리보기→추가→--ids enrich 실행(enrich-other-stores·ai-other·videos는 다음 weekly). 게시물 4개(The Outlast Trials 1304930 포함)를 curator_posts에 연결하는 SQL은 사용자가 SQL 에디터에서 실행. 코드 변경 없음, build·test 351개 통과
 - 10/21: feat/import-curator-games — bulk-import에 `--curator <파일>` 추가(--appids와 같은 JSON, data/meta/curator-games.json). 이 목록의 appid는 리뷰 수·긍정률·연도 기준을 면제(리뷰 0개도 통과), 출시된 게임(coming soon 아님)·스팀 종류 game·제외 장르·한국 상점 정보는 그대로 적용. 기본 수집·--appids 기준은 변화 없음, 정기 흐름(add-games·weekly)에는 넣지 않고 수동 실행만. Tasty Chef(5019920)를 미리보기→추가→--ids enrich까지 실행. build·test 351개 통과
@@ -86,6 +87,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- chore/curator-games-drawer 머지 뒤: 9개 게임의 review_summary가 데일리에서 채워지는지 확인(미확인) / 큐레이터 게시물 연결 SQL은 사용자가 실행 / 프로덕션 노출 확인(미확인)
 - feat/players-from-store 머지 뒤: 다음 weekly 실행 결과(fill-players-from-store 단계 동작·소요 시간·자동 채움 수)를 사용자가 확인(미확인) / 대기 51개는 scripts/.cache/players-store-pending.json에서 근거 문장 확인 뒤 필요하면 직접 검증 라운드로 (미확인)
 - chore/curator-games-nugget 머지 뒤: curator_posts 연결 SQL 실행 여부 확인(미확인) / 실행 후 프로덕션에서 4개 게임 상세의 큐레이터 카드·/c/nugget_zine 확인(미확인)
 - feat/import-curator-games 머지 뒤: 프로덕션에서 Tasty Chef 노출 확인(미확인) / enrich-other-stores·enrich-ai-other·enrich-videos는 --ids가 없어 다음 weekly에서 처리 / 큐레이터 게임은 data/meta/curator-games.json에 추가해 --curator로 수동 실행
