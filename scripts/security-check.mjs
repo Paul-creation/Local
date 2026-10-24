@@ -112,6 +112,24 @@ async function checkUsersDb() {
   upd.error?.code === '42501' ? ok('브라우저 키로 users 수정 차단됨') : bad(`브라우저 키로 users 수정 권한이 있음${upd.error ? ` (${upd.error.message})` : ''}`, 'revoke update on public.users from anon, authenticated; 실행');
 }
 
+// 큐레이터 게임 추가 대기열: 브라우저 키로 읽기·쓰기·수정·삭제 모두 차단 (관리자 API·데일리만 서비스 키로 접근)
+async function checkCuratorQueueDb() {
+  const T = 'curator_game_queue';
+  const probe = await anon.from(T).select('appid').limit(1);
+  if (probe.error?.code === '42P01' || /does not exist|schema cache/i.test(probe.error?.message || '')) return note(`${T} 표 없음 — supabase/migrations/20261031090000_curator_game_queue.sql 실행 전`);
+  const fix = `revoke all on public.${T} from anon, authenticated; 실행`;
+  probe.error ? ok(`브라우저 키로 ${T} 읽기 차단됨`) : bad(`브라우저 키로 ${T}를 읽을 수 있음!`, fix);
+  const ZERO = '00000000-0000-0000-0000-000000000000';
+  const ins = await anon.from(T).insert({ appid: '__security_test__', curator_id: ZERO, post_url: 'https://example.com/__security_test__' });
+  if (ins.error?.code === '42501') ok(`브라우저 키로 ${T} 쓰기 차단됨`);
+  else if (ins.error) note(`브라우저 키로 ${T} 쓰기 시도 → 권한이 아닌 다른 이유로 실패 (${ins.error.message})`);
+  else { bad(`브라우저 키로 ${T}에 쓸 수 있음!`, fix); await admin.from(T).delete().eq('appid', '__security_test__'); }
+  const upd = await anon.from(T).update({ imported_at: new Date().toISOString() }).eq('appid', '__security_test__');
+  upd.error?.code === '42501' ? ok(`브라우저 키로 ${T} 수정 차단됨`) : bad(`브라우저 키로 ${T} 수정 권한이 있음${upd.error ? ` (${upd.error.message})` : ''}`, fix);
+  const del = await anon.from(T).delete().eq('appid', '__security_test__');
+  del.error?.code === '42501' ? ok(`브라우저 키로 ${T} 삭제 차단됨`) : bad(`브라우저 키로 ${T} 삭제 권한이 있음${del.error ? ` (${del.error.message})` : ''}`, fix);
+}
+
 // 보유 게임·nonce 표: 브라우저 키로 읽기·쓰기·교체 함수 실행 모두 차단
 async function checkOwnedDb() {
   for (const [table, col, row] of [
@@ -272,6 +290,7 @@ async function checkDb() {
   await checkGameCommentsDb(anyGame);
   await checkUsersDb();
   await checkOwnedDb();
+  await checkCuratorQueueDb();
   await checkActivityReportsDb();
   await checkCuratorsDb();
   await checkStreamerDb();

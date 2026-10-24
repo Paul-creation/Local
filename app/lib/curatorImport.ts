@@ -110,3 +110,13 @@ export function postedAtIso(date: string): string | null {
 export const isAppid = (s: unknown): s is string => typeof s === 'string' && /^\d{1,10}$/.test(s);
 export const isUuid = (s: unknown): s is string =>
   typeof s === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(s);
+
+// 스팀 appdetails의 data → 대기열에 넣을 본편 후보. 종류가 game이면 그대로, 데모는 본편(fullgame)으로 바꾸고, 사운드트랙·DLC·영상 등은 null
+export function resolveSteamApp(data: unknown): { appid: string; name: string } | null {
+  const d = (data && typeof data === 'object' ? data : {}) as { type?: unknown; steam_appid?: unknown; name?: unknown; fullgame?: { appid?: unknown; name?: unknown } };
+  if (d.type === 'game' && Number.isInteger(d.steam_appid) && typeof d.name === 'string') return { appid: String(d.steam_appid), name: d.name.slice(0, 120) };
+  if (d.type === 'demo' && d.fullgame && /^\d{1,10}$/.test(String(d.fullgame.appid ?? '')) && typeof d.fullgame.name === 'string') {
+    return { appid: String(d.fullgame.appid), name: d.fullgame.name.slice(0, 120) };
+  }
+  return null;
+}

@@ -1,7 +1,7 @@
 // 실행: npm test — 관리자 캡션 붙여넣기 게시물 연결 도구의 매칭·파싱·주소 정리
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeName, matchGames, parseExtraction, cleanNames, normalizePostUrl, postTypeFor, postedAtIso, firstLine } from './curatorImport.ts';
+import { normalizeName, matchGames, parseExtraction, cleanNames, normalizePostUrl, postTypeFor, postedAtIso, firstLine, resolveSteamApp } from './curatorImport.ts';
 
 const g = (id, name, display_name = null, search_name_ko = null) => ({ id, name, display_name, search_name_ko });
 const GAMES = [
@@ -96,4 +96,13 @@ test('게시물 종류와 날짜', () => {
   assert.equal(postedAtIso('2026-02-30'), null);
   assert.equal(postedAtIso('24-10-2026'), null);
   assert.equal(postedAtIso(''), null);
+});
+
+test('스팀 후보: 본편만 남기고 데모는 본편으로, 나머지 종류는 뺀다', () => {
+  assert.deepEqual(resolveSteamApp({ type: 'game', steam_appid: 3364070, name: 'The Jackbox Party Pack 11' }), { appid: '3364070', name: 'The Jackbox Party Pack 11' });
+  assert.deepEqual(resolveSteamApp({ type: 'demo', steam_appid: 3827040, name: 'X Demo', fullgame: { appid: '3364070', name: 'X' } }), { appid: '3364070', name: 'X' });
+  for (const type of ['music', 'dlc', 'video', 'advertising', 'mod', 'episode']) assert.equal(resolveSteamApp({ type, steam_appid: 1, name: 'n', fullgame: { appid: '2', name: 'm' } }), null);
+  assert.equal(resolveSteamApp({ type: 'demo', steam_appid: 1, name: 'n' }), null);
+  assert.equal(resolveSteamApp(null), null);
+  assert.equal(resolveSteamApp(undefined), null);
 });

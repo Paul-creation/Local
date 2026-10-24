@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isAdmin } from '../../../../lib/adminAuth';
 import { guardedClaudeFetch, AiLimitError } from '../../../../lib/aiGuard';
 import { selectGames } from '../../../../lib/visibleGames';
-import { LIMITS, matchGames, parseExtraction, firstLine, type MatchGame } from '../../../../lib/curatorImport';
+import { LIMITS, matchGames, parseExtraction, firstLine, resolveSteamApp, type MatchGame } from '../../../../lib/curatorImport';
 
 // 캡션 → 게임 이름 목록(Haiku) → DB 매칭 → 못 찾은 이름은 스팀 검색 후보. DB는 읽기만 한다 (저장은 connect)
 type GameRow = MatchGame & { steam_appid: string | null; card_image_url: string | null; cover_image_url: string | null };
@@ -25,21 +25,36 @@ const PROMPT = (caption: string) => `아래는 인스타그램 게임 소개 게
 ${caption}
 </caption>`;
 
+// 스팀 상점 검색 후보 중 appdetails 종류가 game인 것만(사운드트랙·DLC·영상 제외), 데모는 본편 appid로 바꿔서 돌려준다
+async function steamType(appid: string) {
+  try {
+    const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${appid}&l=koreana&cc=kr`, { signal: AbortSignal.timeout(8000), headers: { 'User-Agent': 'Mozilla/5.0' } });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json?.[appid]?.success ? resolveSteamApp(json[appid].data) : null;
+  } catch {
+    return null;
+  }
+}
+
 async function steamSearch(term: string, inDbAppids: Set<string>): Promise<SteamCandidate[]> {
   try {
     const url = `https://store.steampowered.com/api/storesearch/?term=${encodeURIComponent(term)}&l=koreana&cc=kr`;
     const res = await fetch(url, { signal: AbortSignal.timeout(8000), headers: { 'User-Agent': 'Mozilla/5.0' } });
     if (!res.ok) return [];
     const data = await res.json();
-    return (Array.isArray(data.items) ? data.items : [])
+    const hits: { id: number; name: string; tiny_image?: string }[] = (Array.isArray(data.items) ? data.items : [])
       .filter((i: { type?: string; id?: unknown; name?: unknown }) => i.type === 'app' && Number.isInteger(i.id) && typeof i.name === 'string')
-      .slice(0, 5)
-      .map((i: { id: number; name: string; tiny_image?: string }) => ({
-        appid: String(i.id),
-        name: i.name.slice(0, 120),
-        image: typeof i.tiny_image === 'string' && i.tiny_image.startsWith('https://') ? i.tiny_image : null,
-        inDb: inDbAppids.has(String(i.id)),
-      }));
+      .slice(0, 5);
+    const out: SteamCandidate[] = [];
+    for (const h of hits) {
+      const app = await steamType(String(h.id));
+      await sleep(150);
+      if (!app || out.some((o) => o.appid === app.appid)) continue;
+      const image = app.appid === String(h.id) ? h.tiny_image : `https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/${app.appid}/capsule_231x87.jpg`;
+      out.push({ appid: app.appid, name: app.name, image: typeof image === 'string' && image.startsWith('https://') ? image : null, inDb: inDbAppids.has(app.appid) });
+    }
+    return out;
   } catch {
     return [];
   }
