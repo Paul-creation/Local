@@ -5,13 +5,15 @@
 // - 빈 칸만 채운다: max_players가 아직 null일 때만 쓰고, min_players는 비어 있을 때만 채운다. 한 번 본 게임은 players_store_checked_at에 기록해 다시 보지 않는다
 // - 채운 게임은 players_auto_at에 시각을 남김 (일일 요약의 "이번 주 자동 채움")
 // - 미리보기가 기본(DB 쓰기 없음). --apply일 때만 DB에 씀. --all은 이미 본 게임도 다시 봄(미리보기용)
+// - --ids <파일>: 지정한 게임만 (lib/only-ids.mjs, 대상 조건은 그대로)
 // - 소개문은 scripts/.cache/store-text.json에 캐시 (미리보기 뒤 --apply 때 다시 받지 않음)
-// 실행: node --env-file=.env.local scripts/fill-players-from-store.mjs [--apply] [--all] [--max-steam=300] [--hold=게임id,게임id]
+// 실행: node --env-file=.env.local scripts/fill-players-from-store.mjs [--apply] [--all] [--max-steam=300] [--hold=게임id,게임id] [--ids 파일.json]
 import fs from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { steamGet, appdetailsUrl, SteamLimitError } from './lib/steam.mjs';
 import { extractPlayers } from './lib/players-from-store.mjs';
 import { refreshCategory } from './lib/category.mjs';
+import { onlyIds } from './lib/only-ids.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const APPLY = process.argv.includes('--apply');
@@ -25,7 +27,7 @@ const OUT = 'scripts/.cache/players-store-pending.json';
 async function loadTargets() {
   const rows = [];
   for (let from = 0; ; from += 1000) {
-    let q = supabase.from('games').select('id, name, steam_appid, min_players').eq('hidden', false).is('max_players', null).not('steam_appid', 'is', null);
+    let q = onlyIds(supabase.from('games').select('id, name, steam_appid, min_players')).eq('hidden', false).is('max_players', null).not('steam_appid', 'is', null);
     if (!ALL) q = q.is('players_store_checked_at', null);
     const { data, error } = await q.order('id').range(from, from + 999);
     if (error) throw new Error(`게임 목록을 못 불러옴: ${error.message}${/players_store_checked_at/.test(error.message) ? ' (마이그레이션 20261028090000_players_from_store.sql을 먼저 실행하거나 --all로 미리보기만)' : ''}`);

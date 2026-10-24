@@ -6,7 +6,7 @@
 //       node --env-file=.env.local scripts/write-fun-descriptions.mjs --ids <id>,<id>   (지정한 게임만, 이미 있어도 다시 씀)
 //       node --env-file=.env.local scripts/write-fun-descriptions.mjs --ids-file data/intros/backup-old-style-....json   (파일의 game_id 목록, 이미 있어도 다시 씀)
 //       --dry-run 을 붙이면 생성만 하고 DB에는 아무것도 쓰지 않음
-// - 생성 뒤 검사(checkLine): 40~60자, 금지어(과장·예전 퀘스트 말투·인원/가격 숫자 등), 멀티 없는 게임은 "혼자", 협동 게임은 "친구"
+// - 생성 뒤 검사(checkLine): 40~60자, 금지어(과장·예전 퀘스트 말투·인원/가격 숫자 등), 멀티 없는 게임은 "혼자", 협동 게임은 "친구" (최대 인원이 비어 있으면 모름으로 보고 "혼자" 검사는 안 함)
 //   어긋나면 저장하지 않고 로그만 남김. AI가 확신이 없다고 답하면(없음) 비워 둠
 // - 한 번 처리한 게임은 fun_description_at에 시각을 남겨 다시 부르지 않음 (검사 탈락·비워 둔 게임 포함, API 오류는 다음에 재시도)
 //   칸이 아직 없으면 경고만 하고 소개가 빈 게임을 대상으로 그대로 진행
@@ -14,6 +14,7 @@
 // - AI 호출: Haiku, 게임당 1번에 후보 3개 (셋 다 검사에 걸리면 이유를 알려 주고 1번 더) (scripts/는 CLAUDE.md 규칙상 guardedClaudeFetch 예외 — 사이트 하루 AI 상한을 쓰지 않도록 직접 호출)
 import { createClient } from '@supabase/supabase-js';
 import { readFileSync } from 'node:fs';
+import { hasCoop, noMulti } from './lib/fun-desc-rules.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -74,8 +75,6 @@ const BANNED = [
 
 // "없음" 또는 "없음 (이유…)"이면 확신이 없어 비워 둔 것
 const isEmpty = (line) => !line || /^없음/.test(line);
-const hasCoop = (g) => !!(g.has_online_coop || g.has_local_coop);
-const noMulti = (g) => g.max_players === 1 || (!hasCoop(g) && !g.has_pvp && (g.max_players ?? 1) <= 1);
 
 // 다시 쓸 때 어긴 규칙별로 구체적으로 알려 줄 문구
 const FIX = {
