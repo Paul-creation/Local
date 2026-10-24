@@ -14,7 +14,7 @@ async function main() {
   const today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul' }).format(new Date()); // YYYY-MM-DD
   const games = [];
   for (let from = 0; ; from += 1000) {
-    const { data, error } = await supabase.from('games').select('id, review_total, review_positive_percent').eq('hidden', false).order('id').range(from, from + 999);
+    const { data, error } = await supabase.from('games').select('id, review_total, review_positive_percent').eq('hidden', false).eq('release_status', 'released').order('id').range(from, from + 999);
     if (error) throw new Error(`게임 목록을 못 불러옴: ${error.message}`);
     games.push(...data);
     if (data.length < 1000) break;

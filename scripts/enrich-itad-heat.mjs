@@ -28,6 +28,7 @@ async function main() {
     .from('games')
     .select('id, name, steam_appid, itad_id, metascore, heat_rank')
     .eq('hidden', false)
+    .eq('release_status', 'released')
     .not('steam_appid', 'is', null));
   if (error) return console.error(`❌ 게임 목록을 못 불러옴: ${error.message}`);
 

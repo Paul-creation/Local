@@ -5,13 +5,13 @@ import { classify, playerGrowth, streamerSum, trendBadgeKey } from '../../app/li
 
 const DAY = 86400_000;
 
-// games: { id, hidden, current_players, release_date, review_total, recent_review_count }
+// games: { id, hidden, release_status(coming_soon이면 판정 안 함), current_players, release_date, review_total, recent_review_count }
 // samples: Map<id, {age, count}[]> · streamerAges: Map<id, number[]> · now: ms
 // → Map<id, { badge, score } | null> (null = 해당 없음)
 export function judgeTrends(games, samples, streamerAges, now) {
   const out = new Map();
   for (const g of games) {
-    if (g.hidden) { out.set(g.id, null); continue; }
+    if (g.hidden || g.release_status === 'coming_soon') { out.set(g.id, null); continue; }
     const t = classify({
       current: g.current_players,
       ageDays: g.release_date ? (now - new Date(g.release_date).getTime()) / DAY : null,

@@ -4,7 +4,7 @@
 //       node --env-file=.env.local scripts/build-similar-games.mjs --apply               (바뀐 게임만 저장)
 //       node --env-file=.env.local scripts/build-similar-games.mjs --show="Satisfactory,Stardew Valley"   (그 게임들의 상위 6개를 출력)
 // - 유사도는 app/lib/taste.ts: 태그 √(득표/최대 득표) + 확인된 활동(activities_confirmed) 0.5, 코사인
-// - 숨긴 게임(hidden)과 메인 노출 제외 게임(home_excluded)은 기준에도 후보에도 넣지 않음
+// - 숨긴 게임(hidden)과 메인 노출 제외 게임(home_excluded), 출시 예정 게임(release_status = coming_soon)은 기준에도 후보에도 넣지 않음
 // - 동점은 인기순(heat_rank 작은 순 → 리뷰 수 많은 순). AI·외부 요청 없음
 // - 이미 저장된 목록과 같은 게임은 건너뜀(같은 값을 다시 쓰지 않음). 지우는 쿼리는 없음 — 저장된 칸보다 새 목록이 짧으면 남는 순위는 그대로 두고 경고만 출력
 // - game_similar 표가 아직 없으면(마이그레이션 전) 미리보기는 "전부 새로 저장"으로 보고, --apply는 실패로 끝남
@@ -35,7 +35,7 @@ async function readAll(table, columns, orders, filter = (q) => q) {
 }
 
 async function main() {
-  const g = await readAll('games', 'id, name, search_name_ko, heat_rank, review_total, activities_confirmed', ['id'], (q) => q.eq('hidden', false).eq('home_excluded', false));
+  const g = await readAll('games', 'id, name, search_name_ko, heat_rank, review_total, activities_confirmed', ['id'], (q) => q.eq('hidden', false).eq('home_excluded', false).neq('release_status', 'coming_soon'));
   if (g.error) throw new Error(`게임 목록을 못 불러옴: ${g.error.message}`);
   const t = await readAll('game_tags', 'game_id, tag_id, votes', ['game_id', 'tag_id']);
   if (t.error) throw new Error(`게임 태그를 못 불러옴: ${t.error.message}`);

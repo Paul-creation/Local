@@ -16,6 +16,7 @@ import GameImage, { type SteamSize } from '../GameImage';
 import OwnedChip from '../owned/OwnedChip';
 import ChipRow from './ChipRow';
 import { gameName } from '../../lib/gameName';
+import { isComingSoon, hasDemo, comingSoonLabel } from '../../lib/release';
 
 // 스팀 외 스토어 이름 (games.source)
 const STORE_NAME: Record<string, string> = { epic: 'Epic', battlenet: 'Battle.net', riot: 'Riot', ea: 'EA app', ubisoft: 'Ubisoft Connect', gog: 'GOG' };
@@ -39,6 +40,8 @@ export default function GameCard({ game, badge, image, imgProps = { steamSize: '
   const barrier = barrierLabel(game);
   const chips = infoChips(game);
   const hasGoty = Array.isArray(game.goty_awards) && game.goty_awards.length > 0;
+  const comingSoon = isComingSoon(game);
+  const demo = hasDemo(game);
   const store = game.steam_appid ? null : STORE_NAME[game.source] ?? '기타 스토어';
   const pct: number | null = game.review_percent || null;
   const summary: string | null = game.review_summary ?? null;
@@ -68,18 +71,21 @@ export default function GameCard({ game, badge, image, imgProps = { steamSize: '
             </>
           )}
         </span>
-        {(hasGoty || chips.length > 0) ? (
+        {(hasGoty || demo || chips.length > 0) ? (
           <ChipRow
             items={[
+              ...(demo ? [<span key="demo" className="chip is-static">무료 데모</span>] : []),
               ...(hasGoty ? [<GotyBadge key="goty" awards={game.goty_awards} />] : []),
               ...chips.map((c) => <span key={c.text} className={`chip is-static${c.kind === 'tag' ? '' : ` is-${c.kind}`}`}>{c.text}</span>),
             ]}
-            labels={[...(hasGoty ? ['GOTY'] : []), ...chips.map((c) => c.text)]}
+            labels={[...(demo ? ['무료 데모'] : []), ...(hasGoty ? ['GOTY'] : []), ...chips.map((c) => c.text)]}
           />
         ) : <span className="gc-chips" aria-hidden="true" />}
         <span className="gc-foot">
           <span className="result-price">
-            {game.is_free ? (
+            {comingSoon ? (
+              <span className="result-price-main"><span className="price-final no-discount">{comingSoonLabel(game)}</span></span>
+            ) : game.is_free ? (
               <span className="result-price-main"><span className="price-final">무료</span></span>
             ) : PRICE_TYPE_LABEL[game.price_type] ? (
               <span className="result-price-main"><span className="price-final no-discount">{PRICE_TYPE_LABEL[game.price_type]}</span></span>

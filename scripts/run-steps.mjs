@@ -8,6 +8,7 @@ import { THU_TRAILER_YT_MAX, pacificNow } from './lib/quota-plan.mjs';
 const GROUPS = {
   // 매일: 가격·할인·접속자처럼 자주 바뀌는 것
   daily: [
+    'check-coming-soon --apply', // 출시 예정 게임(release_status = coming_soon)이 출시됐는지 appdetails로 확인 → 출시됐으면 released로 바꿔 아래 가격·리뷰 단계부터 일반 게임처럼 수집. 출시 예정 게임이 없으면 요청 없음. 칸이 없으면(마이그레이션 전) 실패로 표시
     'fix-missing-prices',
     // ITAD 단계는 한 묶음으로 앞에 (5분 창 한도를 사용자 화면에 직접 보이는 것부터 씀, 창 상태는 scripts/.cache/itad-window.json으로 공유)
     'backfill-price-history-other', // 스팀 외 가격 (약 15건)

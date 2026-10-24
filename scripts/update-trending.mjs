@@ -32,7 +32,8 @@ async function main() {
   const probe = await supabase.from('games').select('trend_badge').limit(1);
   const hasCols = !probe.error;
   if (!hasCols && apply) throw new Error(`trend_badge 칸이 없음 — 마이그레이션 먼저: ${probe.error.message}`);
-  const cols = `id, hidden, current_players, release_date, review_total, recent_review_count${hasCols ? ', trend_badge, trend_score' : ''}`;
+  const probeStatus = await supabase.from('games').select('release_status').limit(1); // 출시 예정 게임은 판정에서 뺌 (칸이 없으면 그 칸 없이 읽음)
+  const cols = `id, hidden, current_players, release_date, review_total, recent_review_count${hasCols ? ', trend_badge, trend_score' : ''}${probeStatus.error ? '' : ', release_status'}`;
   const games = await readAll((a, b) => supabase.from('games').select(cols).order('id').range(a, b));
 
   const since = new Date(now - HISTORY_DAYS * DAY).toISOString();
@@ -53,7 +54,7 @@ async function main() {
 
   const judged = judgeTrends(games, samples, streamerAges, now);
   const c = countByBadge(judged);
-  console.log(`게임 ${games.length}개(숨김 ${games.filter((g) => g.hidden).length}개 제외 판정) → 신작 ${c.new} · 다시 뜨는 중 ${c.rising_old} · 요즘 뜨는 중 ${c.rising_recent}`);
+  console.log(`게임 ${games.length}개(숨김 ${games.filter((g) => g.hidden).length}개 · 출시 예정 ${games.filter((g) => g.release_status === 'coming_soon').length}개 제외 판정) → 신작 ${c.new} · 다시 뜨는 중 ${c.rising_old} · 요즘 뜨는 중 ${c.rising_recent}`);
 
   const writes = planWrites(games, judged, new Date(now).toISOString());
   if (!apply) return console.log(`미리보기라 저장하지 않음 (저장 대상 ${writes.length}개, --apply로 저장)`);

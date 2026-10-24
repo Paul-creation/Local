@@ -11,6 +11,7 @@ import GameImage from '../GameImage';
 import OwnedChip from '../owned/OwnedChip';
 import { barrierLabel } from '../../lib/cardInfo';
 import { gameName } from '../../lib/gameName';
+import { isComingSoon, hasDemo, comingSoonLabel } from '../../lib/release';
 
 // 스팀 외 스토어 이름 (games.source)
 const STORE_NAME: Record<string, string> = { epic: 'Epic', battlenet: 'Battle.net', riot: 'Riot', ea: 'EA app', ubisoft: 'Ubisoft Connect', gog: 'GOG' };
@@ -34,6 +35,8 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
   const isSelected = !!compare?.selected;
   const chips = compact ? [] : cardChips(tree, game, isTop10);
   const players = playersText(game);
+  const comingSoon = isComingSoon(game);
+  const demo = hasDemo(game);
   // 스팀 외 스토어 게임은 스토어 이름을 작게
   const store = game.steam_appid ? null : STORE_NAME[game.source] ?? '기타 스토어';
   if (view === 'row') {
@@ -45,9 +48,10 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
         </span>
         <span className="rr-main">
           <span className="rr-name">{gameName(game)}</span>
-          {(store || players || barrier) && (
+          {(store || players || barrier || demo) && (
             <span className="rr-info">
               {store && <span className="result-store">{store}</span>}
+              {demo && <span className="chip is-static">무료 데모</span>}
               {players && <span className="result-players">{players}</span>}
               {barrier && <span className="result-barrier">진입장벽 {barrier}</span>}
             </span>
@@ -55,7 +59,9 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
           <OwnedChip steamAppid={game.steam_appid} />
         </span>
         <span className="rr-price">
-          {game.is_free ? (
+          {comingSoon ? (
+            <span className="price-final no-discount">{comingSoonLabel(game)}</span>
+          ) : game.is_free ? (
             <span className="price-final">무료</span>
           ) : PRICE_TYPE_LABEL[game.price_type] ? (
             <span className="price-final no-discount">{PRICE_TYPE_LABEL[game.price_type]}</span>
@@ -104,9 +110,12 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
         <OwnedChip steamAppid={game.steam_appid} />
         {chips.length > 0 && <span className="result-meta">{chips.map((c) => <span key={c.text} className={`hc-tag${c.kind === 'special' ? ' tag-special' : ''}`}>{c.text}</span>)}</span>}
         {players && <span className="result-players">{players}</span>}
+        {demo && <span className="chip is-static">무료 데모</span>}
         <span className="result-foot">
           <span className="result-price">
-            {game.is_free ? (
+            {comingSoon ? (
+              <span className="price-final no-discount">{comingSoonLabel(game)}</span>
+            ) : game.is_free ? (
               <span className="price-final">무료</span>
             ) : PRICE_TYPE_LABEL[game.price_type] ? (
               // 월 구독·판매처에서 확인 게임은 예전 가격 대신 문구 (가격 슬라이더·할인 필터에서는 가격 없음으로 빠짐)

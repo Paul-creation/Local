@@ -59,12 +59,14 @@ test('parseChart: 공식 차트 응답 → appid별 동접', () => {
   assert.equal(parseChart({ response: {} }).size, 0);
 });
 
-test('큐레이터 목록: 리뷰 수·긍정률·연도 면제, 출시 여부·종류·장르는 그대로', () => {
+test('큐레이터 목록: 리뷰 수·긍정률·연도 면제, 출시 예정도 받고 종류·장르는 그대로', () => {
   const tiny = { ...base, reviews: 3, positive: 0.4, year: 2012 };
   assert.equal(judge(tiny, { fromList: true }).ok, false);
   assert.equal(judge(tiny, { fromList: true, curator: true }).ok, true);
   assert.equal(judge({ ...tiny, reviews: 0 }, { fromList: true, curator: true }).ok, true);
-  assert.equal(judge({ ...tiny, comingSoon: true }, { fromList: true, curator: true }).ok, false);
+  assert.equal(judge({ ...tiny, comingSoon: true }, { fromList: true, curator: true }).ok, true);
+  assert.equal(judge({ ...tiny, comingSoon: true, type: 'dlc' }, { fromList: true, curator: true }).ok, false);
+  assert.equal(judge({ ...tiny, comingSoon: true }, { fromList: true }).ok, false); // 일반 목록(--appids)은 리뷰가 없어 그대로 제외
   assert.equal(judge({ ...tiny, type: 'dlc' }, { fromList: true, curator: true }).ok, false);
   assert.equal(judge({ ...tiny, genres: ['Sexual Content'] }, { fromList: true, curator: true }).ok, false);
   assert.equal(judge(tiny, { fromList: true, curator: true, legacy: true }).ok, false);

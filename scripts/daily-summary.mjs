@@ -8,6 +8,7 @@ import { createClient } from '@supabase/supabase-js';
 import { readPurge } from './lib/privacy-purge.mjs';
 import { readPriceCheck, NOT_BUNDLE_NOTE } from './lib/price-check.mjs';
 import { readReviewCheck, reviewCheckLine } from './lib/review-check.mjs';
+import { readComingSoonCheck, comingSoonLine } from './lib/coming-soon.mjs';
 import { readStreamerVideos } from './lib/streamer-videos.mjs';
 
 const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
@@ -54,7 +55,7 @@ let priceLine = priceParts.length
 const streakSince = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000 + 6 * 60 * 60 * 1000).toISOString();
 const streakQuery = () => db.from('games').select('name, price_check_note, price_check_failed_since')
   .lte('price_check_failed_since', streakSince).is('price_type', null).or(NOT_BUNDLE_NOTE).order('price_check_failed_since');
-let streak = await streakQuery().eq('hidden', false);
+let streak = await streakQuery().eq('hidden', false).eq('release_status', 'released');
 if (streak.error) streak = await streakQuery(); // hidden 칸이 아직 없을 때
 if (streak.error) {
   priceLine += '\n   (연속 실패 확인 불가 — 마이그레이션 20261010090000_price_check_status.sql 실행 필요)';
@@ -99,7 +100,7 @@ const streamer = readStreamerVideos();
 const streamerLine = streamer
   ? `스트리머 영상 새로 연결 ${streamer.linked}개 (연결 안 된 새 영상 ${streamer.unlinked}개 · YouTube ${streamer.units}유닛)`
   : '스트리머 영상: 오늘 기록 없음 (수집 단계가 안 돌았거나 표가 아직 없음)';
-const message = `${content}\n${purgeLine}\n${priceLine}\n${reviewCheckLine(readReviewCheck())}\n${streamerLine}\n${playersLine}${tagLine}`;
+const message = `${content}\n${purgeLine}\n${priceLine}\n${reviewCheckLine(readReviewCheck())}${comingSoonLine(readComingSoonCheck())}\n${streamerLine}\n${playersLine}${tagLine}`;
 console.log(message);
 
 const url = process.env.DISCORD_WEBHOOK_URL;

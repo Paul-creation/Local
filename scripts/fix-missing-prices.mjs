@@ -99,7 +99,7 @@ async function main() {
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
   const { data: games, error } = await onlyIds(supabase
     .from('games')
-    .select('id, name, steam_appid, is_free, price_history(id, price, discount_percent, checked_at, original_price)')).eq('hidden', false)
+    .select('id, name, steam_appid, is_free, price_history(id, price, discount_percent, checked_at, original_price)')).eq('hidden', false).eq('release_status', 'released')
     .not('steam_appid', 'is', null);
   if (error) {
     console.error('조회 실패:', error.message);

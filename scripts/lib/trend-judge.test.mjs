@@ -9,12 +9,13 @@ const base = { hidden: false, review_total: 20000, recent_review_count: 500 };
 // 최근 3일 5000, 7일 전 같은 3일 2500 → 증가율 2
 const grown = [{ age: 1, count: 5000 }, { age: 2, count: 5000 }, { age: 8, count: 2500 }, { age: 9, count: 2500 }];
 
-test('신작·다시 뜨는 중·요즘 뜨는 중을 가르고, 숨김·동접 부족·증가율 부족은 null', () => {
+test('신작·다시 뜨는 중·요즘 뜨는 중을 가르고, 숨김·출시 예정·동접 부족·증가율 부족은 null', () => {
   const games = [
     { ...base, id: 'new', current_players: 2000, release_date: daysAgo(30) },
     { ...base, id: 'old', current_players: 5000, release_date: daysAgo(800) },
     { ...base, id: 'recent', current_players: 5000, release_date: daysAgo(200) },
     { ...base, id: 'hidden', hidden: true, current_players: 5000, release_date: daysAgo(30) },
+    { ...base, id: 'soon', release_status: 'coming_soon', current_players: 5000, release_date: daysAgo(30) },
     { ...base, id: 'small', current_players: 100, release_date: daysAgo(30) },
     { ...base, id: 'flat', current_players: 5000, release_date: daysAgo(800) },
   ];
@@ -23,7 +24,7 @@ test('신작·다시 뜨는 중·요즘 뜨는 중을 가르고, 숨김·동접 
   assert.equal(j.get('new').badge, 'new');
   assert.equal(j.get('old').badge, 'rising_old');
   assert.equal(j.get('recent').badge, 'rising_recent');
-  for (const id of ['hidden', 'small', 'flat']) assert.equal(j.get(id), null, id);
+  for (const id of ['hidden', 'soon', 'small', 'flat']) assert.equal(j.get(id), null, id);
   assert.deepEqual(countByBadge(j), { new: 1, rising_old: 1, rising_recent: 1 });
 });
 

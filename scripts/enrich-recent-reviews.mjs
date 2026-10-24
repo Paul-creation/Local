@@ -32,7 +32,7 @@ function parseRecent(html) {
 
 async function main() {
   const cols = DRY ? 'id, name, steam_appid' : 'id, name, steam_appid, recent_reviews_at';
-  let q = onlyIds(supabase.from('games').select(cols)).eq('hidden', false).not('steam_appid', 'is', null);
+  let q = onlyIds(supabase.from('games').select(cols)).eq('hidden', false).eq('release_status', 'released').not('steam_appid', 'is', null);
   if (!DRY) {
     const since = new Date(Date.now() - RECHECK_HOURS * 3600 * 1000).toISOString();
     q = q.or(`recent_reviews_at.is.null,recent_reviews_at.lt.${since}`).order('recent_reviews_at', { ascending: true, nullsFirst: true });

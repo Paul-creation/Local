@@ -8,6 +8,7 @@ import { parseIdsParam, shareQuery } from '../../lib/wishlist';
 import SaleEnds from '../SaleEnds';
 import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL } from '../../lib/price';
 import LowestPriceBadge from '../LowestPriceBadge';
+import { isComingSoon, comingSoonLabel } from '../../lib/release';
 import { playersText } from '../../lib/players';
 import { useGameIndex } from '../../lib/useGameIndex';
 import GameImage from '../GameImage';
@@ -25,6 +26,7 @@ const STORE_NAME: Record<string, string> = { epic: 'Epic', battlenet: 'Battle.ne
 type Game = {
   id: string; name: string; display_name?: string | null; source: string; steam_appid?: number | null; is_free?: boolean; price_type: string; lowest_price?: number | null;
   cover_image_url?: string | null; card_image_url?: string | null; min_players?: number | null; max_players?: number | null;
+  release_status?: string | null; release_date_text?: string | null;
 };
 
 function Card({ game }: { game: Game }) {
@@ -42,7 +44,9 @@ function Card({ game }: { game: Game }) {
         {players && <span className="result-players">{players}</span>}
         <span className="result-foot">
           <span className="result-price">
-            {game.is_free ? (
+            {isComingSoon(game) ? (
+              <span className="price-final no-discount">{comingSoonLabel(game)}</span>
+            ) : game.is_free ? (
               <span className="price-final">무료</span>
             ) : PRICE_TYPE_LABEL[game.price_type] ? (
               <span className="price-final no-discount">{PRICE_TYPE_LABEL[game.price_type]}</span>

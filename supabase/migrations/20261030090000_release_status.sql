@@ -1,0 +1,10 @@
+alter table public.games add column if not exists release_status text;
+alter table public.games add column if not exists demo_appid text;
+alter table public.games add column if not exists release_date_text text;
+update public.games set release_status = 'released' where release_status is null;
+alter table public.games alter column release_status set default 'released';
+alter table public.games alter column release_status set not null;
+alter table public.games drop constraint if exists games_release_status_check;
+alter table public.games add constraint games_release_status_check check (release_status in ('released', 'coming_soon'));
+create index if not exists games_coming_soon_idx on public.games (id) where release_status = 'coming_soon';
+notify pgrst, 'reload schema';

@@ -3,6 +3,7 @@ import { supabase } from '../../lib/supabase';
 import BackLink from '../../components/BackLink';
 import DiscountChart from '../../components/DiscountChart';
 import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL } from '../../lib/price';
+import { isComingSoon, hasDemo, comingSoonLabel, demoStoreUrl } from '../../lib/release';
 import { formatDate } from '../../lib/date';
 import { lowestGauge } from '../../lib/saleEnds';
 import SaleEnds from '../../components/SaleEnds';
@@ -110,7 +111,7 @@ function parseMinSpec(raw: string | null) {
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   if (!isUuid(id)) notFound();
-  const { data: game, error } = await selectGames('name, display_name, description, fun_description, min_players, max_players, difficulty, tags, is_free, price_type, price_history(price, discount_percent, checked_at, original_price)')
+  const { data: game, error } = await selectGames('name, display_name, description, fun_description, min_players, max_players, difficulty, tags, is_free, price_type, release_status, release_date_text, price_history(price, discount_percent, checked_at, original_price)')
     .eq('id', id)
     .maybeSingle();
   // 조회 오류는 없는 게임(404)과 구분해 던진다 — 일시 오류가 404로 나가 색인에서 빠지면 안 됨
@@ -124,7 +125,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   const players = playersText(game);
   const price = getPriceInfo(game);
-  const priceText = game.is_free ? '무료' : price ? (price.discount > 0 ? `${price.formattedFinal} (-${price.discount}%)` : price.formattedFinal) : '';
+  const priceText = isComingSoon(game) ? comingSoonLabel(game) : game.is_free ? '무료' : price ? (price.discount > 0 ? `${price.formattedFinal} (-${price.discount}%)` : price.formattedFinal) : '';
   const summary = [players, game.difficulty, priceText].filter(Boolean).join(' · ');
   const tags = (game.tags || []).slice(0, 3).map((t: string) => '#' + translateTag(t)).join(' ');
   // 한 줄 소개가 있으면 그걸 맨 앞에 (카톡 미리보기에서 제일 먼저 보이는 문장)
@@ -179,11 +180,14 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const showHost = !!game.multiplayer_host && (game.has_online_coop === true || game.has_pvp === true);
   // 친구랑: 팀 인원(party_max), 없으면 최대 인원 + 같은 서버 인원(session_max)
   const friendsMax = game.party_max ?? game.max_players;
-  const price = getPriceInfo(game);
+  // 출시 예정 게임은 가격 카드 자리에 출시 예정 안내만 — 가격·할인·역대 최저가·할인 전적은 숨김 (app/lib/release)
+  const comingSoon = isComingSoon(game);
+  const demo = hasDemo(game);
+  const price = comingSoon ? null : getPriceInfo(game);
   // 100원 미만은 잘못 들어온 기록이라 할인 전적에서 제외
   const priceHistory = (game.price_history || []).filter((p: any) => p.price >= 100);
   // 무료·가격 유형 게임(월 구독·판매처에서 확인)은 역대 최저·할인 그래프를 숨김 (기록은 DB에 그대로)
-  const showPriceRecord = !game.is_free && !game.price_type;
+  const showPriceRecord = !comingSoon && !game.is_free && !game.price_type;
   const STORE_LABEL: Record<string, string> = { epic: '에픽 게임즈', battlenet: 'Battle.net', riot: '라이엇' };
   const buyUrl = game.steam_appid ? `https://store.steampowered.com/app/${game.steam_appid}` : game.store_url;
   const buyLabel = game.steam_appid ? 'Steam' : STORE_LABEL[game.source] ?? '공식 사이트';
@@ -263,6 +267,27 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         {/* 가격 카드 — 데스크톱 오른쪽 위, 좁은 화면에서는 제목 바로 아래 */}
         <aside className="detail-price">
           <div className="price-card">
+            {comingSoon ? (
+              <>
+                <div className="price-card-head">
+                  <p className="price-card-label">출시 예정</p>
+                  <HeartButton gameId={game.id} variant="title" />
+                </div>
+                {/* 스팀이 알려 준 출시일 원문 그대로 (날짜 대신 "출시 예정"이 온 경우는 위 제목만) */}
+                {comingSoonLabel(game) !== '출시 예정' && <p className="price-card-now">{game.release_date_text}</p>}
+                <p className="price-card-lowest">아직 출시 전이라 가격·할인 정보가 없어요</p>
+                <div className="price-card-buttons">
+                  {demo && (
+                    <a href={demoStoreUrl(game.demo_appid)} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg price-card-buy">
+                      스팀에서 데모 받기 ↗
+                    </a>
+                  )}
+                  <AddToCompare gameId={game.id} name={gameName(game)} thumb={game.cover_image_url || game.card_image_url} />
+                </div>
+                <p className="price-card-note">출시일은 스팀 표기 기준이며 바뀔 수 있어요. 출시되면 가격 정보를 보여드려요.</p>
+              </>
+            ) : (
+              <>
             <div className="price-card-head">
               <p className="price-card-label">{buyLabel} 가격</p>
               <HeartButton gameId={game.id} variant="title" />
@@ -312,6 +337,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               <AddToCompare gameId={game.id} name={gameName(game)} thumb={game.cover_image_url || game.card_image_url} />
             </div>
             <p className="price-card-note">가격·할인 정보는 실제와 다를 수 있어요. 가격은 하루 한 번 갱신되니 구매 전 스토어에서 확인해 주세요.</p>
+              </>
+            )}
           </div>
           <CuratorsOfGame items={curators} />
           {game.discord_url && (

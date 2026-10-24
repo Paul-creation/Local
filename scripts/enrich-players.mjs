@@ -34,11 +34,11 @@ async function main() {
   const cols = 'id, name, steam_appid, review_summary, review_total';
   // review_source 칸(마이그레이션 20261024120000)이 아직 없으면 그 칸 없이 돌림 — 출처는 기록 안 함
   let hasSource = true;
-  let res = await onlyIds(supabase.from('games').select(`${cols}, review_source`)).eq('hidden', false).not('steam_appid', 'is', null);
+  let res = await onlyIds(supabase.from('games').select(`${cols}, review_source`)).eq('hidden', false).eq('release_status', 'released').not('steam_appid', 'is', null);
   if (res.error && /review_source/.test(res.error.message)) {
     hasSource = false;
     console.log('games.review_source 칸이 없음 — 리뷰 출처 기록 없이 진행 (마이그레이션 전)');
-    res = await onlyIds(supabase.from('games').select(cols)).eq('hidden', false).not('steam_appid', 'is', null);
+    res = await onlyIds(supabase.from('games').select(cols)).eq('hidden', false).eq('release_status', 'released').not('steam_appid', 'is', null);
   }
   const games = res.data;
   if (!games) return;

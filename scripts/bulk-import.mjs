@@ -7,7 +7,7 @@
 // - 기준(두 방식 같음): 이미 있는 게임·판매 중단 목록 제외, 스팀 종류가 game, 성인·프로그램 장르 제외, 리뷰 1,000개 이상·긍정 65% 이상
 //       node --env-file=.env.local scripts/bulk-import.mjs --curator data/meta/curator-games.json         (인스타 큐레이터가 소개한 게임 목록 미리보기)
 //       node --env-file=.env.local scripts/bulk-import.mjs --curator data/meta/curator-games.json --apply (큐레이터 목록 추가)
-// - --curator 목록(--appids와 같은 JSON 형식)은 리뷰 수·긍정률·연도 기준 면제 (리뷰 적은 신작·인디용). appreviews 조회가 실패(302·차단)하면 재시도 없이 건너뛰고 리뷰 없이 넣음 — 리뷰는 데일리가 채움. 단 출시된 게임(coming soon 아님)이고 스팀 상점 정보가 있어야 하며 종류 game·제외 장르 조건은 그대로. 일반 수집 경로(기본·--appids)의 기준은 그대로
+// - --curator 목록(--appids와 같은 JSON 형식)은 리뷰 수·긍정률·연도 기준 면제 (리뷰 적은 신작·인디용). appreviews 조회가 실패(302·차단)하면 재시도 없이 건너뛰고 리뷰 없이 넣음 — 리뷰는 데일리가 채움. 출시 예정(coming soon) 게임도 받음 — appdetails의 release_date.coming_soon·demos[]로 games.release_status·demo_appid·release_date_text를 채우고 리뷰 조회는 건너뜀 (가격·리뷰·동접은 출시 뒤 check-coming-soon이 전환하면 데일리가 받음). 스팀 상점 정보가 있어야 하며 종류 game·제외 장르 조건은 그대로. 일반 수집 경로(기본·--appids)의 기준은 그대로
 //   --appids는 손으로 고른 목록이라 긍정 60% 이상까지 받음 (판매 순위 수집은 65% 그대로)
 //   판매 순위 수집만 2013년 이후 출시 조건 추가 (--appids는 손으로 고른 목록이라 연도 무관). 단 리뷰 10,000개 이상이면 그 전 출시도 통과
 //   판정은 scripts/lib/catalog-rules.mjs (테스트 있음)
@@ -25,6 +25,7 @@ import { steamGet, appdetailsUrl } from './lib/steam.mjs';
 import { judge, parseChart } from './lib/catalog-rules.mjs';
 import { fetchReviewSummary } from './lib/review-fetch.mjs';
 import { REVIEW_LABELS } from './lib/review-fill.mjs';
+import { releaseFields } from './lib/coming-soon.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -110,7 +111,7 @@ async function check(item) {
     if (!pre.ok) return skip(pre.reason);
 
     // 큐레이터 경로는 appreviews가 막혀도 재시도 없이 건너뛰고 review 칸을 비운 채 넣음 (리뷰는 데일리가 채움). 일반 경로는 리뷰 필수
-    const qs = await fetchReviewSummary(appid, { curator: CURATOR });
+    const qs = comingSoon ? null : await fetchReviewSummary(appid, { curator: CURATOR }); // 출시 예정 게임은 리뷰가 없어 조회하지 않음
     if (!CURATOR && (!qs || !qs.total_reviews)) return skip('리뷰 정보 없음');
     const totalReviews = qs?.total_reviews || 0; // 큐레이터 목록은 리뷰가 없어도 들어옴
     const positive = totalReviews ? qs.total_positive / totalReviews : 0;
@@ -122,7 +123,7 @@ async function check(item) {
 
     const ko = (await steamGet(appdetailsUrl(appid, 'korean', cc)))?.[appid];
     if (!ko?.success) return skip(cc === 'kr' ? '한국 상점 정보 없음' : '미국 상점 한국어 정보 없음');
-    return { data: ko.data, year: isNaN(year) ? null : year, reviewSummary: REVIEW_LABELS[qs?.review_score_desc] || null, via: verdict.via, legacyOk, positive, ccu, usFallback: cc === 'us' };
+    return { data: ko.data, comingSoon, year: isNaN(year) ? null : year, reviewSummary: REVIEW_LABELS[qs?.review_score_desc] || null, via: verdict.via, legacyOk, positive, ccu, usFallback: cc === 'us' };
   } catch (e) {
     failed.push({ ...item, reason: e.message });
     return null;
@@ -130,6 +131,8 @@ async function check(item) {
 }
 
 async function insert(appid, { data, reviewSummary }) {
+  // 출시 예정·데모 칸은 큐레이터 경로에서만 채움 (일반 경로는 칸을 건드리지 않아 마이그레이션 전에도 동작, 기본값 released)
+  const release = CURATOR ? releaseFields(data) : null;
   const row = {
     name: data.name,
     steam_appid: appid,
@@ -143,6 +146,7 @@ async function insert(appid, { data, reviewSummary }) {
     content_descriptor_ids: [...new Set((data.content_descriptors?.ids || []).map(Number))].sort((a, b) => a - b),
     // 크로스플레이 — 스팀 카테고리 27 "Cross-Platform Multiplayer". 카테고리가 없으면 모름(null). 예전 게임은 fill-crossplay.mjs
     has_crossplay: data.categories?.length ? data.categories.some((c) => Number(c.id) === 27) : null,
+    ...(release ? { release_status: release.release_status, demo_appid: release.demo_appid, release_date_text: release.release_date_text } : {}),
   };
   let { data: inserted, error } = await supabase.from('games').insert(row).select().single();
   // 마이그레이션(20261014090000_launch_extras.sql) 전이라 has_crossplay 칸이 없으면 그 칸만 빼고 다시 넣음
@@ -155,7 +159,7 @@ async function insert(appid, { data, reviewSummary }) {
     failed.push({ appid, name: data.name, reason: `저장 실패: ${error.message}` });
     return false;
   }
-  if (!data.is_free && data.price_overview) {
+  if (release?.release_status !== 'coming_soon' && !data.is_free && data.price_overview) {
     await supabase.from('price_history').insert({
       game_id: inserted.id,
       price: data.price_overview.final / 100,
@@ -189,8 +193,9 @@ async function main() {
     if (!ok) return;
     if (APPLY && !(await insert(item.appid, ok))) return;
     existingAppids.add(item.appid);
-    added.push({ appid: item.appid, name: ok.data.name, year: ok.year, positive: ok.positive, ccu: ok.ccu, via: ok.via, legacyOk: ok.legacyOk, usFallback: ok.usFallback });
-    console.log(`${APPLY ? '✅ 추가됨' : '➕ 추가 예정'}: ${ok.data.name} (${item.appid}) — ${ok.year ?? '출시일 모름'} · ${ok.via}${ok.usFallback ? ' · 미국 상점 정보(무료)' : ''}`);
+    added.push({ appid: item.appid, name: ok.data.name, comingSoon: ok.comingSoon, ...(CURATOR ? releaseFields(ok.data) : {}), year: ok.year, positive: ok.positive, ccu: ok.ccu, via: ok.via, legacyOk: ok.legacyOk, usFallback: ok.usFallback });
+    const rel = CURATOR ? releaseFields(ok.data) : null;
+    console.log(`${APPLY ? '✅ 추가됨' : '➕ 추가 예정'}: ${ok.data.name} (${item.appid}) — ${ok.year ?? '출시일 모름'} · ${ok.via}${rel ? ` · 상태 ${rel.release_status}${rel.release_date_text ? ` · 출시일 "${rel.release_date_text}"` : ''}${rel.demo_appid ? ` · 데모 ${rel.demo_appid}` : ''}` : ''}${ok.usFallback ? ' · 미국 상점 정보(무료)' : ''}`);
   };
 
   if (LIST_FILE) {

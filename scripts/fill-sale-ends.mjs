@@ -12,7 +12,7 @@ async function main() {
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
   const { data: games, error } = await onlyIds(supabase
     .from('games')
-    .select('id, name, itad_id, price_history(id, price, discount_percent, checked_at, sale_ends_at)')).eq('hidden', false)
+    .select('id, name, itad_id, price_history(id, price, discount_percent, checked_at, sale_ends_at)')).eq('hidden', false).eq('release_status', 'released')
     .not('steam_appid', 'is', null);
   if (error) {
     if (/sale_ends_at/.test(error.message)) return console.log('price_history.sale_ends_at 칸이 아직 없어요 — supabase/migrations/20261019090000_sale_ends_at.sql을 먼저 실행하세요 (이번엔 건너뜀)');

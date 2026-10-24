@@ -53,6 +53,7 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
     soloOnly, setSoloOnly,
     duoOnly, setDuoOnly,
     largeOnly, setLargeOnly,
+    demoOnly, setDemoOnly,
     priceRange, setPriceRange,
     saleOnly, setSaleOnly,
     myPcOnly, setMyPcOnly, myPc, myPcReady,
@@ -121,6 +122,13 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
             ))}
           </div>
         </FoldSection>
+
+        {/* 데모 있음 — 출시 전 게임 중 스팀 무료 데모가 있는 게임 (games.demo_appid, app/lib/release). 기본 검색에는 출시 예정 게임도 함께 나옴 */}
+        <section className="filter-section">
+          <div className="filter-chips">
+            <button type="button" className={`chip${demoOnly ? ' on' : ''}`} aria-pressed={demoOnly} onClick={() => setDemoOnly(!demoOnly)}>데모 있음</button>
+          </div>
+        </section>
 
         <FoldSection title="같이 하는 방식" count={selectedCategory ? 1 : 0}>
           <div className="filter-chips">

@@ -41,6 +41,7 @@ export async function getStreamerTheme(excludeIds: string[] = []): Promise<Strea
       .select('video_id, is_short, published_at, streamer_channels(streamer_name, kind), games!inner(id, name, display_name, card_image_url, cover_image_url, category, min_players, max_players, party_max, has_online_coop, has_local_coop, heat_rank)')
       .eq('games.hidden', false)
       .eq('games.home_excluded', false)
+      .neq('games.release_status', 'coming_soon') // 출시 예정 게임은 추천 섹션에 안 나옴
       .order('published_at', { ascending: false })
       .range(from, from + 999);
     if (error) return null;

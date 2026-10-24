@@ -11,5 +11,11 @@
   { "steam_appid": "2561630", "name": "Moonfrost" },
   { "steam_appid": "3492120", "name": "Legion Was Here" },
   { "steam_appid": "3318210", "name": "파멸의 오타쿠" },
-  { "steam_appid": "3905010", "name": "원피스 그랜드 레스토랑" }
+  { "steam_appid": "3905010", "name": "원피스 그랜드 레스토랑" },
+  { "steam_appid": "4661070", "name": "HANDS OVER" },
+  { "steam_appid": "4928080", "name": "Seikyu Let's Go!" },
+  { "steam_appid": "4300400", "name": "Blades & Trades" },
+  { "steam_appid": "4186890", "name": "Kitman" },
+  { "steam_appid": "3377450", "name": "UNFROST" },
+  { "steam_appid": "4272370", "name": "Coal Duty" }
 ]

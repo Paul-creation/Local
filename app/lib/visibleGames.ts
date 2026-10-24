@@ -13,9 +13,10 @@ export function selectGames(columns = '*', options?: SelectOptions, db: Supabase
   return db.from('games').select(columns as '*', options).eq('hidden', false);
 }
 
-// 메인 섹션(이번주의 게임·지금 뜨는 게임·배너·추천)용 — 숨긴 게임 + 메인 노출 제외 게임이 빠진다. 검색·상세·비교는 selectGames
+// 메인 섹션(이번주의 게임·지금 뜨는 게임·배너·추천)용 — 숨긴 게임 + 메인 노출 제외 게임 + 출시 예정(release_status = coming_soon) 게임이 빠진다. 검색·상세·비교는 selectGames
+// (출시 예정 게임은 검색에는 나오지만 추천 섹션에는 안 나온다. 다른 표에서 embed로 읽는 곳은 따로 거름: weeklyFeatured·streamerTheme)
 export function selectHomeGames(columns = '*', options?: SelectOptions, db: SupabaseClient = supabase) {
-  return selectGames(columns, options, db).eq('home_excluded', false);
+  return selectGames(columns, options, db).eq('home_excluded', false).neq('release_status', 'coming_soon');
 }
 
 // 숨긴 게임이면 남긴 게임 id(merged_into)를, 아니면 null — 상세 주소 이동용
