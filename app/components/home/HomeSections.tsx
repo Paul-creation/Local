@@ -10,7 +10,7 @@ import FeatureCard from './FeatureCard';
 import StreamerSection from './StreamerSection';
 import PeopleRecs from './PeopleRecs';
 import CuratorsHome from './CuratorsHome';
-import type { HomeCurator } from '../../lib/curators';
+import type { HomeCurators } from '../../lib/curators';
 import PersonalRecs from './PersonalRecs';
 import HomeQuickLinks from './HomeQuickLinks';
 import type { PeopleRecs as PeopleRecsData } from '../../lib/peopleRecs';
@@ -21,7 +21,7 @@ import { preconnect } from 'react-dom';
 const POPULAR_MIN = 5;
 
 // 이벤트 배너(HomeEvent)는 페이지 맨 위(GameGrid)로 옮겼다 / featured: featured_games에서 뽑힌 이번 주 게임, 기록이 없으면 예전처럼 featured 칸 (app/page.tsx에서 고름)
-export default function HomeSections({ featured, hotTabs, popularPosts = [], streamerTheme = null, peopleRecs = null, homeExcluded = [], curators = [] }: { featured: any; hotTabs: HotTab[]; popularPosts?: PostListItem[]; streamerTheme?: StreamerTheme | null; peopleRecs?: PeopleRecsData | null; homeExcluded?: string[]; curators?: HomeCurator[] }) {
+export default function HomeSections({ featured, hotTabs, popularPosts = [], streamerTheme = null, peopleRecs = null, homeExcluded = [], curators = null }: { featured: any; hotTabs: HotTab[]; popularPosts?: PostListItem[]; streamerTheme?: StreamerTheme | null; peopleRecs?: PeopleRecsData | null; homeExcluded?: string[]; curators?: HomeCurators | null }) {
 
   // 스팀 이미지 서버에 미리 연결 — 첫 화면은 인원별 추천 카드라 이번주의 게임 이미지는 따로 미리 받지 않는다 (화면 아래, 스크롤하면 지연 로딩)
   preconnect('https://shared.akamai.steamstatic.com');
@@ -32,7 +32,7 @@ export default function HomeSections({ featured, hotTabs, popularPosts = [], str
   return (
     <>
       <PeopleRecs recs={peopleRecs} />
-      <CuratorsHome curators={curators} />
+      <CuratorsHome data={curators} />
       <HomeQuickLinks />
       <PersonalRecs homeExcluded={homeExcluded} />
 

@@ -66,7 +66,7 @@ export default async function Home() {
 
   // 인원별 추천 — 지금 뜨는 게임(모든 탭 10위까지)과 겹치는 건 뺀다. 실패하면 줄만 빠짐
   const hotShown = [...new Set(hot.tabs.flatMap((t) => t.items.map((i) => i.id)))];
-  const [peopleRecs, homeExcluded, curators] = await Promise.all([getPeopleRecs(hotShown).catch(() => null), getHomeExcludedIds().catch(() => [] as string[]), getHomeCurators().catch(() => [])]);
+  const [peopleRecs, homeExcluded, curators] = await Promise.all([getPeopleRecs(hotShown).catch(() => null), getHomeExcludedIds().catch(() => [] as string[]), getHomeCurators().catch(() => null)]);
 
   const rows = (sectionRows || []).map((g) => flattenGame({ ...g, description: g.fun_description ? null : g.description }));
   const featured: Record<string, any> | null = weekly || rows.find((g) => g.featured) || null;
