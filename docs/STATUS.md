@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-24 (main 6dd61e9)
+기준: 2026-10-24 (main 4456165)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/24: chore/curator-sunkenland — curator-games.json에 세이브슬롯 소개 게임 Sunkenland(2080690, 스팀 검색·appdetails로 이름·종류 game·2023-08-25 출시 확인) 추가. --curator 미리보기→--apply→--ids enrich 22단계(가격 3종·itad-heat·players·recent-reviews 포함) 모두 exit 0, AI 비용 약 $0.01 미만. 최대 인원(max_players)은 비어 있음(fill-players-from-store --ids로 채울 수 있음, 아직 안 함). 큐레이터 게시물 연결은 curators에 세이브슬롯이 없어 아직. 코드 변경 없음, build·test 405개 통과
 - 10/24: fix/fun-desc-null-players — write-fun-descriptions의 검사가 max_players null을 1명(멀티 없음)으로 보고 "혼자"를 강제하던 것을 모름으로 처리(scripts/lib/fun-desc-rules.mjs noMulti, 테스트 있음). fill-players-from-store에 --ids <파일> 추가(lib/only-ids.mjs). 데모 게임 6개: fill-players-from-store --ids 미리보기→--apply로 4개 채움(HANDS OVER 최대 5·Kitman 1~4·Coal Duty 1~5·Seikyu Let's Go! 1~4), UNFROST·Blades & Trades는 상점 소개문에 인원 문장이 없어 빈칸(players_store_checked_at 기록됨 → 직접 검증 대상), write-fun-descriptions --ids-file로 6개 소개문 다시 써 6개 모두 통과(약 $0.014). has_online_coop·category는 6개 모두 비어 있음(다음 weekly fill-steam-categories). build·test 405개 통과
 - 10/24: feat/demo-coming-soon — 출시 예정·데모 게임 지원(큐레이터 경로). games.release_status('released'|'coming_soon', 기본 released)·demo_appid·release_date_text(마이그레이션 20261030090000, 사용자 실행 완료). bulk-import --curator만 coming soon 게임도 받음(리뷰 조회 생략, appdetails release_date.coming_soon·demos[]로 세 칸 채움, 이름 앞뒤 공백 항상 trim, 일반 경로는 칸을 안 건드림). coming_soon은 가격·리뷰·동접·순위·트렌드·리뷰 스냅샷·주간 추천·비슷한 게임 계산·일일 요약 가격 실패 목록에서 제외. daily 첫 단계 check-coming-soon --apply(출시됐으면 released로, 아직이면 출시일 원문·데모만 갱신), 일일 요약 "출시 전환 N개" 줄(확인할 게임 0개면 생략). 카드 "출시 예정 · {원문}"+"무료 데모" 칩, 상세 가격 카드 자리에 출시 예정 안내+"스팀에서 데모 받기 ↗"(할인·역대 최저가·할인 전적 숨김), 검색 필터 "데모 있음" 칩(무료만 옆, ?demo=1), 기본 검색엔 포함·메인 추천(selectHomeGames·주간·스트리머 주제·AI 추천)에선 제외. 세이브슬롯 데모 게임 6개(HANDS OVER 4661070·Seikyu Let's Go! 4928080·Blades & Trades 4300400·Kitman 4186890·UNFROST 3377450·Coal Duty 4272370)를 --apply→--ids enrich(가격·리뷰·동접 단계 제외). 6개 모두 max_players가 비어 소개문 검사가 오판해 3개에 잘못된 소개문이 저장돼 사용자가 SQL로 비움. 마이그레이션 전에는 빌드가 실패함(selectHomeGames 등이 칸을 읽음). build·test 401개 통과, 프리뷰 확인(6개가 목록 API에 coming_soon으로 있고 메인·this-week·taste에는 없음 — 6개는 원래 순위가 없어 제외 필터 효과는 증명 못 함), /c/handle 카드는 로컬 가짜 주입으로만 확인
 - 10/24: fix/review-getitems — enrich-players의 리뷰 대체 경로에 스팀 IStoreBrowseService/GetItems/v1(키 없이 GET, 100개씩 묶음, 200개까지 확인) 추가. appreviews 실패 + review_total null인 게임만 appreviews → GetItems(reviews.summary_filtered, 전체 언어) → 상점 페이지 "All Reviews" 순. 3칸(review_summary·review_positive_percent·review_total)을 채우고 games.review_source('appreviews'/'getitems'/'store_page')에 출처 기록(마이그레이션 20261029090000, 사용자가 실행 완료, 칸이 없으면 출처 없이 동작). appreviews가 돌아오면 출처가 getitems·store_page인 게임은 문구까지 덮어씀. GetItems 개수는 appreviews·상점 페이지보다 조금 적을 수 있음(It Takes Two 220,441 vs DB 272,541). 게임서랍장 9개 모두 미리보기로 채워짐 확인(저장은 데일리에서). 일일 요약 리뷰 줄에 대체 개수 표시. 실제 Actions 동작은 확인 못 함. build·test 391개 통과
