@@ -1,5 +1,6 @@
 // 인스타 큐레이터(curators)·소개 게시물(curator_posts) 조회 — 읽기만 (쓰기는 service role, 당분간 SQL로 직접 입력)
 // 표가 아직 없거나 조회가 실패하면 빈 결과 = 섹션 숨김 / 계정 페이지는 404
+import { cache } from 'react';
 import { supabase } from './supabase';
 import { selectGames } from './visibleGames';
 import { getCardGames } from './gameIndex';
@@ -7,9 +8,10 @@ import { getCardExtras } from './cardExtras';
 import type { CardExtras } from './cardInfo';
 import type { CardGame } from './peopleRecs';
 import { roundRobinByCurator, latestPerGame } from './curatorMix';
+import type { PostRow } from './curatorView';
 
 export type Curator = { id: string; handle: string; display_name: string; instagram_url: string; avatar_url: string | null };
-export type CuratorPost = { id: string; game_id: string; post_url: string; post_type: 'single' | 'collection'; posted_at: string };
+export type CuratorPost = PostRow;
 
 // 게임을 소개한 계정 — 게시물 단위, posted_at 최신순
 export async function getCuratorsOfGame(gameId: string) {
@@ -29,13 +31,32 @@ export async function getCurator(handle: string): Promise<Curator | null> {
   return error ? null : (data as Curator | null);
 }
 
+// post_title 칸이 아직 없는 DB(마이그레이션 전)면 그 칸 없이 다시 조회
 export async function getCuratorPosts(curatorId: string): Promise<CuratorPost[]> {
-  const { data, error } = await supabase
-    .from('curator_posts')
-    .select('id, game_id, post_url, post_type, posted_at')
-    .eq('curator_id', curatorId)
-    .order('posted_at', { ascending: false });
-  return error || !data ? [] : (data as CuratorPost[]);
+  const q = (cols: string) => supabase.from('curator_posts').select(cols).eq('curator_id', curatorId).order('posted_at', { ascending: false }).order('id');
+  const first = await q('id, game_id, post_url, post_type, post_title, posted_at');
+  if (!first.error && first.data) return first.data as unknown as CuratorPost[];
+  const second = await q('id, game_id, post_url, post_type, posted_at');
+  return second.error || !second.data ? [] : (second.data as unknown as CuratorPost[]);
+}
+
+// 프로필 페이지 한 번에 — 계정·게시물·카드 게임 (페이지와 메타데이터가 같은 요청 안에서 한 번만 조회)
+export const getCuratorProfile = cache(async (handle: string) => {
+  const curator = await getCurator(handle);
+  if (!curator) return null;
+  const posts = await getCuratorPosts(curator.id);
+  const ids = [...new Set(posts.map((p) => p.game_id))];
+  const games = await getCardGames(ids).catch(() => []);
+  return { curator, posts, games };
+});
+
+// 공유 미리보기용 — 보이는 게임 수만 (카드 조회보다 가볍게)
+export async function getCuratorGameCount(curatorId: string): Promise<number | null> {
+  const posts = await getCuratorPosts(curatorId);
+  const ids = [...new Set(posts.map((p) => p.game_id))];
+  if (!ids.length) return 0;
+  const { data, error } = await selectGames('id').in('id', ids);
+  return error || !data ? null : data.length;
 }
 
 // 메인 "인스타에서 봤던 그 게임" — 동의받은 계정(show_on_home)만. 연결 게임(숨긴 게임·메인 노출 제외 게임 제외)이 1개 이상인 계정이 HOME_CURATORS_MIN개 이상일 때만 돌려주고, 아니면 null = 섹션 없음

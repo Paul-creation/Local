@@ -2,10 +2,13 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import BackLink from '../../components/BackLink';
-import CuratorGames from '../../components/CuratorGames';
-import { getCurator, getCuratorPosts } from '../../lib/curators';
+import CuratorBody from '../../components/CuratorBody';
+import CopyLinkButton from '../../components/CopyLinkButton';
+import { getCuratorProfile } from '../../lib/curators';
+import { groupByPost, groupByGame, dateLabel } from '../../lib/curatorView';
+import { getPriceInfo } from '../../lib/price';
+import { gameName } from '../../lib/gameName';
 import { withSubjectJosa } from '../../lib/josa';
-import { getCardGames } from '../../lib/gameIndex';
 import { BASE_OG } from '../../lib/site';
 
 export const revalidate = 300;
@@ -14,47 +17,63 @@ const titleOf = (displayName: string) => `@${withSubjectJosa(displayName)} 소�
 
 export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
   const { handle } = await params;
-  const curator = await getCurator(decodeURIComponent(handle));
-  if (!curator) notFound();
+  const profile = await getCuratorProfile(decodeURIComponent(handle));
+  if (!profile) notFound();
+  const { curator, games } = profile;
   const title = titleOf(curator.display_name);
-  const description = `@${withSubjectJosa(curator.display_name)} 인스타그램에서 소개한 게임의 현재 가격·할인·인원을 한눈에 볼 수 있어요.`;
+  const description = `@${withSubjectJosa(curator.display_name)} 인스타그램에서 소개한 게임${games.length ? ` ${games.length}개` : ''}의 현재 가격·할인·인원을 한눈에 볼 수 있어요.`;
   const url = `/c/${encodeURIComponent(curator.handle)}`;
+  const image = `/api/og/curator/${encodeURIComponent(curator.handle)}`;
   return {
     title,
     description,
     alternates: { canonical: url },
-    openGraph: { ...BASE_OG, title, description, url },
-    twitter: { card: 'summary', title, description },
+    openGraph: { ...BASE_OG, title, description, url, images: [{ url: image, width: 1200, height: 630 }] },
+    twitter: { card: 'summary_large_image', title, description, images: [image] },
   };
 }
 
 export default async function CuratorPage({ params }: { params: Promise<{ handle: string }> }) {
   const { handle } = await params;
-  const curator = await getCurator(decodeURIComponent(handle));
-  if (!curator) notFound();
+  const profile = await getCuratorProfile(decodeURIComponent(handle));
+  if (!profile) notFound();
+  const { curator, posts, games } = profile;
 
-  // 게임별로 묶고(한 게임에 게시물이 여러 개면 링크만 여러 줄), 순서는 게임의 가장 최신 posted_at 기준. 숨긴 게임은 카드 조회에서 빠진다
-  const posts = await getCuratorPosts(curator.id);
-  const byGame = new Map<string, { id: string; url: string; collection: boolean }[]>();
-  for (const p of posts) byGame.set(p.game_id, [...(byGame.get(p.game_id) || []), { id: p.id, url: p.post_url, collection: p.post_type === 'collection' }]);
-  const games = await getCardGames([...byGame.keys()]).catch(() => []);
-  const entries = games.map((game) => ({ game, posts: byGame.get(game.id) || [] }));
+  // 숨긴 게임은 카드 조회에서 빠진다 → 보이는 게임만 묶는다
+  const byId = Object.fromEntries(games.map((g) => [g.id, g]));
+  const visible = new Map(games.map((g) => [g.id, gameName(g)]));
+  const sections = groupByPost(posts, visible).map((s) => ({ ...s, dateText: dateLabel(s.postedAt) }));
+  const entries = groupByGame(posts, visible);
+  const saleCount = games.filter((g) => (getPriceInfo(g)?.discount ?? 0) > 0).length;
+  const stats = [
+    { label: '소개한 게임', n: entries.length },
+    { label: '게시물', n: sections.length },
+    { label: '지금 할인 중', n: saleCount },
+  ].filter((s) => s.n > 0);
 
   return (
     <main className="page">
       <BackLink fallbackHref="/" label="홈으로" />
-      <section className="curator-head">
-        {curator.avatar_url && <Image src={curator.avatar_url} alt="" width={64} height={64} className="curator-avatar" />}
-        <div className="curator-head-body">
-          <div className="curator-head-top">
-            <h1 className="curator-head-title">{titleOf(curator.display_name)}</h1>
-            <span className="chip is-static">게임 {entries.length}개</span>
+      <header className="curator-profile">
+        {curator.avatar_url && <Image src={curator.avatar_url} alt="" width={128} height={128} className="curator-avatar" />}
+        <div className="curator-profile-body">
+          <h1 className="curator-profile-name">{curator.display_name}</h1>
+          <p className="curator-profile-handle">@{curator.handle}</p>
+          {stats.length > 0 && (
+            <p className="curator-profile-stats">
+              {stats.map((s, i) => (
+                <span key={s.label}>{i > 0 && ' · '}{s.label} <b>{s.n}</b></span>
+              ))}
+            </p>
+          )}
+          <div className="curator-profile-actions">
+            <a href={curator.instagram_url} target="_blank" rel="noopener noreferrer" className="btn btn-primary curator-btn">인스타그램에서 보기 ↗</a>
+            <CopyLinkButton path={`/c/${encodeURIComponent(curator.handle)}`} />
           </div>
-          <p className="curator-head-desc">{curator.display_name}님이 인스타그램에 소개한 게임이에요. 가격·할인·인원은 매일 갱신돼요.</p>
-          <a href={curator.instagram_url} target="_blank" rel="noopener noreferrer" className="btn compare-add curator-head-link">인스타그램에서 보기 ↗</a>
         </div>
-      </section>
-      {entries.length === 0 ? <p className="tl-note">아직 연결된 게임이 없어요.</p> : <CuratorGames entries={entries} />}
+      </header>
+      <p className="curator-note">가격·할인·인원은 매일 갱신돼요.</p>
+      {entries.length === 0 ? <p className="tl-note">아직 연결된 게임이 없어요.</p> : <CuratorBody games={byId} sections={sections} entries={entries} />}
     </main>
   );
 }
