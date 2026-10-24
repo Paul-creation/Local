@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-24 (main 9d657e1)
+기준: 2026-10-24 (main 55e3b10)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/24: feat/curator-profile-page — /c/[handle]을 크리에이터 프로필로 재디자인. 헤더(아바타 PC 128·모바일 96px, 이름 32px, @handle, 숫자 한 줄 소개한 게임·게시물·지금 할인 중(0은 생략), "인스타그램에서 보기 ↗"·"링크 복사"), 탭 "게시물별 / 게임 전체"(밑줄 글자, ?view=all 유지, 서버는 searchParams를 안 읽어 ISR 유지). 게시물별은 posted_at 최신순 섹션(제목 post_title → 게임 1개면 게임 이름 → "게임 N개 모음", 날짜, 원본 게시물 링크), 게임 전체는 필터 칩(지금 할인 중·친구랑 멀티(최대 인원 2명 이상)·출시 예정)·정렬(최근 소개순·할인 큰 순·평가순)·카드 밑 원본 링크. 계정별 OG 이미지 /api/og/curator/[handle](아바타는 jpeg·png·gif만 그려져 webp는 안 나옴 → 아바타는 PNG로 통일, gamelog.archive는 PNG로 교체·webp 삭제). curator_posts.post_title 마이그레이션(20261027090000)·제목 SQL은 사용자가 실행 완료. build·test 414개 통과, 1440·375px 로컬 확인, 프리뷰에서 post_title·OG 아바타 확인
 - 10/24: feat/curators-home-cards — 메인 "인스타에서 봤던 그 게임"을 게임 카드(GameCard) 가로 캐러셀로(인원별 추천과 같은 캐러셀, PC 3.2장·모바일 1.15장, 화살표). 동의 계정(show_on_home) 2개 미만이면 섹션 숨김, 제목 아래 "@계정 N" 칩(/c/handle). 카드는 최신 게시물순·같은 게임은 최신 하나·계정별 라운드로빈(lib/curatorMix, 테스트 있음)으로 최대 12장, 출시 예정 게임 포함. "@계정 소개"는 카드 밖 아래 링크(/c/handle). 스트리머는 GameCard가 game.streamers로 자동. build·test 409개 통과, 프리뷰에서 4개 계정(게임서랍장·세이브슬롯·게임로그·너겟) 1440·375px 확인
 - 10/24: refactor/unified-game-card — 게임 카드를 GameCard 하나로 통일(메인 인원별 추천·뜨는 게임 1~3위·스트리머 섹션·검색 결과·/c/handle·찜목록). 이미지 위 배지(요즘 뜨는 중·다시 뜨는 중·신작, games.trend_badge), TOP 10 칩, 스트리머 한 줄("방송 · 이름, 이름 +N", components/home/StreamerLine, 13px 보조 글자, 영상 링크는 이름 링크), 검색 결과만 "+ 비교"(가격 줄 오른쪽, 좁으면 역대 최저가 칩이 가격 아래로). 같은 줄 높이는 카드가 칸을 채우고 가격 줄이 맨 아래. ResultCard는 행 보기·compact(상세 비슷한 게임·시리즈·내 라이브러리)만 직접 그리고 카드 보기는 GameCard에 위임. 메인 캐러셀 PC 3.5→3.2장(모바일 1.15 그대로). 데이터: gameIndex에 review_summary·review_percent·review_total·no_korean·streamers(게임당 최대 4명, lib/streamerVideos getAllStreamerNames) 추가, getCardGames에 trend_badge·평가·스트리머 추가. /api/games/list 1,447KB→1,574KB(+8.7%, gzip +6.1%). 검색 LCP(CPU 4배·1.6Mbps 제한 중앙값) 약 15.9초→16.4초(+2~4%), 검색 카드 높이 352→약 410~440px. build·test 405개 통과, 1440·375px 로컬 확인(프리뷰 미확인)
 - 10/24: chore/curator-sunkenland — curator-games.json에 세이브슬롯 소개 게임 Sunkenland(2080690, 스팀 검색·appdetails로 이름·종류 game·2023-08-25 출시 확인) 추가. --curator 미리보기→--apply→--ids enrich 22단계(가격 3종·itad-heat·players·recent-reviews 포함) 모두 exit 0, AI 비용 약 $0.01 미만. 최대 인원(max_players)은 비어 있음(fill-players-from-store --ids로 채울 수 있음, 아직 안 함). 큐레이터 게시물 연결은 curators에 세이브슬롯이 없어 아직. 코드 변경 없음, build·test 405개 통과
@@ -95,6 +96,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- feat/curator-profile-page 머지 뒤: 프로덕션 /c/gamelog.archive·games_drawer_·saveslot0_0 확인(미확인) / 새 계정·아바타는 PNG로 올릴 것(webp는 OG에 안 나옴) / 카톡·디스코드 실제 공유 미리보기(미확인)
 - refactor/unified-game-card 머지 뒤: 프로덕션 프리뷰에서 메인·검색·/c/handle·찜목록 확인(미확인) / 상세 비슷한 게임·시리즈·내 라이브러리는 compact 카드 그대로(풀 카드 전환 여부 결정 대기)
 - feat/demo-coming-soon 머지 뒤: Coal Duty(10/27)·HANDS OVER(10/30)가 출시되면 데일리 check-coming-soon이 released로 전환하는지 확인(미확인) / 첫 daily에서 check-coming-soon 단계 동작·일일 요약 "출시 전환" 줄 확인(미확인, DB 연결 실행은 못 해 봄) / 6개를 큐레이터 게시물에 연결하는 curator_posts SQL(세이브슬롯 큐레이터가 curators에 아직 없음) / UNFROST·Blades & Trades 인원 빈칸(직접 검증)
 - chore/curator-games-drawer 머지 뒤: 9개 게임의 review_summary가 데일리에서 채워지는지 확인(미확인) / 큐레이터 게시물 연결 SQL은 사용자가 실행 / 프로덕션 노출 확인(미확인)
