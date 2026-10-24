@@ -1,30 +1,27 @@
-// 실행: npm test — 인스타 섹션 카드 섞기
+// 실행: npm test — 인스타 섹션 카드 고르기 (계정별 라운드로빈)
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mixByCurator, latestPerGame } from './curatorMix.ts';
+import { roundRobinByCurator, latestPerGame } from './curatorMix.ts';
 
 const mk = (s) => s.split('').map((c, i) => ({ curator: c, id: `${c}${i}` }));
-const run = (list) => { let m = 0, r = 0, prev = ''; for (const x of list) { r = x.curator === prev ? r + 1 : 1; prev = x.curator; m = Math.max(m, r); } return m; };
+const ids = (list) => list.map((x) => x.id);
 
-test('한 계정이 3장 연속 나오지 않는다 (다른 계정의 최신 카드를 먼저)', () => {
-  const out = mixByCurator(mk('AAAABBBBCC'), 12);
-  assert.equal(out.length, 10);
-  assert.ok(run(out) <= 2);
-  assert.deepEqual(out.slice(0, 3).map((x) => x.id), ['A0', 'A1', 'B4']);
+test('계정 순서(가장 최근 게시물 순)대로 한 장씩 번갈아, 계정 안은 최신순', () => {
+  // 최신순: A0 A1 B2 A3 C4 B5 → A 큐 [A0 A1 A3], B 큐 [B2 B5], C 큐 [C4]
+  assert.deepEqual(ids(roundRobinByCurator(mk('AABACB'), 12)), ['A0', 'B2', 'C4', 'A1', 'B5', 'A3']);
 });
 
-test('이미 번갈아 있으면 순서 그대로, 최대 12장', () => {
-  const out = mixByCurator(mk('ABABABABABABAB'), 12);
+test('한 계정 게임이 바닥나면 나머지 계정끼리 계속', () => {
+  assert.deepEqual(ids(roundRobinByCurator(mk('AAAAAB'), 12)), ['A0', 'B5', 'A1', 'A2', 'A3', 'A4']);
+  assert.deepEqual(ids(roundRobinByCurator(mk('AAAA'), 12)), ['A0', 'A1', 'A2', 'A3']);
+});
+
+test('최대 12장에서 자르고 모든 계정이 앞쪽 라운드에 나온다', () => {
+  const out = roundRobinByCurator(mk('AAAAAAAAAAAAAAAABBBBCCCCDDDD'), 12);
   assert.equal(out.length, 12);
-  assert.deepEqual(out.map((x) => x.id), mk('ABABABABABABAB').slice(0, 12).map((x) => x.id));
-});
-
-test('담을 다른 계정이 없으면 규칙을 어기지 않고 멈춘다', () => {
-  const out = mixByCurator(mk('AAAAAB'), 12);
-  assert.ok(run(out) <= 2);
-  assert.equal(out.length, 5); // A A B A A (A는 더 못 붙임)
-  assert.equal(mixByCurator(mk('AAAA'), 12).length, 2);
-  assert.deepEqual(mixByCurator([], 12), []);
+  assert.deepEqual([...new Set(out.map((x) => x.curator))].sort(), ['A', 'B', 'C', 'D']);
+  assert.deepEqual(out.slice(0, 4).map((x) => x.curator), ['A', 'B', 'C', 'D']);
+  assert.deepEqual(roundRobinByCurator([], 12), []);
 });
 
 test('같은 게임은 최신 게시물 하나만', () => {

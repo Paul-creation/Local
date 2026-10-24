@@ -6,7 +6,7 @@ import { getCardGames } from './gameIndex';
 import { getCardExtras } from './cardExtras';
 import type { CardExtras } from './cardInfo';
 import type { CardGame } from './peopleRecs';
-import { mixByCurator, latestPerGame } from './curatorMix';
+import { roundRobinByCurator, latestPerGame } from './curatorMix';
 
 export type Curator = { id: string; handle: string; display_name: string; instagram_url: string; avatar_url: string | null };
 export type CuratorPost = { id: string; game_id: string; post_url: string; post_type: 'single' | 'collection'; posted_at: string };
@@ -39,7 +39,7 @@ export async function getCuratorPosts(curatorId: string): Promise<CuratorPost[]>
 }
 
 // 메인 "인스타에서 봤던 그 게임" — 동의받은 계정(show_on_home)만. 연결 게임(숨긴 게임·메인 노출 제외 게임 제외)이 1개 이상인 계정이 HOME_CURATORS_MIN개 이상일 때만 돌려주고, 아니면 null = 섹션 없음
-// 카드: 계정들의 소개 게시물 게임을 최신 게시물순으로, 같은 게임은 최신 게시물 하나만(출처 계정도 그 게시물 기준), 한 계정이 3장 연속 나오지 않게 섞어 최대 12장 (lib/curatorMix)
+// 카드: 계정들의 소개 게시물 게임을 최신 게시물순으로, 같은 게임은 최신 게시물 하나만(출처 계정도 그 게시물 기준), 계정별 라운드로빈(계정 순서는 가장 최근 게시물 기준, 한 장씩 번갈아, 바닥나면 나머지 계정끼리)으로 최대 12장 (lib/curatorMix)
 // 출시 예정 게임도 포함 (카드가 "출시 예정 · …"으로 표시). 칩의 숫자는 그 계정이 소개한 게임 수 전체(카드에 안 나온 게임 포함)
 export const HOME_CURATORS_MIN = 2;
 export type HomeCuratorChip = { handle: string; displayName: string; gameCount: number };
@@ -70,7 +70,7 @@ export async function getHomeCurators(): Promise<HomeCurators | null> {
     .sort((a, b) => b.gameCount - a.gameCount || a.handle.localeCompare(b.handle));
   if (chips.length < HOME_CURATORS_MIN) return null;
 
-  const picked = mixByCurator(latestPerGame(shown).map((p) => ({ curator: p.curator_id as string, gameId: p.game_id as string })));
+  const picked = roundRobinByCurator(latestPerGame(shown).map((p) => ({ curator: p.curator_id as string, gameId: p.game_id as string })));
   try {
     const [cards, extras] = await Promise.all([getCardGames(picked.map((p) => p.gameId)), getCardExtras(picked.map((p) => p.gameId)).catch(() => ({} as Record<string, CardExtras>))]);
     // 칩은 안 쓰는 카드라 태그 번호는 보내지 않는다 (인원별 추천과 같음)

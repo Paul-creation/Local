@@ -1,18 +1,20 @@
-// 메인 "인스타에서 봤던 그 게임" 카드 섞기 — 순수 함수라 curatorMix.test.mjs가 .ts를 바로 불러온다 (다른 파일을 import하지 않는다)
-// 입력은 최신 소개순. 앞에서부터 하나씩 담되, 한 계정이 maxRun장 연속이면 다른 계정의 가장 최신 카드를 먼저 담는다
-// 담을 수 있는 다른 계정 카드가 없으면 규칙을 어기지 않고 거기서 멈춘다 (max장보다 적을 수 있음)
+// 메인 "인스타에서 봤던 그 게임" 카드 고르기 — 순수 함수라 curatorMix.test.mjs가 .ts를 바로 불러온다 (다른 파일을 import하지 않는다)
 export const HOME_CURATOR_CARDS = 12;
-export const HOME_CURATOR_MAX_RUN = 2;
 
-export function mixByCurator<T extends { curator: string }>(items: T[], max = HOME_CURATOR_CARDS, maxRun = HOME_CURATOR_MAX_RUN): T[] {
-  const rest = [...items];
+// 계정별 라운드로빈: 입력은 최신 소개순. 계정마다 자기 게임을 최신순으로 줄 세우고, 계정 순서(그 계정의 가장 최근 게시물이 앞선 순)대로 한 장씩 번갈아 뽑는다
+// 한 계정 게임이 바닥나면 남은 계정끼리 계속, 최대 max장
+export function roundRobinByCurator<T extends { curator: string }>(itemsNewestFirst: T[], max = HOME_CURATOR_CARDS): T[] {
+  const queues = new Map<string, T[]>(); // Map은 처음 들어온 순서를 지킨다 = 계정의 가장 최근 게시물 순
+  for (const it of itemsNewestFirst) (queues.get(it.curator) ?? queues.set(it.curator, []).get(it.curator)!).push(it);
+  const lists = [...queues.values()];
   const out: T[] = [];
-  while (out.length < max && rest.length) {
-    const tail = out.slice(-maxRun);
-    const blocked = tail.length === maxRun && tail.every((x) => x.curator === tail[0].curator) ? tail[0].curator : null;
-    const i = rest.findIndex((x) => x.curator !== blocked);
-    if (i < 0) break;
-    out.push(...rest.splice(i, 1));
+  for (let round = 0; out.length < max; round++) {
+    let took = false;
+    for (const list of lists) {
+      if (out.length >= max) break;
+      if (round < list.length) { out.push(list[round]); took = true; }
+    }
+    if (!took) break;
   }
   return out;
 }
