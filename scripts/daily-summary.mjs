@@ -7,6 +7,7 @@ import fs from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { readPurge } from './lib/privacy-purge.mjs';
 import { readPriceCheck, NOT_BUNDLE_NOTE } from './lib/price-check.mjs';
+import { readReviewCheck, reviewCheckLine } from './lib/review-check.mjs';
 import { readStreamerVideos } from './lib/streamer-videos.mjs';
 
 const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
@@ -98,7 +99,7 @@ const streamer = readStreamerVideos();
 const streamerLine = streamer
   ? `스트리머 영상 새로 연결 ${streamer.linked}개 (연결 안 된 새 영상 ${streamer.unlinked}개 · YouTube ${streamer.units}유닛)`
   : '스트리머 영상: 오늘 기록 없음 (수집 단계가 안 돌았거나 표가 아직 없음)';
-const message = `${content}\n${purgeLine}\n${priceLine}\n${streamerLine}\n${playersLine}${tagLine}`;
+const message = `${content}\n${purgeLine}\n${priceLine}\n${reviewCheckLine(readReviewCheck())}\n${streamerLine}\n${playersLine}${tagLine}`;
 console.log(message);
 
 const url = process.env.DISCORD_WEBHOOK_URL;
