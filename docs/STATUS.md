@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-24 (main b8ba7a9)
+기준: 2026-10-24 (main 76ff3dd)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/24: docs/rules-preview-user — CLAUDE.md 규칙 정리(프리뷰 확인은 사용자가 함, 보고 형식 간소화). 코드 변경 없음, build·test 433개 통과
 - 10/24: feat/curator-import — 관리자 /admin/curators/import(인스타 캡션 붙여넣기 → Haiku로 게임 이름 추출(guardedClaudeFetch, 호출 종류 curator-import 하루 40회) → games 매칭(정확→정규화→부분, 후보 3개, 숨긴 게임 제외) → 못 찾은 이름은 스팀 검색 후보(appdetails 종류 game만, 데모는 본편 appid)). 연결은 curator_posts에(중복 건너뜀, 1개 single·2개 이상 collection), DB에 없는 게임은 curator_game_queue(마이그레이션 20261031090000, 사용자 실행 완료; appid·curator_id·post_url·created_at·imported_at + post_type·post_title·posted_at)에. 데일리 맨 앞 import-curator-queue --apply(bulk-import --curator → --ids 보강 17단계(AI는 Haiku만) → 같은 게시물에 curator_posts 연결 → imported_at, 못 가져온 appid는 14일만 재시도, 단계 타임아웃 60분), 일일 요약 "큐레이터 게임 추가 N개". API 3개 모두 서버에서 isAdmin 확인, 입력 길이 제한. security-check에 curator_game_queue anon 읽기·쓰기·수정·삭제 차단 점검 추가(✅94 ❌0). 로컬 서버로 겜로그 Dd_IdcFkV-h에 Big Walk·SOS OPS! 연결 테스트 → 추가 0개·이미 연결 2개(정상). build·test 433개 통과
 - 10/24: fix/curator-bio — curators.bio(text, null) 추가(마이그레이션 20261027100000, 사용자가 실행). /c/handle에서 bio가 있으면 @handle 아래 15px --text-2로 최대 2줄(넘치면 말줄임), 없으면 줄 자체 없음. 메타 description 앞과 OG 이미지(제목 아래 한 줄)에도 bio가 있으면 표시. 칸이 없는 DB에서는 bio 없이 다시 조회. 헤더 아래 안내를 "가격·할인·스팀 평가는 매일 갱신돼요."로 변경. build·test 414개 통과, 프리뷰에서 안내 문구·2줄 말줄임(1440·375px, 가짜 문구를 DOM에 넣어 확인)·OG 응답 확인
 - 10/24: chore/curator-last-gas-station — curator-games.json에 겜로그 소개 게임 최후의 주유소(3690030, 스팀 한국어 검색 단독 일치·appdetails 종류 game·The Last Gas Station·2026-04-28 출시 확인) 추가. 이 게임은 10/21 weekly로 이미 DB에 있어(인원 1-2·평가·카드 이미지 채워짐) 미리보기가 "추가 예정 0개"라 --apply·enrich는 하지 않음. 겜로그 협동게임 모음 게시물(Dd_IdcFkV-h)에 연결이 빠져 있던 것은 curator_posts SQL로 사용자가 연결. 코드 변경 없음, build·test 414개 통과
