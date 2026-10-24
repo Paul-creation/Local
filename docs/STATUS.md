@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-24 (main 65e17bf)
+기준: 2026-10-24 (main 8d898fc)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/24: fix/curator-bio — curators.bio(text, null) 추가(마이그레이션 20261027100000, 사용자가 실행). /c/handle에서 bio가 있으면 @handle 아래 15px --text-2로 최대 2줄(넘치면 말줄임), 없으면 줄 자체 없음. 메타 description 앞과 OG 이미지(제목 아래 한 줄)에도 bio가 있으면 표시. 칸이 없는 DB에서는 bio 없이 다시 조회. 헤더 아래 안내를 "가격·할인·스팀 평가는 매일 갱신돼요."로 변경. build·test 414개 통과, 프리뷰에서 안내 문구·2줄 말줄임(1440·375px, 가짜 문구를 DOM에 넣어 확인)·OG 응답 확인
 - 10/24: chore/curator-last-gas-station — curator-games.json에 겜로그 소개 게임 최후의 주유소(3690030, 스팀 한국어 검색 단독 일치·appdetails 종류 game·The Last Gas Station·2026-04-28 출시 확인) 추가. 이 게임은 10/21 weekly로 이미 DB에 있어(인원 1-2·평가·카드 이미지 채워짐) 미리보기가 "추가 예정 0개"라 --apply·enrich는 하지 않음. 겜로그 협동게임 모음 게시물(Dd_IdcFkV-h)에 연결이 빠져 있던 것은 curator_posts SQL로 사용자가 연결. 코드 변경 없음, build·test 414개 통과
 - 10/24: feat/curator-profile-page — /c/[handle]을 크리에이터 프로필로 재디자인. 헤더(아바타 PC 128·모바일 96px, 이름 32px, @handle, 숫자 한 줄 소개한 게임·게시물·지금 할인 중(0은 생략), "인스타그램에서 보기 ↗"·"링크 복사"), 탭 "게시물별 / 게임 전체"(밑줄 글자, ?view=all 유지, 서버는 searchParams를 안 읽어 ISR 유지). 게시물별은 posted_at 최신순 섹션(제목 post_title → 게임 1개면 게임 이름 → "게임 N개 모음", 날짜, 원본 게시물 링크), 게임 전체는 필터 칩(지금 할인 중·친구랑 멀티(최대 인원 2명 이상)·출시 예정)·정렬(최근 소개순·할인 큰 순·평가순)·카드 밑 원본 링크. 계정별 OG 이미지 /api/og/curator/[handle](아바타는 jpeg·png·gif만 그려져 webp는 안 나옴 → 아바타는 PNG로 통일, gamelog.archive는 PNG로 교체·webp 삭제). curator_posts.post_title 마이그레이션(20261027090000)·제목 SQL은 사용자가 실행 완료. build·test 414개 통과, 1440·375px 로컬 확인, 프리뷰에서 post_title·OG 아바타 확인
 - 10/24: feat/curators-home-cards — 메인 "인스타에서 봤던 그 게임"을 게임 카드(GameCard) 가로 캐러셀로(인원별 추천과 같은 캐러셀, PC 3.2장·모바일 1.15장, 화살표). 동의 계정(show_on_home) 2개 미만이면 섹션 숨김, 제목 아래 "@계정 N" 칩(/c/handle). 카드는 최신 게시물순·같은 게임은 최신 하나·계정별 라운드로빈(lib/curatorMix, 테스트 있음)으로 최대 12장, 출시 예정 게임 포함. "@계정 소개"는 카드 밖 아래 링크(/c/handle). 스트리머는 GameCard가 game.streamers로 자동. build·test 409개 통과, 프리뷰에서 4개 계정(게임서랍장·세이브슬롯·게임로그·너겟) 1440·375px 확인
@@ -97,6 +98,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- fix/curator-bio 머지 뒤: curators.bio에 실제 소개 문구를 넣은 뒤 /c/handle·OG에서 표시 확인(미확인, 지금은 모든 계정 bio가 비어 있음)
 - chore/curator-last-gas-station 머지 뒤: curator_posts 연결 SQL 실행 후 /c/gamelog.archive 게시물별 보기에 최후의 주유소가 나오는지 확인(미확인)
 - feat/curator-profile-page 머지 뒤: 프로덕션 /c/gamelog.archive·games_drawer_·saveslot0_0 확인(미확인) / 새 계정·아바타는 PNG로 올릴 것(webp는 OG에 안 나옴) / 카톡·디스코드 실제 공유 미리보기(미확인)
 - refactor/unified-game-card 머지 뒤: 프로덕션 프리뷰에서 메인·검색·/c/handle·찜목록 확인(미확인) / 상세 비슷한 게임·시리즈·내 라이브러리는 compact 카드 그대로(풀 카드 전환 여부 결정 대기)
