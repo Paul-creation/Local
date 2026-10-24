@@ -134,7 +134,7 @@ async function insert(appid, { data, reviewSummary }) {
   // 출시 예정·데모 칸은 큐레이터 경로에서만 채움 (일반 경로는 칸을 건드리지 않아 마이그레이션 전에도 동작, 기본값 released)
   const release = CURATOR ? releaseFields(data) : null;
   const row = {
-    name: data.name,
+    name: data.name.trim(),
     steam_appid: appid,
     platform: ['steam'],
     cover_image_url: data.header_image,

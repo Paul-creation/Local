@@ -123,13 +123,6 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
           </div>
         </FoldSection>
 
-        {/* 데모 있음 — 출시 전 게임 중 스팀 무료 데모가 있는 게임 (games.demo_appid, app/lib/release). 기본 검색에는 출시 예정 게임도 함께 나옴 */}
-        <section className="filter-section">
-          <div className="filter-chips">
-            <button type="button" className={`chip${demoOnly ? ' on' : ''}`} aria-pressed={demoOnly} onClick={() => setDemoOnly(!demoOnly)}>데모 있음</button>
-          </div>
-        </section>
-
         <FoldSection title="같이 하는 방식" count={selectedCategory ? 1 : 0}>
           <div className="filter-chips">
             {CATEGORIES.map(c => (
@@ -166,6 +159,8 @@ export default function FilterPanel({ filters, variant = 'sheet' }: { filters: G
           <p className="filter-note">할인 중이면 할인가 기준</p>
           <div className="filter-chips">
             <button type="button" className={`chip${freeOnly ? ' on' : ''}`} aria-pressed={freeOnly} onClick={() => setPriceRange(freeOnly ? PRICE_ALL : FREE_ONLY)}>무료만</button>
+            {/* 데모 있음 — 출시 전 게임 중 스팀 무료 데모가 있는 게임 (games.demo_appid, app/lib/release). 기본 검색에는 출시 예정 게임도 함께 나옴 */}
+            <button type="button" className={`chip${demoOnly ? ' on' : ''}`} aria-pressed={demoOnly} onClick={() => setDemoOnly(!demoOnly)}>데모 있음</button>
             <button type="button" className={`chip${saleOnly ? ' on' : ''}`} aria-pressed={saleOnly} onClick={() => setSaleOnly(v => !v)}>지금 할인 중</button>
           </div>
         </section>
