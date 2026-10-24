@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-24 (main 20e7427)
+기준: 2026-10-24 (main 42d03c6)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/24: feat/demo-coming-soon — 출시 예정·데모 게임 지원(큐레이터 경로). games.release_status('released'|'coming_soon', 기본 released)·demo_appid·release_date_text(마이그레이션 20261030090000, 사용자 실행 완료). bulk-import --curator만 coming soon 게임도 받음(리뷰 조회 생략, appdetails release_date.coming_soon·demos[]로 세 칸 채움, 이름 앞뒤 공백 항상 trim, 일반 경로는 칸을 안 건드림). coming_soon은 가격·리뷰·동접·순위·트렌드·리뷰 스냅샷·주간 추천·비슷한 게임 계산·일일 요약 가격 실패 목록에서 제외. daily 첫 단계 check-coming-soon --apply(출시됐으면 released로, 아직이면 출시일 원문·데모만 갱신), 일일 요약 "출시 전환 N개" 줄(확인할 게임 0개면 생략). 카드 "출시 예정 · {원문}"+"무료 데모" 칩, 상세 가격 카드 자리에 출시 예정 안내+"스팀에서 데모 받기 ↗"(할인·역대 최저가·할인 전적 숨김), 검색 필터 "데모 있음" 칩(무료만 옆, ?demo=1), 기본 검색엔 포함·메인 추천(selectHomeGames·주간·스트리머 주제·AI 추천)에선 제외. 세이브슬롯 데모 게임 6개(HANDS OVER 4661070·Seikyu Let's Go! 4928080·Blades & Trades 4300400·Kitman 4186890·UNFROST 3377450·Coal Duty 4272370)를 --apply→--ids enrich(가격·리뷰·동접 단계 제외). 6개 모두 max_players가 비어 소개문 검사가 오판해 3개에 잘못된 소개문이 저장돼 사용자가 SQL로 비움. 마이그레이션 전에는 빌드가 실패함(selectHomeGames 등이 칸을 읽음). build·test 401개 통과, 프리뷰 확인(6개가 목록 API에 coming_soon으로 있고 메인·this-week·taste에는 없음 — 6개는 원래 순위가 없어 제외 필터 효과는 증명 못 함), /c/handle 카드는 로컬 가짜 주입으로만 확인
 - 10/24: fix/review-getitems — enrich-players의 리뷰 대체 경로에 스팀 IStoreBrowseService/GetItems/v1(키 없이 GET, 100개씩 묶음, 200개까지 확인) 추가. appreviews 실패 + review_total null인 게임만 appreviews → GetItems(reviews.summary_filtered, 전체 언어) → 상점 페이지 "All Reviews" 순. 3칸(review_summary·review_positive_percent·review_total)을 채우고 games.review_source('appreviews'/'getitems'/'store_page')에 출처 기록(마이그레이션 20261029090000, 사용자가 실행 완료, 칸이 없으면 출처 없이 동작). appreviews가 돌아오면 출처가 getitems·store_page인 게임은 문구까지 덮어씀. GetItems 개수는 appreviews·상점 페이지보다 조금 적을 수 있음(It Takes Two 220,441 vs DB 272,541). 게임서랍장 9개 모두 미리보기로 채워짐 확인(저장은 데일리에서). 일일 요약 리뷰 줄에 대체 개수 표시. 실제 Actions 동작은 확인 못 함. build·test 391개 통과
 - 10/24: fix/review-fail-summary·fix/review-source-fallback — 일일 요약에 "⭐ 리뷰 조회 실패 N/M개" 줄 추가(enrich-players가 scripts/.cache/review-check.json에 기록, --ids 실행은 기록 안 함). appreviews가 실패하고 review_total이 null인 게임만 상점 페이지(l=english&cc=us)의 "All Reviews" 줄(전체 언어 합계)로 대체(scripts/lib/review-store.mjs). 리뷰가 많은 게임은 그 줄 없이 언어별 줄만 있어 값이 달라지므로(CS2 상점 영어 2,638,603개 vs 전체 9,937,470개) 대체하지 않음. 10/24 Codespace에서 appreviews는 파라미터·헤더 6가지 조합 모두 302(Location 상점 메인). 10/23 18:17 UTC 데일리도 노출 게임 1,508개 전부 appreviews 실패. 실제 Actions 동작은 확인 못 함. build·test 385개 통과
 - 10/24: fix/fill-missing-reviews — enrich-players가 평가 문구(games.review_summary)도 채움: appreviews 조회가 성공하면 review_total·review_positive_percent는 지금처럼 갱신하고, review_summary는 비어 있을 때만 채움(이미 있는 값은 그대로, 조회 실패면 그 게임은 건너뜀, scripts/lib/review-fill.mjs·REVIEW_LABELS는 bulk-import와 공유). 원인: 데일리는 리뷰 칸이 빈 게임도 대상이었지만 review_summary는 아무도 갱신하지 않았고, 10/23 18:17 UTC 데일리(게임서랍장 import 뒤)에서는 appreviews가 노출 게임 1,508개 전부 실패(전날들은 1,368개 중 1개). 실제 Actions에서 채워지는지는 확인 못 함. build·test 377개 통과
@@ -90,6 +91,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- feat/demo-coming-soon 머지 뒤: Coal Duty(10/27)·HANDS OVER(10/30)가 출시되면 데일리 check-coming-soon이 released로 전환하는지 확인(미확인) / 첫 daily에서 check-coming-soon 단계 동작·일일 요약 "출시 전환" 줄 확인(미확인, DB 연결 실행은 못 해 봄) / 6개를 큐레이터 게시물에 연결하는 curator_posts SQL(세이브슬롯 큐레이터가 curators에 아직 없음) / 인원 빈칸이라 소개문 재작성 필요(fix/fun-desc-null-players 예정)
 - chore/curator-games-drawer 머지 뒤: 9개 게임의 review_summary가 데일리에서 채워지는지 확인(미확인) / 큐레이터 게시물 연결 SQL은 사용자가 실행 / 프로덕션 노출 확인(미확인)
 - feat/players-from-store 머지 뒤: 다음 weekly 실행 결과(fill-players-from-store 단계 동작·소요 시간·자동 채움 수)를 사용자가 확인(미확인) / 대기 51개는 scripts/.cache/players-store-pending.json에서 근거 문장 확인 뒤 필요하면 직접 검증 라운드로 (미확인)
 - chore/curator-games-nugget 머지 뒤: curator_posts 연결 SQL 실행 여부 확인(미확인) / 실행 후 프로덕션에서 4개 게임 상세의 큐레이터 카드·/c/nugget_zine 확인(미확인)
