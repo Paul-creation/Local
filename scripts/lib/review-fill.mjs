@@ -12,9 +12,10 @@ export const REVIEW_LABELS = {
 // qs가 없으면(조회 실패) 빈 객체 — 건너뜀
 export function buildReviewUpdate(game, qs) {
   if (!qs || typeof qs.total_reviews !== 'number') return {};
+  // 상점 페이지에서 읽은 값은 긍정 개수 없이 퍼센트만 있음(positive_percent)
   const update = {
     review_total: qs.total_reviews,
-    review_positive_percent: qs.total_reviews > 0 ? Math.round((qs.total_positive / qs.total_reviews) * 100) : 0,
+    review_positive_percent: qs.positive_percent ?? (qs.total_reviews > 0 ? Math.round((qs.total_positive / qs.total_reviews) * 100) : 0),
   };
   const label = REVIEW_LABELS[qs.review_score_desc];
   if (game.review_summary == null && label) update.review_summary = label;

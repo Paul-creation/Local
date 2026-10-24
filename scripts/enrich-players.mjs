@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { onlyIds, ONLY_IDS } from './lib/only-ids.mjs';
 import { buildReviewUpdate } from './lib/review-fill.mjs';
+import { fetchStoreReviews } from './lib/review-store.mjs';
 import { recordReviewCheck } from './lib/review-check.mjs';
 
 const supabase = createClient(
@@ -29,15 +30,22 @@ async function getReviewSummary(appid) {
 }
 
 async function main() {
-  const { data: games } = await onlyIds(supabase.from('games').select('id, name, steam_appid, review_summary')).eq('hidden', false).not('steam_appid', 'is', null);
+  const { data: games } = await onlyIds(supabase.from('games').select('id, name, steam_appid, review_summary, review_total')).eq('hidden', false).not('steam_appid', 'is', null);
   if (!games) return;
 
   let reviewFailed = 0;
+  let viaStore = 0;
   for (const game of games) {
-    const [currentPlayers, reviews] = await Promise.all([
+    const [currentPlayers, apiReviews] = await Promise.all([
       getCurrentPlayers(game.steam_appid),
       getReviewSummary(game.steam_appid),
     ]);
+    // appreviews가 실패했고 리뷰 수를 아직 모르는 게임(review_total null)만 상점 페이지의 전체 평가 줄로 대체 (이미 값이 있는 게임은 추가 요청 없이 기존 값 유지)
+    let reviews = apiReviews;
+    if (!reviews && game.review_total == null) {
+      reviews = await fetchStoreReviews(game.steam_appid);
+      if (reviews) viaStore++;
+    }
 
     const update = {};
 
@@ -67,7 +75,7 @@ async function main() {
   }
 
   // 일일 요약용 (--ids로 일부만 돌린 때는 매일 기록을 덮어쓰지 않음)
-  if (!ONLY_IDS) recordReviewCheck({ checked: games.length, failed: reviewFailed });
+  if (!ONLY_IDS) recordReviewCheck({ checked: games.length, failed: reviewFailed, viaStore });
 }
 
 main();
