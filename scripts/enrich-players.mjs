@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { onlyIds } from './lib/only-ids.mjs';
+import { buildReviewUpdate } from './lib/review-fill.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -16,41 +17,30 @@ async function getCurrentPlayers(appid) {
   } catch { return null; }
 }
 
-async function getAccurateReviews(appid) {
+async function getReviewSummary(appid) {
   try {
     const res = await fetch(
       `https://store.steampowered.com/appreviews/${appid}?json=1&filter=summary&language=all&purchase_type=all&review_type=all`
     );
     const json = await res.json();
-    const qs = json.query_summary;
-    if (!qs) return null;
-    return {
-      total: qs.total_reviews,
-      positive: qs.total_positive,
-      percent: qs.total_reviews > 0
-        ? Math.round((qs.total_positive / qs.total_reviews) * 100)
-        : 0,
-    };
+    return json.query_summary ?? null;
   } catch { return null; }
 }
 
 async function main() {
-  const { data: games } = await onlyIds(supabase.from('games').select('id, name, steam_appid')).eq('hidden', false).not('steam_appid', 'is', null);
+  const { data: games } = await onlyIds(supabase.from('games').select('id, name, steam_appid, review_summary')).eq('hidden', false).not('steam_appid', 'is', null);
   if (!games) return;
 
   for (const game of games) {
     const [currentPlayers, reviews] = await Promise.all([
       getCurrentPlayers(game.steam_appid),
-      getAccurateReviews(game.steam_appid),
+      getReviewSummary(game.steam_appid),
     ]);
 
     const update = {};
 
     if (currentPlayers !== null) update.current_players = currentPlayers;
-    if (reviews) {
-      update.review_positive_percent = reviews.percent;
-      update.review_total = reviews.total;
-    }
+    Object.assign(update, buildReviewUpdate(game, reviews)); // 조회 실패면 빈 객체, 리뷰 문구는 빈 게임만 채움
 
     // peak_players(역대 최고 동접)는 enrich-itad-heat가 ITAD 값으로만 채움 (SteamSpy peak_ccu는 하루 피크라 쓰지 않음)
 
@@ -67,7 +57,7 @@ async function main() {
     }
 
     console.log(
-      `${game.name}: 현재 ${currentPlayers?.toLocaleString() ?? '?'}명 | 리뷰 ${reviews?.percent ?? '?'}% (${reviews?.total?.toLocaleString() ?? '?'}개)`
+      `${game.name}: 현재 ${currentPlayers?.toLocaleString() ?? '?'}명 | 리뷰 ${update.review_positive_percent ?? '?'}% (${update.review_total?.toLocaleString() ?? '?'}개)`
     );
 
     await new Promise((r) => setTimeout(r, 800));

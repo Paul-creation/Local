@@ -24,6 +24,7 @@ import { isNonGame } from './lib/non-game.mjs';
 import { steamGet, appdetailsUrl } from './lib/steam.mjs';
 import { judge, parseChart } from './lib/catalog-rules.mjs';
 import { fetchReviewSummary } from './lib/review-fetch.mjs';
+import { REVIEW_LABELS } from './lib/review-fill.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -39,13 +40,6 @@ if (APPIDS_FILE && CURATOR_FILE) { console.error('--appids와 --curator는 같�
 const LIST_FILE = APPIDS_FILE || CURATOR_FILE; // 목록 파일로 들어오는 경로
 const CURATOR = !!CURATOR_FILE;
 
-const REVIEW_LABELS = {
-  'Overwhelmingly Positive': '압도적으로 긍정적', 'Very Positive': '매우 긍정적',
-  'Positive': '긍정적', 'Mostly Positive': '대체로 긍정적', 'Mixed': '복합적',
-  'Mostly Negative': '대체로 부정적', 'Negative': '부정적',
-  'Very Negative': '매우 부정적', 'Overwhelmingly Negative': '압도적으로 부정적',
-  'No user reviews': '리뷰 없음',
-};
 
 const MAX_NEW_GAMES = 200;
 const TIME_BUDGET_MS = 40 * 60 * 1000; // run-steps 단계 시간 제한(45분) 전에 스스로 멈춤
