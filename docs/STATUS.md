@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-24 (main 4456165)
+기준: 2026-10-24 (main b2f92d1)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/24: refactor/unified-game-card — 게임 카드를 GameCard 하나로 통일(메인 인원별 추천·뜨는 게임 1~3위·스트리머 섹션·검색 결과·/c/handle·찜목록). 이미지 위 배지(요즘 뜨는 중·다시 뜨는 중·신작, games.trend_badge), TOP 10 칩, 스트리머 한 줄("방송 · 이름, 이름 +N", components/home/StreamerLine, 13px 보조 글자, 영상 링크는 이름 링크), 검색 결과만 "+ 비교"(가격 줄 오른쪽, 좁으면 역대 최저가 칩이 가격 아래로). 같은 줄 높이는 카드가 칸을 채우고 가격 줄이 맨 아래. ResultCard는 행 보기·compact(상세 비슷한 게임·시리즈·내 라이브러리)만 직접 그리고 카드 보기는 GameCard에 위임. 메인 캐러셀 PC 3.5→3.2장(모바일 1.15 그대로). 데이터: gameIndex에 review_summary·review_percent·review_total·no_korean·streamers(게임당 최대 4명, lib/streamerVideos getAllStreamerNames) 추가, getCardGames에 trend_badge·평가·스트리머 추가. /api/games/list 1,447KB→1,574KB(+8.7%, gzip +6.1%). 검색 LCP(CPU 4배·1.6Mbps 제한 중앙값) 약 15.9초→16.4초(+2~4%), 검색 카드 높이 352→약 410~440px. build·test 405개 통과, 1440·375px 로컬 확인(프리뷰 미확인)
 - 10/24: chore/curator-sunkenland — curator-games.json에 세이브슬롯 소개 게임 Sunkenland(2080690, 스팀 검색·appdetails로 이름·종류 game·2023-08-25 출시 확인) 추가. --curator 미리보기→--apply→--ids enrich 22단계(가격 3종·itad-heat·players·recent-reviews 포함) 모두 exit 0, AI 비용 약 $0.01 미만. 최대 인원(max_players)은 비어 있음(fill-players-from-store --ids로 채울 수 있음, 아직 안 함). 큐레이터 게시물 연결은 curators에 세이브슬롯이 없어 아직. 코드 변경 없음, build·test 405개 통과
 - 10/24: fix/fun-desc-null-players — write-fun-descriptions의 검사가 max_players null을 1명(멀티 없음)으로 보고 "혼자"를 강제하던 것을 모름으로 처리(scripts/lib/fun-desc-rules.mjs noMulti, 테스트 있음). fill-players-from-store에 --ids <파일> 추가(lib/only-ids.mjs). 데모 게임 6개: fill-players-from-store --ids 미리보기→--apply로 4개 채움(HANDS OVER 최대 5·Kitman 1~4·Coal Duty 1~5·Seikyu Let's Go! 1~4), UNFROST·Blades & Trades는 상점 소개문에 인원 문장이 없어 빈칸(players_store_checked_at 기록됨 → 직접 검증 대상), write-fun-descriptions --ids-file로 6개 소개문 다시 써 6개 모두 통과(약 $0.014). has_online_coop·category는 6개 모두 비어 있음(다음 weekly fill-steam-categories). build·test 405개 통과
 - 10/24: feat/demo-coming-soon — 출시 예정·데모 게임 지원(큐레이터 경로). games.release_status('released'|'coming_soon', 기본 released)·demo_appid·release_date_text(마이그레이션 20261030090000, 사용자 실행 완료). bulk-import --curator만 coming soon 게임도 받음(리뷰 조회 생략, appdetails release_date.coming_soon·demos[]로 세 칸 채움, 이름 앞뒤 공백 항상 trim, 일반 경로는 칸을 안 건드림). coming_soon은 가격·리뷰·동접·순위·트렌드·리뷰 스냅샷·주간 추천·비슷한 게임 계산·일일 요약 가격 실패 목록에서 제외. daily 첫 단계 check-coming-soon --apply(출시됐으면 released로, 아직이면 출시일 원문·데모만 갱신), 일일 요약 "출시 전환 N개" 줄(확인할 게임 0개면 생략). 카드 "출시 예정 · {원문}"+"무료 데모" 칩, 상세 가격 카드 자리에 출시 예정 안내+"스팀에서 데모 받기 ↗"(할인·역대 최저가·할인 전적 숨김), 검색 필터 "데모 있음" 칩(무료만 옆, ?demo=1), 기본 검색엔 포함·메인 추천(selectHomeGames·주간·스트리머 주제·AI 추천)에선 제외. 세이브슬롯 데모 게임 6개(HANDS OVER 4661070·Seikyu Let's Go! 4928080·Blades & Trades 4300400·Kitman 4186890·UNFROST 3377450·Coal Duty 4272370)를 --apply→--ids enrich(가격·리뷰·동접 단계 제외). 6개 모두 max_players가 비어 소개문 검사가 오판해 3개에 잘못된 소개문이 저장돼 사용자가 SQL로 비움. 마이그레이션 전에는 빌드가 실패함(selectHomeGames 등이 칸을 읽음). build·test 401개 통과, 프리뷰 확인(6개가 목록 API에 coming_soon으로 있고 메인·this-week·taste에는 없음 — 6개는 원래 순위가 없어 제외 필터 효과는 증명 못 함), /c/handle 카드는 로컬 가짜 주입으로만 확인
@@ -93,6 +94,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- refactor/unified-game-card 머지 뒤: 프로덕션 프리뷰에서 메인·검색·/c/handle·찜목록 확인(미확인) / feat/curators-home-cards 세션이 main 위로 rebase해 인스타 섹션 카드를 GameCard로 교체 예정 / 상세 비슷한 게임·시리즈·내 라이브러리는 compact 카드 그대로(풀 카드 전환 여부 결정 대기)
 - feat/demo-coming-soon 머지 뒤: Coal Duty(10/27)·HANDS OVER(10/30)가 출시되면 데일리 check-coming-soon이 released로 전환하는지 확인(미확인) / 첫 daily에서 check-coming-soon 단계 동작·일일 요약 "출시 전환" 줄 확인(미확인, DB 연결 실행은 못 해 봄) / 6개를 큐레이터 게시물에 연결하는 curator_posts SQL(세이브슬롯 큐레이터가 curators에 아직 없음) / UNFROST·Blades & Trades 인원 빈칸(직접 검증)
 - chore/curator-games-drawer 머지 뒤: 9개 게임의 review_summary가 데일리에서 채워지는지 확인(미확인) / 큐레이터 게시물 연결 SQL은 사용자가 실행 / 프로덕션 노출 확인(미확인)
 - feat/players-from-store 머지 뒤: 다음 weekly 실행 결과(fill-players-from-store 단계 동작·소요 시간·자동 채움 수)를 사용자가 확인(미확인) / 대기 51개는 scripts/.cache/players-store-pending.json에서 근거 문장 확인 뒤 필요하면 직접 검증 라운드로 (미확인)
