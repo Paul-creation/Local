@@ -26,3 +26,27 @@ export async function getStreamerNamesByGame(gameIds: string[]): Promise<Map<str
   }
   return out;
 }
+
+// 전체 게임 목록(gameIndex)에 싣는 스트리머 이름 — 검색·찜목록·계정 카드의 스트리머 칩용. 게임당 앞 4명(최근 영상 순)만, 영상이 있는 게임만 들어간다
+export const STREAMER_NAMES_MAX = 4;
+export async function getAllStreamerNames(): Promise<Map<string, string[]>> {
+  const out = new Map<string, string[]>();
+  for (let from = 0; from < 20000; from += 1000) {
+    const { data, error } = await supabase
+      .from('streamer_videos')
+      .select('game_id, published_at, streamer_channels(streamer_name)')
+      .order('published_at', { ascending: false })
+      .order('video_id')
+      .range(from, from + 999);
+    if (error) throw new Error(`스트리머 이름 조회 실패: ${error.message}`);
+    for (const row of (data || []) as unknown as { game_id: string; streamer_channels: One<{ streamer_name: string }> }[]) {
+      const name = first(row.streamer_channels)?.streamer_name;
+      if (!name) continue;
+      const list = out.get(row.game_id) ?? [];
+      if (list.length < STREAMER_NAMES_MAX && !list.includes(name)) list.push(name);
+      out.set(row.game_id, list);
+    }
+    if (!data || data.length < 1000) break;
+  }
+  return out;
+}

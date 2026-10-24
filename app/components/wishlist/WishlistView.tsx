@@ -5,70 +5,18 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { SITE_URL } from '../../lib/site';
 import { parseIdsParam, shareQuery } from '../../lib/wishlist';
-import SaleEnds from '../SaleEnds';
-import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL } from '../../lib/price';
-import LowestPriceBadge from '../LowestPriceBadge';
-import { isComingSoon, comingSoonLabel } from '../../lib/release';
-import { playersText } from '../../lib/players';
 import { useGameIndex } from '../../lib/useGameIndex';
-import GameImage from '../GameImage';
+import GameCard from '../home/GameCard';
 import PageSkeleton from '../status/PageSkeleton';
 import WishlistButton from './WishlistButton';
 import { useWishlist } from './useWishlist';
-import { gameName } from '../../lib/gameName';
 
 // 찜목록 페이지 — 내 목록(localStorage) 또는 공유 주소(?ids=)로 받은 목록을 읽기 전용으로 보여 준다
-// 목록 카드는 검색 결과 카드(result-card)와 같은 모양, 판정은 넣지 않음. 없는 게임 id는 목록에서 빠진다
+// 목록 카드는 검색 결과·메인과 같은 통일 카드(GameCard), 판정은 넣지 않음. 없는 게임 id는 목록에서 빠진다
 // 공유받은 목록은 "내 찜목록에 합치기"를 눌렀을 때만 저장
-const STORE_NAME: Record<string, string> = { epic: 'Epic', battlenet: 'Battle.net', riot: 'Riot', ea: 'EA app', ubisoft: 'Ubisoft Connect', gog: 'GOG' };
 
-// 카드에 쓰는 열만 적은 타입 (목록 API가 주는 게임 줄)
-type Game = {
-  id: string; name: string; display_name?: string | null; source: string; steam_appid?: number | null; is_free?: boolean; price_type: string; lowest_price?: number | null;
-  cover_image_url?: string | null; card_image_url?: string | null; min_players?: number | null; max_players?: number | null;
-  release_status?: string | null; release_date_text?: string | null;
-};
-
-function Card({ game }: { game: Game }) {
-  const price = getPriceInfo(game);
-  const players = playersText(game);
-  const store = game.steam_appid ? null : STORE_NAME[game.source] ?? '기타 스토어';
-  return (
-    <Link href={`/games/${game.id}`} className="result-card lift">
-      <span className="result-image">
-        <GameImage src={game.cover_image_url || game.card_image_url} steamSize="header" alt="" />
-      </span>
-      <span className="result-body">
-        <span className="result-title">{gameName(game)}</span>
-        {store && <span className="result-store">{store}</span>}
-        {players && <span className="result-players">{players}</span>}
-        <span className="result-foot">
-          <span className="result-price">
-            {isComingSoon(game) ? (
-              <span className="price-final no-discount">{comingSoonLabel(game)}</span>
-            ) : game.is_free ? (
-              <span className="price-final">무료</span>
-            ) : PRICE_TYPE_LABEL[game.price_type] ? (
-              <span className="price-final no-discount">{PRICE_TYPE_LABEL[game.price_type]}</span>
-            ) : price ? (
-              <>
-                <LowestPriceBadge timing={getLowestTiming(game, price)} />
-                {price.discount > 0 && (
-                  <span className="result-price-off">
-                    <span className="discount-badge">-{price.discount}%</span>
-                    <span className="price-original">{price.formattedOriginal}</span>
-                    <SaleEnds endsAt={price.saleEndsAt} />
-                  </span>
-                )}
-                <span className="price-final">{price.formattedFinal}</span>
-              </>
-            ) : null}
-          </span>
-        </span>
-      </span>
-    </Link>
-  );
-}
+// 목록 API가 주는 게임 줄(카드 칸은 느슨한 모양)
+type Game = { id: string; [key: string]: unknown };
 
 export default function WishlistView() {
   const params = useSearchParams();
@@ -142,7 +90,7 @@ export default function WishlistView() {
         <div className="result-grid">
           {games.map((g) => (
             <div key={g.id} className="wishlist-item">
-              <Card game={g} />
+              <GameCard game={g} tree={index.tree} />
               {!shared && <WishlistButton gameId={g.id} />}
             </div>
           ))}

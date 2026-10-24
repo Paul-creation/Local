@@ -2655,6 +2655,15 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 .result-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip.is-static.is-up { color: var(--up); border-color: var(--up); }
 .chip.is-static.is-down { color: var(--down); border-color: var(--down); }
+.chip.is-static.is-special { color: var(--accent); border-color: var(--accent); } /* 오늘 TOP 10 — 포인트 색 허용 용도(docs/design.md) */
+
+/* 통일 카드를 격자·목록 칸에 넣을 때 — 칸 높이를 채워 같은 줄 카드 높이가 맞고, 가격 줄(.gc-foot)이 카드 맨 아래에 붙는다 */
+.result-grid > .gc, .wishlist-item > .gc { flex: 1 1 auto; min-width: 0; }
+.gc.is-picked { border-color: var(--accent); }
+.gc-foot { align-items: flex-end; flex-wrap: wrap; gap: 8px; }
+.gc-foot:has(.compare-btn) .result-price { width: auto; flex: 1 1 0; }
+.gc-foot:has(.compare-btn) .result-price-main { flex-wrap: wrap; justify-content: flex-start; } /* 좁은 칸에서 "역대 최저가" 칩이 "+ 비교"와 겹치지 않게 가격 아래로 내려감 */
+.gc-foot .compare-btn { margin-left: auto; }
 
 
 /* ============================================================
@@ -3055,6 +3064,6 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* 링�
 @media (max-width: 720px) { .curator-head { padding: 16px; gap: 14px; } .curator-head-top { flex-wrap: wrap; justify-content: flex-start; } }
 .curator-games { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
 .curator-game { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-.curator-game > .result-card { flex: 1 1 auto; }
+.curator-game > .gc { flex: 1 1 auto; } /* 카드가 남는 높이를 채워 같은 줄 카드 높이가 맞고 가격 줄이 맨 아래에 붙음 */
 .curator-game-posts { display: flex; flex-direction: column; gap: 4px; }
 @media (max-width: 720px) { .curator-games { grid-template-columns: minmax(0, 1fr); } }

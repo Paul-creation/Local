@@ -10,6 +10,8 @@ import { supabase } from './supabase';
 import { flattenGame } from './price';
 import { selectGames } from './visibleGames';
 import { readAllPages } from './paged';
+import { isNoKorean } from './cardInfo';
+import { getAllStreamerNames, getStreamerNamesByGame, STREAMER_NAMES_MAX } from './streamerVideos';
 
 export const INDEX_FIELDS = `
   id, name, display_name, search_name_ko, tags, category, difficulty,
@@ -18,6 +20,7 @@ export const INDEX_FIELDS = `
   entry_barrier, solo_mode, party_max, session_max, multiplayer_host,
   is_free, price_type, lowest_price, steam_appid, source, cover_image_url, card_image_url, heat_rank,
   spec_parsed, activities_confirmed, activities_unsure,
+  review_summary, review_positive_percent, review_total, korean_support,
   price_history(price, discount_percent, checked_at, currency, original_price, sale_ends_at)
 `;
 
@@ -25,6 +28,14 @@ export const INDEX_FIELDS = `
 const SOON_FIELDS = 'id, release_status, demo_appid, release_date_text';
 const soonMap = (rows?: { id: string; release_status: string; demo_appid: string | null; release_date_text: string | null }[] | null) =>
   new Map((rows || []).map((r) => [r.id, { release_status: r.release_status, demo_appid: r.demo_appid, release_date_text: r.release_date_text }]));
+
+// 카드의 Steam 평가·한국어 미지원 칩용 — 원래 칸(review_positive_percent·korean_support)은 빼고 카드가 쓰는 이름(review_percent·no_korean)으로. 빈 칸·한국어 지원은 칸 자체를 뺀다
+const reviewOf = (g: { review_summary?: string | null; review_positive_percent?: number | null; review_total?: number | null; korean_support?: string | null }) => ({
+  ...(g.review_summary ? { review_summary: g.review_summary } : {}),
+  ...(g.review_positive_percent ? { review_percent: g.review_positive_percent } : {}),
+  ...(g.review_total ? { review_total: g.review_total } : {}),
+  ...(isNoKorean(g.korean_support) ? { no_korean: true } : {}),
+});
 
 const activitiesOf = (confirmed?: string[] | null, unsure?: string[] | null) => ({
   ...(confirmed?.length ? { activities_confirmed: confirmed } : {}),
@@ -37,7 +48,8 @@ export async function getGameIndex() {
   // 노출 게임이 1,000개를 넘으면 한 번에 다 못 받으므로 모두 1,000행씩 끝까지 읽는다 (정렬은 created_at 최신순 + id로 고정해 페이지가 겹치지 않게)
   // 지금 뜨는 게임 판정(trend_badge·trend_score)도 판정된 게임만 따로 — 칸이 아직 없으면 오류를 무시하고 필터에 걸리는 게임이 없음
   // 출시 예정(release_status·demo_appid·release_date_text)도 출시 예정인 게임만 따로 — 칸이 아직 없으면 오류를 무시하고 모두 출시된 게임으로
-  const [{ data: list, error }, { data: goty }, { data: cross }, { data: trend }, { data: soon }] = await Promise.all([
+  // 스트리머 이름(game_id → 이름들)도 따로 — 못 읽으면 칩만 빠짐
+  const [{ data: list, error }, { data: goty }, { data: cross }, { data: trend }, { data: soon }, streamers] = await Promise.all([
     readAllPages((from, to) => selectGames(INDEX_FIELDS)
       .gte('price_history.price', 100)
       .order('created_at', { ascending: false })
@@ -49,6 +61,7 @@ export async function getGameIndex() {
     readAllPages((from, to) => selectGames('id').eq('has_crossplay', true).order('id').range(from, to)),
     readAllPages((from, to) => selectGames('id, trend_badge, trend_score').not('trend_badge', 'is', null).order('id').range(from, to)),
     readAllPages((from, to) => selectGames(SOON_FIELDS).eq('release_status', 'coming_soon').order('id').range(from, to)),
+    getAllStreamerNames().catch(() => new Map<string, string[]>()),
   ]);
   if (error || !list) throw new Error(`게임 목록 조회 실패: ${error?.message}`);
   const gotyById = new Map((goty || []).map((g) => [g.id, g.goty_awards]));
@@ -57,16 +70,16 @@ export async function getGameIndex() {
   const soonById = soonMap(soon);
   const tagIds = await getGameTagIds();
   return (list || []).map((g) => {
-    const { tags, spec_parsed, activities_confirmed, activities_unsure, ...rest } = g as typeof g & { tags?: string[] | null };
+    const { tags, spec_parsed, activities_confirmed, activities_unsure, review_summary, review_positive_percent, review_total, korean_support, ...rest } = g as typeof g & { tags?: string[] | null };
     const ids = tagIds?.get(g.id);
-    return flattenGame({ ...rest, ...(tagIds ? { tag_ids: ids || [] } : { tags }), spec_min: specMinOf(spec_parsed), ...activitiesOf(activities_confirmed, activities_unsure), goty_awards: gotyById.get(g.id), ...(crossIds.has(g.id) ? { has_crossplay: true } : {}), ...trendById.get(g.id), ...soonById.get(g.id) });
+    return flattenGame({ ...rest, ...reviewOf({ review_summary, review_positive_percent, review_total, korean_support }), ...(streamers.has(g.id) ? { streamers: streamers.get(g.id) } : {}), ...(tagIds ? { tag_ids: ids || [] } : { tags }), spec_min: specMinOf(spec_parsed), ...activitiesOf(activities_confirmed, activities_unsure), goty_awards: gotyById.get(g.id), ...(crossIds.has(g.id) ? { has_crossplay: true } : {}), ...trendById.get(g.id), ...soonById.get(g.id) });
   });
 }
 
 // 카드 몇 장에만 필요한 게임들 (상세 페이지 "비슷한 게임") — 전체 목록과 같은 칸·같은 모양으로, 넘긴 id 순서대로. 숨긴 게임은 빠진다
 export async function getCardGames(ids: string[]) {
   if (!ids.length) return [];
-  const [{ data: list, error }, { data: goty }, { data: cross }, { data: tagRows }, { data: soon }] = await Promise.all([
+  const [{ data: list, error }, { data: goty }, { data: cross }, { data: tagRows }, { data: soon }, { data: trend }, streamers] = await Promise.all([
     selectGames(INDEX_FIELDS)
       .in('id', ids)
       .gte('price_history.price', 100)
@@ -76,7 +89,10 @@ export async function getCardGames(ids: string[]) {
     selectGames('id').in('id', ids).eq('has_crossplay', true),
     supabase.from('game_tags').select('game_id, tag_id, rank').in('game_id', ids).order('rank'),
     selectGames(SOON_FIELDS).in('id', ids).eq('release_status', 'coming_soon'),
+    selectGames('id, trend_badge, trend_score').in('id', ids).not('trend_badge', 'is', null), // 칸이 아직 없으면 오류를 무시하고 배지 없이
+    getStreamerNamesByGame(ids).catch(() => new Map<string, string[]>()),
   ]);
+  const trendById = new Map((trend || []).map((g) => [g.id, { trend_badge: g.trend_badge, trend_score: g.trend_score }]));
   const soonById = soonMap(soon);
   if (error) throw new Error(`게임 카드 조회 실패: ${error.message}`);
   const gotyById = new Map((goty || []).map((g) => [g.id, g.goty_awards]));
@@ -84,9 +100,9 @@ export async function getCardGames(ids: string[]) {
   const tagIds = new Map<string, number[]>();
   for (const r of tagRows || []) tagIds.set(r.game_id, [...(tagIds.get(r.game_id) || []), Number(r.tag_id)]);
   const byId = new Map((list || []).map((g) => {
-    const { tags, spec_parsed, activities_confirmed, activities_unsure, ...rest } = g as typeof g & { tags?: string[] | null };
+    const { tags, spec_parsed, activities_confirmed, activities_unsure, review_summary, review_positive_percent, review_total, korean_support, ...rest } = g as typeof g & { tags?: string[] | null };
     void tags; // 번호(tag_ids)만 보낸다
-    return [g.id, flattenGame({ ...rest, tag_ids: tagIds.get(g.id) || [], spec_min: specMinOf(spec_parsed), ...activitiesOf(activities_confirmed, activities_unsure), goty_awards: gotyById.get(g.id), ...(crossIds.has(g.id) ? { has_crossplay: true } : {}), ...soonById.get(g.id) })] as const;
+    return [g.id, flattenGame({ ...rest, ...reviewOf({ review_summary, review_positive_percent, review_total, korean_support }), ...trendById.get(g.id), ...(streamers.get(g.id)?.length ? { streamers: streamers.get(g.id)!.slice(0, STREAMER_NAMES_MAX) } : {}), tag_ids: tagIds.get(g.id) || [], spec_min: specMinOf(spec_parsed), ...activitiesOf(activities_confirmed, activities_unsure), goty_awards: gotyById.get(g.id), ...(crossIds.has(g.id) ? { has_crossplay: true } : {}), ...soonById.get(g.id) })] as const;
   }));
   return ids.map((id) => byId.get(id)).filter((g): g is NonNullable<typeof g> => !!g);
 }
