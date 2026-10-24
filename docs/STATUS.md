@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-24 (main 7e98faa)
+기준: 2026-10-24 (main 20e7427)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/24: fix/review-getitems — enrich-players의 리뷰 대체 경로에 스팀 IStoreBrowseService/GetItems/v1(키 없이 GET, 100개씩 묶음, 200개까지 확인) 추가. appreviews 실패 + review_total null인 게임만 appreviews → GetItems(reviews.summary_filtered, 전체 언어) → 상점 페이지 "All Reviews" 순. 3칸(review_summary·review_positive_percent·review_total)을 채우고 games.review_source('appreviews'/'getitems'/'store_page')에 출처 기록(마이그레이션 20261029090000, 사용자가 실행 완료, 칸이 없으면 출처 없이 동작). appreviews가 돌아오면 출처가 getitems·store_page인 게임은 문구까지 덮어씀. GetItems 개수는 appreviews·상점 페이지보다 조금 적을 수 있음(It Takes Two 220,441 vs DB 272,541). 게임서랍장 9개 모두 미리보기로 채워짐 확인(저장은 데일리에서). 일일 요약 리뷰 줄에 대체 개수 표시. 실제 Actions 동작은 확인 못 함. build·test 391개 통과
 - 10/24: fix/review-fail-summary·fix/review-source-fallback — 일일 요약에 "⭐ 리뷰 조회 실패 N/M개" 줄 추가(enrich-players가 scripts/.cache/review-check.json에 기록, --ids 실행은 기록 안 함). appreviews가 실패하고 review_total이 null인 게임만 상점 페이지(l=english&cc=us)의 "All Reviews" 줄(전체 언어 합계)로 대체(scripts/lib/review-store.mjs). 리뷰가 많은 게임은 그 줄 없이 언어별 줄만 있어 값이 달라지므로(CS2 상점 영어 2,638,603개 vs 전체 9,937,470개) 대체하지 않음. 10/24 Codespace에서 appreviews는 파라미터·헤더 6가지 조합 모두 302(Location 상점 메인). 10/23 18:17 UTC 데일리도 노출 게임 1,508개 전부 appreviews 실패. 실제 Actions 동작은 확인 못 함. build·test 385개 통과
 - 10/24: fix/fill-missing-reviews — enrich-players가 평가 문구(games.review_summary)도 채움: appreviews 조회가 성공하면 review_total·review_positive_percent는 지금처럼 갱신하고, review_summary는 비어 있을 때만 채움(이미 있는 값은 그대로, 조회 실패면 그 게임은 건너뜀, scripts/lib/review-fill.mjs·REVIEW_LABELS는 bulk-import와 공유). 원인: 데일리는 리뷰 칸이 빈 게임도 대상이었지만 review_summary는 아무도 갱신하지 않았고, 10/23 18:17 UTC 데일리(게임서랍장 import 뒤)에서는 appreviews가 노출 게임 1,508개 전부 실패(전날들은 1,368개 중 1개). 실제 Actions에서 채워지는지는 확인 못 함. build·test 377개 통과
 - 10/23: chore/curator-games-drawer — bulk-import --curator 경로에서 appreviews 조회가 실패(302·차단·빈 응답)하면 재시도 없이 건너뛰고 review_summary를 비운 채 넣음(scripts/lib/review-fetch.mjs, 일반 수집 경로는 리뷰 필수 그대로, 리뷰는 데일리가 채움). 게임서랍장 소개 게임 9개(우리는 여기에 있었다 582500·LEGO Voyagers 1538550·WheelMates 3905450·Forever Ago 1215940·Colorbound 3778610·Moonfrost 2561630·Legion Was Here 3492120·파멸의 오타쿠 3318210·원피스 그랜드 레스토랑 3905010)를 미리보기→추가→--ids enrich(itad-heat·fallback·igdb·tags·fix-data-gaps·fill-tags-desc·fill-game-details·judge-new-games·card/hero-images·screenshots·search-names·update-date·가격 3종·write-fun-descriptions·fill-activities-v2·specs·players·recent-reviews)까지 실행. enrich-other-stores·ai-other·videos는 --ids가 없어 다음 weekly. build·test 373개 통과
