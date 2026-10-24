@@ -8,6 +8,7 @@ import { THU_TRAILER_YT_MAX, pacificNow } from './lib/quota-plan.mjs';
 const GROUPS = {
   // 매일: 가격·할인·접속자처럼 자주 바뀌는 것
   daily: [
+    'import-curator-queue --apply', // 관리자 "게시물 연결" 도구의 추가 대기열(curator_game_queue) → 새 게임 가져오기·보강 → 같은 게시물에 curator_posts 연결 → imported_at 기록. 대기열이 비어 있으면 바로 끝남. 아래 가격·리뷰 단계가 새 게임도 받도록 맨 앞. 표가 없으면(마이그레이션 전) 실패로 표시
     'check-coming-soon --apply', // 출시 예정 게임(release_status = coming_soon)이 출시됐는지 appdetails로 확인 → 출시됐으면 released로 바꿔 아래 가격·리뷰 단계부터 일반 게임처럼 수집. 출시 예정 게임이 없으면 요청 없음. 칸이 없으면(마이그레이션 전) 실패로 표시
     'fix-missing-prices',
     // ITAD 단계는 한 묶음으로 앞에 (5분 창 한도를 사용자 화면에 직접 보이는 것부터 씀, 창 상태는 scripts/.cache/itad-window.json으로 공유)
@@ -68,7 +69,7 @@ const GROUPS = {
 };
 
 const STEP_TIMEOUT_MIN = 45;
-const STEP_TIMEOUT_OVERRIDE_MIN = { 'enrich-itad-heat': 90, 'fill-activities-v2': 90 }; // 배치 결과를 기다리는 시간이 길 수 있음 // ITAD 5분 창 한도 안에서 약 900건 = 약 1시간
+const STEP_TIMEOUT_OVERRIDE_MIN = { 'enrich-itad-heat': 90, 'fill-activities-v2': 90, 'import-curator-queue': 60 }; // 배치 결과를 기다리는 시간이 길 수 있음 // ITAD 5분 창 한도 안에서 약 900건 = 약 1시간
 const group = process.argv[2];
 const steps = GROUPS[group];
 if (!steps) {

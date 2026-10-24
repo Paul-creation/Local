@@ -18,6 +18,7 @@ const PER_CLIENT_DAILY: Record<string, number> = {
   'recommend-step': 21,
   'compare-chat': 10,
   'compare-scores': 10,
+  'curator-import': 40, // 관리자 캡션 붙여넣기 도구 (Haiku, 한 번에 약 $0.003)
 };
 // 2차 기준: 같은 IP 하루 상한 (쿠키를 지워 가며 남용하는 것만 막는 느슨한 값, recommend-step은 빼고 셈)
 const PER_IP_DAILY = 30;
