@@ -13,6 +13,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ han
 
   const name = clip(curator.display_name, 24);
   const title = `@${withSubjectJosa(name)} 소개한 게임`;
+  const bio = clip(curator.bio || '', 60);
   const titleSize = title.length <= 14 ? 72 : title.length <= 22 ? 60 : 48;
 
   return new ImageResponse(
@@ -21,6 +22,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ han
         {/* 아바타가 없거나 못 받은 계정(webp 등 ImageResponse가 못 그리는 형식 포함)은 원 없이 글자만 */}
         {avatar && <img src={avatar} width={176} height={176} style={{ objectFit: 'cover', borderRadius: 88, border: `2px solid ${OG_COLOR.textMuted}`, marginBottom: 32 }} />}
         <div style={{ display: 'flex', maxWidth: 1000, justifyContent: 'center', textAlign: 'center', fontSize: titleSize, fontWeight: 800, lineHeight: 1.15, letterSpacing: '-0.03em' }}>{title}</div>
+        {bio && <div style={{ display: 'flex', maxWidth: 900, marginTop: 18, justifyContent: 'center', textAlign: 'center', fontSize: 30, fontWeight: 400, lineHeight: 1.35, color: OG_COLOR.textMuted }}>{bio}</div>}
         {count != null && count > 0 && (
           <div style={{ display: 'flex', marginTop: 20, fontSize: 40, fontWeight: 800, color: OG_COLOR.accent }}>게임 {count}개</div>
         )}

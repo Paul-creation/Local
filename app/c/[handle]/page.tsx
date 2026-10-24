@@ -21,7 +21,9 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
   if (!profile) notFound();
   const { curator, games } = profile;
   const title = titleOf(curator.display_name);
-  const description = `@${withSubjectJosa(curator.display_name)} 인스타그램에서 소개한 게임${games.length ? ` ${games.length}개` : ''}의 현재 가격·할인·인원을 한눈에 볼 수 있어요.`;
+  const intro = `@${withSubjectJosa(curator.display_name)} 인스타그램에서 소개한 게임${games.length ? ` ${games.length}개` : ''}의 현재 가격·할인·인원을 한눈에 볼 수 있어요.`;
+  const bio = (curator.bio || '').replace(/\s+/g, ' ').trim();
+  const description = bio ? `${bio} ${intro}` : intro;
   const url = `/c/${encodeURIComponent(curator.handle)}`;
   const image = `/api/og/curator/${encodeURIComponent(curator.handle)}`;
   return {
@@ -59,6 +61,7 @@ export default async function CuratorPage({ params }: { params: Promise<{ handle
         <div className="curator-profile-body">
           <h1 className="curator-profile-name">{curator.display_name}</h1>
           <p className="curator-profile-handle">@{curator.handle}</p>
+          {curator.bio?.trim() && <p className="curator-profile-bio">{curator.bio.trim()}</p>}
           {stats.length > 0 && (
             <p className="curator-profile-stats">
               {stats.map((s, i) => (
@@ -72,7 +75,7 @@ export default async function CuratorPage({ params }: { params: Promise<{ handle
           </div>
         </div>
       </header>
-      <p className="curator-note">가격·할인·인원은 매일 갱신돼요.</p>
+      <p className="curator-note">가격·할인·스팀 평가는 매일 갱신돼요.</p>
       {entries.length === 0 ? <p className="tl-note">아직 연결된 게임이 없어요.</p> : <CuratorBody games={byId} sections={sections} entries={entries} />}
     </main>
   );

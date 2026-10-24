@@ -3057,6 +3057,7 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* ÎßÅÌÅ
 .curator-profile-body { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-width: 0; flex: 1; }
 .curator-profile-name { margin: 0; font-size: 32px; font-weight: 800; line-height: 1.2; color: var(--text); overflow-wrap: anywhere; }
 .curator-profile-handle { margin: 0; font-size: var(--fs-s); color: var(--text-muted); overflow-wrap: anywhere; }
+.curator-profile-bio { margin: 4px 0 0; max-width: 56ch; font-size: 15px; line-height: 1.5; color: var(--text-2); overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 .curator-profile-stats { margin: 6px 0 0; font-size: var(--fs-m); color: var(--text-2); }
 .curator-profile-stats b { color: var(--text); font-variant-numeric: tabular-nums; }
 .curator-profile-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }

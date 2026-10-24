@@ -10,7 +10,7 @@ import type { CardGame } from './peopleRecs';
 import { roundRobinByCurator, latestPerGame } from './curatorMix';
 import type { PostRow } from './curatorView';
 
-export type Curator = { id: string; handle: string; display_name: string; instagram_url: string; avatar_url: string | null };
+export type Curator = { id: string; handle: string; display_name: string; instagram_url: string; avatar_url: string | null; bio: string | null };
 export type CuratorPost = PostRow;
 
 // 게임을 소개한 계정 — 게시물 단위, posted_at 최신순
@@ -26,9 +26,13 @@ export async function getCuratorsOfGame(gameId: string) {
     .map((r) => ({ id: r.id, postUrl: r.post_url, handle: r.curators!.handle, displayName: r.curators!.display_name }));
 }
 
+// bio 칸이 아직 없는 DB(마이그레이션 전)면 그 칸 없이 다시 조회
 export async function getCurator(handle: string): Promise<Curator | null> {
-  const { data, error } = await supabase.from('curators').select('id, handle, display_name, instagram_url, avatar_url').eq('handle', handle).maybeSingle();
-  return error ? null : (data as Curator | null);
+  const q = (cols: string) => supabase.from('curators').select(cols).eq('handle', handle).maybeSingle();
+  const first = await q('id, handle, display_name, instagram_url, avatar_url, bio');
+  if (!first.error) return first.data as unknown as Curator | null;
+  const second = await q('id, handle, display_name, instagram_url, avatar_url');
+  return second.error || !second.data ? null : ({ ...(second.data as unknown as Curator), bio: null });
 }
 
 // post_title 칸이 아직 없는 DB(마이그레이션 전)면 그 칸 없이 다시 조회
