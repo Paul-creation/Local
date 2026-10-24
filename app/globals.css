@@ -2865,9 +2865,11 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* 링�
 .curators-home-sub { margin: 0; font-size: var(--fs-s); line-height: 1.5; color: var(--text-2); word-break: keep-all; }
 .curators-home-chips { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .curators-home-chips .chip { text-decoration: none; }
-/* 출처 링크 — stretched 카드(.gc.is-stretched)의 이름 링크 ::after가 카드 전체를 덮으므로 그 위로 올려 따로 눌리게 한다 */
-.gc-source { position: relative; z-index: 1; align-self: flex-start; font-size: var(--fs-xs); line-height: 1.5; color: var(--text-2); overflow-wrap: anywhere; }
-.gc-source::after { content: ''; position: absolute; inset: -12px -4px; } /* 터치 영역 확장 (보이는 크기는 그대로) */
+/* 출처 링크 — 카드 밖 아래 한 줄. 카드(.gc)가 남는 높이를 채워 같은 줄 카드 높이가 맞고 가격 줄이 맨 아래에 붙는다 */
+.curator-item { flex-direction: column; gap: 8px; }
+.curator-item > .gc { flex: 1 1 auto; }
+.gc-source { align-self: flex-start; position: relative; font-size: var(--fs-s); line-height: 1.5; color: var(--text-2); overflow-wrap: anywhere; }
+.gc-source::after { content: ''; position: absolute; inset: -8px -4px; } /* 터치 영역 확장 (보이는 크기는 그대로) */
 .gc-source:hover { color: var(--text); text-decoration: underline; }
 .gc-source:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
