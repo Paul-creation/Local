@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-23 (main ed8e8bf)
+기준: 2026-10-24 (main 882fa59)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/24: fix/fill-missing-reviews — enrich-players가 평가 문구(games.review_summary)도 채움: appreviews 조회가 성공하면 review_total·review_positive_percent는 지금처럼 갱신하고, review_summary는 비어 있을 때만 채움(이미 있는 값은 그대로, 조회 실패면 그 게임은 건너뜀, scripts/lib/review-fill.mjs·REVIEW_LABELS는 bulk-import와 공유). 원인: 데일리는 리뷰 칸이 빈 게임도 대상이었지만 review_summary는 아무도 갱신하지 않았고, 10/23 18:17 UTC 데일리(게임서랍장 import 뒤)에서는 appreviews가 노출 게임 1,508개 전부 실패(전날들은 1,368개 중 1개). 실제 Actions에서 채워지는지는 확인 못 함. build·test 377개 통과
 - 10/23: chore/curator-games-drawer — bulk-import --curator 경로에서 appreviews 조회가 실패(302·차단·빈 응답)하면 재시도 없이 건너뛰고 review_summary를 비운 채 넣음(scripts/lib/review-fetch.mjs, 일반 수집 경로는 리뷰 필수 그대로, 리뷰는 데일리가 채움). 게임서랍장 소개 게임 9개(우리는 여기에 있었다 582500·LEGO Voyagers 1538550·WheelMates 3905450·Forever Ago 1215940·Colorbound 3778610·Moonfrost 2561630·Legion Was Here 3492120·파멸의 오타쿠 3318210·원피스 그랜드 레스토랑 3905010)를 미리보기→추가→--ids enrich(itad-heat·fallback·igdb·tags·fix-data-gaps·fill-tags-desc·fill-game-details·judge-new-games·card/hero-images·screenshots·search-names·update-date·가격 3종·write-fun-descriptions·fill-activities-v2·specs·players·recent-reviews)까지 실행. enrich-other-stores·ai-other·videos는 --ids가 없어 다음 weekly. build·test 373개 통과
 - 10/23: feat/players-from-store — 최대 인원이 빈 게임을 스팀 상점 소개문(영어)에서 자동 추출(scripts/fill-players-from-store.mjs, 파서 scripts/lib/players-from-store.mjs, AI 안 씀). 보수적 규칙: 숫자가 하나로 확실할 때만 채우고, 숫자가 여럿(협동·대전이 달라도 큰 값으로 안 채움)·17명 이상·친구 N명·NvN뿐·권장 표현·로컬만·특정 모드 인원·대전/협동 한쪽만 숫자인 경우는 대기 목록(scripts/.cache/players-store-pending.json)으로. "you and a friend"·"co-op for two"·"two-player co-op"는 2인 확정. weekly 단계에 추가(players_store_checked_at·players_auto_at 마이그레이션 실행됨, daily 요약에 이번 주 자동 채움). 첫 실행 --apply: 302개 중 59개 채움·51개 대기·192개 문장 없음(Throne and Liberty·Man of Medan은 --hold로 수동 대기). build·test 368개 통과
 - 10/21: chore/curator-games-nugget — curator-games.json에 너겟(nugget_zine) 소개 게임 3개 추가: 소시지에 관한 이상한 게임(4691990)·인보키어: 마의 주사위(Invokyr, 3883570, 영문명은 웹 검색+스팀 한국어 이름 일치로 확정)·A Gentlemen's Dispute(2820700). --curator로 미리보기→추가→--ids enrich 실행(enrich-other-stores·ai-other·videos는 다음 weekly). 게시물 4개(The Outlast Trials 1304930 포함)를 curator_posts에 연결하는 SQL은 사용자가 SQL 에디터에서 실행. 코드 변경 없음, build·test 351개 통과
