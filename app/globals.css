@@ -1368,7 +1368,6 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
 }
 .sg-item { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .sg-card { flex: 1; width: 100%; } /* 같은 줄 카드끼리 높이를 맞춰 가격 위치가 같게 (공통 카드 .gc) */
-.sg-card .sc-chip { color: var(--text-2); font-size: var(--fs-xs); }
 
 /* TOP 10 배지 (검색 결과 카드·상세 페이지) */
 .top10-badge {
@@ -1659,7 +1658,7 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
 .people-cards { display: flex; align-items: stretch; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
 .people-cards::-webkit-scrollbar { display: none; }
 .people-cards:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-.people-item { display: flex; min-width: 0; flex: 0 0 calc((100% - 48px) / 3.5); scroll-snap-align: start; }
+.people-item { display: flex; min-width: 0; flex: 0 0 calc((100% - 48px) / 3.2); scroll-snap-align: start; }
 .people-end-card { display: flex; flex: 1; align-items: center; justify-content: center; padding: 16px; text-align: center; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-card); color: var(--text); font-size: var(--fs-xl); font-weight: 700; }
 .people-end-card:hover { border-color: var(--accent); }
 .people-head-right { display: flex; align-items: center; gap: 16px; margin-left: auto; }
@@ -1727,7 +1726,12 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
 .hc-rank-badge.is-r1 { background: var(--accent); }
 /* 1위 카드는 포인트색 옅은 테두리로 항상 강조 (다크) */
 :root .gc:has(.is-r1) { border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
-/* 스트리머 이름 칩 (components/home/StreamerBadge) — 태그 칩(--tag-bg)보다 한 단계 밝은 면 + 얇은 테두리, 글자는 primary 700. "+N명"은 secondary 400 */
+/* 카드 스트리머 줄 (components/home/StreamerLine) — 보조 글자 13px 한 줄. 영상 링크 이름은 stretched 카드의 이름 링크 ::after 위로 올려 따로 눌린다 */
+.sl-row { display: block; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 13px; line-height: 1.4; color: var(--text-muted); }
+.sl-link { position: relative; z-index: 1; color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.sl-link:hover { color: var(--accent-text); }
+.sl-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+/* 스트리머 이름 칩 (components/home/StreamerBadge, 지금 뜨는 게임 순위 줄) — 태그 칩(--tag-bg)보다 한 단계 밝은 면 + 얇은 테두리, 글자는 primary 700. "+N명"은 secondary 400 */
 .sc-row { position: relative; display: flex; flex-wrap: nowrap; gap: 4px; width: 100%; min-width: 0; overflow: hidden; }
 .sc-chip { flex: none; font-size: var(--fs-xs); font-weight: 700; line-height: 1.4; white-space: nowrap; color: var(--text); background: var(--card-hover); border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; }
 .sc-chip.sc-more { font-weight: 400; color: var(--text-muted); }
