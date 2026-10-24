@@ -17,5 +17,6 @@
   { "steam_appid": "4300400", "name": "Blades & Trades" },
   { "steam_appid": "4186890", "name": "Kitman" },
   { "steam_appid": "3377450", "name": "UNFROST" },
-  { "steam_appid": "4272370", "name": "Coal Duty" }
+  { "steam_appid": "4272370", "name": "Coal Duty" },
+  { "steam_appid": "2080690", "name": "Sunkenland" }
 ]
