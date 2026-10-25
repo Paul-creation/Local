@@ -18,6 +18,10 @@
   --mn-badge-new: #FF7A70;
   --mn-badge-new-fg: #0B0E14;
 
+  /* 인스타그램 버튼 전용 */
+  --mn-instagram: linear-gradient(45deg, #F58529 0%, #DD2A7B 45%, #8134AF 75%, #515BD4 100%);
+  --mn-instagram-glow: 0 0 12px rgba(221, 42, 123, .35);
+
   /* 글꼴 — 영문·숫자 Geist, 한글 Pretendard (둘 다 자체 호스팅, 변수는 app/mono-fonts.ts가 html에 붙인다) */
   --mn-font: var(--font-geist-sans, Geist), var(--font-pretendard, Pretendard), 'Pretendard', -apple-system, system-ui, sans-serif;
   --mn-ls: -0.01em;

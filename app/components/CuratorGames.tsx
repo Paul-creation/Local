@@ -53,12 +53,14 @@ export default function CuratorGames({ games, sections, entries, initialView = '
 
   return (
     <>
-      <div className="curator-tabs" role="tablist" aria-label="보기 전환">
+      <div className="curator-tabs">
+       <div className="curator-tabs-seg" role="tablist" aria-label="보기 전환">
         {([['posts', '게시물별'], ['all', '게임 전체']] as const).map(([key, label]) => (
           <button key={key} type="button" role="tab" aria-selected={view === key} className="curator-tab" onClick={() => setView(key)}>
             {label}
           </button>
         ))}
+       </div>
       </div>
 
       {view === 'posts' ? (

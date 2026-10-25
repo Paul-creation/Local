@@ -1,5 +1,13 @@
-/* 큐레이터 페이지(/c/[handle]) 모노 — 공통은 app/mono-page.css(.mn-inner). 여기엔 전용만: 이름 굵기, 보기 전환 탭(선택 = 흰 배경, 비선택 = 보조). 인스타그램 버튼·칩의 포인트 파랑은 원래대로 */
+/* 큐레이터 페이지(/c/[handle]) 모노 — 공통은 app/mono-page.css(.mn-inner). 여기엔 전용만: 이름 굵기, 보기 전환 세그먼트 컨트롤(선택 = 흰 배경), 인스타그램 버튼(인스타 색). 칩의 포인트 파랑은 원래대로 */
 .mn-inner .curator-profile-name { font-weight: 800; letter-spacing: -0.035em; }
 .mn-inner .curator-section-title { font-weight: 800; letter-spacing: -0.03em; }
-.mn-inner .curator-tab { color: var(--mn-fg); background: transparent; border: 1px solid rgba(255, 255, 255, .4); box-shadow: 0 0 10px rgba(255, 255, 255, .09); text-shadow: none; }
-.mn-inner .curator-tab[aria-selected="true"] { color: var(--mn-fg-inv); background: var(--mn-fg); border-color: transparent; box-shadow: var(--mn-glow-tab-on); }
+.mn-inner .curator-tabs { gap: 0; padding-bottom: 10px; }
+.mn-inner .curator-tabs-seg { display: inline-flex; gap: 2px; padding: 3px; background: var(--mn-surface); border: 1px solid var(--mn-line); border-radius: 10px; }
+.mn-inner .curator-tab { min-height: 0; height: 32px; padding: 0 14px; margin: 0; border: 0; border-radius: 7px; background: transparent; box-shadow: none; text-shadow: none; font-size: 14px; font-weight: 600; color: var(--mn-fg); }
+.mn-inner .curator-tab:hover { background: rgba(255, 255, 255, .06); color: var(--mn-fg); }
+.mn-inner .curator-tab[aria-selected="true"] { background: var(--mn-fg); color: var(--mn-fg-inv); }
+.mn-inner .curator-tab:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.mn-inner .curator-profile-actions .curator-btn { min-height: 36px; height: 36px; padding: 0 16px; font-size: 14px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.mn-inner .curator-btn-ig { background: var(--mn-instagram); color: #fff; font-weight: 600; border: 0; box-shadow: var(--mn-instagram-glow); }
+.mn-inner .curator-btn-ig:hover { background: var(--mn-instagram); filter: brightness(1.08); }
+.mn-inner .curator-btn-ig svg { flex-shrink: 0; }
