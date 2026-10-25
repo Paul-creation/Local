@@ -1,7 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
-import GameCard from './GameCard';
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import PosterCard, { posterBadge } from './mn/PosterCard';
 import { useWishlist } from '../wishlist/useWishlist';
 import { useMyPc } from '../pcspec/useMyPc';
 import { useOwned, hasLoggedInCookie } from '../owned/useOwned';
@@ -22,7 +22,7 @@ import { usePeople } from './PeopleContext';
 // 2) 찜목록(localStorage)이 있음: "찜한 게임과 비슷한 게임" — 가장 최근에 찜한 3개마다 game_similar(상세 "비슷한 게임"과 같은 표)를 읽어 점수를 합치고 찜한 게임 자체는 뺀다
 // 3) 둘 다 없으면 숨김. 취향 정보를 못 받았거나 겹치는 취향이 없으면 2)로 넘어간다
 // /api/games/taste는 1) 조건을 채운 로그인 사용자만 부른다. 카드는 메인 검색용 전체 목록(useGameIndex)에서 가져온다
-// 메인 노출 제외 게임(homeExcluded)은 뺀다. 내 PC 토글이 켜져 있으면 최소 사양 미달도 뺀다. 인원별 추천과 같은 가로 캐러셀(PC는 화살표, 모바일은 스와이프)
+// 메인 노출 제외 게임(homeExcluded)은 뺀다. 내 PC 토글이 켜져 있으면 최소 사양 미달도 뺀다. 인원별 추천과 같은 세로 표지 카드(PosterCard) 가로 줄
 const SEEDS = 3;
 const SHOW = 8;
 type Row = { similar_id: string; score: number };
@@ -91,53 +91,29 @@ export default function PersonalRecs({ homeExcluded }: { homeExcluded: string[] 
   }, [shownKey]);
   const extraMap = extras && extras.key === shownKey ? extras.map : {};
 
-  // 가로 캐러셀 끝 표시 (PeopleRecs와 같은 방식)
+  // 카드가 바뀌면 가로 줄을 맨 앞으로
   const rowRef = useRef<HTMLDivElement>(null);
-  const [edge, setEdge] = useState({ start: true, end: false });
-  const updateEdge = useCallback(() => {
-    const el = rowRef.current;
-    if (!el) return;
-    const start = el.scrollLeft <= 1;
-    const end = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
-    setEdge((e) => (e.start === start && e.end === end ? e : { start, end }));
-  }, []);
-  useEffect(() => { rowRef.current?.scrollTo({ left: 0, behavior: 'instant' }); updateEdge(); }, [shownKey, updateEdge]);
-  useEffect(() => {
-    window.addEventListener('resize', updateEdge);
-    return () => window.removeEventListener('resize', updateEdge);
-  }, [updateEdge]);
-  const page = (dir: 1 | -1) => {
-    const el = rowRef.current;
-    if (el) el.scrollBy({ left: dir * el.clientWidth * 0.9 });
-  };
+  useEffect(() => { rowRef.current?.scrollTo({ left: 0, behavior: 'instant' }); }, [shownKey]);
 
   // 받는 중에는 정지된 빈 틀 (200ms 안에 끝나면 보이지 않음). 로그인하지 않았고 찜도 없으면 틀 없이 숨김
   const loading = (loggedIn && !owned.ready) || (tasteMode && (!tasteRanked || !index)) || (wishMode && (!index || !scored || scored.key !== seedKey));
   if (shown.length === 0) {
     if (!loading) return null;
     return (
-      <div className="home-block personal-skel" aria-hidden="true">
-        <div className="people-cards">{[0, 1, 2, 3].map((i) => <div key={i} className="people-item"><div className="personal-skel-card" /></div>)}</div>
+      <div className="mn-sec mn-skel" aria-hidden="true">
+        <div className="mn-row">{[0, 1, 2, 3].map((i) => <div key={i} className="mn-card-skel" />)}</div>
       </div>
     );
   }
   const title = tasteMode ? '취향에 맞는 게임' : '찜한 게임과 비슷한 게임';
   return (
-    <section className="home-block people-block" aria-labelledby="personal-recs-title">
-      <div className="home-block-head">
-        <h2 id="personal-recs-title" className="section-title">{title}</h2>
-        <div className="people-head-right">
-          {tasteMode && <a href="/library?tab=taste" className="home-more">더 보기 →</a>}
-          {shown.length > 3 && (
-            <div className="people-arrows">
-              <button type="button" className="people-arrow" aria-label="이전 추천 게임" disabled={edge.start} onClick={() => page(-1)}>‹</button>
-              <button type="button" className="people-arrow" aria-label="다음 추천 게임" disabled={edge.end} onClick={() => page(1)}>›</button>
-            </div>
-          )}
-        </div>
+    <section className="mn-sec" aria-labelledby="personal-recs-title">
+      <div className="mn-sec-head">
+        <h2 id="personal-recs-title">{title}</h2>
+        {tasteMode && <a href="/library?tab=taste" className="mn-more">더 보기</a>}
       </div>
-      <div className="people-cards" ref={rowRef} onScroll={updateEdge} tabIndex={0} role="region" aria-label={`${title} 목록`}>
-        {shown.map((g) => <div key={g.id} className="people-item"><GameCard game={{ ...g, ...extraMap[g.id] }} /></div>)}
+      <div className="mn-row" ref={rowRef} tabIndex={0} role="region" aria-label={`${title} 목록`}>
+        {shown.map((g) => <PosterCard key={g.id} game={{ ...g, ...extraMap[g.id] }} badge={posterBadge(g)} />)}
       </div>
     </section>
   );

@@ -1,0 +1,63 @@
+/* 모노 + 흰색 네온 디자인 토큰 — .mn 루트 안에서만 적용된다 (다른 페이지는 영향 없음)
+   다른 페이지로 옮길 때는 그 페이지 루트에 className="mn"을 주고 이 파일을 import 한다 */
+.mn {
+  /* 면·선·글자 — 글자는 전부 한 색, 위계는 크기·굵기로만 */
+  --mn-bg: #0A0A0A;
+  --mn-surface: #111111;
+  --mn-line: #262626;
+  --mn-fg: #EDEDED;
+  --mn-fg-inv: #0A0A0A;
+
+  /* 포인트 색은 할인 배지 하나만 */
+  --mn-sale-bg: #4ADE80;
+  --mn-sale-fg: #052E16;
+  /* 뜨는 중·신작 배지 */
+  --mn-trend-bg: #EDEDED;
+  --mn-trend-fg: #0A0A0A;
+  --mn-new-bg: #A1A1A1;
+  --mn-new-fg: #0A0A0A;
+
+  /* 글꼴 — Geist + Noto Sans KR (변수는 components/home/mn/fonts.ts가 붙인다) */
+  --mn-font: var(--font-geist), var(--font-noto-kr), Pretendard, system-ui, sans-serif;
+  --mn-ls: -0.01em;
+  --mn-ls-display: -0.035em;
+  --mn-weight-display: 800;
+
+  /* 흰색 네온 — 글자(text-shadow) */
+  --mn-glow-text: 0 0 3px rgba(255, 255, 255, .125), 0 0 12px rgba(255, 255, 255, .225), 0 0 26px rgba(255, 255, 255, .1);
+  --mn-glow-h1: 0 0 4px rgba(255, 255, 255, .045), 0 0 18px rgba(255, 255, 255, .085), 0 0 42px rgba(255, 255, 255, .05), 0 0 80px rgba(255, 255, 255, .025);
+  --mn-glow-h2: 0 0 3px rgba(255, 255, 255, .035), 0 0 14px rgba(255, 255, 255, .07), 0 0 32px rgba(255, 255, 255, .03);
+  /* 흰색 네온 — 버튼(box-shadow) */
+  --mn-glow-primary: 0 0 0 1px rgba(255, 255, 255, .3), 0 0 28px rgba(255, 255, 255, .22);
+  --mn-glow-tab-on: 0 0 0 1px rgba(255, 255, 255, .25), 0 0 18px rgba(255, 255, 255, .22);
+  --mn-glow-tab-off: 0 0 10px rgba(255, 255, 255, .09);
+  --mn-tab-off-line: rgba(255, 255, 255, .4);
+
+  /* 이 루트 안에서 예전 토큰을 쓰는 부품(검색 자동완성·AI 창·인기 게시물 등)도 같은 색으로 보이게 */
+  --bg: var(--mn-bg);
+  --card: var(--mn-surface);
+  --card-hover: var(--mn-surface);
+  --inset: var(--mn-bg);
+  --border: var(--mn-line);
+  --border-soft: var(--mn-line);
+  --text: var(--mn-fg);
+  --text-2: var(--mn-fg);
+  --text-muted: var(--mn-fg);
+  --text-faint: var(--mn-fg);
+  --text-dimmer: var(--mn-fg);
+  --accent: var(--mn-fg);
+  --accent-hover: var(--mn-fg);
+  --accent-ink: var(--mn-fg-inv);
+  --accent-text: var(--mn-fg);
+  --accent-soft: var(--mn-surface);
+  --focus-glow: 0 0 0 1px rgba(255, 255, 255, .3), 0 0 14px rgba(255, 255, 255, .15);
+
+  background: var(--mn-bg);
+  color: var(--mn-fg);
+  font-family: var(--mn-font);
+  letter-spacing: var(--mn-ls);
+  text-shadow: var(--mn-glow-text);
+}
+.mn h1 { text-shadow: var(--mn-glow-h1); }
+.mn h2 { text-shadow: var(--mn-glow-h2); }
+.mn button, .mn input, .mn kbd, .mn .mn-badge, .mn .mn-sale { text-shadow: none; }

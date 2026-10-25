@@ -4,10 +4,8 @@ import { cache } from 'react';
 import { supabase } from './supabase';
 import { selectGames } from './visibleGames';
 import { getCardGames } from './gameIndex';
-import { getCardExtras } from './cardExtras';
-import type { CardExtras } from './cardInfo';
-import type { CardGame } from './peopleRecs';
-import { roundRobinByCurator, latestPerGame } from './curatorMix';
+import { gameName } from './gameName';
+import type { Cover } from './homeMain';
 import type { PostRow } from './curatorView';
 
 export type Curator = { id: string; handle: string; display_name: string; instagram_url: string; avatar_url: string | null; bio: string | null };
@@ -64,12 +62,13 @@ export async function getCuratorGameCount(curatorId: string): Promise<number | n
 }
 
 // 메인 "인스타에서 봤던 그 게임" — 동의받은 계정(show_on_home)만. 연결 게임(숨긴 게임·메인 노출 제외 게임 제외)이 1개 이상인 계정이 HOME_CURATORS_MIN개 이상일 때만 돌려주고, 아니면 null = 섹션 없음
-// 카드: 계정들의 소개 게시물 게임을 최신 게시물순으로, 같은 게임은 최신 게시물 하나만(출처 계정도 그 게시물 기준), 계정별 라운드로빈(계정 순서는 가장 최근 게시물 기준, 한 장씩 번갈아, 바닥나면 나머지 계정끼리)으로 최대 12장 (lib/curatorMix)
-// 출시 예정 게임도 포함 (카드가 "출시 예정 · …"으로 표시). 칩의 숫자는 그 계정이 소개한 게임 수 전체(카드에 안 나온 게임 포함)
+// 계정마다 카드 하나: 소개한 게임 수(같은 게임은 한 번)·게시물 수(보이는 게임에 연결된 게시물)·최근 게시물 순 게임 표지 5장·최근 게임 이름 3개. 출시 예정 게임도 포함
+// 계정 순서는 소개한 게임 수 많은 순 (같으면 handle 순)
 export const HOME_CURATORS_MIN = 2;
-export type HomeCuratorChip = { handle: string; displayName: string; gameCount: number };
-export type HomeCuratorCard = { game: CardGame; handle: string; displayName: string };
-export type HomeCurators = { chips: HomeCuratorChip[]; cards: HomeCuratorCard[] };
+export const HOME_CURATOR_COVERS = 5;
+export const HOME_CURATOR_RECENT = 3;
+export type HomeCuratorCard = { handle: string; displayName: string; gameCount: number; postCount: number; covers: Cover[]; recent: string[] };
+export type HomeCurators = { cards: HomeCuratorCard[] };
 
 export async function getHomeCurators(): Promise<HomeCurators | null> {
   const { data: curators, error: cErr } = await supabase.from('curators').select('id, handle, display_name').eq('show_on_home', true);
@@ -83,29 +82,25 @@ export async function getHomeCurators(): Promise<HomeCurators | null> {
     .order('id');
   if (error || !posts?.length) return null;
   const gameIds = [...new Set(posts.map((p) => p.game_id as string))];
-  const { data: games, error: gErr } = await selectGames('id').eq('home_excluded', false).in('id', gameIds);
+  const { data: games, error: gErr } = await selectGames('id, name, display_name, cover_vertical_url, steam_appid, card_image_url, cover_image_url').eq('home_excluded', false).in('id', gameIds);
   if (gErr || !games) return null;
-  const visible = new Set((games as unknown as { id: string }[]).map((g) => g.id));
+  type GameRow = { id: string; name: string; display_name: string | null; cover_vertical_url: string | null; steam_appid: string | null; card_image_url: string | null; cover_image_url: string | null };
+  const byGame = new Map((games as unknown as GameRow[]).map((g) => [g.id, g]));
 
-  const byId = new Map(curators.map((c) => [c.id as string, c]));
-  const shown = posts.filter((p) => visible.has(p.game_id as string) && byId.has(p.curator_id as string));
-  const chips: HomeCuratorChip[] = curators
-    .map((c) => ({ handle: c.handle as string, displayName: c.display_name as string, gameCount: new Set(shown.filter((p) => p.curator_id === c.id).map((p) => p.game_id as string)).size }))
-    .filter((c) => c.gameCount > 0)
-    .sort((a, b) => b.gameCount - a.gameCount || a.handle.localeCompare(b.handle));
-  if (chips.length < HOME_CURATORS_MIN) return null;
-
-  const picked = roundRobinByCurator(latestPerGame(shown).map((p) => ({ curator: p.curator_id as string, gameId: p.game_id as string })));
-  try {
-    const [cards, extras] = await Promise.all([getCardGames(picked.map((p) => p.gameId)), getCardExtras(picked.map((p) => p.gameId)).catch(() => ({} as Record<string, CardExtras>))]);
-    // 칩은 안 쓰는 카드라 태그 번호는 보내지 않는다 (인원별 추천과 같음)
-    const gameById = new Map((cards as CardGame[]).map(({ tag_ids, ...g }) => { void tag_ids; return [g.id, { ...g, ...extras[g.id] } as CardGame] as const; }));
-    const out: HomeCuratorCard[] = picked.filter((p) => gameById.has(p.gameId)).map((p) => {
-      const c = byId.get(p.curator)!;
-      return { game: gameById.get(p.gameId)!, handle: c.handle as string, displayName: c.display_name as string };
+  const cards: HomeCuratorCard[] = [];
+  for (const c of curators) {
+    const mine = posts.filter((p) => p.curator_id === c.id && byGame.has(p.game_id as string)); // 최근 게시물이 앞
+    const distinct = [...new Set(mine.map((p) => p.game_id as string))].map((id) => byGame.get(id)!);
+    if (!distinct.length) continue;
+    cards.push({
+      handle: c.handle as string,
+      displayName: c.display_name as string,
+      gameCount: distinct.length,
+      postCount: mine.length,
+      covers: distinct.slice(0, HOME_CURATOR_COVERS).map((g) => ({ vertical: g.cover_vertical_url, appid: g.steam_appid, wide: g.card_image_url || g.cover_image_url })),
+      recent: distinct.slice(0, HOME_CURATOR_RECENT).map((g) => gameName(g)),
     });
-    return out.length ? { chips, cards: out } : null;
-  } catch {
-    return null;
   }
+  cards.sort((a, b) => b.gameCount - a.gameCount || a.handle.localeCompare(b.handle));
+  return cards.length >= HOME_CURATORS_MIN ? { cards } : null;
 }

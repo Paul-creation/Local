@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { gameName } from '../lib/gameName';
 
@@ -9,7 +9,7 @@ interface Question {
   options: string[];
 }
 
-export default function AIRecommend() {
+export default function AIRecommend({ icon }: { icon?: ReactNode } = {}) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<'intro' | 'asking' | 'result' | 'error'>('intro');
   const [answers, setAnswers] = useState<{ question: string; answer: string }[]>([]);
@@ -88,7 +88,7 @@ export default function AIRecommend() {
   return (
     <>
       <button type="button" className="ai-trigger-clean" onClick={() => setOpen(true)}>
-        AI 추천
+        {icon}AI 추천
       </button>
 
       {open && (

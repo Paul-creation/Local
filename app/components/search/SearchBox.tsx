@@ -21,7 +21,7 @@ const playersLabel = (g: any) => playersText(g);
 
 // 검색창 + 자동완성. 입력 중에는 결과 화면으로 넘어가지 않고, 맞는 태그·게임만 아래에 보여준다.
 // 태그 단어(예: "좀비, 협동")는 엔터나 후보 선택으로 태그 조건이 되어 검색창 아래 칩으로 보인다 (app/lib/tagSearch)
-export default function SearchBox({ games, filters, trailing }: { games: any[], filters: GameFilters, trailing?: ReactNode }) {
+export default function SearchBox({ games, filters, leading, trailing }: { games: any[], filters: GameFilters, leading?: ReactNode, trailing?: ReactNode }) {
   const { input, setInput, submitSearch, rememberList, selectedTags, toggleTag, addTags, selectedActs, toggleAct, tagLookup, splitInput, tree } = filters;
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -141,6 +141,7 @@ export default function SearchBox({ games, filters, trailing }: { games: any[], 
     <div className="search-box" ref={boxRef}>
       <div className="search-box-field">
       <div className={`search-bar-clean${selectedTags.length || selectedActs.length ? ' has-chips' : ''}`}>
+        {leading}
         {/* 검색창 안 태그 칩 — 입력으로 알아본 것과 필터에서 고른 것 모두. ×로 지움 */}
         {selectedTags.map((tag) => (
           <button key={tag} type="button" className="search-tag-chip" onClick={() => toggleTag(tag)} aria-label={`${tagKeyLabel(tag, tree)} 태그 지우기`}>
