@@ -184,7 +184,8 @@
 
 ## 로드맵
 ### 이번 주
-- 밀린 SQL 확인(사용자 실행): Bad Cheese 스팀(3094480) 연결 / 스핀오프 7행·디아블로 II 병합·Ori 숨김 / 판정 실패 20개·보류 3개용 tags_linked_at·filter_ai_at 비우기 / curator_posts 연결(최후의 주유소·큐레이터 게임 6개·nugget 4개·drawer 9개) / 백필 후 확인 SQL 두 개(로컬 협동인데 has_local_coop false, 로컬 근거 없는데 로컬 표현) / 엔티티 정리 SQL 뒤 parse-specs 재계산
+- 밀린 SQL 확인(사용자 실행): 백필 후 확인 SQL 중 "로컬 근거 없는데 로컬 표현" 하나(로컬 협동 쪽은 Hela 1개 보정으로 끝남)
+- 디아블로 시리즈 series_order를 출시순으로(디아블로 II 레저렉션 스팀 1·Diablo III 2·디아블로® IV 스팀 3, 숨긴 배틀넷 행 둘은 101·102): series_id·series_order에 유니크 제약이 없어 순서 충돌 없음, SQL은 사용자가 실행
 - fix/steam-confirm: check-delisted가 요청 제한을 판매 중단 후보로 보지 않게, enrich-fallback 빈 응답 크래시, fix-data-gaps·fill-tags-desc 재시도
 - solo_mode 재판정: judge-new-games --rejudge 미리보기 확인 뒤 --apply 여부 결정, solo_mode null 11개 채움
 - 만료 데모 정리
@@ -216,6 +217,7 @@
 - 인기 게시물: 공개 글 5개 미만이라 아직 안 보임
 
 ### 조건부
+- 근거 없어 확인 불가, 문제가 보이면 그때 처리: 스핀오프 7행 정리, 판정 실패 20개·보류 3개용 tags_linked_at·filter_ai_at 비우기, 엔티티 정리 뒤 parse-specs 재계산
 - 서버 검색 API(docs/search-api-plan.md): 게임 2,000~3,000개 이상 또는 /api/games/list 압축 200KB 이상일 때
 - /api/games/taste(원본 약 219KB)가 커지면 줄이는 방법(태그 수 제한 등) 검토
 - review_history가 8일 이상 쌓이면 리뷰 속도를 주간 증가량 기준으로 바꿀지
