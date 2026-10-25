@@ -1,80 +1,35 @@
-/* 게임 상세 모노 + 흰색 네온 — 토큰은 app/mono-tokens.css(.mn). 이 파일은 상세 루트(main.mn.dx) 안에서만 적용되고,
-   다른 페이지와 같이 쓰는 컴포넌트(버튼·칩·배지·투표·의견 등)는 원본 규칙을 그대로 두고 여기서만 덮어쓴다 */
-main.mn.dx { background: transparent; --tone-review: var(--mn-fg); --tone-live: var(--mn-fg); --tone-time: var(--mn-fg); --tone-party: var(--mn-fg); --tone-price: var(--mn-fg); }
+/* 게임 상세 모노 — 바꾸는 건 배경·표면·테두리·기본 글씨(#EDEDED)와 글꼴·네온뿐이다. 의미 있는 색(할인·평가·찜·구매·상태·포인트 파랑)은 원래 값 그대로.
+   토큰은 app/mono-tokens.css(.mn). 이 파일은 상세 루트(main.mn.dx) 안에서만 적용되고, 공용 컴포넌트의 원본 규칙은 그대로 둔 채 여기서만 덮어쓴다 */
+main.mn.dx {
+  background: transparent;
+  /* 홈·헤더에서 흰색으로 바꾼 포인트 색은 상세에서는 원래 값으로 (주요 버튼·선택 칩·링크·포커스의 파랑) */
+  --accent: #66C0F4; --accent-hover: #8FD1F7; --accent-ink: #0B0E14; --accent-soft: #0F2232; --accent-text: #66C0F4;
+  --focus-glow: 0 0 0 3px rgba(102, 192, 244, 0.22); --focus-glow-color: rgba(102, 192, 244, 0.22);
+}
 body:has(main.mn.dx) { background: #0A0A0A; }
 
-/* ---------- 글씨 위계 ---------- */
+/* ---------- 글씨 위계 (기본 글씨만 흰색 + 네온) ---------- */
 .mn.dx .dx-title { font-weight: 800; letter-spacing: -0.035em; text-shadow: var(--mn-glow-h1); }
-.mn.dx :is(.detail-card-title, .dx-votes .detail-card-title, .shots-title, .vote-group-title) { color: var(--mn-fg); font-weight: 800; letter-spacing: -0.03em; text-shadow: var(--mn-glow-h2); }
-.mn.dx .dx-credits { font-size: 14px; font-weight: 500; }
-.mn.dx .dx-lead { font-weight: 500; }
-.mn.dx :is(button, input, textarea, select, kbd, .btn, .cm-btn, .badge, .badge-neutral, .chip, .activity-chip, .category-tag, .lowest-pill, .buy-discount-badge, .discount-badge, .streamer-chip, .goty-badge, .top10-badge, .review-badge) { text-shadow: none; }
+.mn.dx :is(.detail-card-title, .dx-votes .detail-card-title, .shots-title, .vote-group-title) { font-weight: 800; letter-spacing: -0.03em; text-shadow: var(--mn-glow-h2); }
+/* 버튼·입력·배지·칩과 색이 있는 글씨에는 빛을 넣지 않는다 */
+.mn.dx :is(button, input, textarea, select, kbd, .btn, .cm-btn, .badge, .badge-neutral, .chip, .activity-chip, .category-tag, .lowest-pill, .buy-discount-badge, .discount-badge, .streamer-chip, .goty-badge, .top10-badge, .review-badge, .compare-add, .heart-btn, .share-text-btn, .report-open) { text-shadow: none; }
 
-/* ---------- 스탯 타일 ---------- */
-.mn.dx .dx-tile { background: var(--mn-surface); border: 1px solid var(--mn-line); border-radius: 12px; }
+/* ---------- 스탯 타일: 표면 #111111, 위쪽 선은 원래 의미 색(--tone) ---------- */
+.mn.dx .dx-tile { background: var(--mn-surface); border: 1px solid var(--mn-line); border-top: 2px solid var(--tone); border-radius: 12px; }
 .mn.dx .dx-tile-label { font-size: 13px; font-weight: 500; }
-.mn.dx .dx-tile-icon { color: var(--mn-fg); }
 .mn.dx .dx-tile-value { font-weight: 800; text-shadow: var(--mn-glow-h2); }
-.mn.dx .dx-tile-value.is-text { font-weight: 800; }
+.mn.dx .dx-tile-value.is-down { text-shadow: none; }
 .mn.dx .dx-tile-sub { font-size: 13px; font-weight: 500; }
 .mn.dx .dx-cover { background: var(--mn-surface); border: 1px solid var(--mn-line); box-shadow: none; }
 
-/* ---------- 구분선·표면 ---------- */
-.mn.dx .detail-card, .mn.dx .curators-card { border-top-color: var(--mn-line); }
-.mn.dx :is(.price-card, .discord-card) { border-color: var(--mn-line); }
-.mn.dx .trio-cell + .trio-cell { border-color: var(--mn-line); }
-.mn.dx :is(.more-list dt, .info-label, .steam-cell-label, .price-card-label, .price-card-note, .price-card-lowest, .detail-card-sub, .detail-card-note, .info-sub, .accordion-note) { font-weight: 500; }
-
-/* ---------- 배지·칩 ---------- */
-.mn.dx :is(.badge, .badge-neutral, .badge-accent, .badge-review, .badge-sale, .badge-neutral.is-coop, .badge-neutral.is-pvp, .badge-neutral.is-both) { color: var(--mn-fg); background: transparent; border: 1px solid var(--mn-line); font-weight: 500; box-shadow: none; }
-.mn.dx .dx-badges .chip, .mn.dx .dx-chips .chip, .mn.dx .more-chips .activity-chip, .mn.dx .category-tag { color: var(--mn-fg); background: transparent; border: 1px solid var(--mn-line); box-shadow: none; }
-.mn.dx .chip.is-static, .mn.dx .chip.is-static.is-up, .mn.dx .chip.is-static.is-down, .mn.dx .chip.is-static.is-special { color: var(--mn-fg); border-color: var(--mn-line); background: transparent; }
-.mn.dx .lowest-pill, .mn.dx .lowest-badge { color: var(--mn-fg); background: transparent; border: 1px solid var(--mn-line); box-shadow: none; }
-/* 할인 배지만 초록 */
-.mn.dx :is(.buy-discount-badge, .discount-badge) { background: var(--mn-sale-bg); color: var(--mn-sale-fg); border-color: var(--mn-sale-bg); font-weight: 800; }
-.mn.dx .dchart-tip-off { color: var(--mn-sale-bg); }
-.mn.dx .dchart-dot { fill: var(--mn-sale-bg); stroke: var(--mn-surface); }
-.mn.dx .dchart-dot-active { fill: var(--mn-fg); }
-
-/* ---------- 버튼 ---------- */
-/* 보조 버튼 = 투명 + 테두리 .4 + 약한 빛 (기본값) */
-.mn.dx :is(.btn, .btn-primary, .btn-outline, .cm-btn, .cm-btn-primary, .cm-btn-danger, .compare-add, .curator-post, .share-btn, .video-rail-btn, .shots-btn) {
-  color: var(--mn-fg); background: transparent; border: 1px solid rgba(255, 255, 255, .4); box-shadow: 0 0 10px rgba(255, 255, 255, .09); font-weight: 700; text-shadow: none;
+/* ---------- 보조 버튼 — 원래 색이 없던 버튼(기본 .btn·.btn-outline·기본 .cm-btn)만 모노 보조 스타일 ---------- */
+.mn.dx :is(.btn:not(.btn-primary):not(.compare-add), .btn-outline, .cm-btn:not(.cm-btn-primary):not(.cm-btn-danger)) {
+  color: var(--mn-fg); background: transparent; border: 1px solid rgba(255, 255, 255, .4); box-shadow: 0 0 10px rgba(255, 255, 255, .09); font-weight: 700;
 }
-.mn.dx :is(.btn, .btn-primary, .btn-outline, .cm-btn, .cm-btn-primary, .cm-btn-danger, .compare-add, .curator-post, .share-btn, .video-rail-btn, .shots-btn):hover:not(:disabled) { background: transparent; border-color: rgba(255, 255, 255, .4); box-shadow: 0 0 14px rgba(255, 255, 255, .18); }
-.mn.dx .compare-add.on, .mn.dx .compare-add[aria-pressed="true"] { color: var(--mn-fg-inv); background: var(--mn-fg); border-color: transparent; box-shadow: var(--mn-glow-tab-on); }
-/* 주 버튼 = 흰 배경 + 검은 글씨 + 빛 (한 화면에 하나: 구매하기, 출시 예정이면 데모 받기) */
-.mn.dx .price-card-buy.btn-primary { color: var(--mn-fg-inv); background: var(--mn-fg); border: 0; box-shadow: var(--mn-glow-primary); font-weight: 800; }
-.mn.dx .price-card-buy.btn-primary:hover:not(:disabled) { background: var(--mn-fg); box-shadow: 0 0 0 1px rgba(255, 255, 255, .4), 0 0 34px rgba(255, 255, 255, .3); }
-.mn.dx :is(.btn, .cm-btn):disabled { opacity: .5; box-shadow: none; }
-/* 글자만 있는 링크 버튼은 그대로 글씨 + hover 밑줄 */
-.mn.dx :is(.share-text-btn, .cm-link-btn, .detail-link, .pcs-link, .report-open) { color: var(--mn-fg); text-shadow: var(--mn-glow-text); }
-.mn.dx :is(.share-text-btn, .cm-link-btn, .detail-link, .pcs-link, .report-open):hover { color: var(--mn-fg); box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .4); }
-.mn.dx .heart-btn { color: var(--mn-fg); }
-.mn.dx .heart-btn.is-active, .mn.dx .heart-btn[aria-pressed="true"] { color: var(--mn-fg); }
+.mn.dx :is(.btn:not(.btn-primary):not(.compare-add), .btn-outline, .cm-btn:not(.cm-btn-primary):not(.cm-btn-danger)):hover:not(:disabled) { background: transparent; border-color: rgba(255, 255, 255, .4); box-shadow: 0 0 14px rgba(255, 255, 255, .18); }
 
-/* 선택 상태가 있는 토글·탭(투표 칩·기간 탭·제보 칩) — 홈 인원 탭과 같은 규칙: 선택 = 흰 배경, 비선택 = 보조 스타일 */
-.mn.dx :is(.vote-chip, .dchart-periods button, .report-modal .chip, [class*="report"] .chip) { color: var(--mn-fg); background: transparent; border: 1px solid rgba(255, 255, 255, .4); box-shadow: 0 0 10px rgba(255, 255, 255, .09); }
-.mn.dx :is(.vote-chip.on, .vote-chip[aria-pressed="true"], .vote-chip[aria-checked="true"], .dchart-periods button.is-on, .dchart-periods button[aria-pressed="true"], [class*="report"] .chip[aria-pressed="true"]) { color: var(--mn-fg-inv); background: var(--mn-fg); border-color: transparent; box-shadow: var(--mn-glow-tab-on); }
-.mn.dx .dchart-periods { background: transparent; padding: 0; gap: 8px; }
-.mn.dx .vote-chip.has-gauge::before { background: rgba(255, 255, 255, .14); }
-.mn.dx .vote-chip.on .vote-count, .mn.dx .vote-chip[aria-pressed="true"] .vote-count { color: var(--mn-fg-inv); }
-
-/* ---------- 입력 ---------- */
-.mn.dx :is(input, textarea, select) { color: var(--mn-fg); background: var(--mn-surface); border: 1px solid var(--mn-line); box-shadow: none; }
-.mn.dx :is(input, textarea, select):focus { outline: none; border-color: rgba(255, 255, 255, .4); box-shadow: none; }
-.mn.dx :is(input, textarea)::placeholder { color: var(--mn-fg); opacity: .6; }
-
-/* ---------- 가격 카드·게이지 ---------- */
-.mn.dx .lowest-gauge-track { background: var(--mn-line); }
-.mn.dx .lowest-gauge-bar { background: var(--mn-fg); }
-.mn.dx .price-card-now { font-weight: 800; text-shadow: var(--mn-glow-h2); }
-.mn.dx .dchart-line { stroke: var(--mn-fg); }
-.mn.dx .dchart-area { fill: var(--mn-fg); fill-opacity: .06; }
-.mn.dx .dchart-grid { stroke: var(--mn-line); }
-.mn.dx :is(.dchart-ylabel, .dchart-xlabel) { fill: var(--mn-fg); }
-.mn.dx .dchart-tip { background: var(--mn-surface); border-color: var(--mn-line); text-shadow: none; }
-.mn.dx .dchart-periods button { min-height: 44px; }
-
-/* 하드코딩 회색 안내 문구 */
+/* 원래 하드코딩 회색이던 안내 문구 */
 .mn.dx .cm-hint { color: var(--mn-fg); border-left-color: var(--mn-line); font-weight: 500; }
+
+/* 색이 있는 글씨(포인트·상태·할인·평가)에는 흰 네온을 넣지 않는다 */
+.mn.dx :is(a:not([class]), summary, .steam-rank, .info-sub, .pcs-link, .price-card-store, .lowest-gauge-text, .buy-timing, .vote-top, .cm-error, .dchart-tip-off, .verdict, [class*="verdict"], [class*="is-up"], [class*="is-down"], .chip.on, .chip[aria-pressed="true"], .badge-accent, .badge-review, .badge-sale, .heart-btn, .timing-badge) { text-shadow: none; }
