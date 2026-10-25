@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-25 (main 6e8d775)
+기준: 2026-10-25 (main fca1070)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/25: design/hero-wall-fill — 홈 히어로 표지 벽을 열 단위 3줄 grid로(grid-template-rows 3줄·grid-auto-flow column·타일 160×240px(모바일 96×144)·간격 4px, 오른쪽 끝 열만 잘림). 51장(2560px 폭 17열×3, 모바일은 앞 27장), 앞 12장만 eager·나머지 lazy. 구성: 지정 협동 20개(Rust·Sea of Thieves: 2026 Edition·Lethal Company·Phasmophobia·Deep Rock Galactic·Valheim·It Takes Two·Split Fiction·Don't Starve Together·Dead by Daylight·HELLDIVERS 2·Raft·Grounded·Overcooked! 2·PEAK·R.E.P.O.·Palworld·Monster Hunter Wilds·PUBG·Among Us, 전부 DB에 있고 세로 표지 있음) + 기존 인기순 24개 + 부족분 7개는 has_online_coop 동접순 채움(인슈라오디드·ARC Raiders·Team Fortress 2·Apex 레전드·레인보우식스 시즈·War Thunder·EA SPORTS FC 27, Bongo Cat·방치형/클리커 태그 제외). 배치는 lib/heroWall.ts: 협동·명작 번갈아 + 표지 평균 밝기(HERO_LUM, 20×30 흑백 평균)로 밝음·어두움 번갈아(1440·1920·2560px 좌우 평균 밝기 차 0.7·8.5·3.0%). 오버레이는 main 방식 그대로(벽 opacity .22 + 아래 #0A0A0A 페이드), 셋째 줄만 mask-image로 가운데 40~60% 투명·양끝 0~20%·80~100% 보임(세로는 셋째 줄 위쪽부터 반 줄 높이에 걸쳐) → 숫자·칩 뒤 표지 안 비침. h1·설명 대비는 벽 opacity .22라 최악 약 8.8:1, CLS 홈 3회 평균 1440 0.000·375 0.000. build·test 446개 통과
 - 10/25: perf/pretendard-subset — 한글 Pretendard를 통짜 PretendardVariable.woff2(2MB)에서 pretendard 패키지 variable dynamic subset(unicode-range 조각, node_modules 로컬)으로 전환. app/mono-fonts.ts가 패키지 CSS('Pretendard Variable', 굵기 45~920 그대로)를 import하고 --font-pretendard는 globals.css .pretendard-var가 정함(fallback: Pretendard Hangul Fallback → 시스템 글꼴, 예전 Arial 보정 fallback 제거). 한글 preload 없음. global-error의 static dynamic-subset(family 'Pretendard')과 이름·파일이 달라 충돌 없음. 1.5Mbps/40ms·375px·3회 평균: 글꼴 총용량 홈·상세 2,078KB → 485·469KB, 첫 Pretendard 로드(페이지 load 기준) 홈 32.4초 → 15.1초·상세 17.1초 → 7.4초, CLS 홈 0.0031·상세 0.0756 전후 동일. build·test 443개 통과
 - 10/25: fix/layout-shift-pages — /my-pc·/wishlist 첫 로딩 CLS 제거. 원인: localStorage를 읽기 전 본문이 짧아 푸터가 위에 붙었다가 읽은 뒤 아래로 밀림(푸터 하나만 이동). 두 페이지 main에 pg-fill 클래스, mono-page.css에서 min-height calc(100svh - 60px)로 읽기 전에도 푸터가 첫 화면 밖에 있게 함(globals.css·레이아웃·푸터·Loader 무변경). CLS(1.5Mbps/40ms·4초 합산·3회 평균): /my-pc 1440 0.126→0.0001·375 0.370→0, /wishlist 1440 0.136→0.0001·375 0.357→0. 내 PC 등록·찜 있는 상태는 본문이 화면보다 짧으면 푸터 위에 빈 여백(CLS 미측정). build·test 443개 통과
 - 10/25: fix/layout-shift-home — 홈 375px 첫 로딩 CLS 0.186→0.003(1440px 0.011→0.005, 1.5Mbps/40ms·4초·3회 평균). 원인은 하이드레이션 차이가 아니라 2MB Pretendard가 늦게 와 시스템 한글 글꼴에서 바뀔 때 h1·서브카피 줄바꿈이 달라지는 것. globals.css에 한글 대체 글꼴 'Pretendard Hangul Fallback'(시스템 한글 글꼴을 size-adjust 87.5%로 — Pretendard 한글 폭 0.875em) 추가하고 mono-fonts.ts fallback 맨 앞에 둠(본문 글꼴 변수도 같이 씀). .mn-kbd가 inline이라 min-width 54px가 안 먹던 것을 inline-block으로(⌘K 36.7·Ctrl K 51.0px). 한글 폭은 WenQuanYi(1em)만 실측, Noto CJK·Malgun·Apple SD Gothic Neo는 1em 근처로 가정. /my-pc·/wishlist CLS(푸터 밀림)는 다른 브랜치 작업. build·test 443개 통과
@@ -114,6 +115,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- design/hero-wall-fill 머지 뒤: 프로덕션 / 1440·1920·375px에서 벽 3줄이 오른쪽 끝까지 차는지·셋째 줄 가운데가 숫자 뒤에서 사라지는지·좌우 밝기 균형(미확인) / 375px은 앞 두 열이 상대적으로 어두움(좌우 10% 기준은 데스크톱 폭만 맞춤)
 - perf/pretendard-subset 머지 뒤: 프로덕션 /·/games/<id> 네트워크 탭에서 PretendardVariable.subset.*.woff2 조각 약 0.5MB와 굵기(400·700·800) 확인(미확인) / 자주 쓰는 조각 preload 여부 결정
 - fix/layout-shift-pages 머지 뒤: 프로덕션에서 /my-pc·/wishlist를 강력 새로고침(1440·375px)해 푸터가 위로 붙었다 내려가지 않는지, 내 PC 등록·찜 있는 상태에서 푸터 위 여백이 어색하지 않은지
 - fix/layout-shift-home 머지 뒤: 프로덕션 / 375px에서 강력 새로고침 때 h1·서브카피 아래 커맨드바·숫자가 안 밀리는지, 1440px 검색창 오른쪽 Ctrl K 상자 폭(미확인) / 실제 기기(iOS·Android·Windows) 한글 대체 글꼴 폭은 미측정 / Pretendard 2MB dynamic subset 전환 여부 결정 필요
