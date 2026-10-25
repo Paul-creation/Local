@@ -11,6 +11,8 @@ import { FilterPanel } from './search/SearchPanel';
 import PeopleProvider from './home/PeopleContext';
 import '../mono-tokens.css';
 import './home/mn/mn.css';
+import '../mono-page.css';
+import '../mono-lists.css';
 
 // 데스크톱(1024px 이상)이면 결과 화면에서 필터를 왼쪽 칸에 늘 펼쳐 둔다. 휴대폰·태블릿은 버튼으로 여는 전체 화면 패널
 const WIDE = '(min-width: 1024px)';
@@ -38,7 +40,7 @@ export default function GameGrid({ event, sections, top10Ids = [], peopleReady =
   return (
     <PeopleProvider filters={filters} recsReady={peopleReady}>
       {/* 홈 화면(결과 없을 때)만 모노 + 흰색 네온 루트(.mn). 같은 div의 클래스만 바뀌어서 입력 중에도 검색창이 그대로 유지된다 */}
-      <div className={showHome ? 'mn mn-page' : undefined}>
+      <div className={showHome ? 'mn mn-page' : 'mn mn-inner'}>
         {/* 이벤트 라벨 → 제목 → 서브카피 → 커맨드바(검색·AI 추천·인원 탭·칩) → 숫자 (결과 화면에서는 검색창 줄만) */}
         <MainHero games={index.games || []} filters={filters} showHome={showHome} sidebar={sidebar} event={event} covers={heroCovers} stats={stats} />
 

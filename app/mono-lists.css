@@ -1,3 +1,9 @@
 /* 게임 카드 목록 화면(찜목록·내 라이브러리·검색 결과·이번 주 할인 마감 …) 모노 — 공통은 mono-page.css(.mn-inner). 카드는 공용 컴포넌트(ResultCard·GameCard)라 원본은 그대로 두고 .mn-inner 아래에서만 덮어쓴다.
    카드 표면 #111111·테두리 #262626, 글씨 #EDEDED. 가격·할인·평가·상태 색은 원래대로 */
 .mn-inner :is(.wishlist-title, .lib-title, .this-week-title) { font-weight: 800; letter-spacing: -0.035em; }
+
+/* 검색 결과 화면의 검색창 — 바(.search-bar-clean)는 표면·테두리 그대로, 포커스 효과는 입력창에만 */
+.mn-inner .search-bar-clean, .mn-inner .search-bar-clean:focus-within { background: var(--mn-surface); border-color: var(--mn-line); box-shadow: none; }
+.mn-inner .search-bar-clean input { background: transparent; border: 0; border-radius: 10px; box-shadow: none; outline: none; }
+.mn-inner .search-bar-clean input:focus, .mn-inner .search-bar-clean input:focus-visible { outline: none; box-shadow: 0 0 0 1px rgba(255, 255, 255, .4), 0 0 18px rgba(255, 255, 255, .18); }
+.mn-inner .ai-trigger-clean { text-shadow: none; }
