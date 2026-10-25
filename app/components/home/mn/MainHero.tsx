@@ -44,7 +44,7 @@ export default function MainHero({ games, filters, showHome, sidebar = false, ev
           <div className="home-only mn-intro">
             {event}
             <h1 className="mn-h1">금요일 밤,<br />친구들이랑 뭐 하지?</h1>
-            <p className="mn-sub">스팀, 유튜브, 할인 사이트를 따로 돌아다니지 않아도 돼요. 몇 명이서, 얼마에, 어떻게 하는지 한 곳에서.</p>
+            <p className="mn-sub">스팀, 유튜브, 할인 사이트를 따로 돌아다니지 않아도 돼요.{' '}<br />몇 명이서, 얼마에, 어떻게 하는지 한 곳에서.</p>
           </div>
         )}
         <div className={showHome ? 'mn-cmd' : 'home-search'}>

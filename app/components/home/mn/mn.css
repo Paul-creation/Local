@@ -8,48 +8,56 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
 .mn :focus-visible { outline: 2px solid var(--mn-fg); outline-offset: 2px; }
 .mn a { color: inherit; }
 
-/* ---------- 히어로 ---------- */
-.mn-hero { position: relative; isolation: isolate; padding: 64px 0 56px; }
-.mn-hero-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; display: grid; grid-template-columns: repeat(12, 1fr); align-content: start; gap: 4px; opacity: 0.22; pointer-events: none; }
-.mn-hero-bg img { display: block; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; }
-.mn-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to bottom, transparent, var(--mn-bg) 78%); pointer-events: none; }
-.mn-intro { margin-bottom: 32px; }
-.mn .hero-label { justify-content: flex-start; margin: 0 0 16px; font-size: 14px; font-weight: 600; color: var(--mn-fg); }
+/* ---------- 히어로 (전부 가운데 정렬, 글씨 네온은 히어로 안에만) ---------- */
+/* 세로 간격: 기간 한정 20 → h1 20 → 설명 36 → 커맨드바 48 → 숫자. 위아래 여백 데스크톱 96 / 모바일 56 */
+.mn-hero { position: relative; isolation: isolate; padding: 96px 0; text-align: center; text-shadow: var(--mn-glow-text); }
+/* 표지 벽 — 히어로 전체 높이에 깔리게 행이 높이를 나눠 갖는다 (24장 = 8열 × 3행, 모바일 12장 = 4열 × 3행) */
+.mn-hero-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 4px; opacity: 0.22; pointer-events: none; }
+.mn-hero-bg img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* 위는 그대로, 커맨드바 높이쯤부터 #0A0A0A로 진해져서 숫자 아래에서는 완전히 배경색 */
+.mn-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to bottom, transparent 0, transparent 50%, var(--mn-bg) 90%); pointer-events: none; }
+.mn-intro { margin-bottom: 36px; }
+.mn .hero-label { justify-content: center; margin: 0 0 20px; font-size: 14px; font-weight: 600; color: var(--mn-fg); }
 .mn .hero-label b { color: var(--mn-fg); font-weight: 800; }
 .mn .hero-label a { color: var(--mn-fg); text-decoration: underline; text-underline-offset: 3px; }
 .mn-h1 { margin: 0 0 20px; font-size: clamp(40px, 7vw, 72px); font-weight: var(--mn-weight-display); letter-spacing: var(--mn-ls-display); line-height: 1.08; word-break: keep-all; color: var(--mn-fg); }
-.mn-sub { max-width: 560px; margin: 0; font-size: 17px; font-weight: 500; line-height: 1.6; word-break: keep-all; }
+.mn-sub { margin: 0; font-size: 18px; font-weight: 500; line-height: 1.6; word-break: keep-all; }
 
-/* 커맨드바 — 윗줄: 검색 + ⌘K + AI 추천 / 구분선 / 아랫줄: 인원 탭 | 칩 */
-.mn-cmd { position: relative; z-index: 2; max-width: 860px; background: var(--mn-surface); border: 1px solid var(--mn-line); border-radius: 14px; }
-.mn-cmd:focus-within { border-color: rgba(255, 255, 255, .4); box-shadow: 0 0 0 1px rgba(255, 255, 255, .15), 0 0 24px rgba(255, 255, 255, .08); }
+/* 커맨드바 — 윗줄: 검색 + ⌘K + AI 추천 / 구분선 / 아랫줄: 인원 탭 | 칩. 포커스 효과는 검색 입력창에만 (바 전체는 변하지 않음) */
+.mn-cmd { position: relative; z-index: 2; max-width: 760px; margin-inline: auto; text-align: left; background: var(--mn-surface); border: 1px solid var(--mn-line); border-radius: 14px; }
+.mn-cmd, .mn-cmd * { text-shadow: none; }
 .mn .mn-cmd .search-row { margin: 0; padding: 6px 6px 6px 16px; align-items: center; flex-direction: row; gap: 10px; }
 .mn .mn-cmd .search-box { flex: 1; min-width: 0; }
-.mn .mn-cmd .search-bar-clean { height: 48px; padding: 0; gap: 10px; background: transparent; border: 0; border-radius: 0; box-shadow: none; }
-.mn .mn-cmd .search-bar-clean input { height: 46px; font-size: 17px; font-weight: 500; color: var(--mn-fg); }
+.mn .mn-cmd .search-bar-clean, .mn .mn-cmd .search-bar-clean:focus-within { height: 48px; padding: 0; gap: 10px; background: transparent; border: 0; border-radius: 0; box-shadow: none; }
+.mn .mn-cmd .search-bar-clean input { height: 46px; padding-inline: 12px; font-size: 17px; font-weight: 500; color: var(--mn-fg); border-radius: 10px; outline: none; }
+.mn .mn-cmd .search-bar-clean input:focus, .mn .mn-cmd .search-bar-clean input:focus-visible { outline: none; box-shadow: 0 0 0 1px rgba(255, 255, 255, .4), 0 0 18px rgba(255, 255, 255, .18); }
 .mn .mn-cmd .search-bar-clean input::placeholder { color: var(--mn-fg); opacity: 1; }
 .mn-search-icon { display: inline-flex; flex-shrink: 0; color: var(--mn-fg); }
 .mn .mn-cmd .filter-toggle { color: var(--mn-fg); border-radius: 8px; }
 .mn .mn-cmd .filter-toggle:hover { background: var(--mn-bg); }
 .mn-kbd { flex-shrink: 0; padding: 3px 8px; font: inherit; font-size: 12px; font-weight: 700; color: var(--mn-fg); background: var(--mn-bg); border: 1px solid var(--mn-line); border-radius: 6px; }
 .mn .mn-cmd .search-actions { flex-shrink: 0; }
-.mn .mn-cmd .ai-trigger-clean { height: 44px; gap: 8px; padding: 0 18px; border: 0; border-radius: 10px; background: var(--mn-fg); color: var(--mn-fg-inv); font-family: inherit; font-size: 15px; font-weight: 800; letter-spacing: var(--mn-ls); text-shadow: none; box-shadow: var(--mn-glow-primary); cursor: pointer; transform: none; }
+.mn .mn-cmd .ai-trigger-clean { height: 44px; gap: 8px; padding: 0 18px; border: 0; border-radius: 10px; background: var(--mn-fg); color: var(--mn-fg-inv); font-family: inherit; font-size: 15px; font-weight: 800; letter-spacing: var(--mn-ls); box-shadow: var(--mn-glow-primary); cursor: pointer; transform: none; }
 .mn .mn-cmd .ai-trigger-clean:hover { background: var(--mn-fg); transform: none; }
 .mn .mn-cmd .filter-wrap { padding: 0 14px 14px; }
 
-.mn-cmd-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 12px 14px; border-top: 1px solid var(--mn-line); }
-.mn-tabs, .mn-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.mn-cmd-sep { width: 1px; height: 24px; background: var(--mn-line); }
+.mn-cmd-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 14px; padding: 12px 14px; border-top: 1px solid var(--mn-line); }
+.mn-tabs, .mn-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.mn-cmd-sep { display: none; } /* 가운데 정렬로 줄바꿈되면 구분선이 줄 끝에 혼자 남아서 뺐다 */
 .mn-tab, .mn-chip { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; font-family: inherit; font-size: 14px; font-weight: 700; letter-spacing: var(--mn-ls); line-height: 1; color: var(--mn-fg); text-decoration: none; text-shadow: none; background: transparent; border-radius: 999px; cursor: pointer; }
 .mn-tab { border: 1px solid var(--mn-tab-off-line); box-shadow: var(--mn-glow-tab-off); }
 .mn-tab.on { color: var(--mn-fg-inv); background: var(--mn-fg); border-color: transparent; box-shadow: var(--mn-glow-tab-on); }
 .mn-chip { border: 1px solid var(--mn-line); }
 .mn-chip.on { border-color: var(--mn-fg); }
 
-.mn-stats { display: flex; flex-wrap: wrap; gap: 20px 56px; margin: 44px 0 0; }
-.mn-stats > div { display: flex; flex-direction: column-reverse; gap: 4px; }
+.mn-stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px 48px; margin: 48px 0 0; }
+.mn-stats > div { display: flex; flex-direction: column-reverse; align-items: center; gap: 4px; }
 .mn-stats dd { margin: 0; font-size: clamp(30px, 4vw, 44px); font-weight: var(--mn-weight-display); letter-spacing: var(--mn-ls-display); line-height: 1.1; font-variant-numeric: tabular-nums; }
 .mn-stats dt { font-size: 14px; font-weight: 500; }
+
+/* 히어로 밖 홈 본문은 글씨 네온 없음 (버튼·탭·칩·배지의 box-shadow 빛은 그대로) */
+.mn.mn-page { text-shadow: none; }
+.mn-page h2 { text-shadow: none; }
 
 /* ---------- 섹션 공통 ---------- */
 .mn-sec { margin: 0 0 56px; }
@@ -132,8 +140,10 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
 .mn-card:hover .mn-poster { border-color: rgba(255, 255, 255, .5); box-shadow: 0 0 16px rgba(255, 255, 255, .12); }
 
 @media (max-width: 767px) {
-  .mn-hero-bg { grid-template-columns: repeat(6, 1fr); }
+  .mn-hero-bg { grid-template-columns: repeat(4, 1fr); }
   .mn-hero-bg img:nth-child(n + 13) { display: none; }
+  .mn-sub { font-size: 16px; text-wrap: balance; }
+  .mn-sub br { display: none; }
 }
 
 /* ---------- 인기 게시물 (커뮤니티) ---------- */
@@ -152,7 +162,7 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
 
 @media (max-width: 720px) {
   .mn-wrap { padding-inline: 16px; }
-  .mn-hero { padding: 40px 0 40px; }
+  .mn-hero { padding: 56px 0; }
   .mn-kbd, .mn-cmd-sep { display: none; }
   .mn .mn-cmd .search-row { padding-left: 12px; }
   .mn .mn-cmd .search-bar-clean input { font-size: 16px; }
