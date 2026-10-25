@@ -20,6 +20,7 @@ import fs from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { fetchSteamTags } from './lib/steam-tags.mjs';
 import { onlyIds } from './lib/only-ids.mjs';
+import { PLAYSTYLE_RULE, cachedCategories, inventedPlaystyle } from './lib/playstyle-guard.mjs';
 import { JUDGE_TOOL, extractRows, runWithRetry, RAW_LOG_CHARS } from './lib/judge-batches.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
@@ -48,6 +49,7 @@ const PROMPT_HEAD = `너는 한국 게임 정보 사이트의 필터 데이터�
 - "낮음": 바로 같이 즐김 / "보통": 조금 익혀야 함 / "높음": 배울 게 많거나 실력차가 재미를 크게 좌우
 - reason: 판단 이유를 한국어 20자 안팎 한 구절로 (예시 말투 참고)
 - 게임을 잘 모르거나 확신이 없으면 barrier와 reason 모두 null
+- ${PLAYSTYLE_RULE} reason에도 적용해
 - 예시: Lethal Company 낮음 "줍고 나르고 도망치는 간단한 협동" / Overcooked! 2 낮음 "몇 가지 버튼으로 하는 협동 요리" / Stardew Valley 낮음 "하루 일과가 단순해 금방 익힘" / Portal 낮음 "포털 쏘기 하나로 시작하는 퍼즐" / Among Us 낮음 "규칙이 단순한 마피아 게임" / It Takes Two 낮음 "둘이 바로 하는 쉬운 협동 어드벤처"
   Deep Rock Galactic 보통 "직업 역할과 협동을 익혀야 함" / Phasmophobia 보통 "귀신 증거 찾는 법을 익혀야 함" / Terraria 보통 "할 일이 많아 익숙해져야 함" / Hollow Knight 보통 "탐험과 보스전이 꽤 어려움" / Rocket League 보통 "조작은 단순하나 실력차 큼" / PUBG 보통 "슈팅 실력차가 있음" / Dead by Daylight 보통 "생존자는 쉽지만 킬러 실력차 큼"
   League of Legends 높음 "챔피언·운영 학습량과 실력차 큼" / Counter-Strike 2 높음 "정확한 사격·전술 실력차 큼" / Baldur's Gate 3 높음 "규칙과 선택지가 많은 CRPG" / Civilization VI 높음 "규칙과 시대별 요소가 많은 4X" / Monster Hunter: World 높음 "무기·시스템이 많아 배울 게 많음" / Street Fighter 6 높음 "격투 콤보 실력차가 큼" / Rust 높음 "생존·건설에 PvP 실력차 큼"
@@ -104,7 +106,7 @@ async function hasMigration() {
 }
 
 async function loadTargets(migrated) {
-  const cols = `id, name, steam_appid, description, created_at, entry_barrier, solo_mode${migrated ? ', filter_ai_at' : ''}`;
+  const cols = `id, name, steam_appid, has_local_coop, description, created_at, entry_barrier, solo_mode${migrated ? ', filter_ai_at' : ''}`;
   if (SAMPLE && !EXISTING) {
     // 비용 어림용: 예전 게임 중 아무거나 (판단은 안 함)
     const { data, error } = await supabase.from('games').select(cols).eq('hidden', false).not('steam_appid', 'is', null)
@@ -191,6 +193,8 @@ async function main() {
         if (it.askBarrier && BARRIERS.includes(r.barrier)) {
           it.patch.entry_barrier = r.barrier;
           it.patch.entry_barrier_reason = clean(r.reason, 60) || null;
+          const bad = inventedPlaystyle(it.patch.entry_barrier_reason, it.game, cachedCategories(it.game.steam_appid));
+          if (bad) { console.log(`   ✂️ ${it.game.name}: 진입장벽 이유에 스팀 근거 없는 표현 "${bad}" — 이유만 뺌`); it.patch.entry_barrier_reason = null; }
         }
         if (it.askSolo && SOLOS.includes(r.solo)) it.patch.solo_mode = r.solo;
         if (it.askSolo) it.soloReason = clean(r.solo_reason, 60); // 저장 안 함, 미리보기 표시용

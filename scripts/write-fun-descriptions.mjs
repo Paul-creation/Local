@@ -15,6 +15,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { readFileSync } from 'node:fs';
 import { hasCoop, noMulti } from './lib/fun-desc-rules.mjs';
+import { PLAYSTYLE_RULE, cachedCategories, inventedPlaystyle } from './lib/playstyle-guard.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -47,6 +48,7 @@ const STYLE = `너는 게임 추천 사이트의 한 줄 소개를 쓴다. 읽�
 - 과장("역대급", "최고의", "인생 게임" 등), 스포일러(결말·반전·흑막)는 쓰지 않는다
 - 인원 수(예: 4인, 8명, 5대5)와 가격은 화면에 따로 나오므로 숫자로 쓰지 않는다
 - 아래 [게임 정보]에 있는 사실만 쓴다. 캐릭터·지명·기능을 지어내지 않는다
+- ${PLAYSTYLE_RULE}
 - 따옴표, 이모지, 해시태그는 소개 안에 쓰지 않는다
 
 출력 형식:
@@ -123,6 +125,9 @@ function parseCandidates(text) {
 
 // 후보를 검사해 통과한 것 중 가장 좋은 것을, 없으면 문제가 가장 적은 후보를 돌려준다
 function pick(cands, game) {
+  // 근거 없는 대면·로컬 표현이 없는 후보를 먼저 씀 (AI를 더 부르지 않고 3개 안에서 고름)
+  const clean = cands.filter((c) => !inventedPlaystyle(c, game, cachedCategories(game.steam_appid)));
+  if (clean.length) cands = clean;
   const checked = cands.map((line) => ({ line, problems: checkLine(line, game) }));
   const ok = checked.filter((c) => !c.problems.length).sort((a, b) => score(a.line) - score(b.line));
   if (ok.length) return ok[0];
@@ -193,7 +198,7 @@ async function markDone(id, line) {
 async function main() {
   if (!process.env.ANTHROPIC_API_KEY) return console.error('.env.local에 ANTHROPIC_API_KEY가 없어요');
 
-  const cols = 'id, name, category, tags, genres, min_players, max_players, solo_playable, has_online_coop, has_local_coop, has_pvp, server_type, story_length, difficulty, activities, description, heat_rank, current_players';
+  const cols = 'id, name, steam_appid, category, tags, genres, min_players, max_players, solo_playable, has_online_coop, has_local_coop, has_pvp, server_type, story_length, difficulty, activities, description, heat_rank, current_players';
   const probe = await supabase.from('games').select('fun_description_at').eq('hidden', false).limit(1);
   if (probe.error) {
     hasMarker = false;
@@ -233,7 +238,12 @@ async function main() {
       }
       const line = best?.line ?? null;
       const problems = best?.problems ?? [];
-      if (isEmpty(line)) {
+      const invented = isEmpty(line) ? null : inventedPlaystyle(line, g, cachedCategories(g.steam_appid));
+      if (invented) {
+        result.rejected++;
+        console.log(`🚫 ${g.name} — 스팀 근거 없는 플레이 방식 표현 "${invented}", 저장 안 함\n    ${line}`);
+        await markDone(g.id, null);
+      } else if (isEmpty(line)) {
         result.empty++;
         console.log(`⬜ ${g.name} — 확신이 없어 비워 둠`);
         await markDone(g.id, null);

@@ -2,6 +2,7 @@
 // 스팀 외 게임의 한국어 지원·사양·용량·출시일·게임 특징을 Claude + 웹 검색으로 채우기
 // 실행: node --env-file=.env.local scripts/enrich-ai-other.mjs   (--force: 이미 채운 게임도 다시)
 import { createClient } from '@supabase/supabase-js';
+import { PLAYSTYLE_RULE, filterActivities } from './lib/playstyle-guard.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -12,6 +13,7 @@ const FORCE = process.argv.includes('--force');
 
 const PROMPT = (name, store) => `게임 "${name}" (${store} 플랫폼, PC 버전)의 정보를 웹 검색으로 확인해서 JSON으로만 답해.
 공식 사이트, 공식 지원 페이지, 스토어 페이지를 우선 참고하고, 확인이 안 되는 값은 추측하지 말고 null로 둬.
+${PLAYSTYLE_RULE} description·activities에 적용해.
 
 {
   "description": "한국어 2~3문장. 어떤 게임이고 친구와 어떻게 즐기는지. 광고 문구 말고 담백하게",
@@ -81,7 +83,9 @@ function clean(ai, game) {
   if (str(ai.ending_note)) u.ending_note = str(ai.ending_note);
   if (str(ai.story_length)) u.story_length = str(ai.story_length);
   if (Array.isArray(ai.activities)) {
-    const acts = ai.activities.map(str).filter(Boolean).slice(0, 5);
+    const { kept, removed } = filterActivities(ai.activities.map(str).filter(Boolean), game);
+    if (removed.length) console.log(`   ✂️ ${game.name}: 스팀 근거 없는 플레이 방식이라 활동에서 뺌 — ${removed.join(', ')}`);
+    const acts = kept.slice(0, 5);
     if (acts.length) u.activities = acts;
   }
   if (typeof ai.is_esports === 'boolean') u.is_esports = ai.is_esports;
@@ -100,7 +104,7 @@ async function main() {
 
   const { data: games, error } = await supabase
     .from('games')
-    .select('id, name, source, description, korean_support, release_date, min_spec, recommended_spec, storage_gb, solo_playable, recommended_players, server_type, multiplayer_host, has_ending, ending_note, story_length, activities, is_esports, ai_enriched_at').eq('hidden', false)
+    .select('id, name, source, description, korean_support, release_date, min_spec, recommended_spec, storage_gb, solo_playable, recommended_players, server_type, multiplayer_host, has_ending, ending_note, story_length, activities, is_esports, has_local_coop, ai_enriched_at').eq('hidden', false)
     .is('steam_appid', null);
   if (error) return console.error('조회 실패:', error.message);
 
