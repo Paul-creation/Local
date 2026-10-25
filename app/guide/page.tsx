@@ -8,6 +8,9 @@ import {
   GUIDE_META, GUIDE_HEAD, GUIDE_SECTIONS, GUIDE_FOOT, GUIDE_SHOW_STEAM,
   GUIDE_ACTION_PREFIX, GUIDE_ACTION_SUFFIX, EXAMPLE_GAME_TOKEN,
 } from '../lib/guideCopy';
+import '../mono-tokens.css';
+import '../mono-page.css';
+import '../mono-static.css';
 
 // 예시 게임(영상 있는 인기 게임)을 1시간마다 새로 고른다. 문구는 모두 lib/guideCopy.ts
 export const revalidate = 3600;
@@ -25,7 +28,7 @@ export default async function GuidePage() {
   const resolve = (href: string) => (href.includes(EXAMPLE_GAME_TOKEN) ? (exampleId ? href.replace(EXAMPLE_GAME_TOKEN, exampleId) : null) : href);
 
   return (
-    <main className="page guide-page">
+    <main className="page guide-page mn mn-inner">
       <BackLink fallbackHref="/" label="홈으로" />
       <div className="guide-layout">
         <GuideToc items={sections.map((s) => ({ id: s.id, label: s.tocLabel }))} label={GUIDE_HEAD.tocLabel} />

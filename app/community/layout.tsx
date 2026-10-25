@@ -4,6 +4,7 @@ import WriteLink from '../components/community/WriteLink';
 import '../mono-tokens.css';
 import '../mono-page.css';
 import './community-mono.css';
+import '../mono-static.css';
 
 export default function CommunityLayout({ children }: { children: React.ReactNode }) {
   return (

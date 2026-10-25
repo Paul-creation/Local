@@ -1,13 +1,16 @@
 import type { Metadata } from 'next';
 import StatusSearch from './components/status/StatusSearch';
 import './status-pages.css';
+import './mono-tokens.css';
+import './mono-page.css';
+import './mono-static.css';
 
 export const metadata: Metadata = { title: '페이지를 찾을 수 없어요' };
 
 // 없는 주소·notFound() 공통 404 화면
 export default function NotFound() {
   return (
-    <main className="page status-page">
+    <main className="page status-page mn mn-inner">
       <div className="status-card">
         <p className="status-code">404</p>
         <h1 className="status-title">찾는 페이지가 없어요</h1>

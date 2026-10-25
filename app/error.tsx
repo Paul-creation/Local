@@ -3,6 +3,9 @@
 import { useEffect } from 'react';
 import StatusSearch from './components/status/StatusSearch';
 import './status-pages.css';
+import './mono-tokens.css';
+import './mono-page.css';
+import './mono-static.css';
 
 // 페이지를 그리다 오류가 났을 때 (상단 바·푸터는 그대로 보임)
 export default function ErrorPage({ error, retry }: { error: Error & { digest?: string }; retry: () => void }) {
@@ -11,7 +14,7 @@ export default function ErrorPage({ error, retry }: { error: Error & { digest?: 
   }, [error]);
 
   return (
-    <main className="page status-page">
+    <main className="page status-page mn mn-inner">
       <div className="status-card">
         <p className="status-code">잠시 문제가 생겼어요</p>
         <h1 className="status-title">페이지를 불러오지 못했어요</h1>

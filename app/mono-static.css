@@ -1,0 +1,10 @@
+/* 정적 안내 페이지(소개·FAQ·이용약관·개인정보·의견 보내기·사용 가이드·운영정책·404/에러) 모노 — 공통은 mono-page.css(.mn-inner)
+   긴 글은 본문 16px·줄간격 1.7·최대 폭 720px. 링크 파랑·에러·상태 색은 원래대로 */
+.mn-inner :is(.cm-h1, .guide-h3, .status-title) { font-weight: 800; letter-spacing: -0.035em; }
+.mn-inner :is(.cm-h2) { font-weight: 800; letter-spacing: -0.03em; }
+.mn-inner :is(.legal, .guide-body, .cm-policy) { max-width: 720px; margin-inline: auto; }
+.mn-inner :is(.legal, .guide-body, .cm-policy) :is(p, li, dd, .cm-sub, .cm-hint) { font-size: 16px; line-height: 1.7; }
+.mn-inner .legal-table { font-size: 15px; }
+.mn-inner .legal-table th { background: var(--mn-surface); }
+.mn-inner :is(.status-card) { background: var(--mn-surface); border-color: var(--mn-line); }
+.mn-inner .status-desc { color: var(--mn-fg); } /* 원래 하드코딩 회색 */

@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import BackLink from '../components/BackLink';
 import { SITE_NAME, SITE_META_DESCRIPTION, SITE_DESCRIPTION, OPERATOR_NAME, CONTACT_EMAIL, CONTACT_TEXT, BASE_OG } from '../lib/site';
+import '../mono-tokens.css';
+import '../mono-page.css';
+import '../mono-static.css';
 
 export const metadata: Metadata = {
   title: '사이트 소개',
@@ -14,7 +17,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   const contact = CONTACT_EMAIL ? <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> : CONTACT_TEXT;
   return (
-    <main className="page cm-page">
+    <main className="page cm-page mn mn-inner">
       <BackLink fallbackHref="/" label="홈으로" />
       <article className="cm-card legal">
         <h1 className="cm-h1">{SITE_NAME} 소개</h1>

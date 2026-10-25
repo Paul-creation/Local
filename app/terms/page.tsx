@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import BackLink from '../components/BackLink';
 import { SITE_NAME, OPERATOR_NAME, CONTACT_EMAIL, CONTACT_TEXT } from '../lib/site';
+import '../mono-tokens.css';
+import '../mono-page.css';
+import '../mono-static.css';
 
 export const metadata: Metadata = {
   title: '이용약관',
@@ -14,7 +17,7 @@ const EFFECTIVE_DATE = '2026년 10월 5일';
 export default function TermsPage() {
   const contact = CONTACT_EMAIL ? <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> : CONTACT_TEXT;
   return (
-    <main className="page cm-page">
+    <main className="page cm-page mn mn-inner">
       <BackLink fallbackHref="/" label="홈으로" />
       <article className="cm-card cm-policy legal">
         <h1 className="cm-h1">이용약관</h1>

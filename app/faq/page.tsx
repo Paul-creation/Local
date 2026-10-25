@@ -5,6 +5,9 @@ import BackLink from '../components/BackLink';
 import { SITE_NAME, SITE_NAME_FULL, SITE_ALT_NAMES, SITE_URL, BASE_OG } from '../lib/site';
 import { LARGE_LOBBY } from '../lib/players';
 import { FAQ_GUIDE_LINE } from '../lib/guideCopy';
+import '../mono-tokens.css';
+import '../mono-page.css';
+import '../mono-static.css';
 
 export const metadata: Metadata = {
   title: '자주 묻는 질문',
@@ -75,7 +78,7 @@ const jsonLd = {
 
 export default function FaqPage() {
   return (
-    <main className="page cm-page">
+    <main className="page cm-page mn mn-inner">
       <BackLink fallbackHref="/" label="홈으로" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
       <article className="cm-card legal">
