@@ -12,7 +12,6 @@ export type ListRow = { id: string; name: string; cover: Cover; sub: string[] };
 export type HomeLists = { popular: ListRow[]; upcoming: ListRow[]; rising: ListRow[] };
 export type HomeStats = { games: number | null; sale: number | null; soon: number | null };
 
-export const HERO_COVER_COUNT = 24; // 모바일(768px 미만)은 앞 12장만 보인다 (mn.css)
 export const LIST_SIZE = 5;
 
 type CoverRow = { id: string; cover_vertical_url: string | null; steam_appid: string | null; card_image_url: string | null; cover_image_url: string | null };
@@ -26,16 +25,54 @@ export async function getCovers(ids: string[]): Promise<Record<string, Cover>> {
   return Object.fromEntries(((data ?? []) as unknown as CoverRow[]).map((g) => [g.id, coverOf(g)]));
 }
 
-// 히어로 배경 — 세로 표지가 있는 인기순 36개 (메인 노출 제외 게임은 뺀다)
+// 히어로 배경 — 세로 표지 벽. 열 단위(3줄)로 채우므로 2560px 폭 기준 17열 × 3줄 = 51장 (모바일은 앞 27장만 쓴다, mn.css)
+// 구성: 협동 게임(지정 20개) + 기존 인기순 명작 + 모자라면 온라인 협동 가능 게임을 동접 순으로 채움. 표지는 DB 값만 쓰고 DB에 없는 게임은 빠진다
+export const HERO_COVER_COUNT = 51;
+const HERO_COOP_NAMES = ['Rust', 'Sea of Thieves: 2026 Edition', 'Lethal Company', 'Phasmophobia', 'Deep Rock Galactic', 'Valheim', 'It Takes Two', 'Split Fiction', "Don't Starve Together", 'Dead by Daylight', 'HELLDIVERS™ 2', 'Raft', 'Grounded', 'Overcooked! 2', 'PEAK', 'R.E.P.O.', 'Palworld / 팰월드', 'Monster Hunter Wilds', 'PUBG: BATTLEGROUNDS', 'Among Us'];
+// 글씨 뒤(앞쪽 열)에 먼저 놓을 어두운 표지 — 표지 평균 밝기를 재서 어두운 순 (2026-10-25 측정, 밝기 0~255). 목록에 없는 게임은 뒤쪽 열로
+const HERO_DARK_FIRST = ['The Elder Scrolls V: Skyrim Special Edition', 'R.E.P.O.', 'Phasmophobia', 'Valheim', 'Sekiro™: Shadows Die Twice - GOTY Edition', 'Among Us', 'Divinity: Original Sin 2 - Definitive Edition', 'Dead by Daylight', 'Rust', 'ELDEN RING', 'Hades II', 'ARC Raiders', "Don't Starve Together", 'Lethal Company', '클레르 옵스퀴르: 33 원정대', '톰 클랜시의 레인보우식스 시즈', "Baldur's Gate 3", 'HELLDIVERS™ 2', 'Half-Life 2', 'Hades'];
+const HERO_DARK_COLS = 6; // 어두운 표지를 놓는 열 수 (둘째 열부터)
+
+type HeroRow = { id: string; name: string; cover_vertical_url: string };
 export async function getHeroCovers(): Promise<string[]> {
-  const { data } = await selectHomeGames('cover_vertical_url')
+  const base = () => selectHomeGames('id, name, cover_vertical_url')
     .is('merged_into', null)
     .not('cover_vertical_url', 'is', null)
-    .neq('cover_vertical_url', '')
-    .order('heat_rank', { ascending: true, nullsFirst: false })
-    .order('id')
-    .limit(HERO_COVER_COUNT);
-  return ((data ?? []) as unknown as { cover_vertical_url: string }[]).map((g) => g.cover_vertical_url);
+    .neq('cover_vertical_url', '');
+  const [coopRes, topRes, fillRes] = await Promise.all([
+    base().in('name', HERO_COOP_NAMES),
+    base().order('heat_rank', { ascending: true, nullsFirst: false }).order('id').limit(24),
+    base().eq('has_online_coop', true).order('current_players', { ascending: false, nullsFirst: false }).order('id').limit(40),
+  ]);
+  const seen = new Set<string>();
+  const take = (rows: unknown, limit = Infinity) => {
+    const out: HeroRow[] = [];
+    for (const g of (rows ?? []) as HeroRow[]) {
+      if (out.length >= limit || seen.has(g.id)) continue;
+      seen.add(g.id);
+      out.push(g);
+    }
+    return out;
+  };
+  const coop = take(coopRes.data);
+  const singles = take(topRes.data);
+  const fill = take(fillRes.data, Math.max(0, HERO_COVER_COUNT - coop.length - singles.length));
+  const rank = (g: HeroRow) => { const i = HERO_DARK_FIRST.indexOf(g.name); return i < 0 ? Infinity : i; };
+  const byDark = (a: HeroRow, b: HeroRow) => rank(a) - rank(b);
+
+  // 협동(지정+채움)과 기존 명작을 번갈아 놓는다. 앞쪽 열(어두운 구간)에는 어두운 표지를 먼저
+  const groups = [[...coop, ...fill].sort(byDark), [...singles].sort(byDark)];
+  const zip = (a: HeroRow[], b: HeroRow[]) => { const o: HeroRow[] = []; for (let i = 0; i < Math.max(a.length, b.length); i++) { if (a[i]) o.push(a[i]); if (b[i]) o.push(b[i]); } return o; };
+  const darkN = HERO_DARK_COLS * 3;
+  const darkPick = (list: HeroRow[], n: number) => list.filter((g) => rank(g) < Infinity).slice(0, n);
+  const darkA = darkPick(groups[0], Math.ceil(darkN / 2));
+  const darkB = darkPick(groups[1], Math.floor(darkN / 2));
+  const dark = zip(darkA, darkB);
+  const used = new Set(dark.map((g) => g.id));
+  const rest = zip(groups[0].filter((g) => !used.has(g.id)), groups[1].filter((g) => !used.has(g.id)));
+  // 첫 열(3장)은 어둡지 않아도 되는 표지, 그 뒤 어두운 구간, 나머지
+  const first = rest.splice(0, 3);
+  return [...first, ...dark, ...rest].slice(0, HERO_COVER_COUNT).map((g) => g.cover_vertical_url);
 }
 
 // 히어로 숫자 3개 — 기준은 숨기지 않은(hidden=false) 게임 중 합쳐지지 않은(merged_into null) 게임

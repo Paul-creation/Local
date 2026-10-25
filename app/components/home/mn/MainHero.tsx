@@ -9,9 +9,10 @@ import { SearchIcon, SparkIcon } from './icons';
 import type { GameFilters } from '../../../lib/useGameFilters';
 import type { HomeStats } from '../../../lib/homeMain';
 
-// 메인 히어로(모노 + 흰색 네온): 배경 세로 표지 24개(모바일 12개) → 이벤트 한 줄 → 헤드라인 → 서브카피 → 커맨드바(검색 + AI 추천 / 인원 탭 · 칩) → 숫자 3개
+// 메인 히어로(모노 + 흰색 네온): 배경 세로 표지 벽(3줄, 열 단위로 채움) → 이벤트 한 줄 → 헤드라인 → 서브카피 → 커맨드바(검색 + AI 추천 / 인원 탭 · 칩) → 숫자 3개
 // 검색 결과를 볼 때는 예전 모양(검색창 줄만)으로 돌아간다 — 검색창이 같은 자리에 남도록 요소 위치는 두 모드가 같고 클래스만 바뀐다 (입력 중 포커스 유지)
 // home-only로 감싼 부분은 필터 주소로 들어온 첫 HTML에서 숨김 (globals.css)
+const EAGER_TILES = 12; // 앞 4열(375px 화면이 덮는 만큼)만 바로 받고, 나머지는 lazy
 const nf = new Intl.NumberFormat('ko-KR');
 const STATS: { key: keyof HomeStats; label: string }[] = [
   { key: 'games', label: '비교할 수 있는 게임' },
@@ -38,7 +39,8 @@ export default function MainHero({ games, filters, showHome, sidebar = false, ev
   useEffect(() => {
     const el = bgRef.current;
     if (!el) return;
-    const imgs = [...el.querySelectorAll('img')];
+    // 화면 밖으로 잘리는 타일은 lazy라 받아지지 않는다 — 화면 안에 들어오는 타일만 센다
+    const imgs = [...el.querySelectorAll('img')].filter((i) => i.getBoundingClientRect().left < window.innerWidth);
     const need = Math.ceil(imgs.length * 0.8);
     let done = false;
     const show = () => { if (!done) { done = true; setBgReady(true); } };
@@ -54,7 +56,7 @@ export default function MainHero({ games, filters, showHome, sidebar = false, ev
     <div className={showHome ? 'mn-hero' : 'home-hero'}>
       {showHome && covers.length >= 12 && (
         <div ref={bgRef} className={`home-only mn-hero-bg${bgReady ? ' is-ready' : ''}`} aria-hidden="true">
-          {covers.map((src, i) => <img key={`${i}-${src}`} src={src} alt="" loading="lazy" decoding="async" fetchPriority="low" />)}
+          {covers.map((src, i) => <img key={`${i}-${src}`} src={src} alt="" loading={i < EAGER_TILES ? 'eager' : 'lazy'} decoding="async" fetchPriority="low" />)}
         </div>
       )}
       <div className={showHome ? 'mn-wrap mn-hero-inner' : undefined}>

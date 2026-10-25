@@ -11,13 +11,13 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
 /* ---------- 히어로 (전부 가운데 정렬, 글씨 네온은 히어로 안에만) ---------- */
 /* 세로 간격: 기간 한정 20 → h1 20 → 설명 36 → 커맨드바 48 → 숫자. 위아래 여백 데스크톱 96 / 모바일 56 */
 .mn-hero { position: relative; isolation: isolate; padding: 96px 0; text-align: center; text-shadow: var(--mn-glow-text); }
-/* 표지 벽 — 타일은 폭 약 160px(모바일 96px)·2:3 고정이라 히어로가 높아져도 확대되지 않는다. 남는 높이는 그라데이션으로 가려지고 넘치는 행은 잘린다 */
-.mn-hero-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); align-content: start; gap: 4px; opacity: 0; transition: opacity .4s ease; pointer-events: none; }
-.mn-hero-bg.is-ready { opacity: 0.22; }
+/* 표지 벽 — 타일은 160×240px(모바일 96×144px)·간격 4px 고정. 3줄을 열 단위로 채워서(grid-auto-flow: column) 어떤 폭에서도 3줄이 꽉 차고 오른쪽 끝 열만 잘린다 */
+.mn-hero-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; display: grid; grid-template-rows: repeat(3, 240px); grid-auto-flow: column; grid-auto-columns: 160px; justify-content: start; align-content: start; gap: 4px; opacity: 0; transition: opacity .4s ease; pointer-events: none; }
+.mn-hero-bg.is-ready { opacity: 1; }
 @media (prefers-reduced-motion: reduce) { .mn-hero-bg { transition: none; } }
-.mn-hero-bg img { display: block; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; }
-/* 위는 그대로, 커맨드바 높이쯤부터 #0A0A0A로 진해져서 숫자 아래에서는 완전히 배경색 */
-.mn-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to bottom, transparent 0, transparent 50%, var(--mn-bg) 90%); pointer-events: none; }
+.mn-hero-bg img { display: block; width: 160px; height: 240px; object-fit: cover; }
+/* 벽 위 오버레이 — 가운데(글씨·검색창)는 .88로 진하게, 바깥은 .35로 표지가 비치게. 아래는 커맨드바 높이쯤부터 #0A0A0A로 진해져서 숫자 아래에서는 완전히 배경색 */
+.mn-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to bottom, transparent 0, transparent 50%, var(--mn-bg) 90%), radial-gradient(ellipse 75% 80% at 50% 48%, rgba(10, 10, 10, .88) 0, rgba(10, 10, 10, .88) 40%, rgba(10, 10, 10, .35) 100%); pointer-events: none; }
 .mn .hero-label { justify-content: center; margin: 0 0 20px; font-size: 14px; font-weight: 600; color: var(--mn-fg); }
 .mn .hero-label b { color: var(--mn-fg); font-weight: 800; }
 .mn .hero-label a { color: var(--mn-fg); text-decoration: underline; text-underline-offset: 3px; }
@@ -149,8 +149,9 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
 .mn-card:hover .mn-poster { border-color: rgba(255, 255, 255, .5); box-shadow: 0 0 16px rgba(255, 255, 255, .12); }
 
 @media (max-width: 767px) {
-  .mn-hero-bg { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
-  .mn-hero-bg img:nth-child(n + 13) { display: none; }
+  .mn-hero-bg { grid-template-rows: repeat(3, 144px); grid-auto-columns: 96px; }
+  .mn-hero-bg img { width: 96px; height: 144px; }
+  .mn-hero-bg img:nth-child(n + 28) { display: none; }
   .mn-sub { font-size: 16px; text-wrap: balance; }
   .mn-sub br { display: none; }
 }
