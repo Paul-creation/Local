@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-25 (main cab2a43)
+기준: 2026-10-25 (main 7524afd)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/25: design/detail-redesign — 게임 상세 리디자인. 위쪽 전체 폭 흐린 배경(hero_image_url, 없으면 스크린샷 첫 장) + 세로 표지(cover_vertical_url, 없으면 가로 이미지)·정보 2단 + 숫자 타일(Steam 평가·최근 30일·지금/최고 동접·플레이 시간·인원·진입장벽·한국어·역대 최저가) + 카드 박스 대신 구분선. 투표 두 섹션은 의견 달기·관련 글 아래로 이동·축소, 중복(장르·가격 타일·인원 줄·출시일 칸·N일마다 할인) 정리. 시각 디자인 원칙(docs/design.md)은 "재검토 중 — 사용자 지시가 우선" 표시, 이번 시안에 새 강조색 3개(보라·청록 등)·타일 아이콘 사용. 마이그레이션(cover_vertical_url, ttb_hastily/normally/completely/count) 사용자 실행 완료. scripts/enrich-cover-vertical.mjs(빈칸만, 없으면 ''로 표시해 다시 안 봄, --retry-missing)·enrich-igdb --ttb-only [--apply](IGDB game_time_to_beats, 초 단위, ttb_count 빈 스팀 게임만, 값 없으면 ttb_count=0)를 노출 게임 전체에 한 번 --apply: 세로 표지 1,519개(없음 1), 플레이 시간 값 734·IGDB 값 없음 773·못 찾음 13. 매주 run-steps에 enrich-cover-vertical --apply 추가, enrich-igdb 끝에 플레이 시간 채우기 포함. 플레이 시간 타일은 빠르게≤보통≤전부·solo_mode≠none일 때 "보통 N시간". 머지 직전 build가 /api/games/list 사전 렌더링에서 Supabase statement timeout으로 한 번 실패(대량 업데이트 직후), 5분 뒤 재실행 통과. build·test 438개 통과
 - 10/25: fix/review-getitems-primary — 리뷰 수집 주 경로를 GetItems로 전환(appreviews가 10/23부터 Codespace·Actions 모두 302). enrich-players가 시작 때 노출 게임 전체를 100개씩 묶어 GetItems로 받고(Codespace 확인: 1,509개 중 1,500개, 15초) review_total·review_positive_percent·review_summary를 매일 갱신(GetItems 값은 문구도 덮어씀), review_source='getitems'. 값이 없는 게임만 appreviews → 상점 페이지 순 대체, 세 경로 모두 실패면 기존 값 유지(실패로 셈). 일일 요약 줄 "⭐ 리뷰 갱신 N/M개 (GetItems N · appreviews N · 상점 페이지 N) · 갱신 실패 N개". review_history.source 칸 추가(마이그레이션 20261101090000, 사용자 실행 완료)와 snapshot-review-history가 출처 기록, 하루 증가량은 reviewDeltas()(scripts/lib/review-snapshot.mjs)로만 계산해 출처가 바뀐 날 전후를 뺌(현재 review_history 읽는 코드는 없음). 리뷰 수 증가량을 직접 쓰는 곳은 없고, reviewSpeed 분모(전체 리뷰)와 신작 기준(리뷰 10만 미만)이 GetItems 개수 기준으로 조금 바뀜(사용자 감수). GetItems 개수는 appreviews보다 적음(It Takes Two 220,441 vs 272,541). enrich-players 소요: 전 34~40분(10/22·23·24), 후 미확인. build·test 438개 통과
 - 10/24: docs/rules-preview-user — CLAUDE.md 규칙 정리(프리뷰 확인은 사용자가 함, 보고 형식 간소화). 코드 변경 없음, build·test 433개 통과
 - 10/24: feat/curator-import — 관리자 /admin/curators/import(인스타 캡션 붙여넣기 → Haiku로 게임 이름 추출(guardedClaudeFetch, 호출 종류 curator-import 하루 40회) → games 매칭(정확→정규화→부분, 후보 3개, 숨긴 게임 제외) → 못 찾은 이름은 스팀 검색 후보(appdetails 종류 game만, 데모는 본편 appid)). 연결은 curator_posts에(중복 건너뜀, 1개 single·2개 이상 collection), DB에 없는 게임은 curator_game_queue(마이그레이션 20261031090000, 사용자 실행 완료; appid·curator_id·post_url·created_at·imported_at + post_type·post_title·posted_at)에. 데일리 맨 앞 import-curator-queue --apply(bulk-import --curator → --ids 보강 17단계(AI는 Haiku만) → 같은 게시물에 curator_posts 연결 → imported_at, 못 가져온 appid는 14일만 재시도, 단계 타임아웃 60분), 일일 요약 "큐레이터 게임 추가 N개". API 3개 모두 서버에서 isAdmin 확인, 입력 길이 제한. security-check에 curator_game_queue anon 읽기·쓰기·수정·삭제 차단 점검 추가(✅94 ❌0). 로컬 서버로 겜로그 Dd_IdcFkV-h에 Big Walk·SOS OPS! 연결 테스트 → 추가 0개·이미 연결 2개(정상). build·test 433개 통과
@@ -101,6 +102,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- design/detail-redesign 머지 뒤: 프로덕션 상세(인기·인디·출시 예정)에서 1440·375px 확인(미확인) / 다음 weekly에서 enrich-cover-vertical·enrich-igdb 플레이 시간 단계 동작·소요 시간 확인(미확인) / 매주 build 중 /api/games/list statement timeout이 반복되는지 확인 / 상세 "플랫폼 ·" 링크 줄은 상단 칩과 중복(정리 여부 결정)
 - fix/review-getitems-primary 머지 뒤: 첫 데일리의 enrich-players 소요 시간(전 34~40분)과 요약 리뷰 줄(GetItems 약 1,500개 안팎, 실패 수) 확인(미확인) / 첫 데일리 뒤 review_total이 전반적으로 낮아짐 / 10/25 전후 review_history 단차는 source 칸으로 구분
 - feat/curator-import 머지 뒤: 데일리에서 import-curator-queue 단계 첫 실행 확인(대기열이 비면 바로 끝남, 실제 가져오기·보강·연결 흐름은 DB 연결 실행으로는 못 해 봄, 단위 테스트만) / 프리뷰 서버는 ADMIN_PASSWORD가 달라 관리자 로그인이 401이라 프리뷰 확인은 못 함(Vercel Preview 환경변수 확인 필요) / 실제 캡션 대신 만든 샘플로만 추출 확인
 - fix/curator-bio 머지 뒤: curators.bio에 실제 소개 문구를 넣은 뒤 /c/handle·OG에서 표시 확인(미확인, 지금은 모든 계정 bio가 비어 있음)
