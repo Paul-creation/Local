@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Fragment, type ReactNode } from 'react';
 import { supabase } from '../../lib/supabase';
 import BackLink from '../../components/BackLink';
 import DiscountChart from '../../components/DiscountChart';
@@ -34,7 +35,6 @@ import GameOpinions from '../../components/community/GameOpinions';
 import RelatedPosts from '../../components/community/RelatedPosts';
 import { selectGames, mergedTargetOf } from '../../lib/visibleGames';
 import ContentNotice from '../../components/ContentNotice';
-import TagHelp from '../../components/search/TagHelp';
 import TagChips from '../../components/TagChips';
 import OwnedChip from '../../components/owned/OwnedChip';
 import { detailChipGroups } from '../../lib/tagGroups';
@@ -178,7 +178,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const cardsById = new Map((seriesCards as { id: string }[]).map((g) => [g.id, g]));
   const seriesItems = seriesIds.map((sid) => ({ id: sid, current: sid === game.id, game: cardsById.get(sid) })).filter((it) => it.current || it.game);
   const isTop10 = top10.includes(game.id);
-  const chipGroups = detailChipGroups(TAG_TREE, { ...game, tag_ids: tagIds }, isTop10);
+  // 장르는 위쪽 칩에만 둔다 — 소개 아래 태그 줄에서는 뺀다
+  const chipGroups = detailChipGroups(TAG_TREE, { ...game, tag_ids: tagIds }, isTop10).filter((g) => g.label !== '장르');
   // 멀티 방식(전용 서버/P2P)은 온라인 협동·대전이 있는 게임만
   const showHost = !!game.multiplayer_host && (game.has_online_coop === true || game.has_pvp === true);
   // 친구랑: 팀 인원(party_max), 없으면 최대 인원 + 같은 서버 인원(session_max)
@@ -235,7 +236,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const activityUnsure = orderActivities(game.activities_unsure);
   const hasV2Activities = activityConfirmed.length + activityUnsure.length > 0;
   const hasActivities = hasV2Activities || game.activities?.length > 0;
-  const hasMore = game.has_ending != null || game.server_type || hasActivities || game.story_length || game.is_esports || game.has_workshop || subGenres.length > 0;
+  const hasMore = game.has_ending != null || game.server_type || hasActivities || game.story_length || game.is_esports || game.has_workshop;
 
   const heroBg: string | null = game.hero_image_url || shots[0]?.path_full || null;
   const credits = game.developer && game.publisher
@@ -250,14 +251,12 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   if (showRecent) tiles.push({ key: 'recent', tone: 'review', icon: 'clock', label: '최근 30일 평가', value: <span className="num">{recentPct}%</span>, sub: Math.abs(recentGap) >= 15 ? (recentGap < 0 ? '최근 평가가 낮아졌어요' : '최근 평가가 좋아졌어요') : `리뷰 ${n(game.recent_review_count)}개` });
   if (game.current_players > 0) tiles.push({ key: 'now', tone: 'live', icon: 'pulse', label: '지금 동접', value: <><span className="num">{n(game.current_players)}</span>명</> });
   if (game.peak_players > 0) tiles.push({ key: 'peak', tone: 'live', icon: 'peak', label: '최고 동접', value: <><span className="num">{n(game.peak_players)}</span>명</>, sub: '역대 기준' });
-  if (ttb) tiles.push({ key: 'time', tone: 'time', icon: 'hourglass', label: '플레이 시간', value: <span className="num">{hours(ttb.ttb_normally)}</span>, sub: ['메인 스토리', ttb.ttb_completely ? `전부 ${hours(ttb.ttb_completely)}` : ''].filter(Boolean).join(' · ') });
+  if (ttb) tiles.push({ key: 'time', tone: 'time', icon: 'hourglass', label: '플레이 시간', value: <>보통 <span className="num">{hours(ttb.ttb_normally)}</span></>, sub: [ttb.ttb_hastily ? `빠르게 ${hours(ttb.ttb_hastily)}` : '', ttb.ttb_completely ? `전부 ${hours(ttb.ttb_completely)}` : ''].filter(Boolean).join(' · ') || undefined });
   else if (game.story_length && game.solo_mode !== 'none') tiles.push({ key: 'time', tone: 'time', icon: 'hourglass', label: '플레이 시간', value: game.story_length, valueClass: 'is-text' });
-  if (friendsMax) tiles.push({ key: 'party', tone: 'party', icon: 'people', label: '인원', value: friendsMax === 1 ? '혼자' : <>최대 <span className="num">{friendsMax}</span>명</>, sub: game.min_players > 1 ? `최소 ${game.min_players}명` : undefined });
+  if (friendsMax) tiles.push({ key: 'party', tone: 'party', icon: 'people', label: '인원', value: friendsMax === 1 ? '혼자' : <>최대 <span className="num">{friendsMax}</span>명</> });
   if (game.entry_barrier) tiles.push({ key: 'gate', tone: 'party', icon: 'gate', label: '진입장벽', value: game.entry_barrier, valueClass: 'is-text' });
   tiles.push({ key: 'lang', tone: 'party', icon: 'lang', label: '한국어', value: !koreanOk ? '지원 안 함' : game.korean_support === '자막+더빙' ? '자막 · 더빙' : '자막', valueClass: `is-text${koreanOk ? '' : ' is-down'}` });
   if (!comingSoon) {
-    if (game.is_free) tiles.push({ key: 'price', tone: 'price', icon: 'tag', label: '지금 가격', value: '무료', valueClass: 'is-text' });
-    else if (price) tiles.push({ key: 'price', tone: 'price', icon: 'tag', label: '지금 가격', value: <span className="num">{price.formattedFinal}</span>, sub: price.discount > 0 ? `-${price.discount}% 할인 중` : undefined });
     if (showPriceRecord && game.lowest_price >= 100) tiles.push({ key: 'low', tone: 'price', icon: 'low', label: '역대 최저가', value: <span className="num">₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}</span>, sub: timing === 'best' ? '지금이 최저가' : lowestDate || undefined });
   }
 
@@ -359,7 +358,6 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               </p>
             )}
             {timing === 'near' && <LowestPriceBadge timing={timing} />}
-            {timingLine && !(gauge && timingLine === SAME_AS_LOWEST) && <p className="buy-timing">{timingLine}</p>}
             <div className="price-card-buttons">
               {buyUrl && (
                 <a href={buyUrl} target="_blank" rel="noopener noreferrer" className={`btn btn-primary btn-lg price-card-buy${game.steam_appid ? ' is-steam' : ''}`}>
@@ -404,36 +402,28 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             <ContentNotice ids={game.content_descriptor_ids} />
           </section>
 
-          {/* 혼자 | 친구랑 | 진입장벽 */}
-          <section className="detail-card trio" aria-label="혼자·친구랑·진입장벽">
-            <div className="trio-cell">
-              <span className="trio-label">혼자</span>
-              <span className="trio-value">
-                {game.solo_mode ? SOLO_LABEL[game.solo_mode] ?? '정보 없음'
-                  : game.solo_playable == null ? '정보 없음'
-                  : game.solo_playable && game.max_players === 1 ? '싱글 플레이 게임'
-                  : game.solo_playable ? '혼자도 가능' : '멀티 전용'}
-              </span>
-            </div>
-            <div className="trio-cell">
-              <span className="trio-label">친구랑</span>
-              <span className="trio-value trio-big num">
-                {friendsMax === 1 ? '같이 하기 없음' : friendsMax ? `최대 ${friendsMax}명` : playersText(game) || '인원 정보 확인 중'}
-              </span>
-              {game.min_players > 0 && <span className="trio-sub num">최소 {game.min_players}명</span>}
-              {game.session_max && <span className="trio-sub num">같은 서버 {game.session_max}명</span>}
-              {showHost && <span className="trio-sub">{game.multiplayer_host === 'P2P' ? 'P2P(방장 컴퓨터로 연결)' : game.multiplayer_host}</span>}
-              {game.has_crossplay != null && (game.has_online_coop || game.has_pvp) && (
-                <span className={`trio-sub${game.has_crossplay ? ' is-on' : ''}`}>{game.has_crossplay ? '크로스플레이 지원' : '크로스플레이 미지원'}</span>
-              )}
-              {game.recommended_players && <span className="trio-sub">추천 {game.recommended_players}</span>}
-            </div>
-            <div className="trio-cell">
-              <span className="trio-label">진입장벽 <TagHelp tag="진입장벽" /></span>
-              <span className="trio-value">{game.entry_barrier || '정보 없음'}</span>
-              {game.entry_barrier && game.entry_barrier_reason && <span className="trio-sub">{game.entry_barrier_reason}</span>}
-            </div>
-          </section>
+          {/* 같이 하기 — 위 타일에 없는 정보만 (혼자 가능 여부·최소 인원·서버·크로스플레이·추천 인원·진입장벽 이유) */}
+          {(() => {
+            const solo = game.solo_mode ? SOLO_LABEL[game.solo_mode] ?? null
+              : game.solo_playable == null ? null
+              : game.solo_playable && game.max_players === 1 ? '싱글 플레이 게임'
+              : game.solo_playable ? '혼자도 가능' : '멀티 전용';
+            const rows: [string, ReactNode][] = [];
+            if (solo) rows.push(['혼자', solo]);
+            if (game.min_players > 1) rows.push(['최소 인원', <span key="min" className="num">{game.min_players}명</span>]);
+            if (game.session_max) rows.push(['같은 서버', <span key="ss" className="num">{game.session_max}명</span>]);
+            if (showHost) rows.push(['멀티 방식', game.multiplayer_host === 'P2P' ? 'P2P(방장 컴퓨터로 연결)' : game.multiplayer_host]);
+            if (game.has_crossplay != null && (game.has_online_coop || game.has_pvp)) rows.push(['크로스플레이', game.has_crossplay ? '지원' : '미지원']);
+            if (game.recommended_players) rows.push(['추천 인원', game.recommended_players]);
+            if (game.entry_barrier && game.entry_barrier_reason) rows.push(['진입장벽 이유', game.entry_barrier_reason]);
+            if (rows.length === 0) return null;
+            return (
+              <section className="detail-card" aria-label="같이 하기 정보">
+                <h3 className="detail-card-title">같이 하기</h3>
+                <dl className="more-list">{rows.map(([k, v]) => <Fragment key={k}><dt>{k}</dt><dd>{v}</dd></Fragment>)}</dl>
+              </section>
+            );
+          })()}
 
           {/* 스팀 카드 — 왼쪽: 전체 평가(등급·%·리뷰 수·막대) + 최근 30일, 오른쪽: 인기 순위·도전과제·가족 공유·DLC. 헤더는 요약, 여기는 막대가 있는 자세한 평가 */}
           {hasSteamCard && (
@@ -461,9 +451,6 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
 
           {/* 게임 정보 가로 한 줄 */}
           <section className="detail-card info-row" aria-label="게임 정보">
-            {game.release_date && (
-              <div className="info-cell"><span className="info-label">출시일</span><span className="info-value num">{formatDate(game.release_date)}</span></div>
-            )}
             {game.last_updated && (() => {
               const st = updateState(game.last_updated);
               return (
@@ -479,8 +466,6 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             )}
           </section>
 
-          <GameVotes gameId={game.id} />
-          {isMulti && <PlayerCountVote gameId={game.id} />}
 
           {/* 할인 전적 */}
           {showPriceRecord && priceHistory.length === 1 && price && (
@@ -518,9 +503,6 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
                       <><dt>가능한 활동</dt><dd className="more-chips"><ActivityChips confirmed={activityConfirmed} unsure={activityUnsure} /></dd></>
                     ) : game.activities?.length > 0 && (
                       <><dt>가능한 활동</dt><dd className="more-chips">{game.activities.map((a: string) => <span key={a} className="activity-chip">{a}</span>)}</dd></>
-                    )}
-                    {subGenres.length > 0 && (
-                      <><dt>장르</dt><dd className="more-chips">{subGenres.map((g) => <span key={g} className="activity-chip">{g}</span>)}</dd></>
                     )}
                   </dl>
                   {game.ending_note && <p className="accordion-note">{game.ending_note}</p>}
@@ -566,6 +548,10 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
 
           <GameOpinions gameId={game.id} />
           <RelatedPosts gameId={game.id} />
+          <div className="dx-votes">
+            <GameVotes gameId={game.id} />
+            {isMulti && <PlayerCountVote gameId={game.id} />}
+          </div>
           {showSeries && seriesItems.length > 1 && <SeriesGames name={series?.name_ko ?? null} currentName={gameName(game)} items={seriesItems} />}
           {similarGames.length > 0 && <SimilarGames games={similarGames} />}
         </div>

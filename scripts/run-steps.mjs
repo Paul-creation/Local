@@ -53,6 +53,7 @@ const GROUPS = {
     'fill-game-details',
     'enrich-card-images',
     'enrich-hero-images',
+    'enrich-cover-vertical --apply', // 상세 세로 표지(library_600x900) 확인 → cover_vertical_url (빈 게임만, 없으면 ''로 표시해 다시 안 봄)
     'write-fun-descriptions 300',
     'fill-search-names', // 합방 영상 검색용 한국어 이름 (새 대상만, Haiku 1번)
     'fill-activities-v2 --apply --yes --new-days 14', // 최근 14일 안에 들어온 새 게임의 "가능한 활동" (Message Batches, Sonnet 5.5, 게임당 약 $0.01~0.02). 예전 미처리 게임은 대상 아님, 처리한 게임은 다시 안 함

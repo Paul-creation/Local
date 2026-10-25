@@ -78,3 +78,32 @@ export const isBlank = (v) => v == null || v === '' || (Array.isArray(v) && v.le
 // 이름 비교용: 대소문자·공백·기호를 없앤 뒤 같은지 (영문·숫자·한글만 남김)
 const normName = (s) => String(s ?? '').toLowerCase().replace(/[^a-z0-9가-힣]/g, '');
 export const sameName = (a, b) => { const x = normName(a); return x !== '' && x === normName(b); };
+
+// 플레이 시간 — IGDB game_time_to_beats(초 단위: hastily 빠르게 · normally 보통 · completely 전부 · count 집계 인원)
+// 스팀 앱 ID 목록 → Map(앱 ID → { hastily, normally, completely, count }). IGDB에 게임은 있는데 값이 없으면 count 0, IGDB에서 못 찾은 앱 ID는 Map에 없음
+// external_games는 50개씩, game_time_to_beats는 100개씩 묶어 부른다 (요청 간격 300ms)
+export async function fetchTimeToBeat(appids, token) {
+  const sleep = () => new Promise((r) => setTimeout(r, 300));
+  const gameOf = new Map(); // 앱 ID → IGDB 게임 id
+  for (let i = 0; i < appids.length; i += 50) {
+    const uids = appids.slice(i, i + 50).map((a) => `"${a}"`).join(',');
+    const rows = await igdbQuery('external_games', `fields uid, game; where uid = (${uids}) & external_game_source = 1; limit 100;`, token);
+    if (!Array.isArray(rows)) throw new Error(`external_games 조회 실패: ${JSON.stringify(rows).slice(0, 200)}`);
+    for (const r of rows) if (r.game && !gameOf.has(String(r.uid))) gameOf.set(String(r.uid), r.game);
+    await sleep();
+  }
+  const ids = [...new Set(gameOf.values())];
+  const beats = new Map(); // IGDB 게임 id → 값
+  for (let i = 0; i < ids.length; i += 100) {
+    const rows = await igdbQuery('game_time_to_beats', `fields game_id, hastily, normally, completely, count; where game_id = (${ids.slice(i, i + 100).join(',')}); limit 100;`, token);
+    if (!Array.isArray(rows)) throw new Error(`game_time_to_beats 조회 실패: ${JSON.stringify(rows).slice(0, 200)}`);
+    for (const r of rows) beats.set(r.game_id, r);
+    await sleep();
+  }
+  const out = new Map();
+  for (const [appid, gid] of gameOf) {
+    const b = beats.get(gid);
+    out.set(appid, { hastily: b?.hastily || null, normally: b?.normally || null, completely: b?.completely || null, count: b?.count || 0 });
+  }
+  return out;
+}
