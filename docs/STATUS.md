@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-25 (main f03df23)
+기준: 2026-10-25 (main 59b74d3)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/25: design/curator-page-buttons — /c/[handle] 보기 전환 탭(게시물별·게임 전체)을 세그먼트 컨트롤 하나로(통 #111111·테두리 #262626·radius 10, 탭 높이 32·radius 7, 선택 = 흰 배경 #EDEDED + 검정 글씨, hover rgba(255,255,255,.06), 탭 개별 테두리 없음, 구분선과 간격 10px). "인스타그램에서 보기" 버튼을 인스타 그라디언트 + 분홍 빛 + stroke 아이콘으로(토큰 --mn-instagram·--mn-instagram-glow, mono-tokens.css), 링크 복사는 보조 스타일 그대로, 두 버튼 높이 36px. 큐레이터 페이지는 /c/[handle] 하나라 모든 큐레이터가 같이 바뀜. build·test 443개 통과
 - 10/25: fix/layout-shift — 첫 로딩 때 글자·요소 밀림 제거 + 글꼴 전부 자체 호스팅. 글꼴: next/font/google 전부 제거(구글 폰트 응답 간헐 실패로 빌드가 'Module not found … font/google'로 깨지던 문제 해결, Vercel cc238d7 실패도 같은 원인으로 추정), Geist는 npm 패키지 geist(GeistSans, 크기 맞춘 대체 글꼴 포함), 한글은 Pretendard Variable woff2를 next/font/local로(preload·display swap·adjustFontFallback Arial, 2MB 한 파일, 변수 --font-pretendard), .mn 글꼴 순서 Geist → Pretendard, 본문은 Pretendard 그대로, Noto Sans KR 제거. 자리 고정: 헤더 로그인·아바타 버튼 같은 min-width(154px, 480px 이하 51px), 커맨드바 "내 PC로 돌아가는 게임" 칩(사양은 브라우저 localStorage에만 있어 서버는 모름 → 읽기 전 같은 글자의 보이지 않는 칩), 단축키 표시 고정 폭 상자 + 숨김은 CSS 미디어쿼리, 히어로 표지 벽 전체 fade-in(이미지 80% 로드 또는 600ms 뒤 400ms). 옛 히어로 CSS(--hero-bg·--hero-h·body:has(.home-hero.is-home) 등) 삭제, design/compare-mono 정리. CLS(1.5Mbps급 제한, 3회 평균): 홈 1440 0.005→0.010·375 0.193→0.170, /compare 1440 0.000→0.001, 상세 1440 0.145→0.011. build 두 번 연속·test 통과
 - 10/25: fix/navy-flash-filter-overlay — 페이지 이동 때 남색 → 검정 깜빡임 제거: html·body 배경과 --bg를 #0A0A0A로, viewport themeColor #0A0A0A(남색 theme-color는 원래 없었음). 공용 Loader는 min-height 80vh라 화면을 채움. 홈 필터 패널을 커맨드바 8px 아래에 뜨는 패널로(FilterFloat: 같은 폭·z-index 40(헤더 100 아래)·#111111/#262626·그림자·최대 min(70vh,640px)·안에서 스크롤·"전체 게임 보기" sticky, 바깥 클릭·Esc·×로 닫힘, 열면 포커스는 패널로, 닫으면 필터 버튼으로, 휴대폰(768px 미만)은 아래 시트 fixed 85vh + 어두운 막). 히어로 표지 타일을 고정 크기(폭 약 160px·모바일 96px, 2:3)로 바꿔 히어로가 높아져도 확대되지 않음. build·test 443개 통과
 - 10/25: fix/solo-mode-single-source — solo_playable을 solo_mode에서 파생(story·possible → true, none → false). 쓰기 경로 통일: judge-new-games·apply-filter-v2·관리자 화면(solo_mode 세 단계 드롭다운, API가 solo_playable 파생). enrich-specs·enrich-ai-other·apply-verified-players는 solo_mode가 있으면 solo_playable을 건드리지 않음. 읽는 쪽(app/lib/soloMode.ts isSoloPlayable): 비교·추천·비교 채팅이 solo_mode 우선. 판정 기준 "친구 없이도 즐길 수 있으면 possible"(docs/verification-rules.md), judge-new-games --rejudge 추가(미리보기 기본, --apply일 때만 저장). build·test 443개 통과
