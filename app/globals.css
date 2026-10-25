@@ -81,8 +81,6 @@
   --tag-special-border: rgba(102, 192, 244, 0.55);
   --card-radius-game: 8px;
   --card-hover-line: rgba(102, 192, 244, 0.7);
-  --hero-bg: linear-gradient(to bottom, #1b2838, #0b0e13);
-  --hero-h: 380px;
   --label-size: 13px;
   --label-weight: 600;
   --label-color: var(--text-muted);
@@ -141,7 +139,7 @@ html, body { background: #0A0A0A; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont,
+  font-family: var(--font-pretendard), 'Pretendard', -apple-system, BlinkMacSystemFont,
     'Apple SD Gothic Neo', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -251,6 +249,8 @@ img { display: block; }
   cursor: pointer;
   transition: box-shadow 0.15s ease;
 }
+/* 로그인 확인 중(숨긴 로그인 버튼)·로그인 버튼·아바타 버튼이 같은 폭이라 확인이 끝나도 메뉴가 밀리지 않는다 */
+.auth-login, .auth-user { min-width: 154px; justify-content: center; }
 .auth-login:hover, .auth-user:hover { box-shadow: 0 0 14px rgba(255, 255, 255, 0.18); }
 .auth-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
 .auth-name { max-width: 9em; overflow: hidden; text-overflow: ellipsis; }
@@ -309,6 +309,7 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
 }
 @media (max-width: 480px) {
   .auth-login, .auth-user { padding: 6px 8px; font-size: var(--fs-xs); gap: 0; }
+  .auth-login, .auth-user { min-width: 51px; } /* 로그인 확인 전·후에 같은 폭 ("로그인" 버튼 = 아바타 버튼) */
   .auth-login-long, .auth-avatar ~ .auth-name { display: none; } /* 좁은 화면: "로그인" / 아바타만 (아바타가 없으면 닉네임은 남김) */
   .auth-user { padding: 6px; }
 }
@@ -1592,7 +1593,6 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
 }
 
 /* 히어로 */
-.home-hero.is-home { margin-bottom: 32px; }
 .home-intro { text-align: center; margin-bottom: 8px; }
 .home-intro-title { font-size: 52px; font-weight: 900; letter-spacing: -0.035em; line-height: 1.2; color: var(--text); word-break: keep-all; }
 .hero-label { display: flex; justify-content: center; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin: 0 0 14px; font-size: var(--fs-s); font-weight: 700; color: var(--text-muted); }
@@ -1601,8 +1601,6 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
 .hero-label a:hover { color: var(--text); }
 .hero-guide { display: inline-flex; align-items: center; min-height: 44px; font-size: var(--fs-m); font-weight: 700; color: var(--accent-text); }
 .hero-guide:hover { color: var(--accent-hover); }
-.home-hero.is-home .home-search { max-width: 820px; margin: 12px auto 0; }
-.home-hero.is-home .search-row { margin-bottom: 0; }
 
 /* 검색창 줄: [검색창][필터][AI 추천] — 높이 56px */
 .search-row { display: flex; gap: 8px; margin-bottom: 16px; align-items: flex-start; }
@@ -2473,12 +2471,6 @@ button.activity-chip.activity-more:hover { border-color: var(--text-faint); colo
 /* 화면 폭을 넘는 배경 장식이 가로 스크롤을 만들지 않게 (clip은 sticky 헤더에 영향 없음) */
 html, body { overflow-x: clip; }
 
-/* 메인 상단 — 헤더부터 제목 영역까지 정적 그라데이션 */
-body:has(.home-hero.is-home) {
-  background-image: var(--hero-bg);
-  background-repeat: no-repeat;
-  background-size: 100% var(--hero-h);
-}
 
 /* 지금 뜨는 게임 1~3위 — 1위 이미지를 크게 흐리게 */
 .hc-top { position: relative; isolation: isolate; }
@@ -2572,7 +2564,6 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
 /* ============================================================
    다크 2차 — 게임 카드 호버·태그 칩·섹션 라벨·빠른 칩 (색·크기는 토큰)
    ============================================================ */
-@media (max-width: 640px) { :root { --hero-h: 420px; } }
 
 /* 게임 카드: 모서리 8px, 이미지는 위쪽 모서리에 맞춰 잘림 (overflow: hidden) */
 .feature-card, .result-card, .gc, .card { border-radius: var(--card-radius-game); }

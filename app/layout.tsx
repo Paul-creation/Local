@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
-import "pretendard/dist/web/static/pretendard-dynamic-subset.css";
 import "./globals.css";
 import { mnFontClass } from "./mono-fonts";
 import { SITE_NAME, SITE_URL, SITE_TITLE, SITE_META_DESCRIPTION, BASE_OG } from "./lib/site";
