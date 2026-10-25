@@ -1,0 +1,4 @@
+/* 내 PC(/my-pc) 모노 — 공통은 app/mono-page.css(.mn-inner). 여기엔 이 페이지 전용만 */
+.mn-inner .my-pc-title { font-weight: 800; letter-spacing: -0.035em; }
+.mn-inner .my-pc-rows dd { font-weight: 800; }
+.mn-inner .pcs-panel { background: var(--mn-surface); border-color: var(--mn-line); }

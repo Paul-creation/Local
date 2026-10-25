@@ -32,3 +32,12 @@ main.mn.mn-inner, .mn.mn-inner :is(h2, h3, h4, h5, h6, p, span, a, li, dt, dd, d
 /* 선택 있는 탭 — 선택 = 흰 배경 + 검은 글씨, 비선택 = 보조 스타일 (원래 의미 색이 없던 .tab만; 칩의 포인트 파랑 선택 표시는 그대로) */
 .mn.mn-inner:not(.dx) .tab { color: var(--mn-fg); background: transparent; border: 1px solid rgba(255, 255, 255, .4); box-shadow: 0 0 10px rgba(255, 255, 255, .09); }
 .mn.mn-inner:not(.dx) :is(.tab.is-active, .tab[aria-selected="true"], .tab[aria-pressed="true"]) { color: var(--mn-fg-inv); background: var(--mn-fg); border-color: transparent; box-shadow: var(--mn-glow-tab-on); }
+
+/* 상태 표시에는 색만 쓰지 않고 아이콘(체크·X·경고)을 같이 — PC 사양 판정(충족·미달·정보 없음). 색은 원래 판정 색 그대로, 아이콘은 글씨색(currentColor)을 따른다 */
+.mn.mn-inner :is(.pcs-verdict, .pcs-reason, .pcs-cell-verdict):is(.is-rec, .is-fail, .is-unknown)::before {
+  content: ""; display: inline-block; width: 1em; height: 1em; margin-right: .4em; vertical-align: -0.12em; background: currentColor;
+  -webkit-mask: var(--mn-ico) center / contain no-repeat; mask: var(--mn-ico) center / contain no-repeat;
+}
+.mn.mn-inner :is(.pcs-verdict, .pcs-reason, .pcs-cell-verdict).is-rec { --mn-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l5 5L20 7'/%3E%3C/svg%3E"); }
+.mn.mn-inner :is(.pcs-verdict, .pcs-reason, .pcs-cell-verdict).is-fail { --mn-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E"); }
+.mn.mn-inner :is(.pcs-verdict, .pcs-reason, .pcs-cell-verdict).is-unknown { --mn-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4l9.5 16h-19z'/%3E%3Cpath d='M12 10v4M12 17.2h.01'/%3E%3C/svg%3E"); }
