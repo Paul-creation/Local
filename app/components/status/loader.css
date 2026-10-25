@@ -1,0 +1,17 @@
+/* 공용 로더 — 토큰은 mono-tokens.css(.mn). 8px 점 3개가 왼쪽부터 차례로 #EDEDED로 밝아지고, 다 밝아지면 잠깐 멈췄다가 처음부터 (한 바퀴 1.2초, opacity 전환만)
+   300ms 뒤에야 나타나서 짧은 로딩에서는 보이지 않는다 */
+.loader { position: relative; display: flex; align-items: center; justify-content: center; min-height: 80vh; margin-inline: calc(50% - 50vw); background: var(--mn-bg); opacity: 0; animation: loader-reveal 1ms linear 300ms forwards; }
+@keyframes loader-reveal { to { opacity: 1; } }
+.loader-dots { display: flex; gap: 8px; }
+.loader-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mn-fg); opacity: 0.25; animation-duration: 1.2s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; animation-fill-mode: both; }
+.loader-dot:nth-child(1) { animation-name: loader-dot-1; }
+.loader-dot:nth-child(2) { animation-name: loader-dot-2; }
+.loader-dot:nth-child(3) { animation-name: loader-dot-3; }
+/* 차례로 밝아짐 → 셋 다 밝은 채로 잠깐 멈춤 → 함께 어두워짐 */
+@keyframes loader-dot-1 { 0%, 4% { opacity: .25; } 18%, 72% { opacity: 1; } 88%, 100% { opacity: .25; } }
+@keyframes loader-dot-2 { 0%, 18% { opacity: .25; } 32%, 72% { opacity: 1; } 88%, 100% { opacity: .25; } }
+@keyframes loader-dot-3 { 0%, 32% { opacity: .25; } 46%, 72% { opacity: 1; } 88%, 100% { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) {
+  .loader-dot { animation: none; opacity: 0.6; }
+}
+.loader .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }

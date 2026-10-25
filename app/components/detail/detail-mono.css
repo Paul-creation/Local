@@ -8,17 +8,16 @@ main.mn.dx {
 }
 body:has(main.mn.dx) { background: #0A0A0A; }
 
-/* ---------- 글씨 위계 (기본 글씨만 흰색 + 네온) ---------- */
+/* ---------- 글씨 위계 — 상세는 맨 위 게임 이름(h1)만 흰 네온, 나머지 글씨는 네온 없음 ---------- */
+main.mn.dx, .mn.dx :is(h2, h3, h4, h5, h6, p, span, a, li, dt, dd, div) { text-shadow: none; }
 .mn.dx .dx-title { font-weight: 800; letter-spacing: -0.035em; text-shadow: var(--mn-glow-h1); }
-.mn.dx :is(.detail-card-title, .dx-votes .detail-card-title, .shots-title, .vote-group-title) { font-weight: 800; letter-spacing: -0.03em; text-shadow: var(--mn-glow-h2); }
-/* 버튼·입력·배지·칩과 색이 있는 글씨에는 빛을 넣지 않는다 */
+.mn.dx :is(.detail-card-title, .dx-votes .detail-card-title, .shots-title, .vote-group-title) { font-weight: 800; letter-spacing: -0.03em; }
 .mn.dx :is(button, input, textarea, select, kbd, .btn, .cm-btn, .badge, .badge-neutral, .chip, .activity-chip, .category-tag, .lowest-pill, .buy-discount-badge, .discount-badge, .streamer-chip, .goty-badge, .top10-badge, .review-badge, .compare-add, .heart-btn, .share-text-btn, .report-open) { text-shadow: none; }
 
 /* ---------- 스탯 타일: 표면 #111111, 위쪽 선은 원래 의미 색(--tone) ---------- */
 .mn.dx .dx-tile { background: var(--mn-surface); border: 1px solid var(--mn-line); border-top: 2px solid var(--tone); border-radius: 12px; }
 .mn.dx .dx-tile-label { font-size: 13px; font-weight: 500; }
-.mn.dx .dx-tile-value { font-weight: 800; text-shadow: var(--mn-glow-h2); }
-.mn.dx .dx-tile-value.is-down { text-shadow: none; }
+.mn.dx .dx-tile-value { font-weight: 800; }
 .mn.dx .dx-tile-sub { font-size: 13px; font-weight: 500; }
 .mn.dx .dx-cover { background: var(--mn-surface); border: 1px solid var(--mn-line); box-shadow: none; }
 

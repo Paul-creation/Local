@@ -7,7 +7,7 @@ import { SITE_URL } from '../../lib/site';
 import { parseIdsParam, shareQuery } from '../../lib/wishlist';
 import { useGameIndex } from '../../lib/useGameIndex';
 import GameCard from '../home/GameCard';
-import PartyLoader from '../status/PartyLoader';
+import Loader from '../status/Loader';
 import WishlistButton from './WishlistButton';
 import { useWishlist } from './useWishlist';
 
@@ -78,7 +78,7 @@ export default function WishlistView() {
             <button type="button" onClick={index.retry} className="btn btn-outline">다시 시도</button>
           </div>
         </div>
-      ) : <PartyLoader />)}
+      ) : <Loader />)}
 
       {empty && (
         <p className="wishlist-empty">
