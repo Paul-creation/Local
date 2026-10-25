@@ -88,7 +88,6 @@
   --label-color: var(--text-muted);
   --label-sub-color: var(--text-faint);
   --sub-size: 14px;
-  --footer-bg: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.32));
 
 
   /* 그림자 — 다크에서는 거의 쓰지 않음 */
