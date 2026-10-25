@@ -3,7 +3,7 @@
 // 이미 있는 값은 덮어쓰지 않고, 한 번 확인한 게임은 다시 부르지 않음(details_ai_at)
 import { createClient } from '@supabase/supabase-js';
 import { onlyIds } from './lib/only-ids.mjs';
-import { PLAYSTYLE_RULE, cachedCategories, filterActivities } from './lib/playstyle-guard.mjs';
+import { PLAYSTYLE_RULE, filterActivities } from './lib/playstyle-guard.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const SERVER = ['상시 온라인', '온라인 + 오프라인', '오프라인 전용']; // 인터넷 필요 여부 (DB 제약과 같음)
@@ -59,7 +59,7 @@ async function handle(g) {
   if (!g.multiplayer_host && HOST.includes(ai.multiplayer_host) && (g.has_online_coop || g.has_pvp)) u.multiplayer_host = ai.multiplayer_host;
   if (!(g.activities?.length) && Array.isArray(ai.activities)) {
     const all = ai.activities.filter((a) => typeof a === 'string' && a.trim()).map((a) => a.trim().slice(0, 12));
-    const { kept, removed } = filterActivities(all, g, cachedCategories(g.steam_appid));
+    const { kept, removed } = filterActivities(all, g);
     if (removed.length) console.log(`   ✂️ ${g.name}: 스팀 근거 없는 플레이 방식이라 활동에서 뺌 — ${removed.join(', ')}`);
     const acts = kept.slice(0, 5);
     if (acts.length) u.activities = acts;
@@ -78,7 +78,7 @@ async function main() {
   if (!process.env.ANTHROPIC_API_KEY) return console.error('.env.local에 ANTHROPIC_API_KEY가 없어요');
   const { data, error } = await onlyIds(supabase
     .from('games')
-    .select('id, name, steam_appid, tags, description, min_players, max_players, solo_playable, has_online_coop, has_local_coop, has_pvp, has_ending, ending_note, server_type, multiplayer_host, activities').eq('hidden', false)
+    .select('id, name, steam_categories, tags, description, min_players, max_players, solo_playable, has_online_coop, has_local_coop, has_pvp, has_ending, ending_note, server_type, multiplayer_host, activities').eq('hidden', false)
     .is('details_ai_at', null));
   if (error) return console.error('조회 실패:', error.message);
 

@@ -19,6 +19,7 @@ const MAX_ROWS = 100;
 
 // 새 게임 보강 단계 (모두 --ids 지원). 하나가 실패해도 나머지는 계속
 const ENRICH = [
+  ['backfill-steam-categories', '--apply'], // 스팀 카테고리 원문 — 플레이 방식 검사 근거라 AI 보강(fill-game-details 등)보다 먼저
   ['enrich-fallback'], ['enrich-igdb'], ['enrich-tags'], ['fix-data-gaps'], ['fill-tags-desc'], ['fill-game-details'],
   ['link-new-game-tags', '--apply'], ['judge-new-games', '--apply'],
   ['enrich-card-images'], ['enrich-hero-images'], ['enrich-screenshots'], ['fill-search-names'], ['enrich-update-date'],

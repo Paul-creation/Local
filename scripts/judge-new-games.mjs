@@ -20,7 +20,7 @@ import fs from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 import { fetchSteamTags } from './lib/steam-tags.mjs';
 import { onlyIds } from './lib/only-ids.mjs';
-import { PLAYSTYLE_RULE, cachedCategories, inventedPlaystyle } from './lib/playstyle-guard.mjs';
+import { PLAYSTYLE_RULE, inventedPlaystyle } from './lib/playstyle-guard.mjs';
 import { JUDGE_TOOL, extractRows, runWithRetry, RAW_LOG_CHARS } from './lib/judge-batches.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
@@ -106,7 +106,7 @@ async function hasMigration() {
 }
 
 async function loadTargets(migrated) {
-  const cols = `id, name, steam_appid, has_local_coop, description, created_at, entry_barrier, solo_mode${migrated ? ', filter_ai_at' : ''}`;
+  const cols = `id, name, steam_appid, has_local_coop, steam_categories, description, created_at, entry_barrier, solo_mode${migrated ? ', filter_ai_at' : ''}`;
   if (SAMPLE && !EXISTING) {
     // 비용 어림용: 예전 게임 중 아무거나 (판단은 안 함)
     const { data, error } = await supabase.from('games').select(cols).eq('hidden', false).not('steam_appid', 'is', null)
@@ -193,7 +193,7 @@ async function main() {
         if (it.askBarrier && BARRIERS.includes(r.barrier)) {
           it.patch.entry_barrier = r.barrier;
           it.patch.entry_barrier_reason = clean(r.reason, 60) || null;
-          const bad = inventedPlaystyle(it.patch.entry_barrier_reason, it.game, cachedCategories(it.game.steam_appid));
+          const bad = inventedPlaystyle(it.patch.entry_barrier_reason, it.game);
           if (bad) { console.log(`   ✂️ ${it.game.name}: 진입장벽 이유에 스팀 근거 없는 표현 "${bad}" — 이유만 뺌`); it.patch.entry_barrier_reason = null; }
         }
         if (it.askSolo && SOLOS.includes(r.solo)) it.patch.solo_mode = r.solo;

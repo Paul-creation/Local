@@ -123,14 +123,14 @@ async function check(item) {
 
     const ko = (await steamGet(appdetailsUrl(appid, 'korean', cc)))?.[appid];
     if (!ko?.success) return skip(cc === 'kr' ? '한국 상점 정보 없음' : '미국 상점 한국어 정보 없음');
-    return { data: ko.data, comingSoon, year: isNaN(year) ? null : year, reviewSummary: REVIEW_LABELS[qs?.review_score_desc] || null, via: verdict.via, legacyOk, positive, ccu, usFallback: cc === 'us' };
+    return { data: ko.data, enCategories, comingSoon, year: isNaN(year) ? null : year, reviewSummary: REVIEW_LABELS[qs?.review_score_desc] || null, via: verdict.via, legacyOk, positive, ccu, usFallback: cc === 'us' };
   } catch (e) {
     failed.push({ ...item, reason: e.message });
     return null;
   }
 }
 
-async function insert(appid, { data, reviewSummary }) {
+async function insert(appid, { data, reviewSummary, enCategories }) {
   // 출시 예정·데모 칸은 큐레이터 경로에서만 채움 (일반 경로는 칸을 건드리지 않아 마이그레이션 전에도 동작, 기본값 released)
   const release = CURATOR ? releaseFields(data) : null;
   const row = {
@@ -145,14 +145,16 @@ async function insert(appid, { data, reviewSummary }) {
     // 스팀 성인 콘텐츠 표기 (없으면 빈 배열 = 확인함). 예전 게임은 fill-content-descriptors.mjs
     content_descriptor_ids: [...new Set((data.content_descriptors?.ids || []).map(Number))].sort((a, b) => a - b),
     // 크로스플레이 — 스팀 카테고리 27 "Cross-Platform Multiplayer". 카테고리가 없으면 모름(null). 예전 게임은 fill-crossplay.mjs
+    steam_categories: enCategories, // 영어 카테고리 원문 (플레이 방식 검사 근거, lib/playstyle-guard.mjs)
     has_crossplay: data.categories?.length ? data.categories.some((c) => Number(c.id) === 27) : null,
     ...(release ? { release_status: release.release_status, demo_appid: release.demo_appid, release_date_text: release.release_date_text } : {}),
   };
   let { data: inserted, error } = await supabase.from('games').insert(row).select().single();
   // 마이그레이션(20261014090000_launch_extras.sql) 전이라 has_crossplay 칸이 없으면 그 칸만 빼고 다시 넣음
-  if (error && /has_crossplay/.test(error.message)) {
+  if (error && /has_crossplay|steam_categories/.test(error.message)) {
     const rest = { ...row };
-    delete rest.has_crossplay;
+    if (/has_crossplay/.test(error.message)) delete rest.has_crossplay;
+    if (/steam_categories/.test(error.message)) delete rest.steam_categories; // 마이그레이션(20261102090000_steam_categories.sql) 전
     ({ data: inserted, error } = await supabase.from('games').insert(rest).select().single());
   }
   if (error) {
