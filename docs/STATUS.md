@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-25 (main fca1070)
+기준: 2026-10-25 (main 487604c)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/25: docs/status-roadmap — 로드맵을 이번 주·홍보 전(11월 초)·홍보 후·조건부 네 칸으로 재구성, 진행 중의 머지 후 확인 대기 약 50건을 항목 이름만 남겨 한 묶음으로 축약. 지운 것: user_pc(계정 저장 안 함, 방침 "서버로 보내지 않아요" 유지)·design/compare-mono 삭제 줄·itad_id 81개 lookup 줄·Pretendard preload. 문서 어긋남 수정: lint 에러 114·경고 122, 마이그레이션 버전 중복 3쌍(수동 실행이라 이름 변경 안 함). 코드 변경 없음, build·test 446개 통과
 - 10/25: design/hero-wall-fill — 홈 히어로 표지 벽을 열 단위 3줄 grid로(grid-template-rows 3줄·grid-auto-flow column·타일 160×240px(모바일 96×144)·간격 4px, 오른쪽 끝 열만 잘림). 51장(2560px 폭 17열×3, 모바일은 앞 27장), 앞 12장만 eager·나머지 lazy. 구성: 지정 협동 20개(Rust·Sea of Thieves: 2026 Edition·Lethal Company·Phasmophobia·Deep Rock Galactic·Valheim·It Takes Two·Split Fiction·Don't Starve Together·Dead by Daylight·HELLDIVERS 2·Raft·Grounded·Overcooked! 2·PEAK·R.E.P.O.·Palworld·Monster Hunter Wilds·PUBG·Among Us, 전부 DB에 있고 세로 표지 있음) + 기존 인기순 24개 + 부족분 7개는 has_online_coop 동접순 채움(인슈라오디드·ARC Raiders·Team Fortress 2·Apex 레전드·레인보우식스 시즈·War Thunder·EA SPORTS FC 27, Bongo Cat·방치형/클리커 태그 제외). 배치는 lib/heroWall.ts: 협동·명작 번갈아 + 표지 평균 밝기(HERO_LUM, 20×30 흑백 평균)로 밝음·어두움 번갈아(1440·1920·2560px 좌우 평균 밝기 차 0.7·8.5·3.0%). 오버레이는 main 방식 그대로(벽 opacity .22 + 아래 #0A0A0A 페이드), 셋째 줄만 mask-image로 가운데 40~60% 투명·양끝 0~20%·80~100% 보임(세로는 셋째 줄 위쪽부터 반 줄 높이에 걸쳐) → 숫자·칩 뒤 표지 안 비침. h1·설명 대비는 벽 opacity .22라 최악 약 8.8:1, CLS 홈 3회 평균 1440 0.000·375 0.000. build·test 446개 통과
 - 10/25: perf/pretendard-subset — 한글 Pretendard를 통짜 PretendardVariable.woff2(2MB)에서 pretendard 패키지 variable dynamic subset(unicode-range 조각, node_modules 로컬)으로 전환. app/mono-fonts.ts가 패키지 CSS('Pretendard Variable', 굵기 45~920 그대로)를 import하고 --font-pretendard는 globals.css .pretendard-var가 정함(fallback: Pretendard Hangul Fallback → 시스템 글꼴, 예전 Arial 보정 fallback 제거). 한글 preload 없음. global-error의 static dynamic-subset(family 'Pretendard')과 이름·파일이 달라 충돌 없음. 1.5Mbps/40ms·375px·3회 평균: 글꼴 총용량 홈·상세 2,078KB → 485·469KB, 첫 Pretendard 로드(페이지 load 기준) 홈 32.4초 → 15.1초·상세 17.1초 → 7.4초, CLS 홈 0.0031·상세 0.0756 전후 동일. build·test 443개 통과
 - 10/25: fix/layout-shift-pages — /my-pc·/wishlist 첫 로딩 CLS 제거. 원인: localStorage를 읽기 전 본문이 짧아 푸터가 위에 붙었다가 읽은 뒤 아래로 밀림(푸터 하나만 이동). 두 페이지 main에 pg-fill 클래스, mono-page.css에서 min-height calc(100svh - 60px)로 읽기 전에도 푸터가 첫 화면 밖에 있게 함(globals.css·레이아웃·푸터·Loader 무변경). CLS(1.5Mbps/40ms·4초 합산·3회 평균): /my-pc 1440 0.126→0.0001·375 0.370→0, /wishlist 1440 0.136→0.0001·375 0.357→0. 내 PC 등록·찜 있는 상태는 본문이 화면보다 짧으면 푸터 위에 빈 여백(CLS 미측정). build·test 443개 통과
