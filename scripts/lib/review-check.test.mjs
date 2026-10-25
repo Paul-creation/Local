@@ -7,10 +7,13 @@ test('기록이 없으면 안 돌았다고 알림', () => {
   assert.match(reviewCheckLine(null), /오늘 기록 없음/);
 });
 
-test('실패 0개: 경고 없이 숫자만', () => {
-  assert.equal(reviewCheckLine({ checked: 1508, failed: 0 }), '⭐ 리뷰 조회 실패: 0/1508개');
+test('한 줄: 출처별 개수와 실패 개수', () => {
+  assert.equal(reviewCheckLine({ checked: 1509, updated: 1509, failed: 0, viaGetItems: 1500, viaAppreviews: 6, viaStore: 3 }),
+    '⭐ 리뷰 갱신 1509/1509개 (GetItems 1500 · appreviews 6 · 상점 페이지 3) · 갱신 실패 0개');
+  assert.equal(reviewCheckLine({ checked: 1509, updated: 1505, failed: 4, viaGetItems: 1500, viaAppreviews: 0, viaStore: 5 }),
+    '⭐ 리뷰 갱신 1505/1509개 (GetItems 1500 · appreviews 0 · 상점 페이지 5) · 갱신 실패 4개');
 });
 
-test('실패가 있으면 경고 표시', () => {
-  assert.match(reviewCheckLine({ checked: 1508, failed: 1508 }), /1508\/1508개 ⚠️/);
+test('하나도 못 받으면 경고', () => {
+  assert.match(reviewCheckLine({ checked: 10, updated: 0, failed: 10, viaGetItems: 0, viaAppreviews: 0, viaStore: 0 }), /모든 경로 막힘/);
 });

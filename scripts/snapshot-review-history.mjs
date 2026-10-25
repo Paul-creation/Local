@@ -13,16 +13,27 @@ const CHUNK = 500;
 async function main() {
   const today = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Seoul' }).format(new Date()); // YYYY-MM-DD
   const games = [];
+  // review_source 칸(마이그레이션 20261029090000)이 없으면 출처 없이 읽음
+  let cols = 'id, review_total, review_positive_percent, review_source';
   for (let from = 0; ; from += 1000) {
-    const { data, error } = await supabase.from('games').select('id, review_total, review_positive_percent').eq('hidden', false).eq('release_status', 'released').order('id').range(from, from + 999);
+    let { data, error } = await supabase.from('games').select(cols).eq('hidden', false).eq('release_status', 'released').order('id').range(from, from + 999);
+    if (error && /review_source/.test(error.message) && cols.includes('review_source')) { cols = 'id, review_total, review_positive_percent'; from -= 1000; continue; }
     if (error) throw new Error(`게임 목록을 못 불러옴: ${error.message}`);
     games.push(...data);
     if (data.length < 1000) break;
   }
-  const rows = buildReviewRows(games, today);
+  // review_history.source 칸(마이그레이션 20261101090000)이 없으면 출처 없이 저장
+  let withSource = cols.includes('review_source');
+  let rows = buildReviewRows(games, today, { withSource });
   if (!rows.length) return console.log('리뷰 수가 있는 게임이 없어서 기록하지 않음');
   for (let i = 0; i < rows.length; i += CHUNK) {
-    const { error } = await supabase.from('review_history').upsert(rows.slice(i, i + CHUNK), { onConflict: 'snapshot_date,game_id' });
+    let { error } = await supabase.from('review_history').upsert(rows.slice(i, i + CHUNK), { onConflict: 'snapshot_date,game_id' });
+    if (error && withSource && /source/.test(error.message)) {
+      console.log('review_history.source 칸이 없음 — 출처 없이 기록 (마이그레이션 전)');
+      withSource = false;
+      rows = buildReviewRows(games, today);
+      ({ error } = await supabase.from('review_history').upsert(rows.slice(i, i + CHUNK), { onConflict: 'snapshot_date,game_id' }));
+    }
     if (error) throw new Error(`저장 실패: ${error.message}`);
   }
   console.log(`✅ ${today} 리뷰 기록 ${rows.length}개 저장 (게임 ${games.length}개 중 리뷰 수를 아는 게임)`);

@@ -43,18 +43,29 @@ async function main() {
   const games = res.data;
   if (!games) return;
 
-  const fallback = []; // appreviews가 실패했고 리뷰 수를 아직 모르는 게임 — 뒤에서 GetItems → 상점 페이지 순으로 채움
+  // 리뷰 주 경로: GetItems(100개씩 묶음, 한 번에 약 15초). 값이 없는 게임만 appreviews → 상점 페이지 순으로 대체
+  const viaItems = await fetchGetItemsReviews(games.map((g) => g.steam_appid));
+  console.log(`GetItems 리뷰 ${viaItems.size}/${games.length}개`);
+  const done = { getitems: 0, appreviews: 0, store_page: 0 };
+
   for (const game of games) {
-    const [currentPlayers, reviews] = await Promise.all([
-      getCurrentPlayers(game.steam_appid),
-      getReviewSummary(game.steam_appid),
-    ]);
+    const currentPlayers = await getCurrentPlayers(game.steam_appid);
 
     const update = {};
 
     if (currentPlayers !== null) update.current_players = currentPlayers;
-    Object.assign(update, buildReviewUpdate(game, reviews, { source: 'appreviews', hasSource })); // 조회 실패면 빈 객체
-    if (update.review_total === undefined && game.review_total == null) fallback.push(game);
+    let source = 'getitems';
+    let review = buildReviewUpdate(game, viaItems.get(String(game.steam_appid)), { source, hasSource });
+    if (review.review_total === undefined) {
+      source = 'appreviews';
+      review = buildReviewUpdate(game, await getReviewSummary(game.steam_appid), { source, hasSource });
+    }
+    if (review.review_total === undefined) {
+      source = 'store_page';
+      review = buildReviewUpdate(game, await fetchStoreReviews(game.steam_appid), { source, hasSource });
+    }
+    if (review.review_total !== undefined) { Object.assign(update, review); done[source]++; } // 세 경로 모두 실패면 기존 값 유지(실패로 셈)
+    else console.log(`${game.name}: 리뷰 값을 못 받음 — 기존 값 유지`);
 
     // peak_players(역대 최고 동접)는 enrich-itad-heat가 ITAD 값으로만 채움 (SteamSpy peak_ccu는 하루 피크라 쓰지 않음)
 
@@ -71,33 +82,15 @@ async function main() {
     }
 
     console.log(
-      `${game.name}: 현재 ${currentPlayers?.toLocaleString() ?? '?'}명 | 리뷰 ${update.review_positive_percent ?? '?'}% (${update.review_total?.toLocaleString() ?? '?'}개)`
+      `${game.name}: 현재 ${currentPlayers?.toLocaleString() ?? '?'}명 | 리뷰 ${update.review_positive_percent ?? '?'}% (${update.review_total?.toLocaleString() ?? '?'}개)${update.review_total !== undefined ? ` ← ${source}` : ''}`
     );
 
     await new Promise((r) => setTimeout(r, 800));
   }
 
-  // appreviews 실패 + review_total null인 게임만: GetItems(여러 개 묶음) → 그래도 없으면 상점 페이지 "All Reviews" 줄
-  const done = { getitems: 0, store_page: 0 };
-  if (fallback.length) {
-    const viaItems = await fetchGetItemsReviews(fallback.map((g) => g.steam_appid));
-    for (const game of fallback) {
-      let qs = viaItems.get(String(game.steam_appid));
-      let source = 'getitems';
-      if (!qs) { qs = await fetchStoreReviews(game.steam_appid); source = 'store_page'; }
-      const update = buildReviewUpdate(game, qs, { source, hasSource });
-      if (update.review_total === undefined) { console.log(`${game.name}: 리뷰 대체 경로도 실패`); continue; }
-      await supabase.from('games').update(update).eq('id', game.id);
-      done[source]++;
-      console.log(`${game.name}: 리뷰 ${update.review_positive_percent}% (${update.review_total.toLocaleString()}개) ← ${source}`);
-    }
-  }
-
   // 일일 요약용 (--ids로 일부만 돌린 때는 매일 기록을 덮어쓰지 않음)
-  if (!ONLY_IDS) {
-    const reviewFailed = fallback.length - done.getitems - done.store_page;
-    recordReviewCheck({ checked: games.length, failed: reviewFailed, viaGetItems: done.getitems, viaStore: done.store_page });
-  }
+  if (!ONLY_IDS) recordReviewCheck({ checked: games.length, viaGetItems: done.getitems, viaAppreviews: done.appreviews, viaStore: done.store_page });
+  console.log(`리뷰 갱신 ${done.getitems + done.appreviews + done.store_page}/${games.length}개 (GetItems ${done.getitems} · appreviews ${done.appreviews} · 상점 페이지 ${done.store_page})`);
 }
 
 main();
