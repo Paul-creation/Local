@@ -1,0 +1,9 @@
+/* 커뮤니티(/community, 게시판, 글 보기, 글쓰기, 운영정책) 모노 — 공통은 app/mono-page.css(.mn-inner). 여기엔 커뮤니티 전용만. 상태·에러 색은 원래대로 */
+.mn-inner .cm-h1 { font-weight: 800; letter-spacing: -0.035em; }
+.mn-inner .cm-h2 { font-weight: 800; letter-spacing: -0.03em; }
+/* 게시판 고르기(선택 있는 토글) — 선택 = 흰 배경 + 검은 글씨, 비선택 = 보조 스타일 */
+.mn-inner .cm-board-pick button { color: var(--mn-fg); background: transparent; border: 1px solid rgba(255, 255, 255, .4); box-shadow: 0 0 10px rgba(255, 255, 255, .09); text-shadow: none; }
+.mn-inner .cm-board-pick button.on { color: var(--mn-fg-inv); background: var(--mn-fg); border-color: transparent; box-shadow: var(--mn-glow-tab-on); }
+/* 게시판 탭 링크 — 표면 #111111 */
+.mn-inner .cm-tabs a:not(.cm-write-btn) { background: var(--mn-surface); border: 1px solid var(--mn-line); }
+.mn-inner .cm-tabs a:not(.cm-write-btn):hover { background: var(--mn-surface); border-color: rgba(255, 255, 255, .4); }
