@@ -1,0 +1,20 @@
+/* 공용 로더 "친구 모으는 중" — 토큰은 mono-tokens.css(.mn). 네모·카드 없이 원 4개가 왼쪽부터 채워졌다 비워진다 (한 바퀴 1.6초)
+   300ms 뒤에야 나타나서 짧은 로딩에서는 보이지 않는다 */
+.party-loader { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; margin-inline: calc(50% - 50vw); background: var(--mn-bg); opacity: 0; animation: party-reveal 1ms linear 300ms forwards; }
+@keyframes party-reveal { to { opacity: 1; } }
+.party-dots { display: flex; gap: 12px; }
+.party-dot { width: 10px; height: 10px; box-sizing: border-box; border: 1.5px solid rgba(255, 255, 255, 0.4); border-radius: 50%; background: transparent; animation-duration: 1.6s; animation-timing-function: linear; animation-iteration-count: infinite; animation-fill-mode: both; }
+.party-dot:nth-child(1) { animation-name: party-fill-1; }
+.party-dot:nth-child(2) { animation-name: party-fill-2; }
+.party-dot:nth-child(3) { animation-name: party-fill-3; }
+.party-dot:nth-child(4) { animation-name: party-fill-4; }
+/* 채움 → 4개가 다 찬 채로 잠깐 멈춤(약 0.5초) → 전부 비움 */
+@keyframes party-fill-1 { 0%, 2% { background: transparent; border-color: rgba(255, 255, 255, .4); box-shadow: none; } 8%, 80% { background: var(--mn-fg); border-color: var(--mn-fg); box-shadow: 0 0 10px rgba(255, 255, 255, .35); } 88%, 100% { background: transparent; border-color: rgba(255, 255, 255, .4); box-shadow: none; } }
+@keyframes party-fill-2 { 0%, 14% { background: transparent; border-color: rgba(255, 255, 255, .4); box-shadow: none; } 20%, 80% { background: var(--mn-fg); border-color: var(--mn-fg); box-shadow: 0 0 10px rgba(255, 255, 255, .35); } 88%, 100% { background: transparent; border-color: rgba(255, 255, 255, .4); box-shadow: none; } }
+@keyframes party-fill-3 { 0%, 26% { background: transparent; border-color: rgba(255, 255, 255, .4); box-shadow: none; } 32%, 80% { background: var(--mn-fg); border-color: var(--mn-fg); box-shadow: 0 0 10px rgba(255, 255, 255, .35); } 88%, 100% { background: transparent; border-color: rgba(255, 255, 255, .4); box-shadow: none; } }
+@keyframes party-fill-4 { 0%, 38% { background: transparent; border-color: rgba(255, 255, 255, .4); box-shadow: none; } 44%, 80% { background: var(--mn-fg); border-color: var(--mn-fg); box-shadow: 0 0 10px rgba(255, 255, 255, .35); } 88%, 100% { background: transparent; border-color: rgba(255, 255, 255, .4); box-shadow: none; } }
+.party-text { margin: 16px 0 0; font-size: 14px; font-weight: 600; color: var(--mn-fg); text-shadow: var(--mn-glow-text); }
+@media (prefers-reduced-motion: reduce) {
+  .party-dot { animation: none; }
+  .party-dot:nth-child(-n + 2) { background: var(--mn-fg); border-color: var(--mn-fg); box-shadow: 0 0 10px rgba(255, 255, 255, .35); }
+}

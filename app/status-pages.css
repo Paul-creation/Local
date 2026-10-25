@@ -21,11 +21,6 @@
 .status-btn.is-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: var(--accent-ink); }
 .status-digest { margin-top: 16px; font-size: var(--fs-xs); color: var(--text-dimmer); }
 
-/* 로딩 화면 — 시머 막대 (.skel 빛 지나감은 globals.css 공통 컴포넌트) */
-.status-loading { padding-top: 8px; min-height: 100vh; }
-.skel-title { width: 40%; height: 28px; margin-bottom: 20px; }
-.skel-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-.skel-card { height: 220px; border-radius: var(--radius-card); }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
 
 /* 게임 상세 로딩 틀 (app/games/[id]/loading.tsx) — 정지된 빈 틀. 200ms 뒤에야 보이게 해서 빨리 끝나는 이동에는 번쩍임이 없다 */
@@ -47,6 +42,4 @@
   .status-page { padding: 32px 16px 80px; }
   .status-card { padding: 32px 20px; }
   .status-title { font-size: 22px; }
-  .skel-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .skel-card { height: 180px; }
 }

@@ -8,7 +8,7 @@ import { filterConditions } from '../../lib/filterConditions';
 import { getTagDescription } from './TagHelp';
 import { tagKeyLabel } from '../../lib/tagSearch';
 import ResultCard from './ResultCard';
-import PageSkeleton from '../status/PageSkeleton';
+import PartyLoader from '../status/PartyLoader';
 
 // 카드/행 보기 — 개인 취향이라 주소에 담지 않고 이 브라우저에만 저장
 const VIEW_KEY = 'jdn_list_view';
@@ -44,7 +44,7 @@ export default function SearchResults({ filters, top10Ids = [], loadError = fals
               <button type="button" onClick={onRetry} className="btn btn-outline">다시 시도</button>
             </div>
           </div>
-        ) : <PageSkeleton />
+        ) : <PartyLoader />
       )}
 
       {/* 결과 */}

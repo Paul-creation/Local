@@ -116,7 +116,7 @@ export default function AuthMenu() {
             {visibility === 'private' && <p className="auth-pop-note">스팀 프로필의 게임 세부 정보를 공개로 바꾸면 보유 게임이 표시돼요</p>}
             <a role="menuitem" className="auth-pop-item" href="/library">내 라이브러리</a>
             <button type="button" role="menuitem" className="auth-pop-item" onClick={logout}>로그아웃</button>
-            <button type="button" role="menuitem" className="auth-pop-item" onClick={deleteMe}>내 정보 삭제</button>
+            <button type="button" role="menuitem" className="auth-pop-item is-last" onClick={deleteMe}>내 정보 삭제</button>
           </div>
         )}
         {noticeEl}

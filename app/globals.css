@@ -184,9 +184,10 @@ img { display: block; }
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--header-bg);
   margin-bottom: 24px;
 }
+/* 모노 헤더 — 토큰은 mono-tokens.css(.mn). 이 구간은 --header-* 대신 --mn-*를 직접 쓴다 */
+.site-header.mn { background: rgba(10, 10, 10, 0.8); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-bottom: 1px solid var(--mn-line); }
 
 .site-header-inner {
   max-width: 1200px;
@@ -203,9 +204,10 @@ img { display: block; }
   align-items: center;
   min-height: 44px; /* 터치 영역 */
   font-size: 19px;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: -0.03em;
-  color: var(--header-text);
+  color: var(--mn-fg);
+  text-shadow: var(--mn-glow-h2);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -231,13 +233,12 @@ img { display: block; }
   padding: 8px 12px;
   border-radius: var(--radius-btn);
   font-size: var(--fs-l);
-  font-weight: 700;
-  color: var(--header-text-2);
+  font-weight: 500;
+  color: var(--mn-fg);
   white-space: nowrap;
-  transition: background 0.15s ease, color 0.15s ease;
 }
-.site-menu a:hover { background: var(--header-hover); color: var(--header-text); }
-.site-menu a[aria-current="page"] { color: var(--header-text); }
+.site-menu a:hover { box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.4); border-radius: 0; }
+.site-menu a[aria-current="page"] { font-weight: 700; box-shadow: inset 0 -2px 0 var(--mn-fg); border-radius: 0; }
 
 /* 헤더 로그인 영역 (AuthMenu) — 새 색 없이 기존 토큰만 */
 .auth-menu { position: relative; flex-shrink: 0; }
@@ -247,18 +248,20 @@ img { display: block; }
   gap: 8px;
   min-height: 44px;
   padding: 6px 12px;
-  border: 1px solid var(--accent);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: var(--radius-btn);
-  background: none;
-  color: var(--accent-text);
+  background: transparent;
+  color: var(--mn-fg);
+  font-family: inherit;
   font-size: var(--fs-l);
   font-weight: 700;
   white-space: nowrap;
+  text-shadow: none;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.09);
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: box-shadow 0.15s ease;
 }
-.auth-login:hover, .auth-user:hover { background: var(--header-hover); }
-.auth-user { border-color: var(--border); color: var(--header-text); }
+.auth-login:hover, .auth-user:hover { box-shadow: 0 0 14px rgba(255, 255, 255, 0.18); }
 .auth-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
 .auth-name { max-width: 9em; overflow: hidden; text-overflow: ellipsis; }
 .auth-pop {
@@ -267,15 +270,15 @@ img { display: block; }
   top: calc(100% + 4px);
   min-width: 100%;
   padding: 4px;
-  background: var(--card);
-  border: 1px solid var(--border);
+  background: var(--mn-surface);
+  border: 1px solid var(--mn-line);
   border-radius: var(--radius-btn);
   z-index: 110;
 }
 .auth-pop-note {
   max-width: 260px;
   padding: 8px 12px;
-  color: var(--text-2);
+  color: var(--mn-fg);
   font-size: var(--fs-xs);
   line-height: 1.5;
   white-space: normal;
@@ -288,14 +291,17 @@ img { display: block; }
   background: none;
   border: 0;
   border-radius: var(--radius-badge);
-  color: var(--text);
+  color: var(--mn-fg);
+  font-family: inherit;
   font-size: var(--fs-l);
   font-weight: 700;
   text-align: left;
+  text-shadow: none;
   white-space: nowrap;
   cursor: pointer;
 }
-.auth-pop-item:hover { background: var(--card-hover); }
+.auth-pop-item:hover { background: #1A1A1A; }
+.auth-pop-item.is-last { margin-top: 4px; border-top: 1px solid var(--mn-line); border-radius: 0 0 var(--radius-badge) var(--radius-badge); }
 a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
 .auth-notice {
   position: absolute;
@@ -304,10 +310,10 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
   width: max-content;
   max-width: min(320px, calc(100vw - 24px));
   padding: 10px 14px;
-  background: var(--card);
-  border: 1px solid var(--border);
+  background: var(--mn-surface);
+  border: 1px solid var(--mn-line);
   border-radius: var(--radius-btn);
-  color: var(--text);
+  color: var(--mn-fg);
   font-size: var(--fs-s);
   z-index: 110;
 }
@@ -334,6 +340,10 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
 }
 /* 350px 이하: 그래도 자리가 모자라 "커뮤니티"는 헤더에서 빼고 푸터 링크로 */
 @media (max-width: 349px) { .site-menu .is-narrow-hide { display: none; } }
+
+/* 모노 헤더 안의 비교 개수 배지·진행 바 (원래 규칙은 아래쪽 .nav-count·.nav-progress — 헤더 안에서만 덮어쓴다) */
+.site-header.mn .nav-count { background: var(--mn-fg); color: var(--mn-fg-inv); font-weight: 800; text-shadow: none; box-shadow: none; }
+.site-header.mn .nav-progress { background: var(--mn-fg); box-shadow: 0 0 8px rgba(255, 255, 255, 0.4); }
 
 /* ============================================================
    공통 컴포넌트 — 버튼·칩·뱃지·입력창·탭·카드·스켈레톤

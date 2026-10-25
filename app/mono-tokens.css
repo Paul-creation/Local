@@ -18,7 +18,7 @@
   --mn-new-fg: #0A0A0A;
 
   /* 글꼴 — Geist + Noto Sans KR (변수는 components/home/mn/fonts.ts가 붙인다) */
-  --mn-font: var(--font-geist), var(--font-noto-kr), Pretendard, system-ui, sans-serif;
+  --mn-font: var(--font-geist, Geist), var(--font-noto-kr, 'Noto Sans KR'), Pretendard, system-ui, sans-serif;
   --mn-ls: -0.01em;
   --mn-ls-display: -0.035em;
   --mn-weight-display: 800;

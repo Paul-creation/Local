@@ -1,9 +1,9 @@
 /* 메인 페이지 리디자인 (모노 + 흰색 네온) — 색·글꼴·빛은 app/mono-tokens.css의 --mn-* 토큰만 쓴다. .mn 루트 안에서만 적용 */
 
 /* 화면 폭 전체(히어로 배경이 끝까지 가도록) — 안쪽 내용은 .mn-wrap이 1200px로 잡는다. 넘치는 폭은 body의 overflow-x: clip이 자른다 */
-.mn { margin-inline: calc(50% - 50vw); padding-bottom: 96px; }
-main.page:has(.mn) { padding-bottom: 0; }
-body:has(.mn) { background: var(--mn-bg, #0A0A0A); }
+.mn-page { margin-inline: calc(50% - 50vw); padding-bottom: 96px; }
+main.page:has(.mn-page) { padding-bottom: 0; }
+body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
 .mn-wrap { max-width: 1200px; margin-inline: auto; padding-inline: 24px; }
 .mn :focus-visible { outline: 2px solid var(--mn-fg); outline-offset: 2px; }
 .mn a { color: inherit; }

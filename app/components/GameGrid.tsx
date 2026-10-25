@@ -7,7 +7,7 @@ import MainHero from './home/mn/MainHero';
 import { mnFontClass } from './home/mn/fonts';
 import type { HomeStats } from '../lib/homeMain';
 import SearchResults from './search/SearchResults';
-import PageSkeleton from './status/PageSkeleton';
+import PartyLoader from './status/PartyLoader';
 import { FilterPanel } from './search/SearchPanel';
 import PeopleProvider from './home/PeopleContext';
 import '../mono-tokens.css';
@@ -39,7 +39,7 @@ export default function GameGrid({ event, sections, top10Ids = [], peopleReady =
   return (
     <PeopleProvider filters={filters} recsReady={peopleReady}>
       {/* 홈 화면(결과 없을 때)만 모노 + 흰색 네온 루트(.mn). 같은 div의 클래스만 바뀌어서 입력 중에도 검색창이 그대로 유지된다 */}
-      <div className={showHome ? `mn ${mnFontClass}` : undefined}>
+      <div className={showHome ? `mn mn-page ${mnFontClass}` : undefined}>
         {/* 이벤트 라벨 → 제목 → 서브카피 → 커맨드바(검색·AI 추천·인원 탭·칩) → 숫자 (결과 화면에서는 검색창 줄만) */}
         <MainHero games={index.games || []} filters={filters} showHome={showHome} sidebar={sidebar} event={event} covers={heroCovers} stats={stats} />
 
@@ -47,7 +47,7 @@ export default function GameGrid({ event, sections, top10Ids = [], peopleReady =
         {showHome && <div className="home-only"><div className="mn-wrap">{sections}</div></div>}
 
         {/* 필터 주소로 들어온 첫 HTML에서만 보이는 로딩 막대 (React가 그리기 시작하면 결과 영역이 대신함) */}
-        {showHome && <div className="home-url-skel"><PageSkeleton /></div>}
+        {showHome && <div className="home-url-skel"><PartyLoader /></div>}
 
         {/* 결과 + 하단 비교 바 — 링크 복사 상태가 유지되도록 항상 마운트. 데스크톱 결과 화면은 왼쪽 필터 + 오른쪽 결과 */}
         <div className={sidebar ? 'results-layout' : undefined}>
