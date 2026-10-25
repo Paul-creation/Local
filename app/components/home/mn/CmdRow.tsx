@@ -37,7 +37,7 @@ export default function CmdRow({ filters }: { filters: GameFilters }) {
           <MyPcLink className="mn-chip">내 PC로 돌아가는 게임</MyPcLink>
         ))}
         <button type="button" className="mn-chip" onClick={() => show(() => filters.setPriceRange(FREE_ONLY))}>무료</button>
-        <button type="button" className="mn-chip" onClick={() => show(() => filters.setDemoOnly(true))}>데모</button>
+        <button type="button" className="mn-chip" onClick={() => show(() => filters.setDemoOnly(true))}>출시 전 데모</button>
         <button type="button" className="mn-chip" onClick={() => show(() => filters.setSaleOnly(true))}>지금 할인 중</button>
       </div>
     </div>
