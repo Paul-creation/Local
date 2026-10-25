@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: '내 PC', robots: { index: false } };
 export default function MyPcPage() {
   // useSearchParams를 쓰는 클라이언트 컴포넌트는 Suspense 안에 둔다
   return (
-    <main className="page mn mn-inner">
+    <main className="page mn mn-inner pg-fill">
       <Suspense fallback={null}>
         <MyPcView />
       </Suspense>
