@@ -55,6 +55,7 @@ import { gameName } from '../../lib/gameName';
 import CuratorsOfGame from '../../components/CuratorsOfGame';
 import { getCuratorsOfGame } from '../../lib/curators';
 import '../../mono-tokens.css';
+import '../../mono-page.css';
 import '../../components/detail/detail-mono.css';
 
 // 게임마다 처음 열릴 때 만들고 1시간 동안 재사용 (ISR). 가격·접속자는 하루 한 번 갱신되므로 충분
@@ -263,7 +264,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   }
 
   return (
-    <main className="page detail-page dx mn">
+    <main className="page detail-page dx mn mn-inner">
       <BackLink fallbackHref="/" label="목록으로" preferList />
 
 
