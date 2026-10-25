@@ -115,57 +115,46 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
-- design/hero-wall-fill 머지 뒤: 프로덕션 / 1440·1920·375px에서 벽 3줄이 오른쪽 끝까지 차는지·셋째 줄 가운데가 숫자 뒤에서 사라지는지·좌우 밝기 균형(미확인) / 375px은 앞 두 열이 상대적으로 어두움(좌우 10% 기준은 데스크톱 폭만 맞춤)
-- perf/pretendard-subset 머지 뒤: 프로덕션 /·/games/<id> 네트워크 탭에서 PretendardVariable.subset.*.woff2 조각 약 0.5MB와 굵기(400·700·800) 확인(미확인) / 자주 쓰는 조각 preload 여부 결정
-- fix/layout-shift-pages 머지 뒤: 프로덕션에서 /my-pc·/wishlist를 강력 새로고침(1440·375px)해 푸터가 위로 붙었다 내려가지 않는지, 내 PC 등록·찜 있는 상태에서 푸터 위 여백이 어색하지 않은지
-- fix/layout-shift-home 머지 뒤: 프로덕션 / 375px에서 강력 새로고침 때 h1·서브카피 아래 커맨드바·숫자가 안 밀리는지, 1440px 검색창 오른쪽 Ctrl K 상자 폭(미확인) / 실제 기기(iOS·Android·Windows) 한글 대체 글꼴 폭은 미측정 / Pretendard 2MB dynamic subset 전환 여부 결정 필요
-- fix/layout-shift 머지 뒤: 프로덕션에서 강력 새로고침(홈·상세·/compare)해 글꼴 교체 때 헤더 메뉴·칩 줄·설명 문구가 밀리는지(미확인, 모바일 홈은 2MB Pretendard가 늦게 오면 설명 문구 줄바꿈이 한 번 바뀔 수 있음 — 남으면 display optional 또는 작은 subset 검토) / 로그인 상태에서 아바타 버튼으로 바뀔 때 헤더가 안 밀리는지(미확인) / Vercel 빌드가 폰트 때문에 다시 실패하지 않는지 확인
-- fix/navy-flash-filter-overlay 머지 뒤: 프로덕션에서 /compare·/wishlist 등으로 이동할 때 남색 번쩍임이 사라졌는지, 홈 "필터" 패널(데스크톱 떠 있는 패널·모바일 시트)과 표지 벽 확인(미확인) / 관리자 화면(/admin)은 남색 전제 카드 색(#151A24 등)이 순검정 배경 위에 있어 톤이 다를 수 있음
-- fix/solo-mode-single-source 머지 뒤: judge-new-games --rejudge 미리보기로 바뀌는 게임 확인 뒤 --apply 여부 결정(미실행) / solo_mode null 11개는 --existing 또는 --rejudge로 채움(미실행) / /compare·/admin·홈 추천 "혼자" 화면 확인(미확인)
-- design/pages-mono 머지 뒤: 프로덕션에서 1440·375px로 /compare·/my-pc·/wishlist·/community·/c/<handle>·검색 결과·/this-week·/guide·404 확인(미확인) / 로그인 상태 화면(내 라이브러리·헤더 드롭다운)과 PC 사양 저장 뒤 상세 판정 아이콘(미확인) / 관리자 화면은 아직 옛 디자인 / design/compare-mono 브랜치는 pages-mono에 흡수돼 중복 — 삭제 대기
-- design/home-hero-fix 머지 뒤: 프로덕션 /에서 1440·375px 히어로 가운데 정렬·표지 벽 그라데이션·설명 두 줄 확인(미확인) / 검색창만 포커스 빛이 나는지, 키보드 Tab 포커스(미확인) / "N인 추천 게임" 탭 동작과 모바일 가로 스크롤(미확인) / 윈도우·맥에서 단축키 표시(미확인) / design/compare-mono(비교 페이지 모노·공용 mono-page.css·헤더 푸터 네온 제거)는 아직 머지 전 — 사용자 프리뷰 확인 뒤 머지
-- design/detail-mono 머지 뒤: 프로덕션 /games/<id>(일반·출시 예정) 1440·375px에서 의미 색(구매 초록·평가 파랑·할인 배지)과 스탯 타일 확인(미확인) / 로그인 상태 상세(보유 칩·PC 판정 색)와 홈 취향 섹션 확인(미확인) / 홈 스트리머·큐레이터 줄 스와이프·화살표·썸네일 화질 확인(미확인) / 글리치(glitch_zine)는 curators.show_on_home=false라 홈에서 빠짐 — 동의 확인 뒤 사용자가 update curators set show_on_home = true where handle = 'glitch_zine' 실행 / 홈 밖 페이지는 아직 옛 디자인(헤더·푸터·상세만 모노), 다음은 나머지 페이지 이전 / Vercel 빌드가 cc238d7에서 한 번 실패한 원인은 여전히 미확인(로컬 재현 불가)
-- design/main-redesign 머지 뒤: 프로덕션 /·/wishlist·/faq 1440·375px에서 헤더·푸터·로더·히어로 확인(미확인) / 로그인 상태 헤더 드롭다운·취향 섹션(미확인) / 인기 게시물은 공개 글 5개 미만이라 아직 안 보임 / "출시 전 데모" 칩은 출시 예정+데모 게임만 거름 / 다음 단계: 상세·나머지 페이지를 이 토큰으로 이전(.mn 클래스) / 홈 밖에서도 Noto Sans KR 조각이 헤더 때문에 내려받아짐
-- fix/enrich-no-invented-playstyle 머지 뒤: 사용자가 백필 후 확인 SQL 두 개(로컬 협동인데 has_local_coop false / 로컬 근거 없는데 로컬 표현) 실행해 남은 게임 정리(미확인) / steam_categories 빈 29개는 검사에서 근거 없음으로 처리됨
-- design/detail-redesign 머지 뒤: 프로덕션 상세(인기·인디·출시 예정)에서 1440·375px 확인(미확인) / 다음 weekly에서 enrich-cover-vertical·enrich-igdb 플레이 시간 단계 동작·소요 시간 확인(미확인) / 매주 build 중 /api/games/list statement timeout이 반복되는지 확인 / 상세 "플랫폼 ·" 링크 줄은 상단 칩과 중복(정리 여부 결정)
-- fix/review-getitems-primary 머지 뒤: 첫 데일리의 enrich-players 소요 시간(전 34~40분)과 요약 리뷰 줄(GetItems 약 1,500개 안팎, 실패 수) 확인(미확인) / 첫 데일리 뒤 review_total이 전반적으로 낮아짐 / 10/25 전후 review_history 단차는 source 칸으로 구분
-- feat/curator-import 머지 뒤: 데일리에서 import-curator-queue 단계 첫 실행 확인(대기열이 비면 바로 끝남, 실제 가져오기·보강·연결 흐름은 DB 연결 실행으로는 못 해 봄, 단위 테스트만) / 프리뷰 서버는 ADMIN_PASSWORD가 달라 관리자 로그인이 401이라 프리뷰 확인은 못 함(Vercel Preview 환경변수 확인 필요) / 실제 캡션 대신 만든 샘플로만 추출 확인
-- fix/curator-bio 머지 뒤: curators.bio에 실제 소개 문구를 넣은 뒤 /c/handle·OG에서 표시 확인(미확인, 지금은 모든 계정 bio가 비어 있음)
-- chore/curator-last-gas-station 머지 뒤: curator_posts 연결 SQL 실행 후 /c/gamelog.archive 게시물별 보기에 최후의 주유소가 나오는지 확인(미확인)
-- feat/curator-profile-page 머지 뒤: 프로덕션 /c/gamelog.archive·games_drawer_·saveslot0_0 확인(미확인) / 새 계정·아바타는 PNG로 올릴 것(webp는 OG에 안 나옴) / 카톡·디스코드 실제 공유 미리보기(미확인)
-- refactor/unified-game-card 머지 뒤: 프로덕션 프리뷰에서 메인·검색·/c/handle·찜목록 확인(미확인) / 상세 비슷한 게임·시리즈·내 라이브러리는 compact 카드 그대로(풀 카드 전환 여부 결정 대기)
-- feat/demo-coming-soon 머지 뒤: Coal Duty(10/27)·HANDS OVER(10/30)가 출시되면 데일리 check-coming-soon이 released로 전환하는지 확인(미확인) / 첫 daily에서 check-coming-soon 단계 동작·일일 요약 "출시 전환" 줄 확인(미확인, DB 연결 실행은 못 해 봄) / 6개를 큐레이터 게시물에 연결하는 curator_posts SQL(세이브슬롯 큐레이터가 curators에 아직 없음) / UNFROST·Blades & Trades 인원 빈칸(직접 검증)
-- chore/curator-games-drawer 머지 뒤: 9개 게임의 review_summary가 데일리에서 채워지는지 확인(미확인) / 큐레이터 게시물 연결 SQL은 사용자가 실행 / 프로덕션 노출 확인(미확인)
-- feat/players-from-store 머지 뒤: 다음 weekly 실행 결과(fill-players-from-store 단계 동작·소요 시간·자동 채움 수)를 사용자가 확인(미확인) / 대기 51개는 scripts/.cache/players-store-pending.json에서 근거 문장 확인 뒤 필요하면 직접 검증 라운드로 (미확인)
-- chore/curator-games-nugget 머지 뒤: curator_posts 연결 SQL 실행 여부 확인(미확인) / 실행 후 프로덕션에서 4개 게임 상세의 큐레이터 카드·/c/nugget_zine 확인(미확인)
-- feat/import-curator-games 머지 뒤: 프로덕션에서 Tasty Chef 노출 확인(미확인) / enrich-other-stores·enrich-ai-other·enrich-videos는 --ids가 없어 다음 weekly에서 처리 / 큐레이터 게임은 data/meta/curator-games.json에 추가해 --curator로 수동 실행
-- fix/price-bundle-note 머지 뒤: 동방홍마향 메모·Pixel Worlds 실패 표시 비우기·Home 숨김은 DB에 반영됨(10/20 확인) / 다음 daily 요약의 3일 연속 실패 목록에서 동방홍마향이 빠지는지 확인(미확인) / Bad Cheese 스팀(3094480) 연결 SQL은 사용자 실행 대기
-- fix/streamer-hidden-fallback 머지 뒤: 다음 daily의 fetch-streamer-videos 로그에서 후보 게임 수가 노출 게임 수와 같은지, 일시 오류 때 "후보 게임을 못 읽어 중단"으로 멈추는지 확인(미확인) / fix/vote-duplicate 머지 뒤 프로덕션 상세에서 같은 항목을 다른 브라우저로 다시 눌렀을 때 숫자가 +1 뒤 바로 되돌아오는지 확인(미확인, 실제 중복 투표는 DB에 쓰기가 생겨 시험하지 않음) / 저장소에 같은 버전 번호 마이그레이션이 이미 2쌍(20261009090000·20261014090000) 있음 — Supabase CLI로 적용하지 않고 SQL 에디터로 실행하는 방식이라 지금은 문제 없지만 정리 여부 결정
-- 인원 검증 12차(docs/verification/round12-top50.md): 후보 10개 모두 반영(Anno 117 1~16·party_max 4·session_max 16 포함, DB 확인 10/21), 40개 보류 / 약한 근거로 넣은 Anno 1800 4·TABS 2·토탈워: 삼국 8·World War Z 4·Stronghold Crusader 8은 공식 문서가 생기면 재확인
-- 인원 검증 11차(docs/verification/round11-top50.md): 상위 50개 중 22개 + ETS2·ATS·GW2 3개 반영, 27개 보류 / 오버워치(스팀 행)와 Overwatch 2(배틀넷 행) 합치기는 DB에 반영됨(영상 5·투표 9 이동, 10/20 확인) / WoW 1~40·AION 2·알비온은 공식 근거를 못 찾아 그대로(WoW는 파티 5 공식 문서가 생기면 1~5로) / 나머지 약 170개 빈칸은 다음 라운드
-- 인원 라운드는 12차로 일단 종료. 이후 새 게임만 월 1회 라운드, 보류분은 빈칸 유지 (10/21)
-- fix/fill-players 머지 뒤: 221개 인원 빈칸은 직접 검증 라운드(docs/verification-rules.md → 결정 파일 → apply-verified-players)로 인기순으로 채움(11차 상위 50개 진행, 아래 줄 참고) / 다음 weekly에서 list-players-pending 단계 동작·소요 시간(첫 실행 스팀 요청 약 219건, 약 8분)·pending-players 아티팩트 확인(미확인) / enrich-igdb 앱 ID 조회 수정 뒤 첫 weekly에서 빈칸 채움·이름 불일치 건너뜀 로그 확인(미확인) / 다음 daily 요약에 인원 빈칸 줄이 나오는지 확인(미확인)
-- feat/home-personal·fix/home-personal-owned 머지 뒤 프로덕션 메인에서 개인 추천 확인(미확인): 로그인+보유 5개 이상이면 "취향에 맞는 게임"(/library 취향 탭과 같은 결과, 오른쪽 "더 보기 →"), 그 외 찜이 있으면 "찜한 게임과 비슷한 게임", 둘 다 없으면 숨김 / 비로그인 첫 로딩에 /api/games/taste 요청이 없는지 / 내 PC 토글은 취향·찜 모드 모두 적용(메인 다른 섹션과 같게, /library 취향 탭은 적용 안 함)
-- fix/series-section 머지 뒤 프로덕션 상세에서 시리즈 섹션·비슷한 게임 제외 확인(미확인) / series_id 빈칸 정리 SQL(31행 실행함, 스핀오프 7행·디아블로 II 병합·Ori 숨김 SQL은 사용자 실행 대기)
-- fix/library-states 머지 뒤 프로덕션에서 비공개·미확인 계정으로 /library 상태 문구와 예전 목록 표시 확인(미확인)
-- feat/trending-filter 머지 뒤: 첫 daily에서 update-trending 단계 동작·소요 시간 확인(미확인) / 프로덕션 ?trend=new,rising 화면 확인(미확인) / 메인 "전체 보기 →"는 내 PC 토글이 켜져 있으면 mypc=1도 붙음(의도)
-- feat/curator-header 머지 뒤: avatar_url 마이그레이션을 사용자가 SQL 에디터에서 실행 (avatar_url 열은 프로덕션 추가 완료, 대체 경로는 제거함)
-- feat/curators-home 머지 뒤: show_on_home 마이그레이션을 사용자가 SQL 에디터에서 실행 / 동의받은 계정만 true로 바꾸고 2개 이상일 때 프로덕션 메인 섹션 확인(미확인) / feat/curator-header 머지로 avatar_url 열이 생기면 curators.ts의 열 없이 재조회하는 대체 경로 정리 여부 결정
-- feat/curators 머지 뒤 프로덕션에서 curators 표(마이그레이션)가 적용돼 있는지, 상세 카드·/c/handle 확인(미확인)
-- feat/vote-section 머지 뒤 프로덕션 상세 투표 섹션에서 실제 투표 데이터의 게이지·그룹 정렬·375px 줄바꿈 확인(미확인)
-- fix/display-name 머지 뒤 프로덕션에서 표시명 51개가 카드·상세·검색에 맞게 나오는지, 표시명으로 검색이 되는지 확인(미확인)
-- feat/people-carousel 머지 뒤 프로덕션에서 캐러셀 화살표·모바일 스와이프·신작 고정 3개 노출 확인(미확인)
-- feat/people-trending 머지 뒤 확인(미확인): 프로덕션 인원별 추천 화면·배지 / 첫 daily에서 snapshot-review-history 동작·소요 시간(review_history가 쌓이는지) / review_history가 8일 이상 쌓이면 리뷰 속도를 주간 증가량 기준으로 바꿀지 검토 / 빌드(Vercel 포함)에서 /api/games/list 프리렌더 타임아웃이 다시 나는지
-- fix/judge-retry 머지 뒤 후속(미확인): 10/17 weekly에서 판정 실패한 20개(filter_ai_at 비어 있어 judge-new-games --apply 대상)와 보류 3개·오버워치·AION 2 태그는 SQL(tags_linked_at·filter_ai_at 비우기)을 사용자가 실행한 뒤 스크립트로 채움 / 다음 weekly에서 tool use 전환 뒤 judge 비용(예상 호출당 +약 $0.0006) 확인
-- feat/catalog-popular 머지 뒤 첫 weekly에서 확인(미확인): bulk-import가 동접 차트·무료 폴백 게임을 넣는지·40분 제한 안에 끝나는지, fill-activities-v2 단계가 ANTHROPIC_API_KEY로 돌고 90분 안에 끝나는지, 무료 폴백 게임(한국 상점 없음)의 korean_support·가격 표시 / Bongo Cat(데스크톱 펫형)은 non-game 규칙에 안 걸림, 필요하면 수동 숨김 판단 / Fall Guys가 delisted_appids에 맞게 들어 있는지 확인 필요
-- 활동 제보 머지 뒤 프로덕션에서 상세 제보 UI·제보 저장·관리자 승인 반영 확인(미확인) / 프리뷰 주소는 배포 보호 때문에 [3] 배포 점검이 건너뛰어짐
-- 검색·필터 태그/활동 합침 머지 뒤 프로덕션에서 같은 이름 후보가 하나로 나오는지, 예전 태그 링크가 활동으로 바뀌는지 확인(미확인)
-- 활동 필터 머지 뒤 프로덕션에서 /api/games/list 크기·칩 개수·자동완성 확인(미확인) / 확인 중 게임 수를 "확인 중 포함" 끄고도 따로 흐리게 보여줄지 결정 필요
-- 필터: 데스크톱 사이드바에도 내부 스크롤 없이 펼칠지 결정 필요 / "중간 합류 가능" 칩을 AI 판단으로 만들지 결정 필요 / 메인 상단 개편 머지 뒤 프로덕션에서 이벤트 라벨 줄바꿈·내 PC 칩·/library 인원 버튼 확인(미확인)
-- 방침에 적은 보유 게임 기능은 모두 구현됨(보유 게임 빼고 보기·AI 추천 제외·/library). 프로덕션 확인 필요(미확인): 로그인한 상태로 /library 두 탭(친구랑 할 게임·취향 비슷한 게임), AI 추천에서 보유 게임이 후보에서 빠지는지, 필터 칩 켜고 끄기, 메인 인원별 추천 아래 "내 라이브러리" 링크, 닉네임 메뉴 "내 라이브러리" / /library 상태별 동작은 보고서 3번 표와 맞춤(10/19 fix/library-states: 비공개는 공개 방법 안내, 미확인은 "가져오지 못했어요" 문구, 둘 다 예전 목록이 있으면 두 탭 모두 그 목록으로 "최신이 아닐 수 있어요"와 함께 보여줌) / /api/games/taste 크기(원본 약 219KB, 프리뷰 gzip 약 84KB·br 약 83KB)가 커지면 줄일 방법(태그 수 제한 등) 검토
-- fix/game-index-paging 머지 뒤 프로덕션에서 Satisfactory 등 60개가 검색·필터·추천에 나오는지, 노출 게임 수가 1,060개와 맞는지 확인(미확인) / feat/similar-v2 머지 뒤 다음 weekly에서 build-similar-games --apply 단계 동작·소요 시간 확인, 프리뷰·프로덕션의 상세 "비슷한 게임"·찜 추천 표시 확인(미확인)
-- 고스트러너 2 영어 이름(Ghostrunner 2) 수동 추가 필요(스팀 ID 없어 스크립트 대상 아님) / 다음 weekly 실행에서 fill-english-names 단계 동작·소요 시간 확인
-- 다음: 진짜 로고가 생기면 아이콘 3개 교체 / 구글 검색 결과 아이콘 반영 확인 / ITAD 한도 확인(이메일 인증·앱 설정 페이지) 뒤 ITAD_REQ_PER_WINDOW 조정 / 외부 트리거 적용(PAT 발급·Vault 등록·마이그레이션 실행·시험 호출·cron 기록 확인, 만료일 캘린더 등록, 첫 실행에서 가드 동작 확인) / (10/17 DB 확인: ITAD ID 없는 노출 게임 0개 — 무료 게임 62개 lookup 낭비 메모는 옛 것으로 보임) / daily.yml 외 실제 확인 필요: 다음 daily에서 enrich-itad-heat 대상 수·소요 시간·itad-missing 캐시 복원 로그, 엔티티 정리 SQL 실행 뒤 parse-specs 재계산 / lowest_price_shop 빈 765개는 heat 최저가가 성공하면 채워짐 / 10/12 아침 매일 갱신 확인(순서·소요 시간·429 대기 로그·가격 못 받은 게임)
+- 머지 후 확인 대기 (프로덕션 화면·다음 daily/weekly 로그 확인, 모두 미확인):
+  - hero-wall-fill: 1440·1920·375px 벽 3줄 채움, 셋째 줄 페이드, 좌우 밝기(375px 앞 두 열 어두움)
+  - pretendard-subset: 네트워크 탭 조각 약 0.5MB·굵기 400·700·800
+  - fix/layout-shift-pages: /my-pc·/wishlist 푸터 밀림, 푸터 위 여백
+  - fix/layout-shift-home: 375px h1·서브카피 밀림, 1440px Ctrl K 상자 폭, 실제 기기 한글 대체 글꼴 폭
+  - fix/layout-shift: 홈·상세·/compare 글꼴 교체 밀림, 로그인 아바타 전환, Vercel 폰트 빌드
+  - fix/navy-flash-filter-overlay: 남색 번쩍임, 필터 패널·표지 벽, /admin 톤 차이
+  - fix/solo-mode-single-source: /compare·/admin·홈 추천 "혼자" 화면
+  - design/pages-mono: 나머지 페이지 1440·375px, 로그인 상태 화면, 상세 판정 아이콘
+  - design/home-hero-fix: 히어로 정렬, 포커스·Tab, N인 탭, 단축키 표시
+  - design/detail-mono: 상세 의미 색·스탯 타일, 로그인 상세, 스트리머·큐레이터 줄, cc238d7 빌드 실패 원인
+  - design/main-redesign: /·/wishlist·/faq 헤더·푸터·로더·히어로, 로그인 드롭다운, 취향 섹션
+  - design/detail-redesign: 상세 1440·375px, enrich-cover-vertical·enrich-igdb 플레이 시간 단계, /api/games/list statement timeout
+  - design/curator-page-buttons·feat/curator-profile-page: /c/handle 탭·버튼, 공유 미리보기
+  - unified-game-card: 메인·검색·/c/handle·찜목록
+  - fix/enrich-no-invented-playstyle: 백필 후 확인 SQL 결과
+  - fix/review-getitems-primary: 첫 daily enrich-players 소요 시간·요약 리뷰 줄, review_total 하락·review_history 단차
+  - feat/curator-import: 첫 daily import-curator-queue 단계
+  - fix/curator-bio·chore/curator-last-gas-station·chore/curator-games-drawer·chore/curator-games-nugget·feat/import-curator-games: 프로덕션 노출·review_summary
+  - feat/demo-coming-soon: 첫 daily check-coming-soon 단계·"출시 전환" 줄
+  - feat/players-from-store: 다음 weekly fill-players-from-store 단계(소요 시간·자동 채움 수)
+  - fix/fill-players: weekly list-players-pending 단계, enrich-igdb 앱 ID 조회, daily 인원 빈칸 줄
+  - fix/price-bundle-note: 3일 연속 실패 목록에서 동방홍마향 제외
+  - fix/streamer-hidden-fallback·fix/vote-duplicate: fetch-streamer-videos 후보 게임 수, 중복 투표 되돌림
+  - feat/home-personal: 개인 추천 섹션, /api/games/taste 첫 로딩 요청
+  - fix/series-section: 상세 시리즈 섹션·비슷한 게임 제외
+  - fix/library-states: 비공개·미확인 계정 /library 문구
+  - feat/trending-filter: update-trending 단계, ?trend=new,rising
+  - feat/curator-header·feat/curators-home·feat/curators: show_on_home·avatar_url 마이그레이션 적용, 상세 카드·/c/handle
+  - feat/vote-section: 투표 게이지·그룹 정렬·375px
+  - fix/display-name: 표시명 51개 카드·상세·검색
+  - feat/people-carousel·feat/people-trending: 캐러셀, 인원별 추천 배지, snapshot-review-history, /api/games/list 프리렌더 타임아웃
+  - fix/judge-retry: 판정 실패 20개 채움, tool use 전환 뒤 judge 비용
+  - feat/catalog-popular: 첫 weekly bulk-import·fill-activities-v2 소요 시간, 무료 폴백 게임 표시
+  - 활동 제보·활동 필터·검색 태그/활동 합침: 제보 UI·승인 반영, /api/games/list 크기·자동완성, 같은 이름 후보
+  - 메인 상단 개편: 이벤트 라벨 줄바꿈·내 PC 칩·/library 인원 버튼
+  - 보유 게임 기능(/library): 두 탭, AI 추천 보유 제외, 필터 칩, 메뉴 링크
+  - fix/game-index-paging·feat/similar-v2: 노출 게임 수 1,060개, build-similar-games 단계, 상세 비슷한 게임
+  - fill-english-names: 다음 weekly 단계 동작·소요 시간
+  - daily 점검: enrich-itad-heat 대상 수·소요 시간·itad-missing 캐시 복원 로그, lowest_price_shop 빈 765개 채움, 구글 검색 결과 아이콘
 
 ## 완료된 판단
 - 1~3위 카드에 동접·그래프 안 넣음(상세 헤더에 있음). 4~10위 줄엔 동접 유지
@@ -185,15 +174,52 @@
 - enrich-recent-reviews는 1회 300개(한 바퀴 약 3일). 화면에 쓸 때 상한 450 또는 표시 기준 5일 중 결정
 - 이전 판단(heat_rank 라벨, 역대 최저가 배지 기준, Metascore만, 스팀 로그인 방식 c 등) 유지
 - 게임 이름 한/영 중복 표시 정리(완료): games.display_name 칸(스팀명이 "영문 + 한글 음역"으로 겹친 51개에 사용자가 값 입력)을 화면 표시에만 씀 — app/lib/gameName.ts gameName(g) = display_name ?? name 한 곳(카드·캐러셀·상세·메타 title/OG·비교·핫차트·세일 타임라인·커뮤니티 등). 검색은 name·search_name_ko에 display_name도 매칭. AI 프롬프트·외부 검색 링크·관리자 화면은 name 그대로. 어떤 스크립트도 name·display_name을 갱신하지 않음(bulk-import는 새 행 insert만). player_history 읽기 2000 페이지는 chore/player-history-page로 완료
+- 내 PC 사양은 계정에 저장하지 않음(user_pc 표를 만들지 않음). 개인정보처리방침의 "서버로 보내지 않아요" 문구 유지
+- Pretendard 자주 쓰는 조각 preload는 하지 않음
+- 마이그레이션 파일 버전 번호 중복 3쌍(20261009090000·20261014090000·20261027090000)은 Supabase SQL 에디터로 수동 실행하는 방식이라 실행에 영향이 없어 파일 이름을 바꾸지 않음
+- design/compare-mono 브랜치는 design/pages-mono에 흡수돼 삭제된 것으로 정리(로컬·원격 모두 없음)
 
 ## 로드맵
-- 다음: pg_cron SQL 실행 확인(1년 자동 파기, 매일 04:30 KST) / 보유 중 칩 지연(owned 약 1.75초) 개선(/api/me/owned의 DB 읽기 줄이기: users 조회 2번 합치기, user_owned_games 페이징 읽기를 한 번에) / fix/steam-confirm(check-delisted가 요청 제한을 판매 중단 후보로 보지 않게, enrich-fallback 빈 응답 크래시, fix-data-gaps·fill-tags-desc 재시도) / 가격 못 받은 2개(동방홍마향, Ori) / itad_id 없는 81개 매일 lookup / 보유 칩 HotChart·할인·찜목록 확장(10/11 확인 후) / 찜 동기화·내 PC 사양 계정 저장(user_pc 표, /api/me/pc)·개인정보 방침("서버로 보내지 않아요" 문구 수정 포함)·탈퇴(방침 변경은 시행 7일 전 공지) / YouTube 할당량 구조 / 푸터 축소 / (일주일 뒤에도 저장 공간이 높으면) OG 폰트 fetch 전환
-- 10/10(토) 아침: 매일 갱신 확인(itad-heat, 상점명, 역대 최고 동접, Metascore) / Set up job 로그에 ubuntu-24.04·checkout@v5·setup-node@v5, Node 20 경고 없음 / 요청 제한 미처리 N 확인 / 에픽 전용 가족 공유 칸 숨김 / VALORANT 트레일러 / 정가 missing 0 유지
-- 전용 이메일이 생기면 CONTACT_EMAIL과 개인정보처리방침 6번의 "로그인이 안 되는 경우" 안내(지금은 /feedback "기타")를 바꿈. 방침은 2026-10-10 즉시 시행(이미 제공 중인 기능의 처리 내용을 적은 개정). 1년 자동 파기는 Supabase pg_cron(매일 04:30 KST) SQL을 사용자가 실행해야 방침과 맞음
-- 10/11 휴가: 도메인 구매(Cloudflare) → Vercel 연결 → vercel.app 리다이렉트, NEXT_PUBLIC_SITE_URL=https://jamidunow.com, GitHub ENV_FILE·site.ts·daily-summary.mjs 기본값, 디스코드 웹후크, 이메일 라우팅, 서치콘솔·네이버. 스팀 로그인 시험(로그인 → 아바타·닉네임 → 로그아웃, select steam_id, persona_name, last_login_at from users;, "보유 중" 칩, select count(*) from user_owned_games;, 비공개 프로필 안내. 칩이 안 뜨면 app/lib/user/ownedGames.ts부터)
-- 10/12(월): backup.yml(upload-artifact@v6) 주간 실행 로그 확인
-- 오픈 직전: 로그인 후·찜/비교에 게임 담긴 상태 확인, security-check 3번 구간(실제 배포 점검 포함), 수익화 계획이 있으면 Vercel Pro
-- 오픈 후: "1개로 둘이" 칩, 친구 투표 링크, 캘린더 확장(스팀 무료 주말, 에픽·ITAD 무료 배포, 출시 예정), 스팀 로그인 2단계(친구 목록·찜 공유·다 가진 게임), AI 문장 추천, 자체 지수 이름, 티어·유저 평가, 컬렉션·별점, 모드 인원, 스팀 역대 최저가 별도 수집, 영어 원제 검색, 벤치마크 재시도, 클리어 시간, 추천 세팅 투표, DLSS·FSR, 스트리머 기획전, 추천 인원 순위, 고인물 지표, 스팀덱 등급, 디스코드 초대 만료 13개, 진입장벽·혼자 null 10개, 인기 상위 1인용 89개, lint 에러 4개, 파서 원문 6건, 스트리머 한 영상 여러 게임 연결, 시리즈 키워드 표, 미연결 영상 제목 기록, 카탈로그 누락(도깨비의 세계, 쁘띠플래닛, 동방영야초 등)
+### 이번 주
+- 밀린 SQL 확인(사용자 실행): Bad Cheese 스팀(3094480) 연결 / 스핀오프 7행·디아블로 II 병합·Ori 숨김 / 판정 실패 20개·보류 3개용 tags_linked_at·filter_ai_at 비우기 / curator_posts 연결(최후의 주유소·큐레이터 게임 6개·nugget 4개·drawer 9개) / curators.show_on_home(동의받은 계정만 true, glitch_zine 포함) / 백필 후 확인 SQL 두 개(로컬 협동인데 has_local_coop false, 로컬 근거 없는데 로컬 표현) / 엔티티 정리 SQL 뒤 parse-specs 재계산
+- fix/steam-confirm: check-delisted가 요청 제한을 판매 중단 후보로 보지 않게, enrich-fallback 빈 응답 크래시, fix-data-gaps·fill-tags-desc 재시도
+- solo_mode 재판정: judge-new-games --rejudge 미리보기 확인 뒤 --apply 여부 결정, solo_mode null 11개 채움
+- 만료 데모 정리
+- Coal Duty(10/27)·HANDS OVER(10/30) 출시 전환 확인(daily check-coming-soon)
+- 상세 "플랫폼 ·" 링크 줄이 상단 칩과 중복되는 것 정리
+- curators.ts의 avatar_url 열 없이 재조회하는 대체 경로 제거(avatar_url 열은 프로덕션에 있음)
+- Bongo Cat 숨김(Fall Guys가 delisted_appids에 들어 있는지도 확인)
+- Ghostrunner 2 영어 이름 수동 추가(스팀 ID 없어 스크립트 대상 아님)
+
+### 홍보 전 (11월 초)
+- 메인 구성 2단계 → 새 유저 가이드(온보딩)
+- 전용 이메일: 생기면 CONTACT_EMAIL과 개인정보처리방침 6번 "로그인이 안 되는 경우" 안내(지금은 /feedback "기타")를 바꿈
+- 방침 1년 자동 파기 cron: Supabase pg_cron(매일 04:30 KST) SQL을 사용자가 실행해야 방침과 맞음(파기용 마이그레이션 없음, daily 트리거 20261020090000만 있음)
+- 외부 설정 확인: 서치콘솔·네이버 등록, 이메일 라우팅, 디스코드 웹후크, Vercel Analytics 켜기, 스팀 로그인 시험(안 되면 app/lib/user/ownedGames.ts부터), 구글 검색 결과 아이콘, 외부 트리거(PAT·Vault·시험 호출·cron 기록·만료일 캘린더), backup.yml 주간 실행 로그
+- 검색 별칭 점검
+- 상세 CLS 0.0756 원인
+- 오픈 직전 점검: 로그인 후 찜·비교에 게임 담긴 상태 확인, security-check 3번 구간(실제 배포 점검 포함)
+
+### 홍보 후
+- 오픈 후 목록: "1개로 둘이" 칩, 친구 투표 링크, 캘린더 확장(스팀 무료 주말, 에픽·ITAD 무료 배포, 출시 예정), 스팀 로그인 2단계(친구 목록·찜 공유·다 가진 게임), AI 문장 추천, 자체 지수 이름, 티어·유저 평가, 컬렉션·별점, 모드 인원, 스팀 역대 최저가 별도 수집, 영어 원제 검색, 벤치마크 재시도(22.7% 매칭으로 보류, 재시도 시 콜론 매칭 제거), 클리어 시간, 추천 세팅 투표, DLSS·FSR, 스트리머 기획전, 추천 인원 순위, 고인물 지표, 스팀덱 등급, 디스코드 초대 만료 13개, 진입장벽·혼자 null 10개, 인기 상위 1인용 89개, 파서 원문 6건, 스트리머 한 영상 여러 게임 연결, 시리즈 키워드 표, 미연결 영상 제목 기록, 카탈로그 누락(도깨비의 세계, 쁘띠플래닛, 동방영야초 등), 라이어게임 연결(라이어스 바와 같은 게임인지 확인 뒤)
+- 보유 칩 확장(HotChart·할인·찜목록)과 지연 개선(owned 약 1.75초: /api/me/owned의 users 조회 2번 합치기, user_owned_games 페이징 읽기를 한 번에)
+- 필터 3건: 데스크톱 사이드바 내부 스크롤 없이 펼칠지 / "중간 합류 가능" 칩을 AI 판단으로 만들지 / "확인 중 포함"을 끄고도 확인 중 게임 수를 따로 흐리게 보일지
+- /admin 모노화(옛 디자인·순검정 배경 위 남색 카드 톤), 프리뷰 ADMIN_PASSWORD가 달라 관리자 로그인 401(Vercel Preview 환경변수 확인)
+- YouTube 할당량 구조(docs/youtube-quota-plan.md, 단기안 0a69a72만 적용)
+- lint: npx eslint . 에러 114·경고 122(app/compare 36, app/components 29, app/lib 23, app/api 14, app/games 5, app/admin 3 등)
+- OG 폰트 fetch 전환(일주일 뒤에도 배포 저장 공간이 높으면)
+- 진짜 로고가 생기면 아이콘 3개 교체
+- 찜 동기화(계정에 저장할지는 그때 다시 결정)
+- 인기 게시물: 공개 글 5개 미만이라 아직 안 보임
+
+### 조건부
+- 서버 검색 API(docs/search-api-plan.md): 게임 2,000~3,000개 이상 또는 /api/games/list 압축 200KB 이상일 때
+- /api/games/taste(원본 약 219KB)가 커지면 줄이는 방법(태그 수 제한 등) 검토
+- review_history가 8일 이상 쌓이면 리뷰 속도를 주간 증가량 기준으로 바꿀지
+- enrich-recent-reviews 화면 상한 450 또는 표시 기준 5일 중 결정
+- ITAD 한도 확인(이메일 인증·앱 설정 페이지) 뒤 ITAD_REQ_PER_WINDOW 조정
+- 수익화 계획이 생기면 Vercel Pro
+- 인원 보류분: 라운드는 12차로 종료, 새 게임만 월 1회 라운드, 보류분은 빈칸 유지 / 11차 27개·12차 40개·나머지 약 170개 빈칸 / WoW 1~40·AION 2·알비온은 공식 근거를 찾으면 / 약한 근거로 넣은 Anno 1800 4·TABS 2·토탈워: 삼국 8·World War Z 4·Stronghold Crusader 8은 공식 문서가 생기면 재확인 / WoW는 파티 5 공식 문서가 생기면 1~5로 / UNFROST·Blades & Trades 인원 빈칸 / players-store-pending.json 대기 51개
 
 ## 기각
 예상 FPS·벤치마크 점수, AI 그래픽 옵션 가이드, 스트리머 PC 사양 매칭, 스트리머 "+N명" 삭제, 카드 전체를 영상 링크로, 파티 비용 계산, 사양 패스 칩(상옵 fps), 블러 사라짐 애니메이션, 친구 일정 캘린더, OG 폰트 서브셋, "구동 불가" 배지, 카드 목록 판정 표시, 노랑 신호등, 비교 담기 카운트 TOP3, 순위 미러링, 100vh 고정, "HLTB 기준" 표기, 추천도 숫자 삭제, 비교 버튼 아이콘 제거, 스트리머 인원 연동, ITAD Twitch·번들·쿠폰, 메인 카드 ITAD 순위, GOTY 금색 배지, 카드 동접 그래프 복귀, 1~3위 동접 숫자, 전체 순위 페이지, 배너 캐러셀, 필터 미통과 후보로 빈자리 채우기, 원가 역산 이행 기간, 상세 인라인 사양 등록 폼, 사양 등록 시 필터 자동 켜기, 스트리머 카드 이미지 비율 축소, YouTube 태그 매칭
