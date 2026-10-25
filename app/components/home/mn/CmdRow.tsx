@@ -12,7 +12,7 @@ import { peopleLabel } from '../PeopleSelect';
 // 커맨드바 아랫줄 — 인원 탭 | 칩. 동작은 예전 PeopleSelect·QuickLinks와 같다
 // - 인원 탭: 선택한 인원은 아래 "N인 추천 게임"을 바꾼다 (추천 데이터가 없으면 /?players=N 검색으로 이동)
 // - 내 PC로 돌아가는 게임: 사양을 저장해 뒀으면 인원별 추천을 거르는 토글, 없으면 /my-pc(사양 등록)로 가는 링크
-// - 무료·데모: 검색의 "무료만"(?price=0-0) / 지금 할인 중: 검색의 "지금 할인 중"(?sale=1) — 결과 화면으로 이동
+// - 무료: 검색의 "무료만"(?price=0-0) / 데모: 검색의 "데모 있음"(?demo=1, 출시 예정이고 스팀 데모가 있는 게임) / 지금 할인 중: 검색의 "지금 할인 중"(?sale=1) — 결과 화면으로 이동
 export default function CmdRow({ filters }: { filters: GameFilters }) {
   const { n, setN, myPcOn, setMyPcOn, recsReady } = usePeople();
   const { pc, ready } = useMyPc();
@@ -36,7 +36,8 @@ export default function CmdRow({ filters }: { filters: GameFilters }) {
         ) : (
           <MyPcLink className="mn-chip">내 PC로 돌아가는 게임</MyPcLink>
         ))}
-        <button type="button" className="mn-chip" onClick={() => show(() => filters.setPriceRange(FREE_ONLY))}>무료·데모</button>
+        <button type="button" className="mn-chip" onClick={() => show(() => filters.setPriceRange(FREE_ONLY))}>무료</button>
+        <button type="button" className="mn-chip" onClick={() => show(() => filters.setDemoOnly(true))}>데모</button>
         <button type="button" className="mn-chip" onClick={() => show(() => filters.setSaleOnly(true))}>지금 할인 중</button>
       </div>
     </div>

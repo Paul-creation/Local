@@ -13,3 +13,9 @@ export const PlayIcon = () => (
 export const ArrowIcon = () => (
   <svg {...base} width={16} height={16}><path d="M5 12h14M13 6l6 6-6 6" /></svg>
 );
+export const LikeIcon = () => (
+  <svg {...base} width={14} height={14}><path d="M7 11v9H4v-9zM7 11l4-8a2 2 0 0 1 2 2v4h5.5a2 2 0 0 1 2 2.3l-1.2 7A2 2 0 0 1 17.3 20H7" /></svg>
+);
+export const CommentIcon = () => (
+  <svg {...base} width={14} height={14}><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" /></svg>
+);

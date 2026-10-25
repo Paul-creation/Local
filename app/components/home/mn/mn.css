@@ -118,6 +118,25 @@ body:has(.mn) { background: var(--mn-bg, #0A0A0A); }
 }
 .mn-card:hover .mn-poster { border-color: rgba(255, 255, 255, .5); box-shadow: 0 0 16px rgba(255, 255, 255, .12); }
 
+@media (max-width: 767px) {
+  .mn-hero-bg { grid-template-columns: repeat(6, 1fr); }
+  .mn-hero-bg img:nth-child(n + 13) { display: none; }
+}
+
+/* ---------- 인기 게시물 (커뮤니티) ---------- */
+.mn-posts { margin: 0; padding: 0; list-style: none; background: var(--mn-surface); border: 1px solid var(--mn-line); border-radius: 14px; }
+.mn-posts li + li { border-top: 1px solid var(--mn-line); }
+.mn-post { display: flex; align-items: center; gap: 12px; padding: 14px 18px; text-decoration: none; }
+.mn-post:hover .mn-post-title { text-decoration: underline; text-underline-offset: 3px; }
+.mn-post-board { flex-shrink: 0; padding: 3px 9px; font-size: 13px; font-weight: 700; border: 1px solid var(--mn-line); border-radius: 6px; }
+.mn-post-title { flex: 1; min-width: 0; overflow: hidden; font-size: 15px; font-weight: 700; white-space: nowrap; text-overflow: ellipsis; }
+.mn-post-stat { display: inline-flex; flex-shrink: 0; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.mn-post-stat span { display: inline-flex; align-items: center; gap: 4px; }
+@media (max-width: 720px) {
+  .mn-post { flex-wrap: wrap; gap: 6px 10px; }
+  .mn-post-title { flex-basis: calc(100% - 80px); }
+}
+
 @media (max-width: 720px) {
   .mn-wrap { padding-inline: 16px; }
   .mn-hero { padding: 40px 0 40px; }

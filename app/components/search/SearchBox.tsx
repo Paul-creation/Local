@@ -21,7 +21,23 @@ const playersLabel = (g: any) => playersText(g);
 
 // 검색창 + 자동완성. 입력 중에는 결과 화면으로 넘어가지 않고, 맞는 태그·게임만 아래에 보여준다.
 // 태그 단어(예: "좀비, 협동")는 엔터나 후보 선택으로 태그 조건이 되어 검색창 아래 칩으로 보인다 (app/lib/tagSearch)
-export default function SearchBox({ games, filters, leading, trailing }: { games: any[], filters: GameFilters, leading?: ReactNode, trailing?: ReactNode }) {
+// 768px 미만(휴대폰)이면 안내 글자를 짧게 — shortPlaceholder를 넘긴 곳만. 서버가 그린 첫 화면은 긴 문구, 마운트 뒤 바뀐다
+const PHONE = '(max-width: 767px)';
+function usePhone(enabled: boolean) {
+  const [phone, setPhone] = useState(false);
+  useEffect(() => {
+    if (!enabled) return;
+    const mq = window.matchMedia(PHONE);
+    const on = () => setPhone(mq.matches);
+    on();
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, [enabled]);
+  return enabled && phone;
+}
+
+export default function SearchBox({ games, filters, leading, trailing, shortPlaceholder }: { games: any[], filters: GameFilters, leading?: ReactNode, trailing?: ReactNode, shortPlaceholder?: string }) {
+  const phone = usePhone(!!shortPlaceholder);
   const { input, setInput, submitSearch, rememberList, selectedTags, toggleTag, addTags, selectedActs, toggleAct, tagLookup, splitInput, tree } = filters;
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -157,7 +173,7 @@ export default function SearchBox({ games, filters, leading, trailing }: { games
         <input
           ref={inputRef}
           type="text"
-          placeholder={selectedTags.length || selectedActs.length ? '검색어 더하기' : '게임 이름이나 태그로 검색'}
+          placeholder={selectedTags.length || selectedActs.length ? '검색어 더하기' : phone ? shortPlaceholder : '게임 이름이나 태그로 검색'}
           value={input}
           onChange={(e) => { setInput(e.target.value); setOpen(true); setActive(-1); }}
           onFocus={() => setOpen(true)}

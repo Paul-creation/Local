@@ -12,7 +12,7 @@ export type ListRow = { id: string; name: string; cover: Cover; sub: string[] };
 export type HomeLists = { popular: ListRow[]; upcoming: ListRow[]; rising: ListRow[] };
 export type HomeStats = { games: number | null; sale: number | null; soon: number | null };
 
-export const HERO_COVER_COUNT = 36;
+export const HERO_COVER_COUNT = 24; // 모바일(768px 미만)은 앞 12장만 보인다 (mn.css)
 export const LIST_SIZE = 5;
 
 type CoverRow = { id: string; cover_vertical_url: string | null; steam_appid: string | null; card_image_url: string | null; cover_image_url: string | null };
@@ -40,7 +40,7 @@ export async function getHeroCovers(): Promise<string[]> {
 
 // 히어로 숫자 3개 — 기준은 숨기지 않은(hidden=false) 게임 중 합쳐지지 않은(merged_into null) 게임
 // 할인 중 = 가격 기록이 있는 게임 중 최신 원화 가격의 할인율이 0보다 큰 게임 (검색의 "지금 할인 중" 필터와 같은 getPriceInfo 기준)
-// 출시 예정 = release_status coming_soon (무료 데모는 출시 예정 게임에만 표시되므로 이 숫자에 포함됨)
+// 출시 예정 = release_status coming_soon (데모 여부와 무관)
 export async function getHomeStats(): Promise<HomeStats> {
   const [total, soon, sale] = await Promise.all([
     selectGames('id', { count: 'exact', head: true }).is('merged_into', null),
