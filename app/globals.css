@@ -139,6 +139,8 @@
 @font-face { font-family: 'Pretendard Hangul Fallback'; font-weight: 100 600; size-adjust: 87.5%; src: local('Apple SD Gothic Neo'), local('AppleSDGothicNeo-Regular'), local('Noto Sans CJK KR'), local('Noto Sans KR'), local('Malgun Gothic'), local('NanumGothic'), local('WenQuanYi Zen Hei'); }
 @font-face { font-family: 'Pretendard Hangul Fallback'; font-weight: 700 900; size-adjust: 87.5%; src: local('Apple SD Gothic Neo Bold'), local('AppleSDGothicNeo-Bold'), local('Noto Sans CJK KR Bold'), local('Noto Sans KR Bold'), local('Malgun Gothic Bold'), local('NanumGothic Bold'), local('WenQuanYi Zen Hei'); }
 
+.pretendard-var { --font-pretendard: 'Pretendard Variable', 'Pretendard Hangul Fallback', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; }
+
 html, body { background: #0A0A0A; }
 body {
   background: var(--bg);
