@@ -36,7 +36,7 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
 .mn-search-icon { display: inline-flex; flex-shrink: 0; color: var(--mn-fg); }
 .mn .mn-cmd .filter-toggle { color: var(--mn-fg); border-radius: 8px; }
 .mn .mn-cmd .filter-toggle:hover { background: var(--mn-bg); }
-.mn-kbd { flex-shrink: 0; min-width: 54px; box-sizing: border-box; text-align: center; padding: 3px 8px; font: inherit; font-size: 12px; font-weight: 700; color: var(--mn-fg); background: var(--mn-bg); border: 1px solid var(--mn-line); border-radius: 6px; }
+.mn-kbd { display: inline-block; flex-shrink: 0; min-width: 54px; box-sizing: border-box; text-align: center; padding: 3px 8px; font: inherit; font-size: 12px; font-weight: 700; color: var(--mn-fg); background: var(--mn-bg); border: 1px solid var(--mn-line); border-radius: 6px; }
 .mn .mn-cmd .search-actions { flex-shrink: 0; }
 .mn .mn-cmd .ai-trigger-clean { height: 44px; gap: 8px; padding: 0 18px; border: 0; border-radius: 10px; background: var(--mn-fg); color: var(--mn-fg-inv); font-family: inherit; font-size: 15px; font-weight: 800; letter-spacing: var(--mn-ls); box-shadow: var(--mn-glow-primary); cursor: pointer; transform: none; }
 .mn .mn-cmd .ai-trigger-clean:hover { background: var(--mn-fg); transform: none; }
