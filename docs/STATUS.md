@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-25 (main 09866d2)
+기준: 2026-10-25 (main f03df23)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -110,6 +110,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- fix/layout-shift 머지 뒤: 프로덕션에서 강력 새로고침(홈·상세·/compare)해 글꼴 교체 때 헤더 메뉴·칩 줄·설명 문구가 밀리는지(미확인, 모바일 홈은 2MB Pretendard가 늦게 오면 설명 문구 줄바꿈이 한 번 바뀔 수 있음 — 남으면 display optional 또는 작은 subset 검토) / 로그인 상태에서 아바타 버튼으로 바뀔 때 헤더가 안 밀리는지(미확인) / Vercel 빌드가 폰트 때문에 다시 실패하지 않는지 확인
 - fix/navy-flash-filter-overlay 머지 뒤: 프로덕션에서 /compare·/wishlist 등으로 이동할 때 남색 번쩍임이 사라졌는지, 홈 "필터" 패널(데스크톱 떠 있는 패널·모바일 시트)과 표지 벽 확인(미확인) / 관리자 화면(/admin)은 남색 전제 카드 색(#151A24 등)이 순검정 배경 위에 있어 톤이 다를 수 있음
 - fix/solo-mode-single-source 머지 뒤: judge-new-games --rejudge 미리보기로 바뀌는 게임 확인 뒤 --apply 여부 결정(미실행) / solo_mode null 11개는 --existing 또는 --rejudge로 채움(미실행) / /compare·/admin·홈 추천 "혼자" 화면 확인(미확인)
 - design/pages-mono 머지 뒤: 프로덕션에서 1440·375px로 /compare·/my-pc·/wishlist·/community·/c/<handle>·검색 결과·/this-week·/guide·404 확인(미확인) / 로그인 상태 화면(내 라이브러리·헤더 드롭다운)과 PC 사양 저장 뒤 상세 판정 아이콘(미확인) / 관리자 화면은 아직 옛 디자인 / design/compare-mono 브랜치는 pages-mono에 흡수돼 중복 — 삭제 대기
