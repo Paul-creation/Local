@@ -4,7 +4,7 @@
 
 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트. Next.js + Supabase + Vercel(Hobby). 화면엔 "JamiDuNow"만 쓰고 "재밌드나"는 구조화 데이터에만 쓴다.
 - 현재 상황·로드맵: docs/STATUS.md (있으면 작업 전에 읽기)
-- 디자인 원칙: docs/design.md (UI를 건드리면 먼저 읽기)
+- 디자인 원칙: docs/design.md (UI를 건드리면 먼저 읽기). 시각 디자인 원칙은 재검토 중 — 사용자 지시가 우선.
 
 ## 세션과 브랜치
 - 세션은 J, K 두 개. 다른 세션의 worktree는 건드리지 않는다. 필요하면 원격 브랜치로 새 worktree를 만든다.
