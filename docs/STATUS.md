@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-25 (main 8cf6b98)
+기준: 2026-10-25 (main 9bccb1d)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/25: fix/solo-mode-single-source — solo_playable을 solo_mode에서 파생(story·possible → true, none → false). 쓰기 경로 통일: judge-new-games·apply-filter-v2·관리자 화면(solo_mode 세 단계 드롭다운, API가 solo_playable 파생). enrich-specs·enrich-ai-other·apply-verified-players는 solo_mode가 있으면 solo_playable을 건드리지 않음. 읽는 쪽(app/lib/soloMode.ts isSoloPlayable): 비교·추천·비교 채팅이 solo_mode 우선. 판정 기준 "친구 없이도 즐길 수 있으면 possible"(docs/verification-rules.md), judge-new-games --rejudge 추가(미리보기 기본, --apply일 때만 저장). build·test 443개 통과
 - 10/25: design/pages-mono — 홈·상세를 뺀 나머지 페이지 모노 적용. 공용 app/mono-page.css(.mn-inner: 배경 #0A0A0A·포인트 파랑 복원·글씨 네온은 h1만·기본 보조 버튼·입력창(포커스 빛은 입력창에만)·선택 .tab = 흰 배경·PC 판정 상태 아이콘 체크/X/경고), app/mono-lists.css(카드 목록·검색창), app/mono-static.css(긴 글 16px·줄간격 1.7·최대 폭 720px). 적용: /compare(+new), /my-pc, /wishlist, /library, /community 전체(레이아웃), /c/[handle], 검색 결과(GameGrid 결과 모드)·/this-week, /guide·/faq·/terms·/privacy·/feedback·/about·404·에러. 헤더·푸터 글씨 네온 제거(모든 페이지). 의미 색(평가·할인·가격·구매·상태·포인트 파랑·신작/트렌드 배지)은 원래대로. 관리자(/admin)·/api/theme-preview는 미적용. build·test 443개 통과
 - 10/25: design/home-hero-fix — 홈 히어로 정리. 기간 한정 줄·h1·설명·커맨드바·숫자를 한 세로축 가운데 정렬(간격 20/20/56(모바일 40)/48, 위아래 96(모바일 56)), 설명 문구 두 줄 고정(768px 미만은 br 없이 balance, 18/16px), 표지 벽이 히어로 전체 높이를 덮음(24장 = 8열×3행, 모바일 12장 = 4열×3행, 커맨드바 높이부터 #0A0A0A로 진해져 숫자 아래서 완전히 배경색), 검색 포커스 빛은 입력창에만(커맨드바 테두리는 그대로, focus-visible도 같은 효과), 홈 글씨 네온은 히어로 안(기간 한정·h1·설명·숫자·라벨)에만 — 나머지 섹션은 box-shadow 빛만 유지. 인원 탭을 커맨드바에서 "N인 추천 게임" 제목 아래로 이동(PeopleTabs, 선택·기본값·저장 그대로, 모바일은 가로 스크롤, 추천 데이터가 없으면 탭이 /?players=N 검색으로 이동하는 예전 동작 유지), 커맨드바는 칩만·구분선 제거·max-width 640px. 단축키 표시를 OS별로(맥 ⌘K, 그 외 Ctrl K, 터치·768px 미만은 숨김, 서버 첫 화면은 비움). 설명 → 커맨드바 여백이 .home-only(display: contents) 때문에 안 먹던 것을 .mn-sub 여백으로 바로잡음. build·test 443개 통과
 - 10/25: design/detail-mono — 게임 상세(app/games/[id]) 모노 적용: 루트 main.mn.dx, detail-mono.css. 모노는 배경 #0A0A0A·표면 #111111·테두리 #262626·기본 글씨 #EDEDED와 글꼴·네온만, 의미 있는 색(할인 배지 올리브·Steam 평가·구매 초록·찜 빨강·비교 파랑·가격 차트·PC 판정·에러)은 원래 값 그대로(상세 루트에서만 --accent 파랑 복원). 글씨 네온은 맨 위 게임 이름(h1)만, 버튼·칩·배지 빛은 유지. 뜨는 중·신작 배지 색: 요즘/다시 뜨는 중 = 스팀블루 #66C0F4 + 40% 빛, 신작 = 산호 빨강 #FF7A70(.mn 전체, 홈 .mn-badge·공용 GameCard .gc-trend, 토큰 --mn-badge-*). 공용 로더 PartyLoader → Loader(점 3개 8px, 1.2초, 보이지 않는 "불러오는 중", 300ms 지연 등장). 홈 "스트리머 협동"(조건에 맞는 31개 전부, 중복 제거 끔)·"인스타 큐레이터"를 공용 HScrollRow 가로 스크롤 줄로(스냅·끝 페이드·데스크톱 ←→, 내용이 폭 안에 들어가면 버튼 숨김·키보드 포커스 스크롤), 스트리머 썸네일 maxres → sddefault → hqdefault 폴백. 안 쓰는 StreamerSection·StreamerList 삭제. build·test 443개 통과
@@ -107,6 +108,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- fix/solo-mode-single-source 머지 뒤: judge-new-games --rejudge 미리보기로 바뀌는 게임 확인 뒤 --apply 여부 결정(미실행) / solo_mode null 11개는 --existing 또는 --rejudge로 채움(미실행) / /compare·/admin·홈 추천 "혼자" 화면 확인(미확인)
 - design/pages-mono 머지 뒤: 프로덕션에서 1440·375px로 /compare·/my-pc·/wishlist·/community·/c/<handle>·검색 결과·/this-week·/guide·404 확인(미확인) / 로그인 상태 화면(내 라이브러리·헤더 드롭다운)과 PC 사양 저장 뒤 상세 판정 아이콘(미확인) / 관리자 화면은 아직 옛 디자인 / design/compare-mono 브랜치는 pages-mono에 흡수돼 중복 — 삭제 대기
 - design/home-hero-fix 머지 뒤: 프로덕션 /에서 1440·375px 히어로 가운데 정렬·표지 벽 그라데이션·설명 두 줄 확인(미확인) / 검색창만 포커스 빛이 나는지, 키보드 Tab 포커스(미확인) / "N인 추천 게임" 탭 동작과 모바일 가로 스크롤(미확인) / 윈도우·맥에서 단축키 표시(미확인) / design/compare-mono(비교 페이지 모노·공용 mono-page.css·헤더 푸터 네온 제거)는 아직 머지 전 — 사용자 프리뷰 확인 뒤 머지
 - design/detail-mono 머지 뒤: 프로덕션 /games/<id>(일반·출시 예정) 1440·375px에서 의미 색(구매 초록·평가 파랑·할인 배지)과 스탯 타일 확인(미확인) / 로그인 상태 상세(보유 칩·PC 판정 색)와 홈 취향 섹션 확인(미확인) / 홈 스트리머·큐레이터 줄 스와이프·화살표·썸네일 화질 확인(미확인) / 글리치(glitch_zine)는 curators.show_on_home=false라 홈에서 빠짐 — 동의 확인 뒤 사용자가 update curators set show_on_home = true where handle = 'glitch_zine' 실행 / 홈 밖 페이지는 아직 옛 디자인(헤더·푸터·상세만 모노), 다음은 나머지 페이지 이전 / Vercel 빌드가 cc238d7에서 한 번 실패한 원인은 여전히 미확인(로컬 재현 불가)
