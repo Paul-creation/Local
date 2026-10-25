@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-25 (main 4f2f833)
+기준: 2026-10-25 (main c05e44b)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/25: design/detail-mono — 게임 상세(app/games/[id]) 모노 적용: 루트 main.mn.dx, detail-mono.css. 모노는 배경 #0A0A0A·표면 #111111·테두리 #262626·기본 글씨 #EDEDED와 글꼴·네온만, 의미 있는 색(할인 배지 올리브·Steam 평가·구매 초록·찜 빨강·비교 파랑·가격 차트·PC 판정·에러)은 원래 값 그대로(상세 루트에서만 --accent 파랑 복원). 글씨 네온은 맨 위 게임 이름(h1)만, 버튼·칩·배지 빛은 유지. 뜨는 중·신작 배지 색: 요즘/다시 뜨는 중 = 스팀블루 #66C0F4 + 40% 빛, 신작 = 산호 빨강 #FF7A70(.mn 전체, 홈 .mn-badge·공용 GameCard .gc-trend, 토큰 --mn-badge-*). 공용 로더 PartyLoader → Loader(점 3개 8px, 1.2초, 보이지 않는 "불러오는 중", 300ms 지연 등장). 홈 "스트리머 협동"(조건에 맞는 31개 전부, 중복 제거 끔)·"인스타 큐레이터"를 공용 HScrollRow 가로 스크롤 줄로(스냅·끝 페이드·데스크톱 ←→, 내용이 폭 안에 들어가면 버튼 숨김·키보드 포커스 스크롤), 스트리머 썸네일 maxres → sddefault → hqdefault 폴백. 안 쓰는 StreamerSection·StreamerList 삭제. build·test 443개 통과
 - 10/25: design/main-redesign — 메인(/) 모노+흰색 네온 리디자인 시범 적용. 토큰 app/mono-tokens.css(--mn-*, .mn 루트 안에서만)·글꼴 Geist+Noto Sans KR(app/mono-fonts.ts, layout이 html에 변수만 붙이고 font-family는 .mn 안에서만). 히어로(세로 표지 배경 24장·모바일 12장, 커맨드바 검색+⌘K+AI 추천, 인원 탭·칩 내 PC/무료/출시 전 데모/지금 할인 중, 숫자 3개 = 게임 수·오늘 할인 중·출시 예정을 DB에서 계산) / "N인 추천 게임" 세로 표지 카드 6개 / 취향에 맞는 게임(추천 있을 때만) / 인기 차트·출시 예정·다시 뜨는 중 3단(더 보기는 인기 차트만 — 나머지는 같은 결과로 가는 필터가 없어 링크 없음) / 스트리머 영상 카드 / 인스타 큐레이터 부채꼴 카드 / 인기 게시물 모노 스타일. "이번 주의 게임" 섹션 삭제. 공용 로더 PartyLoader("친구 모으는 중", 스켈레톤 전부 교체)·헤더·푸터 모노로 변경, 현재 메뉴 aria-current 표시. 안 쓰는 HotChart·FeatureCard·PeopleRecs·curatorMix·skel 규칙·--header-*·--footer-bg 삭제. Vercel 빌드가 cc238d7에서 한 번 실패했으나 로컬 재현 불가·다음 커밋은 성공(원인 미확인). build·test 443개 통과
 - 10/25: fix/enrich-no-invented-playstyle — 보강 AI가 스팀 근거 없는 대면·로컬·같은 화면·화면 분할·오프라인 표현을 쓰지 않게 함. 프롬프트 규칙(write-fun-descriptions·fill-game-details·enrich-ai-other·judge-new-games) + 코드 검사(scripts/lib/playstyle-guard.mjs, AI 호출 늘리지 않음: activities는 항목 제거, entry_barrier_reason은 이유만 비움, fun_description은 깨끗한 후보 우선·전부 걸리면 저장 안 함). 근거는 games.steam_categories(영어 원문, 마이그레이션 20261102090000, 사용자 실행 완료)의 Local·Shared/Split Screen 계열 또는 has_local_coop. backfill-steam-categories(캐시 먼저→appdetails, weekly bulk-import 뒤·AI 단계 앞, 대기열 보강 맨 앞, bulk-import는 새 게임에 바로 저장)로 1,516개 채움(빈 29개: 스팀 외 25·appdetails 실패 4 MapleStory·AION 2·MIR4·오버워치). has_local_coop은 Shared/Split Screen Co-op이거나 일반 Shared/Split Screen이면서 PvP 없음일 때 true(lib/local-coop.mjs). build·test 447개 통과
 - 10/25: design/detail-redesign — 게임 상세 리디자인. 위쪽 전체 폭 흐린 배경(hero_image_url, 없으면 스크린샷 첫 장) + 세로 표지(cover_vertical_url, 없으면 가로 이미지)·정보 2단 + 숫자 타일(Steam 평가·최근 30일·지금/최고 동접·플레이 시간·인원·진입장벽·한국어·역대 최저가) + 카드 박스 대신 구분선. 투표 두 섹션은 의견 달기·관련 글 아래로 이동·축소, 중복(장르·가격 타일·인원 줄·출시일 칸·N일마다 할인) 정리. 시각 디자인 원칙(docs/design.md)은 "재검토 중 — 사용자 지시가 우선" 표시, 이번 시안에 새 강조색 3개(보라·청록 등)·타일 아이콘 사용. 마이그레이션(cover_vertical_url, ttb_hastily/normally/completely/count) 사용자 실행 완료. scripts/enrich-cover-vertical.mjs(빈칸만, 없으면 ''로 표시해 다시 안 봄, --retry-missing)·enrich-igdb --ttb-only [--apply](IGDB game_time_to_beats, 초 단위, ttb_count 빈 스팀 게임만, 값 없으면 ttb_count=0)를 노출 게임 전체에 한 번 --apply: 세로 표지 1,519개(없음 1), 플레이 시간 값 734·IGDB 값 없음 773·못 찾음 13. 매주 run-steps에 enrich-cover-vertical --apply 추가, enrich-igdb 끝에 플레이 시간 채우기 포함. 플레이 시간 타일은 빠르게≤보통≤전부·solo_mode≠none일 때 "보통 N시간". 머지 직전 build가 /api/games/list 사전 렌더링에서 Supabase statement timeout으로 한 번 실패(대량 업데이트 직후), 5분 뒤 재실행 통과. build·test 438개 통과
@@ -104,6 +105,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- design/detail-mono 머지 뒤: 프로덕션 /games/<id>(일반·출시 예정) 1440·375px에서 의미 색(구매 초록·평가 파랑·할인 배지)과 스탯 타일 확인(미확인) / 로그인 상태 상세(보유 칩·PC 판정 색)와 홈 취향 섹션 확인(미확인) / 홈 스트리머·큐레이터 줄 스와이프·화살표·썸네일 화질 확인(미확인) / 글리치(glitch_zine)는 curators.show_on_home=false라 홈에서 빠짐 — 동의 확인 뒤 사용자가 update curators set show_on_home = true where handle = 'glitch_zine' 실행 / 홈 밖 페이지는 아직 옛 디자인(헤더·푸터·상세만 모노), 다음은 나머지 페이지 이전 / Vercel 빌드가 cc238d7에서 한 번 실패한 원인은 여전히 미확인(로컬 재현 불가)
 - design/main-redesign 머지 뒤: 프로덕션 /·/wishlist·/faq 1440·375px에서 헤더·푸터·로더·히어로 확인(미확인) / 로그인 상태 헤더 드롭다운·취향 섹션(미확인) / 인기 게시물은 공개 글 5개 미만이라 아직 안 보임 / "출시 전 데모" 칩은 출시 예정+데모 게임만 거름 / 다음 단계: 상세·나머지 페이지를 이 토큰으로 이전(.mn 클래스) / 홈 밖에서도 Noto Sans KR 조각이 헤더 때문에 내려받아짐
 - fix/enrich-no-invented-playstyle 머지 뒤: 사용자가 백필 후 확인 SQL 두 개(로컬 협동인데 has_local_coop false / 로컬 근거 없는데 로컬 표현) 실행해 남은 게임 정리(미확인) / steam_categories 빈 29개는 검사에서 근거 없음으로 처리됨
 - design/detail-redesign 머지 뒤: 프로덕션 상세(인기·인디·출시 예정)에서 1440·375px 확인(미확인) / 다음 weekly에서 enrich-cover-vertical·enrich-igdb 플레이 시간 단계 동작·소요 시간 확인(미확인) / 매주 build 중 /api/games/list statement timeout이 반복되는지 확인 / 상세 "플랫폼 ·" 링크 줄은 상단 칩과 중복(정리 여부 결정)
