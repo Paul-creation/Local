@@ -6,6 +6,7 @@ import { getPriceInfo } from './price';
 import { playersText } from './players';
 import { gameName } from './gameName';
 import type { HotItem } from './hotChart';
+import { arrangeHeroWall } from './heroWall';
 
 export type Cover = { vertical: string | null; appid: string | null; wide: string | null };
 export type ListRow = { id: string; name: string; cover: Cover; sub: string[] };
@@ -29,12 +30,9 @@ export async function getCovers(ids: string[]): Promise<Record<string, Cover>> {
 // 구성: 협동 게임(지정 20개) + 기존 인기순 명작 + 모자라면 온라인 협동 가능 게임을 동접 순으로 채움. 표지는 DB 값만 쓰고 DB에 없는 게임은 빠진다
 export const HERO_COVER_COUNT = 51;
 const HERO_COOP_NAMES = ['Rust', 'Sea of Thieves: 2026 Edition', 'Lethal Company', 'Phasmophobia', 'Deep Rock Galactic', 'Valheim', 'It Takes Two', 'Split Fiction', "Don't Starve Together", 'Dead by Daylight', 'HELLDIVERS™ 2', 'Raft', 'Grounded', 'Overcooked! 2', 'PEAK', 'R.E.P.O.', 'Palworld / 팰월드', 'Monster Hunter Wilds', 'PUBG: BATTLEGROUNDS', 'Among Us'];
-// 글씨 뒤(앞쪽 열)에 먼저 놓을 어두운 표지 — 표지 평균 밝기를 재서 어두운 순 (2026-10-25 측정, 밝기 0~255). 목록에 없는 게임은 뒤쪽 열로
-const HERO_DARK_FIRST = ['The Elder Scrolls V: Skyrim Special Edition', 'R.E.P.O.', 'Phasmophobia', 'Valheim', 'Sekiro™: Shadows Die Twice - GOTY Edition', 'Among Us', 'Divinity: Original Sin 2 - Definitive Edition', 'Dead by Daylight', 'Rust', 'ELDEN RING', 'Hades II', 'ARC Raiders', "Don't Starve Together", 'Lethal Company', '클레르 옵스퀴르: 33 원정대', '톰 클랜시의 레인보우식스 시즈', "Baldur's Gate 3", 'HELLDIVERS™ 2', 'Half-Life 2', 'Hades'];
 // 동접 순 채움에서 뺄 것 — 방치형·클리커류(태그)와 Bongo Cat
 const HERO_FILL_SKIP_TAG = /방치|idle|clicker|클리커/i;
 const HERO_FILL_SKIP_NAMES = ['Bongo Cat'];
-const HERO_DARK_COLS = 6; // 어두운 표지를 놓는 열 수 (둘째 열부터)
 
 type HeroRow = { id: string; name: string; cover_vertical_url: string; tags?: string[] | null };
 export async function getHeroCovers(): Promise<string[]> {
@@ -61,22 +59,8 @@ export async function getHeroCovers(): Promise<string[]> {
   const singles = take(topRes.data);
   const fillRows = ((fillRes.data ?? []) as unknown as HeroRow[]).filter((g) => !HERO_FILL_SKIP_NAMES.includes(g.name) && !(g.tags ?? []).some((t) => HERO_FILL_SKIP_TAG.test(t)));
   const fill = take(fillRows, Math.max(0, HERO_COVER_COUNT - coop.length - singles.length));
-  const rank = (g: HeroRow) => { const i = HERO_DARK_FIRST.indexOf(g.name); return i < 0 ? Infinity : i; };
-  const byDark = (a: HeroRow, b: HeroRow) => rank(a) - rank(b);
-
-  // 협동(지정+채움)과 기존 명작을 번갈아 놓는다. 앞쪽 열(어두운 구간)에는 어두운 표지를 먼저
-  const groups = [[...coop, ...fill].sort(byDark), [...singles].sort(byDark)];
-  const zip = (a: HeroRow[], b: HeroRow[]) => { const o: HeroRow[] = []; for (let i = 0; i < Math.max(a.length, b.length); i++) { if (a[i]) o.push(a[i]); if (b[i]) o.push(b[i]); } return o; };
-  const darkN = HERO_DARK_COLS * 3;
-  const darkPick = (list: HeroRow[], n: number) => list.filter((g) => rank(g) < Infinity).slice(0, n);
-  const darkA = darkPick(groups[0], Math.ceil(darkN / 2));
-  const darkB = darkPick(groups[1], Math.floor(darkN / 2));
-  const dark = zip(darkA, darkB);
-  const used = new Set(dark.map((g) => g.id));
-  const rest = zip(groups[0].filter((g) => !used.has(g.id)), groups[1].filter((g) => !used.has(g.id)));
-  // 첫 열(3장)은 어둡지 않아도 되는 표지, 그 뒤 어두운 구간, 나머지
-  const first = rest.splice(0, 3);
-  return [...first, ...dark, ...rest].slice(0, HERO_COVER_COUNT).map((g) => g.cover_vertical_url);
+  // 협동(지정+채움)과 기존 명작을 번갈아, 밝은 표지·어두운 표지도 번갈아 놓는다 (lib/heroWall)
+  return arrangeHeroWall([...coop, ...fill], singles).slice(0, HERO_COVER_COUNT).map((g) => g.cover_vertical_url);
 }
 
 // 히어로 숫자 3개 — 기준은 숨기지 않은(hidden=false) 게임 중 합쳐지지 않은(merged_into null) 게임
