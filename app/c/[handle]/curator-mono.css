@@ -1,0 +1,5 @@
+/* 큐레이터 페이지(/c/[handle]) 모노 — 공통은 app/mono-page.css(.mn-inner). 여기엔 전용만: 이름 굵기, 보기 전환 탭(선택 = 흰 배경, 비선택 = 보조). 인스타그램 버튼·칩의 포인트 파랑은 원래대로 */
+.mn-inner .curator-profile-name { font-weight: 800; letter-spacing: -0.035em; }
+.mn-inner .curator-section-title { font-weight: 800; letter-spacing: -0.03em; }
+.mn-inner .curator-tab { color: var(--mn-fg); background: transparent; border: 1px solid rgba(255, 255, 255, .4); box-shadow: 0 0 10px rgba(255, 255, 255, .09); text-shadow: none; }
+.mn-inner .curator-tab[aria-selected="true"] { color: var(--mn-fg-inv); background: var(--mn-fg); border-color: transparent; box-shadow: var(--mn-glow-tab-on); }

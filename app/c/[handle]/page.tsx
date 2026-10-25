@@ -10,6 +10,9 @@ import { getPriceInfo } from '../../lib/price';
 import { gameName } from '../../lib/gameName';
 import { withSubjectJosa } from '../../lib/josa';
 import { BASE_OG } from '../../lib/site';
+import '../../mono-tokens.css';
+import '../../mono-page.css';
+import './curator-mono.css';
 
 export const revalidate = 300;
 
@@ -54,7 +57,7 @@ export default async function CuratorPage({ params }: { params: Promise<{ handle
   ].filter((s) => s.n > 0);
 
   return (
-    <main className="page">
+    <main className="page mn mn-inner">
       <BackLink fallbackHref="/" label="홈으로" />
       <header className="curator-profile">
         {curator.avatar_url && <Image src={curator.avatar_url} alt="" width={128} height={128} className="curator-avatar" />}
