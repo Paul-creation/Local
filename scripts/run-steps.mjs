@@ -10,6 +10,7 @@ const GROUPS = {
   daily: [
     'import-curator-queue --apply', // 관리자 "게시물 연결" 도구의 추가 대기열(curator_game_queue) → 새 게임 가져오기·보강 → 같은 게시물에 curator_posts 연결 → imported_at 기록. 대기열이 비어 있으면 바로 끝남. 아래 가격·리뷰 단계가 새 게임도 받도록 맨 앞. 표가 없으면(마이그레이션 전) 실패로 표시
     'check-coming-soon --apply', // 출시 예정 게임(release_status = coming_soon)이 출시됐는지 appdetails로 확인 → 출시됐으면 released로 바꿔 아래 가격·리뷰 단계부터 일반 게임처럼 수집. 출시 예정 게임이 없으면 요청 없음. 칸이 없으면(마이그레이션 전) 실패로 표시
+    'check-expired-demos --apply', // 내려간 데모 정리: 부모 게임 appdetails의 demos[]에 demo_appid가 없거나 데모 appdetails가 success:false면 demo_appid 비움. 스팀 요청 실패는 건너뛰고 다음 날 다시 확인
     'fix-missing-prices',
     // ITAD 단계는 한 묶음으로 앞에 (5분 창 한도를 사용자 화면에 직접 보이는 것부터 씀, 창 상태는 scripts/.cache/itad-window.json으로 공유)
     'backfill-price-history-other', // 스팀 외 가격 (약 15건)
