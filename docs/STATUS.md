@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-25 (main 7524afd)
+기준: 2026-10-25 (main 6085d9f)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/25: fix/enrich-no-invented-playstyle — 보강 AI가 스팀 근거 없는 대면·로컬·같은 화면·화면 분할·오프라인 표현을 쓰지 않게 함. 프롬프트 규칙(write-fun-descriptions·fill-game-details·enrich-ai-other·judge-new-games) + 코드 검사(scripts/lib/playstyle-guard.mjs, AI 호출 늘리지 않음: activities는 항목 제거, entry_barrier_reason은 이유만 비움, fun_description은 깨끗한 후보 우선·전부 걸리면 저장 안 함). 근거는 games.steam_categories(영어 원문, 마이그레이션 20261102090000, 사용자 실행 완료)의 Local·Shared/Split Screen 계열 또는 has_local_coop. backfill-steam-categories(캐시 먼저→appdetails, weekly bulk-import 뒤·AI 단계 앞, 대기열 보강 맨 앞, bulk-import는 새 게임에 바로 저장)로 1,516개 채움(빈 29개: 스팀 외 25·appdetails 실패 4 MapleStory·AION 2·MIR4·오버워치). has_local_coop은 Shared/Split Screen Co-op이거나 일반 Shared/Split Screen이면서 PvP 없음일 때 true(lib/local-coop.mjs). build·test 447개 통과
 - 10/25: design/detail-redesign — 게임 상세 리디자인. 위쪽 전체 폭 흐린 배경(hero_image_url, 없으면 스크린샷 첫 장) + 세로 표지(cover_vertical_url, 없으면 가로 이미지)·정보 2단 + 숫자 타일(Steam 평가·최근 30일·지금/최고 동접·플레이 시간·인원·진입장벽·한국어·역대 최저가) + 카드 박스 대신 구분선. 투표 두 섹션은 의견 달기·관련 글 아래로 이동·축소, 중복(장르·가격 타일·인원 줄·출시일 칸·N일마다 할인) 정리. 시각 디자인 원칙(docs/design.md)은 "재검토 중 — 사용자 지시가 우선" 표시, 이번 시안에 새 강조색 3개(보라·청록 등)·타일 아이콘 사용. 마이그레이션(cover_vertical_url, ttb_hastily/normally/completely/count) 사용자 실행 완료. scripts/enrich-cover-vertical.mjs(빈칸만, 없으면 ''로 표시해 다시 안 봄, --retry-missing)·enrich-igdb --ttb-only [--apply](IGDB game_time_to_beats, 초 단위, ttb_count 빈 스팀 게임만, 값 없으면 ttb_count=0)를 노출 게임 전체에 한 번 --apply: 세로 표지 1,519개(없음 1), 플레이 시간 값 734·IGDB 값 없음 773·못 찾음 13. 매주 run-steps에 enrich-cover-vertical --apply 추가, enrich-igdb 끝에 플레이 시간 채우기 포함. 플레이 시간 타일은 빠르게≤보통≤전부·solo_mode≠none일 때 "보통 N시간". 머지 직전 build가 /api/games/list 사전 렌더링에서 Supabase statement timeout으로 한 번 실패(대량 업데이트 직후), 5분 뒤 재실행 통과. build·test 438개 통과
 - 10/25: fix/review-getitems-primary — 리뷰 수집 주 경로를 GetItems로 전환(appreviews가 10/23부터 Codespace·Actions 모두 302). enrich-players가 시작 때 노출 게임 전체를 100개씩 묶어 GetItems로 받고(Codespace 확인: 1,509개 중 1,500개, 15초) review_total·review_positive_percent·review_summary를 매일 갱신(GetItems 값은 문구도 덮어씀), review_source='getitems'. 값이 없는 게임만 appreviews → 상점 페이지 순 대체, 세 경로 모두 실패면 기존 값 유지(실패로 셈). 일일 요약 줄 "⭐ 리뷰 갱신 N/M개 (GetItems N · appreviews N · 상점 페이지 N) · 갱신 실패 N개". review_history.source 칸 추가(마이그레이션 20261101090000, 사용자 실행 완료)와 snapshot-review-history가 출처 기록, 하루 증가량은 reviewDeltas()(scripts/lib/review-snapshot.mjs)로만 계산해 출처가 바뀐 날 전후를 뺌(현재 review_history 읽는 코드는 없음). 리뷰 수 증가량을 직접 쓰는 곳은 없고, reviewSpeed 분모(전체 리뷰)와 신작 기준(리뷰 10만 미만)이 GetItems 개수 기준으로 조금 바뀜(사용자 감수). GetItems 개수는 appreviews보다 적음(It Takes Two 220,441 vs 272,541). enrich-players 소요: 전 34~40분(10/22·23·24), 후 미확인. build·test 438개 통과
 - 10/24: docs/rules-preview-user — CLAUDE.md 규칙 정리(프리뷰 확인은 사용자가 함, 보고 형식 간소화). 코드 변경 없음, build·test 433개 통과
@@ -102,6 +103,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- fix/enrich-no-invented-playstyle 머지 뒤: 사용자가 백필 후 확인 SQL 두 개(로컬 협동인데 has_local_coop false / 로컬 근거 없는데 로컬 표현) 실행해 남은 게임 정리(미확인) / steam_categories 빈 29개는 검사에서 근거 없음으로 처리됨
 - design/detail-redesign 머지 뒤: 프로덕션 상세(인기·인디·출시 예정)에서 1440·375px 확인(미확인) / 다음 weekly에서 enrich-cover-vertical·enrich-igdb 플레이 시간 단계 동작·소요 시간 확인(미확인) / 매주 build 중 /api/games/list statement timeout이 반복되는지 확인 / 상세 "플랫폼 ·" 링크 줄은 상단 칩과 중복(정리 여부 결정)
 - fix/review-getitems-primary 머지 뒤: 첫 데일리의 enrich-players 소요 시간(전 34~40분)과 요약 리뷰 줄(GetItems 약 1,500개 안팎, 실패 수) 확인(미확인) / 첫 데일리 뒤 review_total이 전반적으로 낮아짐 / 10/25 전후 review_history 단차는 source 칸으로 구분
 - feat/curator-import 머지 뒤: 데일리에서 import-curator-queue 단계 첫 실행 확인(대기열이 비면 바로 끝남, 실제 가져오기·보강·연결 흐름은 DB 연결 실행으로는 못 해 봄, 단위 테스트만) / 프리뷰 서버는 ADMIN_PASSWORD가 달라 관리자 로그인이 401이라 프리뷰 확인은 못 함(Vercel Preview 환경변수 확인 필요) / 실제 캡션 대신 만든 샘플로만 추출 확인
