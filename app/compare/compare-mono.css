@@ -1,0 +1,10 @@
+/* 비교 페이지(/compare, /compare/new) 모노 — 공통 규칙은 app/mono-page.css(.mn-inner). 여기엔 비교 전용만: 표면·행 구분선·표 머리 칸. 가격·할인·평가 색은 원래대로 */
+.mn-inner .cmp-title { font-weight: 800; letter-spacing: -0.035em; }
+.mn-inner .cmp-h2 { font-weight: 800; letter-spacing: -0.03em; }
+.mn-inner .cmp-table, .mn-inner .cmp-poster, .mn-inner .cmp-note, .mn-inner .cmp-ai { background: var(--mn-surface); border-color: var(--mn-line); }
+.mn-inner .cmp-row + .cmp-row, .mn-inner .cmp-mrow + .cmp-mrow { border-top-color: var(--mn-line); }
+.mn-inner .cmp-row-label { background: var(--mn-surface); font-weight: 700; }
+.mn-inner .cmp-row-label:not(.is-m) { border-right: 1px solid var(--mn-line); }
+.mn-inner .cmp-row-label.is-m { background: none; }
+.mn-inner .cmp-meter-bar span:not(.on) { background: var(--mn-line); }
+.mn-inner .cmp-mbox { background: var(--mn-bg); border: 1px solid var(--mn-line); }

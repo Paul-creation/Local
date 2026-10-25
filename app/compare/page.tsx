@@ -20,6 +20,9 @@ import GameImage from '../components/GameImage';
 import HeartButton from '../components/wishlist/HeartButton';
 import { selectGames } from '../lib/visibleGames';
 import { gameName } from '../lib/gameName';
+import '../mono-tokens.css';
+import '../mono-page.css';
+import './compare-mono.css';
 
 export const dynamic = 'force-dynamic';
 
@@ -171,7 +174,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
       ids.length ? selectGames(BUILDER_FIELDS).in('id', ids) : Promise.resolve({ data: [] as any[] }),
     ]);
     return (
-      <main className="page">
+      <main className="page mn mn-inner">
         <BackLink fallbackHref="/" label="목록으로" preferList />
         <CompareBuilder initial={initial || []} popular={popular || []} />
       </main>
@@ -183,7 +186,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
 
   if (!games || games.length < 2) {
     return (
-      <main className="page">
+      <main className="page mn mn-inner">
         <p className="cmp-empty">게임을 불러오지 못했어요. 다시 시도해 주세요.</p>
       </main>
     );
@@ -235,7 +238,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
   const cols = { gridTemplateColumns: `180px repeat(${gameCount}, minmax(0, 1fr))` };
 
   return (
-    <main className="page cmp-page">
+    <main className="page cmp-page mn mn-inner">
       <ScrollToTop />
 
       <BackLink fallbackHref="/" label="목록으로" preferList />

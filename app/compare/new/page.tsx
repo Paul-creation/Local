@@ -5,6 +5,9 @@ import CompareBuilder from '../../components/CompareBuilder';
 import { BUILDER_FIELDS, MAX_COMPARE, compareBlockReason } from '../../lib/compareRule';
 import { UUID } from '../../lib/postLinks';
 import { selectGames } from '../../lib/visibleGames';
+import '../../mono-tokens.css';
+import '../../mono-page.css';
+import '../compare-mono.css';
 
 export const metadata: Metadata = { title: '게임 비교 만들기', robots: { index: false } };
 
@@ -25,7 +28,7 @@ export default async function NewComparePage({ searchParams }: { searchParams: P
     if (g && !compareBlockReason(initial, g)) initial.push(g);
   }
   return (
-    <main className="page">
+    <main className="page mn mn-inner">
       <BackLink fallbackHref="/compare" label="비교로" />
       <CompareBuilder initial={initial} popular={popular || []} />
     </main>
