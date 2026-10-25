@@ -12,7 +12,10 @@ import { translateGenres } from '../../lib/genreTranslate';
 import { getPlatformCategories, CATEGORY_LABEL } from '../../lib/platformDisplay';
 import ReviewRating from '../../components/ReviewRating';
 import { reviewTone } from '../../lib/review';
-import DetailHero from '../../components/DetailHero';
+import GameImage from '../../components/GameImage';
+import DetailCover from '../../components/detail/DetailCover';
+import DetailTrailer from '../../components/detail/DetailTrailer';
+import StatTiles, { type Tile } from '../../components/detail/StatTiles';
 import AddToCompare from '../../components/AddToCompare';
 import HeartButton from '../../components/wishlist/HeartButton';
 import { translateTag } from '../../lib/tagTranslate';
@@ -218,17 +221,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const lowestDate = formatDate(game.lowest_price_date);
   const isMulti = (game.party_max ?? game.max_players ?? 0) > 1;
   const playersChip = game.max_players === 1 ? '혼자' : playersText(game);
-  // 제목 아래 한 줄: 주 = 등급 문구 + %, 보조 = 리뷰 수 · Metascore · 현재 동접 · 역대 최고 동접 — 값이 없는 조각은 빠진다
-  const headExtras = [
-    game.critic_score ? `Metascore ${Number(game.critic_score)}` : '',
-    game.current_players > 0 ? `현재 ${game.current_players.toLocaleString('ko-KR')}명` : '',
-    game.peak_players > 0 ? `역대 최고 ${game.peak_players.toLocaleString('ko-KR')}명` : '',
-  ].filter(Boolean);
-  const headMeta = (game.review_positive_percent || headExtras.length > 0)
-    ? <ReviewRating size="lg" summary={game.review_summary} percent={game.review_positive_percent} total={game.review_total} extras={headExtras} />
-    : null;
-  const hasReviews = !!(game.review_positive_percent || showRecent);
-  const hasSteamCard = !!(hasReviews || game.heat_rank || game.achievement_count || (game.steam_appid && game.family_sharing != null) || game.has_dlc != null);
+  const hasSteamCard = !!(game.heat_rank || game.achievement_count || (game.steam_appid && game.family_sharing != null) || game.has_dlc != null);
   // 스크린샷 — 주소가 둘 다 있는 것만, 없거나 비면 섹션 숨김
   const shots: Screenshot[] = Array.isArray(game.screenshots)
     ? game.screenshots.filter((s: any) => typeof s?.path_thumbnail === 'string' && typeof s?.path_full === 'string').slice(0, 10)
@@ -244,24 +237,63 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const hasActivities = hasV2Activities || game.activities?.length > 0;
   const hasMore = game.has_ending != null || game.server_type || hasActivities || game.story_length || game.is_esports || game.has_workshop || subGenres.length > 0;
 
+  const heroBg: string | null = game.hero_image_url || shots[0]?.path_full || null;
+  const credits = game.developer && game.publisher
+    ? (game.developer === game.publisher ? `개발·배급 ${game.developer}` : `개발 ${game.developer} · 배급 ${game.publisher}`)
+    : game.developer ? `개발 ${game.developer}` : game.publisher ? `배급 ${game.publisher}` : '';
+  // 플레이 시간 — IGDB game_time_to_beats(초). 세 값이 순서대로(빠르게 ≤ 보통 ≤ 완전히)일 때만 쓰고, 멀티 전용 게임은 숨긴다. 칸이 없으면 기존 story_length 문구
+  const ttb = game.ttb_normally > 0 && game.solo_mode !== 'none' && (!game.ttb_hastily || game.ttb_hastily <= game.ttb_normally) && (!game.ttb_completely || game.ttb_completely >= game.ttb_normally) ? game : null;
+  const hours = (sec: number) => `${Math.max(1, Math.round(sec / 3600)).toLocaleString('ko-KR')}시간`;
+  const n = (v: number) => v.toLocaleString('ko-KR');
+  const tiles: Tile[] = [];
+  if (game.review_positive_percent) tiles.push({ key: 'review', tone: 'review', icon: 'thumb', label: 'Steam 평가', value: <span className="num">{game.review_positive_percent}%</span>, sub: [game.review_summary, game.review_total ? `리뷰 ${n(game.review_total)}개` : ''].filter(Boolean).join(' · ') });
+  if (showRecent) tiles.push({ key: 'recent', tone: 'review', icon: 'clock', label: '최근 30일 평가', value: <span className="num">{recentPct}%</span>, sub: Math.abs(recentGap) >= 15 ? (recentGap < 0 ? '최근 평가가 낮아졌어요' : '최근 평가가 좋아졌어요') : `리뷰 ${n(game.recent_review_count)}개` });
+  if (game.current_players > 0) tiles.push({ key: 'now', tone: 'live', icon: 'pulse', label: '지금 동접', value: <><span className="num">{n(game.current_players)}</span>명</> });
+  if (game.peak_players > 0) tiles.push({ key: 'peak', tone: 'live', icon: 'peak', label: '최고 동접', value: <><span className="num">{n(game.peak_players)}</span>명</>, sub: '역대 기준' });
+  if (ttb) tiles.push({ key: 'time', tone: 'time', icon: 'hourglass', label: '플레이 시간', value: <span className="num">{hours(ttb.ttb_normally)}</span>, sub: ['메인 스토리', ttb.ttb_completely ? `전부 ${hours(ttb.ttb_completely)}` : ''].filter(Boolean).join(' · ') });
+  else if (game.story_length && game.solo_mode !== 'none') tiles.push({ key: 'time', tone: 'time', icon: 'hourglass', label: '플레이 시간', value: game.story_length, valueClass: 'is-text' });
+  if (friendsMax) tiles.push({ key: 'party', tone: 'party', icon: 'people', label: '인원', value: friendsMax === 1 ? '혼자' : <>최대 <span className="num">{friendsMax}</span>명</>, sub: game.min_players > 1 ? `최소 ${game.min_players}명` : undefined });
+  if (game.entry_barrier) tiles.push({ key: 'gate', tone: 'party', icon: 'gate', label: '진입장벽', value: game.entry_barrier, valueClass: 'is-text' });
+  tiles.push({ key: 'lang', tone: 'party', icon: 'lang', label: '한국어', value: !koreanOk ? '지원 안 함' : game.korean_support === '자막+더빙' ? '자막 · 더빙' : '자막', valueClass: `is-text${koreanOk ? '' : ' is-down'}` });
+  if (!comingSoon) {
+    if (game.is_free) tiles.push({ key: 'price', tone: 'price', icon: 'tag', label: '지금 가격', value: '무료', valueClass: 'is-text' });
+    else if (price) tiles.push({ key: 'price', tone: 'price', icon: 'tag', label: '지금 가격', value: <span className="num">{price.formattedFinal}</span>, sub: price.discount > 0 ? `-${price.discount}% 할인 중` : undefined });
+    if (showPriceRecord && game.lowest_price >= 100) tiles.push({ key: 'low', tone: 'price', icon: 'low', label: '역대 최저가', value: <span className="num">₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}</span>, sub: timing === 'best' ? '지금이 최저가' : lowestDate || undefined });
+  }
+
   return (
-    <main className="page detail-page">
+    <main className="page detail-page dx">
       <BackLink fallbackHref="/" label="목록으로" preferList />
 
-      <DetailHero
-        image={heroImage}
-        videoUrl={game.video_url || null}
-        name={gameName(game)}
-        meta={headMeta}
-        badges={
-          <>
+
+      {heroBg && <div className="dx-backdrop" aria-hidden="true"><GameImage src={heroBg} fallbackWidth={1280} alt="" /></div>}
+
+      <header className="dx-head">
+        <DetailCover verticalUrl={game.cover_vertical_url ?? null} steamAppid={game.steam_appid ? String(game.steam_appid) : null} fallback={heroImage} name={gameName(game)} />
+        <div className="dx-head-info">
+          <div className="dx-badges">
             <OwnedChip steamAppid={game.steam_appid} />
-            {playersChip && <span className="badge players-chip">{playersChip}</span>}
+            {comingSoon
+              ? <span className="badge badge-accent">{comingSoonLabel(game)}</span>
+              : <>
+                  {game.is_early_access && <span className="badge badge-accent">앞서 해보기</span>}
+                  {game.release_date && <span className="badge-neutral">출시 <span className="num">{formatDate(game.release_date)}</span></span>}
+                </>}
             {game.category && <span className={`badge-neutral ${badgeClass(game.category)}`}>{game.category}</span>}
-            {game.is_early_access && <span className="badge badge-accent">얼리 액세스</span>}
-          </>
-        }
-      />
+          </div>
+          <h1 className="dx-title">{gameName(game)}</h1>
+          {credits && <p className="dx-credits">{credits}</p>}
+          {game.fun_description && <p className="dx-lead">{game.fun_description}</p>}
+          {(subGenres.length > 0 || platformCategories.length > 0) && (
+            <div className="dx-chips">
+              {subGenres.slice(0, 6).map((g) => <span key={g} className="chip">{g}</span>)}
+              {platformCategories.map((c) => <span key={c} className="chip">{CATEGORY_LABEL[c]}</span>)}
+            </div>
+          )}
+        </div>
+      </header>
+
+      <StatTiles tiles={tiles} />
 
       <div className="detail-layout">
         {/* 가격 카드 — 데스크톱 오른쪽 위, 좁은 화면에서는 제목 바로 아래 */}
@@ -347,6 +379,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </aside>
 
         <div className="detail-main">
+          {game.video_url && <DetailTrailer image={heroBg || heroImage} videoUrl={game.video_url} name={gameName(game)} />}
           {shots.length > 0 && <ScreenshotGallery shots={shots} name={gameName(game)} />}
 
           {/* 링크 줄 */}
@@ -404,38 +437,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
 
           {/* 스팀 카드 — 왼쪽: 전체 평가(등급·%·리뷰 수·막대) + 최근 30일, 오른쪽: 인기 순위·도전과제·가족 공유·DLC. 헤더는 요약, 여기는 막대가 있는 자세한 평가 */}
           {hasSteamCard && (
-            <section className={`detail-card steam-card${hasReviews ? '' : ' is-solo'}`}>
-              {hasReviews && (
-                <div className="steam-reviews">
-                  <h3 className="detail-card-title">Steam 평가</h3>
-                  {game.review_positive_percent ? (
-                    <>
-                      <p className={`steam-pct is-${reviewTone(game.review_summary)}`}>
-                        <span className="num">{game.review_positive_percent}%</span>
-                        {game.review_summary && <span className={`review-badge ${reviewTone(game.review_summary)}`}>{game.review_summary}</span>}
-                      </p>
-                      {game.review_total && <p className="steam-count">전체 리뷰 <span className="num">{game.review_total.toLocaleString('ko-KR')}</span>개</p>}
-                      <div className="steam-bar" role="img" aria-label={`긍정 ${game.review_positive_percent}%`}>
-                        <span style={{ width: `${game.review_positive_percent}%` }} />
-                      </div>
-                    </>
-                  ) : null}
-                  {showRecent && (
-                    <div className="steam-recent">
-                      <p className="steam-recent-head">
-                        최근 30일 <span className="num">{recentPct}%</span>
-                        <span className="steam-count"> · 리뷰 <span className="num">{game.recent_review_count.toLocaleString('ko-KR')}</span>개</span>
-                      </p>
-                      <div className="steam-bar is-thin" role="img" aria-label={`최근 30일 긍정 ${recentPct}%`}>
-                        <span style={{ width: `${recentPct}%` }} />
-                      </div>
-                      {Math.abs(recentGap) >= 15 && (
-                        <p className={`steam-trend ${recentGap < 0 ? 'is-down' : 'is-up'}`}>{recentGap < 0 ? '최근 평가가 낮아졌어요' : '최근 평가가 좋아졌어요'}</p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
+            <section className="detail-card steam-card is-solo">
               <div className="steam-grid">
                 <div className="steam-cell">
                   <span className="steam-cell-label">ITAD 인기 순위</span>
@@ -472,17 +474,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
                 </div>
               );
             })()}
-            <div className="info-cell">
-              <span className="info-label">한국어</span>
-              <span className={`info-value${koreanOk ? '' : ' is-down'}`}>
-                {!koreanOk ? '지원 안 함' : game.korean_support === '자막+더빙' ? '자막 · 더빙' : '자막 지원'}
-              </span>
-            </div>
             {game.storage_gb && (
               <div className="info-cell"><span className="info-label">필요 용량</span><span className="info-value num">{game.storage_gb} GB</span></div>
-            )}
-            {game.developer && (
-              <div className="info-cell"><span className="info-label">개발사</span><span className="info-value">{game.developer}</span></div>
             )}
           </section>
 

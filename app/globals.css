@@ -3084,3 +3084,90 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* 링�
 .curator-game > .gc { flex: 1 1 auto; } /* 카드가 남는 높이를 채워 같은 줄 카드 높이가 맞고 가격 줄이 맨 아래에 붙음 */
 .curator-game-posts { display: flex; flex-direction: column; gap: 4px; }
 @media (max-width: 720px) { .curator-games { grid-template-columns: minmax(0, 1fr); } }
+
+/* ============================================================
+   상세 페이지 리디자인 시안 (design/detail-redesign) — .dx 범위 안에서만 적용
+   위쪽 큰 배경 + 세로 표지/정보 2단 + 숫자 타일 + 박스 대신 구분선
+   ============================================================ */
+.dx { --tone-review: #66C0F4; --tone-live: #4ADE80; --tone-time: #C4A7F8; --tone-party: #7DD3C0; --tone-price: #FF7A70; }
+
+.dx-backdrop {
+  position: absolute; z-index: -1; pointer-events: none; overflow: hidden;
+  top: -80px; left: 50%; width: 100vw; height: 640px; transform: translateX(-50%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 45%, transparent 100%);
+}
+.dx-backdrop img { width: 100%; height: 100%; object-fit: cover; filter: blur(16px) brightness(0.5) saturate(1.15); transform: scale(1.08); }
+
+.dx-head { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 40px; align-items: end; padding: 28px 0 36px; }
+.dx-cover { width: 260px; aspect-ratio: 2 / 3; border-radius: 8px; overflow: hidden; background: var(--inset); box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5); }
+.dx-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.dx-cover.is-wide img { object-fit: cover; }
+.dx-head-info { min-width: 0; padding-bottom: 6px; }
+.dx-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 12px; }
+.dx-badges > .badge, .dx-badges > .badge-neutral { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 0 10px; font-size: var(--fs-s); }
+.dx-title { font-size: 52px; font-weight: 900; letter-spacing: -0.04em; line-height: 1.08; color: var(--text); word-break: keep-all; overflow-wrap: anywhere; }
+.dx-credits { margin-top: 10px; font-size: var(--fs-l); color: var(--text-2); }
+.dx-lead { margin-top: 14px; max-width: 62ch; font-size: var(--fs-xl); line-height: 1.55; color: var(--text); word-break: keep-all; }
+.dx-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.dx-chips .chip { cursor: default; }
+
+.dx-tiles { list-style: none; margin: 0 0 40px; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.dx-tile { --tone: var(--text-muted); display: flex; flex-direction: column; gap: 6px; min-width: 0; padding: 14px 16px; border-radius: 8px; background: rgba(21, 26, 36, 0.72); border-top: 2px solid var(--tone); }
+.dx-tile.tone-review { --tone: var(--tone-review); }
+.dx-tile.tone-live { --tone: var(--tone-live); }
+.dx-tile.tone-time { --tone: var(--tone-time); }
+.dx-tile.tone-party { --tone: var(--tone-party); }
+.dx-tile.tone-price { --tone: var(--tone-price); }
+.dx-tile-label { display: flex; align-items: center; gap: 6px; font-size: var(--fs-s); font-weight: 700; color: var(--text-muted); }
+.dx-tile-icon { flex: none; color: var(--tone); }
+.dx-tile-value { font-size: 26px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.15; color: var(--text); font-variant-numeric: tabular-nums; word-break: keep-all; }
+.dx-tile-value.is-text { font-size: 20px; font-weight: 800; }
+.dx-tile-value.is-down { color: var(--down); }
+.dx-tile-sub { font-size: var(--fs-s); color: var(--text-muted); line-height: 1.4; }
+
+.dx-trailer .dx-trailer-poster { position: relative; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; background: var(--inset); }
+.dx-trailer .dx-trailer-poster img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.dx-trailer .dh-play { top: 50%; }
+
+/* 박스 줄이기 — 카드 면·테두리 대신 위쪽 구분선과 여백, 제목 위계로 묶는다 */
+.dx .detail-main { gap: 0; }
+.dx .detail-main > * + * { margin-top: 36px; }
+.dx .detail-card, .dx .curators-card {
+  background: none; border: 0; border-top: 1px solid var(--border); border-radius: 0; box-shadow: none; padding: 28px 0 0;
+}
+.dx .detail-card.is-roomy { padding: 28px 0 0; }
+.dx .detail-card-title { font-size: 22px; margin-bottom: 14px; }
+.dx .shots { border-top: 0; padding-top: 0; }
+.dx .price-card { background: none; border: 0; border-left: 1px solid var(--border); border-radius: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; padding: 4px 0 4px 24px; }
+.dx .discord-card { border: 0; border-left: 1px solid var(--border); padding: 4px 0 4px 24px; background: none; box-shadow: none; }
+.dx .trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; padding: 28px 0 0; }
+.dx .trio-cell { background: none; border-radius: 0; padding: 0 20px; }
+.dx .trio-cell:first-child { padding-left: 0; }
+.dx .trio-cell + .trio-cell { border-left: 1px solid var(--border-soft); }
+.dx .info-row { padding: 28px 0 0; }
+.dx .info-cell:first-child { padding-left: 0; }
+.dx .steam-card { display: block; }
+.dx .steam-grid { background: none; }
+.dx .steam-cell { background: none; border-radius: 0; padding-left: 0; }
+.dx .detail-layout { gap: 40px; }
+.dx .detail-links { padding-top: 0; }
+
+@media (max-width: 760px) {
+  .dx-head { grid-template-columns: minmax(0, 1fr); gap: 20px; padding: 16px 0 24px; align-items: start; }
+  .dx-cover { width: 150px; }
+  .dx-title { font-size: 32px; }
+  .dx-lead { font-size: var(--fs-l); }
+  .dx-backdrop { height: 460px; top: -60px; }
+  .dx-backdrop img { width: 25%; height: 25%; transform-origin: top left; transform: scale(4); filter: blur(6px) brightness(0.5) saturate(1.15); }
+  .dx-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 28px; }
+  .dx-tile { padding: 12px; }
+  .dx-tile-value { font-size: 22px; }
+  .dx-tile-value.is-text { font-size: 17px; }
+  .dx .price-card, .dx .discord-card { border-left: 0; border-top: 1px solid var(--border); padding: 20px 0 0; }
+  .dx .trio { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .dx .trio-cell { padding: 0; }
+  .dx .trio-cell + .trio-cell { border-left: 0; border-top: 1px solid var(--border-soft); padding-top: 16px; }
+  .dx .detail-card, .dx .curators-card { padding-top: 22px; }
+}
+.dx .price-card-now { font-size: 32px; word-break: keep-all; }
