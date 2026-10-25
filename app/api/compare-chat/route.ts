@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { guardedClaudeFetch, AiLimitError } from '../../lib/aiGuard';
 import { supabase } from '../../lib/supabase';
 import { selectGames } from '../../lib/visibleGames';
+import { isSoloPlayable } from '../../lib/soloMode';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const STORE: Record<string, string> = { steam: 'Steam', epic: '에픽', battlenet: 'Battle.net', riot: '라이엇' };
@@ -9,7 +10,7 @@ const STORE: Record<string, string> = { steam: 'Steam', epic: '에픽', battlene
 // 브라우저가 보낸 글 대신, 게임 ID로 DB에서 직접 정확한 정보를 만든다
 async function buildGameInfo(ids: string[]) {
   if (!ids.length) return '';
-  const { data } = await selectGames('id, name, source, steam_appid, tags, difficulty, min_players, max_players, recommended_players, solo_playable, korean_support, activities, is_free, description')
+  const { data } = await selectGames('id, name, source, steam_appid, tags, difficulty, min_players, max_players, recommended_players, solo_playable, solo_mode, korean_support, activities, is_free, description')
     .in('id', ids);
   return ids
     .map((id) => (data || []).find((g: any) => g.id === id))
@@ -18,7 +19,7 @@ async function buildGameInfo(ids: string[]) {
       `[${g.name}]`,
       `스토어: ${g.steam_appid ? 'Steam' : STORE[g.source] || 'PC'}${g.is_free ? ' (무료)' : ''}`,
       `인원: ${g.min_players ?? '?'}-${g.max_players ?? '?'}인${g.recommended_players ? ` (추천 ${g.recommended_players})` : ''}`,
-      `혼자 플레이: ${g.solo_playable === true ? '가능' : g.solo_playable === false ? '사실상 친구 필요' : '정보 없음'}`,
+      `혼자 플레이: ${isSoloPlayable(g) === true ? '가능' : isSoloPlayable(g) === false ? '사실상 친구 필요' : '정보 없음'}`,
       `난이도: ${g.difficulty || '정보 없음'} / 한국어: ${g.korean_support || '정보 없음'}`,
       `태그: ${(g.tags || []).slice(0, 6).join(', ')}`,
       g.activities?.length ? `할 수 있는 것: ${g.activities.slice(0, 5).join(', ')}` : '',

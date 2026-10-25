@@ -71,7 +71,7 @@ async function applyTags() {
 
 // ── 게임 찾기 ────────────────────────────────────────
 async function loadGames() {
-  const rows = await readAll('games', 'id, name, steam_appid, entry_barrier, entry_barrier_reason, solo_mode, party_max, session_max');
+  const rows = await readAll('games', 'id, name, steam_appid, entry_barrier, entry_barrier_reason, solo_mode, solo_playable, party_max, session_max');
   return { byId: new Map(rows.map((g) => [g.id, g])), byAppid: new Map(rows.filter((g) => g.steam_appid).map((g) => [String(g.steam_appid), g])) };
 }
 const find = (games, row) => (row.game_id && games.byId.get(row.game_id)) || (row.steam_appid && games.byAppid.get(String(row.steam_appid))) || null;
@@ -124,6 +124,16 @@ async function applyGameFields(games) {
     want(game, 'solo_mode', r.solo, '혼자 플레이');
     want(game, 'party_max', r.party_max, '팀 인원');
     want(game, 'session_max', r.session_max, '서버 인원');
+    // solo_playable은 solo_mode에서 파생 (story·possible → true, none → false)
+    const mode = patches.get(game.id)?.patch.solo_mode ?? game.solo_mode;
+    if (mode) {
+      const playable = mode !== 'none';
+      if (game.solo_playable !== playable) {
+        const p = patches.get(game.id) || { game, patch: {} };
+        p.patch.solo_playable = playable;
+        patches.set(game.id, p);
+      }
+    }
   }
   let n = 0;
   for (const { game, patch } of patches.values()) {

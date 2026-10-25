@@ -6,6 +6,10 @@
 //       --existing --sample N  (--apply 없이) 기존 게임 N개를 실제로 AI에 물어 결과만 보여줌, DB는 안 바꿈 (Haiku 1번 호출)
 //       --ids <파일>  지정한 게임만 (lib/only-ids.mjs, 대상 조건은 그대로)
 //       node --env-file=.env.local scripts/judge-new-games.mjs --sample 20  (예전 게임 20개로 프롬프트를 만들어 예상 비용만 계산, AI·DB 안 씀)
+//       --rejudge  숨기지 않은 모든 게임의 solo_mode를 지금 기준(친구 없이도 즐길 수 있으면 possible)으로 다시 판정 (진입장벽은 안 건드림)
+//                  기본은 미리보기: AI(Haiku)를 불러 바뀌는 게임 수·목록만 보여주고 DB는 안 바꿈 (결과는 scripts/.cache/rejudge-solo.json에 저장)
+//                  --rejudge --apply: 미리보기 결과(캐시)가 있으면 그대로, 없으면 판정한 뒤 solo_mode와 solo_playable을 같이 저장 (--fresh면 캐시 무시)
+//                  --sample N으로 N개만, --ids <파일>로 지정한 게임만. 판단이 null(확신 없음)인 게임은 그대로 둠
 // - 대상: 숨기지 않은 게임 중 이번 주(7일 안)에 들어왔고 이 기능 시작(NEW_SINCE) 뒤에 들어온 게임, entry_barrier나 solo_mode가 빈 것
 //   예전 미정(null) 게임은 일부러 그대로 둠. 한 번 판단한 게임(filter_ai_at)은 다시 묻지 않음. 한 번에 최대 200개
 // - 기준: docs/verification-rules.md, data/tags/entry-barrier.json(rule)·data/meta/play-modes.json과 같음
@@ -26,6 +30,9 @@ import { JUDGE_TOOL, extractRows, runWithRetry, RAW_LOG_CHARS } from './lib/judg
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const APPLY = process.argv.includes('--apply');
 const EXISTING = process.argv.includes('--existing');
+const REJUDGE = process.argv.includes('--rejudge');
+const FRESH = process.argv.includes('--fresh');
+const REJUDGE_CACHE = 'scripts/.cache/rejudge-solo.json';
 const SAMPLE = process.argv.includes('--sample') ? Number(process.argv[process.argv.indexOf('--sample') + 1]) || 20 : 0;
 const NEW_SINCE = '2026-10-05T00:00:00Z'; // 이 기능을 넣은 날 — 그 전에 들어온 게임은 대상 아님
 const DRY_AI = SAMPLE && EXISTING && !APPLY; // 기존 게임 N개 판단 결과만 보기 (저장 안 함)
@@ -55,11 +62,12 @@ const PROMPT_HEAD = `너는 한국 게임 정보 사이트의 필터 데이터�
   League of Legends 높음 "챔피언·운영 학습량과 실력차 큼" / Counter-Strike 2 높음 "정확한 사격·전술 실력차 큼" / Baldur's Gate 3 높음 "규칙과 선택지가 많은 CRPG" / Civilization VI 높음 "규칙과 시대별 요소가 많은 4X" / Monster Hunter: World 높음 "무기·시스템이 많아 배울 게 많음" / Street Fighter 6 높음 "격투 콤보 실력차가 큼" / Rust 높음 "생존·건설에 PvP 실력차 큼"
 
 [혼자 플레이 solo] ("solo 판단 필요"라고 적힌 게임만, 나머지는 null)
-- "story": 혼자서도 완결된 경험 (스토리 캠페인·싱글 콘텐츠가 핵심급). 1인 전용 게임은 모두 여기 (예: Baldur's Gate 3, Terraria, Portal 2)
-- "possible": 혼자 할 수 있는 모드(봇·AI 상대, 싱글 캠페인 등)가 있지만 본편은 협동·대전 중심 (예: Deep Rock Galactic, Lethal Company, Rocket League, Street Fighter 6)
-- "none": 온라인 매칭 전용이거나, 혼자서는 봇·AI 상대가 없어 사실상 할 수 없는 멀티 전용 (예: League of Legends, Among Us, It Takes Two, PUBG)
+기준: "친구 없이도 즐길 수 있으면 possible". 혼자 접속해서 할 수 있으면 친구가 없어도 되는 것으로 본다.
+- "story": 멀티 요소가 없거나 혼자가 중심인 게임. 1인 전용 게임은 모두 여기 (예: Baldur's Gate 3, Terraria, Portal 2)
+- "possible": 친구 없이도 즐길 수 있는 게임. 온라인 매칭(PvP 포함)이나 MMO처럼 혼자 접속해서 할 수 있는 게임, 봇·AI 상대나 싱글 모드가 있는 게임 (예: Deep Rock Galactic, Lethal Company, Rocket League, League of Legends, PUBG, Among Us, Street Fighter 6)
+- "none": 파트너가 꼭 있어야 하는 게임만. 2인 전용 협동이거나, 매칭 없이 친구 초대로만 하는 게임 (예: It Takes Two)
 - 근거: 스팀 태그(Singleplayer·Story Rich와 멀티 관련 태그의 투표 비율), 소개 문구, 게임을 아는 범위의 판단
-- 애매하면 possible로 뭉뚱그리지 말고 solo와 solo_reason 모두 null (게임을 모르거나 혼자 모드가 있는지 확신이 없을 때)
+- 애매하면 possible로 뭉뚱그리지 말고 solo와 solo_reason 모두 null (게임을 모르거나 혼자 접속해서 할 수 있는지 확신이 없을 때)
 - solo_reason: solo를 정한 근거를 한국어 20자 안팎 한 구절로
 
 게임 목록 (스팀 태그는 영어 이름(투표 수), 투표 많은 순):
@@ -137,7 +145,97 @@ async function loadTargets(migrated) {
   return data;
 }
 
+// 모든 게임의 solo_mode를 새 기준으로 다시 판정. solo_mode와 solo_playable은 항상 같이 씀 (story·possible → true, none → false)
+async function rejudge() {
+  console.log(APPLY ? '🟢 재판정 저장 모드' : '👀 재판정 미리보기 (AI 부름, DB 저장 안 함)');
+  const cols = 'id, name, steam_appid, description, solo_mode, solo_playable';
+  const all = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await onlyIds(supabase.from('games').select(cols)).eq('hidden', false).order('id').range(from, from + 999);
+    if (error) throw new Error(error.message);
+    all.push(...data);
+    if (data.length < 1000) break;
+  }
+  const games = SAMPLE ? all.slice(0, SAMPLE) : all;
+  let judged = !FRESH && fs.existsSync(REJUDGE_CACHE) ? JSON.parse(fs.readFileSync(REJUDGE_CACHE, 'utf8')) : {};
+  const todo = games.filter((g) => !judged[g.id]);
+  console.log(`대상 ${games.length}개 · 이미 판정한 것 ${games.length - todo.length}개 · 새로 판정 ${todo.length}개`);
+
+  const cache = fs.existsSync(CACHE) ? JSON.parse(fs.readFileSync(CACHE, 'utf8')).games || {} : {};
+  const items = [];
+  for (const g of todo) {
+    let steamTags = cache[g.id];
+    if (!steamTags && g.steam_appid) {
+      try { steamTags = await fetchSteamTags(g.steam_appid); } catch (e) { console.log(`   ${g.name}: 스팀 태그 못 받음 (${e.message}) — 소개 문구로만 판단`); }
+    }
+    steamTags ||= [];
+    // 스팀 태그가 있는데 멀티 관련 태그가 하나도 없으면 1인 전용 → story (AI 안 물음)
+    if (steamTags.length && !steamTags.some((t) => MULTI_TAGS.has(t.id))) judged[g.id] = { solo: 'story', reason: '멀티 태그 없음(규칙)' };
+    else items.push({ game: g, steamTags, askBarrier: false, askSolo: true });
+  }
+  const batches = Array.from({ length: Math.ceil(items.length / BATCH) }, (_, i) => items.slice(i * BATCH, i * BATCH + BATCH));
+  const inTok = batches.reduce((s, b) => s + estimateTokens(buildPrompt(b)), 0);
+  const estimate = inTok * PRICE.input + items.length * OUTPUT_TOKENS_PER_GAME * PRICE.output;
+  console.log(`AI에 물을 것 ${items.length}개 → Haiku ${batches.length}번 호출 · 예상 비용 약 $${estimate.toFixed(3)} (입력 약 ${inTok.toLocaleString()} 토큰)`);
+
+  let totalCost = 0;
+  const failed = [];
+  for (const [bi, batch] of batches.entries()) {
+    if (totalCost > MAX_COST_USD) { console.log(`💸 누적 $${totalCost.toFixed(3)} — 상한 $${MAX_COST_USD} 넘어서 멈춤`); break; }
+    const run = await runWithRetry(batch, (its) => askHaiku(buildPrompt(its)), (m) => console.log(`[${bi + 1}/${batches.length}] ${m}`));
+    for (const { batch: part, result } of run.parts) {
+      totalCost += result.cost;
+      part.forEach((it, i) => {
+        const r = result.rows.find((x) => Number(x.index) === i + 1) || {};
+        judged[it.game.id] = { solo: SOLOS.includes(r.solo) ? r.solo : null, reason: clean(r.solo_reason, 60) };
+      });
+    }
+    if (!run.ok) failed.push(`${bi + 1}번째 묶음 중 ${run.lost.length}개 (${run.lost.map((it) => it.game.name).join(', ')}): ${run.errors.at(-1)?.message}`);
+    fs.mkdirSync('scripts/.cache', { recursive: true });
+    fs.writeFileSync(REJUDGE_CACHE, JSON.stringify(judged)); // 중간에 멈춰도 다시 안 묻도록 묶음마다 저장
+  }
+  if (items.length) console.log(`AI 비용 약 $${totalCost.toFixed(4)}`);
+
+  // 바뀌는 게임 = solo_mode가 다르거나, solo_playable이 solo_mode에서 파생한 값과 다른 게임
+  const changes = [];
+  let unsure = 0;
+  for (const g of games) {
+    const j = judged[g.id];
+    if (!j) continue;
+    if (!j.solo) { unsure++; continue; }
+    const playable = j.solo !== 'none';
+    if (g.solo_mode !== j.solo || g.solo_playable !== playable) changes.push({ g, to: j.solo, playable, reason: j.reason });
+  }
+  const tally = {};
+  for (const c of changes) { const k = `${c.g.solo_mode ?? 'null'} → ${c.to}`; tally[k] = (tally[k] || 0) + 1; }
+  console.log(`\n바뀌는 게임 ${changes.length}개 / 대상 ${games.length}개 (판단 보류 ${unsure}개는 그대로)`);
+  for (const [k, n] of Object.entries(tally).sort()) console.log(`  ${k}: ${n}개`);
+  for (const c of changes) console.log(`  - ${c.g.name}: solo_mode ${c.g.solo_mode ?? 'null'}→${c.to} · solo_playable ${c.g.solo_playable}→${c.playable}${c.reason ? ` "${c.reason}"` : ''}`);
+
+  if (APPLY) {
+    let saved = 0;
+    for (const c of changes) {
+      // 읽은 뒤 다른 곳에서 바뀌었으면 건너뜀
+      let q = supabase.from('games').update({ solo_mode: c.to, solo_playable: c.playable }).eq('id', c.g.id);
+      q = c.g.solo_mode == null ? q.is('solo_mode', null) : q.eq('solo_mode', c.g.solo_mode);
+      const { data, error } = await q.select('id');
+      if (error) failed.push(`${c.g.name}: 저장 실패 (${error.message})`);
+      else if (!data.length) failed.push(`${c.g.name}: 그사이 값이 바뀌어 건너뜀`);
+      else saved++;
+    }
+    console.log(`\n✅ ${saved}개 저장`);
+  } else {
+    console.log('\n(저장 안 함 — 반영하려면 같은 명령에 --apply를 붙이세요. 위 판정은 캐시에 저장돼 다시 묻지 않음)');
+  }
+  if (failed.length) {
+    console.log(`❌ 실패 ${failed.length}개`);
+    for (const f of failed) console.log(`  - ${f}`);
+    process.exitCode = 1;
+  }
+}
+
 async function main() {
+  if (REJUDGE) return rejudge();
   console.log(DRY_AI ? `🔍 기존 게임 ${SAMPLE}개 판단 결과 미리보기 (AI 부름, DB 저장 안 함)` : SAMPLE ? `🧮 비용 어림 (예전 게임 ${SAMPLE}개로 프롬프트만 만듦, AI·DB 안 씀)` : APPLY ? '🟢 저장 모드' : '👀 미리보기 (AI 안 부름, 저장하려면 --apply)');
   const migrated = await hasMigration();
   if (!migrated) console.log('⚠️ 마이그레이션 20261013090000_new_game_tagging.sql 전 — 처리 표시(filter_ai_at) 없이 진행');
@@ -211,7 +309,7 @@ async function main() {
   // 빈 칸만 채움: 읽은 뒤 다른 단계가 채웠을 수도 있어서 칸별로 "비어 있을 때만" 조건을 붙여 씀
   const updates = (p) => [
     p.entry_barrier && ['entry_barrier', { entry_barrier: p.entry_barrier, entry_barrier_reason: p.entry_barrier_reason }],
-    p.solo_mode && ['solo_mode', { solo_mode: p.solo_mode }],
+    p.solo_mode && ['solo_mode', { solo_mode: p.solo_mode, solo_playable: p.solo_mode !== 'none' }],
   ].filter(Boolean);
   for (const it of items) {
     if ((it.askBarrier || it.askSolo) && !it.asked) continue; // AI 실패한 게임은 표시하지 않음 → 다음 실행에 다시

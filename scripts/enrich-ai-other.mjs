@@ -75,7 +75,7 @@ function clean(ai, game) {
   if (str(ai.min_spec)) u.min_spec = str(ai.min_spec);
   if (str(ai.recommended_spec)) u.recommended_spec = str(ai.recommended_spec);
   if (typeof ai.storage_gb === 'number' && ai.storage_gb > 0) u.storage_gb = ai.storage_gb;
-  if (typeof ai.solo_playable === 'boolean') u.solo_playable = ai.solo_playable;
+  if (typeof ai.solo_playable === 'boolean' && !game.solo_mode) u.solo_playable = ai.solo_playable;
   if (str(ai.recommended_players)) u.recommended_players = str(ai.recommended_players);
   if (SERVER.has(ai.server_type)) u.server_type = ai.server_type;
   if (HOST.has(ai.multiplayer_host)) u.multiplayer_host = ai.multiplayer_host;
@@ -104,7 +104,7 @@ async function main() {
 
   const { data: games, error } = await supabase
     .from('games')
-    .select('id, name, source, description, korean_support, release_date, min_spec, recommended_spec, storage_gb, solo_playable, recommended_players, server_type, multiplayer_host, has_ending, ending_note, story_length, activities, is_esports, has_local_coop, steam_categories, ai_enriched_at').eq('hidden', false)
+    .select('id, name, source, description, korean_support, release_date, min_spec, recommended_spec, storage_gb, solo_playable, solo_mode, recommended_players, server_type, multiplayer_host, has_ending, ending_note, story_length, activities, is_esports, has_local_coop, steam_categories, ai_enriched_at').eq('hidden', false)
     .is('steam_appid', null);
   if (error) return console.error('조회 실패:', error.message);
 

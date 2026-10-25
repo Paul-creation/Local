@@ -22,7 +22,7 @@ async function main() {
   const { fix = [] } = JSON.parse(fs.readFileSync(file, 'utf8'));
   const lines = [];
   for (const f of fix) {
-    let q = supabase.from('games').select(`id, name, min_players, max_players, activities, ${FLAGS.join(', ')}`).eq('name', f.name);
+    let q = supabase.from('games').select(`id, name, min_players, max_players, activities, solo_mode, ${FLAGS.join(', ')}`).eq('name', f.name);
     if (f.appid) q = q.eq('steam_appid', f.appid);
     const { data, error } = await q;
     if (error || data.length !== 1) { console.log(`❌ ${f.name}: ${error?.message || `일치하는 게임 ${data.length}개`}`); continue; }
@@ -30,7 +30,10 @@ async function main() {
     const update = {};
     if (f.min != null && g.min_players !== f.min) update.min_players = f.min;
     if (f.max !== undefined && g.max_players !== f.max) update.max_players = f.max;
-    for (const [k, v] of Object.entries(f.flags || {})) if (FLAGS.includes(k) && g[k] !== v) update[k] = v;
+    for (const [k, v] of Object.entries(f.flags || {})) {
+      if (k === 'solo_playable' && g.solo_mode) { console.log(`= ${f.name}: solo_mode(${g.solo_mode})가 있어 solo_playable은 건드리지 않음`); continue; }
+      if (FLAGS.includes(k) && g[k] !== v) update[k] = v;
+    }
     const drop = (f.drop_activities || []).filter((a) => g.activities?.includes(a));
     if (drop.length) update.activities = g.activities.filter((a) => !drop.includes(a));
     if (!Object.keys(update).length) { console.log(`= ${f.name}: 이미 ${f.min}~${f.max}`); continue; }

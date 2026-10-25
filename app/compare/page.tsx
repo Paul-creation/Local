@@ -19,6 +19,7 @@ import { playersText } from '../lib/players';
 import GameImage from '../components/GameImage';
 import HeartButton from '../components/wishlist/HeartButton';
 import { selectGames } from '../lib/visibleGames';
+import { isSoloPlayable } from '../lib/soloMode';
 import { gameName } from '../lib/gameName';
 import '../mono-tokens.css';
 import '../mono-page.css';
@@ -74,7 +75,7 @@ async function getSituationScores(games: any[], activeSituations: string[]) {
 
   const gameList = games
     .map((g, i) =>
-      `${i + 1}번. ${g.name} | 태그: ${(g.tags || []).join(', ')} | 난이도: ${g.difficulty} | 인원: ${g.min_players ?? '?'}-${g.max_players ?? '?'} | 카테고리: ${g.category} | 솔로: ${g.solo_playable}`
+      `${i + 1}번. ${g.name} | 태그: ${(g.tags || []).join(', ')} | 난이도: ${g.difficulty} | 인원: ${g.min_players ?? '?'}-${g.max_players ?? '?'} | 카테고리: ${g.category} | 솔로: ${isSoloPlayable(g)}`
     )
     .join('\n');
 
@@ -215,9 +216,9 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
       return playersText(g) || '인원 정보 확인 중';
     }},
     { label: '솔로 플레이', render: (g: any) =>
-      g.solo_playable === true && g.max_players === 1
+      isSoloPlayable(g) === true && g.max_players === 1
         ? '싱글 플레이 게임'
-        : g.solo_playable === true
+        : isSoloPlayable(g) === true
         ? '솔로 가능'
         : '멀티 필수'
     },

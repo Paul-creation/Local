@@ -144,7 +144,7 @@ const STEAM_FLAGS = ['has_dlc', 'family_sharing', 'is_early_access', 'has_worksh
 async function main() {
   const { data: games, error: loadError } = await onlyIds(supabase
     .from('games')
-    .select('id, name, steam_appid, tags, min_spec, recommended_spec, release_date, korean_support, storage_gb, achievement_count, min_players, max_players, solo_playable, review_positive_percent, review_total, lowest_price, lowest_price_date').eq('hidden', false)
+    .select('id, name, steam_appid, tags, min_spec, recommended_spec, release_date, korean_support, storage_gb, achievement_count, min_players, max_players, solo_playable, solo_mode, review_positive_percent, review_total, lowest_price, lowest_price_date').eq('hidden', false)
     .not('steam_appid', 'is', null)
     .or(EMPTY_FILTER));
   if (loadError) return console.error(`❌ 게임 목록을 못 불러옴: ${loadError.message}`);
@@ -155,7 +155,8 @@ async function main() {
     .update({ solo_playable: true })
     .eq('min_players', 1)
     .eq('max_players', 1)
-    .eq('solo_playable', false));
+    .eq('solo_playable', false)
+    .is('solo_mode', null));
   console.log('✅ 1인 게임 solo_playable 자동 수정 완료');
   console.log(`정보가 빈 스팀 게임 ${games.length}개 (약 ${Math.ceil(games.length * 2.5 / 60)}분)\n`);
 
@@ -237,7 +238,7 @@ async function main() {
     };
     // 빈 칸만 채운다 (다른 스크립트나 직접 넣은 값은 그대로)
     const update = Object.fromEntries(
-      Object.entries(found).filter(([k, v]) => v !== null && v !== undefined && game[k] == null)
+      Object.entries(found).filter(([k, v]) => v !== null && v !== undefined && game[k] == null && !(k === 'solo_playable' && game.solo_mode))
     );
     Object.assign(update, {
       has_dlc: (data.dlc?.length ?? 0) > 0,

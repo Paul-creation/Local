@@ -7,6 +7,7 @@ import { readAllPages } from '../../lib/paged';
 import { normalizeSearch, searchNames } from '../../lib/searchMatch';
 import { getOwnedAppids, getSessionUserId } from '../../lib/user';
 import { dropOwned } from '../../lib/ownedFilter';
+import { isSoloPlayable } from '../../lib/soloMode';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -40,7 +41,7 @@ function filterGames(games: any[], answers: { question: string; answer: string }
     const a = answer.toLowerCase();
 
     if (q.includes('어떻게 플레이')) {
-      if (a.includes('혼자')) filtered = filtered.filter(g => g.solo_playable !== false);
+      if (a.includes('혼자')) filtered = filtered.filter(g => isSoloPlayable(g) !== false);
       else if (a.includes('친구')) filtered = filtered.filter(g => g.max_players >= 2);
       continue;
     }
@@ -137,7 +138,7 @@ async function handlePOST(req: NextRequest) {
   // 한 번의 추천에서 AI는 질문마다 불리므로 첫 AI 호출(답 1개)만 추천 1회로 셈
   const kind = answers.length <= 1 ? 'recommend' : 'recommend-step';
 
-  const { data: allGames, error } = await readAllPages((from, to) => selectGames('id, name, display_name, search_name_ko, steam_appid, home_excluded, cover_image_url, category, tags, min_players, max_players, difficulty, is_free, solo_playable, korean_support', undefined, supabase).neq('release_status', 'coming_soon').order('id').range(from, to));
+  const { data: allGames, error } = await readAllPages((from, to) => selectGames('id, name, display_name, search_name_ko, steam_appid, home_excluded, cover_image_url, category, tags, min_players, max_players, difficulty, is_free, solo_playable, solo_mode, korean_support', undefined, supabase).neq('release_status', 'coming_soon').order('id').range(from, to));
 
   if (error || !allGames) {
     return NextResponse.json({ error: '게임 목록을 불러오지 못했어요.' }, { status: 500 });
@@ -206,7 +207,7 @@ JSON 배열로만 출력:
 
   // 다음 질문 생성
   const gameList = filtered.slice(0, 50).map((g) =>
-    `${g.name}|${(g.tags || []).slice(0, 3).join(',')}|${g.min_players ?? '?'}-${g.max_players ?? '?'}인|${g.difficulty}|무료:${g.is_free}|솔로:${g.solo_playable}|한국어:${g.korean_support}`
+    `${g.name}|${(g.tags || []).slice(0, 3).join(',')}|${g.min_players ?? '?'}-${g.max_players ?? '?'}인|${g.difficulty}|무료:${g.is_free}|솔로:${isSoloPlayable(g)}|한국어:${g.korean_support}`
   ).join('\n');
 
   const askedQuestions = answers.map((a: any) => a.question).join(', ');

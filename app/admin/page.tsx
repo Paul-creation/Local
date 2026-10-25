@@ -55,7 +55,7 @@ export default function AdminPage() {
         min_players: selected.min_players,
         max_players: selected.max_players,
         recommended_players: selected.recommended_players,
-        solo_playable: selected.solo_playable,
+        solo_mode: selected.solo_mode,
       }),
     });
     setSaving(false);
@@ -228,12 +228,13 @@ export default function AdminPage() {
             <label style={labelStyle}>솔로 플레이</label>
             <select
               style={inputStyle}
-              value={selected.solo_playable === true ? 'true' : selected.solo_playable === false ? 'false' : ''}
-              onChange={(e) => setSelected({ ...selected, solo_playable: e.target.value === 'true' })}
+              value={selected.solo_mode || ''}
+              onChange={(e) => setSelected({ ...selected, solo_mode: e.target.value || null })}
             >
               <option value="">선택</option>
-              <option value="true">혼자도 가능</option>
-              <option value="false">멀티 필수</option>
+              <option value="story">혼자 해도 충분해요</option>
+              <option value="possible">혼자도 가능</option>
+              <option value="none">멀티 전용</option>
             </select>
 
             {/* 태그 */}

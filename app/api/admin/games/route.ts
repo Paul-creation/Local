@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { isAdmin } from '../../../lib/adminAuth';
 import { badgeFor } from '../../../lib/badge.mjs';
 import { readAllPages } from '../../../lib/paged';
+import { SOLO_MODES, soloPlayableFromMode, type SoloMode } from '../../../lib/soloMode';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -10,7 +11,7 @@ const supabase = createClient(
 );
 
 // category(배지)는 직접 고치지 않고 인원·협동/대전 칸에서 계산 (app/lib/badge.mjs)
-const EDITABLE = ['tags', 'difficulty', 'min_players', 'max_players', 'recommended_players', 'solo_playable'];
+const EDITABLE = ['tags', 'difficulty', 'min_players', 'max_players', 'recommended_players'];
 const unauthorized = () => NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
 export async function GET(req: NextRequest) {
@@ -18,7 +19,7 @@ export async function GET(req: NextRequest) {
   const { data } = await readAllPages((from, to) => supabase
     .from('games')
     // 관리자 화면은 숨긴 게임(중복 정리 등)도 보여줌 — hidden·merged_into로 표시. 1,000개 넘어도 끝까지 읽는다(정렬은 이름+id로 고정)
-    .select('id, name, tags, difficulty, min_players, max_players, recommended_players, solo_playable, category, hidden, merged_into')
+    .select('id, name, tags, difficulty, min_players, max_players, recommended_players, solo_playable, solo_mode, category, hidden, merged_into')
     .order('name')
     .order('id')
     .range(from, to));
@@ -32,6 +33,12 @@ export async function PATCH(req: NextRequest) {
 
   const update: Record<string, unknown> = {};
   for (const k of EDITABLE) if (k in body) update[k] = body[k];
+  // 혼자 플레이는 solo_mode가 기준 — solo_playable은 항상 같이 써서 어긋나지 않게 한다
+  if (body.solo_mode != null) {
+    if (!SOLO_MODES.includes(body.solo_mode)) return NextResponse.json({ error: 'solo_mode 값이 잘못됨' }, { status: 400 });
+    update.solo_mode = body.solo_mode;
+    update.solo_playable = soloPlayableFromMode(body.solo_mode as SoloMode);
+  }
 
   const { error } = await supabase.from('games').update(update).eq('id', body.id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
