@@ -1458,14 +1458,17 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
 .cm-opinion-form { margin-bottom: 4px; }
 
 /* 공통 푸터 (layout) */
-.site-footer { max-width: none; margin: 56px 0 0; padding: 48px 16px 44px; text-align: center; color: var(--text-faint); font-size: var(--fs-sub); line-height: 2; background: var(--footer-bg); }
-.site-footer-links { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; margin-bottom: 12px; font-size: var(--fs-sub); color: var(--text-faint); }
-.site-footer a { color: var(--text-faint); }
-.site-footer a:hover { color: var(--text); }
+.site-footer { max-width: none; margin: 56px 0 0; padding: 48px 16px 44px; text-align: center; font-size: 12px; font-weight: 400; line-height: 1.6; color: var(--mn-fg); text-shadow: none; background: var(--mn-bg); border-top: 1px solid var(--mn-line); }
+.site-footer-links { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; margin-bottom: 24px; font-size: 13px; font-weight: 500; }
+.site-footer a { color: var(--mn-fg); text-shadow: var(--mn-glow-text); }
+.site-footer a:hover { box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.4); }
 .site-footer-links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; } /* 터치 영역 44px */
-.site-footer-links a + a { border-left: 1px solid var(--card-line); }
+.site-footer-links a:first-child { font-size: 14px; font-weight: 800; letter-spacing: -0.03em; text-shadow: var(--mn-glow-h2); }
+.site-footer-links a + a { border-left: 1px solid var(--mn-line); }
 .site-footer p { max-width: 640px; margin-inline: auto; word-break: keep-all; }
-.site-footer-copy { margin-top: 12px; }
+.site-footer-copy { margin-top: 8px; }
+/* 휴대폰: 링크가 여러 줄로 감길 때 줄 처음·끝에 구분선이 혼자 남지 않게 구분선을 없애고 간격으로만 나눈다 */
+@media (max-width: 767px) { .site-footer-links a + a { border-left: 0; } .site-footer-links a { padding: 0 12px; } }
 
 /* 개인정보처리방침·이용약관 */
 .legal p { font-size: var(--fs-l); line-height: 1.7; color: var(--text); margin-bottom: 10px; }

@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import { SITE_NAME, OPERATOR_NAME } from '../lib/site';
 import { FOOTER_GUIDE_LABEL } from '../lib/guideCopy';
+import '../mono-tokens.css';
 
 // 모든 페이지 하단 공통 푸터 — 사이트 이름·약관 링크·비공식 고지
 export default function SiteFooter() {
   return (
-    <footer className="site-footer">
+    <footer className="site-footer mn">
       <nav className="site-footer-links" aria-label="사이트 정보">
         <Link href="/">{SITE_NAME}</Link>
         <Link href="/this-week">이번 주 할인 마감</Link>
