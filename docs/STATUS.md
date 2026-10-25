@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-25 (main bde7001)
+기준: 2026-10-25 (main 6e1bd20)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/25: fix/layout-shift-pages — /my-pc·/wishlist 첫 로딩 CLS 제거. 원인: localStorage를 읽기 전 본문이 짧아 푸터가 위에 붙었다가 읽은 뒤 아래로 밀림(푸터 하나만 이동). 두 페이지 main에 pg-fill 클래스, mono-page.css에서 min-height calc(100svh - 60px)로 읽기 전에도 푸터가 첫 화면 밖에 있게 함(globals.css·레이아웃·푸터·Loader 무변경). CLS(1.5Mbps/40ms·4초 합산·3회 평균): /my-pc 1440 0.126→0.0001·375 0.370→0, /wishlist 1440 0.136→0.0001·375 0.357→0. 내 PC 등록·찜 있는 상태는 본문이 화면보다 짧으면 푸터 위에 빈 여백(CLS 미측정). build·test 443개 통과
 - 10/25: fix/layout-shift-home — 홈 375px 첫 로딩 CLS 0.186→0.003(1440px 0.011→0.005, 1.5Mbps/40ms·4초·3회 평균). 원인은 하이드레이션 차이가 아니라 2MB Pretendard가 늦게 와 시스템 한글 글꼴에서 바뀔 때 h1·서브카피 줄바꿈이 달라지는 것. globals.css에 한글 대체 글꼴 'Pretendard Hangul Fallback'(시스템 한글 글꼴을 size-adjust 87.5%로 — Pretendard 한글 폭 0.875em) 추가하고 mono-fonts.ts fallback 맨 앞에 둠(본문 글꼴 변수도 같이 씀). .mn-kbd가 inline이라 min-width 54px가 안 먹던 것을 inline-block으로(⌘K 36.7·Ctrl K 51.0px). 한글 폭은 WenQuanYi(1em)만 실측, Noto CJK·Malgun·Apple SD Gothic Neo는 1em 근처로 가정. /my-pc·/wishlist CLS(푸터 밀림)는 다른 브랜치 작업. build·test 443개 통과
 - 10/25: design/curator-page-buttons — /c/[handle] 보기 전환 탭(게시물별·게임 전체)을 세그먼트 컨트롤 하나로(통 #111111·테두리 #262626·radius 10, 탭 높이 32·radius 7, 선택 = 흰 배경 #EDEDED + 검정 글씨, hover rgba(255,255,255,.06), 탭 개별 테두리 없음, 구분선과 간격 10px). "인스타그램에서 보기" 버튼을 인스타 그라디언트 + 분홍 빛 + stroke 아이콘으로(토큰 --mn-instagram·--mn-instagram-glow, mono-tokens.css), 링크 복사는 보조 스타일 그대로, 두 버튼 높이 36px. 큐레이터 페이지는 /c/[handle] 하나라 모든 큐레이터가 같이 바뀜. build·test 443개 통과
 - 10/25: fix/layout-shift — 첫 로딩 때 글자·요소 밀림 제거 + 글꼴 전부 자체 호스팅. 글꼴: next/font/google 전부 제거(구글 폰트 응답 간헐 실패로 빌드가 'Module not found … font/google'로 깨지던 문제 해결, Vercel cc238d7 실패도 같은 원인으로 추정), Geist는 npm 패키지 geist(GeistSans, 크기 맞춘 대체 글꼴 포함), 한글은 Pretendard Variable woff2를 next/font/local로(preload·display swap·adjustFontFallback Arial, 2MB 한 파일, 변수 --font-pretendard), .mn 글꼴 순서 Geist → Pretendard, 본문은 Pretendard 그대로, Noto Sans KR 제거. 자리 고정: 헤더 로그인·아바타 버튼 같은 min-width(154px, 480px 이하 51px), 커맨드바 "내 PC로 돌아가는 게임" 칩(사양은 브라우저 localStorage에만 있어 서버는 모름 → 읽기 전 같은 글자의 보이지 않는 칩), 단축키 표시 고정 폭 상자 + 숨김은 CSS 미디어쿼리, 히어로 표지 벽 전체 fade-in(이미지 80% 로드 또는 600ms 뒤 400ms). 옛 히어로 CSS(--hero-bg·--hero-h·body:has(.home-hero.is-home) 등) 삭제, design/compare-mono 정리. CLS(1.5Mbps급 제한, 3회 평균): 홈 1440 0.005→0.010·375 0.193→0.170, /compare 1440 0.000→0.001, 상세 1440 0.145→0.011. build 두 번 연속·test 통과
@@ -112,6 +113,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- fix/layout-shift-pages 머지 뒤: 프로덕션에서 /my-pc·/wishlist를 강력 새로고침(1440·375px)해 푸터가 위로 붙었다 내려가지 않는지, 내 PC 등록·찜 있는 상태에서 푸터 위 여백이 어색하지 않은지
 - fix/layout-shift-home 머지 뒤: 프로덕션 / 375px에서 강력 새로고침 때 h1·서브카피 아래 커맨드바·숫자가 안 밀리는지, 1440px 검색창 오른쪽 Ctrl K 상자 폭(미확인) / 실제 기기(iOS·Android·Windows) 한글 대체 글꼴 폭은 미측정 / Pretendard 2MB dynamic subset 전환 여부 결정 필요
 - fix/layout-shift 머지 뒤: 프로덕션에서 강력 새로고침(홈·상세·/compare)해 글꼴 교체 때 헤더 메뉴·칩 줄·설명 문구가 밀리는지(미확인, 모바일 홈은 2MB Pretendard가 늦게 오면 설명 문구 줄바꿈이 한 번 바뀔 수 있음 — 남으면 display optional 또는 작은 subset 검토) / 로그인 상태에서 아바타 버튼으로 바뀔 때 헤더가 안 밀리는지(미확인) / Vercel 빌드가 폰트 때문에 다시 실패하지 않는지 확인
 - fix/navy-flash-filter-overlay 머지 뒤: 프로덕션에서 /compare·/wishlist 등으로 이동할 때 남색 번쩍임이 사라졌는지, 홈 "필터" 패널(데스크톱 떠 있는 패널·모바일 시트)과 표지 벽 확인(미확인) / 관리자 화면(/admin)은 남색 전제 카드 색(#151A24 등)이 순검정 배경 위에 있어 톤이 다를 수 있음
