@@ -57,7 +57,7 @@ export default function GameCard({ game, badge, tree = null, isTop10 = false, on
   const pct: number | null = game.review_percent || null;
   const summary: string | null = game.review_summary ?? null;
   const trendLabel = TREND_LABEL[game.trend_badge as string];
-  const topBadge = badge ?? (trendLabel ? <span className="gc-trend"><span>{trendLabel}</span></span> : null);
+  const topBadge = badge ?? (trendLabel ? <span className="gc-trend"><span className={trendLabel === '신작' ? 'is-new' : 'is-trend'}>{trendLabel}</span></span> : null);
   const streamers: (string | StreamerRef)[] = streamersProp ?? (Array.isArray(game.streamers) ? game.streamers : []);
   const isPicked = !!compare?.selected;
   const body = (

@@ -11,11 +11,12 @@
   /* 포인트 색은 할인 배지 하나만 */
   --mn-sale-bg: #4ADE80;
   --mn-sale-fg: #052E16;
-  /* 뜨는 중·신작 배지 */
-  --mn-trend-bg: #EDEDED;
-  --mn-trend-fg: #0A0A0A;
-  --mn-new-bg: #A1A1A1;
-  --mn-new-fg: #0A0A0A;
+  /* 뜨는 중·신작 배지 — 새 색 없이 사이트 원래 값: 스팀블루(globals.css --accent, 글씨는 --accent-ink)와 산호 빨강(--down·--sale) */
+  --mn-badge-trend: #66C0F4;
+  --mn-badge-trend-fg: #0B0E14;
+  --mn-badge-trend-glow: 0 0 0 1px rgba(102, 192, 244, .4), 0 0 12px rgba(102, 192, 244, .4);
+  --mn-badge-new: #FF7A70;
+  --mn-badge-new-fg: #0B0E14;
 
   /* 글꼴 — Geist + Noto Sans KR (변수는 app/mono-fonts.ts가 html에 붙인다) */
   --mn-font: var(--font-geist, Geist), var(--font-noto-kr, 'Noto Sans KR'), Pretendard, system-ui, sans-serif;
@@ -74,3 +75,7 @@
 .mn h1 { text-shadow: var(--mn-glow-h1); }
 .mn h2 { text-shadow: var(--mn-glow-h2); }
 .mn button, .mn input, .mn kbd, .mn .mn-badge, .mn .mn-sale { text-shadow: none; }
+
+/* 뜨는 중·신작 배지 — 홈 세로 카드(.mn-badge)와 공용 게임 카드(.gc-trend, 상세 비슷한 게임 등) 같은 규칙 */
+.mn .mn-badge.is-trend, .mn .gc-trend > span.is-trend { color: var(--mn-badge-trend-fg); background: var(--mn-badge-trend); box-shadow: var(--mn-badge-trend-glow); text-shadow: none; }
+.mn .mn-badge.is-new, .mn .gc-trend > span.is-new { color: var(--mn-badge-new-fg); background: var(--mn-badge-new); box-shadow: none; text-shadow: none; }
