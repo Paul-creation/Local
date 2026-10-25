@@ -40,12 +40,6 @@
   --up: #4ADE80;              /* 순위 상승·활발히 업데이트 중 */
   --down: #FF7A70;
 
-  /* 헤더 */
-  --header-bg: #1b2838;      /* 히어로 그라데이션 시작색과 같은 값 */
-  --header-text: #E8EAED;
-  --header-text-2: #C3C9D2;
-  --header-hover: #1C2331;
-
   /* 이미지 위 글자·어둡게 깔기  */
   --on-image: #ffffff;
   --scrim: rgba(0, 0, 0, 0.6);
@@ -96,9 +90,6 @@
   --sub-size: 14px;
   --footer-bg: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.32));
 
-  /* 로딩 시머 */
-  --skel-base: #151A24;
-  --skel-shine: rgba(255, 255, 255, 0.06);
 
   /* 그림자 — 다크에서는 거의 쓰지 않음 */
   --shadow-sm: none;
@@ -186,7 +177,7 @@ img { display: block; }
   z-index: 100;
   margin-bottom: 24px;
 }
-/* 모노 헤더 — 토큰은 mono-tokens.css(.mn). 이 구간은 --header-* 대신 --mn-*를 직접 쓴다 */
+/* 모노 헤더 — 토큰은 mono-tokens.css(.mn). 이 구간은 --mn-* 토큰을 직접 쓴다 */
 .site-header.mn { background: rgba(10, 10, 10, 0.8); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-bottom: 1px solid var(--mn-line); }
 
 .site-header-inner {
@@ -414,20 +405,6 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
 .lift { transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease; }
 .lift:hover { transform: translateY(-2px); border-color: var(--border); }
 @media (prefers-reduced-motion: reduce) { .lift, .lift:hover { transition: none; transform: none; } }
-
-/* 로딩 시머 — 왼쪽에서 오른쪽으로 옅은 빛이 지나감 */
-.skel, .shimmer {
-  position: relative; overflow: hidden;
-  background: var(--skel-base); border-radius: var(--radius-sm);
-}
-.skel::after, .shimmer::after {
-  content: ''; position: absolute; inset: 0; transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, var(--skel-shine), transparent);
-  animation: shimmer 1.4s ease-in-out infinite;
-}
-@keyframes shimmer { to { transform: translateX(100%); } }
-@media (prefers-reduced-motion: reduce) { .skel::after, .shimmer::after { animation: none; } }
-
 
 /* ============================================================
    SECTION HEADERS
@@ -1681,9 +1658,6 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
 .people-more:hover { text-decoration: underline; }
 .people-links { display: flex; flex-wrap: wrap; align-items: center; gap: 0 24px; }
 .people-chips { margin-bottom: 44px; }
-/* 개인 추천 받는 중 빈 틀 — 200ms 안에 끝나면 보이지 않음 */
-.personal-skel { opacity: 0; animation: lib-skel-in 0s linear 200ms forwards; }
-.personal-skel-card { flex: 1; height: 390px; background: var(--card); border-radius: var(--radius-card); }
 .people-empty-box { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 12px; }
 .people-empty-box .people-empty { margin: 0; }
 .people-empty { margin: 0 0 4px; font-size: var(--fs-m); color: var(--text-muted); }
@@ -3046,9 +3020,6 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* 링�
 .lib-state { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; padding: 24px; margin-top: 8px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-card); color: var(--text-2); font-size: var(--fs-l); line-height: 1.6; }
 .lib-state p { margin: 0; }
 .lib-more { margin-top: 16px; }
-/* 로딩 틀 — 정지된 틀만, 200ms 안에 끝나면 보이지 않게 */
-.lib-skel { height: 320px; margin-top: 8px; background: var(--card); border-radius: var(--radius-card); opacity: 0; animation: lib-skel-in 0s linear 200ms forwards; }
-@keyframes lib-skel-in { to { opacity: 1; } }
 .detail-card-title .activity-info { margin-left: 4px; vertical-align: middle; font-size: var(--fs-s); font-weight: 400; }
 
 /* 인스타 큐레이터 — 상세 "이 게임을 소개한 계정", 계정 페이지(/c/[handle]) */

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import ResultCard from '../search/ResultCard';
+import PartyLoader from '../status/PartyLoader';
 import PeopleProvider, { usePeople } from '../home/PeopleContext';
 import { peopleLabel } from '../home/PeopleSelect';
 import { useOwned } from '../owned/useOwned';
@@ -46,7 +47,7 @@ function Library() {
     </>
   );
 
-  if (!owned.ready) return <>{head}<div className="lib-skel" aria-hidden="true" /></>;
+  if (!owned.ready) return <>{head}<PartyLoader /></>;
   if (owned.visibility === null) {
     return (
       <>{head}
@@ -81,7 +82,7 @@ function Library() {
         <button type="button" className="tab" aria-pressed={tab === 'friends'} onClick={() => setTab('friends')}>친구랑 할 게임</button>
         <button type="button" className="tab" aria-pressed={tab === 'taste'} onClick={() => setTab('taste')}>취향 비슷한 게임</button>
       </div>
-      {!index ? <div className="lib-skel" aria-hidden="true" /> : tab === 'friends' ? <FriendsTab games={ownedGames} /> : <TasteTab ownedGames={ownedGames} index={index} ownedCount={owned.count} />}
+      {!index ? <PartyLoader /> : tab === 'friends' ? <FriendsTab games={ownedGames} /> : <TasteTab ownedGames={ownedGames} index={index} ownedCount={owned.count} />}
     </>
   );
 }
@@ -150,7 +151,7 @@ function TasteTab({ ownedGames, index, ownedCount }: { ownedGames: any[]; index:
 
   if (!enough) return <div className="lib-state"><p>게임이 더 쌓이면 취향 추천이 열려요. (보유 게임 {MIN_OWNED_FOR_TASTE}개부터, 지금 {ownedCount}개)</p></div>;
   if (error) return <div className="lib-state"><p>취향 정보를 불러오지 못했어요.</p><button type="button" className="btn btn-outline" onClick={retry}>다시 시도</button></div>;
-  if (!ranked) return <div className="lib-skel" aria-hidden="true" />;
+  if (!ranked) return <PartyLoader />;
   if (ranked.length === 0) return <div className="lib-state"><p>보유 게임과 겹치는 취향 정보가 아직 부족해요.</p></div>;
   return (
     <section aria-label="취향 비슷한 게임">

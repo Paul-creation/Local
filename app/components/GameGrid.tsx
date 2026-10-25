@@ -4,7 +4,6 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { useGameFilters } from '../lib/useGameFilters';
 import { useGameIndex } from '../lib/useGameIndex';
 import MainHero from './home/mn/MainHero';
-import { mnFontClass } from './home/mn/fonts';
 import type { HomeStats } from '../lib/homeMain';
 import SearchResults from './search/SearchResults';
 import PartyLoader from './status/PartyLoader';
@@ -39,7 +38,7 @@ export default function GameGrid({ event, sections, top10Ids = [], peopleReady =
   return (
     <PeopleProvider filters={filters} recsReady={peopleReady}>
       {/* 홈 화면(결과 없을 때)만 모노 + 흰색 네온 루트(.mn). 같은 div의 클래스만 바뀌어서 입력 중에도 검색창이 그대로 유지된다 */}
-      <div className={showHome ? `mn mn-page ${mnFontClass}` : undefined}>
+      <div className={showHome ? 'mn mn-page' : undefined}>
         {/* 이벤트 라벨 → 제목 → 서브카피 → 커맨드바(검색·AI 추천·인원 탭·칩) → 숫자 (결과 화면에서는 검색창 줄만) */}
         <MainHero games={index.games || []} filters={filters} showHome={showHome} sidebar={sidebar} event={event} covers={heroCovers} stats={stats} />
 

@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import PosterCard, { posterBadge } from './mn/PosterCard';
 import { useWishlist } from '../wishlist/useWishlist';
 import { useMyPc } from '../pcspec/useMyPc';
-import { useOwned, hasLoggedInCookie } from '../owned/useOwned';
+import { useOwned } from '../owned/useOwned';
 import { useGameIndex } from '../../lib/useGameIndex';
 import { useTaste } from '../../lib/useTaste';
 import { supabase } from '../../lib/supabase';
@@ -33,9 +33,6 @@ export default function PersonalRecs({ homeExcluded }: { homeExcluded: string[] 
   const { pc, ready: pcReady } = useMyPc();
   const owned = useOwned();
   const { games: index } = useGameIndex();
-
-  // 로그인 표시 쿠키는 브라우저에서만 읽는다 — 서버 첫 화면과 같게 hydration 뒤에 확인
-  const loggedIn = useSyncExternalStore(() => () => {}, hasLoggedInCookie, () => false);
 
   const tasteWanted = owned.ready && (owned.visibility === 'public' || owned.visibility === 'private' || owned.visibility === 'unknown') && owned.count >= MIN_OWNED_FOR_TASTE;
   const { rows: tasteRows, error: tasteError } = useTaste(tasteWanted);
@@ -95,16 +92,8 @@ export default function PersonalRecs({ homeExcluded }: { homeExcluded: string[] 
   const rowRef = useRef<HTMLDivElement>(null);
   useEffect(() => { rowRef.current?.scrollTo({ left: 0, behavior: 'instant' }); }, [shownKey]);
 
-  // 받는 중에는 정지된 빈 틀 (200ms 안에 끝나면 보이지 않음). 로그인하지 않았고 찜도 없으면 틀 없이 숨김
-  const loading = (loggedIn && !owned.ready) || (tasteMode && (!tasteRanked || !index)) || (wishMode && (!index || !scored || scored.key !== seedKey));
-  if (shown.length === 0) {
-    if (!loading) return null;
-    return (
-      <div className="mn-sec mn-skel" aria-hidden="true">
-        <div className="mn-row">{[0, 1, 2, 3].map((i) => <div key={i} className="mn-card-skel" />)}</div>
-      </div>
-    );
-  }
+  // 확인·받는 중에는 아무것도 그리지 않고, 추천이 도착하면 그때 섹션을 그린다 (로그인하지 않았고 찜도 없으면 처음부터 안 그림)
+  if (shown.length === 0) return null;
   const title = tasteMode ? '취향에 맞는 게임' : '찜한 게임과 비슷한 게임';
   return (
     <section className="mn-sec" aria-labelledby="personal-recs-title">

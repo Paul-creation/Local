@@ -72,8 +72,6 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
 .mn-card-meta, .mn-card-rating { font-size: 13px; font-weight: 500; line-height: 1.4; }
 .mn-card-price { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; margin-top: 2px; font-size: 15px; font-weight: 800; }
 .mn-sale { padding: 2px 7px; font-size: 13px; font-weight: 800; color: var(--mn-sale-fg); background: var(--mn-sale-bg); border-radius: 6px; text-shadow: none; }
-.mn-skel { opacity: 0; animation: lib-skel-in 0s linear 200ms forwards; }
-.mn-card-skel { flex: 0 0 184px; height: 320px; background: var(--mn-surface); border-radius: 10px; }
 
 /* ---------- 3단 리스트 ---------- */
 .mn-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 40px 32px; margin-bottom: 56px; }
