@@ -21,11 +21,14 @@ export default function CmdRow({ filters }: { filters: GameFilters }) {
   return (
     <div className="mn-cmd-row">
       <div className="mn-chips">
-        {ready && (pc ? (
+        {/* 사양은 이 브라우저(localStorage)에만 있어서 서버는 토글인지 등록 링크인지 모른다 — 읽기 전에는 같은 글자의 보이지 않는 칩으로 자리를 잡아 칩 줄이 다시 정렬되지 않게 */}
+        {!ready ? (
+          <span className="mn-chip" style={{ visibility: 'hidden' }} aria-hidden="true">내 PC로 돌아가는 게임</span>
+        ) : pc ? (
           <button type="button" className={`mn-chip${myPcOn ? ' on' : ''}`} aria-pressed={myPcOn} onClick={() => setMyPcOn(!myPcOn)}>내 PC로 돌아가는 게임</button>
         ) : (
           <MyPcLink className="mn-chip">내 PC로 돌아가는 게임</MyPcLink>
-        ))}
+        )}
         <button type="button" className="mn-chip" onClick={() => show(() => filters.setPriceRange(FREE_ONLY))}>무료</button>
         <button type="button" className="mn-chip" onClick={() => show(() => filters.setDemoOnly(true))}>출시 전 데모</button>
         <button type="button" className="mn-chip" onClick={() => show(() => filters.setSaleOnly(true))}>지금 할인 중</button>

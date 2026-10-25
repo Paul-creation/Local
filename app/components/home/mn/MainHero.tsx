@@ -1,7 +1,7 @@
 // 담당: Paul(메인 배너·디자인)
 'use client';
 
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import SearchPanel from '../../search/SearchPanel';
 import CmdRow from './CmdRow';
 import ShortcutHint from './ShortcutHint';
@@ -32,11 +32,28 @@ export default function MainHero({ games, filters, showHome, sidebar = false, ev
     return () => window.removeEventListener('keydown', onKey);
   }, [showHome]);
 
+  // 표지 벽 — 하나씩 툭툭 나타나지 않게 전체를 투명에서 시작해, 이미지 대부분이 받아지면(또는 600ms 뒤) 400ms에 걸쳐 나타난다 (absolute 배경이라 레이아웃 영향 없음)
+  const bgRef = useRef<HTMLDivElement>(null);
+  const [bgReady, setBgReady] = useState(false);
+  useEffect(() => {
+    const el = bgRef.current;
+    if (!el) return;
+    const imgs = [...el.querySelectorAll('img')];
+    const need = Math.ceil(imgs.length * 0.8);
+    let done = false;
+    const show = () => { if (!done) { done = true; setBgReady(true); } };
+    const check = () => { if (imgs.filter((i) => i.complete).length >= need) show(); };
+    imgs.forEach((i) => i.addEventListener('load', check));
+    check();
+    const t = window.setTimeout(show, 600);
+    return () => { window.clearTimeout(t); imgs.forEach((i) => i.removeEventListener('load', check)); };
+  }, [covers.length, showHome]);
+
   const shownStats = STATS.filter((s) => stats[s.key] != null);
   return (
     <div className={showHome ? 'mn-hero' : 'home-hero'}>
       {showHome && covers.length >= 12 && (
-        <div className="home-only mn-hero-bg" aria-hidden="true">
+        <div ref={bgRef} className={`home-only mn-hero-bg${bgReady ? ' is-ready' : ''}`} aria-hidden="true">
           {covers.map((src, i) => <img key={`${i}-${src}`} src={src} alt="" loading="lazy" decoding="async" fetchPriority="low" />)}
         </div>
       )}

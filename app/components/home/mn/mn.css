@@ -12,7 +12,9 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
 /* 세로 간격: 기간 한정 20 → h1 20 → 설명 36 → 커맨드바 48 → 숫자. 위아래 여백 데스크톱 96 / 모바일 56 */
 .mn-hero { position: relative; isolation: isolate; padding: 96px 0; text-align: center; text-shadow: var(--mn-glow-text); }
 /* 표지 벽 — 타일은 폭 약 160px(모바일 96px)·2:3 고정이라 히어로가 높아져도 확대되지 않는다. 남는 높이는 그라데이션으로 가려지고 넘치는 행은 잘린다 */
-.mn-hero-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); align-content: start; gap: 4px; opacity: 0.22; pointer-events: none; }
+.mn-hero-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); align-content: start; gap: 4px; opacity: 0; transition: opacity .4s ease; pointer-events: none; }
+.mn-hero-bg.is-ready { opacity: 0.22; }
+@media (prefers-reduced-motion: reduce) { .mn-hero-bg { transition: none; } }
 .mn-hero-bg img { display: block; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; }
 /* 위는 그대로, 커맨드바 높이쯤부터 #0A0A0A로 진해져서 숫자 아래에서는 완전히 배경색 */
 .mn-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to bottom, transparent 0, transparent 50%, var(--mn-bg) 90%); pointer-events: none; }
@@ -34,7 +36,7 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
 .mn-search-icon { display: inline-flex; flex-shrink: 0; color: var(--mn-fg); }
 .mn .mn-cmd .filter-toggle { color: var(--mn-fg); border-radius: 8px; }
 .mn .mn-cmd .filter-toggle:hover { background: var(--mn-bg); }
-.mn-kbd { flex-shrink: 0; padding: 3px 8px; font: inherit; font-size: 12px; font-weight: 700; color: var(--mn-fg); background: var(--mn-bg); border: 1px solid var(--mn-line); border-radius: 6px; }
+.mn-kbd { flex-shrink: 0; min-width: 54px; box-sizing: border-box; text-align: center; padding: 3px 8px; font: inherit; font-size: 12px; font-weight: 700; color: var(--mn-fg); background: var(--mn-bg); border: 1px solid var(--mn-line); border-radius: 6px; }
 .mn .mn-cmd .search-actions { flex-shrink: 0; }
 .mn .mn-cmd .ai-trigger-clean { height: 44px; gap: 8px; padding: 0 18px; border: 0; border-radius: 10px; background: var(--mn-fg); color: var(--mn-fg-inv); font-family: inherit; font-size: 15px; font-weight: 800; letter-spacing: var(--mn-ls); box-shadow: var(--mn-glow-primary); cursor: pointer; transform: none; }
 .mn .mn-cmd .ai-trigger-clean:hover { background: var(--mn-fg); transform: none; }
@@ -170,7 +172,6 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
 @media (max-width: 720px) {
   .mn-wrap { padding-inline: 16px; }
   .mn-hero { padding: 56px 0; }
-  .mn-kbd { display: none; }
   .mn-sub { margin-bottom: 40px; }
   .mn .mn-cmd .search-row { padding-left: 12px; }
   .mn .mn-cmd .search-bar-clean input { font-size: 16px; }
@@ -186,3 +187,6 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
   .filter-scrim { display: block; position: fixed; inset: 0; z-index: 89; background: rgba(0, 0, 0, .55); }
   .mn-cmd .filter-wrap.is-float { position: fixed; top: auto; left: 0; right: 0; bottom: 0; z-index: 90; max-height: 85vh; border-radius: 16px 16px 0 0; border-bottom: 0; }
 }
+
+/* 단축키 표시는 터치 기기·768px 미만에서 숨김 (CSS라 마운트 전후 차이 없음) */
+@media (max-width: 767px), (pointer: coarse), (hover: none) { .mn-kbd { display: none; } }
