@@ -49,7 +49,7 @@ export default function MainHero({ games, filters, showHome, sidebar = false, ev
           </div>
         )}
         <div className={showHome ? 'mn-cmd' : 'home-search'}>
-          <SearchPanel games={games} filters={filters} sidebar={sidebar} shortPlaceholder={showHome ? '게임·태그 검색' : undefined} lead={showHome ? <span className="mn-search-icon"><SearchIcon /></span> : undefined} hint={showHome ? <ShortcutHint /> : undefined} aiIcon={showHome ? <SparkIcon /> : undefined} />
+          <SearchPanel games={games} filters={filters} sidebar={sidebar} floating={showHome} shortPlaceholder={showHome ? '게임·태그 검색' : undefined} lead={showHome ? <span className="mn-search-icon"><SearchIcon /></span> : undefined} hint={showHome ? <ShortcutHint /> : undefined} aiIcon={showHome ? <SparkIcon /> : undefined} />
           {showHome && <div className="home-only"><CmdRow filters={filters} /></div>}
         </div>
         {showHome && shownStats.length > 0 && (

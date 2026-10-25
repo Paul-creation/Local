@@ -11,9 +11,9 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
 /* ---------- 히어로 (전부 가운데 정렬, 글씨 네온은 히어로 안에만) ---------- */
 /* 세로 간격: 기간 한정 20 → h1 20 → 설명 36 → 커맨드바 48 → 숫자. 위아래 여백 데스크톱 96 / 모바일 56 */
 .mn-hero { position: relative; isolation: isolate; padding: 96px 0; text-align: center; text-shadow: var(--mn-glow-text); }
-/* 표지 벽 — 히어로 전체 높이에 깔리게 행이 높이를 나눠 갖는다 (24장 = 8열 × 3행, 모바일 12장 = 4열 × 3행) */
-.mn-hero-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 4px; opacity: 0.22; pointer-events: none; }
-.mn-hero-bg img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* 표지 벽 — 타일은 폭 약 160px(모바일 96px)·2:3 고정이라 히어로가 높아져도 확대되지 않는다. 남는 높이는 그라데이션으로 가려지고 넘치는 행은 잘린다 */
+.mn-hero-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); align-content: start; gap: 4px; opacity: 0.22; pointer-events: none; }
+.mn-hero-bg img { display: block; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; }
 /* 위는 그대로, 커맨드바 높이쯤부터 #0A0A0A로 진해져서 숫자 아래에서는 완전히 배경색 */
 .mn-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to bottom, transparent 0, transparent 50%, var(--mn-bg) 90%); pointer-events: none; }
 .mn .hero-label { justify-content: center; margin: 0 0 20px; font-size: 14px; font-weight: 600; color: var(--mn-fg); }
@@ -147,7 +147,7 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
 .mn-card:hover .mn-poster { border-color: rgba(255, 255, 255, .5); box-shadow: 0 0 16px rgba(255, 255, 255, .12); }
 
 @media (max-width: 767px) {
-  .mn-hero-bg { grid-template-columns: repeat(4, 1fr); }
+  .mn-hero-bg { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
   .mn-hero-bg img:nth-child(n + 13) { display: none; }
   .mn-sub { font-size: 16px; text-wrap: balance; }
   .mn-sub br { display: none; }
@@ -176,4 +176,13 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
   .mn .mn-cmd .search-bar-clean input { font-size: 16px; }
   .mn .mn-cmd .ai-trigger-clean { padding: 0 14px; }
   .mn-stats { gap: 16px 32px; }
+}
+
+/* ---------- 홈 필터 패널 — 커맨드바 바로 아래(8px)에 뜨는 패널. 히어로 높이를 늘리지 않는다 ---------- */
+.mn-cmd .filter-wrap.is-float { position: absolute; top: calc(100% + 8px); left: 0; right: 0; z-index: 40; max-height: min(70vh, 640px); overflow-y: auto; margin: 0; background: var(--mn-surface); border: 1px solid var(--mn-line); border-radius: 14px; box-shadow: 0 16px 48px rgba(0, 0, 0, .6); outline: none; overscroll-behavior: contain; }
+.mn-cmd .filter-wrap.is-float .filter-panel { background: transparent; border: 0; border-radius: 0; }
+.filter-scrim { display: none; }
+@media (max-width: 767px) {
+  .filter-scrim { display: block; position: fixed; inset: 0; z-index: 89; background: rgba(0, 0, 0, .55); }
+  .mn-cmd .filter-wrap.is-float { position: fixed; top: auto; left: 0; right: 0; bottom: 0; z-index: 90; max-height: 85vh; border-radius: 16px 16px 0 0; border-bottom: 0; }
 }

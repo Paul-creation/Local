@@ -8,7 +8,7 @@
   color-scheme: dark;
 
   /* 면 — 선 대신 밝기 차이로 구분 */
-  --bg: #0b0e13;             /* 히어로 그라데이션 끝색과 같은 값 — 이음새 없이 이어짐 */
+  --bg: #0A0A0A;             /* 사이트 기본 배경 — 모노 디자인과 같은 검정 (페이지 이동 중 남색이 번쩍이지 않게) */
   --card: #151A24;
   --card-hover: #1C2331;
   --inset: #10141C;          /* 카드 안의 칸 */
@@ -137,6 +137,7 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+html, body { background: #0A0A0A; }
 body {
   background: var(--bg);
   color: var(--text);

@@ -11,7 +11,7 @@ import ThemeKeyCleanup from "./components/ThemeKeyCleanup";
 import NavTracker from "./components/NavTracker";
 
 // 다크 고정 — <meta name="color-scheme" content="dark">
-export const viewport: Viewport = { colorScheme: 'dark' };
+export const viewport: Viewport = { colorScheme: 'dark', themeColor: '#0A0A0A' };
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

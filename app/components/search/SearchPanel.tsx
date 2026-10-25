@@ -4,6 +4,7 @@
 import dynamic from 'next/dynamic';
 import AIRecommend from '../AIRecommend';
 import SearchBox from './SearchBox';
+import FilterFloat from './FilterFloat';
 import type { ReactNode } from 'react';
 import type { GameFilters } from '../../lib/useGameFilters';
 
@@ -16,8 +17,8 @@ export const FilterPanel = dynamic(loadFilterPanel, {
 
 // 검색창 + 필터 버튼 + AI 추천. 필터 본문은 FilterPanel
 // sidebar: 데스크톱 결과 화면 — 필터가 왼쪽 칸에 늘 펼쳐져 있으므로 여기서는 버튼·펼침을 숨김 (GameGrid)
-// shortPlaceholder: 휴대폰 폭에서 검색창 안내 글자 / lead·hint·aiIcon: 메인 리디자인 커맨드바(components/home/mn)가 검색 아이콘·⌘K 표시·AI 추천 아이콘을 얹을 때만 넘긴다
-export default function SearchPanel({ games, filters, sidebar = false, lead, hint, aiIcon, shortPlaceholder }: { games: any[], filters: GameFilters, sidebar?: boolean, lead?: ReactNode, hint?: ReactNode, aiIcon?: ReactNode, shortPlaceholder?: string }) {
+// floating: 메인 커맨드바 아래에 뜨는 패널(휴대폰은 아래 시트)로 / shortPlaceholder: 휴대폰 폭에서 검색창 안내 글자 / lead·hint·aiIcon: 메인 리디자인 커맨드바(components/home/mn)가 검색 아이콘·⌘K 표시·AI 추천 아이콘을 얹을 때만 넘긴다
+export default function SearchPanel({ games, filters, sidebar = false, floating = false, lead, hint, aiIcon, shortPlaceholder }: { games: any[], filters: GameFilters, sidebar?: boolean, floating?: boolean, lead?: ReactNode, hint?: ReactNode, aiIcon?: ReactNode, shortPlaceholder?: string }) {
   const { filterOpen, setFilterOpen, selectedCount } = filters;
 
   return (
@@ -44,7 +45,12 @@ export default function SearchPanel({ games, filters, sidebar = false, lead, hin
         </div>
       </div>
 
-      {filterOpen && !sidebar && <div className="filter-wrap"><FilterPanel filters={filters} /></div>}
+      {filterOpen && !sidebar && (floating
+        ? <>
+            <div className="filter-scrim" aria-hidden="true" />
+            <FilterFloat onClose={() => setFilterOpen(false)}><FilterPanel filters={filters} /></FilterFloat>
+          </>
+        : <div className="filter-wrap"><FilterPanel filters={filters} /></div>)}
     </>
   );
 }
