@@ -31,18 +31,21 @@ export const HERO_COVER_COUNT = 51;
 const HERO_COOP_NAMES = ['Rust', 'Sea of Thieves: 2026 Edition', 'Lethal Company', 'Phasmophobia', 'Deep Rock Galactic', 'Valheim', 'It Takes Two', 'Split Fiction', "Don't Starve Together", 'Dead by Daylight', 'HELLDIVERS™ 2', 'Raft', 'Grounded', 'Overcooked! 2', 'PEAK', 'R.E.P.O.', 'Palworld / 팰월드', 'Monster Hunter Wilds', 'PUBG: BATTLEGROUNDS', 'Among Us'];
 // 글씨 뒤(앞쪽 열)에 먼저 놓을 어두운 표지 — 표지 평균 밝기를 재서 어두운 순 (2026-10-25 측정, 밝기 0~255). 목록에 없는 게임은 뒤쪽 열로
 const HERO_DARK_FIRST = ['The Elder Scrolls V: Skyrim Special Edition', 'R.E.P.O.', 'Phasmophobia', 'Valheim', 'Sekiro™: Shadows Die Twice - GOTY Edition', 'Among Us', 'Divinity: Original Sin 2 - Definitive Edition', 'Dead by Daylight', 'Rust', 'ELDEN RING', 'Hades II', 'ARC Raiders', "Don't Starve Together", 'Lethal Company', '클레르 옵스퀴르: 33 원정대', '톰 클랜시의 레인보우식스 시즈', "Baldur's Gate 3", 'HELLDIVERS™ 2', 'Half-Life 2', 'Hades'];
+// 동접 순 채움에서 뺄 것 — 방치형·클리커류(태그)와 Bongo Cat
+const HERO_FILL_SKIP_TAG = /방치|idle|clicker|클리커/i;
+const HERO_FILL_SKIP_NAMES = ['Bongo Cat'];
 const HERO_DARK_COLS = 6; // 어두운 표지를 놓는 열 수 (둘째 열부터)
 
-type HeroRow = { id: string; name: string; cover_vertical_url: string };
+type HeroRow = { id: string; name: string; cover_vertical_url: string; tags?: string[] | null };
 export async function getHeroCovers(): Promise<string[]> {
-  const base = () => selectHomeGames('id, name, cover_vertical_url')
+  const base = () => selectHomeGames('id, name, cover_vertical_url, tags')
     .is('merged_into', null)
     .not('cover_vertical_url', 'is', null)
     .neq('cover_vertical_url', '');
   const [coopRes, topRes, fillRes] = await Promise.all([
     base().in('name', HERO_COOP_NAMES),
     base().order('heat_rank', { ascending: true, nullsFirst: false }).order('id').limit(24),
-    base().eq('has_online_coop', true).order('current_players', { ascending: false, nullsFirst: false }).order('id').limit(40),
+    base().eq('has_online_coop', true).order('current_players', { ascending: false, nullsFirst: false }).order('id').limit(60),
   ]);
   const seen = new Set<string>();
   const take = (rows: unknown, limit = Infinity) => {
@@ -56,7 +59,8 @@ export async function getHeroCovers(): Promise<string[]> {
   };
   const coop = take(coopRes.data);
   const singles = take(topRes.data);
-  const fill = take(fillRes.data, Math.max(0, HERO_COVER_COUNT - coop.length - singles.length));
+  const fillRows = ((fillRes.data ?? []) as unknown as HeroRow[]).filter((g) => !HERO_FILL_SKIP_NAMES.includes(g.name) && !(g.tags ?? []).some((t) => HERO_FILL_SKIP_TAG.test(t)));
+  const fill = take(fillRows, Math.max(0, HERO_COVER_COUNT - coop.length - singles.length));
   const rank = (g: HeroRow) => { const i = HERO_DARK_FIRST.indexOf(g.name); return i < 0 ? Infinity : i; };
   const byDark = (a: HeroRow, b: HeroRow) => rank(a) - rank(b);
 
