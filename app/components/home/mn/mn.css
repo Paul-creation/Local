@@ -16,15 +16,14 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
 .mn-hero-bg img { display: block; width: 100%; height: 100%; object-fit: cover; }
 /* 위는 그대로, 커맨드바 높이쯤부터 #0A0A0A로 진해져서 숫자 아래에서는 완전히 배경색 */
 .mn-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to bottom, transparent 0, transparent 50%, var(--mn-bg) 90%); pointer-events: none; }
-.mn-intro { margin-bottom: 36px; }
 .mn .hero-label { justify-content: center; margin: 0 0 20px; font-size: 14px; font-weight: 600; color: var(--mn-fg); }
 .mn .hero-label b { color: var(--mn-fg); font-weight: 800; }
 .mn .hero-label a { color: var(--mn-fg); text-decoration: underline; text-underline-offset: 3px; }
 .mn-h1 { margin: 0 0 20px; font-size: clamp(40px, 7vw, 72px); font-weight: var(--mn-weight-display); letter-spacing: var(--mn-ls-display); line-height: 1.08; word-break: keep-all; color: var(--mn-fg); }
-.mn-sub { margin: 0; font-size: 18px; font-weight: 500; line-height: 1.6; word-break: keep-all; }
+.mn-sub { margin: 0 0 56px; font-size: 18px; font-weight: 500; line-height: 1.6; word-break: keep-all; }
 
 /* 커맨드바 — 윗줄: 검색 + ⌘K + AI 추천 / 구분선 / 아랫줄: 인원 탭 | 칩. 포커스 효과는 검색 입력창에만 (바 전체는 변하지 않음) */
-.mn-cmd { position: relative; z-index: 2; max-width: 760px; margin-inline: auto; text-align: left; background: var(--mn-surface); border: 1px solid var(--mn-line); border-radius: 14px; }
+.mn-cmd { position: relative; z-index: 2; max-width: 640px; margin-inline: auto; text-align: left; background: var(--mn-surface); border: 1px solid var(--mn-line); border-radius: 14px; }
 .mn-cmd, .mn-cmd * { text-shadow: none; }
 .mn .mn-cmd .search-row { margin: 0; padding: 6px 6px 6px 16px; align-items: center; flex-direction: row; gap: 10px; }
 .mn .mn-cmd .search-box { flex: 1; min-width: 0; }
@@ -43,11 +42,19 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
 
 .mn-cmd-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px 14px; padding: 12px 14px; border-top: 1px solid var(--mn-line); }
 .mn-tabs, .mn-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-.mn-cmd-sep { display: none; } /* 가운데 정렬로 줄바꿈되면 구분선이 줄 끝에 혼자 남아서 뺐다 */
 .mn-tab, .mn-chip { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; font-family: inherit; font-size: 14px; font-weight: 700; letter-spacing: var(--mn-ls); line-height: 1; color: var(--mn-fg); text-decoration: none; text-shadow: none; background: transparent; border-radius: 999px; cursor: pointer; }
 .mn-tab { border: 1px solid var(--mn-tab-off-line); box-shadow: var(--mn-glow-tab-off); }
 .mn-tab.on { color: var(--mn-fg-inv); background: var(--mn-fg); border-color: transparent; box-shadow: var(--mn-glow-tab-on); }
 .mn-chip { border: 1px solid var(--mn-line); }
+/* "N인 추천 게임" 머리: 왼쪽 제목 + 12px 아래 인원 탭, 오른쪽 끝 "뜨는 게임 더 보기". 768px 미만에서 탭 줄이 넘치면 가로 스크롤(스크롤바 숨김) */
+.mn-people-head { align-items: flex-start; }
+.mn-people-head-left { display: flex; flex-direction: column; gap: 12px; min-width: 0; max-width: 100%; }
+.mn-tabs.is-section { justify-content: flex-start; }
+@media (max-width: 767px) {
+  .mn-tabs.is-section { flex-wrap: nowrap; overflow-x: auto; max-width: 100%; scrollbar-width: none; padding: 0 0 4px; }
+  .mn-tabs.is-section::-webkit-scrollbar { display: none; }
+  .mn-tabs.is-section .mn-tab { flex: 0 0 auto; }
+}
 .mn-chip.on { border-color: var(--mn-fg); }
 
 .mn-stats { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px 48px; margin: 48px 0 0; }
@@ -163,7 +170,8 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
 @media (max-width: 720px) {
   .mn-wrap { padding-inline: 16px; }
   .mn-hero { padding: 56px 0; }
-  .mn-kbd, .mn-cmd-sep { display: none; }
+  .mn-kbd { display: none; }
+  .mn-sub { margin-bottom: 40px; }
   .mn .mn-cmd .search-row { padding-left: 12px; }
   .mn .mn-cmd .search-bar-clean input { font-size: 16px; }
   .mn .mn-cmd .ai-trigger-clean { padding: 0 14px; }

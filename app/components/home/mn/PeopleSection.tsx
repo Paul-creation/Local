@@ -10,6 +10,7 @@ import { choosePeopleGames } from '../../../lib/peopleShow';
 import { usePeople } from '../PeopleContext';
 import { peopleLabel, peopleHref, trendingHref } from '../PeopleSelect';
 import LibraryLink from '../LibraryLink';
+import PeopleTabs from './PeopleTabs';
 
 // 메인 "N인 추천 게임" — 서버가 인원 4종 후보를 한 번에 보냈으므로 히어로의 인원 탭을 눌러도 이동·추가 요청 없이 바로 바뀐다
 // 후보(재부상 + 신작, 날짜 시드 순서)의 앞 6개를 세로 표지 카드 한 줄(가로 스크롤)로. 내 PC 토글이 켜져 있으면 최소 사양 통과 게임만 (규칙은 lib/peopleShow)
@@ -28,11 +29,14 @@ export default function PeopleSection({ recs }: { recs: Data | null }) {
   const rowRef = useRef<HTMLDivElement>(null);
   const gamesKey = games.map((g) => g.id).join(',');
   useEffect(() => { rowRef.current?.scrollTo({ left: 0, behavior: 'instant' }); }, [gamesKey]);
-  if (!recs) return null;
+  // 추천 데이터가 없어도 머리(제목 + 인원 탭)는 그린다 — 탭이 그 인원의 검색 결과로 가는 길이라서
   return (
     <section className="mn-sec" aria-labelledby="mn-people-title">
-      <div className="mn-sec-head">
-        <h2 id="mn-people-title">{peopleLabel(n)} 추천 게임</h2>
+      <div className="mn-sec-head mn-people-head">
+        <div className="mn-people-head-left">
+          <h2 id="mn-people-title">{peopleLabel(n)} 추천 게임</h2>
+          <PeopleTabs />
+        </div>
         <a href={trendingHref(n, myPcActive)} className="mn-more">뜨는 게임 더 보기</a>
       </div>
       {filteredOut && (
@@ -41,17 +45,17 @@ export default function PeopleSection({ recs }: { recs: Data | null }) {
           <button type="button" className="mn-chip" onClick={() => setMyPcOn(false)}>내 PC 필터 끄기</button>
         </p>
       )}
-      {games.length > 0 ? (
+      {!recs ? null : games.length > 0 ? (
         <div className="mn-row" ref={rowRef} tabIndex={0} role="region" aria-label={`${peopleLabel(n)} 추천 게임 목록`}>
           {games.map((g, i) => <PosterCard key={g.id} game={g} eager={i < 3} badge={posterBadge(g, recs.badges[g.id])} />)}
         </div>
       ) : (
         <p className="mn-note">조건에 맞는 추천 게임이 아직 없어요</p>
       )}
-      <div className="mn-links">
+      {recs && <div className="mn-links">
         <a href={peopleHref(n, myPcActive)} className="mn-more">{peopleLabel(n)} 게임 전체 보기</a>
         <LibraryLink />
-      </div>
+      </div>}
     </section>
   );
 }
