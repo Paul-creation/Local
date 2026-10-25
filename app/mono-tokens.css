@@ -52,6 +52,45 @@
   --accent-soft: var(--mn-surface);
   --focus-glow: 0 0 0 1px rgba(255, 255, 255, .3), 0 0 14px rgba(255, 255, 255, .15);
 
+  /* 기능색·면 토큰도 모노로 — 초록은 할인 배지(--discount-*)에만 남는다 */
+  --sale: var(--mn-fg);
+  --sale-border: rgba(255, 255, 255, .4);
+  --review: var(--mn-fg);
+  --review-border: rgba(255, 255, 255, .4);
+  --up: var(--mn-fg);
+  --down: var(--mn-fg);
+  --wishlist-active: var(--mn-fg);
+  --steam-buy: var(--mn-fg);
+  --steam-buy-hover: var(--mn-fg);
+  --compare-active: var(--mn-fg);
+  --on-solid: var(--mn-fg-inv);
+  --card-surface: var(--mn-surface);
+  --price-surface: var(--mn-surface);
+  --card-line: var(--mn-line);
+  --card-hl: none;
+  --card-shadow: none;
+  --card-hover-shadow: none;
+  --card-info: transparent;
+  --panel-bg: var(--mn-surface);
+  --panel-line: var(--mn-line);
+  --results-bg: var(--mn-surface);
+  --results-line: var(--mn-line);
+  --discount-bg: var(--mn-sale-bg);
+  --discount-text: var(--mn-sale-fg);
+  --discount-border: var(--mn-sale-bg);
+  --lowest-text: var(--mn-fg);
+  --verdict-rec: var(--mn-fg);
+  --verdict-fail: var(--mn-fg);
+  --tag-bg: transparent;
+  --tag-border: var(--mn-line);
+  --tag-text: var(--mn-fg);
+  --tag-special-text: var(--mn-fg);
+  --tag-special-bg: transparent;
+  --tag-special-border: var(--mn-line);
+  --card-hover-line: rgba(255, 255, 255, .4);
+  --label-color: var(--mn-fg);
+  --label-sub-color: var(--mn-fg);
+
   background: var(--mn-bg);
   color: var(--mn-fg);
   font-family: var(--mn-font);

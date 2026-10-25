@@ -54,6 +54,8 @@ import ScreenshotGallery, { type Screenshot } from '../../components/ScreenshotG
 import { gameName } from '../../lib/gameName';
 import CuratorsOfGame from '../../components/CuratorsOfGame';
 import { getCuratorsOfGame } from '../../lib/curators';
+import '../../mono-tokens.css';
+import '../../components/detail/detail-mono.css';
 
 // 게임마다 처음 열릴 때 만들고 1시간 동안 재사용 (ISR). 가격·접속자는 하루 한 번 갱신되므로 충분
 // 의견 작성·수정·삭제(api/game-comments)와 신고 자동 숨김(api/community/report)은 그 게임 페이지를 바로 새로 만든다
@@ -261,7 +263,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   }
 
   return (
-    <main className="page detail-page dx">
+    <main className="page detail-page dx mn">
       <BackLink fallbackHref="/" label="목록으로" preferList />
 
 
