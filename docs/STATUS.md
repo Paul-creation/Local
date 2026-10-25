@@ -175,6 +175,7 @@
 - enrich-recent-reviews는 1회 300개(한 바퀴 약 3일). 화면에 쓸 때 상한 450 또는 표시 기준 5일 중 결정
 - 이전 판단(heat_rank 라벨, 역대 최저가 배지 기준, Metascore만, 스팀 로그인 방식 c 등) 유지
 - 게임 이름 한/영 중복 표시 정리(완료): games.display_name 칸(스팀명이 "영문 + 한글 음역"으로 겹친 51개에 사용자가 값 입력)을 화면 표시에만 씀 — app/lib/gameName.ts gameName(g) = display_name ?? name 한 곳(카드·캐러셀·상세·메타 title/OG·비교·핫차트·세일 타임라인·커뮤니티 등). 검색은 name·search_name_ko에 display_name도 매칭. AI 프롬프트·외부 검색 링크·관리자 화면은 name 그대로. 어떤 스크립트도 name·display_name을 갱신하지 않음(bulk-import는 새 행 insert만). player_history 읽기 2000 페이지는 chore/player-history-page로 완료
+- 큐레이터 메인 노출(curators.show_on_home) 기준: 아카이브 페이지를 만들면 메인 노출을 켜고, 연락 메시지에 노출 사실과 요청 시 바로 내린다는 점을 알림. 내려 달라는 요청이 오면 false로 바꿈. 현재 7개 계정 모두 true(사전 동의 방식이 아님)
 - 내 PC 사양은 계정에 저장하지 않음(user_pc 표를 만들지 않음). 개인정보처리방침의 "서버로 보내지 않아요" 문구 유지
 - Pretendard 자주 쓰는 조각 preload는 하지 않음
 - 마이그레이션 파일 버전 번호 중복 3쌍(20261009090000·20261014090000·20261027090000)은 Supabase SQL 에디터로 수동 실행하는 방식이라 실행에 영향이 없어 파일 이름을 바꾸지 않음
@@ -182,7 +183,7 @@
 
 ## 로드맵
 ### 이번 주
-- 밀린 SQL 확인(사용자 실행): Bad Cheese 스팀(3094480) 연결 / 스핀오프 7행·디아블로 II 병합·Ori 숨김 / 판정 실패 20개·보류 3개용 tags_linked_at·filter_ai_at 비우기 / curator_posts 연결(최후의 주유소·큐레이터 게임 6개·nugget 4개·drawer 9개) / curators.show_on_home(동의받은 계정만 true, glitch_zine 포함) / 백필 후 확인 SQL 두 개(로컬 협동인데 has_local_coop false, 로컬 근거 없는데 로컬 표현) / 엔티티 정리 SQL 뒤 parse-specs 재계산
+- 밀린 SQL 확인(사용자 실행): Bad Cheese 스팀(3094480) 연결 / 스핀오프 7행·디아블로 II 병합·Ori 숨김 / 판정 실패 20개·보류 3개용 tags_linked_at·filter_ai_at 비우기 / curator_posts 연결(최후의 주유소·큐레이터 게임 6개·nugget 4개·drawer 9개) / 백필 후 확인 SQL 두 개(로컬 협동인데 has_local_coop false, 로컬 근거 없는데 로컬 표현) / 엔티티 정리 SQL 뒤 parse-specs 재계산
 - fix/steam-confirm: check-delisted가 요청 제한을 판매 중단 후보로 보지 않게, enrich-fallback 빈 응답 크래시, fix-data-gaps·fill-tags-desc 재시도
 - solo_mode 재판정: judge-new-games --rejudge 미리보기 확인 뒤 --apply 여부 결정, solo_mode null 11개 채움
 - 만료 데모 정리
