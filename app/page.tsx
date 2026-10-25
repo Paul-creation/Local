@@ -63,12 +63,8 @@ export default async function Home() {
     for (const [id, c] of Object.entries(covers)) peopleRecs.games[id] = { ...peopleRecs.games[id], cover_vertical_url: c.vertical };
   }
 
-  // 스트리머 협동은 위 섹션(인원별 추천 4종 전부·인기 차트 탭들의 1~10위)에 나온 게임을 먼저 빼고 고른다 (기준 미달이면 lib 안에서 중복 제거 없이 다시 고름)
-  const shownAbove = [
-    ...(peopleRecs ? Object.values(peopleRecs.ids).flat() : []),
-    ...hotShown,
-  ];
-  const streamerTheme = await getStreamerTheme(shownAbove).catch(() => null);
+  // 스트리머 협동은 조건에 맞는 게임 전부 (가로 스크롤 줄)
+  const streamerTheme = await getStreamerTheme().catch(() => null);
 
   return (
     <main className="page">

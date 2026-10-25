@@ -83,8 +83,26 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
 .mn-rank-name { overflow: hidden; font-size: 15px; font-weight: 700; white-space: nowrap; text-overflow: ellipsis; }
 .mn-rank-sub { overflow: hidden; font-size: 13px; font-weight: 500; white-space: nowrap; text-overflow: ellipsis; }
 
+/* ---------- 가로 스크롤 줄 (HScrollRow) — 스트리머·큐레이터 공용 ---------- */
+.mn-hs-arrows { display: flex; gap: 8px; }
+.mn-hs-arrow { display: inline-grid; place-items: center; width: 40px; height: 40px; padding: 0; color: var(--mn-fg); background: transparent; border: 1px solid rgba(255, 255, 255, .4); border-radius: 10px; box-shadow: 0 0 10px rgba(255, 255, 255, .09); cursor: pointer; text-shadow: none; }
+.mn-hs-arrow:disabled { opacity: .3; cursor: default; }
+.mn-hs-arrow:not(:disabled):hover { box-shadow: 0 0 14px rgba(255, 255, 255, .18); }
+.mn-hs { --gap: 20px; position: relative; }
+.mn-hs-row { display: flex; gap: var(--gap); margin: 0; padding: 0; overflow-x: auto; list-style: none; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.mn-hs-row::-webkit-scrollbar { display: none; }
+.mn-hs-row > li { flex: 0 0 calc((100% - (var(--per-d) - 1) * var(--gap)) / var(--per-d)); min-width: 0; scroll-snap-align: start; }
+.mn-hs::before, .mn-hs::after { content: ""; position: absolute; top: 0; bottom: 0; z-index: 2; width: 48px; pointer-events: none; opacity: 0; }
+.mn-hs::before { left: 0; background: linear-gradient(to right, var(--mn-bg), transparent); }
+.mn-hs::after { right: 0; background: linear-gradient(to left, var(--mn-bg), transparent); }
+.mn-hs.has-prev::before, .mn-hs.has-next::after { opacity: 1; }
+@media (max-width: 767px) {
+  .mn-hs-arrows { display: none; }
+  .mn-hs { --gap: 14px; }
+  .mn-hs-row > li { flex-basis: calc((100% - (var(--per-m) - 1) * var(--gap)) / var(--per-m)); }
+}
+
 /* ---------- 스트리머 영상 카드 ---------- */
-.mn-vids { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr)); gap: 28px 20px; margin: 0; padding: 0; list-style: none; }
 .mn-vid-thumb { position: relative; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: var(--mn-surface); border: 1px solid var(--mn-line); border-radius: 12px; }
 .mn-vid-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .mn-play { position: absolute; top: 50%; left: 50%; display: grid; place-items: center; width: 48px; height: 48px; color: var(--mn-fg); background: rgba(10, 10, 10, .72); border: 1px solid rgba(255, 255, 255, .5); border-radius: 50%; transform: translate(-50%, -50%); }
@@ -99,7 +117,6 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
 .mn-vid-by { overflow: hidden; font-size: 13px; font-weight: 500; white-space: nowrap; text-overflow: ellipsis; }
 
 /* ---------- 큐레이터 카드 ---------- */
-.mn-curators { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); gap: 20px; margin: 0; padding: 0; list-style: none; }
 .mn-curator { display: flex; flex-direction: column; gap: 4px; padding: 20px; text-decoration: none; background: var(--mn-surface); border: 1px solid var(--mn-line); border-radius: 14px; }
 .mn-curator:hover { border-color: rgba(255, 255, 255, .4); box-shadow: 0 0 18px rgba(255, 255, 255, .08); }
 .mn-fan { position: relative; display: block; height: 150px; margin-bottom: 16px; }

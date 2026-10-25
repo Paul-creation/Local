@@ -19,3 +19,7 @@ export const LikeIcon = () => (
 export const CommentIcon = () => (
   <svg {...base} width={14} height={14}><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" /></svg>
 );
+export const ArrowLeftIcon = () => (
+  <svg {...base} width={16} height={16}><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
+);
+export const ArrowRightIcon = ArrowIcon;
