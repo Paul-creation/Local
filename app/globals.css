@@ -3152,15 +3152,12 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* 링�
 }
 .dx .price-card-now { font-size: 32px; word-break: keep-all; }
 
-/* 투표 섹션 — 맨 아래로 옮기고 작게: 제목 16px, 칩 13px·낮게, 그룹 라벨은 칩과 한 줄 */
+/* 투표 섹션 — 의견 달기 바로 위. 제목·보조줄은 다른 카드와 같고, 그룹 라벨은 칩 위로 쌓고, 칩은 40px */
 .dx-votes { display: flex; flex-direction: column; gap: 0; }
-.dx-votes .detail-card.is-roomy { padding-top: 20px; }
-.dx-votes .detail-card-title { font-size: 16px; margin-bottom: 6px; }
-.dx-votes .detail-card-sub { font-size: 13px; margin: 0 0 10px; }
-.dx-votes .vote-group { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
-.dx-votes .vote-group + .vote-group { margin-top: 8px; }
-.dx-votes .vote-group-title { margin: 0; flex: none; min-width: 4.5em; font-size: 13px; }
-.dx-votes .vote-chips { gap: 6px; }
-.dx-votes .chip, .dx-votes .vote-chip { min-height: 28px; padding: 3px 11px; font-size: 13px; }
-.dx-votes .vote-count { font-size: 13px; }
-.dx-votes > * + * { margin-top: 20px; }
+.dx-votes .detail-card.is-roomy { padding-top: 28px; }
+.dx-votes .vote-group + .vote-group { margin-top: 16px; }
+.dx-votes .vote-group-title { margin: 0 0 8px; font-size: 14px; font-weight: 800; color: var(--text); }
+.dx-votes .vote-chips { gap: 8px; }
+.dx-votes .chip, .dx-votes .vote-chip { min-height: 40px; padding: 0 14px; font-size: 15px; }
+.dx-votes .vote-count { font-size: 15px; }
+.dx-votes > * + * { margin-top: 36px; }

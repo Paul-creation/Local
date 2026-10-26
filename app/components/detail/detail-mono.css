@@ -5,7 +5,14 @@
 
 /* ---------- 스탯 타일: 표면 #111111, 위쪽 선은 원래 의미 색(--tone) ---------- */
 .mn.dx .dx-tile { background: var(--mn-surface); border: 1px solid var(--mn-line); border-top: 2px solid var(--tone); border-radius: 12px; }
-.mn.dx .dx-tile-label { font-size: 13px; font-weight: 500; }
+.mn.dx .dx-tile-label { font-size: 14px; font-weight: 700; }
 .mn.dx .dx-tile-value { font-weight: 800; }
 .mn.dx .dx-tile-sub { font-size: 13px; font-weight: 500; }
 .mn.dx .dx-cover { background: var(--mn-surface); border: 1px solid var(--mn-line); box-shadow: none; }
+
+/* ---------- 글자 위계 — 히어로 아래 본문(상세 .dx 안에서만) ---------- */
+.mn.dx .detail-fun { font-size: 20px; font-weight: 700; }
+.mn.dx .detail-description-v2 { font-size: 17px; line-height: 1.7; max-width: 70ch; }
+.mn.dx :is(.more-list, .info-value, .steam-cell-value) { font-size: 17px; }
+.mn.dx :is(.info-label, .steam-cell-label) { font-size: 14px; font-weight: 700; }
+.mn.dx .detail-main :is(.category-tag, .activity-chip, .chip.is-static) { font-size: 15px; }

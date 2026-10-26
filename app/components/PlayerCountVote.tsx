@@ -42,7 +42,7 @@ export default function PlayerCountVote({ gameId }: { gameId: string }) {
       <p className="detail-card-sub">
         {total >= MIN_VOTES_TO_SHOW && top
           ? <>가장 많은 선택: <strong className="vote-top">{choiceLabel(top[0])}</strong> (<span className="num">{Math.round((top[1] / total) * 100)}%</span>) · <span className="num">{total}</span>명 참여</>
-          : '투표 모으는 중'}
+          : <>투표 모으는 중{total > 0 && <> · <span className="num">{total}</span>명 참여</>}</>}
       </p>
       <div className="vote-chips" role="radiogroup" aria-label="재밌었던 인원">
         {PLAYER_CHOICES.map(([k, label]) => (

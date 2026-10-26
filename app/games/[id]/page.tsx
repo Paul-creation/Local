@@ -549,12 +549,12 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             ) : null}
           />
 
-          <GameOpinions gameId={game.id} />
-          <RelatedPosts gameId={game.id} />
           <div className="dx-votes">
             <GameVotes gameId={game.id} />
             {isMulti && <PlayerCountVote gameId={game.id} />}
           </div>
+          <GameOpinions gameId={game.id} />
+          <RelatedPosts gameId={game.id} />
           {showSeries && seriesItems.length > 1 && <SeriesGames name={series?.name_ko ?? null} currentName={gameName(game)} items={seriesItems} />}
           {similarGames.length > 0 && <SimilarGames games={similarGames} />}
         </div>
