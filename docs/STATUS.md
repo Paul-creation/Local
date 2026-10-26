@@ -179,7 +179,7 @@
 - enrich-recent-reviews는 1회 300개(한 바퀴 약 3일). 화면에 쓸 때 상한 450 또는 표시 기준 5일 중 결정
 - 이전 판단(heat_rank 라벨, 역대 최저가 배지 기준, Metascore만, 스팀 로그인 방식 c 등) 유지
 - 게임 이름 한/영 중복 표시 정리(완료): games.display_name 칸(스팀명이 "영문 + 한글 음역"으로 겹친 51개에 사용자가 값 입력)을 화면 표시에만 씀 — app/lib/gameName.ts gameName(g) = display_name ?? name 한 곳(카드·캐러셀·상세·메타 title/OG·비교·핫차트·세일 타임라인·커뮤니티 등). 검색은 name·search_name_ko에 display_name도 매칭. AI 프롬프트·외부 검색 링크·관리자 화면은 name 그대로. 어떤 스크립트도 name·display_name을 갱신하지 않음(bulk-import는 새 행 insert만). player_history 읽기 2000 페이지는 chore/player-history-page로 완료
-- 큐레이터 메인 노출(curators.show_on_home) 기준: 아카이브 페이지를 만들면 메인 노출을 켜고, 연락 메시지에 노출 사실과 요청 시 바로 내린다는 점을 알림. 내려 달라는 요청이 오면 false로 바꿈. 현재 7개 계정 모두 true(사전 동의 방식이 아님)
+- 큐레이터 노출 기준: 사전 동의를 받기 전에는 아카이브 페이지를 공개하지 않음(2026-10-26 세이브슬롯 항의 후 변경). 동의 전 계정은 archive 스키마에 백업만 하고 curators·curator_posts에는 넣지 않음. 현재 공개 계정은 gamelog.archive, gamecuration.kr, glitch_zine 3개(동의 받음). saveslot0_0, nugget_zine, games_drawer_, game__wish는 archive 스키마에 백업 후 삭제(10/26). 내려 달라는 요청이 오면 바로 내림(show_on_home=false가 아니라 백업 후 삭제)
 - 내 PC 사양은 계정에 저장하지 않음(user_pc 표를 만들지 않음). 개인정보처리방침의 "서버로 보내지 않아요" 문구 유지
 - Pretendard 자주 쓰는 조각 preload는 하지 않음
 - 마이그레이션 파일 버전 번호 중복 3쌍(20261009090000·20261014090000·20261027090000)은 Supabase SQL 에디터로 수동 실행하는 방식이라 실행에 영향이 없어 파일 이름을 바꾸지 않음
