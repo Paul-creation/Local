@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-26 (main c388ec4)
+기준: 2026-10-26 (main 9c44e03)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/26: fix/release-label-undated — 출시 예정 문구 판정을 숫자(연도·월·분기) 유무로: 날짜가 있으면 "출시 예정 · {원문}", "출시 예정"·"발표 예정"·Coming soon·TBA 등 날짜 아닌 문구나 빈 값은 "출시 예정 · 날짜 미정"(release.ts hasReleaseDate·comingSoonLabel). 상세 가격 카드는 날짜가 있을 때만 날짜 줄. Ebbtide(4915700)·아키에이지 크로니클(3218230) 테스트 추가. 프리뷰 확인 전 머지(사용자 지시). build·test 454개 통과
 - 10/26: docs/curator-status — STATUS 큐레이터 현황을 공개 5곳으로(겜위시 10/26 메일로 페이지 제작만 허락, 너겟·게임서랍장 답 대기), zz_test_pending 시험 통과·삭제 기록, 로드맵 "홍보 전"에 소프트 404(404 화면인데 상태 코드 200) 상태 코드 확인 추가. 코드 변경 없음, build·test 453개 통과
 - 10/26: fix/curator-preview-404 — 프로덕션에서 관리자 로그인 후 /c/zz_test_pending?preview=1이 404인 문제 대응. 로컬(같은 DB)에서는 유효한 관리자 쿠키로 정상이라 프로덕션 원인은 미확정. proxy.ts: matcher에 '/c/:handle' 추가(점 든 핸들 gamelog.archive·gamecuration.kr은 기존 matcher에서 빠져 미리보기가 안 됐을 가능성), rewrite 주소를 req.nextUrl.clone()으로, ?preview=1 응답에 진단 헤더 x-curator-preview(rewritten | no-cookie | bad-cookie) 추가. build·test 453개 통과
 - 10/26: feat/curator-consent — 큐레이터 공개를 curators.consent_status('pending'|'granted'|'revoked', 기본 pending)로 제어. granted가 아니면 /c/[handle](404)·홈 인스타 섹션·게임 상세 "이 게임을 소개한 계정"·OG 이미지에 안 나옴(조회 함수 curators.ts 한 곳에서 거름, 칸이 없거나 조회가 실패해도 닫힘). show_on_home은 granted일 때만 의미(curatorConsent.ts). 관리자 로그인 상태에서만 /c/<handle>?preview=1로 pending 계정 비공개 미리보기(proxy.ts가 /c-preview/[handle]로 rewrite, 거기서 관리자 쿠키 재확인, noindex, 서비스 키로 읽음, 화면에 미리보기 표시 없음, 사이트맵에 큐레이터 주소 없음). admin_session 쿠키 경로 /api → /(재로그인 필요). 마이그레이션 20261103090000_curator_consent.sql(consent_status·consent_note·consented_at 추가, 4곳 granted, 세이브슬롯 consent_note, curators는 칸 단위 grant로 consent_note·consented_at을 anon에서 숨기고 행 정책을 granted만으로, curator_posts 행 정책도 granted 계정 것만) — 사용자 실행 필요. CLAUDE.md·STATUS에 공개 규칙 추가. build·test 453개 통과, security-check ✅94 ❌0(마이그레이션 전이라 새 권한은 미점검)
@@ -123,6 +124,7 @@
 
 ## 진행 중
 - 머지 후 확인 대기 (프로덕션 화면·다음 daily/weekly 로그 확인, 모두 미확인):
+  - fix/release-label-undated: Ebbtide·아키에이지 크로니클 카드·상세가 "출시 예정 · 날짜 미정"으로 나오는지, 날짜 있는 게임은 그대로인지
   - fix/curator-preview-404: 배포 후 관리자 로그인한 같은 창에서 /c/zz_test_pending?preview=1 — 열리면 끝, 404면 F12 Network의 응답 헤더 x-curator-preview 값(no-cookie → admin_session 쿠키 Path / 확인, bad-cookie → Vercel ADMIN_SESSION_SECRET·ADMIN_PASSWORD 적용 범위, rewritten → /c-preview 페이지·DB 조회)
   - feat/curator-consent: 마이그레이션 실행 후 4곳 /c/handle 열림·pending 계정 404, 홈 인스타 섹션(granted 2곳 미만이면 사라짐), 관리자 재로그인 후 ?preview=1, security-check로 새 권한(anon의 consent_note 읽기 차단) 확인
   - hero-wall-fill: 1440·1920·375px 벽 3줄 채움, 셋째 줄 페이드, 좌우 밝기(375px 앞 두 열 어두움)
