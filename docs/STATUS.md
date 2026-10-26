@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-26 (main 25f2130)
+기준: 2026-10-26 (main 79422cc)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/26: feat/curator-consent — 큐레이터 공개를 curators.consent_status('pending'|'granted'|'revoked', 기본 pending)로 제어. granted가 아니면 /c/[handle](404)·홈 인스타 섹션·게임 상세 "이 게임을 소개한 계정"·OG 이미지에 안 나옴(조회 함수 curators.ts 한 곳에서 거름, 칸이 없거나 조회가 실패해도 닫힘). show_on_home은 granted일 때만 의미(curatorConsent.ts). 관리자 로그인 상태에서만 /c/<handle>?preview=1로 pending 계정 비공개 미리보기(proxy.ts가 /c-preview/[handle]로 rewrite, 거기서 관리자 쿠키 재확인, noindex, 서비스 키로 읽음, 화면에 미리보기 표시 없음, 사이트맵에 큐레이터 주소 없음). admin_session 쿠키 경로 /api → /(재로그인 필요). 마이그레이션 20261103090000_curator_consent.sql(consent_status·consent_note·consented_at 추가, 4곳 granted, 세이브슬롯 consent_note, curators는 칸 단위 grant로 consent_note·consented_at을 anon에서 숨기고 행 정책을 granted만으로, curator_posts 행 정책도 granted 계정 것만) — 사용자 실행 필요. CLAUDE.md·STATUS에 공개 규칙 추가. build·test 453개 통과, security-check ✅94 ❌0(마이그레이션 전이라 새 권한은 미점검)
 - 10/26: fix/expired-demos — daily에 check-expired-demos --apply 단계 추가(check-coming-soon 바로 뒤). 부모 게임 appdetails의 demos[]에 demo_appid가 없거나, 있어도 데모 appdetails가 success:false면 games.demo_appid를 비움(update 한 줄, 다른 칸·기록 표는 안 건드림). 스팀 요청 실패는 건너뛰고 다음 날 다시 확인, 40분 시간 제한. 미리보기(데모 22개)는 종료된 데모 0개·유지 22개. build·test 451개 통과, --apply 실제 실행은 확인 못 함
 - 10/25: docs/status-sql-cleanup — 로드맵 "밀린 SQL 확인"에서 끝난 것 정리(Bad Cheese 연결·디아블로 II 병합·Ori 숨김·curator_posts 연결·로컬 협동 백필 확인(Hela 1개 보정)), 스핀오프 7행·판정 실패 비우기·엔티티 정리 parse-specs는 "근거 없어 확인 불가, 문제 보이면 그때 처리"로 조건부에 한 줄. 디아블로 series_order 출시순 SQL은 사용자 실행 대기. 코드 변경 없음, build·test 446개 통과
 - 10/25: docs/curator-home-policy — 큐레이터 메인 노출(curators.show_on_home) 기준을 실제 운영 방식으로 정리: 아카이브 페이지를 만들면 켜고, 연락 메시지에 노출 사실과 요청 시 바로 내린다는 점을 알림, 내려 달라는 요청이 오면 false. 현재 7개 계정 모두 true를 "완료된 판단"에 기록하고 밀린 SQL 묶음에서 show_on_home 줄을 뺌. 코드 변경 없음, build·test 446개 통과
@@ -120,6 +121,7 @@
 
 ## 진행 중
 - 머지 후 확인 대기 (프로덕션 화면·다음 daily/weekly 로그 확인, 모두 미확인):
+  - feat/curator-consent: 마이그레이션 실행 후 4곳 /c/handle 열림·pending 계정 404, 홈 인스타 섹션(granted 2곳 미만이면 사라짐), 관리자 재로그인 후 ?preview=1, security-check로 새 권한(anon의 consent_note 읽기 차단) 확인
   - hero-wall-fill: 1440·1920·375px 벽 3줄 채움, 셋째 줄 페이드, 좌우 밝기(375px 앞 두 열 어두움)
   - pretendard-subset: 네트워크 탭 조각 약 0.5MB·굵기 400·700·800
   - fix/expired-demos: 다음 daily 로그의 "종료된 데모 N개 · 유지 N개 · 건너뜀 N개" 줄, 단계 소요 시간
@@ -179,7 +181,7 @@
 - enrich-recent-reviews는 1회 300개(한 바퀴 약 3일). 화면에 쓸 때 상한 450 또는 표시 기준 5일 중 결정
 - 이전 판단(heat_rank 라벨, 역대 최저가 배지 기준, Metascore만, 스팀 로그인 방식 c 등) 유지
 - 게임 이름 한/영 중복 표시 정리(완료): games.display_name 칸(스팀명이 "영문 + 한글 음역"으로 겹친 51개에 사용자가 값 입력)을 화면 표시에만 씀 — app/lib/gameName.ts gameName(g) = display_name ?? name 한 곳(카드·캐러셀·상세·메타 title/OG·비교·핫차트·세일 타임라인·커뮤니티 등). 검색은 name·search_name_ko에 display_name도 매칭. AI 프롬프트·외부 검색 링크·관리자 화면은 name 그대로. 어떤 스크립트도 name·display_name을 갱신하지 않음(bulk-import는 새 행 insert만). player_history 읽기 2000 페이지는 chore/player-history-page로 완료
-- 큐레이터 공개 규칙(feat/curator-consent, 머지 전): 큐레이터 페이지는 consent_status=granted가 되기 전까지 공개하지 않는다. 연락 메시지에는 공개 링크가 아니라 스크린샷을 첨부한다(관리자 로그인 후 /c/<handle>?preview=1, noindex·사이트맵 제외). 수익화(광고·유료 노출·제휴)를 시작하기 전에는 모든 큐레이터에게 사전 연락해 협의한다. 큐레이터가 직접 소개하지 않은 게임을 그 큐레이터 추천처럼 보이게 하지 않고, 공식 제휴처럼 보이는 표현을 쓰지 않는다. curators.show_on_home은 granted일 때만 의미가 있다(아니면 true여도 무시). 내려 달라는 요청이 오면 consent_status를 revoked로
+- 큐레이터 공개 규칙(feat/curator-consent): 큐레이터 페이지는 consent_status=granted가 되기 전까지 공개하지 않는다. 연락 메시지에는 공개 링크가 아니라 스크린샷을 첨부한다(관리자 로그인 후 /c/<handle>?preview=1, noindex·사이트맵 제외). 수익화(광고·유료 노출·제휴)를 시작하기 전에는 모든 큐레이터에게 사전 연락해 협의한다. 큐레이터가 직접 소개하지 않은 게임을 그 큐레이터 추천처럼 보이게 하지 않고, 공식 제휴처럼 보이는 표현을 쓰지 않는다. curators.show_on_home은 granted일 때만 의미가 있다(아니면 true여도 무시). 내려 달라는 요청이 오면 consent_status를 revoked로
 - 큐레이터 현황(10/26 세이브슬롯 항의 뒤 동의 전 공개 페이지를 모두 내림): 공개 4곳 — 겜로그(gamelog.archive)·게임큐레이션(gamecuration.kr)·글리치(glitch_zine)·세이브슬롯(saveslot0_0, 조건부: 비상업적 아카이빙 한정·수익화 전 사전 협의 필수·메인 노출은 답 대기·새 게시물은 요청 시에만). 너겟·게임서랍장·겜위시는 archive 스키마 백업 후 삭제(10/26), 후속 안내 발송
 - 내 PC 사양은 계정에 저장하지 않음(user_pc 표를 만들지 않음). 개인정보처리방침의 "서버로 보내지 않아요" 문구 유지
 - Pretendard 자주 쓰는 조각 preload는 하지 않음
