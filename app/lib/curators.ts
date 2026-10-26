@@ -1,12 +1,18 @@
 // 인스타 큐레이터(curators)·소개 게시물(curator_posts) 조회 — 읽기만 (쓰기는 service role, 당분간 SQL로 직접 입력)
+// 공개 조회는 모두 consent_status='granted' 계정만 돌려준다(curatorConsent.ts). 칸이 없거나 조회가 실패해도 공개되지 않는 쪽(빈 결과·404)으로 닫힌다. 관리자 미리보기만 getCurator/getCuratorProfile의 includePending=true
 // 표가 아직 없거나 조회가 실패하면 빈 결과 = 섹션 숨김 / 계정 페이지는 404
 import { cache } from 'react';
+import { createClient } from '@supabase/supabase-js';
 import { supabase } from './supabase';
 import { selectGames } from './visibleGames';
 import { getCardGames } from './gameIndex';
 import { gameName } from './gameName';
 import type { Cover } from './homeMain';
 import type { PostRow } from './curatorView';
+import { CONSENT_GRANTED, isGranted, showsOnHome } from './curatorConsent';
+
+// 동의 전 계정은 DB(RLS)도 브라우저 키(anon)에게 숨긴다 → 관리자 미리보기만 서비스 키로 읽는다 (서버 전용, 관리자 확인을 마친 /c-preview에서만 includePending=true)
+const reader = (includePending: boolean) => (includePending ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!) : supabase);
 
 export type Curator = { id: string; handle: string; display_name: string; instagram_url: string; avatar_url: string | null; bio: string | null };
 export type CuratorPost = PostRow;
@@ -15,38 +21,41 @@ export type CuratorPost = PostRow;
 export async function getCuratorsOfGame(gameId: string) {
   const { data, error } = await supabase
     .from('curator_posts')
-    .select('id, post_url, posted_at, curators(handle, display_name)')
+    .select('id, post_url, posted_at, curators(handle, display_name, consent_status)')
     .eq('game_id', gameId)
     .order('posted_at', { ascending: false });
   if (error || !data) return [];
-  return (data as unknown as { id: string; post_url: string; posted_at: string; curators: { handle: string; display_name: string } | null }[])
-    .filter((r) => r.curators)
+  return (data as unknown as { id: string; post_url: string; posted_at: string; curators: { handle: string; display_name: string; consent_status: string } | null }[])
+    .filter((r) => r.curators && isGranted(r.curators.consent_status))
     .map((r) => ({ id: r.id, postUrl: r.post_url, handle: r.curators!.handle, displayName: r.curators!.display_name }));
 }
 
-// bio 칸이 아직 없는 DB(마이그레이션 전)면 그 칸 없이 다시 조회
-export async function getCurator(handle: string): Promise<Curator | null> {
-  const q = (cols: string) => supabase.from('curators').select(cols).eq('handle', handle).maybeSingle();
-  const first = await q('id, handle, display_name, instagram_url, avatar_url, bio');
+// bio 칸이 아직 없는 DB(마이그레이션 전)면 그 칸 없이 다시 조회. consent_status는 두 조회 모두 필수 — 칸이 없으면 null(404)
+export async function getCurator(handle: string, includePending = false): Promise<Curator | null> {
+  const q = (cols: string) => {
+    const base = reader(includePending).from('curators').select(cols).eq('handle', handle);
+    return (includePending ? base : base.eq('consent_status', CONSENT_GRANTED)).maybeSingle();
+  };
+  const first = await q('id, handle, display_name, instagram_url, avatar_url, bio, consent_status');
   if (!first.error) return first.data as unknown as Curator | null;
-  const second = await q('id, handle, display_name, instagram_url, avatar_url');
+  const second = await q('id, handle, display_name, instagram_url, avatar_url, consent_status');
   return second.error || !second.data ? null : ({ ...(second.data as unknown as Curator), bio: null });
 }
 
 // post_title 칸이 아직 없는 DB(마이그레이션 전)면 그 칸 없이 다시 조회
-export async function getCuratorPosts(curatorId: string): Promise<CuratorPost[]> {
-  const q = (cols: string) => supabase.from('curator_posts').select(cols).eq('curator_id', curatorId).order('posted_at', { ascending: false }).order('id');
+export async function getCuratorPosts(curatorId: string, includePending = false): Promise<CuratorPost[]> {
+  const q = (cols: string) => reader(includePending).from('curator_posts').select(cols).eq('curator_id', curatorId).order('posted_at', { ascending: false }).order('id');
   const first = await q('id, game_id, post_url, post_type, post_title, posted_at');
   if (!first.error && first.data) return first.data as unknown as CuratorPost[];
   const second = await q('id, game_id, post_url, post_type, posted_at');
   return second.error || !second.data ? [] : (second.data as unknown as CuratorPost[]);
 }
 
-// 프로필 페이지 한 번에 — 계정·게시물·카드 게임 (페이지와 메타데이터가 같은 요청 안에서 한 번만 조회)
-export const getCuratorProfile = cache(async (handle: string) => {
-  const curator = await getCurator(handle);
+// 프로필 페이지 한 번에 (includePending는 관리자 미리보기 전용) — 계정·게시물·카드 게임 (페이지와 메타데이터가 같은 요청 안에서 한 번만 조회)
+export const getCuratorProfile = cache(async (handle: string, includePending = false) => {
+  const curator = await getCurator(handle, includePending);
   if (!curator) return null;
-  const posts = await getCuratorPosts(curator.id);
+  const posts = await getCuratorPosts(curator.id, includePending);
   const ids = [...new Set(posts.map((p) => p.game_id))];
   const games = await getCardGames(ids).catch(() => []);
   return { curator, posts, games };
@@ -61,7 +70,7 @@ export async function getCuratorGameCount(curatorId: string): Promise<number | n
   return error || !data ? null : data.length;
 }
 
-// 메인 "인스타에서 봤던 그 게임" — 동의받은 계정(show_on_home)만. 연결 게임(숨긴 게임·메인 노출 제외 게임 제외)이 1개 이상인 계정이 HOME_CURATORS_MIN개 이상일 때만 돌려주고, 아니면 null = 섹션 없음
+// 메인 "인스타에서 봤던 그 게임" — 동의(consent_status=granted)하고 show_on_home인 계정만. 연결 게임(숨긴 게임·메인 노출 제외 게임 제외)이 1개 이상인 계정이 HOME_CURATORS_MIN개 이상일 때만 돌려주고, 아니면 null = 섹션 없음
 // 계정마다 카드 하나: 소개한 게임 수(같은 게임은 한 번)·게시물 수(보이는 게임에 연결된 게시물)·최근 게시물 순 게임 표지 5장·최근 게임 이름 3개. 출시 예정 게임도 포함
 // 계정 순서는 소개한 게임 수 많은 순 (같으면 handle 순)
 export const HOME_CURATORS_MIN = 2;
@@ -71,13 +80,15 @@ export type HomeCuratorCard = { handle: string; displayName: string; gameCount: 
 export type HomeCurators = { cards: HomeCuratorCard[] };
 
 export async function getHomeCurators(): Promise<HomeCurators | null> {
-  const { data: curators, error: cErr } = await supabase.from('curators').select('id, handle, display_name').eq('show_on_home', true);
+  const { data: curators, error: cErr } = await supabase.from('curators').select('id, handle, display_name, consent_status, show_on_home').eq('consent_status', CONSENT_GRANTED).eq('show_on_home', true);
   if (cErr || !curators?.length) return null;
+  const shown = curators.filter(showsOnHome);
+  if (!shown.length) return null;
 
   const { data: posts, error } = await supabase
     .from('curator_posts')
     .select('curator_id, game_id, posted_at')
-    .in('curator_id', curators.map((c) => c.id))
+    .in('curator_id', shown.map((c) => c.id))
     .order('posted_at', { ascending: false })
     .order('id');
   if (error || !posts?.length) return null;
@@ -88,7 +99,7 @@ export async function getHomeCurators(): Promise<HomeCurators | null> {
   const byGame = new Map((games as unknown as GameRow[]).map((g) => [g.id, g]));
 
   const cards: HomeCuratorCard[] = [];
-  for (const c of curators) {
+  for (const c of shown) {
     const mine = posts.filter((p) => p.curator_id === c.id && byGame.has(p.game_id as string)); // 최근 게시물이 앞
     const distinct = [...new Set(mine.map((p) => p.game_id as string))].map((id) => byGame.get(id)!);
     if (!distinct.length) continue;

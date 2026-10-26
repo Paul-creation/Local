@@ -7,6 +7,7 @@ import { readAllPages } from './lib/paged';
 
 export const revalidate = 86400; // 하루에 한 번 새로 만들기
 
+// 큐레이터 페이지(/c/…)와 미리보기는 넣지 않는다 — 동의(consent_status) 전 공개 금지, 동의 뒤에도 사이트맵 노출은 따로 정한다
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const { data: games } = await readAllPages((from, to) => selectGames('id, created_at').order('id').range(from, to)); // 1,000개 넘는 게임도 모두
   return [

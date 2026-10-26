@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
-    path: '/api', // 커뮤니티 글쓰기 API도 관리자 여부를 알아야 해서 /api 전체 (운영자 배지)
+    path: '/', // 커뮤니티 글쓰기 API(운영자 배지)와 큐레이터 비공개 미리보기(/c/[handle]?preview=1)가 관리자 여부를 알아야 해서 사이트 전체. 이전 로그인의 /api 쿠키는 최대 12시간 뒤 사라짐
     maxAge: SESSION_HOURS * 60 * 60,
   });
   return res;

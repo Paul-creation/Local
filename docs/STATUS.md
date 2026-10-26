@@ -179,7 +179,8 @@
 - enrich-recent-reviews는 1회 300개(한 바퀴 약 3일). 화면에 쓸 때 상한 450 또는 표시 기준 5일 중 결정
 - 이전 판단(heat_rank 라벨, 역대 최저가 배지 기준, Metascore만, 스팀 로그인 방식 c 등) 유지
 - 게임 이름 한/영 중복 표시 정리(완료): games.display_name 칸(스팀명이 "영문 + 한글 음역"으로 겹친 51개에 사용자가 값 입력)을 화면 표시에만 씀 — app/lib/gameName.ts gameName(g) = display_name ?? name 한 곳(카드·캐러셀·상세·메타 title/OG·비교·핫차트·세일 타임라인·커뮤니티 등). 검색은 name·search_name_ko에 display_name도 매칭. AI 프롬프트·외부 검색 링크·관리자 화면은 name 그대로. 어떤 스크립트도 name·display_name을 갱신하지 않음(bulk-import는 새 행 insert만). player_history 읽기 2000 페이지는 chore/player-history-page로 완료
-- 큐레이터 메인 노출(curators.show_on_home) 기준: 아카이브 페이지를 만들면 메인 노출을 켜고, 연락 메시지에 노출 사실과 요청 시 바로 내린다는 점을 알림. 내려 달라는 요청이 오면 false로 바꿈. 현재 7개 계정 모두 true(사전 동의 방식이 아님)
+- 큐레이터 공개 규칙(feat/curator-consent, 머지 전): 큐레이터 페이지는 consent_status=granted가 되기 전까지 공개하지 않는다. 연락 메시지에는 공개 링크가 아니라 스크린샷을 첨부한다(관리자 로그인 후 /c/<handle>?preview=1, noindex·사이트맵 제외). 수익화(광고·유료 노출·제휴)를 시작하기 전에는 모든 큐레이터에게 사전 연락해 협의한다. 큐레이터가 직접 소개하지 않은 게임을 그 큐레이터 추천처럼 보이게 하지 않고, 공식 제휴처럼 보이는 표현을 쓰지 않는다. curators.show_on_home은 granted일 때만 의미가 있다(아니면 true여도 무시). 내려 달라는 요청이 오면 consent_status를 revoked로
+- 큐레이터 현황(10/26 세이브슬롯 항의 뒤 동의 전 공개 페이지를 모두 내림): 공개 4곳 — 겜로그(gamelog.archive)·게임큐레이션(gamecuration.kr)·글리치(glitch_zine)·세이브슬롯(saveslot0_0, 조건부: 비상업적 아카이빙 한정·수익화 전 사전 협의 필수·메인 노출은 답 대기·새 게시물은 요청 시에만). 너겟·게임서랍장·겜위시는 archive 스키마 백업 후 삭제(10/26), 후속 안내 발송
 - 내 PC 사양은 계정에 저장하지 않음(user_pc 표를 만들지 않음). 개인정보처리방침의 "서버로 보내지 않아요" 문구 유지
 - Pretendard 자주 쓰는 조각 preload는 하지 않음
 - 마이그레이션 파일 버전 번호 중복 3쌍(20261009090000·20261014090000·20261027090000)은 Supabase SQL 에디터로 수동 실행하는 방식이라 실행에 영향이 없어 파일 이름을 바꾸지 않음
