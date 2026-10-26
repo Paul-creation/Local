@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-25 (main 31e51c5)
+기준: 2026-10-26 (main 25f2130)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/26: fix/expired-demos — daily에 check-expired-demos --apply 단계 추가(check-coming-soon 바로 뒤). 부모 게임 appdetails의 demos[]에 demo_appid가 없거나, 있어도 데모 appdetails가 success:false면 games.demo_appid를 비움(update 한 줄, 다른 칸·기록 표는 안 건드림). 스팀 요청 실패는 건너뛰고 다음 날 다시 확인, 40분 시간 제한. 미리보기(데모 22개)는 종료된 데모 0개·유지 22개. build·test 451개 통과, --apply 실제 실행은 확인 못 함
 - 10/25: docs/status-sql-cleanup — 로드맵 "밀린 SQL 확인"에서 끝난 것 정리(Bad Cheese 연결·디아블로 II 병합·Ori 숨김·curator_posts 연결·로컬 협동 백필 확인(Hela 1개 보정)), 스핀오프 7행·판정 실패 비우기·엔티티 정리 parse-specs는 "근거 없어 확인 불가, 문제 보이면 그때 처리"로 조건부에 한 줄. 디아블로 series_order 출시순 SQL은 사용자 실행 대기. 코드 변경 없음, build·test 446개 통과
 - 10/25: docs/curator-home-policy — 큐레이터 메인 노출(curators.show_on_home) 기준을 실제 운영 방식으로 정리: 아카이브 페이지를 만들면 켜고, 연락 메시지에 노출 사실과 요청 시 바로 내린다는 점을 알림, 내려 달라는 요청이 오면 false. 현재 7개 계정 모두 true를 "완료된 판단"에 기록하고 밀린 SQL 묶음에서 show_on_home 줄을 뺌. 코드 변경 없음, build·test 446개 통과
 - 10/25: docs/status-roadmap — 로드맵을 이번 주·홍보 전(11월 초)·홍보 후·조건부 네 칸으로 재구성, 진행 중의 머지 후 확인 대기 약 50건을 항목 이름만 남겨 한 묶음으로 축약. 지운 것: user_pc(계정 저장 안 함, 방침 "서버로 보내지 않아요" 유지)·design/compare-mono 삭제 줄·itad_id 81개 lookup 줄·Pretendard preload. 문서 어긋남 수정: lint 에러 114·경고 122, 마이그레이션 버전 중복 3쌍(수동 실행이라 이름 변경 안 함). 코드 변경 없음, build·test 446개 통과
@@ -121,6 +122,7 @@
 - 머지 후 확인 대기 (프로덕션 화면·다음 daily/weekly 로그 확인, 모두 미확인):
   - hero-wall-fill: 1440·1920·375px 벽 3줄 채움, 셋째 줄 페이드, 좌우 밝기(375px 앞 두 열 어두움)
   - pretendard-subset: 네트워크 탭 조각 약 0.5MB·굵기 400·700·800
+  - fix/expired-demos: 다음 daily 로그의 "종료된 데모 N개 · 유지 N개 · 건너뜀 N개" 줄, 단계 소요 시간
   - fix/layout-shift-pages: /my-pc·/wishlist 푸터 밀림, 푸터 위 여백
   - fix/layout-shift-home: 375px h1·서브카피 밀림, 1440px Ctrl K 상자 폭, 실제 기기 한글 대체 글꼴 폭
   - fix/layout-shift: 홈·상세·/compare 글꼴 교체 밀림, 로그인 아바타 전환, Vercel 폰트 빌드
