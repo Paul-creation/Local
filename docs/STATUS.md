@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-26 (main 79422cc)
+기준: 2026-10-26 (main 9121bf7)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/26: fix/curator-preview-404 — 프로덕션에서 관리자 로그인 후 /c/zz_test_pending?preview=1이 404인 문제 대응. 로컬(같은 DB)에서는 유효한 관리자 쿠키로 정상이라 프로덕션 원인은 미확정. proxy.ts: matcher에 '/c/:handle' 추가(점 든 핸들 gamelog.archive·gamecuration.kr은 기존 matcher에서 빠져 미리보기가 안 됐을 가능성), rewrite 주소를 req.nextUrl.clone()으로, ?preview=1 응답에 진단 헤더 x-curator-preview(rewritten | no-cookie | bad-cookie) 추가. build·test 453개 통과
 - 10/26: feat/curator-consent — 큐레이터 공개를 curators.consent_status('pending'|'granted'|'revoked', 기본 pending)로 제어. granted가 아니면 /c/[handle](404)·홈 인스타 섹션·게임 상세 "이 게임을 소개한 계정"·OG 이미지에 안 나옴(조회 함수 curators.ts 한 곳에서 거름, 칸이 없거나 조회가 실패해도 닫힘). show_on_home은 granted일 때만 의미(curatorConsent.ts). 관리자 로그인 상태에서만 /c/<handle>?preview=1로 pending 계정 비공개 미리보기(proxy.ts가 /c-preview/[handle]로 rewrite, 거기서 관리자 쿠키 재확인, noindex, 서비스 키로 읽음, 화면에 미리보기 표시 없음, 사이트맵에 큐레이터 주소 없음). admin_session 쿠키 경로 /api → /(재로그인 필요). 마이그레이션 20261103090000_curator_consent.sql(consent_status·consent_note·consented_at 추가, 4곳 granted, 세이브슬롯 consent_note, curators는 칸 단위 grant로 consent_note·consented_at을 anon에서 숨기고 행 정책을 granted만으로, curator_posts 행 정책도 granted 계정 것만) — 사용자 실행 필요. CLAUDE.md·STATUS에 공개 규칙 추가. build·test 453개 통과, security-check ✅94 ❌0(마이그레이션 전이라 새 권한은 미점검)
 - 10/26: fix/expired-demos — daily에 check-expired-demos --apply 단계 추가(check-coming-soon 바로 뒤). 부모 게임 appdetails의 demos[]에 demo_appid가 없거나, 있어도 데모 appdetails가 success:false면 games.demo_appid를 비움(update 한 줄, 다른 칸·기록 표는 안 건드림). 스팀 요청 실패는 건너뛰고 다음 날 다시 확인, 40분 시간 제한. 미리보기(데모 22개)는 종료된 데모 0개·유지 22개. build·test 451개 통과, --apply 실제 실행은 확인 못 함
 - 10/25: docs/status-sql-cleanup — 로드맵 "밀린 SQL 확인"에서 끝난 것 정리(Bad Cheese 연결·디아블로 II 병합·Ori 숨김·curator_posts 연결·로컬 협동 백필 확인(Hela 1개 보정)), 스핀오프 7행·판정 실패 비우기·엔티티 정리 parse-specs는 "근거 없어 확인 불가, 문제 보이면 그때 처리"로 조건부에 한 줄. 디아블로 series_order 출시순 SQL은 사용자 실행 대기. 코드 변경 없음, build·test 446개 통과
@@ -121,6 +122,7 @@
 
 ## 진행 중
 - 머지 후 확인 대기 (프로덕션 화면·다음 daily/weekly 로그 확인, 모두 미확인):
+  - fix/curator-preview-404: 배포 후 관리자 로그인한 같은 창에서 /c/zz_test_pending?preview=1 — 열리면 끝, 404면 F12 Network의 응답 헤더 x-curator-preview 값(no-cookie → admin_session 쿠키 Path / 확인, bad-cookie → Vercel ADMIN_SESSION_SECRET·ADMIN_PASSWORD 적용 범위, rewritten → /c-preview 페이지·DB 조회)
   - feat/curator-consent: 마이그레이션 실행 후 4곳 /c/handle 열림·pending 계정 404, 홈 인스타 섹션(granted 2곳 미만이면 사라짐), 관리자 재로그인 후 ?preview=1, security-check로 새 권한(anon의 consent_note 읽기 차단) 확인
   - hero-wall-fill: 1440·1920·375px 벽 3줄 채움, 셋째 줄 페이드, 좌우 밝기(375px 앞 두 열 어두움)
   - pretendard-subset: 네트워크 탭 조각 약 0.5MB·굵기 400·700·800
