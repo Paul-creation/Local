@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/26: chore/brand-icon — 사이트 아이콘을 JamiDuNow 로고로 교체(public/brand/logo.svg 마스터, app/favicon.ico 16·32·48, icon.png 512, apple-icon.png 180 꽉 찬 정사각형). manifest·OG 로고 자리 없음. build·test 454개 통과
 - 10/26: chore/contact-email — 전용 연락 이메일 jamidunow@gmail.com을 CONTACT_EMAIL 코드 기본값으로(NEXT_PUBLIC_CONTACT_EMAIL로 덮어쓰기 가능), 방침 Steam 로그인 삭제 안내를 이메일로, 푸터에 "문의" 메일 링크 추가. 개인 이메일 노출 없음. build·test 454개 통과
 - 10/26: design/detail-type — 상세 페이지 본문 글자 위계 정리, 투표 섹션 크기·배치 개선, 라벨 전용 토큰으로 라벨·값 구분(PlayerCountVote·detail-mono.css·globals.css·mono-tokens.css·games/[id]/page.tsx). build·test 454개 통과
 - 10/26: fix/copylink-no-query — /c/[handle] "링크 복사"가 현재 도메인 대신 SITE_URL + 경로(https://jamidunow.com/c/{handle})만 복사(쿼리 없음, 프리뷰·다른 도메인에서도 정식 주소). CopyLinkButton.tsx 한 파일. build·test 454개 통과
