@@ -7,13 +7,12 @@ export const isComingSoon = (g: ReleaseGame) => g.release_status === 'coming_soo
 // 데모는 출시 예정 게임에서만 보여준다 (출시된 뒤에는 데모가 내려가는 일이 많아서)
 export const hasDemo = (g: ReleaseGame) => isComingSoon(g) && !!g.demo_appid;
 
-// 스팀이 날짜 대신 주는 말("출시 예정", "Coming soon")이면 문구가 겹치므로 날짜로 치지 않는다
-const PLACEHOLDER = /^(출시\s*예정|coming\s*soon|to\s*be\s*announced|tba)$/i;
+// 출시일 원문에 숫자(연도·월·분기)가 있어야 날짜로 친다 — "출시 예정"·"발표 예정"·"Coming soon"·"To be announced" 같은 문구는 날짜가 아니다
+export const hasReleaseDate = (g: ReleaseGame) => /\d/.test(g.release_date_text ?? '');
 
-// 가격 자리 문구: "출시 예정 · 2026년 11월" / 날짜를 모르면 "출시 예정"
+// 가격 자리 문구: "출시 예정 · 2026년 4분기" / 날짜가 없으면 "출시 예정 · 날짜 미정"
 export function comingSoonLabel(g: ReleaseGame): string {
-  const text = (g.release_date_text ?? '').trim();
-  return text && !PLACEHOLDER.test(text) ? `출시 예정 · ${text}` : '출시 예정';
+  return hasReleaseDate(g) ? `출시 예정 · ${(g.release_date_text ?? '').trim()}` : '출시 예정 · 날짜 미정';
 }
 
 // 데모 상점 페이지 (새 탭으로 연다)

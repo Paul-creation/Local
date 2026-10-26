@@ -4,7 +4,7 @@ import { supabase } from '../../lib/supabase';
 import BackLink from '../../components/BackLink';
 import DiscountChart from '../../components/DiscountChart';
 import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL } from '../../lib/price';
-import { isComingSoon, hasDemo, comingSoonLabel, demoStoreUrl } from '../../lib/release';
+import { isComingSoon, hasDemo, comingSoonLabel, hasReleaseDate, demoStoreUrl } from '../../lib/release';
 import { formatDate } from '../../lib/date';
 import { lowestGauge } from '../../lib/saleEnds';
 import SaleEnds from '../../components/SaleEnds';
@@ -307,8 +307,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
                   <p className="price-card-label">출시 예정</p>
                   <HeartButton gameId={game.id} variant="title" />
                 </div>
-                {/* 스팀이 알려 준 출시일 원문 그대로 (날짜 대신 "출시 예정"이 온 경우는 위 제목만) */}
-                {comingSoonLabel(game) !== '출시 예정' && <p className="price-card-now">{game.release_date_text}</p>}
+                {/* 스팀이 알려 준 출시일 원문 그대로 (날짜가 아닌 문구는 위 제목만) */}
+                {hasReleaseDate(game) && <p className="price-card-now">{game.release_date_text}</p>}
                 <p className="price-card-lowest">아직 출시 전이라 가격·할인 정보가 없어요</p>
                 <div className="price-card-buttons">
                   {demo && (
