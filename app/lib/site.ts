@@ -13,8 +13,8 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://jamidunow.
 export const OPERATOR_NAME = process.env.NEXT_PUBLIC_OPERATOR_NAME || 'The Circles';
 // 페이지에서 openGraph를 쓰면 layout 값을 통째로 덮어쓰므로 공통 값은 이걸 펼쳐서 같이 넣는다
 export const BASE_OG = { siteName: SITE_NAME_FULL, locale: 'ko_KR', type: 'website' as const };
-// 연락 이메일 — 비어 있으면 화면에 CONTACT_TEXT("준비 중")를 보여준다
-export const CONTACT_EMAIL = (process.env.NEXT_PUBLIC_CONTACT_EMAIL || '').trim();
+// 연락 이메일 — NEXT_PUBLIC_CONTACT_EMAIL로 바꿀 수 있고, 없으면 전용 주소를 쓴다
+export const CONTACT_EMAIL = (process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'jamidunow@gmail.com').trim();
 export const CONTACT_TEXT = CONTACT_EMAIL || '준비 중';
 export const SITE_DESCRIPTION = '친구들이랑 뭐 할지 고민될 때 — 인원·난이도·가격·할인까지 한눈에 비교하는 게임 정보 사이트';
 // <meta description>·OG 설명용

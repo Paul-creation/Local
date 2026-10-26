@@ -113,7 +113,7 @@ Vercel → 프로젝트 → **Settings → Domains** 에서 도메인 추가·DN
 | `NEXT_PUBLIC_SITE_URL` | `https://새도메인` (끝 `/` 없이) | `app/lib/site.ts` — canonical, sitemap, OG, 디스코드 알림 링크, `proxy.ts` 리다이렉트 |
 | `NEXT_PUBLIC_SITE_NAME` | 바꿀 때만 | `site.ts` (기본 `게임정보허브`) |
 | `NEXT_PUBLIC_OPERATOR_NAME` | 바꿀 때만 | `site.ts` (기본 `The Circles`) |
-| `NEXT_PUBLIC_CONTACT_EMAIL` | 연락 이메일 | `site.ts` (비어 있으면 화면에 "준비 중") |
+| `NEXT_PUBLIC_CONTACT_EMAIL` | 연락 이메일 | `site.ts` (기본값 jamidunow@gmail.com) |
 | `NEXT_PUBLIC_GOOGLE_VERIFICATION` | 서치콘솔 HTML 태그의 content 값 | `app/layout.tsx` (아래 4번) |
 | `NEXT_PUBLIC_NAVER_VERIFICATION` | 네이버 HTML 태그의 content 값 | `app/layout.tsx` (아래 4번) |
 

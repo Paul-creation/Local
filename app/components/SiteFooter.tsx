@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { SITE_NAME, OPERATOR_NAME } from '../lib/site';
+import { SITE_NAME, OPERATOR_NAME, CONTACT_EMAIL } from '../lib/site';
 import { FOOTER_GUIDE_LABEL } from '../lib/guideCopy';
 import '../mono-tokens.css';
 
@@ -16,6 +16,7 @@ export default function SiteFooter() {
         <Link href="/terms">이용약관</Link>
         <Link href="/privacy">개인정보처리방침</Link>
         <Link href="/feedback">의견 보내기</Link>
+        <a href={`mailto:${CONTACT_EMAIL}`}>문의</a>
       </nav>
       <p>{SITE_NAME}는 Valve 및 각 게임사와 관련 없는 비공식 사이트입니다. Steam은 Valve Corporation의 상표이며, 게임 이미지와 데이터의 권리는 각 권리자에게 있습니다.</p>
       <p className="site-footer-copy">© 2026 {OPERATOR_NAME}. All rights reserved.</p>

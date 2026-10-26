@@ -195,7 +195,7 @@ export default function PrivacyPage() {
 
         <h2 className="cm-h2">6. 이용자의 권리</h2>
         <ul>
-          <li><strong>Steam 로그인 정보 삭제</strong>: 로그인한 뒤 오른쪽 위 닉네임 메뉴의 <strong>[내 정보 삭제]</strong> 버튼을 누르면 저장된 Steam ID·닉네임·사진 주소·보유 게임 번호를 바로 한꺼번에 지워요. 로그인이 안 되는 경우에만 <Link href="/feedback">의견 보내기</Link>에서 &ldquo;기타&rdquo;를 골라 &ldquo;Steam 로그인 정보 삭제 요청&rdquo;과 Steam 닉네임을 적어 주세요. 처리 결과를 받고 싶으면 연락처도 남겨 주세요.</li>
+          <li><strong>Steam 로그인 정보 삭제</strong>: 로그인한 뒤 오른쪽 위 닉네임 메뉴의 <strong>[내 정보 삭제]</strong> 버튼을 누르면 저장된 Steam ID·닉네임·사진 주소·보유 게임 번호를 바로 한꺼번에 지워요. 로그인이 안 되는 경우에만 {contact}로 &ldquo;Steam 로그인 정보 삭제 요청&rdquo;과 Steam 닉네임을 보내 주세요.</li>
           <li>내가 쓴 글·댓글·의견은 작성할 때 정한 비밀번호로 언제든 수정·삭제할 수 있어요.</li>
           <li>비밀번호를 잊었거나 내 개인정보가 담긴 글의 삭제를 원하면 해당 글의 <strong>신고</strong> 버튼(개인정보 노출)이나 아래 연락처로 요청해주세요.</li>
           <li>개인정보 열람·정정·삭제·처리정지를 요청할 수 있어요. 다만 사이트는 이름 등 신원 정보를 갖고 있지 않아, 요청한 분이 해당 글의 작성자인지 확인할 수 있는 범위에서 처리해요.</li>
