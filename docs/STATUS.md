@@ -184,7 +184,7 @@
 - 이전 판단(heat_rank 라벨, 역대 최저가 배지 기준, Metascore만, 스팀 로그인 방식 c 등) 유지
 - 게임 이름 한/영 중복 표시 정리(완료): games.display_name 칸(스팀명이 "영문 + 한글 음역"으로 겹친 51개에 사용자가 값 입력)을 화면 표시에만 씀 — app/lib/gameName.ts gameName(g) = display_name ?? name 한 곳(카드·캐러셀·상세·메타 title/OG·비교·핫차트·세일 타임라인·커뮤니티 등). 검색은 name·search_name_ko에 display_name도 매칭. AI 프롬프트·외부 검색 링크·관리자 화면은 name 그대로. 어떤 스크립트도 name·display_name을 갱신하지 않음(bulk-import는 새 행 insert만). player_history 읽기 2000 페이지는 chore/player-history-page로 완료
 - 큐레이터 공개 규칙(feat/curator-consent): 큐레이터 페이지는 consent_status=granted가 되기 전까지 공개하지 않는다. 연락 메시지에는 공개 링크가 아니라 스크린샷을 첨부한다(관리자 로그인 후 /c/<handle>?preview=1, noindex·사이트맵 제외). 수익화(광고·유료 노출·제휴)를 시작하기 전에는 모든 큐레이터에게 사전 연락해 협의한다. 큐레이터가 직접 소개하지 않은 게임을 그 큐레이터 추천처럼 보이게 하지 않고, 공식 제휴처럼 보이는 표현을 쓰지 않는다. curators.show_on_home은 granted일 때만 의미가 있다(아니면 true여도 무시). 내려 달라는 요청이 오면 consent_status를 revoked로
-- 큐레이터 현황(10/26 세이브슬롯 항의 뒤 동의 전 공개 페이지를 모두 내림): 공개 4곳 — 겜로그(gamelog.archive)·게임큐레이션(gamecuration.kr)·글리치(glitch_zine)·세이브슬롯(saveslot0_0, 조건부: 비상업적 아카이빙 한정·수익화 전 사전 협의 필수·메인 노출은 답 대기·새 게시물은 요청 시에만). 너겟·게임서랍장·겜위시는 archive 스키마 백업 후 삭제(10/26), 후속 안내 발송
+- 큐레이터 현황(10/26 세이브슬롯 항의 뒤 동의 전 공개 페이지를 모두 내림): 공개 5곳 — 겜로그(gamelog.archive)·게임큐레이션(gamecuration.kr)·글리치(glitch_zine)는 전부 허락, 세이브슬롯(saveslot0_0)은 조건부(비상업 한정·메인 노출은 답 대기·새 게시물은 요청 시에만), 겜위시(game__wish)는 10/26 메일로 페이지 제작만 허락(프로필 이미지·소개 문구·메인 노출은 답 대기). 너겟·게임서랍장은 archive 스키마 백업 후 삭제(10/26), 후속 안내 발송, 답 대기. 공개 차단 시험용 계정 zz_test_pending(pending)은 anon 키로 행·게시물·임베드 모두 0행, 로그아웃 /c/zz_test_pending와 OG 404를 확인해 통과, 삭제함
 - 내 PC 사양은 계정에 저장하지 않음(user_pc 표를 만들지 않음). 개인정보처리방침의 "서버로 보내지 않아요" 문구 유지
 - Pretendard 자주 쓰는 조각 preload는 하지 않음
 - 마이그레이션 파일 버전 번호 중복 3쌍(20261009090000·20261014090000·20261027090000)은 Supabase SQL 에디터로 수동 실행하는 방식이라 실행에 영향이 없어 파일 이름을 바꾸지 않음
@@ -204,6 +204,7 @@
 - Ghostrunner 2 영어 이름 수동 추가(스팀 ID 없어 스크립트 대상 아님)
 
 ### 홍보 전 (11월 초)
+- 없는 /c/[handle]·게임 페이지가 실제 404 상태 코드를 주는지 확인(지금은 404 화면인데 상태 코드 200인 소프트 404라 검색엔진에 빈 페이지가 색인될 수 있음)
 - 메인 구성 2단계 → 새 유저 가이드(온보딩)
 - 전용 이메일: 생기면 CONTACT_EMAIL과 개인정보처리방침 6번 "로그인이 안 되는 경우" 안내(지금은 /feedback "기타")를 바꿈
 - 방침 1년 자동 파기 cron: Supabase pg_cron(매일 04:30 KST) SQL을 사용자가 실행해야 방침과 맞음(파기용 마이그레이션 없음, daily 트리거 20261020090000만 있음)
