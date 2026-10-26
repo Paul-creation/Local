@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-26 (main bcd84e1)
+기준: 2026-10-26 (main ad38c09)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/26: design/detail-type — 상세 페이지 본문 글자 위계 정리, 투표 섹션 크기·배치 개선, 라벨 전용 토큰으로 라벨·값 구분(PlayerCountVote·detail-mono.css·globals.css·mono-tokens.css·games/[id]/page.tsx). build·test 454개 통과
 - 10/26: fix/copylink-no-query — /c/[handle] "링크 복사"가 현재 도메인 대신 SITE_URL + 경로(https://jamidunow.com/c/{handle})만 복사(쿼리 없음, 프리뷰·다른 도메인에서도 정식 주소). CopyLinkButton.tsx 한 파일. build·test 454개 통과
 - 10/26: fix/release-label-undated — 출시 예정 문구 판정을 숫자(연도·월·분기) 유무로: 날짜가 있으면 "출시 예정 · {원문}", "출시 예정"·"발표 예정"·Coming soon·TBA 등 날짜 아닌 문구나 빈 값은 "출시 예정 · 날짜 미정"(release.ts hasReleaseDate·comingSoonLabel). 상세 가격 카드는 날짜가 있을 때만 날짜 줄. Ebbtide(4915700)·아키에이지 크로니클(3218230) 테스트 추가. 프리뷰 확인 전 머지(사용자 지시). build·test 454개 통과
 - 10/26: docs/curator-status — STATUS 큐레이터 현황을 공개 5곳으로(겜위시 10/26 메일로 페이지 제작만 허락, 너겟·게임서랍장 답 대기), zz_test_pending 시험 통과·삭제 기록, 로드맵 "홍보 전"에 소프트 404(404 화면인데 상태 코드 200) 상태 코드 확인 추가. 코드 변경 없음, build·test 453개 통과
