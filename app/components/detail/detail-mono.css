@@ -5,7 +5,7 @@
 
 /* ---------- 스탯 타일: 표면 #111111, 위쪽 선은 원래 의미 색(--tone) ---------- */
 .mn.dx .dx-tile { background: var(--mn-surface); border: 1px solid var(--mn-line); border-top: 2px solid var(--tone); border-radius: 12px; }
-.mn.dx .dx-tile-label { font-size: 14px; font-weight: 700; }
+.mn.dx .dx-tile-label { font-size: 14px; }
 .mn.dx .dx-tile-value { font-weight: 800; }
 .mn.dx .dx-tile-sub { font-size: 13px; font-weight: 500; }
 .mn.dx .dx-cover { background: var(--mn-surface); border: 1px solid var(--mn-line); box-shadow: none; }
@@ -14,5 +14,10 @@
 .mn.dx .detail-fun { font-size: 20px; font-weight: 700; }
 .mn.dx .detail-description-v2 { font-size: 17px; line-height: 1.7; max-width: 70ch; }
 .mn.dx :is(.more-list, .info-value, .steam-cell-value) { font-size: 17px; }
-.mn.dx :is(.info-label, .steam-cell-label) { font-size: 14px; font-weight: 700; }
+.mn.dx :is(.info-label, .steam-cell-label) { font-size: 14px; }
 .mn.dx .detail-main :is(.category-tag, .activity-chip, .chip.is-static) { font-size: 15px; }
+
+/* ---------- 라벨-값 구분 — 라벨은 --mn-label(흰색 62%)·500, 값은 #EDEDED·700 ---------- */
+.mn.dx :is(.more-list dt, .info-label, .steam-cell-label, .dx-tile-label, .tag-group-label, .spec-col-title, .pcs-table thead th, .pcs-table .pcs-part, .dx-votes .vote-group-title) { color: var(--mn-label); font-weight: 500; }
+.mn.dx :is(.more-list dd, .info-value, .steam-cell-value) { color: var(--mn-fg); font-weight: 700; }
+.mn.dx .pcs-table td::before { color: var(--mn-label); font-weight: 500; }
