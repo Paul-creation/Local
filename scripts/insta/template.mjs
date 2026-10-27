@@ -40,7 +40,7 @@ em { font-style: normal; color: #FFD84A; }
 .label { font-size: 96px; font-weight: 900; letter-spacing: -0.04em; line-height: 1.2; text-align: center; }
 .shot { flex: 1; min-height: 0; display: flex; justify-content: center; align-items: center; padding-top: 50px; }
 .frame { border: 8px solid #333; border-radius: 56px; overflow: hidden; background: #0a0a0a; padding: 36px 0 36px 36px; line-height: 0; }
-.frame img { display: block; max-width: 820px; max-height: 850px; width: auto; height: auto; }
+.frame img { display: block; max-width: 800px; max-height: 790px; width: auto; height: auto; }
 
 /* cta */
 .cta-big { font-size: 190px; font-weight: 900; line-height: 1.15; letter-spacing: -0.045em; margin-top: 28px; }

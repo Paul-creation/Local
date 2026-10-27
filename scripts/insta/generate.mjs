@@ -28,7 +28,7 @@ if (!Array.isArray(slides) || slides.length === 0) { console.error('json은 슬�
 
 const dataUri = (file) => `data:image/png;base64,${fs.readFileSync(file).toString('base64')}`;
 const wallFile = path.join(CACHE, 'wall.png');
-const shotFile = path.join(CACHE, 'screenshot.png');
+const shotFile = (n) => path.join(CACHE, `screenshot-${n}.png`);
 
 // 메인 히어로 표지 벽만 남기고 4:5(1080×1350) 6열×5줄로 다시 깔아 찍는다 — 가운데 크롭 대신 처음부터 4:5로 그려 해상도를 지킨다
 async function captureWall(browser) {
@@ -51,31 +51,50 @@ async function captureWall(browser) {
   await page.close();
 }
 
-// 모바일 뷰포트로 메인을 열어 인원 탭(4인)을 누른 뒤 "N인 추천 게임" 섹션을 찍는다
-async function captureScreenshot(browser) {
-  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
+// 모바일 뷰포트로 메인을 열어 인원 탭을 누른 뒤, 인원 칩 줄부터 "첫 화면에 완전히 보이는 카드"까지만 찍는다
+// (가로 스크롤 줄이라 오른쪽에 잘린 카드는 clip 계산에서 뺀다. "뜨는 게임 더 보기" 링크는 CSS로 숨김)
+async function captureScreenshot(browser, people) {
+  const ctx = await browser.newContext({ viewport: { width: 480, height: 900 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
   const page = await ctx.newPage();
   await page.goto(SITE, { waitUntil: 'domcontentloaded' });
-  const tab = page.locator('.mn-tabs.is-section .mn-tab', { hasText: '4' }).first();
+  const tab = page.locator('.mn-tabs.is-section .mn-tab', { hasText: new RegExp(`^${people}인`) }).first();
   await tab.waitFor({ timeout: 30000 });
   await tab.click();
+  await page.addStyleTag({ content: 'section[aria-labelledby="mn-people-title"] .mn-more { display: none !important; }' });
   const sec = page.locator('section[aria-labelledby="mn-people-title"]');
   await sec.scrollIntoViewIfNeeded();
   await page.waitForFunction(() => [...document.querySelectorAll('section[aria-labelledby="mn-people-title"] img')].filter((i) => i.getBoundingClientRect().left < innerWidth).every((i) => i.complete && i.naturalWidth > 0), null, { timeout: 30000 });
   await page.waitForTimeout(500);
-  await sec.screenshot({ path: shotFile });
+  const box = await page.evaluate(() => {
+    const sec = document.querySelector('section[aria-labelledby="mn-people-title"]');
+    const tabs = sec.querySelector('.mn-tabs');
+    const row = sec.querySelector('.mn-row');
+    const r = row.getBoundingClientRect();
+    const cards = [...row.children].map((c) => c.getBoundingClientRect()).filter((c) => c.left >= r.left - 1 && c.right <= r.right + 1);
+    if (!cards.length) throw new Error('완전히 보이는 카드가 없어요');
+    const t = tabs.getBoundingClientRect();
+    const left = Math.min(t.left, cards[0].left);
+    const lastTab = [...tabs.children].map((c) => c.getBoundingClientRect()).filter((c) => c.right <= innerWidth).pop();
+    return { x: left + scrollX, y: t.top + scrollY, right: Math.max(lastTab?.right ?? 0, ...cards.map((c) => c.right)) + scrollX, bottom: Math.max(...cards.map((c) => c.bottom)) + scrollY, n: cards.length };
+  });
+  const pad = 12;
+  const clip = { x: Math.max(0, box.x - pad), y: box.y - 6, width: box.right - box.x + pad * 2, height: box.bottom - box.y + 6 + pad };
+  console.log(`카드 ${box.n}개, clip ${Math.round(clip.width)}×${Math.round(clip.height)}`);
+  await page.screenshot({ path: shotFile(people), clip, fullPage: true });
   await ctx.close();
 }
 
 fs.mkdirSync(CACHE, { recursive: true });
+const shotSlide = slides.find((s) => s.type === 'screenshot');
+const people = Number(shotSlide?.people ?? 4);
 const need = {
   wall: slides.some((s) => s.type === 'wall-cover') && (refresh || !fs.existsSync(wallFile)),
-  shot: slides.some((s) => s.type === 'screenshot') && (refresh || !fs.existsSync(shotFile)),
+  shot: !!shotSlide && (refresh || !fs.existsSync(shotFile(people))),
 };
 const browser = await chromium.launch();
 try {
   if (need.wall) { console.log('카드 벽 캡처…'); await captureWall(browser); }
-  if (need.shot) { console.log('모바일 스크린샷 캡처…'); await captureScreenshot(browser); }
+  if (need.shot) { console.log('모바일 스크린샷 캡처…'); await captureScreenshot(browser, people); }
 
   const font = fs.readFileSync(path.join(ROOT, 'node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2')).toString('base64');
   const outDir = path.join(DIR, 'out', postId);
@@ -87,7 +106,7 @@ try {
     const s = slides[i];
     const ctx = { font };
     if (s.type === 'wall-cover') ctx.wall = dataUri(wallFile);
-    if (s.type === 'screenshot') ctx.screenshot = dataUri(shotFile);
+    if (s.type === 'screenshot') ctx.screenshot = dataUri(shotFile(Number(s.people ?? 4)));
     if (s.type === 'photo-cover' && s.image) {
       ctx.photo = /^https?:/.test(s.image) ? s.image : dataUri(path.resolve(path.dirname(postFile), s.image));
     }
