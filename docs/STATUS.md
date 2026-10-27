@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-27 (main 13c8c87)
+기준: 2026-10-27 (main 56bb53a)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/27: feat/insta-generator — 인스타 게시물 이미지 생성기(scripts/insta/, 사이트 빌드와 분리). `npm run insta -- <post-id> [--refresh]`로 posts/<id>.json → out/<id>/NN.png(1080×1350). 템플릿 하나(배경 #0b0b0b·강조 #FFD84A·Pretendard 임베드·오른쪽 아래 J 로고·n/총 페이지 번호), 슬라이드 타입 wall-cover·list·chips·screenshot·cta·photo-cover(자리)·detail-grid·detail-split. 사이트 캡처(카드 벽·인원 추천·게임 상세)는 Playwright로 jamidunow.com을 찍어 cache/에 저장(첫 방문자 투어는 건너뛴 상태로). detail-split은 상세 페이지를 slides×columns 조각으로 이어 나누며 빠지는 뒤쪽 비율을 경고로 알림. pick.mjs는 detail 게임 후보를 DB에서 읽기만 함. 인트로 게시물 = 2단 상세 나누기 4장(posts/intro.json, 상세 페이지의 약 55%만 보임). cache/·out/은 gitignore. build·test 468개 통과
 - 10/27: feat/onboarding-tour — 첫 방문자용 단계별 투어(코치마크). 8단계: 1~3 히어로·커맨드바·AI 추천 버튼 소개("다음"만 진행, 대상 클릭·Tab 막음 inert) → 4 인원 탭 → 5 첫 게임 카드(클릭하면 상세로 이어짐) → 6~7 상세 스탯 타일·가격 카드(화면 위에서부터 한 번에 하나, 대상이 없으면 건너뜀) → 8 비교에 담기 → 마무리 "준비 끝!"(2초). 구멍 뚫린 오버레이(rgba(0,0,0,.65))·흰 말풍선·"N / 8" 배지·막대 8칸·건너뛰기·Esc·Tab 순환, 서버 렌더 없음·전부 position: fixed(CLS 홈 0.0000·상세 0.0000, 말풍선은 transform으로만 이동). 시작: 홈 + 주소에 검색 조건 없음 + 봇 UA 아님 + 인원 탭·첫 카드 있음 + localStorage 쓰기 가능. 스크롤은 시작·상세 진입 0에서, 이후엔 대상이 화면 밖일 때만 위쪽 1/3로 부드럽게. 저장 키 jdn_tour_v2(v1 값이 있으면 본 사람이라 안 띄움). /guide 맨 위 "튜토리얼 다시 보기". 규칙은 app/lib/tour.ts(테스트 tour.test.mjs), 화면은 components/tour/TourRoot.tsx·tour.css, 대상은 data-tour 속성(hero·cmdbar·ai·people-tabs·first-card·stat-tiles·price-card·compare-add). build·test 468개 통과
 - 10/26: chore/brand-icon — 사이트 아이콘을 JamiDuNow 로고로 교체(public/brand/logo.svg 마스터, app/favicon.ico 16·32·48, icon.png 512, apple-icon.png 180 꽉 찬 정사각형). manifest·OG 로고 자리 없음. build·test 454개 통과
 - 10/26: chore/contact-email — 전용 연락 이메일 jamidunow@gmail.com을 CONTACT_EMAIL 코드 기본값으로(NEXT_PUBLIC_CONTACT_EMAIL로 덮어쓰기 가능), 방침 Steam 로그인 삭제 안내를 이메일로, 푸터에 "문의" 메일 링크 추가. 개인 이메일 노출 없음. build·test 454개 통과
