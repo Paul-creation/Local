@@ -1,5 +1,20 @@
 [
-  { "type": "wall-cover", "headline": "금요일 밤,\n친구들이랑\n뭐 하지?", "overlay": 0.62, "blur": 3 },
-  { "type": "screenshot", "label": "인원만 고르면\n요즘 뜨는 게임이 다 나오고" },
-  { "type": "detail-grid", "label": "찾던 정보는 전부 한곳에", "small": "jamidunow.com", "slug": "Overcooked! 2" }
+  {
+    "type": "wall-cover",
+    "headline": "금요일 밤,\n친구들이랑\n뭐 하지?",
+    "overlay": 0.62,
+    "blur": 3
+  },
+  {
+    "type": "screenshot",
+    "label": "인원만 고르면\n요즘 뜨는 게임이 다 나오고"
+  },
+  {
+    "type": "detail-split",
+    "label": "찾던 정보는 전부 한곳에",
+    "slug": "Overcooked! 2",
+    "slides": 2,
+    "columns": 2,
+    "small": "jamidunow.com"
+  }
 ]
