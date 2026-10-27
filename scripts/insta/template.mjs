@@ -37,7 +37,7 @@ em { font-style: normal; color: #FFD84A; }
 .chip { border: 3px solid #5a5a5a; border-radius: 999px; padding: 20px 44px; font-size: 46px; font-weight: 600; }
 
 /* screenshot */
-.label { font-size: 96px; font-weight: 900; letter-spacing: -0.04em; line-height: 1.2; text-align: center; text-wrap: balance; }
+.label { font-size: 88px; font-weight: 900; letter-spacing: -0.04em; line-height: 1.2; text-align: center; text-wrap: balance; }
 .shot { flex: 1; min-height: 0; display: flex; justify-content: center; align-items: flex-start; padding-top: 36px; }
 .frame { border: 8px solid #333; border-radius: 56px; overflow: hidden; background: #0a0a0a; padding: 28px 0 28px 28px; line-height: 0; }
 .frame img { display: block; max-width: 860px; max-height: 822px; width: auto; height: auto; }
@@ -81,7 +81,6 @@ const BODY = {
       <div class="label">${rich(s.label)}</div>
       <div class="shot"><div class="frame"><img src="${ctx.screenshot}" alt=""></div></div>
     </div>`,
-  trending: (s, ctx) => BODY.screenshot(s, ctx),
   'detail-pair': (s, ctx) => `
     <div class="pad" style="padding-bottom:84px">
       <div class="label" ${s.size ? `style="font-size:${+s.size}px"` : ''}>${rich(s.label)}</div>

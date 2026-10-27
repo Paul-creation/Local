@@ -29,7 +29,6 @@ if (!Array.isArray(slides) || slides.length === 0) { console.error('json은 슬�
 
 const dataUri = (file) => `data:image/png;base64,${fs.readFileSync(file).toString('base64')}`;
 const wallFile = path.join(CACHE, 'wall.png');
-const shotPeople = (s) => Number(s.people ?? 4);
 
 // 메인 히어로 표지 벽만 남기고 4:5(1080×1350) 6열×5줄로 다시 깔아 찍는다 — 가운데 크롭 대신 처음부터 4:5로 그려 해상도를 지킨다
 async function captureWall(browser) {
@@ -53,7 +52,7 @@ async function captureWall(browser) {
 }
 
 // 메인 "N인 추천 게임" 섹션 캡처 (모바일 뷰포트, 가로 스크롤 줄에서 완전히 보이는 카드만 clip에 넣는다)
-//  chips: 인원 칩 줄부터 카드까지 / cards: 카드만 + 배지 조건(need)에 맞는 인원을 찾을 때까지 2~5인을 훑는다
+//  chips: 인원 칩 줄부터 카드까지(아니면 카드만). people이 없으면 배지 조건(need)에 맞는 인원을 찾을 때까지 2~5인을 훑고, 칩도 그 인원이 선택된 상태
 async function capturePeople(browser, { people, chips, width, need = [], file }) {
   const ctx = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
   const page = await ctx.newPage();
@@ -131,23 +130,19 @@ async function captureDetail(browser, game, files) {
 fs.mkdirSync(CACHE, { recursive: true });
 const slideOf = (type) => slides.find((s) => s.type === type);
 const shotSlide = slideOf('screenshot');
-const trendSlide = slideOf('trending');
 const detailSlide = slideOf('detail-pair');
-const shotFile = (n) => path.join(CACHE, `screenshot-${n}.png`);
-const trendFile = (n) => path.join(CACHE, `trending-${n ?? 'auto'}.png`);
+const shotPeople = (s) => (s.people ? Number(s.people) : null); // 비우면 배지가 다 보이는 인원을 자동으로 찾는다
+const shotFile = (n) => path.join(CACHE, `screenshot-${n ?? 'auto'}.png`);
 const detailKey = (slug) => String(slug ?? 'auto').replace(/[^\w.-]+/g, '_');
 const detailFiles = (slug) => ({ top: path.join(CACHE, `detail-${detailKey(slug)}-top.png`), spec: path.join(CACHE, `detail-${detailKey(slug)}-spec.png`) });
 const stale = (f) => refresh || !fs.existsSync(f);
-const TREND_NEED = ['신작', '다시 뜨는 중'];
+const SHOT_NEED = ['요즘 뜨는 중', '다시 뜨는 중', '신작'];
 const browser = await chromium.launch();
 try {
-  const trendPeople = trendSlide?.people ? Number(trendSlide.people) : null;
-  const trendCache = () => (trendPeople ? trendFile(trendPeople) : trendFile(null));
   if (slideOf('wall-cover') && stale(wallFile)) { console.log('카드 벽 캡처…'); await captureWall(browser); }
-  if (shotSlide && stale(shotFile(shotPeople(shotSlide)))) { console.log('인원 추천 스크린샷 캡처…'); await capturePeople(browser, { people: shotPeople(shotSlide), chips: true, width: 480, file: shotFile }); }
-  if (trendSlide && stale(trendCache())) {
-    console.log('뜨는 게임 캡처…');
-    await capturePeople(browser, { people: trendPeople, chips: false, width: 640, need: TREND_NEED, file: (n) => (trendPeople ? trendFile(trendPeople) : trendFile(null)) });
+  if (shotSlide && stale(shotFile(shotPeople(shotSlide)))) {
+    console.log('인원 추천 스크린샷 캡처…');
+    await capturePeople(browser, { people: shotPeople(shotSlide), chips: true, width: 640, need: SHOT_NEED, file: () => shotFile(shotPeople(shotSlide)) });
   }
   if (detailSlide) {
     const files = detailFiles(detailSlide.slug);
@@ -177,7 +172,6 @@ try {
     const ctx = { font };
     if (s.type === 'wall-cover') ctx.wall = dataUri(wallFile);
     if (s.type === 'screenshot') ctx.screenshot = dataUri(shotFile(shotPeople(s)));
-    if (s.type === 'trending') ctx.screenshot = dataUri(trendCache());
     if (s.type === 'detail-pair') { const f = detailFiles(s.slug); ctx.top = dataUri(f.top); ctx.spec = dataUri(f.spec); }
     if (s.type === 'photo-cover' && s.image) {
       ctx.photo = /^https?:/.test(s.image) ? s.image : dataUri(path.resolve(path.dirname(postFile), s.image));
