@@ -24,15 +24,22 @@ const postFile = path.join(DIR, 'posts', `${postId}.json`);
 if (!fs.existsSync(postFile)) { console.error(`게시물 파일이 없어요: ${path.relative(ROOT, postFile)}`); process.exit(1); }
 const raw = fs.readFileSync(postFile, 'utf8');
 if (raw.includes('재밌드나')) { console.error('화면에는 "재밌드나"를 쓰지 않아요. JamiDuNow만 쓰세요.'); process.exit(1); }
-const slides = JSON.parse(raw);
+const slides = JSON.parse(raw).flatMap((s) => (s.type === 'detail-split' ? Array.from({ length: s.slides ?? 1 }, (_, part) => ({ ...s, part, parts: s.slides ?? 1 })) : [s])); // detail-split 한 줄 = slides장
 if (!Array.isArray(slides) || slides.length === 0) { console.error('json은 슬라이드 배열이어야 해요.'); process.exit(1); }
+
+// 첫 방문자 투어(jdn_tour_v2)가 화면을 덮어 클릭을 막으니, 투어를 건너뛴 상태로 시작한다
+async function newContext(browser, opts) {
+  const ctx = await browser.newContext(opts);
+  await ctx.addInitScript(() => { try { localStorage.setItem('jdn_tour_v2', JSON.stringify({ status: 'skipped', step: 0 })); } catch { /* 저장소 없음 */ } });
+  return ctx;
+}
 
 const dataUri = (file) => `data:image/png;base64,${fs.readFileSync(file).toString('base64')}`;
 const wallFile = path.join(CACHE, 'wall.png');
 
 // 메인 히어로 표지 벽만 남기고 4:5(1080×1350) 6열×5줄로 다시 깔아 찍는다 — 가운데 크롭 대신 처음부터 4:5로 그려 해상도를 지킨다
 async function captureWall(browser) {
-  const page = await browser.newPage({ viewport: { width: SIZE.width, height: SIZE.height } });
+  const page = await (await newContext(browser, { viewport: { width: SIZE.width, height: SIZE.height } })).newPage();
   await page.goto(SITE, { waitUntil: 'domcontentloaded' });
   await page.waitForSelector('.mn-hero-bg img', { state: 'attached', timeout: 30000 });
   await page.addStyleTag({ content: `
@@ -54,7 +61,7 @@ async function captureWall(browser) {
 // 메인 "N인 추천 게임" 섹션 캡처 (모바일 뷰포트, 가로 스크롤 줄에서 완전히 보이는 카드만 clip에 넣는다)
 //  chips: 인원 칩 줄부터 카드까지(아니면 카드만). people이 없으면 배지 조건(need)에 맞는 인원을 찾을 때까지 2~5인을 훑고, 칩도 그 인원이 선택된 상태
 async function capturePeople(browser, { people, chips, width, need = [], file }) {
-  const ctx = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
+  const ctx = await newContext(browser, { viewport: { width, height: 900 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
   const page = await ctx.newPage();
   await page.goto(SITE, { waitUntil: 'domcontentloaded' });
   const secSel = 'section[aria-labelledby="mn-people-title"]';
@@ -102,7 +109,7 @@ async function capturePeople(browser, { people, chips, width, need = [], file })
 // 게임 상세 페이지 모바일 캡처 4조각(deviceScaleFactor 3): 인원 / 가격·역대 최저가 / PC 사양 표 / 영상 썸네일
 // 각 조각은 해당 요소(들)의 상자만 clip으로 찍는다 — 카드가 따로 테두리를 두르니 섹션 자체의 테두리·여백은 뺀다
 async function captureDetail(browser, game, files) {
-  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
+  const ctx = await newContext(browser, { viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
   const page = await ctx.newPage();
   await page.goto(`${SITE}/games/${game.id}`, { waitUntil: 'networkidle' });
   await page.locator('.dx-title').waitFor({ timeout: 30000 });
@@ -134,10 +141,93 @@ async function captureDetail(browser, game, files) {
   await ctx.close();
 }
 
+// 게임 상세 페이지 전체를 모바일(폭 430, deviceScaleFactor 3)로 찍어 1000px 높이 띠(band)들로 cache에 저장한다 (한 번에 fullPage로 찍으면 16384px 한도를 넘음)
+// 이 게임 정보가 아닌 부분(상단 메뉴·뒤로가기·푸터·시리즈·비슷한 게임·의견 달기 입력)만 숨기고 나머지는 전부 남긴다
+const SPLIT_W = 430;
+const BAND = 1000;
+const splitFiles = (slug) => ({ json: path.join(CACHE, `split-${detailKey(slug)}.json`), band: (i) => path.join(CACHE, `split-${detailKey(slug)}-${i}.png`) });
+async function captureSplit(browser, game, files) {
+  const ctx = await newContext(browser, { viewport: { width: SPLIT_W, height: 900 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
+  const page = await ctx.newPage();
+  await page.goto(`${SITE}/games/${game.id}`, { waitUntil: 'networkidle' });
+  await page.locator('.dx-title').waitFor({ timeout: 30000 });
+  await page.addStyleTag({ content: '.site-header, .back-link, footer, .similar-section, .series-section { display: none !important; }' });
+  await page.evaluate(() => [...document.querySelectorAll('section')].forEach((e) => { if (e.querySelector('h3')?.textContent.trim() === '의견 달기') e.style.display = 'none'; }));
+  // 끝까지 천천히 내려 lazy 이미지를 받는다
+  const total = await page.evaluate(() => document.documentElement.scrollHeight);
+  for (let y = 0; y < total; y += 600) { await page.evaluate((v) => window.scrollTo(0, v), y); await page.waitForTimeout(120); }
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForFunction(() => [...document.querySelectorAll('main img')].filter((i) => i.getBoundingClientRect().height > 0).every((i) => i.complete && i.naturalWidth > 0), null, { timeout: 15000 })
+    .catch(async () => console.warn('경고: 안 받아진 이미지가 있어요:', await page.evaluate(() => [...document.querySelectorAll('main img')].filter((i) => i.getBoundingClientRect().height > 0 && !(i.complete && i.naturalWidth > 0)).map((i) => i.currentSrc || i.src).slice(0, 5))));
+  await page.waitForTimeout(800);
+  // 구획(섹션) 위쪽 경계와 콘텐츠 끝
+  const { bounds, atoms, heads, end } = await page.evaluate(() => {
+    const m = document.querySelector('main');
+    const units = [...m.querySelectorAll(':scope > header.dx-head, :scope > ul.dx-tiles, .detail-price, .detail-main > *')].filter((e) => e.getBoundingClientRect().height > 0);
+    const tops = units.map((e) => Math.round(e.getBoundingClientRect().top + scrollY));
+    const last = units[units.length - 1].getBoundingClientRect();
+    // 자르면 안 되는 덩어리(글줄·제목·카드·썸네일 등)의 세로 범위와 제목 위치
+    const box = (e) => { const r = e.getBoundingClientRect(); return [r.top + scrollY, r.bottom + scrollY]; };
+    const inUnits = (e) => units.some((u) => u.contains(e));
+    const atoms = [...m.querySelectorAll('*')].filter((e) => !e.children.length || e.matches('h1, h2, h3, p, li, img, picture, button, a, dt, dd, tr, svg, canvas, .dx-tile, .dx-badges > *, .dx-chips > *, .chip, .video-stage, .video-stage-info, .lowest-gauge, .price-card-was, .price-card-now, .detail-links > *'))
+      .filter((e) => inUnits(e) && e.getBoundingClientRect().height > 0).map(box).map(([a, b]) => [Math.round(a), Math.round(b)]);
+    const heads = [...m.querySelectorAll('h2, h3')].filter((e) => inUnits(e) && e.getBoundingClientRect().height > 0).map((e) => Math.round(e.getBoundingClientRect().bottom + scrollY));
+    return { bounds: tops, atoms, heads, end: Math.round(last.bottom + scrollY) + 16 };
+  });
+  const bands = [];
+  for (let y = 0, i = 0; y < end; y += BAND, i++) {
+    const h = Math.min(BAND, end - y);
+    await page.screenshot({ path: files.band(i), clip: { x: 0, y, width: SPLIT_W, height: Math.min(h + 2, (await page.evaluate(() => document.documentElement.scrollHeight)) - y) }, fullPage: true });
+    bands.push({ y, h });
+  }
+  fs.writeFileSync(files.json, JSON.stringify({ width: SPLIT_W, height: end, bounds, atoms, heads, bands }));
+  await ctx.close();
+}
+
+// 상세 캡처를 slides장 × columns단 조각으로 위에서부터 이어 나눈다. 조각 높이는 단 폭에 맞춘 배율로 정해지고,
+// 조각 끝은 구획 경계로 옮긴다(절반 이상 찼을 때). 그래도 구획이 조각보다 크면 그 자리에서 자른다.
+const CANVAS_W = 1080;
+const SIDE = 72;
+const COL_GAP = 24;
+const AREA_BOTTOM = 1170; // 로고·넘김 표시·jamidunow.com 줄 위
+const areaTop = (part) => (part === 0 ? 280 : 110); // 첫 장은 라벨 아래, 나머지는 페이지 번호 아래
+function planSplit(layout, slidesN, cols) {
+  const outerW = (CANVAS_W - SIDE * 2 - COL_GAP * (cols - 1)) / cols;
+  const W = outerW - 3;
+  const sc = W / layout.width;
+  const plan = [];
+  let y = 0;
+  let hardCuts = 0;
+  for (let part = 0; part < slidesN; part++) {
+    const areaH = AREA_BOTTOM - areaTop(part);
+    const cap = (areaH - 3) / sc;
+    const pieces = [];
+    for (let c = 0; c < cols; c++) {
+      const ideal = y + cap;
+      let end;
+      if (ideal >= layout.height) end = layout.height;
+      else {
+        // 글줄·카드·썸네일 한가운데가 아니고, 제목이 조각 맨 끝에 혼자 남지 않는 가장 아래 자리 (구획·덩어리 사이 빈틈)
+        const okCut = (c) => !layout.atoms.some(([a, b]) => a + 1 < c && c < b - 1) && !layout.heads.some((h) => h <= c && c - h < 60) ;
+        let b = null;
+        for (let c = Math.floor(ideal); c > y + cap * 0.3; c--) if (okCut(c)) { b = c; break; }
+        if (b != null) { let lo = b; while (lo - 1 > y + cap * 0.3 && okCut(lo - 1)) lo--; end = Math.round((lo + b) / 2); } // 빈틈의 가운데에서 자른다
+        else { end = ideal; hardCuts++; }
+      }
+      if (y >= layout.height) { pieces.push(null); continue; }
+      pieces.push({ y0: y, y1: end, sc, W, outerW, areaH });
+      y = end;
+    }
+    plan.push(pieces);
+  }
+  return { plan, covered: y, hardCuts };
+}
+
 fs.mkdirSync(CACHE, { recursive: true });
 const slideOf = (type) => slides.find((s) => s.type === type);
 const shotSlide = slideOf('screenshot');
 const detailSlide = slideOf('detail-grid');
+const splitSlide = slideOf('detail-split');
 const shotPeople = (s) => (s.people ? Number(s.people) : null); // 비우면 배지가 다 보이는 인원을 자동으로 찾는다
 const shotFile = (n) => path.join(CACHE, `screenshot-${n ?? 'auto'}.png`);
 const detailKey = (slug) => String(slug ?? 'auto').replace(/[^\w.-]+/g, '_');
@@ -151,6 +241,25 @@ try {
   if (shotSlide && stale(shotFile(shotPeople(shotSlide)))) {
     console.log('인원 추천 스크린샷 캡처…');
     await capturePeople(browser, { people: shotPeople(shotSlide), chips: true, width: 640, need: SHOT_NEED, file: () => shotFile(shotPeople(shotSlide)) });
+  }
+  let splitLayout = null;
+  if (splitSlide) {
+    const sf = splitFiles(splitSlide.slug);
+    if (stale(sf.json)) {
+      console.log('게임 상세 전체 캡처…');
+      const game = splitSlide.slug ? await resolveGame(splitSlide.slug) : (await pickCandidates())[0];
+      if (!game) throw new Error('detail-split 게임을 못 찾았어요 (slug를 지정하세요)');
+      console.log(`상세: ${gameTitle(game)}`);
+      await captureSplit(browser, game, sf);
+    }
+    splitLayout = JSON.parse(fs.readFileSync(sf.json, 'utf8'));
+    const { plan, covered, hardCuts } = planSplit(splitLayout, splitSlide.parts, splitSlide.columns ?? 1);
+    splitLayout.planned = plan;
+    const pct = Math.round((covered / splitLayout.height) * 100);
+    console.log(`상세 나누기: ${splitSlide.parts}장 × ${splitSlide.columns ?? 1}단 → 페이지의 ${pct}% 표시 (${Math.round(covered)}/${splitLayout.height}px)${hardCuts ? `, 구획 중간에서 자른 곳 ${hardCuts}곳` : ''}`);
+    if (covered < splitLayout.height) {
+      for (let n = splitSlide.parts + 1; n <= 40; n++) if (planSplit(splitLayout, n, splitSlide.columns ?? 1).covered >= splitLayout.height) { console.warn(`경고: 이 배율로 페이지 전체를 보이려면 ${n}장 × ${splitSlide.columns ?? 1}단이 필요해요 (뒤쪽 ${100 - pct}%는 빠짐)`); break; }
+    }
   }
   if (detailSlide) {
     const files = detailFiles(detailSlide.slug);
@@ -180,6 +289,14 @@ try {
     const ctx = { font };
     if (s.type === 'wall-cover') ctx.wall = dataUri(wallFile);
     if (s.type === 'screenshot') ctx.screenshot = dataUri(shotFile(shotPeople(s)));
+    if (s.type === 'detail-split') {
+      const sf = splitFiles(s.slug);
+      ctx.split = { first: s.part === 0, last: s.part === s.parts - 1, top: areaTop(s.part), areaH: AREA_BOTTOM - areaTop(s.part), gap: COL_GAP, side: SIDE,
+        pieces: splitLayout.planned[s.part].filter(Boolean).map((p) => ({
+          W: p.W, outerW: p.outerW, h: (p.y1 - p.y0) * p.sc,
+          imgs: splitLayout.bands.map((b, i) => ({ b, i })).filter(({ b }) => b.y + b.h > p.y0 && b.y < p.y1).map(({ b, i }) => ({ src: dataUri(sf.band(i)), top: (b.y - p.y0) * p.sc, w: p.W })),
+        })) };
+    }
     if (s.type === 'detail-grid') { const f = detailFiles(s.slug); ctx.parts = Object.fromEntries(DETAIL_PARTS.map((p) => [p, dataUri(f[p])])); }
     if (s.type === 'photo-cover' && s.image) {
       ctx.photo = /^https?:/.test(s.image) ? s.image : dataUri(path.resolve(path.dirname(postFile), s.image));

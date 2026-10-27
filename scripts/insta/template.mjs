@@ -52,6 +52,14 @@ em { font-style: normal; color: #FFD84A; }
 .gcard.spec img { width: auto; max-width: 100%; max-height: 360px; }
 .foot { text-align: center; font-size: 36px; font-weight: 600; color: rgba(255,255,255,.7); padding-top: 20px; margin-right: 140px; margin-left: 140px; }
 
+/* detail-split */
+.split { position: absolute; display: flex; }
+.sp { position: relative; height: 100%; overflow: hidden; background: #0a0a0a; border: 1.5px solid #2e2e2e; border-radius: 28px; }
+.spc { position: absolute; left: 0; top: 0; width: 100%; overflow: hidden; }
+.sp img { position: absolute; left: 0; display: block; height: auto; }
+.next { position: absolute; right: 176px; bottom: 88px; z-index: 5; font-size: 44px; font-weight: 600; line-height: 1; color: rgba(255,255,255,.7); }
+.foot-abs { position: absolute; left: 140px; right: 180px; bottom: 80px; text-align: center; font-size: 36px; font-weight: 600; color: rgba(255,255,255,.7); }
+
 /* cta */
 .cta-big { font-size: 190px; font-weight: 900; line-height: 1.15; letter-spacing: -0.045em; margin-top: 28px; }
 .footer { margin-top: auto; font-size: 40px; font-weight: 600; color: rgba(255,255,255,.7); padding-right: 140px; }
@@ -95,6 +103,15 @@ const BODY = {
       </div>
       <div class="foot">${rich(s.small ?? 'jamidunow.com')}</div>
     </div>`,
+  'detail-split': (s, ctx) => {
+    const sp = ctx.split;
+    return `
+    ${sp.first ? `<div class="pad" style="padding-bottom:0"><div class="label">${rich(s.label ?? '')}</div></div>` : ''}
+    <div class="split" style="top:${sp.top}px;height:${sp.areaH}px;left:${sp.side}px;right:${sp.side}px;gap:${sp.gap}px">
+      ${sp.pieces.map((p) => `<div class="sp" style="width:${p.outerW}px"><div class="spc" style="height:${p.h}px">${p.imgs.map((i) => `<img src="${i.src}" style="top:${i.top}px;width:${i.w}px" alt="">`).join('')}</div></div>`).join('')}
+    </div>
+    ${sp.last ? `<div class="foot-abs">${rich(s.small ?? 'jamidunow.com')}</div>` : '<div class="next">→</div>'}`;
+  },
   cta: (s) => `
     <div class="pad">
       <div class="small">${rich(s.small)}</div>
