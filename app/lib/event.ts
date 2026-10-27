@@ -1,6 +1,6 @@
 // 담당: Paul(메인 배너·디자인)
 // 메인 상단 이벤트 영역. 날짜가 맞는 이벤트가 있으면 그걸, 없으면 그 달의 기본 이벤트를 보여준다.
-// 태그는 DB(games.tags)에 실제로 있는 한국어 태그 이름만 쓴다. 여러 개면 하나라도 맞는 게임이 나온다.
+// 태그는 DB(games.tags)에 실제로 있는 한국어 태그 이름만 쓴다. 여러 개면 하나라도 맞는 게임이 나온다 (링크에 match=any를 붙여 홈 필터가 OR로 거른다. 직접 고른 태그는 AND).
 
 // 배너 카드 색 — 이벤트 색의 아주 어두운 배경. 실제 색은 globals.css .home-event[data-tone]
 export type EventTone = 'horror' | 'blue' | 'red' | 'green' | 'pink' | 'gold' | 'purple' | 'teal' | 'orange';
@@ -61,5 +61,5 @@ export function getCurrentEvent(now: Date = new Date(), previewMonth?: number): 
 
 // "보러 가기" — 기존 URL 상태 방식(/?r=1&tags=...) 그대로
 export function eventHref(event: HomeEvent) {
-  return `/?${new URLSearchParams({ r: '1', tags: event.tags.join(',') }).toString()}`;
+  return `/?${new URLSearchParams({ r: '1', tags: event.tags.join(','), match: 'any' }).toString()}`;
 }

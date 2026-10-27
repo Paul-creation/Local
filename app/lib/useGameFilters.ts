@@ -5,6 +5,7 @@ import { useState, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { compareBlockReason, MAX_COMPARE } from './compareRule';
 import { readPick, writePick, COMPARE_EVENT } from './compareStore';
 import { matchesGame, normalizeSearch, searchNames } from './searchMatch';
+import { matchesTags } from './tagMatch';
 import { buildTagLookup, hasTag, parseSearchInput, FLAG_TAGS, isTreeTag } from './tagSearch';
 import { countByNode, nameToTagId, type TagTree } from './tagTree';
 import { getPriceInfo } from './price';
@@ -66,6 +67,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
   const [selectedCategory, setSelectedCategory] = useState('');
   // 고른 태그: 태그 나무 칸 번호("1663") 또는 협동·대전 단어 (app/lib/tagSearch). 서로 다른 칸끼리는 AND
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [tagMatchAny, setTagMatchAny] = useState(false); // ?match=any — 이벤트 링크만. 직접 태그를 고르면 다시 AND
   // 빼고 보기: 이용 연령·표현 칸(선정성·폭력·고어·유혈) 중 고른 칸의 게임을 뺀다
   const [excludedTags, setExcludedTags] = useState<string[]>([]);
   // 진입장벽 낮음·보통·높음 (여러 개 고르면 그중 하나)
@@ -126,6 +128,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     // 예전 공유 링크의 ?tags=1644처럼 활동과 같은 뜻의 태그(ACTIVITY_TAG_MAP)는 활동 조건으로 바꿔 적용한다 (주소는 아래 URL_STATE 효과가 ?act=drive로 교체)
     const urlTags = (sp.get('tags') || '').split(',').filter(Boolean);
     setSelectedTags(urlTags.filter((t) => !activityForTag(t)));
+    setTagMatchAny(sp.get('match') === 'any');
     setExcludedTags((sp.get('ex') || '').split(',').filter(isTreeTag));
     setSelectedBarriers(barrierFromUrl(sp.get('barrier')));
     setSelectedNet(netFromUrl(sp.get('net')));
@@ -169,6 +172,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     if (query) q.set('q', query);
     if (selectedCategory) q.set('cat', selectedCategory);
     if (selectedTags.length) q.set('tags', selectedTags.join(','));
+    if (selectedTags.length && tagMatchAny) q.set('match', 'any');
     if (selectedActs.length) q.set('act', selectedActs.join(','));
     if (selectedActs.length && actIncludeUnsure) q.set('actu', '1');
     if (excludedTags.length) q.set('ex', excludedTags.join(','));
@@ -193,7 +197,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     if (window.location.pathname === '/' && window.location.pathname + window.location.search !== url) {
       window.history.replaceState(null, '', url);
     }
-  }, [inited, showResults, query, selectedCategory, selectedTags, selectedActs, actIncludeUnsure, excludedTags, selectedBarriers, storyOnly, selectedNet, selectedTrend, playersRange, soloOnly, duoOnly, largeOnly, demoOnly, priceRange, saleOnly, myPcOnly, sort, compareList]);
+  }, [inited, showResults, query, selectedCategory, selectedTags, tagMatchAny, selectedActs, actIncludeUnsure, excludedTags, selectedBarriers, storyOnly, selectedNet, selectedTrend, playersRange, soloOnly, duoOnly, largeOnly, demoOnly, priceRange, saleOnly, myPcOnly, sort, compareList]);
 
   // 카드나 비교하기를 누를 때 지금 목록 주소와 스크롤 위치를 기억
   const rememberList = () => {
@@ -243,8 +247,10 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     });
   };
 
-  const toggleTag = (tag: string) =>
+  const toggleTag = (tag: string) => {
+    setTagMatchAny(false);
     setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
+  };
   const toggleExcluded = (tag: string) =>
     setExcludedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
   const toggleNet = (k: NetKey) =>
@@ -263,6 +269,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     const acts = tags.map(activityForTag).filter((a): a is ActivityKey => !!a);
     if (acts.length) setSelectedActs(prev => [...prev, ...acts.filter(a => !prev.includes(a))]);
     const rest = tags.filter(t => !activityForTag(t));
+    if (rest.length) setTagMatchAny(false);
     if (rest.length) setSelectedTags(prev => [...prev, ...rest.filter(t => !prev.includes(t))]);
   };
 
@@ -339,9 +346,9 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     if (myPcActive && myPc && !runsOnMyPc(toUserPc(myPc), g)) return false;
     if (hideOwnedActive && owned.has(g.steam_appid)) return false;
     if (selectedCategory && !badgeMatches(g.category, selectedCategory)) return false;
-    // 고른 칸을 전부 만족하는 게임만 (AND). 상위 칸은 그 아래 태그 중 하나라도 있으면,
+    // 고른 칸을 전부 만족하는 게임만 (AND, 이벤트 링크 ?match=any면 하나라도 OR). 상위 칸은 그 아래 태그 중 하나라도 있으면,
     // 협동·대전은 스팀 카테고리 플래그(has_online_coop 등)로 (app/lib/tagSearch)
-    if (selectedTags.length > 0 && !selectedTags.every(t => hasTag(g, t, tree))) return false;
+    if (!matchesTags(selectedTags, (t) => hasTag(g, t, tree), tagMatchAny)) return false;
     // 빼고 보기: 고른 칸(선정성·폭력·고어·유혈) 중 하나라도 있으면 뺀다
     if (excludedTags.length > 0 && excludedTags.some(t => hasTag(g, t, tree))) return false;
     if (selectedActs.length > 0 && !matchesActivities(g, selectedActs, actIncludeUnsure, actAlsoHas)) return false;
@@ -418,6 +425,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
   const clearConditions = () => {
     setSelectedCategory('');
     setSelectedTags([]);
+    setTagMatchAny(false);
     setExcludedTags([]);
     setSelectedBarriers([]);
     setSelectedNet([]);
@@ -441,6 +449,7 @@ export function useGameFilters(games: any[] | null, tree: TagTree | null = null)
     setQuery('');
     setSelectedCategory('');
     setSelectedTags([]);
+    setTagMatchAny(false);
     setExcludedTags([]);
     setSelectedBarriers([]);
     setSelectedNet([]);
