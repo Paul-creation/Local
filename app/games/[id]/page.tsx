@@ -374,7 +374,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               </>
             )}
           </div>
-          <CuratorsOfGame items={curators} />
+          <CuratorsOfGame items={curators} gameId={game.id} />
           {game.discord_url && (
             <a href={game.discord_url} target="_blank" rel="noopener nofollow" className="detail-card discord-card">공식 디스코드 ↗</a>
           )}

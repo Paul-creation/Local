@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import GameCard from './home/GameCard';
+import OutboundLink from './OutboundLink';
 import { buildTree, type TagDict } from '../lib/tagTree';
 import tagDict from '../lib/tag-search-dict.json';
 import { getPriceInfo } from '../lib/price';
@@ -35,7 +36,7 @@ const factsOf = (g: Game) => ({
 });
 
 // 계정 프로필 본문 — 보기 전환(게시물별 / 게임 전체). 보기는 주소 ?view=all로 유지(기본 게시물별)
-export default function CuratorGames({ games, sections, entries, initialView = 'posts' }: { games: Record<string, Game>; sections: Section[]; entries: GameEntry[]; initialView?: View }) {
+export default function CuratorGames({ curator, games, sections, entries, initialView = 'posts' }: { curator: string; games: Record<string, Game>; sections: Section[]; entries: GameEntry[]; initialView?: View }) {
   const [view, setViewState] = useState<View>(initialView);
   const [filters, setFilters] = useState<GameFilter[]>([]);
   const [sort, setSort] = useState<GameSort>('recent');
@@ -70,7 +71,7 @@ export default function CuratorGames({ games, sections, entries, initialView = '
               <div className="curator-section-head">
                 <h2 className="curator-section-title">{s.title}</h2>
                 <span className="curator-section-date">{s.dateText}</span>
-                <a href={s.url} target="_blank" rel="noopener noreferrer" className="curator-link">원본 게시물 보기 ↗</a>
+                <OutboundLink href={s.url} curator={curator} gameId={s.gameIds.length === 1 ? s.gameIds[0] : null} className="curator-link">원본 게시물 보기 ↗</OutboundLink>
               </div>
               <ul className="curator-games">
                 {s.gameIds.map((id) => (
@@ -104,7 +105,7 @@ export default function CuratorGames({ games, sections, entries, initialView = '
                   <GameCard game={games[e.gameId]} tree={TREE} />
                   <div className="curator-game-posts">
                     {e.posts.map((p) => (
-                      <a key={p.id} href={p.url} target="_blank" rel="noopener noreferrer" className="curator-link">원본 게시물 보기 ↗</a>
+                      <OutboundLink key={p.id} href={p.url} curator={curator} gameId={e.gameId} className="curator-link">원본 게시물 보기 ↗</OutboundLink>
                     ))}
                   </div>
                 </li>
