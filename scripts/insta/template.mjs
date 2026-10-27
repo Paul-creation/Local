@@ -64,6 +64,14 @@ em { font-style: normal; color: #FFD84A; }
 .cta-big { font-size: 190px; font-weight: 900; line-height: 1.15; letter-spacing: -0.045em; margin-top: 28px; }
 .footer { margin-top: auto; font-size: 40px; font-weight: 600; color: rgba(255,255,255,.7); padding-right: 140px; }
 
+/* end-card */
+.end-card .page { background: none; color: #888; }
+.end { position: absolute; inset: 0; background: #FFFFFF; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #0b0b0b; padding-bottom: 60px; }
+.end svg { display: block; width: 340px; height: 340px; }
+.end-name { margin-top: 56px; font-size: 132px; font-weight: 900; line-height: 1.1; letter-spacing: -0.04em; }
+.end-sub { margin-top: 20px; font-size: 52px; font-weight: 600; color: #555; }
+.end-url { position: absolute; left: 0; right: 0; bottom: 84px; text-align: center; font-size: 44px; font-weight: 600; color: #0b0b0b; }
+
 /* collage-cover */
 .collage { position: absolute; inset: 0; display: grid; grid-template: 1fr 1fr / 1fr 1fr; gap: 4px; background: #000; }
 .collage div { background-size: cover; background-position: center; }
@@ -136,6 +144,13 @@ const BODY = {
       <div class="cta-big">${rich(s.big)}</div>
       <div class="footer">${rich(s.footer)}</div>
     </div>`,
+  'end-card': () => `
+    <div class="end">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><rect width="96" height="96" rx="22" fill="#0b0b0b"/><path d="M62 20 V58 A16 16 0 0 1 30 58" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round"/></svg>
+      <div class="end-name">JamiDuNow</div>
+      <div class="end-sub">모든 정보를 한곳에</div>
+      <div class="end-url">jamidunow.com</div>
+    </div>`,
   'collage-cover': (s, ctx) => `
     <div class="collage">${ctx.photos.map((p) => `<div style="background-image:url(${p})"></div>`).join('')}</div>
     <div class="collage-dim"></div>
@@ -165,10 +180,10 @@ export const SLIDE_TYPES = Object.keys(BODY);
 export function renderSlide(slide, index, total, ctx) {
   const body = BODY[slide.type];
   if (!body) throw new Error(`알 수 없는 슬라이드 타입: ${slide.type} (${SLIDE_TYPES.join(', ')})`);
-  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>${CSS(ctx.font)}</style></head><body>
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>${CSS(ctx.font)}</style></head><body${slide.type === 'end-card' ? ' class="end-card"' : ''}>
     <div class="slide">${body(slide, ctx)}</div>
     ${index > 0 ? `<div class="page">${index + 1}/${total}</div>` : ''}
-    <div class="logo">J</div>
+    ${slide.type === 'end-card' ? '' : '<div class="logo">J</div>'}
   </body></html>`;
 }
 
