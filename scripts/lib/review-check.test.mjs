@@ -24,3 +24,10 @@ test('KR 재시도 개수가 줄 끝에 붙음 (옛 기록에는 없으면 생�
   assert.equal(reviewCheckLine({ checked: 5, updated: 5, failed: 0, viaGetItems: 5, viaAppreviews: 0, viaStore: 0, krRetried: 0 }),
     '⭐ 리뷰 갱신 5/5개 (GetItems 5 · appreviews 0 · 상점 페이지 0) · 갱신 실패 0개 · KR 재시도 0개');
 });
+
+test('연결 앱 재조회 개수는 0이면 생략', () => {
+  const base = { checked: 1512, updated: 1511, failed: 1, viaGetItems: 1511, viaAppreviews: 0, viaStore: 0, krRetried: 9 };
+  assert.equal(reviewCheckLine({ ...base, linkedRetried: 0 }), reviewCheckLine(base));
+  assert.equal(reviewCheckLine({ ...base, linkedRetried: 1 }),
+    '⭐ 리뷰 갱신 1511/1512개 (GetItems 1511 · appreviews 0 · 상점 페이지 0) · 갱신 실패 1개 · KR 재시도 9개 · 연결 앱 재조회 1개');
+});

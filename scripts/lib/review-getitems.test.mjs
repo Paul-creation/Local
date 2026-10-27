@@ -1,7 +1,7 @@
 // 실행: npm test — GetItems 리뷰 요약 읽기 (appreviews 대체 경로)
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseGetItems, fetchGetItemsReviews, fetchGetItemsReviewsWithKr, parseUnavailable, getItemsUrl } from './review-getitems.mjs';
+import { parseGetItems, fetchGetItemsReviews, fetchGetItemsReviewsWithKr, parseUnavailable, parseRedirects, getItemsUrl } from './review-getitems.mjs';
 import { buildReviewUpdate } from './review-fill.mjs';
 
 const item = (appid, s, success = 1) => ({ appid, success, reviews: s ? { summary_filtered: s } : {} });
@@ -131,4 +131,81 @@ test('US 요청 자체가 실패한 묶음은 KR 재시도 대상이 아님, 나
   assert.deepEqual(calls, ['US', 'US', 'KR']);
   assert.deepEqual([...r.reviews.keys()].sort(), ['3', '4']);
   assert.equal(r.krRetried, 2);
+});
+
+// ── 응답 appid가 다르고 리뷰 0건 → 연결 앱 재조회
+const ST = { review_count: 38958, percent_positive: 89, review_score: 8, review_score_label: 'Very Positive' };
+const zero = { review_count: 0, percent_positive: 0, review_score: 0, review_score_label: 'No user reviews' };
+// 요청한 id를 appid 34330으로 돌려주는 가짜 스팀: id 201270 → appid 34330(리뷰 0), id 34330 → 리뷰 있음
+const linkedGet = (calls = []) => async (url) => {
+  const cc = ccOf(url), ids = appidsOf(url);
+  calls.push([cc, ids]);
+  return { response: { store_items: ids.map((id) => (id === 201270 ? { id, appid: 34330, success: 1, reviews: { summary_filtered: zero } } : { id, appid: id, success: 1, reviews: { summary_filtered: ST } })) } };
+};
+
+test('parseRedirects: appid가 다르고 리뷰 0건인 항목만', () => {
+  assert.deepEqual(parseRedirects({ response: { store_items: [
+    { id: 201270, appid: 34330, success: 1, reviews: { summary_filtered: zero } },
+    { id: 5, appid: 5, success: 1, reviews: { summary_filtered: zero } }, // 같은 appid는 연결 아님
+    { id: 6, appid: 60, success: 1, reviews: { summary_filtered: ST } }, // 리뷰가 있으면 대상 아님
+    { id: 7, appid: 70, success: 15 }, // 조회 불가는 KR 재시도 쪽
+    { id: 8, appid: 80, success: 1, reviews: {} }, // 리뷰 요약 없음 = 0건
+  ] } }), [{ from: '201270', to: '34330' }, { from: '8', to: '80' }]);
+  assert.deepEqual(parseRedirects(null), []);
+});
+
+test('연결 앱 재조회: 34330의 리뷰를 201270에 넣고 개수를 셈', async () => {
+  const calls = [];
+  const r = await fetchGetItemsReviewsWithKr([201270, 1], { get: linkedGet(calls) });
+  assert.deepEqual(calls.map((c) => c[1]), [[201270, 1], [34330]]);
+  assert.deepEqual(r.reviews.get('201270'), { total_reviews: 38958, positive_percent: 89, review_score_desc: 'Very Positive' });
+  assert.equal(r.reviews.get('1').total_reviews, 38958);
+  assert.equal(r.linkedRetried, 1);
+  assert.equal(r.krRetried, 0);
+});
+
+test('연결 앱이 우리 DB에 다른 게임으로 있으면 넣지 않고 재조회도 안 함(실패로 셈)', async () => {
+  const calls = [];
+  const r = await fetchGetItemsReviewsWithKr([201270], { get: linkedGet(calls), knownAppids: new Set(['34330']) });
+  assert.equal(calls.length, 1);
+  assert.equal(r.reviews.has('201270'), false);
+  assert.equal(r.linkedRetried, 0);
+});
+
+test('이번 요청 안에 연결 앱 appid가 따로 들어 있어도 넣지 않음', async () => {
+  const r = await fetchGetItemsReviewsWithKr([201270, 34330], { get: linkedGet() });
+  assert.equal(r.reviews.has('201270'), false);
+  assert.equal(r.reviews.get('34330').total_reviews, 38958); // 34330 자기 값은 그대로
+  assert.equal(r.linkedRetried, 0);
+});
+
+test('두 요청이 같은 연결 앱을 가리키면 둘 다 넣지 않음', async () => {
+  const get = async (url) => ({ response: { store_items: appidsOf(url).map((id) => (id === 34330 ? { id, appid: id, success: 1, reviews: { summary_filtered: ST } } : { id, appid: 34330, success: 1, reviews: { summary_filtered: zero } })) } });
+  const r = await fetchGetItemsReviewsWithKr([201270, 201271], { get });
+  assert.equal(r.reviews.size, 0);
+  assert.equal(r.linkedRetried, 0);
+});
+
+test('연결 앱도 리뷰가 없거나 조회가 실패하면 값 없음(기존 값 유지)', async () => {
+  const noReview = async (url) => ({ response: { store_items: appidsOf(url).map((id) => (id === 201270 ? { id, appid: 34330, success: 1, reviews: { summary_filtered: zero } } : { id, appid: id, success: 1, reviews: { summary_filtered: zero } })) } });
+  const r = await fetchGetItemsReviewsWithKr([201270], { get: noReview });
+  assert.equal(r.reviews.size, 0);
+  assert.equal(r.linkedRetried, 1); // 다시 물어는 봤음
+  let n = 0;
+  const throwSecond = async (url) => { if (++n === 2) throw new Error('막힘'); return linkedGet()(url); };
+  const r2 = await fetchGetItemsReviewsWithKr([201270], { get: throwSecond });
+  assert.equal(r2.reviews.size, 0);
+});
+
+test('연결 앱이 미국에서 조회 불가면 KR로 한 번 더', async () => {
+  const get = async (url) => {
+    const cc = ccOf(url), ids = appidsOf(url);
+    return { response: { store_items: ids.map((id) => {
+      if (id === 201270) return { id, appid: 34330, success: 1, reviews: { summary_filtered: zero } };
+      return cc === 'US' ? { id, appid: id, success: 15 } : { id, appid: id, success: 1, reviews: { summary_filtered: ST } };
+    }) } };
+  };
+  const r = await fetchGetItemsReviewsWithKr([201270], { get });
+  assert.equal(r.reviews.get('201270').total_reviews, 38958);
+  assert.equal(r.linkedRetried, 1);
 });

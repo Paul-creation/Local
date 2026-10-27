@@ -30,6 +30,18 @@ async function getReviewSummary(appid) {
   } catch { return null; }
 }
 
+// 우리 DB에 있는 모든 steam_appid(숨김·출시 예정 포함) — --ids로 일부만 돌려도 전체 기준으로 확인한다
+async function loadKnownAppids() {
+  const known = new Set();
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await supabase.from('games').select('steam_appid').not('steam_appid', 'is', null).order('id').range(from, from + 999);
+    if (error) throw error; // 확인하지 못하면 연결 앱 값을 넣지 않도록 멈춘다
+    for (const g of data) known.add(String(g.steam_appid));
+    if (data.length < 1000) break;
+  }
+  return known;
+}
+
 async function main() {
   const cols = 'id, name, steam_appid, review_summary, review_total';
   // review_source 칸(마이그레이션 20261024120000)이 아직 없으면 그 칸 없이 돌림 — 출처는 기록 안 함
@@ -44,8 +56,9 @@ async function main() {
   if (!games) return;
 
   // 리뷰 주 경로: GetItems(100개씩 묶음, 한 번에 약 15초). 미국 스토어에서 조회 불가(success 15)인 게임은 한국 기준으로 한 번 더. 값이 없는 게임만 appreviews → 상점 페이지 순으로 대체
-  const { reviews: viaItems, krRetried, krRecovered } = await fetchGetItemsReviewsWithKr(games.map((g) => g.steam_appid));
-  console.log(`GetItems 리뷰 ${viaItems.size}/${games.length}개 (KR 재시도 ${krRetried}개 → ${krRecovered}개 받음)`);
+  // 응답이 다른 appid(연결 앱)를 가리키고 리뷰가 0건이면 그 앱을 한 번 더 조회 — 단 그 appid가 우리 DB에 다른 게임으로 있으면 안 씀(같은 리뷰가 두 게임에 들어가지 않게)
+  const { reviews: viaItems, krRetried, krRecovered, linkedRetried } = await fetchGetItemsReviewsWithKr(games.map((g) => g.steam_appid), { knownAppids: await loadKnownAppids() });
+  console.log(`GetItems 리뷰 ${viaItems.size}/${games.length}개 (KR 재시도 ${krRetried}개 → ${krRecovered}개 받음 · 연결 앱 재조회 ${linkedRetried}개)`);
   const done = { getitems: 0, appreviews: 0, store_page: 0 };
 
   for (const game of games) {
@@ -89,7 +102,7 @@ async function main() {
   }
 
   // 일일 요약용 (--ids로 일부만 돌린 때는 매일 기록을 덮어쓰지 않음)
-  if (!ONLY_IDS) recordReviewCheck({ checked: games.length, viaGetItems: done.getitems, viaAppreviews: done.appreviews, viaStore: done.store_page, krRetried });
+  if (!ONLY_IDS) recordReviewCheck({ checked: games.length, viaGetItems: done.getitems, viaAppreviews: done.appreviews, viaStore: done.store_page, krRetried, linkedRetried });
   console.log(`리뷰 갱신 ${done.getitems + done.appreviews + done.store_page}/${games.length}개 (GetItems ${done.getitems} · appreviews ${done.appreviews} · 상점 페이지 ${done.store_page})`);
 }
 
