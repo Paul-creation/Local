@@ -17,3 +17,10 @@ test('한 줄: 출처별 개수와 실패 개수', () => {
 test('하나도 못 받으면 경고', () => {
   assert.match(reviewCheckLine({ checked: 10, updated: 0, failed: 10, viaGetItems: 0, viaAppreviews: 0, viaStore: 0 }), /모든 경로 막힘/);
 });
+
+test('KR 재시도 개수가 줄 끝에 붙음 (옛 기록에는 없으면 생략)', () => {
+  assert.equal(reviewCheckLine({ checked: 1512, updated: 1511, failed: 1, viaGetItems: 1511, viaAppreviews: 0, viaStore: 0, krRetried: 9 }),
+    '⭐ 리뷰 갱신 1511/1512개 (GetItems 1511 · appreviews 0 · 상점 페이지 0) · 갱신 실패 1개 · KR 재시도 9개');
+  assert.equal(reviewCheckLine({ checked: 5, updated: 5, failed: 0, viaGetItems: 5, viaAppreviews: 0, viaStore: 0, krRetried: 0 }),
+    '⭐ 리뷰 갱신 5/5개 (GetItems 5 · appreviews 0 · 상점 페이지 0) · 갱신 실패 0개 · KR 재시도 0개');
+});

@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { onlyIds, ONLY_IDS } from './lib/only-ids.mjs';
 import { buildReviewUpdate } from './lib/review-fill.mjs';
 import { fetchStoreReviews } from './lib/review-store.mjs';
-import { fetchGetItemsReviews } from './lib/review-getitems.mjs';
+import { fetchGetItemsReviewsWithKr } from './lib/review-getitems.mjs';
 import { recordReviewCheck } from './lib/review-check.mjs';
 
 const supabase = createClient(
@@ -43,9 +43,9 @@ async function main() {
   const games = res.data;
   if (!games) return;
 
-  // 리뷰 주 경로: GetItems(100개씩 묶음, 한 번에 약 15초). 값이 없는 게임만 appreviews → 상점 페이지 순으로 대체
-  const viaItems = await fetchGetItemsReviews(games.map((g) => g.steam_appid));
-  console.log(`GetItems 리뷰 ${viaItems.size}/${games.length}개`);
+  // 리뷰 주 경로: GetItems(100개씩 묶음, 한 번에 약 15초). 미국 스토어에서 조회 불가(success 15)인 게임은 한국 기준으로 한 번 더. 값이 없는 게임만 appreviews → 상점 페이지 순으로 대체
+  const { reviews: viaItems, krRetried, krRecovered } = await fetchGetItemsReviewsWithKr(games.map((g) => g.steam_appid));
+  console.log(`GetItems 리뷰 ${viaItems.size}/${games.length}개 (KR 재시도 ${krRetried}개 → ${krRecovered}개 받음)`);
   const done = { getitems: 0, appreviews: 0, store_page: 0 };
 
   for (const game of games) {
@@ -89,7 +89,7 @@ async function main() {
   }
 
   // 일일 요약용 (--ids로 일부만 돌린 때는 매일 기록을 덮어쓰지 않음)
-  if (!ONLY_IDS) recordReviewCheck({ checked: games.length, viaGetItems: done.getitems, viaAppreviews: done.appreviews, viaStore: done.store_page });
+  if (!ONLY_IDS) recordReviewCheck({ checked: games.length, viaGetItems: done.getitems, viaAppreviews: done.appreviews, viaStore: done.store_page, krRetried });
   console.log(`리뷰 갱신 ${done.getitems + done.appreviews + done.store_page}/${games.length}개 (GetItems ${done.getitems} · appreviews ${done.appreviews} · 상점 페이지 ${done.store_page})`);
 }
 
