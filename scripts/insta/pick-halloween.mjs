@@ -39,7 +39,7 @@ const slides = picked.map(({ g, price }) => {
   return {
     type: 'game-card',
     name: g.display_name || g.name,
-    people: g.min_players === g.max_players ? `${g.max_players}인` : `${g.min_players}~${g.max_players}인`,
+    people: g.min_players === g.max_players ? `${g.max_players}인` : `최대 ${g.max_players}인`,
     discount: price.discount_percent,
     price: won(price.price),
     ...(Number.isFinite(stored) && stored > price.price ? { original: won(stored) } : {}), // 수집한 정가만 쓰고 역산하지 않는다

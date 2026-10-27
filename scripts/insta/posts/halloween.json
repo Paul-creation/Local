@@ -7,7 +7,7 @@
   {
     "type": "game-card",
     "name": "R.E.P.O.",
-    "people": "1~6인",
+    "people": "최대 6인",
     "discount": 35,
     "price": "₩6,950",
     "original": "₩10,700",
@@ -17,7 +17,7 @@
   {
     "type": "game-card",
     "name": "Dying Light",
-    "people": "1~4인",
+    "people": "최대 4인",
     "discount": 90,
     "price": "₩2,740",
     "original": "₩27,400",
@@ -27,7 +27,7 @@
   {
     "type": "game-card",
     "name": "Buckshot Roulette",
-    "people": "1~4인",
+    "people": "최대 4인",
     "discount": 50,
     "price": "₩1,700",
     "original": "₩3,400",
@@ -37,7 +37,7 @@
   {
     "type": "game-card",
     "name": "Phasmophobia",
-    "people": "1~4인",
+    "people": "최대 4인",
     "discount": 30,
     "price": "₩15,050",
     "original": "₩21,500",
