@@ -146,7 +146,7 @@ async function captureDetail(browser, game, files) {
 const SPLIT_W = 430;
 const BAND = 1000;
 const splitFiles = (slug) => ({ json: path.join(CACHE, `split-${detailKey(slug)}.json`), band: (i) => path.join(CACHE, `split-${detailKey(slug)}-${i}.png`) });
-async function captureSplit(browser, game, files) {
+async function captureSplit(browser, game, files, split) {
   const ctx = await newContext(browser, { viewport: { width: SPLIT_W, height: 900 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
   const page = await ctx.newPage();
   await page.goto(`${SITE}/games/${game.id}`, { waitUntil: 'networkidle' });
@@ -160,8 +160,27 @@ async function captureSplit(browser, game, files) {
   await page.waitForFunction(() => [...document.querySelectorAll('main img')].filter((i) => i.getBoundingClientRect().height > 0).every((i) => i.complete && i.naturalWidth > 0), null, { timeout: 15000 })
     .catch(async () => console.warn('경고: 안 받아진 이미지가 있어요:', await page.evaluate(() => [...document.querySelectorAll('main img')].filter((i) => i.getBoundingClientRect().height > 0 && !(i.complete && i.naturalWidth > 0)).map((i) => i.currentSrc || i.src).slice(0, 5))));
   await page.waitForTimeout(800);
-  // 구획(섹션) 위쪽 경계와 콘텐츠 끝
-  const { bounds, atoms, heads, end } = await page.evaluate(() => {
+  // 단계별로 숨길 부분을 늘려 가며, 페이지 전체가 slides×columns 조각에 100% 들어갈 때까지 줄인다 (반드시 남길 것: 커버·제목, 인원, 가격·할인·역대 최저가, PC 사양, 대표 영상 1개)
+  await page.evaluate(() => {
+    const sec = (t) => [...document.querySelectorAll('.detail-main > section')].find((e) => e.querySelector('h3')?.textContent.trim().startsWith(t));
+    sec('소개')?.setAttribute('data-hide', 'intro');
+    for (const t of ['같이 하기', '할인 전적']) sec(t)?.setAttribute('data-hide', 'misc');
+    const video = sec('영상으로 미리 보기');
+    video?.setAttribute('data-keep', '1');
+    document.querySelector('.pcs-card')?.setAttribute('data-keep', '1');
+    [...document.querySelectorAll('.dx-tile')].forEach((li) => { if (li.querySelector('.dx-tile-label')?.textContent.trim() !== '인원') li.setAttribute('data-hide', 'tiles'); });
+  });
+  const LEVELS = [
+    { name: '긴 소개글', css: '[data-hide="intro"]' },
+    { name: '장르 칩', css: '.dx-chips' },
+    { name: '다른 영상 썸네일 줄', css: '.video-rail-wrap' },
+    { name: '투표', css: '.dx-votes' },
+    { name: '트레일러·스크린샷·링크 줄', css: '.dx-trailer, .shots, .detail-links' },
+    { name: '인원 외 지표 칸(평가·동접·플레이 시간·진입장벽·한국어·역대 최저가 칸)', css: '[data-hide="tiles"]' },
+    { name: '같이 하기·ITAD 순위·정보 행·할인 전적·더 자세히', css: '[data-hide="misc"], .steam-card, .info-row, .detail-two' },
+    { name: '그 밖의 섹션·한 줄 소개·개발사 줄·구매 버튼·안내 문구·PC 사양 설명·원문 사양', css: '.detail-main > *:not([data-keep]):not(.detail-price), .dx-lead, .dx-credits, .price-card-buttons, .price-card-note, .price-card-compare-status, .pcs-sub, .pcs-raw' },
+  ];
+  const measure = () => page.evaluate(() => {
     const m = document.querySelector('main');
     const units = [...m.querySelectorAll(':scope > header.dx-head, :scope > ul.dx-tiles, .detail-price, .detail-main > *')].filter((e) => e.getBoundingClientRect().height > 0);
     const tops = units.map((e) => Math.round(e.getBoundingClientRect().top + scrollY));
@@ -171,16 +190,32 @@ async function captureSplit(browser, game, files) {
     const inUnits = (e) => units.some((u) => u.contains(e));
     const atoms = [...m.querySelectorAll('*')].filter((e) => !e.children.length || e.matches('h1, h2, h3, p, li, img, picture, button, a, dt, dd, tr, svg, canvas, .dx-tile, .dx-badges > *, .dx-chips > *, .chip, .video-stage, .video-stage-info, .lowest-gauge, .price-card-was, .price-card-now, .detail-links > *'))
       .filter((e) => inUnits(e) && e.getBoundingClientRect().height > 0).map(box).map(([a, b]) => [Math.round(a), Math.round(b)]);
-    const heads = [...m.querySelectorAll('h2, h3')].filter((e) => inUnits(e) && e.getBoundingClientRect().height > 0).map((e) => Math.round(e.getBoundingClientRect().bottom + scrollY));
-    return { bounds: tops, atoms, heads, end: Math.round(last.bottom + scrollY) + 16 };
+    // 제목: h2·h3, 그리고 h가 아닌 섹션 제목(예: 할인 전적)도 잡도록 detail-main 안의 큼직한 굵은 짧은 글자
+    const isHead = (e) => e.matches('h2, h3') || (e.closest('.detail-main') && !e.children.length && e.textContent.trim().length < 20 && parseFloat(getComputedStyle(e).fontSize) >= 20 && parseInt(getComputedStyle(e).fontWeight, 10) >= 600);
+    const heads = [...m.querySelectorAll('*')].filter((e) => isHead(e) && inUnits(e) && e.getBoundingClientRect().height > 0).map((e) => Math.round(e.getBoundingClientRect().bottom + scrollY));
+    const vis = (e, q) => [...e.querySelectorAll(q)].filter((x) => x.getBoundingClientRect().height > 0).map((x) => x.textContent.trim());
+    const kept = units.map((e) => e.matches('header.dx-head') ? '커버·제목' : e.matches('ul.dx-tiles') ? `지표 칸(${vis(e, '.dx-tile-label').join('·')})` : e.matches('.detail-price') ? 'Steam 가격·할인·역대 최저가'
+      : vis(e, 'h1, h2, h3, .dx-tile-label')[0] || (e.className.toString().includes('info-row') ? '마지막 업데이트·필요 용량 줄' : e.className.toString().includes('steam-card') ? 'ITAD 순위·도전과제·가족 공유·DLC' : e.textContent.trim().slice(0, 14)));
+    return { bounds: tops, atoms, heads, kept, end: Math.round(last.bottom + scrollY) + 16 };
   });
+  const hidden = ['상단 메뉴', '뒤로가기', '푸터', '시리즈(다른 게임)', '비슷한 게임(다른 게임 추천)', '의견 달기 입력'];
+  let layout = null;
+  for (let lv = 0; lv <= LEVELS.length; lv++) {
+    if (lv > 0) { await page.addStyleTag({ content: `${LEVELS[lv - 1].css} { display: none !important; }` }); hidden.push(LEVELS[lv - 1].name); await page.waitForTimeout(150); }
+    layout = await measure();
+    const { covered } = planSplit({ width: SPLIT_W, ...layout, height: layout.end }, split.parts, split.columns);
+    if (covered >= layout.end) break;
+    if (lv === LEVELS.length) throw new Error(`숨길 수 있는 부분을 다 숨겨도 ${split.parts}장 × ${split.columns}단에 안 들어가요. 남은 구획: ${layout.kept.join(' / ')}`);
+  }
+  const { bounds, atoms, heads, end, kept } = layout;
+  console.log(`숨긴 것: ${hidden.join(', ')}\n남긴 것: ${kept.join(', ')}`);
   const bands = [];
   for (let y = 0, i = 0; y < end; y += BAND, i++) {
     const h = Math.min(BAND, end - y);
     await page.screenshot({ path: files.band(i), clip: { x: 0, y, width: SPLIT_W, height: Math.min(h + 2, (await page.evaluate(() => document.documentElement.scrollHeight)) - y) }, fullPage: true });
     bands.push({ y, h });
   }
-  fs.writeFileSync(files.json, JSON.stringify({ width: SPLIT_W, height: end, bounds, atoms, heads, bands }));
+  fs.writeFileSync(files.json, JSON.stringify({ width: SPLIT_W, height: end, bounds, atoms, heads, bands, hidden, kept }));
   await ctx.close();
 }
 
@@ -208,7 +243,7 @@ function planSplit(layout, slidesN, cols) {
       if (ideal >= layout.height) end = layout.height;
       else {
         // 글줄·카드·썸네일 한가운데가 아니고, 제목이 조각 맨 끝에 혼자 남지 않는 가장 아래 자리 (구획·덩어리 사이 빈틈)
-        const okCut = (c) => !layout.atoms.some(([a, b]) => a + 1 < c && c < b - 1) && !layout.heads.some((h) => h <= c && c - h < 60) ;
+        const okCut = (c) => !layout.atoms.some(([a, b]) => a - 1 < c && c < b + 1) && !layout.heads.some((h) => h - 6 <= c && c - h < 60);
         let b = null;
         for (let c = Math.floor(ideal); c > y + cap * 0.3; c--) if (okCut(c)) { b = c; break; }
         if (b != null) { let lo = b; while (lo - 1 > y + cap * 0.3 && okCut(lo - 1)) lo--; end = Math.round((lo + b) / 2); } // 빈틈의 가운데에서 자른다
@@ -250,9 +285,10 @@ try {
       const game = splitSlide.slug ? await resolveGame(splitSlide.slug) : (await pickCandidates())[0];
       if (!game) throw new Error('detail-split 게임을 못 찾았어요 (slug를 지정하세요)');
       console.log(`상세: ${gameTitle(game)}`);
-      await captureSplit(browser, game, sf);
+      await captureSplit(browser, game, sf, { parts: splitSlide.parts, columns: splitSlide.columns ?? 1 });
     }
     splitLayout = JSON.parse(fs.readFileSync(sf.json, 'utf8'));
+    if (splitLayout.hidden) console.log(`숨긴 것: ${splitLayout.hidden.join(', ')}\n남긴 것: ${splitLayout.kept.join(', ')}`);
     const { plan, covered, hardCuts } = planSplit(splitLayout, splitSlide.parts, splitSlide.columns ?? 1);
     splitLayout.planned = plan;
     const pct = Math.round((covered / splitLayout.height) * 100);
