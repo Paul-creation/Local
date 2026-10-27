@@ -81,3 +81,15 @@ export function placeBubble(a: Box, b: { w: number; h: number }, vw: number, vh:
   if (above >= 8) return { left, top: above, side: 'above', tailX };
   return { left: clampX((vw - b.w) / 2), top: Math.max(8, vh - b.h - bottomReserve), side: 'over', tailX: null };
 }
+
+// 좁은 화면(NARROW_MAX 이하)에서는 3단계를 둘로 나눠 한 번에 하나씩 보여준다 (진행 표시는 "3 / 4" 그대로). 순서는 화면에서 위에 있는 것부터
+export const NARROW_MAX = 760;
+export type TourPart = { target: string; title: string };
+export const INFO_PARTS: TourPart[] = [
+  { target: 'stat-tiles', title: '인원·평가는 여기서 봐요' },
+  { target: 'price-card', title: '가격·할인은 여기 있어요' },
+];
+// tops: 화면에 있는 대상의 위쪽 좌표 → 위에 있는 순서로 정렬한 부분 목록
+export function orderParts(tops: Record<string, number | undefined>): TourPart[] {
+  return INFO_PARTS.filter((p) => typeof tops[p.target] === 'number').sort((a, b) => (tops[a.target] as number) - (tops[b.target] as number));
+}

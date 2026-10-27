@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseState, serializeState, decide, advance, isBot, pageOf, placeBubble, TOUR_STEPS, TOUR_TOTAL } from './tour.ts';
+import { parseState, serializeState, decide, advance, isBot, pageOf, placeBubble, orderParts, TOUR_STEPS, TOUR_TOTAL } from './tour.ts';
 
 const UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/130 Safari/537.36';
 const run = (step) => serializeState({ status: 'running', step });
@@ -69,4 +69,11 @@ test('말풍선 자리: 아래 기본, 아래가 모자라면 위, 둘 다 안 �
 test('말풍선은 화면 가로 안에 머문다 (375px)', () => {
   const p = placeBubble({ left: 330, top: 100, width: 40, height: 30 }, { w: 300, h: 150 }, 375, 700);
   assert.ok(p.left >= 16 && p.left + 300 <= 375 - 16 + 1);
+});
+
+test('좁은 화면 3단계 분할: 위에 있는 대상부터, 하나뿐이면 하나만', () => {
+  assert.deepEqual(orderParts({ 'stat-tiles': 90, 'price-card': 700 }).map((p) => p.target), ['stat-tiles', 'price-card']);
+  assert.deepEqual(orderParts({ 'stat-tiles': 900, 'price-card': 200 }).map((p) => p.target), ['price-card', 'stat-tiles']);
+  assert.deepEqual(orderParts({ 'price-card': 200 }).map((p) => p.target), ['price-card']);
+  assert.deepEqual(orderParts({}), []);
 });
