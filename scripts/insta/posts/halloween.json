@@ -1,8 +1,14 @@
 [
   {
-    "type": "photo-cover",
-    "headline": "할로윈에 친구랑\n비명 지를 게임.jpg",
-    "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3241660/ss_e6babaab52581f81df91e50768cee6a9334ef6ec.1920x1080.jpg?t=1778158882"
+    "type": "collage-cover",
+    "kicker": "할로윈 특가 · 최대 -90%",
+    "headline": "친구랑 비명 지를\n게임.jpg",
+    "images": [
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3241660/ss_e6babaab52581f81df91e50768cee6a9334ef6ec.1920x1080.jpg?t=1778158882",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/239140/ss_a3771358b8eb4ea4c8f99c5850711f55b87804de.1920x1080.jpg?t=1782913513",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2835570/ss_c9c2df013e1c2d1b97f2c5cce57c22c24efd5178.1920x1080.jpg?t=1783085442",
+      "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/739630/ec30a770064ea10c2bcfb1b3002a3dbd086be516/ss_ec30a770064ea10c2bcfb1b3002a3dbd086be516.1920x1080.jpg?t=1791466787"
+    ]
   },
   {
     "type": "game-card",

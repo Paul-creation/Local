@@ -15,7 +15,7 @@ body { position: relative; overflow: hidden; color: #fff; font-family: 'Pretenda
 em { font-style: normal; color: #FFD84A; }
 .slide { position: absolute; inset: 0; }
 .pad { position: absolute; inset: 0; padding: 130px 84px 200px; display: flex; flex-direction: column; }
-.page { position: absolute; top: 56px; right: 64px; z-index: 5; font-size: 34px; font-weight: 600; color: rgba(255,255,255,.6); font-variant-numeric: tabular-nums; }
+.page { position: absolute; top: 48px; right: 56px; z-index: 5; padding: 6px 22px; border-radius: 999px; background: rgba(0,0,0,.5); font-size: 34px; font-weight: 600; color: rgba(255,255,255,.85); font-variant-numeric: tabular-nums; }
 .logo { position: absolute; right: 64px; bottom: 64px; z-index: 5; width: 92px; height: 92px; border-radius: 26px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-size: 66px; font-weight: 900; line-height: 1; }
 
 /* wall-cover */
@@ -64,22 +64,27 @@ em { font-style: normal; color: #FFD84A; }
 .cta-big { font-size: 190px; font-weight: 900; line-height: 1.15; letter-spacing: -0.045em; margin-top: 28px; }
 .footer { margin-top: auto; font-size: 40px; font-weight: 600; color: rgba(255,255,255,.7); padding-right: 140px; }
 
-/* photo-cover */
-.photo { position: absolute; inset: 0; background-size: cover; background-position: center; }
-.photo-shade { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0) 45%, rgba(0,0,0,.55) 100%); }
-.photo-text { position: absolute; left: 0; right: 0; top: 56%; transform: translateY(-50%); text-align: center; padding: 0 50px; font-size: 128px; font-weight: 900; line-height: 1.25; letter-spacing: -0.03em; color: #fff; -webkit-text-stroke: 16px #000; paint-order: stroke fill; stroke-linejoin: round; }
+/* collage-cover */
+.collage { position: absolute; inset: 0; display: grid; grid-template: 1fr 1fr / 1fr 1fr; gap: 4px; background: #000; }
+.collage div { background-size: cover; background-position: center; }
+.collage-dim { position: absolute; inset: 0; background: rgba(0,0,0,.4); }
+.collage-shade { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0) 55%, #000 100%); }
+.collage-text { position: absolute; left: 84px; right: 84px; bottom: 150px; text-shadow: 0 2px 12px rgba(0,0,0,.25); }
+.kicker { font-size: 50px; font-weight: 800; color: #FFD84A; letter-spacing: -0.01em; margin-bottom: 22px; }
+.collage-head { white-space: nowrap; font-size: 124px; font-weight: 900; line-height: 1.12; letter-spacing: -0.045em; color: #fff; }
 
 /* game-card */
-.gshot { position: absolute; left: 0; right: 0; top: 0; height: 675px; background-size: cover; background-position: center; }
-.gshot::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(11,11,11,0) 70%, #0b0b0b 100%); }
-.gbody { position: absolute; left: 0; right: 0; top: 675px; bottom: 0; padding: 14px 84px 64px; display: flex; flex-direction: column; }
+.gcard-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.gshot { position: relative; flex: 1; min-height: 0; background-size: cover; background-position: center; }
+.gshot::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(11,11,11,0) 75%, #0b0b0b 100%); }
+.gbody { padding: 14px 84px 64px; display: flex; flex-direction: column; }
 .gname { font-size: 92px; font-weight: 900; line-height: 1.15; letter-spacing: -0.04em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; padding-right: 100px; }
 .gmeta { display: flex; align-items: center; gap: 22px; margin-top: 30px; }
 .gpeople { border: 3px solid #5a5a5a; border-radius: 999px; padding: 10px 30px; font-size: 40px; font-weight: 600; }
 .gbadge { background: #FFD84A; color: #0b0b0b; border-radius: 14px; padding: 8px 22px; font-size: 48px; font-weight: 900; font-variant-numeric: tabular-nums; }
 .gprice { font-size: 56px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .gorig { font-size: 38px; font-weight: 600; color: rgba(255,255,255,.5); text-decoration: line-through; font-variant-numeric: tabular-nums; }
-.gtag { margin-top: auto; padding-right: 140px; font-size: 38px; font-weight: 500; line-height: 1.45; color: rgba(255,255,255,.75); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.gtag { margin-top: 32px; padding-right: 140px; font-size: 57px; font-weight: 500; line-height: 1.4; color: #EDEDED; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 `;
 
 const GRID_CELLS = [['people', '인원'], ['price', '가격·역대 최저가'], ['spec', '내 PC 사양'], ['video', '친구랑 하는 영상']];
@@ -131,21 +136,27 @@ const BODY = {
       <div class="cta-big">${rich(s.big)}</div>
       <div class="footer">${rich(s.footer)}</div>
     </div>`,
-  'photo-cover': (s, ctx) => `
-    <div class="photo" style="background-image:url(${ctx.photo ?? ''})"></div>
-    <div class="photo-shade"></div>
-    <div class="photo-text"><div>${rich(s.headline)}</div></div>`,
+  'collage-cover': (s, ctx) => `
+    <div class="collage">${ctx.photos.map((p) => `<div style="background-image:url(${p})"></div>`).join('')}</div>
+    <div class="collage-dim"></div>
+    <div class="collage-shade"></div>
+    <div class="collage-text">
+      <div class="kicker">${rich(s.kicker)}</div>
+      <div class="collage-head">${rich(s.headline)}</div>
+    </div>`,
   'game-card': (s, ctx) => `
-    <div class="gshot" style="background-image:url(${ctx.photo ?? ''})"></div>
-    <div class="gbody">
-      <div class="gname">${rich(s.name)}</div>
-      <div class="gmeta">
-        <span class="gpeople">${rich(s.people)}</span>
-        ${s.discount ? `<span class="gbadge">-${esc(s.discount)}%</span>` : ''}
-        <span class="gprice">${rich(s.price)}</span>
-        ${s.original ? `<span class="gorig">${rich(s.original)}</span>` : ''}
+    <div class="gcard-wrap">
+      <div class="gshot" style="background-image:url(${ctx.photo ?? ''})"></div>
+      <div class="gbody">
+        <div class="gname">${rich(s.name)}</div>
+        <div class="gmeta">
+          <span class="gpeople">${rich(s.people)}</span>
+          ${s.discount ? `<span class="gbadge">-${esc(s.discount)}%</span>` : ''}
+          <span class="gprice">${rich(s.price)}</span>
+          ${s.original ? `<span class="gorig">${rich(s.original)}</span>` : ''}
+        </div>
+        <div class="gtag">${rich(s.tagline)}</div>
       </div>
-      <div class="gtag">${rich(s.tagline)}</div>
     </div>`,
 };
 

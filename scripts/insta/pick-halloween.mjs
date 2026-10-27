@@ -49,7 +49,7 @@ const slides = picked.map(({ g, price }) => {
 });
 
 const post = [
-  { type: 'photo-cover', headline: '할로윈에 친구랑\n비명 지를 게임.jpg', image: slides[0].image },
+  { type: 'collage-cover', kicker: `할로윈 특가 · 최대 -${Math.max(...slides.map((s) => s.discount))}%`, headline: '친구랑 비명 지를\n게임.jpg', images: slides.map((s) => s.image) },
   ...slides,
   { type: 'cta', small: '인원·할인·내 PC까지 한 번에', big: '여기서\n{골라와}', footer: '프로필 링크 → jamidunow.com' },
 ];

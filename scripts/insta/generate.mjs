@@ -334,9 +334,9 @@ try {
         })) };
     }
     if (s.type === 'detail-grid') { const f = detailFiles(s.slug); ctx.parts = Object.fromEntries(DETAIL_PARTS.map((p) => [p, dataUri(f[p])])); }
-    if ((s.type === 'photo-cover' || s.type === 'game-card') && s.image) {
-      ctx.photo = /^https?:/.test(s.image) ? s.image : dataUri(path.resolve(path.dirname(postFile), s.image));
-    }
+    const imgUri = (v) => (/^https?:/.test(v) ? v : dataUri(path.resolve(path.dirname(postFile), v)));
+    if (s.type === 'game-card' && s.image) ctx.photo = imgUri(s.image);
+    if (s.type === 'collage-cover') ctx.photos = s.images.map(imgUri);
     await page.setContent(renderSlide(s, i, slides.length, ctx), { waitUntil: 'load' });
     await page.evaluate(() => document.fonts.ready);
     const file = path.join(outDir, `${String(i + 1).padStart(2, '0')}.png`);
