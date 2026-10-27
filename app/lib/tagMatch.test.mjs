@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { matchesTags } from './tagMatch.ts';
-import { eventHref, EVENTS } from './event.ts';
+import { eventHref, eventShortLinkTarget, EVENTS } from './event.ts';
 
 const owns = (...tags) => (t) => tags.includes(t);
 
@@ -21,4 +21,11 @@ test('이벤트 링크는 match=any를 붙인다', () => {
   const sp = new URL(eventHref(EVENTS[0]), 'http://x').searchParams;
   assert.equal(sp.get('match'), 'any');
   assert.equal(sp.get('tags'), EVENTS[0].tags.join(','));
+});
+
+test('짧은 주소(/halloween)는 기간 안엔 이벤트 링크, 끝나면 메인', () => {
+  const ev = EVENTS[0];
+  assert.equal(eventShortLinkTarget(ev, new Date('2026-10-27T03:00:00Z')), eventHref(ev));
+  assert.equal(eventShortLinkTarget(ev, new Date('2026-10-31T14:59:00Z')), eventHref(ev)); // 한국 10/31 23:59
+  assert.equal(eventShortLinkTarget(ev, new Date('2026-10-31T15:00:00Z')), '/'); // 한국 11/1 00:00
 });

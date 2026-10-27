@@ -63,3 +63,8 @@ export function getCurrentEvent(now: Date = new Date(), previewMonth?: number): 
 export function eventHref(event: HomeEvent) {
   return `/?${new URLSearchParams({ r: '1', tags: event.tags.join(','), match: 'any' }).toString()}`;
 }
+
+// 짧은 주소(/halloween) 이동 위치 — 기간 이벤트가 끝난 날(한국 시간) 다음부터는 메인으로
+export function eventShortLinkTarget(event: DatedEvent, now: Date = new Date()) {
+  return todayInKorea(now) <= event.end ? eventHref(event) : '/';
+}
