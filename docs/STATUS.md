@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-27 (main 385b017)
+기준: 2026-10-27 (main 1c1508f)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/27: feat/outbound-clicks — 큐레이터 → 인스타그램 나가는 클릭 기록. outbound_clicks 표(curator 계정 slug·game_id(프로필 링크는 null, 게임 삭제 시 set null)·target_url·created_at, IP·개인 정보 없음, RLS+anon·authenticated 권한 회수, 마이그레이션 20261104090000 — 사용자 실행 필요). POST /api/outbound(sendBeacon, 응답 본문 없음): granted 큐레이터만, 주소는 https instagram.com·www.instagram.com만, game_id는 그 큐레이터가 소개한 게임만, IP당 분당 30회(서버 메모리, 인스턴스별). OutboundLink 컴포넌트를 /c/[handle] "인스타그램에서 보기"·"원본 게시물 보기"(게시물별·게임 전체)와 게임 상세 "이 게임을 소개한 계정"에 적용(메인 큐레이터 섹션은 인스타 링크가 없어 해당 없음). security-check에 outbound_clicks anon 읽기·쓰기 차단·마이그레이션 문구·/api/outbound 400 점검 추가(로컬 ✅139 ❌0, 미동의 큐레이터가 없어 그 거절은 미확인). build·test 491개 통과
 - 10/27: feat/insta-halloween — 인스타 카드뉴스 생성 스크립트(scripts/insta) 보강: 사진 표지·게임 카드 템플릿, 핼러윈 게시물(posts/halloween.json, pick-halloween.mjs), 카드에 최대 인원 표시, 표지 콜라주, 흰색 엔드 카드. 사이트 코드 변경 없음, build·test 488개 통과
 - 10/27: design/section-accent — 게임 상세 페이지 섹션별 포인트 색(app/components/detail/detail-sections.css 추가, DiscountChart·VideoPreviewSection·PcSpecCard 등 적용). build·test 488개 통과
 - 10/27: fix/halloween-match-any — 홈 필터에 태그 OR 모드(주소 ?match=any, app/lib/tagMatch.ts matchesTags). 없으면 기존대로 AND, 직접 태그를 고르거나 필터를 지우면 AND로 복귀. eventHref가 match=any를 붙여 할로윈 이벤트 링크가 6개(AND)→295개(OR)로 나옴(R.E.P.O.·Dying Light·Buckshot Roulette·Phasmophobia 포함). 짧은 주소 /halloween(app/halloween/route.ts) — eventHref로 307, 기간(EVENTS[0].end, 한국 시간) 지나면 /로. page.tsx redirect()는 app/loading.tsx 때문에 200+meta라 라우트 핸들러 사용. build·test 488개 통과
@@ -134,6 +135,7 @@
 
 ## 진행 중
 - 머지 후 확인 대기 (프로덕션 화면·다음 daily/weekly 로그 확인, 모두 미확인):
+  - feat/outbound-clicks: 마이그레이션 실행 여부, 프로덕션 /c/handle에서 "인스타그램에서 보기"·"원본 게시물 보기" 클릭 후 /api/outbound 204와 outbound_clicks 행 쌓임(큐레이터별·월별 SQL: select curator, date_trunc('month', created_at) as month, count(*) as clicks from public.outbound_clicks group by 1, 2 order by 2 desc, 3 desc;)
   - design/section-accent: 프로덕션 게임 상세 페이지(1440·375px)에서 섹션별 포인트 색이 의도대로 보이는지
   - fix/halloween-match-any: 프로덕션 /halloween이 이벤트 링크로 이동하고 결과가 295개 안팎(OR)인지, 태그 칩을 직접 누르면 AND로 돌아가는지 (ISR로 5~10분 늦을 수 있음)
   - fix/review-kr-fallback: 다음 daily 로그의 "⭐ 리뷰 갱신 … · 갱신 실패 N개 · KR 재시도 N개 · 연결 앱 재조회 N개" 줄 — 갱신 실패 0개(또는 크게 줄어듦), KR 재시도 8개, 연결 앱 재조회 1개 / 소울워커 등 개수가 크게 달라진 게임(10,729 → 2,670) 기준 차이 이대로 둘지 사용자 판단
