@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-27 (main 856d1b7)
+기준: 2026-10-27 (main 55656b8)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/27: docs/design-accents — docs/design.md를 지금 디자인에 맞게 수정: 섹션별 포인트 색(intro·together·price·detail·spec·video·glance)을 허용 색으로 추가, 색은 섹션 막대·핵심 값 1~2개·칩에만 쓴다는 규칙 추가, 주황·노랑·금색 금지와 새 색 금지 문구 삭제. 코드 변경 없음, build·test 491개 통과
 - 10/27: feat/og-default — 공유 미리보기(og:image·twitter) 기본 이미지를 public/og-default.png(1200×630: 카드 벽 + 검정 65% + 로고·"친구들이랑 뭐 하지?"·JamiDuNow, 로고·문구는 가운데 630×630 안)로. site.ts BASE_OG에 images를 넣어 BASE_OG를 쓰는 페이지(메인·guide·faq·about·커뮤니티 글)가 모두 적용, layout twitter에도 적용. 게임 상세·compare·큐레이터 페이지는 각자 이미지 유지. scripts/insta에 og 타입 추가(posts/og.json, 이 타입만 1200×630), 생성 npm run og(cache/wall.png 필요, 다시 찍으려면 npm run insta -- og --refresh). build·test 491개 통과
 - 10/27: feat/outbound-clicks — 큐레이터 → 인스타그램 나가는 클릭 기록. outbound_clicks 표(curator 계정 slug·game_id(프로필 링크는 null, 게임 삭제 시 set null)·target_url·created_at, IP·개인 정보 없음, RLS+anon·authenticated 권한 회수, 마이그레이션 20261104090000 — 사용자 실행 필요). POST /api/outbound(sendBeacon, 응답 본문 없음): granted 큐레이터만, 주소는 https instagram.com·www.instagram.com만, game_id는 그 큐레이터가 소개한 게임만, IP당 분당 30회(서버 메모리, 인스턴스별). OutboundLink 컴포넌트를 /c/[handle] "인스타그램에서 보기"·"원본 게시물 보기"(게시물별·게임 전체)와 게임 상세 "이 게임을 소개한 계정"에 적용(메인 큐레이터 섹션은 인스타 링크가 없어 해당 없음). security-check에 outbound_clicks anon 읽기·쓰기 차단·마이그레이션 문구·/api/outbound 400 점검 추가(로컬 ✅139 ❌0, 미동의 큐레이터가 없어 그 거절은 미확인). build·test 491개 통과
 - 10/27: feat/insta-halloween — 인스타 카드뉴스 생성 스크립트(scripts/insta) 보강: 사진 표지·게임 카드 템플릿, 핼러윈 게시물(posts/halloween.json, pick-halloween.mjs), 카드에 최대 인원 표시, 표지 콜라주, 흰색 엔드 카드. 사이트 코드 변경 없음, build·test 488개 통과
