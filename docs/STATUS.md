@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-27 (main 4083adf)
+기준: 2026-10-27 (main 9e8bbc5)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/27: design/section-accent — 게임 상세 페이지 섹션별 포인트 색(app/components/detail/detail-sections.css 추가, DiscountChart·VideoPreviewSection·PcSpecCard 등 적용). build·test 488개 통과
 - 10/27: fix/halloween-match-any — 홈 필터에 태그 OR 모드(주소 ?match=any, app/lib/tagMatch.ts matchesTags). 없으면 기존대로 AND, 직접 태그를 고르거나 필터를 지우면 AND로 복귀. eventHref가 match=any를 붙여 할로윈 이벤트 링크가 6개(AND)→295개(OR)로 나옴(R.E.P.O.·Dying Light·Buckshot Roulette·Phasmophobia 포함). 짧은 주소 /halloween(app/halloween/route.ts) — eventHref로 307, 기간(EVENTS[0].end, 한국 시간) 지나면 /로. page.tsx redirect()는 app/loading.tsx 때문에 200+meta라 라우트 핸들러 사용. build·test 488개 통과
 - 10/27: fix/review-kr-fallback — GetItems 리뷰 수집 보완 2가지(scripts/lib/review-getitems.mjs fetchGetItemsReviewsWithKr, enrich-players가 사용). ① 미국(US) 기준 응답이 success 15(조회 불가)인 appid만 모아 KR 기준으로 한 번 더 조회(일본·한국·중국 퍼블리셔 게임 8개: DOAX Venus Vacation 958260·아이돌마스터 스탈릿 시즌 1046480·대항해시대4 HD 1424800·슈퍼로봇대전 X 1031510·V 1031500·Governor of Poker 436150·소울워커 1825750·不问凡尘 4209920). KR도 실패하면 기존 값 유지·실패로 셈. ② 응답 appid가 요청한 appid와 다르고 리뷰가 0건이면(토탈워: 쇼군2 201270 → 34330) 가리키는 appid를 한 번 더 조회해 원래 게임에 저장. 그 appid가 우리 DB에 다른 게임으로 있거나(loadKnownAppids, 숨김·출시 예정 포함 전체), 같은 실행에서 둘 이상이 같은 연결 앱을 가리키면 저장하지 않고 실패로 셈. 일일 요약 리뷰 줄 끝에 "· KR 재시도 N개"(0이어도 표시), "· 연결 앱 재조회 N개"(0이면 생략). 수동 실행(--ids): 8개 + 쇼군2를 enrich-players로 갱신해 review_source='getitems'로 바뀜(소울워커 10,729개 70% → 2,670개 65%·문구 대체로 긍정적 → 복합적, 쇼군2 69,522개 90% → 38,958개 89%; 나머지는 ±수%·수백 개). 쇼군2 스팀 확인: 201270이 상점 상품 페이지(출시 2011-03-15·₩30,000·SEGA/Feral), appdetails가 steam_appid 34330을 돌려주고 34330은 설명·출시일이 빈 윈도우 전용 연결 앱(parent 201270), 리뷰는 34330 쪽(38,958개)에 붙음. DB appid는 그대로. build·test 484개 통과
 - 10/27: feat/insta-generator — 인스타 게시물 이미지 생성기(scripts/insta/, 사이트 빌드와 분리). `npm run insta -- <post-id> [--refresh]`로 posts/<id>.json → out/<id>/NN.png(1080×1350). 템플릿 하나(배경 #0b0b0b·강조 #FFD84A·Pretendard 임베드·오른쪽 아래 J 로고·n/총 페이지 번호), 슬라이드 타입 wall-cover·list·chips·screenshot·cta·photo-cover(자리)·detail-grid·detail-split. 사이트 캡처(카드 벽·인원 추천·게임 상세)는 Playwright로 jamidunow.com을 찍어 cache/에 저장(첫 방문자 투어는 건너뛴 상태로). detail-split은 상세 페이지를 slides×columns 조각으로 이어 나누며 빠지는 뒤쪽 비율을 경고로 알림. pick.mjs는 detail 게임 후보를 DB에서 읽기만 함. 인트로 게시물 = 2단 상세 나누기 4장(posts/intro.json, 상세 페이지의 약 55%만 보임). cache/·out/은 gitignore. build·test 468개 통과
@@ -132,6 +133,7 @@
 
 ## 진행 중
 - 머지 후 확인 대기 (프로덕션 화면·다음 daily/weekly 로그 확인, 모두 미확인):
+  - design/section-accent: 프로덕션 게임 상세 페이지(1440·375px)에서 섹션별 포인트 색이 의도대로 보이는지
   - fix/halloween-match-any: 프로덕션 /halloween이 이벤트 링크로 이동하고 결과가 295개 안팎(OR)인지, 태그 칩을 직접 누르면 AND로 돌아가는지 (ISR로 5~10분 늦을 수 있음)
   - fix/review-kr-fallback: 다음 daily 로그의 "⭐ 리뷰 갱신 … · 갱신 실패 N개 · KR 재시도 N개 · 연결 앱 재조회 N개" 줄 — 갱신 실패 0개(또는 크게 줄어듦), KR 재시도 8개, 연결 앱 재조회 1개 / 소울워커 등 개수가 크게 달라진 게임(10,729 → 2,670) 기준 차이 이대로 둘지 사용자 판단
   - feat/onboarding-tour: 프리뷰·프로덕션 새 시크릿 창에서 1~8단계 흐름과 마무리, 1~3·6~7단계에서 검색창·AI 버튼 클릭이 막히는지, 375px 6·7단계 순서·말풍선 위치, /guide "튜토리얼 다시 보기", v1 값이 있는 브라우저에서 안 뜨는지, 실제 방문자 CLS
