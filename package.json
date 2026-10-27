@@ -12,6 +12,7 @@
     "daily": "node scripts/run-steps.mjs daily",
     "weekly": "node scripts/run-steps.mjs weekly",
     "insta": "node scripts/insta/generate.mjs",
+    "og": "node scripts/insta/generate.mjs og",
     "test": "node --test app/lib/*.test.mjs app/lib/user/*.test.mjs scripts/lib/*.test.mjs"
   },
   "dependencies": {

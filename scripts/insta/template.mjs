@@ -7,16 +7,24 @@ const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replac
 // {강조}로 감싼 부분만 강조색, \n은 줄바꿈
 export const rich = (s) => esc(s).replace(/\{([^{}]+)\}/g, '<em>$1</em>').replace(/\n/g, '<br>');
 
-const CSS = (fontData) => `
+const CSS = (fontData, w = W, h = H) => `
 @font-face { font-family: 'Pretendard'; font-weight: 45 920; font-display: block; src: url(data:font/woff2;base64,${fontData}) format('woff2-variations'); }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { width: ${W}px; height: ${H}px; background: #0b0b0b; }
+html, body { width: ${w}px; height: ${h}px; background: #0b0b0b; }
 body { position: relative; overflow: hidden; color: #fff; font-family: 'Pretendard', sans-serif; word-break: keep-all; -webkit-font-smoothing: antialiased; }
 em { font-style: normal; color: #FFD84A; }
 .slide { position: absolute; inset: 0; }
 .pad { position: absolute; inset: 0; padding: 130px 84px 200px; display: flex; flex-direction: column; }
 .page { position: absolute; top: 48px; right: 56px; z-index: 5; padding: 6px 22px; border-radius: 999px; background: rgba(0,0,0,.5); font-size: 34px; font-weight: 600; color: rgba(255,255,255,.85); font-variant-numeric: tabular-nums; }
 .logo { position: absolute; right: 64px; bottom: 64px; z-index: 5; width: 92px; height: 92px; border-radius: 26px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-size: 66px; font-weight: 900; line-height: 1; }
+
+/* og — 공유 미리보기 1200×630. 카톡이 가운데를 정사각형 가깝게 자르니 로고·문구는 가운데 630×630 안에 둔다 */
+.og-wall { position: absolute; inset: 0; background-size: cover; background-position: center; }
+.og-dim { position: absolute; inset: 0; background: rgba(0,0,0,.65); }
+.og { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.og-logo { width: 156px; height: 156px; border-radius: 44px; background: #0b0b0b; border: 4px solid rgba(255,255,255,.85); color: #fff; display: grid; place-items: center; font-size: 112px; font-weight: 900; line-height: 1; }
+.og-head { margin-top: 40px; font-size: 60px; font-weight: 900; line-height: 1.2; letter-spacing: -0.04em; white-space: nowrap; }
+.og-name { margin-top: 18px; font-size: 28px; font-weight: 600; letter-spacing: 0.02em; color: rgba(255,255,255,.8); }
 
 /* wall-cover */
 .wall { position: absolute; inset: 0; background-size: cover; background-position: center; }
@@ -159,6 +167,14 @@ const BODY = {
       <div class="kicker">${rich(s.kicker)}</div>
       <div class="collage-head">${rich(s.headline)}</div>
     </div>`,
+  og: (s, ctx) => `
+    <div class="og-wall" style="background-image:url(${ctx.wall})"></div>
+    <div class="og-dim"></div>
+    <div class="og">
+      <div class="og-logo">J</div>
+      <div class="og-head">친구들이랑 뭐 하지?</div>
+      <div class="og-name">JamiDuNow</div>
+    </div>`,
   'game-card': (s, ctx) => `
     <div class="gcard-wrap">
       <div class="gshot" style="background-image:url(${ctx.photo ?? ''})"></div>
@@ -177,13 +193,17 @@ const BODY = {
 
 export const SLIDE_TYPES = Object.keys(BODY);
 
+export const sizeOf = (slide) => (slide.type === 'og' ? { width: 1200, height: 630 } : SIZE);
+
 export function renderSlide(slide, index, total, ctx) {
   const body = BODY[slide.type];
+  const { width, height } = sizeOf(slide);
+  const og = slide.type === 'og';
   if (!body) throw new Error(`알 수 없는 슬라이드 타입: ${slide.type} (${SLIDE_TYPES.join(', ')})`);
-  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>${CSS(ctx.font)}</style></head><body${slide.type === 'end-card' ? ' class="end-card"' : ''}>
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>${CSS(ctx.font, width, height)}</style></head><body${slide.type === 'end-card' ? ' class="end-card"' : ''}>
     <div class="slide">${body(slide, ctx)}</div>
-    ${index > 0 ? `<div class="page">${index + 1}/${total}</div>` : ''}
-    ${slide.type === 'end-card' ? '' : '<div class="logo">J</div>'}
+    ${index > 0 && !og ? `<div class="page">${index + 1}/${total}</div>` : ''}
+    ${slide.type === 'end-card' || og ? '' : '<div class="logo">J</div>'}
   </body></html>`;
 }
 

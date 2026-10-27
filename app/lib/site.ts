@@ -12,7 +12,8 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || 'https://jamidunow.
 // 운영자(저작권 표시·개인정보 보호책임자 표기에 사용)
 export const OPERATOR_NAME = process.env.NEXT_PUBLIC_OPERATOR_NAME || 'The Circles';
 // 페이지에서 openGraph를 쓰면 layout 값을 통째로 덮어쓰므로 공통 값은 이걸 펼쳐서 같이 넣는다
-export const BASE_OG = { siteName: SITE_NAME_FULL, locale: 'ko_KR', type: 'website' as const };
+export const OG_DEFAULT_IMAGE = { url: '/og-default.png', width: 1200, height: 630, alt: SITE_NAME_FULL };
+export const BASE_OG = { siteName: SITE_NAME_FULL, locale: 'ko_KR', type: 'website' as const, images: [OG_DEFAULT_IMAGE] };
 // 연락 이메일 — NEXT_PUBLIC_CONTACT_EMAIL로 바꿀 수 있고, 없으면 전용 주소를 쓴다
 export const CONTACT_EMAIL = (process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'jamidunow@gmail.com').trim();
 export const CONTACT_TEXT = CONTACT_EMAIL || '준비 중';

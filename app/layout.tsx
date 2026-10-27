@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { mnFontClass } from "./mono-fonts";
-import { SITE_NAME, SITE_URL, SITE_TITLE, SITE_META_DESCRIPTION, BASE_OG } from "./lib/site";
+import { SITE_NAME, SITE_URL, SITE_TITLE, SITE_META_DESCRIPTION, BASE_OG, OG_DEFAULT_IMAGE } from "./lib/site";
 import SiteHeader from "./components/home/SiteHeader";
 import SiteFooter from "./components/SiteFooter";
 import CompareTray from "./components/CompareTray";
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   description: SITE_META_DESCRIPTION,
   // url·canonical은 페이지마다 따로 (여기 두면 모든 하위 페이지가 메인 주소를 가리키게 됨)
   openGraph: { ...BASE_OG, title: SITE_TITLE, description: SITE_META_DESCRIPTION },
-  twitter: { card: 'summary_large_image' },
+  twitter: { card: 'summary_large_image', images: [OG_DEFAULT_IMAGE.url] },
   // 구글·네이버 소유 확인 코드 (Vercel 환경변수에 넣으면 자동 적용)
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || undefined,

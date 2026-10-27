@@ -3,12 +3,13 @@
 // 실행: npm run insta -- <post-id>             (카드 벽·스크린샷은 cache/에 저장해 재사용)
 //       npm run insta -- <post-id> --refresh   (jamidunow.com에서 벽·스크린샷을 다시 찍음)
 //       SITE=http://localhost:3000 npm run insta -- <post-id> --refresh
+//       npm run og                       (공유 미리보기 public/og-default.png, posts/og.json)
 // 처음 한 번: npm ci (브라우저가 없으면 npx playwright install chromium)
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { chromium } from 'playwright';
-import { renderSlide, SIZE } from './template.mjs';
+import { renderSlide, sizeOf, SIZE } from './template.mjs';
 import { resolveGame, pickCandidates, gameTitle } from './pick.mjs';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -272,7 +273,7 @@ const stale = (f) => refresh || !fs.existsSync(f);
 const SHOT_NEED = ['요즘 뜨는 중', '다시 뜨는 중', '신작'];
 const browser = await chromium.launch();
 try {
-  if (slideOf('wall-cover') && stale(wallFile)) { console.log('카드 벽 캡처…'); await captureWall(browser); }
+  if ((slideOf('wall-cover') || slideOf('og')) && stale(wallFile)) { console.log('카드 벽 캡처…'); await captureWall(browser); }
   if (shotSlide && stale(shotFile(shotPeople(shotSlide)))) {
     console.log('인원 추천 스크린샷 캡처…');
     await capturePeople(browser, { people: shotPeople(shotSlide), chips: true, width: 640, need: SHOT_NEED, file: () => shotFile(shotPeople(shotSlide)) });
@@ -323,7 +324,7 @@ try {
   for (let i = 0; i < slides.length; i++) {
     const s = slides[i];
     const ctx = { font };
-    if (s.type === 'wall-cover') ctx.wall = dataUri(wallFile);
+    if (s.type === 'wall-cover' || s.type === 'og') ctx.wall = dataUri(wallFile);
     if (s.type === 'screenshot') ctx.screenshot = dataUri(shotFile(shotPeople(s)));
     if (s.type === 'detail-split') {
       const sf = splitFiles(s.slug);
@@ -337,10 +338,12 @@ try {
     const imgUri = (v) => (/^https?:/.test(v) ? v : dataUri(path.resolve(path.dirname(postFile), v)));
     if (s.type === 'game-card' && s.image) ctx.photo = imgUri(s.image);
     if (s.type === 'collage-cover') ctx.photos = s.images.map(imgUri);
+    const size = sizeOf(s);
+    await page.setViewportSize(size);
     await page.setContent(renderSlide(s, i, slides.length, ctx), { waitUntil: 'load' });
     await page.evaluate(() => document.fonts.ready);
-    const file = path.join(outDir, `${String(i + 1).padStart(2, '0')}.png`);
-    await page.screenshot({ path: file, clip: { x: 0, y: 0, ...SIZE } });
+    const file = s.type === 'og' ? path.join(ROOT, 'public/og-default.png') : path.join(outDir, `${String(i + 1).padStart(2, '0')}.png`);
+    await page.screenshot({ path: file, clip: { x: 0, y: 0, ...size } });
     console.log(path.relative(ROOT, file));
   }
 } finally {
