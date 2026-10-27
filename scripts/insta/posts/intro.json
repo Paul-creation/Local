@@ -1,0 +1,7 @@
+[
+  { "type": "wall-cover", "headline": "금요일 밤,\n친구들이랑\n뭐 하지?", "overlay": 0.62, "blur": 3 },
+  { "type": "list", "title": "그래서 매번 한 짓", "items": ["스팀에서 몇 명까지 되는지 확인", "유튜브에서 친구랑 하는 영상 찾기", "할인 사이트 따로 열기", "내 컴에서 돌아가나 검색"], "small": "30분 뒤", "punch": "{결국 롤}" },
+  { "type": "chips", "big": "그래서\n{한 곳에}\n모았어요", "chips": ["인원", "가격·할인", "내 PC 사양", "친구랑 하는 영상"] },
+  { "type": "screenshot", "label": "인원만 고르면" },
+  { "type": "cta", "small": "단톡에 \"뭐 하지?\" 보내기 전에", "big": "여기서\n먼저\n{골라와}", "footer": "프로필 링크 → jamidunow.com" }
+]
