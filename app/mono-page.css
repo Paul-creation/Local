@@ -13,7 +13,7 @@ body:has(.mn-inner) { background: #0A0A0A; }
 main.mn.mn-inner, .mn.mn-inner :is(h2, h3, h4, h5, h6, p, span, a, li, dt, dd, div, th, td, label, strong) { text-shadow: none; }
 .mn.mn-inner :is(button, input, textarea, select, kbd, .btn, .cm-btn, .badge, .badge-neutral, .chip, .activity-chip, .category-tag, .lowest-pill, .buy-discount-badge, .discount-badge, .streamer-chip, .goty-badge, .top10-badge, .review-badge, .compare-add, .heart-btn, .share-text-btn, .report-open) { text-shadow: none; }
 /* 색이 있는 글씨(포인트·상태·할인·평가)에도 빛 없음 */
-.mn.mn-inner :is(a:not([class]), summary, .steam-rank, .info-sub, .pcs-link, .price-card-store, .lowest-gauge-text, .buy-timing, .vote-top, .cm-error, .dchart-tip-off, .verdict, [class*="verdict"], [class*="is-up"], [class*="is-down"], .chip.on, .chip[aria-pressed="true"], .badge-accent, .badge-review, .badge-sale, .heart-btn, .timing-badge) { text-shadow: none; }
+.mn.mn-inner :is(a:not([class]), summary, .glance-sub, .pcs-link, .price-card-store, .lowest-gauge-text, .buy-timing, .vote-top, .cm-error, .dchart-tip-off, .verdict, [class*="verdict"], [class*="is-up"], [class*="is-down"], .chip.on, .chip[aria-pressed="true"], .badge-accent, .badge-review, .badge-sale, .heart-btn, .timing-badge) { text-shadow: none; }
 
 /* 보조 버튼 — 원래 색이 없던 버튼(기본 .btn·.btn-outline·기본 .cm-btn)만 모노 보조 스타일 */
 .mn.mn-inner :is(.btn:not(.btn-primary):not(.compare-add), .btn-outline, .cm-btn:not(.cm-btn-primary):not(.cm-btn-danger)) {

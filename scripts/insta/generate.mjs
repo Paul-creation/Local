@@ -178,7 +178,7 @@ async function captureSplit(browser, game, files, split) {
     { name: '투표', css: '.dx-votes' },
     { name: '트레일러·스크린샷·링크 줄', css: '.dx-trailer, .shots, .detail-links' },
     { name: '인원 외 지표 칸(평가·동접·플레이 시간·진입장벽·한국어·역대 최저가 칸)', css: '[data-hide="tiles"]' },
-    { name: '같이 하기·ITAD 순위·정보 행·할인 전적·더 자세히', css: '[data-hide="misc"], .steam-card, .info-row, .detail-two' },
+    { name: '같이 하기·한눈에 보기·할인 전적·더 자세히', css: '[data-hide="misc"], .sec-glance, .detail-two' },
     { name: '그 밖의 섹션·한 줄 소개·개발사 줄·구매 버튼·안내 문구·PC 사양 설명·원문 사양', css: '.detail-main > *:not([data-keep]):not(.detail-price), .dx-lead, .dx-credits, .price-card-buttons, .price-card-note, .price-card-compare-status, .pcs-sub, .pcs-raw' },
   ];
   const measure = () => page.evaluate(() => {
@@ -196,7 +196,7 @@ async function captureSplit(browser, game, files, split) {
     const heads = [...m.querySelectorAll('*')].filter((e) => isHead(e) && inUnits(e) && e.getBoundingClientRect().height > 0).map((e) => Math.round(e.getBoundingClientRect().bottom + scrollY));
     const vis = (e, q) => [...e.querySelectorAll(q)].filter((x) => x.getBoundingClientRect().height > 0).map((x) => x.textContent.trim());
     const kept = units.map((e) => e.matches('header.dx-head') ? '커버·제목' : e.matches('ul.dx-tiles') ? `지표 칸(${vis(e, '.dx-tile-label').join('·')})` : e.matches('.detail-price') ? 'Steam 가격·할인·역대 최저가'
-      : vis(e, 'h1, h2, h3, .dx-tile-label')[0] || (e.className.toString().includes('info-row') ? '마지막 업데이트·필요 용량 줄' : e.className.toString().includes('steam-card') ? 'ITAD 순위·도전과제·가족 공유·DLC' : e.textContent.trim().slice(0, 14)));
+      : vis(e, 'h1, h2, h3, .dx-tile-label')[0] || e.textContent.trim().slice(0, 14));
     return { bounds: tops, atoms, heads, kept, end: Math.round(last.bottom + scrollY) + 16 };
   });
   const hidden = ['상단 메뉴', '뒤로가기', '푸터', '시리즈(다른 게임)', '비슷한 게임(다른 게임 추천)', '의견 달기 입력'];

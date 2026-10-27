@@ -5,9 +5,10 @@
 .sec-detail { --sec: var(--sec-detail); }
 .sec-spec { --sec: var(--sec-spec); }
 .sec-video { --sec: var(--sec-video); }
+.sec-glance { --sec: var(--sec-glance); }
 
 /* 제목 왼쪽 세로 막대 — 폭 4px, 높이는 제목 글자 크기 */
-:is(.sec-intro, .sec-together, .sec-price, .sec-detail, .sec-spec, .sec-video) :is(.detail-card-title, .pcs-card-title)::before {
+:is(.sec-intro, .sec-together, .sec-price, .sec-detail, .sec-spec, .sec-video, .sec-glance) :is(.detail-card-title, .pcs-card-title)::before {
   content: ""; display: inline-block; width: 4px; height: 1em; margin-right: 10px; border-radius: 2px; background: var(--sec); vertical-align: -0.12em;
 }
 
@@ -40,7 +41,17 @@
 .sec-video .video-rail-btn[aria-current="true"] .video-rail-thumb { border-color: var(--sec-video); }
 .sec-video .video-play-label { background: var(--sec-video); border-color: var(--sec-video); color: var(--mn-fg-inv); }
 
-/* 지표 칸 — 포인트 색 없이 값은 흰색. 활발히 업데이트 중은 회색 글씨 앞에 점 하나 */
-.mn.dx .steam-rank { color: var(--mn-fg); }
-.mn.dx .info-sub.is-up { color: var(--sec-label); }
-.mn.dx .info-sub.is-up::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: var(--sec-together); vertical-align: middle; }
+/* 한눈에 보기 — 2열 타일, 값 없는 칸은 만들지 않고 마지막 홀수 칸은 한 줄 전체. ITAD 순위 숫자만 섹션 색. 활발히 업데이트 중은 라벨색 글씨 앞에 점 하나 */
+.glance-grid { list-style: none; margin: 14px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.glance-tile { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 10px; background: var(--glance-tile); min-width: 0; }
+.glance-grid > .glance-tile:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.glance-label { font-size: 13px; font-weight: 500; color: var(--mn-label); }
+.glance-value { font-size: 17px; font-weight: 800; color: #fff; overflow-wrap: anywhere; }
+.glance-value.is-accent { color: var(--sec-glance); }
+.glance-sub { font-size: 13px; font-weight: 500; color: var(--mn-label); }
+.glance-sub.is-up::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: var(--sec-together); vertical-align: middle; }
+
+/* 데스크톱 오른쪽 열 — 한눈에 보기가 더해져 화면보다 길어질 수 있으니 창 높이가 충분할 때만 sticky */
+@media (min-width: 961px) and (max-height: 1049px) {
+  .detail-price { position: static; }
+}

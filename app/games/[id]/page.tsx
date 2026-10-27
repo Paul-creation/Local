@@ -226,7 +226,15 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const lowestDate = formatDate(game.lowest_price_date);
   const isMulti = (game.party_max ?? game.max_players ?? 0) > 1;
   const playersChip = game.max_players === 1 ? '혼자' : playersText(game);
-  const hasSteamCard = !!(game.heat_rank || game.achievement_count || (game.steam_appid && game.family_sharing != null) || game.has_dlc != null);
+  // 한눈에 보기 — 값이 있는 칸만 만든다
+  const upState = game.last_updated ? updateState(game.last_updated) : null;
+  const glance: { key: string; label: string; value: ReactNode; sub?: ReactNode; subClass?: string; valueClass?: string }[] = [];
+  if (game.heat_rank) glance.push({ key: 'rank', label: 'ITAD 인기 순위', value: `#${game.heat_rank.toLocaleString('ko-KR')}`, valueClass: 'is-accent' });
+  if (game.achievement_count) glance.push({ key: 'ach', label: '도전과제', value: `${game.achievement_count.toLocaleString('ko-KR')}개` });
+  if (game.steam_appid && game.family_sharing != null) glance.push({ key: 'family', label: '가족 공유', value: game.family_sharing ? '공유 가능' : '공유 불가' });
+  if (game.has_dlc != null) glance.push({ key: 'dlc', label: 'DLC', value: game.has_dlc ? 'DLC 있음' : 'DLC 없음' });
+  if (game.last_updated && upState) glance.push({ key: 'upd', label: '마지막 업데이트', value: formatDate(game.last_updated), sub: upState.text, subClass: upState.cls });
+  if (game.storage_gb) glance.push({ key: 'size', label: '필요 용량', value: `${game.storage_gb} GB` });
   // 스크린샷 — 주소가 둘 다 있는 것만, 없거나 비면 섹션 숨김
   const shots: Screenshot[] = Array.isArray(game.screenshots)
     ? game.screenshots.filter((s: any) => typeof s?.path_thumbnail === 'string' && typeof s?.path_full === 'string').slice(0, 10)
@@ -374,6 +382,20 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               </>
             )}
           </div>
+          {glance.length > 0 && (
+            <section className="detail-card sec-glance" aria-label="한눈에 보기">
+              <h3 className="detail-card-title">한눈에 보기</h3>
+              <ul className="glance-grid">
+                {glance.map((t) => (
+                  <li key={t.key} className="glance-tile">
+                    <span className="glance-label">{t.label}</span>
+                    <span className={`glance-value num${t.valueClass ? ` ${t.valueClass}` : ''}`}>{t.value}</span>
+                    {t.sub && <span className={`glance-sub ${t.subClass ?? ''}`}>{t.sub}</span>}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
           <CuratorsOfGame items={curators} gameId={game.id} />
           {game.discord_url && (
             <a href={game.discord_url} target="_blank" rel="noopener nofollow" className="detail-card discord-card">공식 디스코드 ↗</a>
@@ -428,48 +450,6 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               </section>
             );
           })()}
-
-          {/* 스팀 카드 — 왼쪽: 전체 평가(등급·%·리뷰 수·막대) + 최근 30일, 오른쪽: 인기 순위·도전과제·가족 공유·DLC. 헤더는 요약, 여기는 막대가 있는 자세한 평가 */}
-          {hasSteamCard && (
-            <section className="detail-card steam-card is-solo">
-              <div className="steam-grid">
-                <div className="steam-cell">
-                  <span className="steam-cell-label">ITAD 인기 순위</span>
-                  <span className="steam-rank num">{game.heat_rank ? `#${game.heat_rank.toLocaleString('ko-KR')}` : '-'}</span>
-                </div>
-                <div className="steam-cell">
-                  <span className="steam-cell-label">도전과제</span>
-                  <span className="steam-cell-value num">{game.achievement_count ? `${game.achievement_count.toLocaleString('ko-KR')}개` : '-'}</span>
-                </div>
-                <div className="steam-cell">
-                  <span className="steam-cell-label">가족 공유 · DLC</span>
-                  <span className="steam-cell-value">
-                    {game.steam_appid && game.family_sharing != null ? (game.family_sharing ? '공유 가능' : '공유 불가') : '공유 정보 없음'}
-                    <br />
-                    {game.has_dlc ? 'DLC 있음' : game.has_dlc === false ? 'DLC 없음' : 'DLC 정보 없음'}
-                  </span>
-                </div>
-              </div>
-            </section>
-          )}
-
-          {/* 게임 정보 가로 한 줄 */}
-          <section className="detail-card info-row" aria-label="게임 정보">
-            {game.last_updated && (() => {
-              const st = updateState(game.last_updated);
-              return (
-                <div className="info-cell">
-                  <span className="info-label">마지막 업데이트</span>
-                  <span className="info-value num">{formatDate(game.last_updated)}</span>
-                  <span className={`info-sub ${st.cls}`}>{st.text}</span>
-                </div>
-              );
-            })()}
-            {game.storage_gb && (
-              <div className="info-cell"><span className="info-label">필요 용량</span><span className="info-value num">{game.storage_gb} GB</span></div>
-            )}
-          </section>
-
 
           {/* 할인 전적 */}
           {showPriceRecord && priceHistory.length === 1 && price && (

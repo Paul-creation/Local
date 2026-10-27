@@ -2119,22 +2119,7 @@ a.hc-row:hover { background: var(--card-hover); }
 .steam-trend { margin-top: 6px; font-size: var(--fs-m); font-weight: 700; }
 .steam-trend.is-down { color: var(--down); }
 .steam-trend.is-up { color: var(--up); }
-.steam-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-.steam-grid > .steam-cell:last-child:nth-child(odd) { grid-column: 1 / -1; }
-.steam-cell { display: flex; flex-direction: column; gap: 6px; padding: 14px; border-radius: var(--radius-card-sm); background: var(--inset); min-width: 0; }
-.steam-cell-label { font-size: var(--fs-xs); font-weight: 700; color: var(--text-muted); }
-.steam-cell-value { font-size: var(--fs-l); font-weight: 700; color: var(--text); line-height: 1.5; }
-.steam-rank { font-size: 28px; font-weight: 900; color: var(--accent-text); letter-spacing: -0.02em; line-height: 1.1; }
 
-/* 게임 정보 가로 한 줄 */
-.info-row { display: flex; flex-wrap: wrap; gap: 0; padding: 6px; }
-.info-cell { flex: 1 1 140px; display: flex; flex-direction: column; gap: 3px; padding: 12px 16px; min-width: 0; }
-.info-cell + .info-cell { border-left: 1px solid var(--border-soft); }
-.info-label { font-size: var(--fs-xs); font-weight: 700; color: var(--text-muted); }
-.info-value { font-size: var(--fs-l); font-weight: 700; color: var(--text); overflow-wrap: anywhere; }
-.info-value.is-down, .info-sub.is-down { color: var(--sale); }
-.info-sub { font-size: var(--fs-xs); font-weight: 700; color: var(--text-muted); }
-.info-sub.is-up { color: var(--up); }
 
 /* 상황 칩 투표 */
 .vote-chips { display: flex; flex-wrap: wrap; gap: 10px 8px; }
@@ -2253,8 +2238,6 @@ button.activity-chip.activity-more:hover { border-color: var(--text-faint); colo
   .detail-two { grid-template-columns: minmax(0, 1fr); }
   .spec-columns { grid-template-columns: minmax(0, 1fr); padding: 4px 18px 18px; }
   .detail-accordion summary { padding-left: 18px; padding-right: 14px; }
-  .info-cell + .info-cell { border-left: none; }
-  .info-cell { flex-basis: 45%; padding: 10px 12px; }
   .price-card-now { font-size: 34px; }
 }
 
@@ -2539,15 +2522,11 @@ a.hc-row:hover, .cm-home-row:hover, .cm-row:hover { background: var(--card-hover
   .card, .card:hover, .cm-board-card, .cm-board-card:hover { transition: none; transform: none; }
 }
 
-/* 상세 정보 라벨·값 */
-.info-label { font-size: var(--fs-xs); font-weight: 500; color: var(--text-muted); }
-.info-value { font-size: var(--fs-l); font-weight: 600; color: var(--text); }
 
 /* 핵심 수치 — PC 32px(순위 28px), 모바일 24px */
 .steam-pct > .num { font-size: 32px; }
-.steam-rank { font-size: 28px; }
 @media (max-width: 760px) {
-  .steam-pct > .num, .steam-rank { font-size: 24px; }
+  .steam-pct > .num { font-size: 24px; }
 }
 
 /* 태그 칩 */
@@ -3125,11 +3104,7 @@ a.pcs-link, a.pcs-change { display: inline-flex; align-items: center; } /* 링�
 .dx .trio-cell { background: none; border-radius: 0; padding: 0 20px; }
 .dx .trio-cell:first-child { padding-left: 0; }
 .dx .trio-cell + .trio-cell { border-left: 1px solid var(--border-soft); }
-.dx .info-row { padding: 28px 0 0; }
-.dx .info-cell:first-child { padding-left: 0; }
 .dx .steam-card { display: block; }
-.dx .steam-grid { background: none; }
-.dx .steam-cell { background: none; border-radius: 0; padding-left: 0; }
 .dx .detail-layout { gap: 40px; }
 .dx .detail-links { padding-top: 0; }
 
