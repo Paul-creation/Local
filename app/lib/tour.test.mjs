@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseState, serializeState, decide, advance, isBot, pageOf, placeBubble, orderParts, TOUR_STEPS, TOUR_TOTAL } from './tour.ts';
+import { parseState, serializeState, decide, advance, isBot, pageOf, placeBubble, orderInfo, resolveStep, stepTargetNames, TOUR_STEPS, TOUR_TOTAL } from './tour.ts';
 
 const UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/130 Safari/537.36';
 const run = (step) => serializeState({ status: 'running', step });
@@ -39,9 +39,45 @@ test('단계 진행: 마지막 다음은 마무리', () => {
   assert.equal(advance(TOUR_TOTAL - 1), 'finale');
 });
 
-test('단계 정의: 카드 → 상세 이동 경계, 설명만 보는 단계는 3번 하나', () => {
-  assert.deepEqual(TOUR_STEPS.map((s) => s.page), ['home', 'home', 'detail', 'detail']);
-  assert.deepEqual(TOUR_STEPS.filter((s) => s.action === 'button').map((s) => s.id), ['info']);
+test('단계 정의: 5단계, 카드 → 상세 이동 경계, 설명만 보는 단계는 위에서부터 하나씩', () => {
+  assert.equal(TOUR_TOTAL, 5);
+  assert.deepEqual(TOUR_STEPS.map((s) => s.page), ['home', 'home', 'detail', 'detail', 'detail']);
+  assert.deepEqual(TOUR_STEPS.filter((s) => s.action === 'button').map((s) => s.id), ['info1', 'info2']);
+  assert.deepEqual(stepTargetNames(2), ['stat-tiles', 'price-card']);
+  assert.deepEqual(stepTargetNames(4), ['compare-add']);
+});
+
+test('옛 저장값(4단계 시절 step 0~3)도 깨지지 않고 이어짐', () => {
+  for (let step = 0; step <= 4; step++) {
+    const page = TOUR_STEPS[step].page === 'home' ? '/' : '/games/x';
+    assert.deepEqual(decide(run(step), page, '', UA), { kind: 'resume', step });
+  }
+  assert.equal(parseState('{"status":"running","step":7}').step, 0);
+  assert.equal(parseState('{"status":"running","step":-1}').step, 0);
+});
+
+test('상세 slot 단계: 화면 위에서부터, 문구는 대상을 따라감', () => {
+  const desk = { 'stat-tiles': 90, 'price-card': 360 };
+  assert.deepEqual(orderInfo(desk).map((p) => p.target), ['stat-tiles', 'price-card']);
+  const a = resolveStep(2, desk), b = resolveStep(3, desk);
+  assert.equal(a.names[0], 'stat-tiles');
+  assert.equal(a.title, '인원·평가·플레이 시간은 여기서 봐요');
+  assert.equal(b.names[0], 'price-card');
+  assert.equal(b.title, '지금 가격이랑 역대 최저가예요');
+  // 모바일에서 가격 카드가 위면 순서가 바뀌고 문구도 같이 따라감
+  const mob = { 'stat-tiles': 900, 'price-card': 200 };
+  assert.equal(resolveStep(2, mob).names[0], 'price-card');
+  assert.equal(resolveStep(2, mob).title, '지금 가격이랑 역대 최저가예요');
+  assert.equal(resolveStep(3, mob).names[0], 'stat-tiles');
+  assert.equal(resolveStep(3, mob).action, 'button');
+});
+
+test('상세 slot 단계: 대상이 하나뿐이면 둘째 단계는 비어 건너뜀, 비교 단계는 항상 있음', () => {
+  assert.equal(resolveStep(2, { 'price-card': 100 }).names[0], 'price-card');
+  assert.equal(resolveStep(3, { 'price-card': 100 }), null);
+  assert.equal(resolveStep(2, {}), null);
+  assert.equal(resolveStep(4, {}).names[0], 'compare-add');
+  assert.equal(resolveStep(4, {}).buttonLabel, '끝내기');
 });
 
 test('pageOf·isBot', () => {
@@ -69,11 +105,4 @@ test('말풍선 자리: 아래 기본, 아래가 모자라면 위, 둘 다 안 �
 test('말풍선은 화면 가로 안에 머문다 (375px)', () => {
   const p = placeBubble({ left: 330, top: 100, width: 40, height: 30 }, { w: 300, h: 150 }, 375, 700);
   assert.ok(p.left >= 16 && p.left + 300 <= 375 - 16 + 1);
-});
-
-test('좁은 화면 3단계 분할: 위에 있는 대상부터, 하나뿐이면 하나만', () => {
-  assert.deepEqual(orderParts({ 'stat-tiles': 90, 'price-card': 700 }).map((p) => p.target), ['stat-tiles', 'price-card']);
-  assert.deepEqual(orderParts({ 'stat-tiles': 900, 'price-card': 200 }).map((p) => p.target), ['price-card', 'stat-tiles']);
-  assert.deepEqual(orderParts({ 'price-card': 200 }).map((p) => p.target), ['price-card']);
-  assert.deepEqual(orderParts({}), []);
 });

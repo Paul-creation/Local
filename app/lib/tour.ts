@@ -7,19 +7,22 @@ export type TourPage = 'home' | 'detail';
 export type TourStep = {
   id: string;
   page: TourPage;
-  // data-tour 속성값 — 하나라도 화면에 있으면 진행, 있는 것마다 구멍을 뚫는다 (첫 번째가 말풍선 기준)
+  // data-tour 속성값 (slot 단계는 비워 둠)
   targets: string[];
   title: string;
   desc: string;
-  // target: 대상을 직접 누르면 다음 / button: 말풍선 버튼으로만 다음 (4단계는 둘 다)
+  // target: 대상을 직접 누르면 다음 / button: 말풍선 버튼으로만 다음 (마지막 단계는 둘 다)
   action: 'target' | 'button';
   buttonLabel?: string;
+  // 상세의 "화면 위에서부터 하나씩" 단계 — 스탯 타일·가격 카드 중 화면에서 위에 있는 순서대로 slot번째를 보여준다 (resolveStep)
+  slot?: number;
 };
 
 export const TOUR_STEPS: TourStep[] = [
   { id: 'people', page: 'home', targets: ['people-tabs'], title: '친구 몇 명이서 할 거예요?', desc: '위에서 인원을 눌러보세요', action: 'target' },
   { id: 'card', page: 'home', targets: ['first-card'], title: '하나 골라볼까요?', desc: '카드를 눌러 자세히 봐요', action: 'target' },
-  { id: 'info', page: 'detail', targets: ['stat-tiles', 'price-card'], title: '가격·할인·인원이 여기 다 있어요', desc: '표시된 두 곳을 한 번 훑어봐요', action: 'button', buttonLabel: '다음' },
+  { id: 'info1', page: 'detail', targets: [], title: '', desc: '', action: 'button', buttonLabel: '다음', slot: 0 },
+  { id: 'info2', page: 'detail', targets: [], title: '', desc: '', action: 'button', buttonLabel: '다음', slot: 1 },
   { id: 'compare', page: 'detail', targets: ['compare-add'], title: '친구랑 고민되면 담아서 비교해요', desc: '버튼을 누르거나 아래 끝내기를 눌러요', action: 'target', buttonLabel: '끝내기' },
 ];
 export const TOUR_TOTAL = TOUR_STEPS.length;
@@ -82,14 +85,21 @@ export function placeBubble(a: Box, b: { w: number; h: number }, vw: number, vh:
   return { left: clampX((vw - b.w) / 2), top: Math.max(8, vh - b.h - bottomReserve), side: 'over', tailX: null };
 }
 
-// 좁은 화면(NARROW_MAX 이하)에서는 3단계를 둘로 나눠 한 번에 하나씩 보여준다 (진행 표시는 "3 / 4" 그대로). 순서는 화면에서 위에 있는 것부터
-export const NARROW_MAX = 760;
-export type TourPart = { target: string; title: string };
-export const INFO_PARTS: TourPart[] = [
-  { target: 'stat-tiles', title: '인원·평가는 여기서 봐요' },
-  { target: 'price-card', title: '가격·할인은 여기 있어요' },
+export const INFO_ITEMS = [
+  { target: 'stat-tiles', title: '인원·평가·플레이 시간은 여기서 봐요' },
+  { target: 'price-card', title: '지금 가격이랑 역대 최저가예요' },
 ];
-// tops: 화면에 있는 대상의 위쪽 좌표 → 위에 있는 순서로 정렬한 부분 목록
-export function orderParts(tops: Record<string, number | undefined>): TourPart[] {
-  return INFO_PARTS.filter((p) => typeof tops[p.target] === 'number').sort((a, b) => (tops[a.target] as number) - (tops[b.target] as number));
+// 화면에 있는 INFO_ITEMS를 위쪽 좌표 순으로 (모바일에서 가격 카드가 위면 순서가 바뀜, 문구는 대상을 따라간다)
+export function orderInfo(tops: Record<string, number | undefined>) {
+  return INFO_ITEMS.filter((p) => typeof tops[p.target] === 'number').sort((a, b) => (tops[a.target] as number) - (tops[b.target] as number));
+}
+export const stepTargetNames = (i: number) => (TOUR_STEPS[i].slot === undefined ? TOUR_STEPS[i].targets : INFO_ITEMS.map((p) => p.target));
+
+export type StepContent = { names: string[]; title: string; desc: string; action: 'target' | 'button'; buttonLabel?: string };
+// 지금 단계에 보여줄 내용 — 대상이 없어 비는 slot 단계는 null(건너뜀)
+export function resolveStep(i: number, tops: Record<string, number | undefined>): StepContent | null {
+  const s = TOUR_STEPS[i];
+  if (s.slot === undefined) return { names: s.targets, title: s.title, desc: s.desc, action: s.action, buttonLabel: s.buttonLabel };
+  const item = orderInfo(tops)[s.slot];
+  return item ? { names: [item.target], title: item.title, desc: '', action: s.action, buttonLabel: s.buttonLabel } : null;
 }
