@@ -37,10 +37,16 @@ em { font-style: normal; color: #FFD84A; }
 .chip { border: 3px solid #5a5a5a; border-radius: 999px; padding: 20px 44px; font-size: 46px; font-weight: 600; }
 
 /* screenshot */
-.label { font-size: 96px; font-weight: 900; letter-spacing: -0.04em; line-height: 1.2; text-align: center; }
-.shot { flex: 1; min-height: 0; display: flex; justify-content: center; align-items: center; padding-top: 50px; }
-.frame { border: 8px solid #333; border-radius: 56px; overflow: hidden; background: #0a0a0a; padding: 36px 0 36px 36px; line-height: 0; }
-.frame img { display: block; max-width: 800px; max-height: 790px; width: auto; height: auto; }
+.label { font-size: 96px; font-weight: 900; letter-spacing: -0.04em; line-height: 1.2; text-align: center; text-wrap: balance; }
+.shot { flex: 1; min-height: 0; display: flex; justify-content: center; align-items: flex-start; padding-top: 36px; }
+.frame { border: 8px solid #333; border-radius: 56px; overflow: hidden; background: #0a0a0a; padding: 28px 0 28px 28px; line-height: 0; }
+.frame img { display: block; max-width: 860px; max-height: 822px; width: auto; height: auto; }
+
+/* detail-pair */
+.pair { flex: 1; min-height: 0; display: flex; justify-content: center; align-items: flex-start; gap: 26px; padding-top: 34px; }
+.phone { border: 8px solid #333; border-radius: 44px; overflow: hidden; background: #0a0a0a; line-height: 0; }
+.phone img { display: block; width: 412px; height: auto; }
+.foot { text-align: center; font-size: 36px; font-weight: 600; color: rgba(255,255,255,.7); padding-top: 20px; margin-right: 140px; margin-left: 140px; }
 
 /* cta */
 .cta-big { font-size: 190px; font-weight: 900; line-height: 1.15; letter-spacing: -0.045em; margin-top: 28px; }
@@ -71,9 +77,19 @@ const BODY = {
       <div class="chips">${s.chips.map((c) => `<span class="chip">${rich(c)}</span>`).join('')}</div>
     </div>`,
   screenshot: (s, ctx) => `
-    <div class="pad" style="padding-bottom:130px">
+    <div class="pad" style="padding-bottom:166px">
       <div class="label">${rich(s.label)}</div>
       <div class="shot"><div class="frame"><img src="${ctx.screenshot}" alt=""></div></div>
+    </div>`,
+  trending: (s, ctx) => BODY.screenshot(s, ctx),
+  'detail-pair': (s, ctx) => `
+    <div class="pad" style="padding-bottom:84px">
+      <div class="label" ${s.size ? `style="font-size:${+s.size}px"` : ''}>${rich(s.label)}</div>
+      <div class="pair">
+        <div class="phone"><img src="${ctx.top}" alt=""></div>
+        <div class="phone"><img src="${ctx.spec}" alt=""></div>
+      </div>
+      <div class="foot">${rich(s.small ?? 'jamidunow.com')}</div>
     </div>`,
   cta: (s) => `
     <div class="pad">
