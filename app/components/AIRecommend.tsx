@@ -87,7 +87,7 @@ export default function AIRecommend({ icon }: { icon?: ReactNode } = {}) {
 
   return (
     <>
-      <button type="button" className="ai-trigger-clean" onClick={() => setOpen(true)}>
+      <button type="button" className="ai-trigger-clean" data-tour="ai" onClick={() => setOpen(true)}>
         {icon}AI 추천
       </button>
 

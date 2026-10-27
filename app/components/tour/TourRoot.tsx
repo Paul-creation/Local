@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import './tour.css';
 import {
-  TOUR_KEY, TOUR_STEPS, TOUR_TOTAL, TOUR_FINALE, FINALE_MS,
+  TOUR_KEY, TOUR_LEGACY_KEY, TOUR_STEPS, TOUR_TOTAL, TOUR_FINALE, FINALE_MS,
   INFO_ITEMS, decide, advance, serializeState, placeBubble, resolveStep, stepTargetNames,
   type Box, type Placement, type StepContent, type TourState,
 } from '../../lib/tour';
@@ -19,15 +19,23 @@ type Layout = { key: string; step: number; holes: Box[]; place: Placement; vw: n
 const HOLE_PAD = 6;
 const HOLE_R = 10;
 
-const read = (): { ok: boolean; raw: string | null } => {
-  try { return { ok: true, raw: window.localStorage.getItem(TOUR_KEY) }; } catch { return { ok: false, raw: null }; }
+const read = (): { ok: boolean; raw: string | null; legacy: string | null } => {
+  try { return { ok: true, raw: window.localStorage.getItem(TOUR_KEY), legacy: window.localStorage.getItem(TOUR_LEGACY_KEY) }; } catch { return { ok: false, raw: null, legacy: null }; }
 };
 const write = (s: TourState): boolean => {
   try { window.localStorage.setItem(TOUR_KEY, serializeState(s)); return true; } catch { return false; }
 };
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+// 대상의 화면 위치 — display: contents(홈 히어로의 .home-only)는 자기 박스가 없어서 자식들을 합친 영역을 쓴다. 보이지 않으면 null
+const rectOf = (el: HTMLElement): DOMRect | null => {
+  if (el.getClientRects().length > 0) return el.getBoundingClientRect();
+  const rs = Array.from(el.children).map((c) => c.getBoundingClientRect()).filter((r) => r.width > 0 && r.height > 0);
+  if (rs.length === 0) return null;
+  const l = Math.min(...rs.map((r) => r.left)), t = Math.min(...rs.map((r) => r.top));
+  return new DOMRect(l, t, Math.max(...rs.map((r) => r.right)) - l, Math.max(...rs.map((r) => r.bottom)) - t);
+};
 const findTarget = (name: string): HTMLElement | null =>
-  Array.from(document.querySelectorAll<HTMLElement>(`[data-tour="${name}"]`)).find((el) => el.getClientRects().length > 0) ?? null;
+  Array.from(document.querySelectorAll<HTMLElement>(`[data-tour="${name}"]`)).find((el) => rectOf(el)) ?? null;
 const findNames = (names: string[]) => names.map(findTarget).filter((e): e is HTMLElement => !!e);
 const findTargets = (step: number) => findNames(stepTargetNames(step));
 const namesOf = (v: StepView) => v.c.names;
@@ -49,11 +57,11 @@ export default function TourRoot() {
   const skipRef = useRef<HTMLButtonElement>(null);
   const gen = useRef(0); // 진행 중인 기다림을 취소하는 번호표
 
-  // 대상이 화면에 나타날 때까지 기다림 (extra: 같이 있어야 하는 대상)
-  const waitFor = useCallback(async (step: number, my: number, extra?: string): Promise<boolean> => {
-    for (let t = 0; t < 8000; t += 150) {
+  // 대상이 화면에 나타날 때까지 기다림 (extras: 같이 있어야 하는 대상)
+  const waitFor = useCallback(async (step: number, my: number, extras: string[], timeout: number): Promise<boolean> => {
+    for (let t = 0; t < timeout; t += 150) {
       if (my !== gen.current) return false;
-      if (findTargets(step).length > 0 && (!extra || findTarget(extra))) return true;
+      if (findTargets(step).length > 0 && extras.every((x) => findTarget(x))) return true;
       await sleep(150);
     }
     return false;
@@ -62,7 +70,7 @@ export default function TourRoot() {
   // 대상이 화면 밖(일부라도 잘림)일 때만 부드럽게 스크롤해 대상이 화면 위쪽 1/3에 오게 하고, 멈출 때까지 기다림
   const bringIntoView = useCallback(async (els: HTMLElement[], my: number) => {
     if (els.length === 0) return;
-    const rect = els[0].getBoundingClientRect();
+    const rect = rectOf(els[0])!;
     const vh = window.innerHeight;
     if (rect.top >= 70 && rect.bottom <= vh) return;
     const want = rect.height > vh * 0.6 ? 90 : Math.round(vh / 3);
@@ -82,26 +90,33 @@ export default function TourRoot() {
     setView(finale ? { kind: 'finale' } : null);
   }, []);
 
+  // step부터 보여줄 수 있는 첫 단계를 찾아 띄움 — 대상이 없는 optional 단계는 건너뛰고, 필수 단계의 대상이 없으면 종료
   const enter = useCallback(async (step: number, my: number, first: boolean) => {
-    if (!(await waitFor(step, my, first ? 'first-card' : undefined))) {
-      if (my === gen.current && !first) write({ status: 'done', step });
-      return;
-    }
-    if (!write({ status: 'running', step }) && first) return;
-    // 상세에 처음 들어온 단계는 맨 위에서 시작
-    if (TOUR_STEPS[step].page === 'detail' && (step === 0 || TOUR_STEPS[step - 1].page !== 'detail')) window.scrollTo({ top: 0, behavior: 'instant' });
-    const tops: Record<string, number> = {};
-    for (const p of INFO_ITEMS) { const e = findTarget(p.target); if (e) tops[p.target] = e.getBoundingClientRect().top; }
-    // 대상이 없어 비는 단계는 건너뜀
-    let at = step, c = resolveStep(at, tops);
-    while (!c) {
+    let at = step;
+    for (;;) {
+      const def = TOUR_STEPS[at];
+      const start = first && at === step; // 시작할 때는 인원 탭과 첫 카드까지 있어야 함 (추천이 비어 있으면 시작 안 함)
+      const ok = await waitFor(at, my, start ? ['people-tabs', 'first-card'] : [], start || !def.optional ? 8000 : 1200);
+      if (my !== gen.current) return;
+      let c = null;
+      if (ok) {
+        // 홈 맨 처음 단계와 상세에 처음 들어온 단계는 스크롤 맨 위(0)에서 시작
+        if (at === 0 || (def.page === 'detail' && TOUR_STEPS[at - 1].page !== 'detail')) window.scrollTo({ top: 0, behavior: 'instant' });
+        const tops: Record<string, number> = {};
+        for (const p of INFO_ITEMS) { const e = findTarget(p.target); if (e) tops[p.target] = rectOf(e)!.top; }
+        c = resolveStep(at, tops);
+      }
+      if (c) {
+        if (!write({ status: 'running', step: at }) && first) return;
+        await bringIntoView(findNames(c.names), my);
+        if (my === gen.current) setView({ kind: 'step', step: at, c });
+        return;
+      }
+      if (!def.optional) { if (!first) write({ status: 'done', step: at }); return; }
       const to = advance(at);
       if (to === 'finale') { finish('done', at, true); return; }
-      at = to; c = resolveStep(at, tops);
+      at = to;
     }
-    if (at !== step) write({ status: 'running', step: at });
-    await bringIntoView(findNames(c.names), my);
-    if (my === gen.current) setView({ kind: 'step', step: at, c });
   }, [waitFor, bringIntoView, finish]);
 
   // 시작·이어가기: 페이지가 바뀔 때마다 저장된 상태로 판단
@@ -109,7 +124,7 @@ export default function TourRoot() {
     const my = ++gen.current;
     const r = read();
     if (!r.ok) return;
-    const d = decide(r.raw, window.location.pathname, window.location.search, navigator.userAgent);
+    const d = decide(r.raw, window.location.pathname, window.location.search, navigator.userAgent, r.legacy);
     if (d.kind === 'end') { write({ status: 'done', step: 0 }); return; }
     if (d.kind === 'none') return;
     void (async () => {
@@ -140,14 +155,14 @@ export default function TourRoot() {
       if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const t = e.target as Element | null;
       if (!t || t.closest('.jdn-tour')) return;
-      const hit = step === 0 ? t.closest('[data-tour="people-tabs"] button') : sv!.c.action === 'target' && names.some((n) => t.closest(`[data-tour="${n}"]`));
+      const hit = TOUR_STEPS[step].id === 'people' ? t.closest('[data-tour="people-tabs"] button') : sv!.c.action === 'target' && names.some((n) => t.closest(`[data-tour="${n}"]`));
       if (hit) next(step);
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') { e.preventDefault(); finish('skipped', step, false); return; }
       if (e.key !== 'Tab') return;
       const list: HTMLElement[] = [];
-      for (const el of findNames(names)) {
+      for (const el of sv!.c.block ? [] : findNames(names)) { // 설명만 보는 단계는 대상으로 Tab이 못 가게
         if (el.matches(FOCUSABLE)) list.push(el);
         else list.push(...Array.from(el.querySelectorAll<HTMLElement>(FOCUSABLE)).filter((x) => x.getClientRects().length > 0));
       }
@@ -165,6 +180,14 @@ export default function TourRoot() {
     return () => { document.removeEventListener('click', onClick, true); document.removeEventListener('keydown', onKey, true); };
   }, [sv, step, next, finish]);
 
+  // 설명만 보는 단계: 대상 안의 입력·버튼이 눌리거나 포커스를 받지 않게 (구멍 밖은 아래 투명 막이 막는다)
+  useEffect(() => {
+    if (!sv || !sv.c.block) return;
+    const els = findNames(sv.c.names);
+    els.forEach((e) => { e.inert = true; });
+    return () => els.forEach((e) => { e.inert = false; });
+  }, [sv]);
+
   // 대상 위치를 따라가며 구멍·말풍선 자리 갱신 (스크롤·크기 변화·목록 교체 모두 매 프레임 확인). 대상이 1.5초 넘게 없으면 종료
   useEffect(() => {
     if (step < 0) return;
@@ -180,7 +203,7 @@ export default function TourRoot() {
         missing = 0;
         const b = bubbleRef.current;
         if (b && b.offsetWidth > 0) {
-          const rects = els.map((e) => toBox(e.getBoundingClientRect()));
+          const rects = els.map((e) => toBox(rectOf(e)!));
           const vw = document.documentElement.clientWidth, vh = window.innerHeight;
           const place = placeBubble(rects[0], { w: b.offsetWidth, h: b.offsetHeight }, vw, vh);
           const key = JSON.stringify([rects, place, vw, vh]);
@@ -193,7 +216,7 @@ export default function TourRoot() {
     return () => cancelAnimationFrame(raf);
   }, [sv, step, finish]);
 
-  // 마무리 말풍선: 3초 뒤 또는 아무 데나 누르면 닫힘
+  // 마무리 말풍선: 2초 뒤 또는 아무 데나 누르면 닫힘
   const finale = view?.kind === 'finale';
   useEffect(() => {
     if (!finale) return;
@@ -211,7 +234,6 @@ export default function TourRoot() {
         <div className="jdn-tour-bubble jdn-tour-finale" role="dialog" aria-live="polite" aria-label={TOUR_FINALE.title}>
           <div className="jdn-tour-float">
             <p className="jdn-tour-title">{TOUR_FINALE.title}</p>
-            <p className="jdn-tour-desc">{TOUR_FINALE.desc}</p>
           </div>
         </div>
       </div>
@@ -224,6 +246,7 @@ export default function TourRoot() {
     <div className="jdn-tour">
       {lay && (
         <svg className="jdn-tour-mask" aria-hidden="true">
+          {def.block && <rect width="100%" height="100%" fill="transparent" style={{ pointerEvents: 'all' }} />}
           <path fillRule="evenodd" fill="rgba(0,0,0,.65)" d={`M0 0H${lay.vw}V${lay.vh}H0Z${lay.holes.map(holePath).join('')}`} />
         </svg>
       )}

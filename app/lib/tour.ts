@@ -1,7 +1,9 @@
 // 첫 방문자용 단계별 투어의 진행 규칙 — 화면 없이 판단만 한다 (components/tour/TourRoot이 이 규칙대로 그림)
 // 저장값(localStorage jdn_tour_v1)은 JSON {status, step}. 저장소를 못 쓰면 투어를 띄우지 않는다
 
-export const TOUR_KEY = 'jdn_tour_v1';
+export const TOUR_KEY = 'jdn_tour_v2';
+// v1(4단계 시절)은 단계 번호의 뜻이 달라 읽지 않는다. 다만 v1 값이 있는 사람은 이미 투어를 본 사람이라 v2에서도 처음 방문으로 치지 않는다
+export const TOUR_LEGACY_KEY = 'jdn_tour_v1';
 
 export type TourPage = 'home' | 'detail';
 export type TourStep = {
@@ -14,21 +16,28 @@ export type TourStep = {
   // target: 대상을 직접 누르면 다음 / button: 말풍선 버튼으로만 다음 (마지막 단계는 둘 다)
   action: 'target' | 'button';
   buttonLabel?: string;
+  // 설명만 보는 단계 — 대상 요소를 눌러도 아무 일도 안 일어나게 막는다 (검색창 입력·AI 창·칩 필터로 투어가 끊기지 않게)
+  block?: boolean;
+  // 대상이 없으면 이 단계만 건너뜀 (없으면 투어 종료)
+  optional?: boolean;
   // 상세의 "화면 위에서부터 하나씩" 단계 — 스탯 타일·가격 카드 중 화면에서 위에 있는 순서대로 slot번째를 보여준다 (resolveStep)
   slot?: number;
 };
 
 export const TOUR_STEPS: TourStep[] = [
-  { id: 'people', page: 'home', targets: ['people-tabs'], title: '친구 몇 명이서 할 거예요?', desc: '위에서 인원을 눌러보세요', action: 'target' },
+  { id: 'hero', page: 'home', targets: ['hero'], title: 'JamiDuNow에 온 걸 환영해요', desc: '친구랑 할 게임을 인원·가격·할인으로 한 번에 비교하는 곳이에요', action: 'button', buttonLabel: '다음', block: true, optional: true },
+  { id: 'cmdbar', page: 'home', targets: ['cmdbar'], title: '게임 이름이나 태그로 바로 찾아요', desc: '무료·할인 중·내 PC로 돌아가는 게임만 골라볼 수도 있어요', action: 'button', buttonLabel: '다음', block: true, optional: true },
+  { id: 'ai', page: 'home', targets: ['ai'], title: '뭘 할지 모르겠다면', desc: '질문 몇 개로 AI가 골라줘요', action: 'button', buttonLabel: '다음', block: true, optional: true },
+  { id: 'people', page: 'home', targets: ['people-tabs'], title: '친구 몇 명이서 할 거예요?', desc: '인원을 눌러보세요', action: 'target' },
   { id: 'card', page: 'home', targets: ['first-card'], title: '하나 골라볼까요?', desc: '카드를 눌러 자세히 봐요', action: 'target' },
-  { id: 'info1', page: 'detail', targets: [], title: '', desc: '', action: 'button', buttonLabel: '다음', slot: 0 },
-  { id: 'info2', page: 'detail', targets: [], title: '', desc: '', action: 'button', buttonLabel: '다음', slot: 1 },
+  { id: 'info1', page: 'detail', targets: [], title: '', desc: '', action: 'button', buttonLabel: '다음', block: true, optional: true, slot: 0 },
+  { id: 'info2', page: 'detail', targets: [], title: '', desc: '', action: 'button', buttonLabel: '다음', block: true, optional: true, slot: 1 },
   { id: 'compare', page: 'detail', targets: ['compare-add'], title: '친구랑 고민되면 담아서 비교해요', desc: '버튼을 누르거나 아래 끝내기를 눌러요', action: 'target', buttonLabel: '끝내기' },
 ];
 export const TOUR_TOTAL = TOUR_STEPS.length;
 
-export const TOUR_FINALE = { title: '준비 끝!', desc: '뭘 할지 모르겠으면 홈에서 AI 추천을 눌러보세요' };
-export const FINALE_MS = 3000;
+export const TOUR_FINALE = { title: '준비 끝!' };
+export const FINALE_MS = 2000;
 
 export type TourState = { status: 'running' | 'done' | 'skipped'; step: number };
 
@@ -58,9 +67,10 @@ export type Decision = { kind: 'none' } | { kind: 'start' } | { kind: 'resume'; 
 
 // raw: 저장된 값(없으면 null). 첫 방문 + 홈(주소에 검색 조건 없음) + 봇 아님 → 시작
 // 진행 중이면 지금 페이지가 그 단계의 페이지일 때만 이어가고, 아니면(다른 페이지로 갔으면) 종료
-export function decide(raw: string | null, pathname: string, search: string, ua: string): Decision {
+// legacy: v1 저장값 — 있으면(본 사람) 새로 시작하지 않는다
+export function decide(raw: string | null, pathname: string, search: string, ua: string, legacy: string | null = null): Decision {
   const st = parseState(raw);
-  if (!st) return pathname === '/' && !search && !isBot(ua) ? { kind: 'start' } : { kind: 'none' };
+  if (!st) return !legacy && pathname === '/' && !search && !isBot(ua) ? { kind: 'start' } : { kind: 'none' };
   if (st.status !== 'running') return { kind: 'none' };
   return pageOf(pathname) === TOUR_STEPS[st.step].page ? { kind: 'resume', step: st.step } : { kind: 'end' };
 }
@@ -95,11 +105,11 @@ export function orderInfo(tops: Record<string, number | undefined>) {
 }
 export const stepTargetNames = (i: number) => (TOUR_STEPS[i].slot === undefined ? TOUR_STEPS[i].targets : INFO_ITEMS.map((p) => p.target));
 
-export type StepContent = { names: string[]; title: string; desc: string; action: 'target' | 'button'; buttonLabel?: string };
+export type StepContent = { names: string[]; title: string; desc: string; action: 'target' | 'button'; buttonLabel?: string; block: boolean };
 // 지금 단계에 보여줄 내용 — 대상이 없어 비는 slot 단계는 null(건너뜀)
 export function resolveStep(i: number, tops: Record<string, number | undefined>): StepContent | null {
   const s = TOUR_STEPS[i];
-  if (s.slot === undefined) return { names: s.targets, title: s.title, desc: s.desc, action: s.action, buttonLabel: s.buttonLabel };
+  if (s.slot === undefined) return { names: s.targets, title: s.title, desc: s.desc, action: s.action, buttonLabel: s.buttonLabel, block: !!s.block };
   const item = orderInfo(tops)[s.slot];
-  return item ? { names: [item.target], title: item.title, desc: '', action: s.action, buttonLabel: s.buttonLabel } : null;
+  return item ? { names: [item.target], title: item.title, desc: '', action: s.action, buttonLabel: s.buttonLabel, block: !!s.block } : null;
 }

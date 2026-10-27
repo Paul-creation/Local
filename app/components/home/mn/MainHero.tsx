@@ -61,13 +61,13 @@ export default function MainHero({ games, filters, showHome, sidebar = false, ev
       )}
       <div className={showHome ? 'mn-wrap mn-hero-inner' : undefined}>
         {showHome && (
-          <div className="home-only mn-intro">
+          <div className="home-only mn-intro" data-tour="hero">
             {event}
             <h1 className="mn-h1">금요일 밤,<br />친구들이랑 뭐 하지?</h1>
             <p className="mn-sub">스팀, 유튜브, 할인 사이트를 따로 돌아다니지 않아도 돼요.{' '}<br />몇 명이서, 얼마에, 어떻게 하는지 한 곳에서.</p>
           </div>
         )}
-        <div className={showHome ? 'mn-cmd' : 'home-search'}>
+        <div className={showHome ? 'mn-cmd' : 'home-search'} data-tour={showHome ? 'cmdbar' : undefined}>
           <SearchPanel games={games} filters={filters} sidebar={sidebar} floating={showHome} shortPlaceholder={showHome ? '게임·태그 검색' : undefined} lead={showHome ? <span className="mn-search-icon"><SearchIcon /></span> : undefined} hint={showHome ? <ShortcutHint /> : undefined} aiIcon={showHome ? <SparkIcon /> : undefined} />
           {showHome && <div className="home-only"><CmdRow filters={filters} /></div>}
         </div>
