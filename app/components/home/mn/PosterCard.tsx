@@ -18,7 +18,7 @@ export const posterBadge = (game: Record<string, unknown>, badges?: string[]): P
   BADGES.find((b) => badges?.includes(b)) ?? TREND_LABEL[game.trend_badge as string] ?? null;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- 게임 카드 칸은 목록(gameIndex)과 같은 느슨한 모양
-export default function PosterCard({ game, badge = null, eager = false }: { game: any; badge?: PosterBadge | null; eager?: boolean }) {
+export default function PosterCard({ game, badge = null, eager = false, tourId }: { game: any; badge?: PosterBadge | null; eager?: boolean; tourId?: string }) {
   const price = getPriceInfo(game);
   const players = playersText(game);
   const barrier = barrierLabel(game);
@@ -27,7 +27,7 @@ export default function PosterCard({ game, badge = null, eager = false }: { game
   const cover = { vertical: game.cover_vertical_url ?? null, appid: game.steam_appid ?? null, wide: game.card_image_url || game.cover_image_url || null };
   const meta = [players, barrier ? `진입장벽 ${barrier}` : ''].filter(Boolean).join(' · ');
   return (
-    <Link href={`/games/${game.id}`} className="mn-card">
+    <Link href={`/games/${game.id}`} className="mn-card" data-tour={tourId}>
       <span className="mn-poster">
         <PosterImage cover={cover} eager={eager} />
         {badge && <span className={`mn-badge ${badge === '신작' ? 'is-new' : 'is-trend'}`}>{badge}</span>}

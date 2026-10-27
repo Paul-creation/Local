@@ -29,7 +29,7 @@ function Icon({ name }: { name: IconName }) {
 export default function StatTiles({ tiles }: { tiles: Tile[] }) {
   if (tiles.length === 0) return null;
   return (
-    <ul className="dx-tiles" aria-label="핵심 수치">
+    <ul className="dx-tiles" data-tour="stat-tiles" aria-label="핵심 수치">
       {tiles.map((t) => (
         <li key={t.key} className={`dx-tile tone-${t.tone}`}>
           <span className="dx-tile-label"><Icon name={t.icon} />{t.label}</span>

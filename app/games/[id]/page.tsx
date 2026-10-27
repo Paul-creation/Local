@@ -300,7 +300,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       <div className="detail-layout">
         {/* 가격 카드 — 데스크톱 오른쪽 위, 좁은 화면에서는 제목 바로 아래 */}
         <aside className="detail-price">
-          <div className="price-card">
+          <div className="price-card" data-tour="price-card">
             {comingSoon ? (
               <>
                 <div className="price-card-head">

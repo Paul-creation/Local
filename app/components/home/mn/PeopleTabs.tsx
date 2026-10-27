@@ -14,7 +14,7 @@ export default function PeopleTabs() {
   const { pc, ready } = useMyPc();
   const myPcActive = ready && !!pc && myPcOn;
   return (
-    <div className="mn-tabs is-section" role="group" aria-label="몇 명이서 할까요?">
+    <div className="mn-tabs is-section" data-tour="people-tabs" role="group" aria-label="몇 명이서 할까요?">
       {PEOPLE_CHOICES.map((v) => (
         <button key={v} type="button" className={`mn-tab${n === v ? ' on' : ''}`} aria-pressed={n === v} onClick={() => { setN(v); const to = peopleButtonTarget(recsReady, v, myPcActive, PLAYERS_MAX); if (to) window.location.assign(to); }}>{peopleLabel(v)}</button>
       ))}

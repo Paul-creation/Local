@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import BackLink from '../components/BackLink';
 import GuideToc from '../components/guide/GuideToc';
+import TourRestartButton from '../components/tour/TourRestartButton';
 import { BASE_OG } from '../lib/site';
 import { getExampleVideoGameId } from '../lib/guideExample';
 import {
@@ -33,6 +34,7 @@ export default async function GuidePage() {
       <div className="guide-layout">
         <GuideToc items={sections.map((s) => ({ id: s.id, label: s.tocLabel }))} label={GUIDE_HEAD.tocLabel} />
         <article className="guide-body">
+          <TourRestartButton />
           <h1 className="cm-h1">{GUIDE_HEAD.title}</h1>
           <p className="cm-sub">{GUIDE_HEAD.intro}</p>
           {sections.map((s) => (

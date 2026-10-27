@@ -47,7 +47,7 @@ export default function PeopleSection({ recs }: { recs: Data | null }) {
       )}
       {!recs ? null : games.length > 0 ? (
         <div className="mn-row" ref={rowRef} tabIndex={0} role="region" aria-label={`${peopleLabel(n)} 추천 게임 목록`}>
-          {games.map((g, i) => <PosterCard key={g.id} game={g} eager={i < 3} badge={posterBadge(g, recs.badges[g.id])} />)}
+          {games.map((g, i) => <PosterCard key={g.id} game={g} eager={i < 3} tourId={i === 0 ? 'first-card' : undefined} badge={posterBadge(g, recs.badges[g.id])} />)}
         </div>
       ) : (
         <p className="mn-note">조건에 맞는 추천 게임이 아직 없어요</p>

@@ -27,7 +27,7 @@ export default function AddToCompare({ gameId, name, thumb }: { gameId: string; 
 
   return (
     <>
-      <button type="button" className="btn btn-lg price-card-compare compare-add" onClick={toggle} aria-pressed={added}>
+      <button type="button" className="btn btn-lg price-card-compare compare-add" data-tour="compare-add" onClick={toggle} aria-pressed={added}>
         {added ? (
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
         ) : (

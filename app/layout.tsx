@@ -8,6 +8,7 @@ import SiteFooter from "./components/SiteFooter";
 import CompareTray from "./components/CompareTray";
 import ThemeKeyCleanup from "./components/ThemeKeyCleanup";
 import NavTracker from "./components/NavTracker";
+import TourRoot from "./components/tour/TourRoot";
 
 // 다크 고정 — <meta name="color-scheme" content="dark">
 export const viewport: Viewport = { colorScheme: 'dark', themeColor: '#0A0A0A' };
@@ -40,6 +41,7 @@ export default function RootLayout({
         {children}
         <SiteFooter />
         <CompareTray />
+        <TourRoot />
         {/* Vercel 방문 통계 — 쿠키 없이 페이지 조회 수만 셈 (Vercel 대시보드에서 Analytics를 켜야 수집됨) */}
         <Analytics />
       </body>
