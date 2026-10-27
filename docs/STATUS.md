@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-26 (main 3ba2917)
+기준: 2026-10-27 (main 13c8c87)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/27: feat/onboarding-tour — 첫 방문자용 단계별 투어(코치마크). 8단계: 1~3 히어로·커맨드바·AI 추천 버튼 소개("다음"만 진행, 대상 클릭·Tab 막음 inert) → 4 인원 탭 → 5 첫 게임 카드(클릭하면 상세로 이어짐) → 6~7 상세 스탯 타일·가격 카드(화면 위에서부터 한 번에 하나, 대상이 없으면 건너뜀) → 8 비교에 담기 → 마무리 "준비 끝!"(2초). 구멍 뚫린 오버레이(rgba(0,0,0,.65))·흰 말풍선·"N / 8" 배지·막대 8칸·건너뛰기·Esc·Tab 순환, 서버 렌더 없음·전부 position: fixed(CLS 홈 0.0000·상세 0.0000, 말풍선은 transform으로만 이동). 시작: 홈 + 주소에 검색 조건 없음 + 봇 UA 아님 + 인원 탭·첫 카드 있음 + localStorage 쓰기 가능. 스크롤은 시작·상세 진입 0에서, 이후엔 대상이 화면 밖일 때만 위쪽 1/3로 부드럽게. 저장 키 jdn_tour_v2(v1 값이 있으면 본 사람이라 안 띄움). /guide 맨 위 "튜토리얼 다시 보기". 규칙은 app/lib/tour.ts(테스트 tour.test.mjs), 화면은 components/tour/TourRoot.tsx·tour.css, 대상은 data-tour 속성(hero·cmdbar·ai·people-tabs·first-card·stat-tiles·price-card·compare-add). build·test 468개 통과
 - 10/26: chore/brand-icon — 사이트 아이콘을 JamiDuNow 로고로 교체(public/brand/logo.svg 마스터, app/favicon.ico 16·32·48, icon.png 512, apple-icon.png 180 꽉 찬 정사각형). manifest·OG 로고 자리 없음. build·test 454개 통과
 - 10/26: chore/contact-email — 전용 연락 이메일 jamidunow@gmail.com을 CONTACT_EMAIL 코드 기본값으로(NEXT_PUBLIC_CONTACT_EMAIL로 덮어쓰기 가능), 방침 Steam 로그인 삭제 안내를 이메일로, 푸터에 "문의" 메일 링크 추가. 개인 이메일 노출 없음. build·test 454개 통과
 - 10/26: design/detail-type — 상세 페이지 본문 글자 위계 정리, 투표 섹션 크기·배치 개선, 라벨 전용 토큰으로 라벨·값 구분(PlayerCountVote·detail-mono.css·globals.css·mono-tokens.css·games/[id]/page.tsx). build·test 454개 통과
@@ -128,6 +129,7 @@
 
 ## 진행 중
 - 머지 후 확인 대기 (프로덕션 화면·다음 daily/weekly 로그 확인, 모두 미확인):
+  - feat/onboarding-tour: 프리뷰·프로덕션 새 시크릿 창에서 1~8단계 흐름과 마무리, 1~3·6~7단계에서 검색창·AI 버튼 클릭이 막히는지, 375px 6·7단계 순서·말풍선 위치, /guide "튜토리얼 다시 보기", v1 값이 있는 브라우저에서 안 뜨는지, 실제 방문자 CLS
   - fix/release-label-undated: Ebbtide·아키에이지 크로니클 카드·상세가 "출시 예정 · 날짜 미정"으로 나오는지, 날짜 있는 게임은 그대로인지
   - fix/curator-preview-404: 배포 후 관리자 로그인한 같은 창에서 /c/zz_test_pending?preview=1 — 열리면 끝, 404면 F12 Network의 응답 헤더 x-curator-preview 값(no-cookie → admin_session 쿠키 Path / 확인, bad-cookie → Vercel ADMIN_SESSION_SECRET·ADMIN_PASSWORD 적용 범위, rewritten → /c-preview 페이지·DB 조회)
   - feat/curator-consent: 마이그레이션 실행 후 4곳 /c/handle 열림·pending 계정 404, 홈 인스타 섹션(granted 2곳 미만이면 사라짐), 관리자 재로그인 후 ?preview=1, security-check로 새 권한(anon의 consent_note 읽기 차단) 확인
@@ -212,7 +214,7 @@
 
 ### 홍보 전 (11월 초)
 - 없는 /c/[handle]·게임 페이지가 실제 404 상태 코드를 주는지 확인(지금은 404 화면인데 상태 코드 200인 소프트 404라 검색엔진에 빈 페이지가 색인될 수 있음)
-- 메인 구성 2단계 → 새 유저 가이드(온보딩)
+- 메인 구성 2단계 (새 유저 가이드 투어는 10/27 main 반영, 위 "진행 중"에서 확인)
 - [완료] 전용 이메일 jamidunow@gmail.com: CONTACT_EMAIL 코드 기본값, 방침·약관·소개·푸터 반영
 - 방침 1년 자동 파기 cron: Supabase pg_cron(매일 04:30 KST) SQL을 사용자가 실행해야 방침과 맞음(파기용 마이그레이션 없음, daily 트리거 20261020090000만 있음)
 - 외부 설정 확인: 서치콘솔·네이버 등록, 이메일 라우팅, 디스코드 웹후크, Vercel Analytics 켜기, 스팀 로그인 시험(안 되면 app/lib/user/ownedGames.ts부터), 구글 검색 결과 아이콘, 외부 트리거(PAT·Vault·시험 호출·cron 기록·만료일 캘린더), backup.yml 주간 실행 로그
