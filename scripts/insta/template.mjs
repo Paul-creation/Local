@@ -64,9 +64,22 @@ em { font-style: normal; color: #FFD84A; }
 .cta-big { font-size: 190px; font-weight: 900; line-height: 1.15; letter-spacing: -0.045em; margin-top: 28px; }
 .footer { margin-top: auto; font-size: 40px; font-weight: 600; color: rgba(255,255,255,.7); padding-right: 140px; }
 
-/* photo-cover (데이터 게시물용 자리) */
+/* photo-cover */
 .photo { position: absolute; inset: 0; background-size: cover; background-position: center; }
-.photo-text { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 0 60px; font-size: 150px; font-weight: 900; line-height: 1.2; letter-spacing: -0.03em; color: #fff; -webkit-text-stroke: 14px #000; paint-order: stroke fill; }
+.photo-shade { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0) 45%, rgba(0,0,0,.55) 100%); }
+.photo-text { position: absolute; left: 0; right: 0; top: 56%; transform: translateY(-50%); text-align: center; padding: 0 50px; font-size: 128px; font-weight: 900; line-height: 1.25; letter-spacing: -0.03em; color: #fff; -webkit-text-stroke: 16px #000; paint-order: stroke fill; stroke-linejoin: round; }
+
+/* game-card */
+.gshot { position: absolute; left: 0; right: 0; top: 0; height: 675px; background-size: cover; background-position: center; }
+.gshot::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(11,11,11,0) 70%, #0b0b0b 100%); }
+.gbody { position: absolute; left: 0; right: 0; top: 675px; bottom: 0; padding: 14px 84px 64px; display: flex; flex-direction: column; }
+.gname { font-size: 92px; font-weight: 900; line-height: 1.15; letter-spacing: -0.04em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; padding-right: 100px; }
+.gmeta { display: flex; align-items: center; gap: 22px; margin-top: 30px; }
+.gpeople { border: 3px solid #5a5a5a; border-radius: 999px; padding: 10px 30px; font-size: 40px; font-weight: 600; }
+.gbadge { background: #FFD84A; color: #0b0b0b; border-radius: 14px; padding: 8px 22px; font-size: 48px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.gprice { font-size: 56px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.gorig { font-size: 38px; font-weight: 600; color: rgba(255,255,255,.5); text-decoration: line-through; font-variant-numeric: tabular-nums; }
+.gtag { margin-top: auto; padding-right: 140px; font-size: 38px; font-weight: 500; line-height: 1.45; color: rgba(255,255,255,.75); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 `;
 
 const GRID_CELLS = [['people', '인원'], ['price', '가격·역대 최저가'], ['spec', '내 PC 사양'], ['video', '친구랑 하는 영상']];
@@ -120,7 +133,20 @@ const BODY = {
     </div>`,
   'photo-cover': (s, ctx) => `
     <div class="photo" style="background-image:url(${ctx.photo ?? ''})"></div>
+    <div class="photo-shade"></div>
     <div class="photo-text"><div>${rich(s.headline)}</div></div>`,
+  'game-card': (s, ctx) => `
+    <div class="gshot" style="background-image:url(${ctx.photo ?? ''})"></div>
+    <div class="gbody">
+      <div class="gname">${rich(s.name)}</div>
+      <div class="gmeta">
+        <span class="gpeople">${rich(s.people)}</span>
+        ${s.discount ? `<span class="gbadge">-${esc(s.discount)}%</span>` : ''}
+        <span class="gprice">${rich(s.price)}</span>
+        ${s.original ? `<span class="gorig">${rich(s.original)}</span>` : ''}
+      </div>
+      <div class="gtag">${rich(s.tagline)}</div>
+    </div>`,
 };
 
 export const SLIDE_TYPES = Object.keys(BODY);

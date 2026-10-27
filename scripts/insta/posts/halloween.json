@@ -1,0 +1,53 @@
+[
+  {
+    "type": "photo-cover",
+    "headline": "할로윈에 친구랑\n비명 지를 게임.jpg",
+    "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3241660/ss_e6babaab52581f81df91e50768cee6a9334ef6ec.1920x1080.jpg?t=1778158882"
+  },
+  {
+    "type": "game-card",
+    "name": "R.E.P.O.",
+    "people": "1~6인",
+    "discount": 35,
+    "price": "₩6,950",
+    "original": "₩10,700",
+    "tagline": "친구와 함께 물건을 모아 탈출하는 협동 호러 게임. 물리 엔진의 혼란 속에서 팀워크가 빛난다.",
+    "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/3241660/ss_e6babaab52581f81df91e50768cee6a9334ef6ec.1920x1080.jpg?t=1778158882"
+  },
+  {
+    "type": "game-card",
+    "name": "Dying Light",
+    "people": "1~4인",
+    "discount": 90,
+    "price": "₩2,740",
+    "original": "₩27,400",
+    "tagline": "친구와 파쿠르로 지붕을 넘나들며 좀비를 피하는 협동 액션. 밤이 되면 위험한 적이 나와 분위기가 바뀐다.",
+    "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/239140/ss_a3771358b8eb4ea4c8f99c5850711f55b87804de.1920x1080.jpg?t=1782913513"
+  },
+  {
+    "type": "game-card",
+    "name": "Buckshot Roulette",
+    "people": "1~4인",
+    "discount": 50,
+    "price": "₩1,700",
+    "original": "₩3,400",
+    "tagline": "러시안 룰렛을 하는 심리전 게임. 혼자 즐기거나 친구와 차례대로 운을 시험한다.",
+    "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2835570/ss_c9c2df013e1c2d1b97f2c5cce57c22c24efd5178.1920x1080.jpg?t=1783085442"
+  },
+  {
+    "type": "game-card",
+    "name": "Phasmophobia",
+    "people": "1~4인",
+    "discount": 30,
+    "price": "₩15,050",
+    "original": "₩21,500",
+    "tagline": "친구와 유령이 나오는 집에 들어가 증거를 모아 정체를 밝히는 협동 호러. 음성 채팅이 게임에 쓰인다.",
+    "image": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/739630/ec30a770064ea10c2bcfb1b3002a3dbd086be516/ss_ec30a770064ea10c2bcfb1b3002a3dbd086be516.1920x1080.jpg?t=1791466787"
+  },
+  {
+    "type": "cta",
+    "small": "인원·할인·내 PC까지 한 번에",
+    "big": "여기서\n{골라와}",
+    "footer": "프로필 링크 → jamidunow.com"
+  }
+]
