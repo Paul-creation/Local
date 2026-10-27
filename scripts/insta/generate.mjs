@@ -99,42 +99,50 @@ async function capturePeople(browser, { people, chips, width, need = [], file })
   await ctx.close();
 }
 
-// 게임 상세 페이지 모바일 캡처 두 장: 왼쪽 = 상단 요약(커버·인원·가격·할인), 오른쪽 = PC 사양 카드 아래쪽 + 영상 섹션
+// 게임 상세 페이지 모바일 캡처 4조각(deviceScaleFactor 3): 인원 / 가격·역대 최저가 / PC 사양 표 / 영상 썸네일
+// 각 조각은 해당 요소(들)의 상자만 clip으로 찍는다 — 카드가 따로 테두리를 두르니 섹션 자체의 테두리·여백은 뺀다
 async function captureDetail(browser, game, files) {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
   const page = await ctx.newPage();
   await page.goto(`${SITE}/games/${game.id}`, { waitUntil: 'networkidle' });
   await page.locator('.dx-title').waitFor({ timeout: 30000 });
-  await page.waitForTimeout(1500);
-  // 오른쪽: 영상 섹션 아래 끝이 화면 아래에 닿게 스크롤 → 위쪽에 PC 사양 카드가 같이 보인다 (다른 영상 썸네일 줄은 숨겨 사양 표가 더 보이게)
-  await page.addStyleTag({ content: '.video-rail { display: none !important; }' });
-  const y = await page.evaluate(() => {
-    const sec = [...document.querySelectorAll('section')].find((e) => e.querySelector('h3')?.textContent.trim() === '영상으로 미리 보기');
-    if (!sec) return null;
-    const r = sec.getBoundingClientRect();
-    return Math.max(0, r.bottom + scrollY - innerHeight + 12);
-  });
-  if (y == null) throw new Error('영상 섹션을 못 찾았어요');
-  await page.evaluate((v) => window.scrollTo(0, v), y);
-  await page.waitForTimeout(1200);
-  await page.screenshot({ path: files.spec });
-  // 왼쪽: 한 화면에 요약이 들어오게 사이 블록(뒤로가기·소개·장르 칩·다른 지표 칸·구매 버튼)을 숨긴다 — 남는 값은 그대로 사이트 값
-  await page.evaluate(() => window.scrollTo(0, 0));
-  await page.addStyleTag({ content: '.back-link, .dx-lead, .dx-chips, .dx-credits, .price-card-buttons, .price-card-note, .price-card-lowest, .price-card-compare-status, .dx-trailer, .detail-main, footer { display: none !important; }' });
-  await page.evaluate(() => document.querySelectorAll('.dx-tiles > li').forEach((li) => { if (li.querySelector('.dx-tile-label')?.textContent.trim() !== '인원') li.style.display = 'none'; }));
-  await page.waitForTimeout(500);
-  await page.screenshot({ path: files.top });
+  await page.addStyleTag({ content: 'html, body, .mn-inner { background: #121212 !important; } .price-card-buttons, .price-card-note, .price-card-compare-status, .pcs-raw { display: none !important; }' });
+  await page.waitForTimeout(1000);
+  // 각 조각 = 요소 선택자 목록의 합친 상자 (JS에서 찾아 문서 좌표로 돌려준다)
+  const clipOf = (find) => page.evaluate((src) => {
+    const els = new Function(`return (${src})()`)();
+    if (!els.length) return null;
+    const rs = els.map((e) => e.getBoundingClientRect());
+    const l = Math.min(...rs.map((r) => r.left)), t = Math.min(...rs.map((r) => r.top));
+    return { x: l + scrollX, y: t + scrollY, width: Math.max(...rs.map((r) => r.right)) - l, height: Math.max(...rs.map((r) => r.bottom)) - t };
+  }, find.toString());
+  const parts = {
+    people: () => [...document.querySelectorAll('.dx-tile')].filter((e) => e.querySelector('.dx-tile-label')?.textContent.trim() === '인원'),
+    price: () => ['.price-card-head', '.price-card-was', '.price-card-now', '.lowest-gauge'].flatMap((q) => [...document.querySelectorAll(q)]),
+    spec: () => [...document.querySelectorAll('.pcs-table tbody')],
+    video: () => ['.video-stage', '.video-stage-info'].flatMap((q) => [...document.querySelectorAll(q)]),
+  };
+  for (const [name, find] of Object.entries(parts)) {
+    let clip = await clipOf(find);
+    if (!clip) throw new Error(`상세 페이지에 "${name}" 부분이 없어요 (${game.name})`);
+    await page.evaluate((y) => window.scrollTo(0, y - 200), clip.y);
+    await page.waitForFunction((c) => [...document.querySelectorAll('img')].filter((i) => { const r = i.getBoundingClientRect(); return r.bottom + scrollY > c.y && r.top + scrollY < c.y + c.height; }).every((i) => i.complete && i.naturalWidth > 0), clip, { timeout: 30000 });
+    await page.waitForTimeout(400);
+    clip = await clipOf(find);
+    await page.screenshot({ path: files[name], clip, fullPage: true });
+  }
   await ctx.close();
 }
 
 fs.mkdirSync(CACHE, { recursive: true });
 const slideOf = (type) => slides.find((s) => s.type === type);
 const shotSlide = slideOf('screenshot');
-const detailSlide = slideOf('detail-pair');
+const detailSlide = slideOf('detail-grid');
 const shotPeople = (s) => (s.people ? Number(s.people) : null); // 비우면 배지가 다 보이는 인원을 자동으로 찾는다
 const shotFile = (n) => path.join(CACHE, `screenshot-${n ?? 'auto'}.png`);
 const detailKey = (slug) => String(slug ?? 'auto').replace(/[^\w.-]+/g, '_');
-const detailFiles = (slug) => ({ top: path.join(CACHE, `detail-${detailKey(slug)}-top.png`), spec: path.join(CACHE, `detail-${detailKey(slug)}-spec.png`) });
+const DETAIL_PARTS = ['people', 'price', 'spec', 'video'];
+const detailFiles = (slug) => Object.fromEntries(DETAIL_PARTS.map((p) => [p, path.join(CACHE, `detail-${detailKey(slug)}-${p}.png`)]));
 const stale = (f) => refresh || !fs.existsSync(f);
 const SHOT_NEED = ['요즘 뜨는 중', '다시 뜨는 중', '신작'];
 const browser = await chromium.launch();
@@ -146,13 +154,13 @@ try {
   }
   if (detailSlide) {
     const files = detailFiles(detailSlide.slug);
-    if (stale(files.top) || stale(files.spec)) {
+    if (DETAIL_PARTS.some((p) => stale(files[p]))) {
       console.log('게임 상세 캡처…');
       let game;
       if (detailSlide.slug) game = await resolveGame(detailSlide.slug);
       else {
         const list = await pickCandidates();
-        if (!list.length) throw new Error('detail-pair 후보가 없어요 (slug를 지정하세요)');
+        if (!list.length) throw new Error('detail-grid 후보가 없어요 (slug를 지정하세요)');
         console.log('후보:\n' + list.slice(0, 3).map((g, i) => `  ${i + 1}. ${gameTitle(g)} (-${g.sale}%, ${g.min_players}-${g.max_players}인)`).join('\n'));
         game = list[0];
       }
@@ -172,7 +180,7 @@ try {
     const ctx = { font };
     if (s.type === 'wall-cover') ctx.wall = dataUri(wallFile);
     if (s.type === 'screenshot') ctx.screenshot = dataUri(shotFile(shotPeople(s)));
-    if (s.type === 'detail-pair') { const f = detailFiles(s.slug); ctx.top = dataUri(f.top); ctx.spec = dataUri(f.spec); }
+    if (s.type === 'detail-grid') { const f = detailFiles(s.slug); ctx.parts = Object.fromEntries(DETAIL_PARTS.map((p) => [p, dataUri(f[p])])); }
     if (s.type === 'photo-cover' && s.image) {
       ctx.photo = /^https?:/.test(s.image) ? s.image : dataUri(path.resolve(path.dirname(postFile), s.image));
     }

@@ -42,10 +42,14 @@ em { font-style: normal; color: #FFD84A; }
 .frame { border: 8px solid #333; border-radius: 56px; overflow: hidden; background: #0a0a0a; padding: 28px 0 28px 28px; line-height: 0; }
 .frame img { display: block; max-width: 860px; max-height: 822px; width: auto; height: auto; }
 
-/* detail-pair */
-.pair { flex: 1; min-height: 0; display: flex; justify-content: center; align-items: flex-start; gap: 26px; padding-top: 34px; }
-.phone { border: 8px solid #333; border-radius: 44px; overflow: hidden; background: #0a0a0a; line-height: 0; }
-.phone img { display: block; width: 412px; height: auto; }
+/* detail-grid */
+.grid { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 20px 24px; padding-top: 34px; }
+.cell { min-height: 0; display: flex; flex-direction: column; }
+.cell-label { font-size: 30px; font-weight: 700; color: rgba(255,255,255,.7); margin-bottom: 12px; }
+.gcard { flex: 1; min-height: 0; overflow: hidden; background: #121212; border: 1.5px solid #2e2e2e; border-radius: 28px; padding: 20px; display: flex; justify-content: center; align-items: flex-start; }
+.gcard.people { align-items: center; }
+.gcard img { display: block; width: 100%; height: auto; }
+.gcard.spec img { width: auto; max-width: 100%; max-height: 360px; }
 .foot { text-align: center; font-size: 36px; font-weight: 600; color: rgba(255,255,255,.7); padding-top: 20px; margin-right: 140px; margin-left: 140px; }
 
 /* cta */
@@ -56,6 +60,8 @@ em { font-style: normal; color: #FFD84A; }
 .photo { position: absolute; inset: 0; background-size: cover; background-position: center; }
 .photo-text { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 0 60px; font-size: 150px; font-weight: 900; line-height: 1.2; letter-spacing: -0.03em; color: #fff; -webkit-text-stroke: 14px #000; paint-order: stroke fill; }
 `;
+
+const GRID_CELLS = [['people', '인원'], ['price', '가격·역대 최저가'], ['spec', '내 PC 사양'], ['video', '친구랑 하는 영상']];
 
 const BODY = {
   'wall-cover': (s, ctx) => `
@@ -81,12 +87,11 @@ const BODY = {
       <div class="label">${rich(s.label)}</div>
       <div class="shot"><div class="frame"><img src="${ctx.screenshot}" alt=""></div></div>
     </div>`,
-  'detail-pair': (s, ctx) => `
-    <div class="pad" style="padding-bottom:84px">
-      <div class="label" ${s.size ? `style="font-size:${+s.size}px"` : ''}>${rich(s.label)}</div>
-      <div class="pair">
-        <div class="phone"><img src="${ctx.top}" alt=""></div>
-        <div class="phone"><img src="${ctx.spec}" alt=""></div>
+  'detail-grid': (s, ctx) => `
+    <div class="pad" style="padding-bottom:100px">
+      <div class="label">${rich(s.label)}</div>
+      <div class="grid">${GRID_CELLS.map(([key, name]) => `
+        <div class="cell"><div class="cell-label">${name}</div><div class="gcard ${key}"><img src="${ctx.parts[key]}" alt=""></div></div>`).join('')}
       </div>
       <div class="foot">${rich(s.small ?? 'jamidunow.com')}</div>
     </div>`,

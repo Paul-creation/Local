@@ -1,5 +1,5 @@
 // scripts/insta/pick.mjs
-// detail-pair 슬라이드용 게임 고르기 (DB 읽기만 함)
+// detail-grid 슬라이드용 게임 고르기 (DB 읽기만 함)
 // 조건: 2~4인 · 영상 있음 · PC 사양 있음 · 지금 할인 중 · 메인 커버 벽(첫 30장)에 나오는 게임
 // 실행: node scripts/insta/pick.mjs            → 후보 목록 출력
 // 모듈: resolveGame(key)   — key는 게임 id(uuid) · 스팀 appid(숫자) · 게임 이름(name/display_name 정확히 일치)
