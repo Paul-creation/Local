@@ -130,6 +130,26 @@ async function checkCuratorQueueDb() {
   del.error?.code === '42501' ? ok(`브라우저 키로 ${T} 삭제 차단됨`) : bad(`브라우저 키로 ${T} 삭제 권한이 있음${del.error ? ` (${del.error.message})` : ''}`, fix);
 }
 
+// 나가는 클릭 기록: 브라우저 키(anon)로 읽기·쓰기 차단 (authenticated는 로그인 토큰이 필요해 마이그레이션의 RLS·revoke 문구로 확인)
+async function checkOutboundDb() {
+  const T = 'outbound_clicks';
+  const migration = 'supabase/migrations/20261104090000_outbound_clicks.sql';
+  const probe = await anon.from(T).select('id').limit(1);
+  if (probe.error?.code === '42P01' || /does not exist|schema cache/i.test(probe.error?.message || '')) note(`${T} 표 없음 — ${migration} 실행 전`);
+  else {
+    const fix = `revoke all on public.${T} from anon, authenticated; 실행`;
+    probe.error ? ok(`브라우저 키(anon)로 ${T} 읽기 차단됨`) : bad(`브라우저 키(anon)로 ${T}를 읽을 수 있음!`, fix);
+    const ins = await anon.from(T).insert({ curator: '__security_test__', target_url: 'https://www.instagram.com/__security_test__' });
+    if (ins.error?.code === '42501') ok(`브라우저 키(anon)로 ${T} 쓰기 차단됨`);
+    else if (ins.error) note(`브라우저 키(anon)로 ${T} 쓰기 시도 → 권한이 아닌 다른 이유로 실패 (${ins.error.message})`);
+    else { bad(`브라우저 키(anon)로 ${T}에 쓸 수 있음!`, fix); await admin.from(T).delete().eq('curator', '__security_test__'); }
+  }
+  const sql = read(migration);
+  /enable row level security/i.test(sql) && /revoke all on public\.outbound_clicks from anon, authenticated/i.test(sql)
+    ? ok(`${T} 마이그레이션에 RLS 켜기·anon·authenticated 권한 회수가 있음`)
+    : bad(`${T} 마이그레이션에 RLS·revoke 문구가 없음`, 'enable row level security; revoke all ... from anon, authenticated; 추가');
+}
+
 // 보유 게임·nonce 표: 브라우저 키로 읽기·쓰기·교체 함수 실행 모두 차단
 async function checkOwnedDb() {
   for (const [table, col, row] of [
@@ -291,6 +311,7 @@ async function checkDb() {
   await checkUsersDb();
   await checkOwnedDb();
   await checkCuratorQueueDb();
+  await checkOutboundDb();
   await checkActivityReportsDb();
   await checkCuratorsDb();
   await checkStreamerDb();
@@ -414,6 +435,22 @@ async function checkSite() {
   r.status === 400 ? ok('의견함: 이상한 유형 거절') : bad(`의견함 이상한 유형 응답 ${r.status}`);
   r = await call('/api/feedback', json('POST', { kind: 'etc', body: '가'.repeat(1001) }));
   r.status === 400 ? ok('의견함: 1000자 넘는 본문 거절') : bad(`의견함 1000자 초과 응답 ${r.status}`);
+  // 나가는 클릭 기록 — 동의 전/없는 큐레이터·인스타그램이 아닌 주소는 저장 전에 400
+  const { data: granted } = await admin.from('curators').select('handle').eq('consent_status', 'granted').limit(1).maybeSingle();
+  const { data: pending } = await admin.from('curators').select('handle').neq('consent_status', 'granted').limit(1).maybeSingle();
+  const IG = 'https://www.instagram.com/__security_test__';
+  r = await call('/api/outbound', json('POST', { curator: '__no_such_curator__', target_url: IG }));
+  r.status === 400 ? ok('나가는 클릭: 없는 큐레이터 거절') : bad(`나가는 클릭 없는 큐레이터 응답 ${r.status}`, 'app/api/outbound/route.ts 확인');
+  if (pending) {
+    r = await call('/api/outbound', json('POST', { curator: pending.handle, target_url: IG }));
+    r.status === 400 ? ok('나가는 클릭: 미동의 큐레이터 거절') : bad(`나가는 클릭 미동의 큐레이터 응답 ${r.status}`, 'consent_status=granted만 저장하도록 확인');
+  } else note('미동의(granted 아닌) 큐레이터가 없어 나가는 클릭의 미동의 거절은 못 봄');
+  if (granted) {
+    for (const url of ['https://evil.example.com/p/x', 'http://www.instagram.com/p/x', 'https://instagram.com.evil.example.com/p/x', 'javascript:alert(1)']) {
+      r = await call('/api/outbound', json('POST', { curator: granted.handle, target_url: url }));
+      r.status === 400 ? ok(`나가는 클릭: 인스타그램 아닌 주소 거절 (${url.slice(0, 40)})`) : bad(`나가는 클릭 ${url} 응답 ${r.status}`, 'parseInstagramUrl 확인');
+    }
+  } else note('동의한 큐레이터가 없어 나가는 클릭의 주소 검사는 못 봄');
   await checkSiteBundle();
 
   await checkCommunity(call, json);
