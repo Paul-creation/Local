@@ -1,0 +1,46 @@
+/* 게임 상세 섹션별 포인트 색 — 색 값은 mono-tokens.css(--sec-*). 막대·핵심 값 1~2개·칩에만 쓰고 나머지 본문은 그대로 */
+.sec-intro { --sec: var(--sec-intro); }
+.sec-together { --sec: var(--sec-together); }
+.sec-price { --sec: var(--sec-price); }
+.sec-detail { --sec: var(--sec-detail); }
+.sec-spec { --sec: var(--sec-spec); }
+.sec-video { --sec: var(--sec-video); }
+
+/* 제목 왼쪽 세로 막대 — 폭 4px, 높이는 제목 글자 크기 */
+:is(.sec-intro, .sec-together, .sec-price, .sec-detail, .sec-spec, .sec-video) :is(.detail-card-title, .pcs-card-title)::before {
+  content: ""; display: inline-block; width: 4px; height: 1em; margin-right: 10px; border-radius: 2px; background: var(--sec); vertical-align: -0.12em;
+}
+
+/* 소개 — 플레이 방식·특징 칩 (수상·순위 특별 칩은 그대로) */
+.mn.dx .sec-intro .category-tag:not(.tag-special) { color: var(--sec-intro-text); box-shadow: inset 0 0 0 1px var(--sec-intro-a33); }
+.mn.dx .sec-intro .category-tag:not(.tag-special):is(:hover, :focus-visible) { box-shadow: inset 0 0 0 1px var(--sec-intro); }
+
+/* 같이 하기 — 첫 값만 섹션 색 + 굵게 */
+.mn.dx .sec-together .more-list dt, .mn.dx .sec-detail .more-list dt { color: var(--sec-label); }
+.mn.dx .sec-together .more-list dd:first-of-type { color: var(--sec-together); font-weight: 800; }
+
+/* 할인 전적 — 요약 줄의 숫자·그래프 선, 가격 카드의 배지 */
+.dchart-key { color: var(--sec-price); font-weight: inherit; }
+.sec-price .dchart-line { stroke: var(--sec-price); }
+.sec-price .dchart-area { fill: var(--sec-price); }
+.price-card .buy-discount-badge { color: var(--sec-price); background: var(--sec-price-a13); border-color: var(--sec-price); }
+.price-card .lowest-pill { color: var(--sec-price); border-color: var(--sec-price); }
+
+/* 더 자세히 — 첫 값, 가능한 활동 칩(확실하지 않은 활동의 점선 칩은 그대로) */
+.mn.dx .sec-detail .more-list dd:first-of-type:not(.more-chips) { color: var(--sec-detail-text); }
+.mn.dx .sec-detail .activity-chip:not(.is-unsure) { background: var(--sec-detail-a13); color: var(--sec-detail-text); }
+
+/* PC 사양 — 표의 부품 이름, 내 PC 등록하기·원문 사양 보기 */
+.mn.dx .sec-spec .pcs-table .pcs-part { color: var(--sec-spec); font-weight: 700; }
+.mn.dx .sec-spec .pcs-link, .mn.dx .sec-spec .pcs-raw summary { color: var(--sec-spec); }
+
+/* 영상 — 영상 카드 테두리, 재생 버튼 (밝은 배경이라 글자는 어두운 색) */
+.sec-video .video-stage { border: 1px solid var(--sec-video-a33); border-radius: 12px; overflow: hidden; }
+.sec-video .video-rail-thumb { border-color: var(--sec-video-a33); }
+.sec-video .video-rail-btn[aria-current="true"] .video-rail-thumb { border-color: var(--sec-video); }
+.sec-video .video-play-label { background: var(--sec-video); border-color: var(--sec-video); color: var(--mn-fg-inv); }
+
+/* 지표 칸 — 포인트 색 없이 값은 흰색. 활발히 업데이트 중은 회색 글씨 앞에 점 하나 */
+.mn.dx .steam-rank { color: var(--mn-fg); }
+.mn.dx .info-sub.is-up { color: var(--sec-label); }
+.mn.dx .info-sub.is-up::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: var(--sec-together); vertical-align: middle; }

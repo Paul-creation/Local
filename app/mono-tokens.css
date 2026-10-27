@@ -9,6 +9,20 @@
   --mn-fg-inv: #0A0A0A;
   /* 라벨(항목 이름) 전용 — 라벨-값 쌍의 라벨에만 쓴다. 일반 보조 글씨에는 쓰지 않는다. #0A0A0A 위 6.76:1 · #111111 위 6.66:1 */
   --mn-label: rgba(237, 237, 237, .62);
+  /* 상세 섹션 포인트 색 — 섹션 막대·핵심 값·칩에만 쓴다. 쓰는 곳은 components/detail/detail-sections.css */
+  --sec-intro: #FFD84A;
+  --sec-together: #3DDCC4;
+  --sec-price: #4ADE80;
+  --sec-detail: #B794F6;
+  --sec-spec: #60A5FA;
+  --sec-video: #FF7A6B;
+  --sec-intro-a33: #FFD84A54;
+  --sec-video-a33: #FF7A6B54;
+  --sec-price-a13: #4ADE8021;
+  --sec-detail-a13: #B794F621;
+  --sec-intro-text: #FFE27A;
+  --sec-detail-text: #C9B0FA;
+  --sec-label: #8a8a8a;
 
   /* 포인트 색은 할인 배지 하나만 */
   --mn-sale-bg: #4ADE80;

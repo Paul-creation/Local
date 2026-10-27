@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { formatDate } from '../lib/date';
 
 type PriceRecord = { price: number; discount_percent: number | null; checked_at: string };
@@ -65,16 +65,25 @@ export default function DiscountChart({ history, now }: { history: PriceRecord[]
   const regular = points.length ? Math.max(...points.map((p) => p.price)) : 0;
   const lastStart = starts[starts.length - 1];
 
-  const summary = !points.length
-    ? `${conf.summary} 가격 기록 없음`
+  // 최대 할인율·최저가 숫자만 섹션 색으로 — 글자는 summaryNode, 스크린리더용 문자열은 summary
+  const key = (t: string) => <b className="dchart-key">{t}</b>;
+  const lowestLabel = `${period === 'all' ? '역대 ' : ''}최저`;
+  const lastLabel = lastStart ? `마지막 할인 ${kst(lastStart.t).m}월 ${kst(lastStart.t).d}일` : '';
+  const parts: { text: string; node: ReactNode }[] = !points.length
+    ? [{ text: `${conf.summary} 가격 기록 없음`, node: `${conf.summary} 가격 기록 없음` }]
     : starts.length === 0
-      ? `${conf.summary} 할인 없음 · ${period === 'all' ? '역대 ' : ''}최저 ${won(lowest)}`
+      ? [
+          { text: `${conf.summary} 할인 없음`, node: `${conf.summary} 할인 없음` },
+          { text: `${lowestLabel} ${won(lowest)}`, node: <>{lowestLabel} {key(won(lowest))}</> },
+        ]
       : [
-          `${conf.summary} 할인 ${starts.length}회`,
-          `최대 ${maxDiscount}%`,
-          `${period === 'all' ? '역대 ' : ''}최저 ${won(lowest)}`,
-          `마지막 할인 ${kst(lastStart.t).m}월 ${kst(lastStart.t).d}일`,
-        ].join(' · ');
+          { text: `${conf.summary} 할인 ${starts.length}회`, node: `${conf.summary} 할인 ${starts.length}회` },
+          { text: `최대 ${maxDiscount}%`, node: <>최대 {key(`${maxDiscount}%`)}</> },
+          { text: `${lowestLabel} ${won(lowest)}`, node: <>{lowestLabel} {key(won(lowest))}</> },
+          { text: lastLabel, node: lastLabel },
+        ];
+  const summary = parts.map((p) => p.text).join(' · ');
+  const summaryNode = parts.map((p, i) => <Fragment key={i}>{i > 0 && ' · '}{p.node}</Fragment>);
 
   // 좌표
   const innerW = width - PAD.left - PAD.right;
@@ -126,7 +135,7 @@ export default function DiscountChart({ history, now }: { history: PriceRecord[]
   return (
     <div className="dchart">
       <div className="dchart-head">
-        <p className="dchart-summary">{summary}</p>
+        <p className="dchart-summary">{summaryNode}</p>
         <div className="dchart-periods" role="group" aria-label="기간 선택">
           {PERIODS.map((p) => (
             <button

@@ -147,7 +147,7 @@ export default function PcSpecCard({ parsed, minRows, recRows }: { parsed: Parse
   }
 
   return (
-    <section className={`detail-card pcs-card is-${state}`} aria-label="내 PC 사양 진단">
+    <section className={`detail-card pcs-card sec-spec is-${state}`} aria-label="내 PC 사양 진단">
       {title}
       {content}
     </section>

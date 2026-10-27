@@ -57,6 +57,7 @@ import { getCuratorsOfGame } from '../../lib/curators';
 import '../../mono-tokens.css';
 import '../../mono-page.css';
 import '../../components/detail/detail-mono.css';
+import '../../components/detail/detail-sections.css';
 
 // 게임마다 처음 열릴 때 만들고 1시간 동안 재사용 (ISR). 가격·접속자는 하루 한 번 갱신되므로 충분
 // 의견 작성·수정·삭제(api/game-comments)와 신고 자동 숨김(api/community/report)은 그 게임 페이지를 바로 새로 만든다
@@ -394,7 +395,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           </div>
 
           {/* 소개 */}
-          <section className="detail-card">
+          <section className="detail-card sec-intro">
             <h3 className="detail-card-title">
               소개
               {game.fun_description && <InfoTip label="AI가 정리한 소개 안내" text="AI가 정리한 소개예요" />}
@@ -421,7 +422,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             if (game.entry_barrier && game.entry_barrier_reason) rows.push(['진입장벽 이유', game.entry_barrier_reason]);
             if (rows.length === 0) return null;
             return (
-              <section className="detail-card" aria-label="같이 하기 정보">
+              <section className="detail-card sec-together" aria-label="같이 하기 정보">
                 <h3 className="detail-card-title">같이 하기</h3>
                 <dl className="more-list">{rows.map(([k, v]) => <Fragment key={k}><dt>{k}</dt><dd>{v}</dd></Fragment>)}</dl>
               </section>
@@ -472,7 +473,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
 
           {/* 할인 전적 */}
           {showPriceRecord && priceHistory.length === 1 && price && (
-            <section className="detail-card is-roomy">
+            <section className="detail-card is-roomy sec-price">
               <h3 className="detail-card-title">할인 전적</h3>
               <p className="detail-card-sub">
                 {price.discount > 0
@@ -482,7 +483,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             </section>
           )}
           {showPriceRecord && priceHistory.length >= 2 && (
-            <section className="detail-card is-roomy">
+            <section className="detail-card is-roomy sec-price">
               <h3 className="detail-card-title">할인 전적</h3>
               {timingLine && timingLine !== SAME_AS_LOWEST && <p className="buy-timing is-chart">{timingLine}</p>}
               {/* 기간 기준 시각은 서버에서 정해 넘긴다 (서버·브라우저 계산이 어긋나지 않게) */}
@@ -494,7 +495,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           {hasMore && (
             <div className="detail-two">
               {hasMore && (
-                <section className="detail-card">
+                <section className="detail-card sec-detail">
                   <h3 className="detail-card-title">더 자세히</h3>
                   <dl className="more-list">
                     {game.has_ending != null && (<><dt>엔딩</dt><dd>{game.has_ending ? '있음' : '없음'}</dd></>)}

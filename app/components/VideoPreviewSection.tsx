@@ -81,7 +81,7 @@ export default function VideoPreviewSection({ videos, streamers }: { videos: Vid
   const current = list.find((v) => v.video_id === selectedId) ?? list[0];
 
   return (
-    <section className="detail-card" id={VIDEOS_ANCHOR}>
+    <section className="detail-card sec-video" id={VIDEOS_ANCHOR}>
       <h3 className="detail-card-title">영상으로 미리 보기</h3>
 
       {current && (
