@@ -1,8 +1,10 @@
 // scripts/verify-players-web.mjs
 // 인기 멀티 게임의 인원·협동 정보를 Sonnet + 웹 검색으로 확인해서, DB 값과 다른 것만 표로 보여줌 (DB는 고치지 않음)
-// - 확인 항목: 최소 인원(min_players), 최대 인원(max_players), 온라인 협동(tags의 '온라인 협동'), 혼자 플레이(solo_playable)
+// - 확인 항목: 최소 인원(min_players), 온라인 최대(online_max)·로컬 최대(local_max) → max_players는 둘 중 큰 값, 온라인 협동(tags의 '온라인 협동'), 혼자 플레이(solo_playable)
+// - max_players = 친구끼리 한 판(같은 로비·파티·사설 방)에 함께 들어갈 수 있는 최대 인원. 대전(4대4)도 한 방이면 포함, 공개 매칭·같은 서버·월드·성계에 모이는 인원은 제외
 // - 대상: lib/coop-targets.mjs와 같은 기준 (max_players 2 이상, 인기 순)
-// - 결과는 scripts/.cache/verify-players.json에 쌓아서, 이미 확인한 게임은 다시 묻지 않음
+// - 결과는 scripts/.cache/verify-players-v2.json에 쌓아서, 이미 확인한 게임은 다시 묻지 않음 (질문 기준을 바꾸기 전 결과는 verify-players.json)
+// - 답에 JSON이 없으면 그 게임만 한 번 더 묻는다
 // 실행: node --env-file=.env.local scripts/verify-players-web.mjs            (상위 10개)
 //       node --env-file=.env.local scripts/verify-players-web.mjs --limit 200
 //       node --env-file=.env.local scripts/verify-players-web.mjs --ids <id>,<id>   (지정한 게임만, 인기·인원 조건 없이)
@@ -13,7 +15,7 @@ import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const LIMIT = Number(process.argv[process.argv.indexOf('--limit') + 1]) || 10;
 const IDS = process.argv.includes('--ids') ? process.argv[process.argv.indexOf('--ids') + 1].split(',') : null;
-const CACHE = 'scripts/.cache/verify-players.json';
+const CACHE = 'scripts/.cache/verify-players-v2.json';
 const MODEL = 'claude-sonnet-5-5';
 // 1M 토큰당 가격 (입력 $2, 출력 $10, 캐시 쓰기 1.25배, 캐시 읽기 $0.20) + 웹 검색 1회 $0.01
 const costOf = (u) =>
@@ -47,12 +49,14 @@ async function askSonnet(game) {
   const prompt = `PC 게임 "${game.name}"${game.developer ? ` (개발사 ${game.developer})` : ''}${game.release_date ? ` (출시 ${String(game.release_date).slice(0, 4)})` : ''}의 플레이 인원 정보를 웹에서 확인해줘. 공식 스토어 페이지(Steam 등)나 공식 사이트를 우선으로 봐.
 
 - min_players: 게임을 시작할 수 있는 최소 인원 (혼자 할 수 있으면 1)
-- max_players: 공식적으로 한 판(한 세션)에 같이 할 수 있는 최대 인원 (모드 제외, 모드 중 가장 큰 값)
+- online_max: 친구들끼리 온라인으로 한 판(같은 로비·파티·사설 방)에 함께 들어갈 수 있는 최대 인원. 대전(예: 4대4)도 친구끼리 한 방이면 포함. 공개 매칭으로만 만나는 인원, 같은 서버·월드·성계에 모이는 인원은 제외. 온라인 멀티가 없으면 0
+- local_max: 한 PC·한 화면(분할 화면·로컬 멀티)에서 함께 할 수 있는 최대 인원. 없으면 0 (Remote Play Together는 온라인으로 보지 말고 local_max에 넣어)
 - online_coop: 다른 사람과 온라인으로 같은 편이 되어 협동하는 플레이가 있는지 (대전만 있으면 false)
 - solo_playable: 혼자서도 제대로 즐길 수 있는지 (봇·싱글 모드 포함, 멀티 대기열만 있으면 false)
+- confidence: 인원 값(online_max·local_max)의 근거 수준. 공식 스토어/개발사 페이지·공식 위키에서 직접 확인했으면 "high", 그 외 한 곳이면 "medium", 커뮤니티 글이나 기존 지식뿐이면 "low"
 
-확인이 안 된 항목은 null. 마지막에 JSON만 답해. 각 항목의 근거 URL을 sources에 넣어.
-{"min_players": 1, "max_players": 4, "online_coop": true, "solo_playable": true, "sources": {"min_players": "https://...", "max_players": "https://...", "online_coop": "https://...", "solo_playable": "https://..."}, "note": "한 줄 메모"}`;
+모드 인원은 제외. 확인이 안 된 항목은 null. 마지막에 JSON만 답해. 각 항목의 근거 URL을 sources에 넣어.
+{"min_players": 1, "online_max": 4, "local_max": 2, "online_coop": true, "solo_playable": true, "confidence": "high", "sources": {"min_players": "https://...", "online_max": "https://...", "local_max": "https://...", "online_coop": "https://...", "solo_playable": "https://..."}, "note": "한 줄 메모"}`;
 
   const messages = [{ role: 'user', content: prompt }];
   const usage = { input_tokens: 0, output_tokens: 0, cache_creation_input_tokens: 0, cache_read_input_tokens: 0, server_tool_use: { web_search_requests: 0 } };
@@ -93,7 +97,7 @@ async function askSonnet(game) {
 function parseAnswer(text) {
   for (let start = text.lastIndexOf('{"min_players"'); start >= 0; start = text.lastIndexOf('{"min_players"', start - 1)) {
     const obj = readObject(text, start);
-    if (obj && 'sources' in obj) return obj;
+    if (obj && 'sources' in obj) return { ...obj, max_players: maxOf(obj) };
   }
   throw new Error('답에 JSON이 없음');
 }
@@ -113,6 +117,9 @@ function readObject(text, start) {
 }
 
 const show = (v) => (v === true ? '가능' : v === false ? '불가' : v == null ? '(없음)' : String(v));
+
+// max_players는 online_max·local_max 중 큰 값 (둘 다 null이면 null)
+const maxOf = (r) => { const v = [r.online_max, r.local_max].filter((x) => typeof x === 'number'); return v.length ? Math.max(...v) : null; };
 
 function diffs(game, r) {
   const db = {
@@ -144,12 +151,22 @@ async function main() {
   let spent = 0, done = 0;
   for (const g of todo) {
     try {
-      const { text, usage, cost } = await askSonnet(g);
+      let { text, usage, cost } = await askSonnet(g);
       // 비용이 든 답은 해석하기 전에 먼저 저장
       cache[g.id] = { name: g.name, checked_at: new Date().toISOString(), text, usage, cost };
       save();
       spent += cost; done++;
-      cache[g.id].result = parseAnswer(text);
+      try {
+        cache[g.id].result = parseAnswer(text);
+      } catch {
+        // JSON이 없으면 한 번만 다시 묻는다 (두 번째 답도 저장)
+        console.log(`↻ ${g.name}: 답에 JSON이 없어 한 번 다시 물음`);
+        ({ text, usage, cost } = await askSonnet(g));
+        cache[g.id] = { ...cache[g.id], text, usage, cost: cache[g.id].cost + cost, retried: true };
+        save();
+        spent += cost;
+        cache[g.id].result = parseAnswer(text);
+      }
       save();
       console.log(`✅ ${g.name}: 입력 ${usage.input_tokens + usage.cache_read_input_tokens + usage.cache_creation_input_tokens} · 출력 ${usage.output_tokens} 토큰 · 검색 ${usage.server_tool_use.web_search_requests}회 · $${cost.toFixed(4)}`);
     } catch (e) {
