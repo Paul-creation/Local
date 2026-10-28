@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-28 (main 913dbc5)
+기준: 2026-10-28 (main 8a1d096)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,7 +16,8 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
-- 10/28: feat/verify-players-definition — 웹 검증(scripts/verify-players-web.mjs) 질문을 online_max·local_max(친구끼리 한 판 기준, 공개 매칭·같은 서버 제외)·confidence·local_coop·pvp로 바꾸고 결과를 scripts/.cache/verify-players-v2.json에 저장(JSON 없으면 한 번 재시도, 웹 검색 최대 3회). apply-verified-players.mjs는 미리보기가 기본(--apply일 때만 DB 쓰기)이고 v2 결과를 받음: confidence high·medium만(--include로 low 예외, --exclude, --max id=N 수동 보정), 비어 있는 min·max·협동·대전 플래그만 채움, 0은 1로 저장. 이번에 (2) 그룹 인기순 1~50위 중 최대 인원 38개 반영(Left 4 Dead·Arma 3 low 예외 포함, Back 4 Blood 8 수동 보정)과 플래그 5개 수동 반영(Rain World has_local_coop false→true 포함), 비용 약 $4.9. feat/players-popularity-first(fill-players-from-store 인기순 처리, 682d465)는 아직 머지 안 함. build·test 491개 통과
+- 10/28: feat/players-popularity-first — fill-players-from-store의 처리 순서를 인기순으로(ITAD heat_rank 오름차순, 순위 없으면 리뷰 수 많은 순). 소개문 요청 상한(--max-steam=300)과 weekly 일정은 그대로라 상한에 걸리면 인기 게임부터 처리됨. 이미 확인한(players_store_checked_at) 게임은 이전처럼 건너뜀. 인원 빈칸 253개 중 이 스크립트가 앞으로 처리할 것은 4개, 나머지는 웹 검증(verify-players-web) 대상. build·test 491개 통과
+- 10/28: feat/verify-players-definition — 웹 검증(scripts/verify-players-web.mjs) 질문을 online_max·local_max(친구끼리 한 판 기준, 공개 매칭·같은 서버 제외)·confidence·local_coop·pvp로 바꾸고 결과를 scripts/.cache/verify-players-v2.json에 저장(JSON 없으면 한 번 재시도, 웹 검색 최대 3회). apply-verified-players.mjs는 미리보기가 기본(--apply일 때만 DB 쓰기)이고 v2 결과를 받음: confidence high·medium만(--include로 low 예외, --exclude, --max id=N 수동 보정), 비어 있는 min·max·협동·대전 플래그만 채움, 0은 1로 저장. 이번에 (2) 그룹 인기순 1~50위 중 최대 인원 38개 반영(Left 4 Dead·Arma 3 low 예외 포함, Back 4 Blood 8 수동 보정)과 플래그 5개 수동 반영(Rain World has_local_coop false→true 포함), 비용 약 $4.9.  build·test 491개 통과
 - 10/27: feat/detail-glance — 게임 상세 지표 칸(ITAD 인기 순위·도전과제·가족 공유·DLC·마지막 업데이트·필요 용량)을 "한눈에 보기" 섹션 하나(2열 타일 6칸, 막대 #FFA94D)로 통합. 값 없는 칸은 숨기고 홀수 마지막 칸은 한 줄 전체. 오른쪽 가격 카드 아래(모바일은 가격 카드 아래·소개 위), 데스크톱은 창 높이 1050px 미만이면 sticky 해제. 기존 스팀 카드·정보 행과 그 CSS 삭제, 인스타 스크립트 셀렉터 갱신. build·test 491개 통과
 - 10/27: docs/design-accents — docs/design.md를 지금 디자인에 맞게 수정: 섹션별 포인트 색(intro·together·price·detail·spec·video·glance)을 허용 색으로 추가, 색은 섹션 막대·핵심 값 1~2개·칩에만 쓴다는 규칙 추가, 주황·노랑·금색 금지와 새 색 금지 문구 삭제. 코드 변경 없음, build·test 491개 통과
 - 10/27: feat/og-default — 공유 미리보기(og:image·twitter) 기본 이미지를 public/og-default.png(1200×630: 카드 벽 + 검정 65% + 로고·"친구들이랑 뭐 하지?"·JamiDuNow, 로고·문구는 가운데 630×630 안)로. site.ts BASE_OG에 images를 넣어 BASE_OG를 쓰는 페이지(메인·guide·faq·about·커뮤니티 글)가 모두 적용, layout twitter에도 적용. 게임 상세·compare·큐레이터 페이지는 각자 이미지 유지. scripts/insta에 og 타입 추가(posts/og.json, 이 타입만 1200×630), 생성 npm run og(cache/wall.png 필요, 다시 찍으려면 npm run insta -- og --refresh). build·test 491개 통과
