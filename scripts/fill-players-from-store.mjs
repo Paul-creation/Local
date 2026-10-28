@@ -6,6 +6,7 @@
 // - 채운 게임은 players_auto_at에 시각을 남김 (일일 요약의 "이번 주 자동 채움")
 // - 미리보기가 기본(DB 쓰기 없음). --apply일 때만 DB에 씀. --all은 이미 본 게임도 다시 봄(미리보기용)
 // - --ids <파일>: 지정한 게임만 (lib/only-ids.mjs, 대상 조건은 그대로)
+// - 처리 순서는 인기순 (ITAD heat_rank 오름차순 → 리뷰 수 내림차순)
 // - 소개문은 scripts/.cache/store-text.json에 캐시 (미리보기 뒤 --apply 때 다시 받지 않음)
 // 실행: node --env-file=.env.local scripts/fill-players-from-store.mjs [--apply] [--all] [--max-steam=300] [--hold=게임id,게임id] [--ids 파일.json]
 import fs from 'node:fs';
@@ -24,15 +25,20 @@ const MAX_STEAM = maxArg ? Number(maxArg.slice(12)) : 300;
 const CACHE = 'scripts/.cache/store-text.json';
 const OUT = 'scripts/.cache/players-store-pending.json';
 
+// 인기 순서: ITAD 순위(heat_rank, 작을수록 위) → 순위 없으면 리뷰 수 많은 순 → 이름 순. 소개문 요청 상한(--max-steam)이 있어 인기 게임부터 처리됨
+function byPopularity(rows) {
+  return rows.sort((a, b) => (a.heat_rank ?? Infinity) - (b.heat_rank ?? Infinity) || (b.review_total ?? 0) - (a.review_total ?? 0) || a.name.localeCompare(b.name));
+}
+
 async function loadTargets() {
   const rows = [];
   for (let from = 0; ; from += 1000) {
-    let q = onlyIds(supabase.from('games').select('id, name, steam_appid, min_players')).eq('hidden', false).is('max_players', null).not('steam_appid', 'is', null);
+    let q = onlyIds(supabase.from('games').select('id, name, steam_appid, min_players, heat_rank, review_total')).eq('hidden', false).is('max_players', null).not('steam_appid', 'is', null);
     if (!ALL) q = q.is('players_store_checked_at', null);
     const { data, error } = await q.order('id').range(from, from + 999);
     if (error) throw new Error(`게임 목록을 못 불러옴: ${error.message}${/players_store_checked_at/.test(error.message) ? ' (마이그레이션 20261028090000_players_from_store.sql을 먼저 실행하거나 --all로 미리보기만)' : ''}`);
     rows.push(...data);
-    if (data.length < 1000) return rows;
+    if (data.length < 1000) return byPopularity(rows);
   }
 }
 
