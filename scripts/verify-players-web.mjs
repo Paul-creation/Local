@@ -8,7 +8,7 @@
 // 실행: node --env-file=.env.local scripts/verify-players-web.mjs            (상위 10개)
 //       node --env-file=.env.local scripts/verify-players-web.mjs --limit 200
 //       node --env-file=.env.local scripts/verify-players-web.mjs --ids <id>,<id>   (지정한 게임만, 인기·인원 조건 없이)
-// 비용: 게임당 약 $0.05~0.12 (Sonnet 토큰 + 웹 검색 최대 2회, 회당 $0.01)
+// 비용: 게임당 약 $0.05~0.12 (Sonnet 토큰 + 웹 검색 최대 3회, 회당 $0.01)
 import fs from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 
@@ -75,7 +75,7 @@ async function askSonnet(game) {
         max_tokens: 8000,
         output_config: { effort: 'medium' },
         fallbacks: 'default', // 드물게 안전 판단으로 거절되면 서버가 다른 모델로 다시 시도
-        tools: [{ type: 'web_search_20260209', name: 'web_search', max_uses: 2 }],
+        tools: [{ type: 'web_search_20260209', name: 'web_search', max_uses: 3 }],
         messages,
       }),
     });
