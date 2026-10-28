@@ -25,7 +25,7 @@ test('이벤트 링크는 match=any를 붙인다', () => {
 
 test('짧은 주소(/halloween)는 기간 안엔 이벤트 링크, 끝나면 메인', () => {
   const ev = EVENTS[0];
-  assert.equal(eventShortLinkTarget(ev, new Date('2026-10-27T03:00:00Z')), eventHref(ev));
-  assert.equal(eventShortLinkTarget(ev, new Date('2026-10-31T14:59:00Z')), eventHref(ev)); // 한국 10/31 23:59
+  assert.equal(eventShortLinkTarget(ev, new Date('2026-10-27T03:00:00Z')), `${eventHref(ev)}&utm_source=instagram&utm_campaign=halloween`);
+  assert.equal(eventShortLinkTarget(ev, new Date('2026-10-31T14:59:00Z')), `${eventHref(ev)}&utm_source=instagram&utm_campaign=halloween`); // 한국 10/31 23:59
   assert.equal(eventShortLinkTarget(ev, new Date('2026-10-31T15:00:00Z')), '/'); // 한국 11/1 00:00
 });

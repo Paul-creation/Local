@@ -65,6 +65,10 @@ export function eventHref(event: HomeEvent) {
 }
 
 // 짧은 주소(/halloween) 이동 위치 — 기간 이벤트가 끝난 날(한국 시간) 다음부터는 메인으로
+// 리다이렉트 자체는 Vercel Analytics에 안 잡히므로, 도착 페이지에서 유입을 구분하도록 utm을 붙인다
+export const SHORT_LINK_UTM = { utm_source: 'instagram', utm_campaign: 'halloween' };
+
 export function eventShortLinkTarget(event: DatedEvent, now: Date = new Date()) {
-  return todayInKorea(now) <= event.end ? eventHref(event) : '/';
+  if (todayInKorea(now) > event.end) return '/';
+  return `${eventHref(event)}&${new URLSearchParams(SHORT_LINK_UTM).toString()}`;
 }
