@@ -8,7 +8,10 @@
 // - 미리보기가 기본(DB 쓰기·로그 없음). --apply일 때만 DB에 씀
 // - verify-players-web.mjs 결과(scripts/.cache/verify-players-v2.json)도 받음: confidence가 high·medium인 게임만, 비어 있는 min_players·max_players만 채움 (이미 있는 값은 안 덮어씀)
 //   max_players는 결과의 online_max·local_max 중 큰 값. 협동·대전 플래그(has_online_coop·has_local_coop·has_pvp)도 비어 있는 것만 채움 (결과에 값이 있을 때만, 혼자 플레이는 건드리지 않음)
+//   결과의 0(온라인·로컬 모두 멀티 없음)은 혼자 하는 게임이므로 1로 저장
 //   --include <게임id>,<게임id>: confidence가 low여도 반영할 게임 (예외)
+//   --exclude <게임id>,<게임id>: 반영에서 뺄 게임
+//   --max <게임id>=<인원>,...: 최대 인원을 직접 지정 (근거 문구에 "수동 보정" 표시)
 // 실행: node --env-file=.env.local scripts/apply-verified-players.mjs data/verification/party-max-decisions.json [--apply]
 //       node --env-file=.env.local scripts/apply-verified-players.mjs scripts/.cache/verify-players-v2.json [--include id,id] [--apply]
 import fs from 'node:fs';
@@ -23,6 +26,9 @@ const LOG = 'data/verification/applied-log.txt';
 const APPLY = process.argv.includes('--apply');
 const inc = process.argv.indexOf('--include');
 const INCLUDE = new Set(inc > 0 ? (process.argv[inc + 1] || '').split(',').filter(Boolean) : []);
+const listArg = (name) => { const i = process.argv.indexOf(name); return i > 0 ? (process.argv[i + 1] || '').split(',').filter(Boolean) : []; };
+const EXCLUDE = new Set(listArg('--exclude'));
+const MANUAL_MAX = new Map(listArg('--max').map((x) => x.split('=')).map(([id, n]) => [id, Number(n)]));
 const OK_CONFIDENCE = new Set(['high', 'medium']);
 
 // verify-players-web.mjs 결과 → 결정 목록. 근거가 약한(low·없음) 게임은 --include로 지정한 것만
@@ -30,13 +36,16 @@ function fromVerifyCache(cache) {
   const fix = [], skipped = [];
   for (const [id, c] of Object.entries(cache)) {
     const r = c.result;
+    if (EXCLUDE.has(id)) { skipped.push(`${c.name}: --exclude`); continue; }
     if (!r) { skipped.push(`${c.name}: 결과 없음`); continue; }
     if (!OK_CONFIDENCE.has(r.confidence) && !INCLUDE.has(id)) { skipped.push(`${c.name}: confidence ${r.confidence ?? '없음'} — 제외 (--include로 예외 가능)`); continue; }
     if (r.max_players == null && !Object.keys(r).some((k) => ['online_coop', 'local_coop', 'pvp'].includes(k) && typeof r[k] === 'boolean')) { skipped.push(`${c.name}: 채울 값 없음`); continue; }
     const src = r.sources?.online_max || r.sources?.local_max || '';
     const flags = {};
     for (const [k, v] of [['has_online_coop', r.online_coop], ['has_local_coop', r.local_coop], ['has_pvp', r.pvp]]) if (typeof v === 'boolean') flags[k] = v;
-    fix.push({ id, name: c.name, min: r.min_players ?? undefined, max: r.max_players ?? undefined, flags, onlyIfEmpty: true, source: src, evidence: `웹 확인 ${r.confidence ?? '?'}${INCLUDE.has(id) && !OK_CONFIDENCE.has(r.confidence) ? '·예외 포함' : ''} online ${r.online_max ?? '?'}/local ${r.local_max ?? '?'}` });
+    const manual = MANUAL_MAX.get(id);
+    const max = manual ?? (r.max_players === 0 ? 1 : r.max_players ?? undefined); // 0은 멀티가 없는 혼자 게임 → 1
+    fix.push({ id, name: c.name, min: r.min_players ?? undefined, max, flags, onlyIfEmpty: true, source: src, evidence: `${manual != null ? `수동 보정 ${manual} · ` : ''}웹 확인 ${r.confidence ?? '?'}${INCLUDE.has(id) && !OK_CONFIDENCE.has(r.confidence) ? '·예외 포함' : ''} online ${r.online_max ?? '?'}/local ${r.local_max ?? '?'}` });
   }
   return { fix, skipped };
 }
