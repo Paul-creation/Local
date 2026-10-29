@@ -1,0 +1,8 @@
+[
+  { "type": "poster-cover", "game": "1274570", "kicker": "할로윈 할인 · 친구랑 4인 협동 공포", "headline": "넷이 들어가서\n셋이 비명 지르는 게임", "chips": [] },
+  { "type": "game-data", "game": "1274570", "index": 5 },
+  { "type": "shot-pair", "game": "1274570", "index": [6, 7], "heading": "악령 들린 교주를 막아라", "body": "교주 안나에게 깃든 악마를 쫓아내려면\n맵 곳곳에 숨겨진 제물을 찾아 불태워야 해요." },
+  { "type": "shot-pair", "game": "1274570", "index": [1, 4], "heading": "들키면 끝, 역할 분담이 핵심", "body": "한 명이 쫓기는 동안 나머지가 제물을 나르고\n누가 미끼가 될지 정하다 보면 어느새 웃고 있어요." },
+  { "type": "shot", "game": "1274570", "index": 2 },
+  { "type": "follow-card", "game": "1274570", "title": "친구랑 할 게임, 고민되면", "sub": "인원·할인·내 PC까지 한곳에서 비교해요" }
+]

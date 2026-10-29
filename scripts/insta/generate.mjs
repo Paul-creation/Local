@@ -261,20 +261,66 @@ function planSplit(layout, slidesN, cols) {
 
 // poster-cover·poster-game — 스팀 세로 아트 원본(1200×1800)을 cache에 받아 두고 data URI로 쓴다(늘리지 않음: 1080폭에 맞춰 줄어듦)
 const won = (n) => `₩${Math.round(n).toLocaleString('ko-KR')}`;
+// 스팀 이미지를 cache에 받아 둔다(CDN이 가끔 503을 줘서 몇 번 다시 시도)
+async function fetchCached(url, file, what) {
+  if (!stale(file)) return;
+  let res;
+  for (let i = 0; i < 4; i++) {
+    res = await fetch(url);
+    if (res.ok) break;
+    await new Promise((r) => setTimeout(r, 1500));
+  }
+  if (!res.ok) throw new Error(`${what}을(를) 못 받았어요 (HTTP ${res.status})`);
+  fs.writeFileSync(file, Buffer.from(await res.arrayBuffer()));
+}
+const jpgUri = (file) => `data:image/jpeg;base64,${fs.readFileSync(file).toString('base64')}`;
+const posterArt = async (game) => {
+  const file = path.join(CACHE, `poster-${game.steam_appid}.jpg`);
+  await fetchCached(`https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.steam_appid}/library_600x900_2x.jpg`, file, `세로 아트(${gameTitle(game)})`);
+  return jpgUri(file);
+};
+// 스팀 스크린샷 원본(path_full) — 번호는 1부터(상점 갤러리 순서)
+const shotUri = async (game, n) => {
+  const shot = (game.screenshots ?? [])[Number(n) - 1];
+  if (!shot?.path_full) throw new Error(`${gameTitle(game)}에 스크린샷 ${n}번이 없어요 (1~${(game.screenshots ?? []).length})`);
+  const file = path.join(CACHE, `shot-${game.steam_appid}-${n}.jpg`);
+  await fetchCached(shot.path_full, file, `스크린샷 ${n}번(${gameTitle(game)})`);
+  return jpgUri(file);
+};
+const latestKrw = (game) => (game.price_history ?? []).filter((p) => p.price >= 100).sort((a, b) => new Date(b.checked_at) - new Date(a.checked_at));
+const kstMD = (iso) => { const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric' }).formatToParts(new Date(iso)).map((x) => [x.type, x.value])); return `${p.month}/${p.day}`; };
+// 최소 사양 문자열("프로세서: … / 메모리: … / 그래픽: …")에서 CPU / GPU / RAM만. 값마다 첫 후보만 남긴다
+function specLine(minSpec) {
+  if (!minSpec) return null;
+  const fields = {};
+  for (const part of minSpec.split(/ \/ (?=[^:/]{1,12}: )/)) { const m = part.match(/^([^:]{1,12}): (.+)$/); if (m) fields[m[1].trim()] = m[2].trim(); }
+  const first = (v) => v?.split(' / ')[0].trim();
+  const cpu = first(fields['프로세서']), gpu = first(fields['그래픽']), ram = fields['메모리']?.replace(/\s*RAM$/i, '').replace(/\s+/g, '');
+  return cpu && gpu && ram ? `${cpu} / ${gpu} / ${ram}` : null;
+}
+// game-data·shot-pair·shot·follow-card — 한 게시물 = 한 게임. 모든 값은 DB(games·price_history)에서 자동으로 채운다
+async function singleCtx(s) {
+  const game = await resolveGame(s.game);
+  if (s.type === 'follow-card') return { art: await posterArt(game) };
+  if (s.type === 'shot') return { images: [await shotUri(game, s.index)] };
+  if (s.type === 'shot-pair') return { images: await Promise.all(s.index.map((n) => shotUri(game, n))) };
+  const rows = latestKrw(game);
+  const now = rows[0];
+  const sale = now?.discount_percent > 0;
+  const chips = [game.min_players === game.max_players ? `${game.max_players}인` : `최대 ${game.max_players}인`];
+  if (game.has_online_coop) chips.push('온라인 협동');
+  if (game.has_local_coop) chips.push('로컬 협동');
+  if (game.has_pvp) chips.push('대전');
+  if (game.korean_support && game.korean_support !== '없음') chips.push('한국어');
+  if (now && rows.length > 1 && now.price <= Math.min(...rows.map((p) => p.price))) chips.push('기록상 최저가');
+  const end = sale && now.sale_ends_at && new Date(now.sale_ends_at) > new Date() ? kstMD(now.sale_ends_at) : null;
+  console.log(`${gameTitle(game)} | ${won(now.price)} ${sale ? `-${now.discount_percent}%` : ''} | ${chips.join(' · ')} | 종료 ${end ?? '-'} | ${specLine(game.min_spec) ?? '사양 없음'}`);
+  return { bg: await shotUri(game, s.index), name: gameTitle(game), price: won(now.price), original: sale && now.original_price ? won(now.original_price) : null, discount: sale ? now.discount_percent : 0, chips, saleEnd: end, spec: specLine(game.min_spec) };
+}
+
 async function posterCtx(s) {
   const game = await resolveGame(s.game);
-  const file = path.join(CACHE, `poster-${game.steam_appid}.jpg`);
-  if (stale(file)) {
-    let res;
-    for (let i = 0; i < 4; i++) { // 스팀 CDN이 가끔 503을 줘서 몇 번 다시 시도
-      res = await fetch(`https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.steam_appid}/library_600x900_2x.jpg`);
-      if (res.ok) break;
-      await new Promise((r) => setTimeout(r, 1500));
-    }
-    if (!res.ok) throw new Error(`세로 아트를 못 받았어요 (${gameTitle(game)}, HTTP ${res.status})`);
-    fs.writeFileSync(file, Buffer.from(await res.arrayBuffer()));
-  }
-  const image = `data:image/jpeg;base64,${fs.readFileSync(file).toString('base64')}`;
+  const image = await posterArt(game);
   if (s.type === 'poster-cover') return { image, chips: (s.chips ?? []).map((text) => ({ text })) };
   // 가장 최근 원화(100원 이상) 가격 기록 — app/lib/price.ts getPriceInfo와 같은 기준. 기록상 최저가 = 우리 price_history 안의 최저가
   const rows = (game.price_history ?? []).filter((p) => p.price >= 100).sort((a, b) => new Date(b.checked_at) - new Date(a.checked_at));
@@ -365,6 +411,7 @@ try {
     const imgUri = (v) => (/^https?:/.test(v) ? v : dataUri(path.resolve(path.dirname(postFile), v)));
     if (s.type === 'game-card' && s.image) ctx.photo = imgUri(s.image);
     if (s.type === 'poster-cover' || s.type === 'poster-game') ctx.poster = await posterCtx(s);
+    if (['game-data', 'shot-pair', 'shot', 'follow-card'].includes(s.type)) ctx.single = await singleCtx(s);
     if (s.type === 'collage-cover') ctx.photos = s.images.map(imgUri);
     const size = sizeOf(s);
     await page.setViewportSize(size);

@@ -114,6 +114,37 @@ em { font-style: normal; color: #FFD84A; }
 .poster-chips { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 36px; }
 .poster-chip { background: transparent; border: 3px solid rgba(255,255,255,.35); border-radius: 999px; padding: 12px 32px; font-size: 38px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }
 .poster-chip.sale { border-color: #4ADE80; color: #4ADE80; }
+
+/* game-data · shot-pair · shot · follow-card — 한 게시물 = 한 게임. 페이지 번호·J 로고 없음 */
+.gd-bg, .fc-bg { position: absolute; inset: 0; background-size: cover; background-position: center; }
+.gd-dim { position: absolute; inset: 0; background: rgba(0,0,0,.7); }
+.gd-text { position: absolute; left: 72px; right: 72px; bottom: 80px; }
+.gd-name { font-size: 104px; font-weight: 900; line-height: 1.12; letter-spacing: -0.045em; color: #fff; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.gd-price { display: flex; align-items: baseline; gap: 20px; margin-top: 28px; font-variant-numeric: tabular-nums; }
+.gd-orig { font-size: 44px; font-weight: 600; color: rgba(255,255,255,.55); text-decoration: line-through; }
+.gd-now { font-size: 76px; font-weight: 800; letter-spacing: -0.03em; color: #4ADE80; }
+.gd-off { font-size: 52px; font-weight: 800; color: #4ADE80; }
+.gd-chips { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
+.gd-chip { border: 3px solid rgba(255,255,255,.4); border-radius: 999px; padding: 10px 28px; font-size: 38px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }
+.gd-sub { margin-top: 22px; font-size: 32px; font-weight: 500; color: #9A9A9A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gd-sub + .gd-sub { margin-top: 10px; }
+.sp-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 2px; background: #000; }
+.sp-half { flex: 1; min-height: 0; background-size: cover; background-position: center; }
+.sp-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 45%; background: linear-gradient(to top, rgba(0,0,0,.92), rgba(0,0,0,0)); }
+.sp-text { position: absolute; left: 72px; right: 72px; bottom: 80px; }
+.sp-head { font-size: 68px; font-weight: 900; line-height: 1.2; letter-spacing: -0.04em; color: #fff; margin-bottom: 20px; }
+.sp-body { font-size: 44px; font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; color: #fff; }
+.shot-full { position: absolute; inset: 0; background-size: cover; background-position: center; }
+.fc-bg { filter: blur(24px); transform: scale(1.12); }
+.fc-dim { position: absolute; inset: 0; background: rgba(0,0,0,.45); }
+.fc-top { position: absolute; left: 60px; right: 60px; top: 190px; text-align: center; color: #fff; }
+.fc-title { font-size: 76px; font-weight: 900; line-height: 1.2; letter-spacing: -0.04em; }
+.fc-sub { margin-top: 22px; font-size: 42px; font-weight: 500; line-height: 1.4; color: rgba(255,255,255,.88); }
+.fc-pill { position: absolute; left: 162px; right: 162px; top: 600px; height: 150px; border-radius: 999px; background: #fff; display: flex; align-items: center; padding: 0 16px 0 16px; gap: 24px; color: #0b0b0b; }
+.fc-j { flex: none; width: 118px; height: 118px; border-radius: 50%; background: #0b0b0b; color: #fff; display: grid; place-items: center; font-size: 76px; font-weight: 900; line-height: 1; }
+.fc-handle { flex: 1; font-size: 44px; font-weight: 800; letter-spacing: -0.02em; }
+.fc-btn { flex: none; height: 94px; padding: 0 38px; border-radius: 999px; background: #0b0b0b; color: #fff; display: grid; place-items: center; font-size: 38px; font-weight: 800; }
+.fc-brand { position: absolute; left: 0; right: 0; bottom: 84px; text-align: center; font-size: 34px; font-weight: 700; color: #fff; }
 `;
 
 const GRID_CELLS = [['people', '인원'], ['price', '가격·역대 최저가'], ['spec', '내 PC 사양'], ['video', '친구랑 하는 영상']];
@@ -193,6 +224,40 @@ const BODY = {
     </div>`,
   'poster-cover': (s, ctx) => poster(s, ctx, s.headline, ctx.poster.chips),
   'poster-game': (s, ctx) => poster(s, ctx, ctx.poster.name, ctx.poster.chips),
+  'game-data': (s, ctx) => {
+    const g = ctx.single;
+    return `
+    <div class="gd-bg" style="background-image:url(${g.bg})"></div>
+    <div class="gd-dim"></div>
+    <div class="gd-text">
+      <div class="gd-name">${rich(g.name)}</div>
+      <div class="gd-price">
+        ${g.original ? `<span class="gd-orig">${rich(g.original)}</span>` : ''}
+        <span class="gd-now">${rich(g.price)}</span>
+        ${g.discount ? `<span class="gd-off">-${esc(g.discount)}%</span>` : ''}
+      </div>
+      <div class="gd-chips">${g.chips.map((c) => `<span class="gd-chip">${rich(c)}</span>`).join('')}</div>
+      ${g.saleEnd ? `<div class="gd-sub">할인 종료 ${esc(g.saleEnd)}</div>` : ''}
+      ${g.spec ? `<div class="gd-sub">최소 사양 · ${esc(g.spec)}</div>` : ''}
+    </div>`;
+  },
+  'shot-pair': (s, ctx) => `
+    <div class="sp-wrap">${ctx.single.images.map((u) => `<div class="sp-half" style="background-image:url(${u})"></div>`).join('')}</div>
+    <div class="sp-shade"></div>
+    <div class="sp-text">
+      ${s.heading ? `<div class="sp-head">${rich(s.heading)}</div>` : ''}
+      <div class="sp-body">${rich(s.body)}</div>
+    </div>`,
+  shot: (s, ctx) => `<div class="shot-full" style="background-image:url(${ctx.single.images[0]})"></div>`,
+  'follow-card': (s, ctx) => `
+    <div class="fc-bg" style="background-image:url(${ctx.single.art})"></div>
+    <div class="fc-dim"></div>
+    <div class="fc-top">
+      <div class="fc-title">${rich(s.title)}</div>
+      <div class="fc-sub">${rich(s.sub)}</div>
+    </div>
+    <div class="fc-pill"><span class="fc-j">J</span><span class="fc-handle">jamidunow</span><span class="fc-btn">팔로우</span></div>
+    <div class="fc-brand">JamiDuNow</div>`,
   og: (s, ctx) => `
     <div class="og-wall" style="background-image:url(${ctx.wall})"></div>
     <div class="og-dim"></div>
@@ -228,9 +293,10 @@ export function renderSlide(slide, index, total, ctx) {
   if (!body) throw new Error(`알 수 없는 슬라이드 타입: ${slide.type} (${SLIDE_TYPES.join(', ')})`);
   return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>${CSS(ctx.font, width, height)}</style></head><body${slide.type === 'end-card' ? ' class="end-card"' : ''}>
     <div class="slide">${body(slide, ctx)}</div>
-    ${index > 0 && !og && !slide.type.startsWith('poster-') ? `<div class="page">${index + 1}/${total}</div>` : ''}
-    ${slide.type === 'end-card' || og || slide.type.startsWith('poster-') ? '' : '<div class="logo">J</div>'}
+    ${index > 0 && !og && !slide.type.startsWith('poster-') && !BARE.includes(slide.type) ? `<div class="page">${index + 1}/${total}</div>` : ''}
+    ${slide.type === 'end-card' || og || slide.type.startsWith('poster-') || BARE.includes(slide.type) ? '' : '<div class="logo">J</div>'}
   </body></html>`;
 }
 
 export const SIZE = { width: W, height: H };
+const BARE = ['game-data', 'shot-pair', 'shot', 'follow-card']; // 페이지 번호·J 로고 없는 타입(poster-*와 같이)

@@ -11,7 +11,7 @@ import { chromium } from 'playwright';
 try { if (!process.env.NEXT_PUBLIC_SUPABASE_URL) process.loadEnvFile('.env.local'); } catch { /* .env.local 없음 */ }
 const SITE = (process.env.SITE || 'https://jamidunow.com').replace(/\/$/, '');
 const db = () => createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-const FIELDS = 'id, name, display_name, steam_appid, min_players, max_players, spec_parsed, min_spec, hidden, merged_into, release_status, game_videos(kind), price_history(price, discount_percent, checked_at)';
+const FIELDS = 'id, name, display_name, steam_appid, min_players, max_players, spec_parsed, min_spec, hidden, merged_into, release_status, game_videos(kind), price_history(price, original_price, discount_percent, sale_ends_at, checked_at), screenshots, has_online_coop, has_local_coop, has_pvp, korean_support';
 
 export const gameTitle = (g) => g.display_name || g.name;
 
