@@ -14,7 +14,7 @@ import '../mono-page.css';
 import '../mono-static.css';
 
 // 예시 게임(영상 있는 인기 게임)을 1시간마다 새로 고른다. 문구는 모두 lib/guideCopy.ts
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: GUIDE_META.title,

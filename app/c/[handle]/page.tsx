@@ -9,7 +9,7 @@ import '../../mono-page.css';
 import './curator-mono.css';
 
 // 동의(consent_status=granted)한 계정만 보인다 — 아니면 getCuratorProfile이 null이라 404. 미리보기는 /c-preview/[handle] (proxy.ts가 관리자의 ?preview=1을 넘겨줌)
-export const revalidate = 300;
+export const revalidate = 86400;
 
 const titleOf = (displayName: string) => `@${withSubjectJosa(displayName)} 소개한 게임`;
 
