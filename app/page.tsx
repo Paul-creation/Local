@@ -13,7 +13,7 @@ import { getPeopleRecs, getHomeExcludedIds } from './lib/peopleRecs';
 import { getCovers, getHeroCovers, getHomeLists, getHomeStats } from './lib/homeMain';
 
 // 5분마다 새로 만든 결과를 모두에게 보여준다 (방문마다 DB를 조회하지 않도록). 인기 글·가격도 최대 5분 늦게 반영
-export const revalidate = 300;
+export const revalidate = 3600;
 export const metadata: Metadata = {
   alternates: { canonical: '/' },
   openGraph: { ...BASE_OG, title: SITE_TITLE, description: SITE_META_DESCRIPTION, url: '/' },

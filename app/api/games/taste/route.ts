@@ -6,9 +6,9 @@ import type { TasteRow } from '../../../lib/taste';
 
 // 내 라이브러리 "취향 비슷한 게임"용 — 게임별 태그 번호·득표·확인된 활동만 (읽기 전용, 공개 정보). 보유 목록 같은 개인 정보는 받지 않고, 취향 계산은 브라우저가 한다
 // 숨긴 게임(hidden)과 메인 노출 제외 게임(home_excluded)은 빠진다(selectHomeGames). 득표 0 이하 태그는 뺌, 태그·활동이 하나도 없는 게임은 줄 자체를 뺌
-// 5분마다 새로 만들고 그 사이에는 만들어 둔 응답을 그대로 준다 (/api/games/list와 같은 방식). 조회가 실패하면 예외를 던져서 직전 캐시를 계속 쓴다
+// 1시간마다 새로 만들고 그 사이에는 만들어 둔 응답을 그대로 준다 (/api/games/list와 같은 방식). 조회가 실패하면 예외를 던져서 직전 캐시를 계속 쓴다
 export const dynamic = 'force-static';
-export const revalidate = 300;
+export const revalidate = 3600;
 
 export async function GET() {
   const [games, tags] = await Promise.all([

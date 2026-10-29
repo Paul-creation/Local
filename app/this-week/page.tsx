@@ -6,7 +6,7 @@ import '../mono-tokens.css';
 import '../mono-page.css';
 import '../mono-lists.css';
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: '이번 주 할인 마감',

@@ -1,5 +1,5 @@
 // 가이드 "영상으로 미리 보기"의 예시 게임 — 스트리머 영상이 연결된 게임 중 인기 순위(heat_rank)가 가장 높은 게임 하나
-// 못 골라도(표 읽기 실패·영상 없음) 가이드는 그대로 뜨고 그 버튼만 숨는다. 호출하는 /guide 페이지가 revalidate 3600
+// 못 골라도(표 읽기 실패·영상 없음) 가이드는 그대로 뜨고 그 버튼만 숨는다. 호출하는 /guide 페이지가 revalidate 86400
 import { supabase } from './supabase';
 import { selectHomeGames } from './visibleGames';
 

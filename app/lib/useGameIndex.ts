@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { loadTagTree, type TagTree } from './tagTree';
 
 // 메인 검색·필터용 전체 게임 목록과 태그 나무를 첫 화면 뒤에 받아 온다
-// - 게임: /api/games/list (5분 캐시, 태그는 번호만)
+// - 게임: /api/games/list (1시간 캐시, 태그는 번호만)
 // - 태그 나무·이름: app/lib/tag-search-dict.json (별도 조각으로 받아 첫 화면 JS에 싣지 않음)
 // 받은 목록은 탭 안에서 5분 동안 기억 → 상세에서 "목록으로" 돌아오면 다시 받지 않고 바로 결과를 그린다
 const KEEP_MS = 5 * 60 * 1000;

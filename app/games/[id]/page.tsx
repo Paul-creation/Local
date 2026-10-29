@@ -59,11 +59,11 @@ import '../../mono-page.css';
 import '../../components/detail/detail-mono.css';
 import '../../components/detail/detail-sections.css';
 
-// 게임마다 처음 열릴 때 만들고 1시간 동안 재사용 (ISR). 가격·접속자는 하루 한 번 갱신되므로 충분
+// 게임마다 처음 열릴 때 만들고 하루 동안 재사용 (ISR). 가격·접속자는 하루 한 번 갱신되므로 충분 — Vercel 무료 플랜 ISR Writes(월 20만)를 아끼려고 1시간 → 하루
 // 의견 작성·수정·삭제(api/game-comments)와 신고 자동 숨김(api/community/report)은 그 게임 페이지를 바로 새로 만든다
-// 메인 카드의 <Link>가 화면에 보이면 상세를 미리 불러오므로(prefetch) 짧게 잡으면 방문마다 재생성이 몰린다
+// 메인 카드의 <Link>가 화면에 보이면 상세를 미리 불러오고 검색 봇이 사이트맵의 모든 게임을 도므로(prefetch·크롤링) 짧게 잡으면 재생성이 몰린다
 type Ch = { channel_title: string | null; streamer_name: string; kind: string };
-export const revalidate = 3600;
+export const revalidate = 86400;
 export async function generateStaticParams() {
   return []; // 빌드 때 미리 만들지 않고, 처음 방문할 때 만든다 (빈 배열이어야 ISR이 켜짐)
 }
