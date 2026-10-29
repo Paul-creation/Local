@@ -101,9 +101,33 @@ em { font-style: normal; color: #FFD84A; }
 .gprice { font-size: 56px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
 .gorig { font-size: 38px; font-weight: 600; color: rgba(255,255,255,.5); text-decoration: line-through; font-variant-numeric: tabular-nums; }
 .gtag { margin-top: 32px; padding-right: 140px; font-size: 57px; font-weight: 500; line-height: 1.4; color: #EDEDED; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* poster-cover · poster-game — 스팀 세로 아트(library_600x900_2x) 전체 배경 */
+.poster-bg { position: absolute; inset: 0; background-size: cover; background-position: center; }
+.poster-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 60%; background: linear-gradient(to top, rgba(0,0,0,.92), rgba(0,0,0,0)); }
+.poster-logo { position: absolute; left: 64px; top: 56px; height: 44px; display: flex; align-items: center; gap: 12px; }
+.poster-logo i { width: 44px; height: 44px; border-radius: 12px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-style: normal; font-size: 32px; font-weight: 900; line-height: 1; }
+.poster-logo b { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; color: #fff; text-shadow: 0 1px 6px rgba(0,0,0,.35); }
+.poster-text { position: absolute; left: 64px; right: 64px; bottom: 72px; }
+.poster-kicker { font-size: 38px; font-weight: 600; color: #DDDDDD; margin-bottom: 20px; letter-spacing: -0.01em; }
+.poster-head { font-size: 108px; font-weight: 900; line-height: 1.12; letter-spacing: -0.045em; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,.2); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.poster-chips { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 36px; }
+.poster-chip { background: transparent; border: 3px solid rgba(255,255,255,.35); border-radius: 999px; padding: 12px 32px; font-size: 38px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }
+.poster-chip.sale { border-color: #4ADE80; color: #4ADE80; }
 `;
 
 const GRID_CELLS = [['people', '인원'], ['price', '가격·역대 최저가'], ['spec', '내 PC 사양'], ['video', '친구랑 하는 영상']];
+
+// 포스터 레이아웃 — 배경(세로 아트) · 아래 그라데이션 · 왼쪽 위 로고 · 왼쪽 아래 kicker/제목/칩. chips는 {text, sale}
+const poster = (s, ctx, headline, chips) => `
+    <div class="poster-bg" style="background-image:url(${ctx.poster.image})"></div>
+    <div class="poster-shade"></div>
+    <div class="poster-logo"><i>J</i><b>JamiDuNow</b></div>
+    <div class="poster-text">
+      <div class="poster-kicker">${rich(s.kicker)}</div>
+      <div class="poster-head">${rich(headline)}</div>
+      <div class="poster-chips">${chips.map((c) => `<span class="poster-chip${c.sale ? ' sale' : ''}">${rich(c.text)}</span>`).join('')}</div>
+    </div>`;
 
 const BODY = {
   'wall-cover': (s, ctx) => `
@@ -167,6 +191,8 @@ const BODY = {
       <div class="kicker">${rich(s.kicker)}</div>
       <div class="collage-head">${rich(s.headline)}</div>
     </div>`,
+  'poster-cover': (s, ctx) => poster(s, ctx, s.headline, ctx.poster.chips),
+  'poster-game': (s, ctx) => poster(s, ctx, ctx.poster.name, ctx.poster.chips),
   og: (s, ctx) => `
     <div class="og-wall" style="background-image:url(${ctx.wall})"></div>
     <div class="og-dim"></div>
@@ -203,7 +229,7 @@ export function renderSlide(slide, index, total, ctx) {
   return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>${CSS(ctx.font, width, height)}</style></head><body${slide.type === 'end-card' ? ' class="end-card"' : ''}>
     <div class="slide">${body(slide, ctx)}</div>
     ${index > 0 && !og ? `<div class="page">${index + 1}/${total}</div>` : ''}
-    ${slide.type === 'end-card' || og ? '' : '<div class="logo">J</div>'}
+    ${slide.type === 'end-card' || og || slide.type.startsWith('poster-') ? '' : '<div class="logo">J</div>'}
   </body></html>`;
 }
 

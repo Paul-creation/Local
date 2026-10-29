@@ -259,6 +259,33 @@ function planSplit(layout, slidesN, cols) {
   return { plan, covered: y, hardCuts };
 }
 
+// poster-cover·poster-game — 스팀 세로 아트 원본(1200×1800)을 cache에 받아 두고 data URI로 쓴다(늘리지 않음: 1080폭에 맞춰 줄어듦)
+const won = (n) => `₩${Math.round(n).toLocaleString('ko-KR')}`;
+async function posterCtx(s) {
+  const game = await resolveGame(s.game);
+  const file = path.join(CACHE, `poster-${game.steam_appid}.jpg`);
+  if (stale(file)) {
+    let res;
+    for (let i = 0; i < 4; i++) { // 스팀 CDN이 가끔 503을 줘서 몇 번 다시 시도
+      res = await fetch(`https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.steam_appid}/library_600x900_2x.jpg`);
+      if (res.ok) break;
+      await new Promise((r) => setTimeout(r, 1500));
+    }
+    if (!res.ok) throw new Error(`세로 아트를 못 받았어요 (${gameTitle(game)}, HTTP ${res.status})`);
+    fs.writeFileSync(file, Buffer.from(await res.arrayBuffer()));
+  }
+  const image = `data:image/jpeg;base64,${fs.readFileSync(file).toString('base64')}`;
+  if (s.type === 'poster-cover') return { image, chips: (s.chips ?? []).map((text) => ({ text })) };
+  // 가장 최근 원화(100원 이상) 가격 기록 — app/lib/price.ts getPriceInfo와 같은 기준. 기록상 최저가 = 우리 price_history 안의 최저가
+  const rows = (game.price_history ?? []).filter((p) => p.price >= 100).sort((a, b) => new Date(b.checked_at) - new Date(a.checked_at));
+  const now = rows[0];
+  const chips = [{ text: game.min_players === game.max_players ? `${game.max_players}인` : `최대 ${game.max_players}인` }];
+  if (now?.discount_percent > 0) chips.push({ text: `-${now.discount_percent}% ${won(now.price)}`, sale: true });
+  if (now && rows.length > 1 && now.price <= Math.min(...rows.map((p) => p.price))) chips.push({ text: '기록상 최저가' });
+  console.log(`${gameTitle(game)} | ${chips.map((c) => c.text).join(' · ')}`);
+  return { image, name: gameTitle(game), chips };
+}
+
 fs.mkdirSync(CACHE, { recursive: true });
 const slideOf = (type) => slides.find((s) => s.type === type);
 const shotSlide = slideOf('screenshot');
@@ -337,6 +364,7 @@ try {
     if (s.type === 'detail-grid') { const f = detailFiles(s.slug); ctx.parts = Object.fromEntries(DETAIL_PARTS.map((p) => [p, dataUri(f[p])])); }
     const imgUri = (v) => (/^https?:/.test(v) ? v : dataUri(path.resolve(path.dirname(postFile), v)));
     if (s.type === 'game-card' && s.image) ctx.photo = imgUri(s.image);
+    if (s.type === 'poster-cover' || s.type === 'poster-game') ctx.poster = await posterCtx(s);
     if (s.type === 'collage-cover') ctx.photos = s.images.map(imgUri);
     const size = sizeOf(s);
     await page.setViewportSize(size);
