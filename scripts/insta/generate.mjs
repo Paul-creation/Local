@@ -342,7 +342,13 @@ async function singleCtx(s) {
 
 async function posterCtx(s) {
   const game = await resolveGame(s.game);
-  const image = await posterArt(game);
+  // bg: "hero"(library_hero_2x, 로고 없는 가로 배경 아트) 또는 스크린샷 번호(1부터). 없으면 세로 아트
+  let image;
+  if (s.bg === 'hero') {
+    const file = path.join(CACHE, `hero-${game.steam_appid}.jpg`);
+    await fetchCached(`https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.steam_appid}/library_hero_2x.jpg`, file, `히어로 아트(${gameTitle(game)})`);
+    image = jpgUri(file);
+  } else image = s.bg ? await shotUri(game, s.bg) : await posterArt(game);
   if (s.type === 'poster-cover') return { image, chips: (s.chips ?? []).map((text) => ({ text })) };
   // 가장 최근 원화(100원 이상) 가격 기록 — app/lib/price.ts getPriceInfo와 같은 기준. 기록상 최저가 = 우리 price_history 안의 최저가
   const rows = (game.price_history ?? []).filter((p) => p.price >= 100).sort((a, b) => new Date(b.checked_at) - new Date(a.checked_at));
@@ -436,6 +442,18 @@ try {
     if (['game-data', 'shot-pair', 'shot', 'follow-card'].includes(s.type)) ctx.single = await singleCtx(s);
     if (s.type === 'collage-cover') ctx.photos = s.images.map(imgUri);
     const size = sizeOf(s);
+    if (s.type === 'poster-cover' && s.variants) { // 배경 후보: 01a.png, 01b.png … (고른 뒤 json에 bg를 쓰고 variants를 지운다)
+      await page.setViewportSize(size);
+      for (const v of s.variants) {
+        ctx.poster = await posterCtx({ ...s, bg: v.bg });
+        await page.setContent(renderSlide(s, i, slides.length, ctx), { waitUntil: 'load' });
+        await page.evaluate(() => document.fonts.ready);
+        const vf = path.join(outDir, `${String(i + 1).padStart(2, '0')}${v.suffix}.png`);
+        await page.screenshot({ path: vf, clip: { x: 0, y: 0, ...size } });
+        console.log(path.relative(ROOT, vf));
+      }
+      continue;
+    }
     await page.setViewportSize(size);
     await page.setContent(renderSlide(s, i, slides.length, ctx), { waitUntil: 'load' });
     await page.evaluate(() => document.fonts.ready);
