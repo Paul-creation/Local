@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-28 (main a3b8aa3)
+기준: 2026-10-29 (main 2f145f7)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/29: fix/isr-writes — Vercel 무료 플랜 ISR Writes(월 20만) 100% 소진 대응. revalidate: 게임 상세 3600→86400, 큐레이터 /c/[handle] 300→86400, /guide 3600→86400, 메인·/this-week·/api/games/list·/api/games/taste 300→3600. 스크립트·workflow는 revalidate를 부르지 않음(확인). 댓글 작성·삭제·신고 숨김의 revalidatePath는 그 게임 한 경로만이라 유지. 메인 반영 지연이 최대 5분→1시간. build·test 491개 통과
 - 10/28: chore/curator-gamelog-posts·chore/curator-gamewish-posts — curator-games.json에 히루가오(ひるがお, 5112880, 겜로그 게시물용)와 시체만 없으면 문제없어!(No Body, No Problem!, 4954970, 겜위시 게시물용, 출시 예정·데모 5076290) 추가. 두 게임은 bulk-import --curator --apply와 --ids 보강으로 DB에 넣음(AI 약 $0.01). Over the Hill·Two Point Hospital은 DB에 이미 있었음. curator_posts 연결·소개문 오타(숨바꼭지)·최대 인원 SQL은 사용자 실행 대기. 두 번째 브랜치는 같은 줄 충돌을 쉼표로 둘 다 남겨 해결. build·test 491개 통과
 - 10/28: feat/analytics-utm — Vercel Web Analytics(@vercel/analytics, layout의 <Analytics />)는 이미 main에 있었음(7098775). 이번엔 /halloween 307 리다이렉트 대상(eventShortLinkTarget)에 utm_source=instagram&utm_campaign=halloween을 붙여 도착 페이지에서 인스타 유입이 구분되게 함(기간이 끝나 /로 가면 UTM 없음). 배너의 eventHref에는 안 붙음. Vercel 대시보드에서 Analytics를 켜야 수집됨. build·test 491개 통과
 - 10/28: feat/players-popularity-first — fill-players-from-store의 처리 순서를 인기순으로(ITAD heat_rank 오름차순, 순위 없으면 리뷰 수 많은 순). 소개문 요청 상한(--max-steam=300)과 weekly 일정은 그대로라 상한에 걸리면 인기 게임부터 처리됨. 이미 확인한(players_store_checked_at) 게임은 이전처럼 건너뜀. 인원 빈칸 253개 중 이 스크립트가 앞으로 처리할 것은 4개, 나머지는 웹 검증(verify-players-web) 대상. build·test 491개 통과
