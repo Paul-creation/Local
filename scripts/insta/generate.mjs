@@ -8,6 +8,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { execFileSync } from 'child_process';
 import { chromium } from 'playwright';
 import { renderSlide, sizeOf, SIZE } from './template.mjs';
 import { resolveGame, pickCandidates, gameTitle } from './pick.mjs';
@@ -298,6 +299,27 @@ function specLine(minSpec) {
   const cpu = first(fields['프로세서']), gpu = first(fields['그래픽']), ram = fields['메모리']?.replace(/\s*RAM$/i, '').replace(/\s+/g, '');
   return cpu && gpu && ram ? `${cpu} / ${gpu} / ${ram}` : null;
 }
+// 첫 번째 트레일러(스팀 appdetails movies[0])를 cache에 받는다 — mp4가 있으면 그대로, 없으면 hls를 ffmpeg로 받아 mp4로 묶는다
+async function trailerFile(game) {
+  const file = path.join(CACHE, `trailer-${game.steam_appid}.mp4`);
+  if (!stale(file)) return file;
+  const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${game.steam_appid}&l=koreana`);
+  const movie = (await res.json())[game.steam_appid]?.data?.movies?.[0];
+  if (!movie) throw new Error(`${gameTitle(game)}에 스팀 트레일러가 없어요`);
+  const mp4 = movie.mp4?.max ?? movie.mp4?.['480'];
+  if (mp4) await fetchCached(mp4, file, `트레일러(${gameTitle(game)})`);
+  else execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', movie.hls_h264 ?? movie.dash_h264, '-c', 'copy', file], { stdio: 'inherit' });
+  return file;
+}
+const VIDEO_SECONDS = 12;
+// 투명 오버레이 PNG를 트레일러 위에 얹어 1080×1350 가운데 크롭·30fps·H.264 mp4로 만든다 (소리는 원본 그대로)
+function composeVideo({ trailer, overlay, start, out }) {
+  const dur = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', trailer]).toString());
+  if (start + VIDEO_SECONDS > dur) throw new Error(`videoStart ${start}초부터 ${VIDEO_SECONDS}초를 자르기엔 트레일러(${dur.toFixed(1)}초)가 짧아요`);
+  execFileSync('ffmpeg', ['-v', 'error', '-y', '-ss', String(start), '-t', String(VIDEO_SECONDS), '-i', trailer, '-loop', '1', '-framerate', '30', '-t', String(VIDEO_SECONDS), '-i', overlay,
+    '-filter_complex', `[0:v]scale=-2:${SIZE.height},crop=${SIZE.width}:${SIZE.height},fps=30[v];[v][1:v]overlay=format=auto,format=yuv420p[o]`,
+    '-map', '[o]', '-map', '0:a?', '-c:v', 'libx264', '-preset', 'veryfast', '-c:a', 'copy', '-movflags', '+faststart', '-shortest', out], { stdio: 'inherit' });
+}
 // game-data·shot-pair·shot·follow-card — 한 게시물 = 한 게임. 모든 값은 DB(games·price_history)에서 자동으로 채운다
 async function singleCtx(s) {
   const game = await resolveGame(s.game);
@@ -315,7 +337,7 @@ async function singleCtx(s) {
   if (now && rows.length > 1 && now.price <= Math.min(...rows.map((p) => p.price))) chips.push('기록상 최저가');
   const end = sale && now.sale_ends_at && new Date(now.sale_ends_at) > new Date() ? kstMD(now.sale_ends_at) : null;
   console.log(`${gameTitle(game)} | ${won(now.price)} ${sale ? `-${now.discount_percent}%` : ''} | ${chips.join(' · ')} | 종료 ${end ?? '-'} | ${specLine(game.min_spec) ?? '사양 없음'}`);
-  return { bg: await shotUri(game, s.index), name: gameTitle(game), price: won(now.price), original: sale && now.original_price ? won(now.original_price) : null, discount: sale ? now.discount_percent : 0, chips, saleEnd: end, spec: specLine(game.min_spec) };
+  return { video: !!s.video, trailer: s.video ? await trailerFile(game) : null, bg: s.video ? null : await shotUri(game, s.index), name: gameTitle(game), price: won(now.price), original: sale && now.original_price ? won(now.original_price) : null, discount: sale ? now.discount_percent : 0, chips, saleEnd: end, spec: specLine(game.min_spec) };
 }
 
 async function posterCtx(s) {
@@ -418,6 +440,14 @@ try {
     await page.setContent(renderSlide(s, i, slides.length, ctx), { waitUntil: 'load' });
     await page.evaluate(() => document.fonts.ready);
     const file = s.type === 'og' ? path.join(ROOT, 'public/og-default.png') : path.join(outDir, `${String(i + 1).padStart(2, '0')}.png`);
+    if (s.type === 'game-data' && s.video) { // 영상 배경: 투명 오버레이 PNG는 임시 폴더에만 두고 02.mp4만 남긴다
+      const tmp = path.join(CACHE, `overlay-${postId}-${i + 1}.png`);
+      await page.screenshot({ path: tmp, clip: { x: 0, y: 0, ...size }, omitBackground: true });
+      const mp4 = file.replace(/\.png$/, '.mp4');
+      composeVideo({ trailer: ctx.single.trailer, overlay: tmp, start: s.videoStart ?? 28, out: mp4 });
+      console.log(path.relative(ROOT, mp4));
+      continue;
+    }
     await page.screenshot({ path: file, clip: { x: 0, y: 0, ...size } });
     console.log(path.relative(ROOT, file));
   }

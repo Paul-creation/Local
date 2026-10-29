@@ -137,10 +137,10 @@ em { font-style: normal; color: #FFD84A; }
 .shot-full { position: absolute; inset: 0; background-size: cover; background-position: center; }
 .fc-bg { filter: blur(24px); transform: scale(1.12); }
 .fc-dim { position: absolute; inset: 0; background: rgba(0,0,0,.45); }
-.fc-top { position: absolute; left: 60px; right: 60px; top: 190px; text-align: center; color: #fff; }
+.fc-mid { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 64px; padding: 0 60px; text-align: center; color: #fff; }
 .fc-title { font-size: 76px; font-weight: 900; line-height: 1.2; letter-spacing: -0.04em; }
-.fc-sub { margin-top: 22px; font-size: 42px; font-weight: 500; line-height: 1.4; color: rgba(255,255,255,.88); }
-.fc-pill { position: absolute; left: 162px; right: 162px; top: 600px; height: 150px; border-radius: 999px; background: #fff; display: flex; align-items: center; padding: 0 16px 0 16px; gap: 24px; color: #0b0b0b; }
+.fc-sub { margin-top: -28px; font-size: 42px; font-weight: 500; line-height: 1.4; color: rgba(255,255,255,.88); }
+.fc-pill { width: 756px; height: 150px; border-radius: 999px; background: #fff; display: flex; align-items: center; padding: 0 16px; gap: 24px; color: #0b0b0b; }
 .fc-j { flex: none; width: 118px; height: 118px; border-radius: 50%; background: #0b0b0b; color: #fff; display: grid; place-items: center; font-size: 76px; font-weight: 900; line-height: 1; }
 .fc-handle { flex: 1; font-size: 44px; font-weight: 800; letter-spacing: -0.02em; }
 .fc-btn { flex: none; height: 94px; padding: 0 38px; border-radius: 999px; background: #0b0b0b; color: #fff; display: grid; place-items: center; font-size: 38px; font-weight: 800; }
@@ -227,8 +227,8 @@ const BODY = {
   'game-data': (s, ctx) => {
     const g = ctx.single;
     return `
-    <div class="gd-bg" style="background-image:url(${g.bg})"></div>
-    <div class="gd-dim"></div>
+    ${g.video ? '<style>html, body { background: transparent !important; }</style>' : `<div class="gd-bg" style="background-image:url(${g.bg})"></div>`}
+    <div class="gd-dim" style="background:rgba(0,0,0,${g.video ? 0.55 : 0.7})"></div>
     <div class="gd-text">
       <div class="gd-name">${rich(g.name)}</div>
       <div class="gd-price">
@@ -252,11 +252,11 @@ const BODY = {
   'follow-card': (s, ctx) => `
     <div class="fc-bg" style="background-image:url(${ctx.single.art})"></div>
     <div class="fc-dim"></div>
-    <div class="fc-top">
+    <div class="fc-mid">
       <div class="fc-title">${rich(s.title)}</div>
-      <div class="fc-sub">${rich(s.sub)}</div>
+      ${s.sub ? `<div class="fc-sub">${rich(s.sub)}</div>` : ''}
+      <div class="fc-pill"><span class="fc-j">J</span><span class="fc-handle">jamidunow</span><span class="fc-btn">팔로우</span></div>
     </div>
-    <div class="fc-pill"><span class="fc-j">J</span><span class="fc-handle">jamidunow</span><span class="fc-btn">팔로우</span></div>
     <div class="fc-brand">JamiDuNow</div>`,
   og: (s, ctx) => `
     <div class="og-wall" style="background-image:url(${ctx.wall})"></div>
