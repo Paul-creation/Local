@@ -167,7 +167,7 @@ const poster = (s, ctx, headline, chips, brandBelow = false) => `
     <div class="poster-shade"></div>
     ${brandBelow ? '' : '<div class="poster-logo"><i>J</i><b>JamiDuNow</b></div>'}
     <div class="poster-text">
-      <div class="poster-kicker">${rich(s.kicker)}</div>
+      ${s.kicker ? `<div class="poster-kicker">${rich(s.kicker)}</div>` : ''}
       <div class="poster-head">${rich(headline)}</div>
       ${chips.length ? `<div class="poster-chips">${chips.map((c) => `<span class="poster-chip${c.sale ? ' sale' : ''}">${rich(c.text)}</span>`).join('')}</div>` : ''}
       ${brandBelow ? '<div class="poster-brand"><i>J</i><b>JamiDuNow</b></div>' : ''}
