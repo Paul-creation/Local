@@ -300,12 +300,13 @@ function specLine(minSpec) {
   return cpu && gpu && ram ? `${cpu} / ${gpu} / ${ram}` : null;
 }
 // 첫 번째 트레일러(스팀 appdetails movies[0])를 cache에 받는다 — mp4가 있으면 그대로, 없으면 hls를 ffmpeg로 받아 mp4로 묶는다
-async function trailerFile(game) {
-  const file = path.join(CACHE, `trailer-${game.steam_appid}.mp4`);
-  if (!stale(file)) return file;
+async function trailerFile(game, name) {
   const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${game.steam_appid}&l=koreana`);
-  const movie = (await res.json())[game.steam_appid]?.data?.movies?.[0];
-  if (!movie) throw new Error(`${gameTitle(game)}에 스팀 트레일러가 없어요`);
+  const movies = (await res.json())[game.steam_appid]?.data?.movies ?? [];
+  const movie = name ? movies.find((m) => m.name === name) : movies[0]; // name을 주면 그 이름의 트레일러, 아니면 첫 번째
+  if (!movie) throw new Error(`${gameTitle(game)}에 스팀 트레일러${name ? ` "${name}"` : ''}가 없어요 (${movies.map((m) => m.name).join(', ')})`);
+  const file = path.join(CACHE, `trailer-${game.steam_appid}-${movie.id}.mp4`);
+  if (!stale(file)) return file;
   const mp4 = movie.mp4?.max ?? movie.mp4?.['480'];
   if (mp4) await fetchCached(mp4, file, `트레일러(${gameTitle(game)})`);
   else execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', movie.hls_h264 ?? movie.dash_h264, '-c', 'copy', file], { stdio: 'inherit' });
@@ -337,7 +338,7 @@ async function singleCtx(s) {
   if (now && rows.length > 1 && now.price <= Math.min(...rows.map((p) => p.price))) chips.push('기록상 최저가');
   const end = sale && now.sale_ends_at && new Date(now.sale_ends_at) > new Date() ? kstMD(now.sale_ends_at) : null;
   console.log(`${gameTitle(game)} | ${won(now.price)} ${sale ? `-${now.discount_percent}%` : ''} | ${chips.join(' · ')} | 종료 ${end ?? '-'} | ${specLine(game.min_spec) ?? '사양 없음'}`);
-  return { video: !!s.video, trailer: s.video ? await trailerFile(game) : null, bg: s.video ? null : await shotUri(game, s.index), name: gameTitle(game), price: won(now.price), original: sale && now.original_price ? won(now.original_price) : null, discount: sale ? now.discount_percent : 0, chips, saleEnd: end, spec: specLine(game.min_spec) };
+  return { video: !!s.video, trailer: s.video ? await trailerFile(game, s.trailer) : null, bg: s.video ? null : await shotUri(game, s.index), name: gameTitle(game), price: won(now.price), original: sale && now.original_price ? won(now.original_price) : null, discount: sale ? now.discount_percent : 0, chips, saleEnd: end, spec: specLine(game.min_spec) };
 }
 
 async function posterCtx(s) {

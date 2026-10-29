@@ -131,16 +131,15 @@ em { font-style: normal; color: #FFD84A; }
 .gd-chip { border: 3px solid rgba(255,255,255,.4); border-radius: 999px; padding: 10px 28px; font-size: 38px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }
 .gd-sub { margin-top: 22px; font-size: 32px; font-weight: 500; color: #9A9A9A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gd-sub + .gd-sub { margin-top: 10px; }
-/* game-data 영상 배경 — 아래 40%만 검정 85%→0% 그라데이션, 글은 두 줄(가격 / 인원·특징)만 */
-.gv-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 40%; background: linear-gradient(to top, rgba(0,0,0,.85), rgba(0,0,0,0)); }
-.gv-text { position: absolute; left: 72px; right: 72px; bottom: 120px; }
-.gv-price { display: flex; align-items: baseline; gap: 18px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.gv-orig { font-size: 44px; font-weight: 600; color: #9A9A9A; text-decoration: line-through; }
-.gv-now { font-size: 88px; font-weight: 900; letter-spacing: -0.03em; color: #4ADE80; line-height: 1.1; }
-.gv-off { font-size: 52px; font-weight: 800; color: #4ADE80; }
-.gv-end { font-size: 44px; font-weight: 600; color: #fff; }
-.gv-facts { display: flex; margin-top: 4px; font-size: 40px; font-weight: 600; color: #fff; white-space: nowrap; }
-.gv-facts span + span { margin-left: 22px; padding-left: 22px; border-left: 2px solid rgba(255,255,255,.45); }
+/* game-data 영상 배경 — 아래 30%만 검정 85%→0% 그라데이션, 글은 두 줄(가격 / 인원·특징)만 */
+.gv-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 30%; background: linear-gradient(to top, rgba(0,0,0,.85), rgba(0,0,0,0)); }
+.gv-text { position: absolute; left: 64px; right: 64px; bottom: 110px; }
+.gv-price { display: flex; align-items: baseline; gap: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.gv-now { font-size: 40px; font-weight: 800; letter-spacing: -0.02em; color: #4ADE80; line-height: 1.2; }
+.gv-orig { font-size: 24px; font-weight: 500; color: #9a9a9a; text-decoration: line-through; }
+.gv-off { font-size: 24px; font-weight: 500; color: #4ADE80; }
+.gv-end { align-self: center; font-size: 20px; font-weight: 500; color: #fff; border: 2px solid rgba(255,255,255,.25); border-radius: 999px; padding: 3px 14px; }
+.gv-facts { margin-top: 10px; font-size: 22px; font-weight: 500; color: rgba(255,255,255,.8); white-space: nowrap; }
 .sp-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 2px; background: #000; }
 .sp-half { flex: 1; min-height: 0; background-size: cover; background-position: center; }
 .sp-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 45%; background: linear-gradient(to top, rgba(0,0,0,.92), rgba(0,0,0,0)); }
@@ -245,12 +244,12 @@ const BODY = {
     <div class="gv-shade"></div>
     <div class="gv-text">
       <div class="gv-price">
-        ${g.original ? `<span class="gv-orig">${rich(g.original)}</span>` : ''}
         <span class="gv-now">${rich(g.price)}</span>
+        ${g.original ? `<span class="gv-orig">${rich(g.original)}</span>` : ''}
         ${g.discount ? `<span class="gv-off">-${esc(g.discount)}%</span>` : ''}
-        ${g.saleEnd ? `<span class="gv-end">· ${esc(g.saleEnd)}까지</span>` : ''}
+        ${g.saleEnd ? `<span class="gv-end">${esc(g.saleEnd)}까지</span>` : ''}
       </div>
-      <div class="gv-facts">${g.chips.map((c) => `<span>${rich(c)}</span>`).join('')}</div>
+      <div class="gv-facts">${g.chips.map((c) => rich(c)).join(' · ')}</div>
     </div>`;
     return `
     ${g.video ? '<style>html, body { background: transparent !important; }</style>' : `<div class="gd-bg" style="background-image:url(${g.bg})"></div>`}
