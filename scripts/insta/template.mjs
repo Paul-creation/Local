@@ -228,7 +228,7 @@ export function renderSlide(slide, index, total, ctx) {
   if (!body) throw new Error(`알 수 없는 슬라이드 타입: ${slide.type} (${SLIDE_TYPES.join(', ')})`);
   return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>${CSS(ctx.font, width, height)}</style></head><body${slide.type === 'end-card' ? ' class="end-card"' : ''}>
     <div class="slide">${body(slide, ctx)}</div>
-    ${index > 0 && !og ? `<div class="page">${index + 1}/${total}</div>` : ''}
+    ${index > 0 && !og && !slide.type.startsWith('poster-') ? `<div class="page">${index + 1}/${total}</div>` : ''}
     ${slide.type === 'end-card' || og || slide.type.startsWith('poster-') ? '' : '<div class="logo">J</div>'}
   </body></html>`;
 }
