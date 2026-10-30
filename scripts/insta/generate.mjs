@@ -335,10 +335,27 @@ function composeVideo({ trailer, overlay, start, out }) {
     '-map', '[o]', '-map', '0:a?', '-c:v', 'libx264', '-preset', 'veryfast', '-c:a', 'copy', '-movflags', '+faststart', '-shortest', out], { stdio: 'inherit' });
 }
 // game-data·shot-pair·shot·follow-card — 한 게시물 = 한 게임. 모든 값은 DB(games·price_history)에서 자동으로 채운다
+// 모음 표지 배경: 기본 = 스크린샷, s.keyart = 그 게임의 library_hero_2x(가로 키아트, coverFocusX 0~1 지점이 가운데 오게 가로 크롭), s.collage = 세로 캡슐 3x3(간격 없음)
+function jpgSize(file) {
+  const b = fs.readFileSync(file);
+  for (let i = 2; i < b.length;) { if (b[i] !== 0xff) { i++; continue; } const m = b[i + 1]; if (m >= 0xc0 && m <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(m)) return { h: b.readUInt16BE(i + 5), w: b.readUInt16BE(i + 7) }; i += 2 + b.readUInt16BE(i + 2); }
+  throw new Error('JPEG 크기를 못 읽었어요');
+}
+async function roundupCoverCtx(game, s) {
+  if (s.collage) return { collage: await Promise.all(s.collage.map(async (id) => posterArt(await resolveGame(id)))) };
+  if (!s.keyart) return { images: [await shotUri(game, s.shot)] };
+  const file = path.join(CACHE, `hero-${game.steam_appid}.jpg`);
+  const base = `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.steam_appid}`;
+  try { await fetchCached(`${base}/library_hero_2x.jpg`, file, `키아트(${gameTitle(game)})`); } catch { await fetchCached(`${base}/library_hero.jpg`, file, `키아트(${gameTitle(game)})`); }
+  const { w, h } = jpgSize(file);
+  const W = (SIZE.height * w) / h, f = s.coverFocusX ?? 0.5; // 높이에 맞춘 폭
+  const off = Math.min(Math.max(f * W - SIZE.width / 2, 0), W - SIZE.width);
+  return { images: [jpgUri(file)], bgPosX: Math.round((off / (W - SIZE.width)) * 1000) / 10 };
+}
 async function singleCtx(s) {
   const game = await resolveGame(s.game);
   if (s.type === 'follow-card') return { art: await posterArt(game) };
-  if (s.type === 'roundup-cover') return { images: [await shotUri(game, s.shot)] };
+  if (s.type === 'roundup-cover') return roundupCoverCtx(game, s);
   if (s.type === 'roundup-game') return roundupGameCtx(game, s);
   if (s.type === 'roundup-detail') return roundupDetailCtx(game, s);
   if (s.type === 'overview' || s.type === 'minigame') return { images: [await shotUri(game, s.index)] };
@@ -443,6 +460,17 @@ const DETAIL_PARTS = ['people', 'price', 'spec', 'video'];
 const detailFiles = (slug) => Object.fromEntries(DETAIL_PARTS.map((p) => [p, path.join(CACHE, `detail-${detailKey(slug)}-${p}.png`)]));
 const stale = (f) => refresh || !fs.existsSync(f);
 const SHOT_NEED = ['요즘 뜨는 중', '다시 뜨는 중', '신작'];
+const FIT = () => { // data-fit="최대,최소": 한 줄에 안 들어가면 폰트를 최소까지 줄이고, 그래도 넘치면 2줄로 둔다
+      for (const el of document.querySelectorAll('[data-fit]')) {
+        const [max, min] = el.dataset.fit.split(',').map(Number);
+        el.style.whiteSpace = 'nowrap';
+        const oneLine = el.dataset.fit.split(',')[2] === '1'; // 3번째 값이 1이면 최소 크기에서도 한 줄 유지(넘치면 말줄임)
+        let px = max;
+        el.style.fontSize = `${px}px`;
+        while (px > min && el.scrollWidth > el.clientWidth) el.style.fontSize = `${--px}px`;
+        if (!oneLine && el.scrollWidth > el.clientWidth) el.style.whiteSpace = 'normal';
+      }
+    };
 const browser = await chromium.launch();
 try {
   if ((slideOf('wall-cover') || slideOf('og')) && stale(wallFile)) { console.log('카드 벽 캡처…'); await captureWall(browser); }
@@ -528,17 +556,7 @@ try {
     await page.setViewportSize(size);
     await page.setContent(renderSlide(s, i, slides.length, ctx), { waitUntil: 'load' });
     await page.evaluate(() => document.fonts.ready);
-    await page.evaluate(() => { // data-fit="최대,최소": 한 줄에 안 들어가면 폰트를 최소까지 줄이고, 그래도 넘치면 2줄로 둔다
-      for (const el of document.querySelectorAll('[data-fit]')) {
-        const [max, min] = el.dataset.fit.split(',').map(Number);
-        el.style.whiteSpace = 'nowrap';
-        const oneLine = el.dataset.fit.split(',')[2] === '1'; // 3번째 값이 1이면 최소 크기에서도 한 줄 유지(넘치면 말줄임)
-        let px = max;
-        el.style.fontSize = `${px}px`;
-        while (px > min && el.scrollWidth > el.clientWidth) el.style.fontSize = `${--px}px`;
-        if (!oneLine && el.scrollWidth > el.clientWidth) el.style.whiteSpace = 'normal';
-      }
-    });
+    await page.evaluate(FIT);
     const file = s.type === 'og' ? path.join(ROOT, 'public/og-default.png') : path.join(outDir, `${String(i + 1).padStart(2, '0')}.png`);
     if (s.type === 'game-data' && s.video) { // 영상 배경: 투명 오버레이 PNG는 임시 폴더에만 두고 02.mp4만 남긴다
       const tmp = path.join(CACHE, `overlay-${postId}-${i + 1}.png`);
@@ -550,6 +568,18 @@ try {
     }
     await page.screenshot({ path: file, clip: { x: 0, y: 0, ...size } });
     console.log(path.relative(ROOT, file));
+    if (s.type === 'roundup-cover' && s.variants) { // 배경 후보 01a·01b·01c (01.png는 그대로)
+      for (const v of s.variants) {
+        const vs = { ...s, keyart: v.keyart, coverFocusX: v.coverFocusX, collage: v.collage ? s.all : null, game: v.game ?? s.game };
+        const vctx = { ...ctx, single: await singleCtx(vs) };
+        await page.setContent(renderSlide(vs, i, slides.length, vctx), { waitUntil: 'load' });
+        await page.evaluate(() => document.fonts.ready);
+        await page.evaluate(FIT);
+        const vf = path.join(outDir, `01${v.suffix}.png`);
+        await page.screenshot({ path: vf, clip: { x: 0, y: 0, ...size } });
+        console.log(path.relative(ROOT, vf));
+      }
+    }
     if (s.type === 'poster-cover' && i === 0) { // --cover-zoom: 같은 표지를 blur 맞춤으로 배율만 바꿔 01a·01b… 로 (01.png는 그대로)
       for (const [k, zoom] of coverZooms.entries()) {
         await page.setContent(renderSlide({ ...s, fit: 'blur', zoom }, i, slides.length, ctx), { waitUntil: 'load' });

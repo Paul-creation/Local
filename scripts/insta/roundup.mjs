@@ -11,7 +11,7 @@ export function expandRoundup(base, copy) {
   const follow = base.find((s) => s.type === 'follow-card') ?? { type: 'follow-card', title: '친구랑 할 게임, 고민되면' };
   const fill = (v) => String(v).replace('{N}', games.length);
   const out = [
-    { ...cover, game: games[0].appid, shot: copy.coverShot ?? 1, title1: fill(cover.title1), title2: fill(cover.title2) },
+    { ...cover, game: games[0].appid, all: games.map((g) => g.appid), shot: copy.coverShot ?? 1, title1: fill(cover.title1), title2: fill(cover.title2) },
     ...games.flatMap((g) => {
       const shots = g.shots ?? [1, 2];
       return [{ type: 'roundup-game', game: g.appid, desc: g.desc, shots }, { type: 'roundup-detail', game: g.appid, shots, detailShot: g.detailShot }];

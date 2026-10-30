@@ -157,10 +157,15 @@ em { font-style: normal; color: #FFD84A; }
 .poster-fit { position: absolute; left: 0; top: 40%; width: 100%; overflow: hidden; transform: translateY(-50%); }
 .poster-fit img { display: block; height: auto; max-width: none; }
 /* roundup-cover · roundup-game — --roundup 전용 (주황 #FF7A1A) */
-.rc-shade { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,.55) 0%, rgba(0,0,0,.15) 30%, rgba(0,0,0,.55) 60%, rgba(0,0,0,.92) 100%); }
-.rc-kicker { position: absolute; left: 64px; right: 64px; top: 72px; font-size: 38px; font-weight: 700; color: #fff; letter-spacing: -0.02em; text-shadow: 0 2px 8px rgba(0,0,0,.4); }
-.rc-title { position: absolute; left: 64px; right: 64px; bottom: 190px; font-size: 76px; font-weight: 900; line-height: 1.22; letter-spacing: -0.045em; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,.35); }
-.rc-title div:nth-child(2) { color: #FF7A1A; }
+.rc-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 40%; background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,.85)); }
+.rc-text { position: absolute; left: 64px; right: 64px; bottom: 190px; }
+.rc-kicker { font-size: 30px; font-weight: 700; color: #fff; letter-spacing: -0.02em; margin-bottom: 16px; text-shadow: 0 2px 8px rgba(0,0,0,.45); }
+.rc-title { font-weight: 900; line-height: 1.22; letter-spacing: -0.045em; text-shadow: 0 2px 10px rgba(0,0,0,.45); }
+.rc-title div { white-space: nowrap; }
+.rc-t1 { font-size: 72px; color: #fff; }
+.rc-t2 { font-size: 80px; color: #FF7A1A; }
+.rc-grid { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); }
+.rc-grid div { background-size: cover; background-position: center; }
 .rc-brand { position: absolute; left: 64px; bottom: 72px; display: flex; align-items: center; gap: 14px; }
 .rc-brand i { width: 56px; height: 56px; border-radius: 16px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-style: normal; font-size: 40px; font-weight: 900; line-height: 1; }
 .rc-brand b { font-size: 36px; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
@@ -331,10 +336,12 @@ const BODY = {
       ${s.body ? `<div class="mg-body">${rich(s.body)}</div>` : ''}
     </div>` : ''}`,
   'roundup-cover': (s, ctx) => `
-    <div class="ov-bg" style="background-image:url(${ctx.single.images[0]})"></div>
+    ${ctx.single.collage ? `<div class="rc-grid">${ctx.single.collage.map((u) => `<div style="background-image:url(${u})"></div>`).join('')}</div>` : `<div class="ov-bg" style="background-image:url(${ctx.single.images[0]})${ctx.single.bgPosX != null ? `; background-size: auto 100%; background-position: ${ctx.single.bgPosX}% 50%` : ''}"></div>`}
     <div class="rc-shade"></div>
-    <div class="rc-kicker">${rich(s.kicker)}</div>
-    <div class="rc-title"><div>${rich(s.title1)}</div><div>${rich(s.title2)}</div></div>
+    <div class="rc-text">
+      <div class="rc-kicker">${rich(s.kicker)}</div>
+      <div class="rc-title"><div class="rc-t1" data-fit="72,40">${rich(s.title1)}</div><div class="rc-t2" data-fit="80,44">${rich(s.title2)}</div></div>
+    </div>
     <div class="rc-brand"><i>J</i><b>JamiDuNow</b></div>`,
   'roundup-game': (s, ctx) => {
     const g = ctx.single;
