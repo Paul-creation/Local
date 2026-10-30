@@ -3,7 +3,7 @@
 // 실행: npm run insta -- <post-id>             (카드 벽·스크린샷은 cache/에 저장해 재사용)
 //       npm run insta -- <post-id> --refresh   (jamidunow.com에서 벽·스크린샷을 다시 찍음)
 //       SITE=http://localhost:3000 npm run insta -- <post-id> --refresh
-//       npm run insta -- <post-id> --detailed  (표지·트레일러·팔로우 카드는 그대로, 사이에 해봄·플레이·친구·알아둘 점을 넣은 10장. 문구는 copy/<post-id>.json)
+//       npm run insta -- <post-id> --detailed  (표지·트레일러·팔로우 카드는 그대로, 사이에 개요·플레이 4장을 넣은 8장. 문구는 copy/<post-id>.json)
 //       (끝나면 out/<post-id>.zip도 같이 만든다 — zip 명령 필요)
 //       npm run og                       (공유 미리보기 public/og-default.png, posts/og.json)
 // 처음 한 번: npm ci (브라우저가 없으면 npx playwright install chromium)
@@ -333,9 +333,7 @@ function composeVideo({ trailer, overlay, start, out }) {
 async function singleCtx(s) {
   const game = await resolveGame(s.game);
   if (s.type === 'follow-card') return { art: await posterArt(game) };
-  if (s.type === 'notes') return { art: await posterArt(game) };
-  if (s.type === 'friends') return { images: [await shotUri(game, s.bg)] };
-  if (s.type === 'review' || s.type === 'minigame') return { images: [await shotUri(game, s.index)] };
+  if (s.type === 'overview' || s.type === 'minigame') return { images: [await shotUri(game, s.index)] };
   if (s.type === 'shot') return { images: [await shotUri(game, s.index)] };
   if (s.type === 'shot-pair') return { images: await Promise.all(s.index.map((n) => shotUri(game, n))) };
   const rows = latestKrw(game);
@@ -355,13 +353,27 @@ async function singleCtx(s) {
 async function posterCtx(s) {
   const game = await resolveGame(s.game);
   // bg: "hero"(library_hero_2x, 로고 없는 가로 배경 아트) 또는 스크린샷 번호(1부터). 없으면 세로 아트
-  let image;
-  if (s.bg === 'hero') {
+  let image, top = false;
+  if (s.bg === 'keyart') { // 스팀 키아트: library_hero(가로 배경 아트) → header(로고 글자가 박혀 있어 위쪽에 따로 얹는다). DB의 해시 주소를 먼저, 없으면 해시 없는 주소
+    const base = `https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.steam_appid}`;
+    const tries = [[game.hero_image_url, false], [`${base}/library_hero.jpg`, false], [game.cover_image_url, true], [`${base}/header.jpg`, true]].filter(([u]) => u);
+    for (const [url, logo] of tries) {
+      if (!(await fetch(url, { method: 'HEAD' })).ok) continue;
+      const file = path.join(CACHE, `keyart-${game.steam_appid}.jpg`);
+      await fetchCached(url, file, `키아트(${gameTitle(game)})`);
+      image = jpgUri(file); top = logo;
+      console.log(`표지 키아트: ${url.replace(/\?.*/, '').split('/').pop()}${logo ? ' (로고 글자 있음 → 위쪽 배치)' : ''}`);
+      break;
+    }
+    if (!image) throw new Error(`${gameTitle(game)}의 키아트(library_hero·header)를 못 찾았어요 — copy.coverImage로 지정하세요`);
+  } else if (typeof s.bg === 'string' && /[./]/.test(s.bg) && s.bg !== 'hero') { // 이미지 경로(posts 폴더 기준) 또는 주소
+    image = /^https?:/.test(s.bg) ? await (async () => { const f = path.join(CACHE, `cover-${postId}.jpg`); await fetchCached(s.bg, f, '표지 이미지'); return jpgUri(f); })() : dataUri(path.resolve(path.dirname(postFile), s.bg));
+  } else if (s.bg === 'hero') {
     const file = path.join(CACHE, `hero-${game.steam_appid}.jpg`);
     await fetchCached(`https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.steam_appid}/library_hero_2x.jpg`, file, `히어로 아트(${gameTitle(game)})`);
     image = jpgUri(file);
   } else image = s.bg ? await shotUri(game, s.bg) : await posterArt(game);
-  if (s.type === 'poster-cover') return { image, chips: (s.chips ?? []).map((text) => ({ text })) };
+  if (s.type === 'poster-cover') return { image, top, chips: (s.chips ?? []).map((text) => ({ text })) };
   // 가장 최근 원화(100원 이상) 가격 기록 — app/lib/price.ts getPriceInfo와 같은 기준. 기록상 최저가 = 우리 price_history 안의 최저가
   const rows = (game.price_history ?? []).filter((p) => p.price >= 100).sort((a, b) => new Date(b.checked_at) - new Date(a.checked_at));
   const now = rows[0];
@@ -451,7 +463,7 @@ try {
     const imgUri = (v) => (/^https?:/.test(v) ? v : dataUri(path.resolve(path.dirname(postFile), v)));
     if (s.type === 'game-card' && s.image) ctx.photo = imgUri(s.image);
     if (s.type === 'poster-cover' || s.type === 'poster-game') ctx.poster = await posterCtx(s);
-    if (['game-data', 'shot-pair', 'shot', 'follow-card', 'review', 'minigame', 'friends', 'notes'].includes(s.type)) ctx.single = await singleCtx(s);
+    if (['game-data', 'shot-pair', 'shot', 'follow-card', 'overview', 'minigame'].includes(s.type)) ctx.single = await singleCtx(s);
     if (s.type === 'collage-cover') ctx.photos = s.images.map(imgUri);
     const size = sizeOf(s);
     if (s.type === 'poster-cover' && s.variants) { // 배경 후보: 01a.png, 01b.png … (고른 뒤 json에 bg를 쓰고 variants를 지운다)
