@@ -185,7 +185,7 @@ em { font-style: normal; color: #FFD84A; }
 .rd-val { margin-top: 10px; font-size: 44px; font-weight: 700; line-height: 1.3; letter-spacing: -0.03em; color: #fff; text-shadow: 0 0 18px rgba(255,255,255,.28); }
 .rd-val.small { font-size: 36px; font-weight: 600; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .rd-chips { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
-.rd-chip { padding: 8px 24px; border-radius: 999px; border: 2px solid rgba(255,255,255,.45); font-size: 32px; font-weight: 600; color: #fff; box-shadow: 0 0 14px rgba(255,255,255,.12); }
+.rd-chip { white-space: nowrap; padding: 8px 24px; border-radius: 999px; border: 2px solid rgba(255,255,255,.45); font-size: 32px; font-weight: 600; color: #fff; box-shadow: 0 0 14px rgba(255,255,255,.12); }
 .rd-badge { display: inline-block; margin-left: 16px; padding: 4px 18px; border-radius: 999px; border: 2px solid rgba(255,255,255,.5); font-size: 28px; font-weight: 600; vertical-align: middle; text-shadow: none; box-shadow: 0 0 12px rgba(255,255,255,.15); }
 .rd-foot { position: absolute; left: 72px; right: 72px; bottom: 72px; font-size: 26px; font-weight: 500; color: rgba(255,255,255,.55); }
 .sp-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 2px; background: #000; }

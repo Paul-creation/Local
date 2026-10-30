@@ -14,7 +14,7 @@ export function expandRoundup(base, copy) {
     { ...cover, game: games[0].appid, shot: copy.coverShot ?? 1, title1: fill(cover.title1), title2: fill(cover.title2) },
     ...games.flatMap((g) => {
       const shots = g.shots ?? [1, 2];
-      return [{ type: 'roundup-game', game: g.appid, desc: g.desc, shots }, { type: 'roundup-detail', game: g.appid, oneliner: g.oneliner, shots, detailShot: g.detailShot }];
+      return [{ type: 'roundup-game', game: g.appid, desc: g.desc, shots }, { type: 'roundup-detail', game: g.appid, oneliner: g.oneliner, shots, detailShot: g.detailShot, chips: g.chips, chipsLabel: g.chipsLabel }];
     }),
     { ...follow, game: follow.game ?? games[0].appid },
   ];
@@ -24,7 +24,7 @@ export function expandRoundup(base, copy) {
 export { loadCopy };
 
 // 상세 장 행: DB에 있는 값만 (없으면 행을 만들지 않고 missing에 이름을 남긴다). price는 스팀 KR 가격 {price, discount}, lowest는 가격 기록 안의 최저가
-export function detailRows(game, { oneliner, price, discount, lowest }) {
+export function detailRows(game, { oneliner, chips: chipList, chipsLabel, price, discount, lowest }) {
   const rows = [], missing = [];
   const add = (label, value, extra = {}) => (value ? rows.push({ label, value, ...extra }) : missing.push(label));
   const solo = game.solo_playable === true ? '혼자도 가능' : game.solo_playable === false ? '혼자는 어려움' : null;
@@ -33,8 +33,8 @@ export function detailRows(game, { oneliner, price, discount, lowest }) {
   const modes = [/비대칭/.test(text) ? '비대칭 대전' : game.has_pvp && '대전', game.has_online_coop && '온라인 협동', game.has_local_coop && '로컬 협동'].filter(Boolean);
   add('플레이 방식', modes.join(' · '));
   add('난이도', game.difficulty);
-  const acts = (game.activities ?? []).slice(0, 4);
-  add('이런 걸 해요', acts.length ? 'chips' : null, { chips: acts });
+  const acts = chipList?.length ? chipList : (game.activities ?? []).slice(0, 4);
+  add(chipsLabel ?? '이런 걸 해요', acts.length ? 'chips' : null, { chips: acts });
   const man = (n) => (n >= 10000 ? `${(Math.floor(n / 1000) / 10).toFixed(1).replace(/\.0$/, '')}만` : n.toLocaleString('ko-KR'));
   add('스팀 평가', game.review_summary && game.review_total ? `${game.review_summary} · 리뷰 ${man(game.review_total)} 개` : null);
   add('가격', price ? `${Math.round(price).toLocaleString('ko-KR')}원${discount ? ` (-${discount}%)` : ''}` : null, { badge: price && lowest != null && price <= lowest ? '기록상 최저가' : null });

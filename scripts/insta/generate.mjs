@@ -393,7 +393,7 @@ async function roundupDetailCtx(game, s) {
   const db = latestKrw(game);
   const p = (await steamPrice(game).catch(() => null)) ?? { price: db[0]?.price, discount: db[0]?.discount_percent };
   const lowest = Math.min(...[...db.map((r) => r.price), game.lowest_price].filter((v) => v > 0));
-  const { rows, missing } = detailRows(game, { oneliner: s.oneliner, price: p.price, discount: p.discount, lowest: db.length > 1 || game.lowest_price ? lowest : null });
+  const { rows, missing } = detailRows(game, { oneliner: s.oneliner, chips: s.chips, chipsLabel: s.chipsLabel, price: p.price, discount: p.discount, lowest: db.length > 1 || game.lowest_price ? lowest : null });
   roundupMissing.push({ name: gameTitle(game), missing });
   return { name: gameTitle(game), bg, rows };
 }
