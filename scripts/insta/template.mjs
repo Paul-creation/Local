@@ -190,11 +190,11 @@ em { font-style: normal; color: #FFD84A; }
 .rd-foot { position: absolute; left: 72px; right: 72px; bottom: 72px; font-size: 26px; font-weight: 500; color: rgba(255,255,255,.55); }
 /* showcase-video — 위 16:9 트레일러(영상은 ffmpeg가 얹음) + 아래 검은 패널. 이 PNG는 글씨만 있는 투명 오버레이 */
 html:has(.sv), html:has(.sv) body { background: transparent !important; }
-.sv-panel { position: absolute; left: 0; right: 0; top: 840px; bottom: 0; background: #000; padding: 30px 64px 0; text-align: left; }
+.sv-panel { position: absolute; left: 0; right: 0; top: 950px; bottom: 0; background: #000; padding: 20px 64px 0; text-align: left; }
 .sv-name { font-size: 58px; font-weight: 900; line-height: 1.2; letter-spacing: -0.03em; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sv-info { margin-top: 10px; font-size: 30px; font-weight: 600; color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }
-.sv-desc { margin-top: 18px; font-size: 38px; font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; color: #fff; }
-.sv-brand { position: absolute; left: 64px; bottom: 48px; display: flex; align-items: center; gap: 14px; }
+.sv-info { margin-top: 4px; font-size: 30px; font-weight: 600; color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sv-desc { margin-top: 10px; font-size: 38px; font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; color: #fff; }
+.sv-brand { margin-top: 18px; display: flex; align-items: center; gap: 14px; }
 .sv-brand i { width: 44px; height: 44px; border-radius: 13px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-style: normal; font-size: 32px; font-weight: 900; line-height: 1; }
 .sv-brand b { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
 /* showcase-sig — roundup-detail과 같은 흑백 + 흰색 글로우. 첫 행(지금 사도 될까?)이 가장 크다 */

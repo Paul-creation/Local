@@ -351,7 +351,7 @@ function composeVideo({ trailer, overlay, start, out }) {
 }
 // --showcase 영상 장: 트레일러를 높이 840으로 키워 좌우 크롭해 위에 두고 아래는 검은 패널, 그 위에 글씨 오버레이. 무음 · H.264 veryfast · 15초
 // 시작점 = start(초) 또는 영상 길이의 20%. 시작점부터 15초가 안 남으면 앞으로 당기고, 영상이 15초보다 짧으면 전체를 쓴다
-const VIDEO_AREA_H = 840; // 영상 영역 높이(좌우는 가운데 기준 크롭, copy.videoFocusX 0~1로 위치 조정). template.mjs의 .sv-panel top과 같아야 함
+const VIDEO_AREA_H = 950; // 영상 영역 높이(좌우는 가운데 기준 크롭, copy.videoFocusX 0~1로 위치 조정). template.mjs의 .sv-panel top과 같아야 함
 function composeShowcase({ trailer, overlay, start, out, name, focus = 0.5 }) {
   const dur = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', trailer]).toString());
   const len = Math.min(SHOWCASE_SECONDS, dur);
