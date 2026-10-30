@@ -3,6 +3,7 @@
 // 실행: npm run insta -- <post-id>             (카드 벽·스크린샷은 cache/에 저장해 재사용)
 //       npm run insta -- <post-id> --refresh   (jamidunow.com에서 벽·스크린샷을 다시 찍음)
 //       SITE=http://localhost:3000 npm run insta -- <post-id> --refresh
+//       npm run insta -- <post-id> --detailed  (표지·트레일러·팔로우 카드는 그대로, 사이에 해봄·플레이·친구·알아둘 점을 넣은 10장. 문구는 copy/<post-id>.json)
 //       npm run og                       (공유 미리보기 public/og-default.png, posts/og.json)
 // 처음 한 번: npm ci (브라우저가 없으면 npx playwright install chromium)
 import fs from 'fs';
@@ -12,6 +13,7 @@ import { execFileSync } from 'child_process';
 import { chromium } from 'playwright';
 import { renderSlide, sizeOf, SIZE } from './template.mjs';
 import { resolveGame, pickCandidates, gameTitle } from './pick.mjs';
+import { loadCopy, expandDetailed } from './detailed.mjs';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DIR, '../..');
@@ -19,14 +21,16 @@ const CACHE = path.join(DIR, 'cache');
 const SITE = (process.env.SITE || 'https://jamidunow.com').replace(/\/$/, '');
 const args = process.argv.slice(2);
 const refresh = args.includes('--refresh');
+const detailed = args.includes('--detailed');
 const postId = args.find((a) => !a.startsWith('--'));
-if (!postId) { console.error('사용법: npm run insta -- <post-id> [--refresh]'); process.exit(1); }
+if (!postId) { console.error('사용법: npm run insta -- <post-id> [--refresh] [--detailed]'); process.exit(1); }
 
 const postFile = path.join(DIR, 'posts', `${postId}.json`);
 if (!fs.existsSync(postFile)) { console.error(`게시물 파일이 없어요: ${path.relative(ROOT, postFile)}`); process.exit(1); }
 const raw = fs.readFileSync(postFile, 'utf8');
 if (raw.includes('재밌드나')) { console.error('화면에는 "재밌드나"를 쓰지 않아요. JamiDuNow만 쓰세요.'); process.exit(1); }
-const slides = JSON.parse(raw).flatMap((s) => (s.type === 'detail-split' ? Array.from({ length: s.slides ?? 1 }, (_, part) => ({ ...s, part, parts: s.slides ?? 1 })) : [s])); // detail-split 한 줄 = slides장
+const baseSlides = JSON.parse(raw);
+const slides = (detailed ? await expandDetailed(baseSlides, loadCopy(DIR, postId)) : baseSlides).flatMap((s) => (s.type === 'detail-split' ? Array.from({ length: s.slides ?? 1 }, (_, part) => ({ ...s, part, parts: s.slides ?? 1 })) : [s])); // detail-split 한 줄 = slides장
 if (!Array.isArray(slides) || slides.length === 0) { console.error('json은 슬라이드 배열이어야 해요.'); process.exit(1); }
 
 // 첫 방문자 투어(jdn_tour_v2)가 화면을 덮어 클릭을 막으니, 투어를 건너뛴 상태로 시작한다
@@ -275,10 +279,13 @@ async function fetchCached(url, file, what) {
   fs.writeFileSync(file, Buffer.from(await res.arrayBuffer()));
 }
 const jpgUri = (file) => `data:image/jpeg;base64,${fs.readFileSync(file).toString('base64')}`;
+// 세로 아트: 스팀 library_600x900_2x → (없으면 404) DB cover_vertical_url → hero_image_url → 첫 스크린샷
 const posterArt = async (game) => {
   const file = path.join(CACHE, `poster-${game.steam_appid}.jpg`);
-  await fetchCached(`https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.steam_appid}/library_600x900_2x.jpg`, file, `세로 아트(${gameTitle(game)})`);
-  return jpgUri(file);
+  const urls = [`https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/${game.steam_appid}/library_600x900_2x.jpg`, game.cover_vertical_url, game.hero_image_url, game.screenshots?.[0]?.path_full].filter(Boolean);
+  for (const [i, url] of urls.entries()) {
+    try { await fetchCached(url, file, `세로 아트(${gameTitle(game)})`); return jpgUri(file); } catch (e) { if (i === urls.length - 1) throw e; console.warn(`세로 아트 ${url.slice(0, 60)}… 실패 → 다음 후보`); }
+  }
 };
 // 스팀 스크린샷 원본(path_full) — 번호는 1부터(상점 갤러리 순서)
 const shotUri = async (game, n) => {
@@ -325,6 +332,9 @@ function composeVideo({ trailer, overlay, start, out }) {
 async function singleCtx(s) {
   const game = await resolveGame(s.game);
   if (s.type === 'follow-card') return { art: await posterArt(game) };
+  if (s.type === 'notes') return { art: await posterArt(game) };
+  if (s.type === 'friends') return { images: [await shotUri(game, s.bg)] };
+  if (s.type === 'review' || s.type === 'minigame') return { images: [await shotUri(game, s.index)] };
   if (s.type === 'shot') return { images: [await shotUri(game, s.index)] };
   if (s.type === 'shot-pair') return { images: await Promise.all(s.index.map((n) => shotUri(game, n))) };
   const rows = latestKrw(game);
@@ -440,7 +450,7 @@ try {
     const imgUri = (v) => (/^https?:/.test(v) ? v : dataUri(path.resolve(path.dirname(postFile), v)));
     if (s.type === 'game-card' && s.image) ctx.photo = imgUri(s.image);
     if (s.type === 'poster-cover' || s.type === 'poster-game') ctx.poster = await posterCtx(s);
-    if (['game-data', 'shot-pair', 'shot', 'follow-card'].includes(s.type)) ctx.single = await singleCtx(s);
+    if (['game-data', 'shot-pair', 'shot', 'follow-card', 'review', 'minigame', 'friends', 'notes'].includes(s.type)) ctx.single = await singleCtx(s);
     if (s.type === 'collage-cover') ctx.photos = s.images.map(imgUri);
     const size = sizeOf(s);
     if (s.type === 'poster-cover' && s.variants) { // 배경 후보: 01a.png, 01b.png … (고른 뒤 json에 bg를 쓰고 variants를 지운다)
@@ -462,10 +472,11 @@ try {
       for (const el of document.querySelectorAll('[data-fit]')) {
         const [max, min] = el.dataset.fit.split(',').map(Number);
         el.style.whiteSpace = 'nowrap';
+        const oneLine = el.dataset.fit.split(',')[2] === '1'; // 3번째 값이 1이면 최소 크기에서도 한 줄 유지(넘치면 말줄임)
         let px = max;
         el.style.fontSize = `${px}px`;
         while (px > min && el.scrollWidth > el.clientWidth) el.style.fontSize = `${--px}px`;
-        if (el.scrollWidth > el.clientWidth) el.style.whiteSpace = 'normal';
+        if (!oneLine && el.scrollWidth > el.clientWidth) el.style.whiteSpace = 'normal';
       }
     });
     const file = s.type === 'og' ? path.join(ROOT, 'public/og-default.png') : path.join(outDir, `${String(i + 1).padStart(2, '0')}.png`);

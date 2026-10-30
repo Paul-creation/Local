@@ -1,0 +1,13 @@
+{
+  "headline": "",
+  "tagline": "",
+  "review": { "label": "", "index": null, "headline": "", "body": "" },
+  "shots": [
+    { "index": null, "heading": "", "body": "" },
+    { "index": null, "heading": "", "body": "" },
+    { "index": null, "heading": "", "body": "" },
+    { "index": null, "heading": "", "body": "" }
+  ],
+  "friends": ["", "", ""],
+  "notes": { "people": "", "mode": "", "length": "", "korean": "" }
+}

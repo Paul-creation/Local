@@ -1,0 +1,7 @@
+[
+  {"type": "poster-cover", "game": "4108000", "headline": "친구들과 함께\n미친 기계 장치를\n헤쳐나가는 게임", "chips": [], "bg": 1},
+  {"type": "game-data", "game": "4108000", "index": 1, "video": true, "videoStart": 5},
+  {"type": "shot", "game": "4108000", "index": 2},
+  {"type": "shot", "game": "4108000", "index": 3},
+  {"type": "follow-card", "game": "4108000", "title": "친구랑 할 게임, 고민되면"}
+]

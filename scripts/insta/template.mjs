@@ -143,6 +143,26 @@ em { font-style: normal; color: #FFD84A; }
 .gv-off { font-size: 31px; font-weight: 500; color: #4ADE80; }
 .gv-end { align-self: center; font-size: 26px; font-weight: 500; color: #fff; border: 3px solid rgba(255,255,255,.25); border-radius: 999px; padding: 4px 18px; }
 .gv-facts { margin-top: 13px; font-size: 29px; font-weight: 500; color: rgba(255,255,255,.8); white-space: nowrap; }
+/* review · minigame · friends · notes — --detailed 전용 */
+.rv-bg, .mg-bg { position: absolute; inset: 0; background-size: cover; background-position: center; }
+.rv-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 62%; background: linear-gradient(to top, rgba(0,0,0,.92) 0%, rgba(0,0,0,.8) 45%, rgba(0,0,0,0) 100%); }
+.rv-top { position: absolute; left: 64px; top: 64px; padding: 8px 22px; border-radius: 999px; background: rgba(0,0,0,.55); border: 2px solid rgba(255,255,255,.35); font-size: 28px; font-weight: 700; color: #fff; }
+.rv-text { position: absolute; left: 64px; right: 64px; bottom: 90px; }
+.rv-head { font-size: 64px; font-weight: 900; line-height: 1.2; letter-spacing: -0.04em; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rv-body { margin-top: 24px; font-size: 36px; font-weight: 500; line-height: 1.5; letter-spacing: -0.02em; color: rgba(255,255,255,.92); display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.mg-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 40%; background: linear-gradient(to top, rgba(0,0,0,.9), rgba(0,0,0,0)); }
+.mg-text { position: absolute; left: 64px; right: 64px; bottom: 80px; }
+.mg-head { font-size: 60px; font-weight: 900; line-height: 1.2; letter-spacing: -0.04em; color: #fff; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.mg-body { margin-top: 16px; font-size: 36px; font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; color: rgba(255,255,255,.9); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.fr-mid, .nt-mid { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; padding: 0 90px; }
+.fr-title, .nt-title { font-size: 76px; font-weight: 900; line-height: 1.2; letter-spacing: -0.04em; color: #fff; text-align: center; margin-bottom: 72px; }
+.fr-list { display: flex; flex-direction: column; gap: 44px; }
+.fr-item { display: flex; align-items: center; gap: 28px; font-size: 46px; font-weight: 700; line-height: 1.35; letter-spacing: -0.02em; color: #fff; }
+.fr-check { flex: none; width: 64px; height: 64px; border-radius: 50%; background: #4ADE80; display: grid; place-items: center; }
+.nt-list { display: flex; flex-direction: column; gap: 40px; }
+.nt-row { display: flex; align-items: baseline; gap: 32px; }
+.nt-label { flex: none; width: 260px; font-size: 38px; font-weight: 500; color: rgba(255,255,255,.65); }
+.nt-value { font-size: 50px; font-weight: 800; line-height: 1.3; letter-spacing: -0.02em; color: #fff; }
 .sp-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 2px; background: #000; }
 .sp-half { flex: 1; min-height: 0; background-size: cover; background-position: center; }
 .sp-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 45%; background: linear-gradient(to top, rgba(0,0,0,.92), rgba(0,0,0,0)); }
@@ -272,6 +292,35 @@ const BODY = {
       ${g.spec ? `<div class="gd-sub">최소 사양 · ${esc(g.spec)}</div>` : ''}
     </div>`;
   },
+  review: (s, ctx) => `
+    <div class="rv-bg" style="background-image:url(${ctx.single.images[0]})"></div>
+    <div class="rv-shade"></div>
+    <div class="rv-top">${rich(s.label)}</div>
+    <div class="rv-text">
+      <div class="rv-head" data-fit="64,44,1">${rich(s.headline)}</div>
+      <div class="rv-body">${rich(s.body)}</div>
+    </div>`,
+  minigame: (s, ctx) => `
+    <div class="mg-bg" style="background-image:url(${ctx.single.images[0]})"></div>
+    ${s.heading || s.body ? `<div class="mg-shade"></div>
+    <div class="mg-text">
+      ${s.heading ? `<div class="mg-head">${rich(s.heading)}</div>` : ''}
+      ${s.body ? `<div class="mg-body">${rich(s.body)}</div>` : ''}
+    </div>` : ''}`,
+  friends: (s, ctx) => `
+    <div class="fc-bg" style="background-image:url(${ctx.single.images[0]})"></div>
+    <div class="fc-dim"></div>
+    <div class="fr-mid">
+      <div class="fr-title">${rich(s.title)}</div>
+      <div class="fr-list">${s.items.map((t) => `<div class="fr-item"><span class="fr-check"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#0b0b0b" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span>${rich(t)}</span></div>`).join('')}</div>
+    </div>`,
+  notes: (s, ctx) => `
+    <div class="fc-bg" style="background-image:url(${ctx.single.art})"></div>
+    <div class="fc-dim"></div>
+    <div class="nt-mid">
+      <div class="nt-title">${rich(s.title)}</div>
+      <div class="nt-list">${s.rows.map(([l, v]) => `<div class="nt-row"><span class="nt-label">${esc(l)}</span><span class="nt-value">${rich(v)}</span></div>`).join('')}</div>
+    </div>`,
   'shot-pair': (s, ctx) => `
     <div class="sp-wrap">${ctx.single.images.map((u) => `<div class="sp-half" style="background-image:url(${u})"></div>`).join('')}</div>
     <div class="sp-shade"></div>
@@ -330,4 +379,4 @@ export function renderSlide(slide, index, total, ctx) {
 }
 
 export const SIZE = { width: W, height: H };
-const BARE = ['game-data', 'shot-pair', 'shot', 'follow-card']; // 페이지 번호·J 로고 없는 타입(poster-*와 같이)
+const BARE = ['game-data', 'shot-pair', 'shot', 'follow-card', 'review', 'minigame', 'friends', 'notes']; // 페이지 번호·J 로고 없는 타입(poster-*와 같이)
