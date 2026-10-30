@@ -14,7 +14,7 @@ export function expandRoundup(base, copy) {
     { ...cover, game: games[0].appid, shot: copy.coverShot ?? 1, title1: fill(cover.title1), title2: fill(cover.title2) },
     ...games.flatMap((g) => {
       const shots = g.shots ?? [1, 2];
-      return [{ type: 'roundup-game', game: g.appid, desc: g.desc, shots }, { type: 'roundup-detail', game: g.appid, oneliner: g.oneliner, shots, detailShot: g.detailShot, chips: g.chips, chipsLabel: g.chipsLabel }];
+      return [{ type: 'roundup-game', game: g.appid, desc: g.desc, shots, accent: cover.accent }, { type: 'roundup-detail', game: g.appid, accent: cover.accent, oneliner: g.oneliner, shots, detailShot: g.detailShot, chips: g.chips, chipsLabel: g.chipsLabel }];
     }),
     { ...follow, game: follow.game ?? games[0].appid },
   ];

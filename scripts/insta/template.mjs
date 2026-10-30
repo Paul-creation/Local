@@ -156,24 +156,24 @@ em { font-style: normal; color: #FFD84A; }
 .poster-bg.blurred { filter: blur(40px) brightness(.6); transform: scale(1.15); }
 .poster-fit { position: absolute; left: 0; top: 40%; width: 100%; overflow: hidden; transform: translateY(-50%); }
 .poster-fit img { display: block; height: auto; max-width: none; }
-/* roundup-cover · roundup-game — --roundup 전용 (주황 #FF7A1A) */
+/* roundup-cover · roundup-game — --roundup·--showcase 전용. 포인트 컬러는 --accent(기본 민트 #5CF2B0, 시즌 게시물은 json의 accent로 지정) */
 .rc-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 40%; background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,.85)); }
 .rc-text { position: absolute; left: 64px; right: 64px; bottom: 190px; }
 .rc-kicker { font-size: 30px; font-weight: 700; color: #fff; letter-spacing: -0.02em; margin-bottom: 16px; text-shadow: 0 2px 8px rgba(0,0,0,.45); }
 .rc-title { font-weight: 900; line-height: 1.22; letter-spacing: -0.045em; text-shadow: 0 2px 10px rgba(0,0,0,.45); }
 .rc-title div { white-space: nowrap; }
 .rc-t1 { font-size: 72px; color: #fff; }
-.rc-t2 { font-size: 80px; color: #FF7A1A; }
+.rc-t2 { font-size: 80px; color: var(--accent); }
 .rc-brand { position: absolute; left: 64px; bottom: 72px; display: flex; align-items: center; gap: 14px; }
 .rc-brand i { width: 56px; height: 56px; border-radius: 16px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-style: normal; font-size: 40px; font-weight: 900; line-height: 1; }
 .rc-brand b { font-size: 36px; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
 .rg-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 42%; background: linear-gradient(to top, rgba(0,0,0,.94) 0%, rgba(0,0,0,.8) 50%, rgba(0,0,0,0) 100%); }
 .rg-text { position: absolute; left: 64px; right: 64px; bottom: 64px; text-align: left; }
-.rg-name { font-size: 58px; font-weight: 900; line-height: 1.2; letter-spacing: -0.03em; color: #FF7A1A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.rg-info { margin-top: 10px; font-size: 26px; font-weight: 600; color: #FF7A1A; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.rg-name { font-size: 58px; font-weight: 900; line-height: 1.2; letter-spacing: -0.03em; color: var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rg-info { margin-top: 10px; font-size: 30px; font-weight: 600; color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .rg-info s { opacity: .75; }
 .rg-dash { margin-top: 6px; font-size: 26px; font-weight: 600; color: rgba(255,255,255,.6); line-height: 1.2; }
-.rg-desc { margin-top: 6px; font-size: 30px; font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; color: #fff; }
+.rg-desc { margin-top: 6px; font-size: 38px; font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; color: #fff; }
 /* roundup-detail — 사이트 톤(흑백 + 흰색 글로우, 주황 없음) */
 .rd-bg { position: absolute; inset: -20px; background-size: cover; background-position: center; filter: blur(8px); }
 .rd-dim { position: absolute; inset: 0; background: rgba(0,0,0,.65); }
@@ -188,6 +188,25 @@ em { font-style: normal; color: #FFD84A; }
 .rd-chip { white-space: nowrap; padding: 8px 24px; border-radius: 999px; border: 2px solid rgba(255,255,255,.45); font-size: 32px; font-weight: 600; color: #fff; box-shadow: 0 0 14px rgba(255,255,255,.12); }
 .rd-badge { display: inline-block; margin-left: 16px; padding: 4px 18px; border-radius: 999px; border: 2px solid rgba(255,255,255,.5); font-size: 28px; font-weight: 600; vertical-align: middle; text-shadow: none; box-shadow: 0 0 12px rgba(255,255,255,.15); }
 .rd-foot { position: absolute; left: 72px; right: 72px; bottom: 72px; font-size: 26px; font-weight: 500; color: rgba(255,255,255,.55); }
+/* showcase-video — 위 16:9 트레일러(영상은 ffmpeg가 얹음) + 아래 검은 패널. 이 PNG는 글씨만 있는 투명 오버레이 */
+html:has(.sv), html:has(.sv) body { background: transparent !important; }
+.sv-panel { position: absolute; left: 0; right: 0; top: 608px; bottom: 0; background: #000; padding: 0 64px; display: flex; flex-direction: column; justify-content: center; text-align: left; }
+.sv-name { font-size: 58px; font-weight: 900; line-height: 1.2; letter-spacing: -0.03em; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sv-info { margin-top: 10px; font-size: 30px; font-weight: 600; color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sv-desc { margin-top: 18px; font-size: 38px; font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; color: #fff; }
+.sv-brand { position: absolute; left: 64px; bottom: 48px; display: flex; align-items: center; gap: 14px; }
+.sv-brand i { width: 44px; height: 44px; border-radius: 13px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-style: normal; font-size: 32px; font-weight: 900; line-height: 1; }
+.sv-brand b { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
+/* showcase-sig — roundup-detail과 같은 흑백 + 흰색 글로우. 첫 행(지금 사도 될까?)이 가장 크다 */
+.ss-mid { position: absolute; left: 72px; right: 72px; top: 232px; bottom: 124px; display: flex; flex-direction: column; justify-content: space-between; text-align: left; }
+.ss-verdict .rd-label-s { font-size: 28px; color: rgba(255,255,255,.7); }
+.ss-head { margin-top: 8px; font-size: 56px; font-weight: 900; line-height: 1.25; letter-spacing: -0.04em; color: #fff; text-shadow: 0 0 24px rgba(255,255,255,.4); }
+.ss-sub { margin-top: 8px; font-size: 32px; font-weight: 500; color: rgba(255,255,255,.8); letter-spacing: -0.02em; }
+.ss-mid .rd-val { font-size: 40px; margin-top: 6px; }
+.ss-mid .rd-val.small { font-size: 38px; }
+.ss-mid .rd-val.fit { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ss-mid .rd-chip { font-size: 30px; padding: 6px 22px; }
+.ss-mid .rd-chips { margin-top: 10px; }
 .sp-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 2px; background: #000; }
 .sp-half { flex: 1; min-height: 0; background-size: cover; background-position: center; }
 .sp-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 45%; background: linear-gradient(to top, rgba(0,0,0,.92), rgba(0,0,0,0)); }
@@ -365,6 +384,30 @@ const BODY = {
       : `<div class="rd-val${r.label === '한 줄 평' ? ' small' : ''}">${esc(r.value)}${r.badge ? `<span class="rd-badge">${esc(r.badge)}</span>` : ''}</div>`}</div>`).join('')}</div>
     <div class="rd-foot">더 자세한 비교는 jamidunow.com</div>`;
   },
+  'showcase-video': (s, ctx) => {
+    const v = ctx.single;
+    return `
+    <div class="sv"></div>
+    <div class="sv-panel">
+      <div class="sv-name" data-fit="58,36,1">${esc(v.name)}</div>
+      <div class="sv-info" data-fit="30,24,1">${esc(v.info)}</div>
+      <div class="sv-desc">${rich(s.g.desc)}</div>
+    </div>
+    <div class="sv-brand"><i>J</i><b>JamiDuNow</b></div>`;
+  },
+  'showcase-sig': (s, ctx) => {
+    const g = ctx.single;
+    return `
+    <div class="rd-bg" style="background-image:url(${g.bg})"></div>
+    <div class="rd-dim"></div>
+    <div class="rd-top"><span class="rd-label">JamiDuNow 데이터</span><div class="rd-name" data-fit="52,34,1">${esc(g.name)}</div></div>
+    <div class="ss-mid">${g.rows.map((r) => r.key === 'verdict'
+      ? `<div class="ss-verdict"><div class="rd-label-s">${esc(r.label)}</div><div class="ss-head" data-fit="56,38,1">${esc(r.value)}</div><div class="ss-sub">${esc(r.sub)}</div></div>`
+      : `<div class="rd-row"><div class="rd-label-s">${esc(r.label)}</div>${r.chips
+        ? `<div class="rd-chips">${r.chips.map((c) => `<span class="rd-chip">${esc(c)}</span>`).join('')}</div>`
+        : `<div class="rd-val${r.small ? ' small' : ''}${r.fit ? ' fit' : ''}"${r.fit ? ' data-fit="40,28,1"' : ''}>${esc(r.value)}</div>`}</div>`).join('')}</div>
+    <div class="rd-foot">자세한 정보는 jamidunow.com</div>`;
+  },
   'shot-pair': (s, ctx) => `
     <div class="sp-wrap">${ctx.single.images.map((u) => `<div class="sp-half" style="background-image:url(${u})"></div>`).join('')}</div>
     <div class="sp-shade"></div>
@@ -416,11 +459,11 @@ export function renderSlide(slide, index, total, ctx) {
   const og = slide.type === 'og';
   if (!body) throw new Error(`알 수 없는 슬라이드 타입: ${slide.type} (${SLIDE_TYPES.join(', ')})`);
   return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>${CSS(ctx.font, width, height)}</style></head><body${slide.type === 'end-card' ? ' class="end-card"' : ''}>
-    <div class="slide">${body(slide, ctx)}</div>
+    <div class="slide" style="--accent:${slide.accent ?? '#5CF2B0'}">${body(slide, ctx)}</div>
     ${index > 0 && !og && !slide.type.startsWith('poster-') && !BARE.includes(slide.type) ? `<div class="page">${index + 1}/${total}</div>` : ''}
     ${slide.type === 'end-card' || og || slide.type.startsWith('poster-') || BARE.includes(slide.type) ? '' : '<div class="logo">J</div>'}
   </body></html>`;
 }
 
 export const SIZE = { width: W, height: H };
-const BARE = ['game-data', 'shot-pair', 'shot', 'follow-card', 'overview', 'minigame', 'roundup-cover', 'roundup-game', 'roundup-detail']; // 페이지 번호·J 로고 없는 타입(poster-*와 같이)
+const BARE = ['game-data', 'shot-pair', 'shot', 'follow-card', 'overview', 'minigame', 'roundup-cover', 'roundup-game', 'roundup-detail', 'showcase-video', 'showcase-sig']; // 페이지 번호·J 로고 없는 타입(poster-*와 같이)

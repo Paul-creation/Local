@@ -6,6 +6,7 @@
 //       npm run insta -- <post-id> --detailed  (표지·트레일러·팔로우 카드는 그대로, 사이에 개요·플레이 4장을 넣은 8장. 문구는 copy/<post-id>.json)
 //       (끝나면 out/<post-id>.zip도 같이 만든다 — zip 명령 필요)
 //       npm run insta -- <post-id> --roundup   (여러 게임 모음: 표지 + 게임당 1장 + 팔로우 카드. 게임·설명은 copy/<post-id>.json의 games, 가격은 스팀 KR 스토어에서 받음)
+//       npm run insta -- <post-id> --showcase  (인디 추천: 표지 + 게임마다 영상 장(mp4, 위 트레일러 + 아래 검은 패널)과 시그니처 장(데이터 상세) + 팔로우 카드. 문구는 copy/<post-id>.json)
 //       npm run og                       (공유 미리보기 public/og-default.png, posts/og.json)
 // 처음 한 번: npm ci (브라우저가 없으면 npx playwright install chromium)
 import fs from 'fs';
@@ -17,6 +18,7 @@ import { renderSlide, sizeOf, SIZE } from './template.mjs';
 import { resolveGame, pickCandidates, gameTitle } from './pick.mjs';
 import { loadCopy, expandDetailed } from './detailed.mjs';
 import { expandRoundup, detailRows } from './roundup.mjs';
+import { expandShowcase, showcaseData, buyVerdict, sigRows, infoLine, VIDEO_SECONDS as SHOWCASE_SECONDS, START_RATIO } from './showcase.mjs';
 import { hasKorean, saleEndOf } from './pick-roundup.mjs';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -27,16 +29,17 @@ const args = process.argv.slice(2);
 const refresh = args.includes('--refresh');
 const detailed = args.includes('--detailed');
 const roundup = args.includes('--roundup');
+const showcase = args.includes('--showcase');
 const coverZooms = (args.find((a) => a.startsWith('--cover-zoom='))?.slice(13) ?? '').split(',').filter(Boolean).map(Number); // 표지 blur 비교용: 01a·01b… 로 따로 저장
 const postId = args.find((a) => !a.startsWith('--'));
-if (!postId) { console.error('사용법: npm run insta -- <post-id> [--refresh] [--detailed|--roundup] [--cover-zoom=1,1.3,1.6]'); process.exit(1); }
+if (!postId) { console.error('사용법: npm run insta -- <post-id> [--refresh] [--detailed|--roundup|--showcase] [--cover-zoom=1,1.3,1.6]'); process.exit(1); }
 
 const postFile = path.join(DIR, 'posts', `${postId}.json`);
 if (!fs.existsSync(postFile)) { console.error(`게시물 파일이 없어요: ${path.relative(ROOT, postFile)}`); process.exit(1); }
 const raw = fs.readFileSync(postFile, 'utf8');
 if (raw.includes('재밌드나')) { console.error('화면에는 "재밌드나"를 쓰지 않아요. JamiDuNow만 쓰세요.'); process.exit(1); }
 const baseSlides = JSON.parse(raw);
-const slides = (roundup ? expandRoundup(baseSlides, loadCopy(DIR, postId)) : detailed ? await expandDetailed(baseSlides, loadCopy(DIR, postId)) : baseSlides).flatMap((s) => (s.type === 'detail-split' ? Array.from({ length: s.slides ?? 1 }, (_, part) => ({ ...s, part, parts: s.slides ?? 1 })) : [s])); // detail-split 한 줄 = slides장
+const slides = (showcase ? expandShowcase(baseSlides, loadCopy(DIR, postId)) : roundup ? expandRoundup(baseSlides, loadCopy(DIR, postId)) : detailed ? await expandDetailed(baseSlides, loadCopy(DIR, postId)) : baseSlides).flatMap((s) => (s.type === 'detail-split' ? Array.from({ length: s.slides ?? 1 }, (_, part) => ({ ...s, part, parts: s.slides ?? 1 })) : [s])); // detail-split 한 줄 = slides장
 if (!Array.isArray(slides) || slides.length === 0) { console.error('json은 슬라이드 배열이어야 해요.'); process.exit(1); }
 
 // 첫 방문자 투어(jdn_tour_v2)가 화면을 덮어 클릭을 막으니, 투어를 건너뛴 상태로 시작한다
@@ -313,12 +316,14 @@ function specLine(minSpec) {
   return cpu && gpu && ram ? `${cpu} / ${gpu} / ${ram}` : null;
 }
 // 첫 번째 트레일러(스팀 appdetails movies[0])를 cache에 받는다 — mp4가 있으면 그대로, 없으면 hls를 ffmpeg로 받아 mp4로 묶는다
-async function trailerFile(game, name) {
+const usedTrailers = []; // --showcase 보고용: { game, trailer, file }
+async function trailerFile(game, name, { preferGameplay = false } = {}) {
   const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${game.steam_appid}&l=koreana`);
   const movies = (await res.json())[game.steam_appid]?.data?.movies ?? [];
-  const movie = name ? movies.find((m) => m.name === name) : movies[0]; // name을 주면 그 이름의 트레일러, 아니면 첫 번째
+  const movie = name ? movies.find((m) => m.name === name) : (preferGameplay && movies.find((m) => /gameplay/i.test(m.name))) || movies[0]; // name을 주면 그 이름의 트레일러, 아니면 (gameplay 이름 우선이면 그것, 없으면) 첫 번째
   if (!movie) throw new Error(`${gameTitle(game)}에 스팀 트레일러${name ? ` "${name}"` : ''}가 없어요 (${movies.map((m) => m.name).join(', ')})`);
   const file = path.join(CACHE, `trailer-${game.steam_appid}-${movie.id}.mp4`);
+  usedTrailers.push({ game: gameTitle(game), trailer: movie.name.trim(), file });
   if (!stale(file)) return file;
   const mp4 = movie.mp4?.max ?? movie.mp4?.['480'];
   if (mp4) await fetchCached(mp4, file, `트레일러(${gameTitle(game)})`);
@@ -334,11 +339,25 @@ function composeVideo({ trailer, overlay, start, out }) {
     '-filter_complex', `[0:v]scale=-2:${SIZE.height},crop=${SIZE.width}:${SIZE.height},fps=30[v];[v][1:v]overlay=format=auto,format=yuv420p[o]`,
     '-map', '[o]', '-map', '0:a?', '-c:v', 'libx264', '-preset', 'veryfast', '-c:a', 'copy', '-movflags', '+faststart', '-shortest', out], { stdio: 'inherit' });
 }
+// --showcase 영상 장: 트레일러를 1080 너비 16:9 그대로(크롭 없음) 위에 두고 아래는 검은 패널, 그 위에 글씨 오버레이. 무음 · H.264 veryfast · 15초
+// 시작점 = start(초) 또는 영상 길이의 20%. 시작점부터 15초가 안 남으면 앞으로 당기고, 영상이 15초보다 짧으면 전체를 쓴다
+function composeShowcase({ trailer, overlay, start, out, name }) {
+  const dur = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', trailer]).toString());
+  const len = Math.min(SHOWCASE_SECONDS, dur);
+  let ss = start ?? dur * START_RATIO;
+  if (ss + len > dur) { const fixed = Math.max(0, dur - len); console.warn(`경고: ${name} 시작점 ${ss.toFixed(1)}초부터 ${len.toFixed(0)}초가 안 남아 ${fixed.toFixed(1)}초로 당김 (트레일러 ${dur.toFixed(1)}초)`); ss = fixed; }
+  execFileSync('ffmpeg', ['-v', 'error', '-y', '-ss', String(ss), '-t', String(len), '-i', trailer, '-loop', '1', '-framerate', '30', '-t', String(len), '-i', overlay,
+    '-filter_complex', `[0:v]scale=${SIZE.width}:608,setsar=1,fps=30,pad=${SIZE.width}:${SIZE.height}:0:0:black[v];[v][1:v]overlay=format=auto,format=yuv420p[o]`,
+    '-map', '[o]', '-an', '-c:v', 'libx264', '-preset', 'veryfast', '-movflags', '+faststart', '-shortest', out], { stdio: 'inherit' });
+  return { start: ss, length: len, duration: dur };
+}
 // game-data·shot-pair·shot·follow-card — 한 게시물 = 한 게임. 모든 값은 DB(games·price_history)에서 자동으로 채운다
 async function singleCtx(s) {
   const game = await resolveGame(s.game);
   if (s.type === 'follow-card') return { art: await posterArt(game) };
   if (s.type === 'roundup-cover') return { images: [await shotUri(game, s.shot)] };
+  if (s.type === 'showcase-video') return showcaseVideoCtx(game, s);
+  if (s.type === 'showcase-sig') return showcaseSigCtx(game, s);
   if (s.type === 'roundup-game') return roundupGameCtx(game, s);
   if (s.type === 'roundup-detail') return roundupDetailCtx(game, s);
   if (s.type === 'overview' || s.type === 'minigame') return { images: [await shotUri(game, s.index)] };
@@ -396,6 +415,33 @@ async function roundupDetailCtx(game, s) {
   const { rows, missing } = detailRows(game, { oneliner: s.oneliner, chips: s.chips, chipsLabel: s.chipsLabel, price: p.price, discount: p.discount, lowest: db.length > 1 || game.lowest_price ? lowest : null });
   roundupMissing.push({ name: gameTitle(game), missing });
   return { name: gameTitle(game), bg, rows };
+}
+
+// --showcase 영상 장: 정보 줄 = PC(Steam) / 인원 / 한국어 / 가격(스팀 KR 실시간)
+async function currentPrice(game) {
+  const db = latestKrw(game)[0];
+  const p = await steamPrice(game).catch(() => null);
+  if (!p) { console.warn(`경고: ${gameTitle(game)} 스팀 가격을 못 받아 DB 값을 씀`); return { price: db?.price, discount: db?.discount_percent ?? 0 }; }
+  return p;
+}
+async function showcaseVideoCtx(game, s) {
+  const p = await currentPrice(game);
+  const trailer = await trailerFile(game, s.g.trailer, { preferGameplay: true });
+  const info = infoLine(game, { korean: hasKorean(game), price: p.price, discount: p.discount });
+  console.log(`${gameTitle(game)} | ${info} | 트레일러 ${usedTrailers.at(-1).trailer}`);
+  return { name: gameTitle(game), info, trailer };
+}
+// --showcase 시그니처 장: 배경 = copy.sigShot번 스크린샷(기본 2번, 없으면 1번)
+const showcaseMissing = [];
+async function showcaseSigCtx(game, s) {
+  const d = await showcaseData(game);
+  const p = await currentPrice(game);
+  const verdict = buyVerdict(d.price_history, { price: p.price, discount: p.discount, lowest: d.lowest_price });
+  const { rows, missing } = sigRows(d, s.g, { verdict, game });
+  showcaseMissing.push({ name: gameTitle(game), missing });
+  const n = s.g.sigShot ?? ((game.screenshots ?? []).length >= 2 ? 2 : 1);
+  console.log(`${gameTitle(game)} | ${verdict.head} | ${verdict.sub}`);
+  return { name: gameTitle(game), bg: await shotUri(game, n), rows, verdict };
 }
 
 async function posterCtx(s) {
@@ -521,7 +567,7 @@ try {
     const imgUri = (v) => (/^https?:/.test(v) ? v : dataUri(path.resolve(path.dirname(postFile), v)));
     if (s.type === 'game-card' && s.image) ctx.photo = imgUri(s.image);
     if (s.type === 'poster-cover' || s.type === 'poster-game') ctx.poster = await posterCtx(s);
-    if (['game-data', 'shot-pair', 'shot', 'follow-card', 'overview', 'minigame', 'roundup-cover', 'roundup-game', 'roundup-detail'].includes(s.type)) ctx.single = await singleCtx(s);
+    if (['game-data', 'shot-pair', 'shot', 'follow-card', 'overview', 'minigame', 'roundup-cover', 'roundup-game', 'roundup-detail', 'showcase-video', 'showcase-sig'].includes(s.type)) ctx.single = await singleCtx(s);
     if (s.type === 'collage-cover') ctx.photos = s.images.map(imgUri);
     const size = sizeOf(s);
     if (s.type === 'poster-cover' && s.variants) { // 배경 후보: 01a.png, 01b.png … (고른 뒤 json에 bg를 쓰고 variants를 지운다)
@@ -540,6 +586,12 @@ try {
     await page.setContent(renderSlide(s, i, slides.length, ctx), { waitUntil: 'load' });
     await page.evaluate(() => document.fonts.ready);
     await page.evaluate(FIT);
+    for (const [sel, who] of [['.rg-desc', '설명문'], ['.sv-desc', '설명문']]) { // 설명문은 최대 3줄, 줄당 24자 안팎 — 넘으면 경고
+      const lines = await page.evaluate((q) => { const el = document.querySelector(q); return el ? Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight)) : 0; }, sel);
+      const long = (s.desc ?? s.g?.desc ?? '').split('\n').filter((l) => [...l].length > 24);
+      if (lines > 3) console.warn(`경고: ${ctx.single?.name} ${who}이(가) ${lines}줄이에요 (최대 3줄)`);
+      if (lines && long.length) console.warn(`경고: ${ctx.single?.name} ${who} 24자 넘는 줄: ${long.join(' / ')}`);
+    }
     const file = s.type === 'og' ? path.join(ROOT, 'public/og-default.png') : path.join(outDir, `${String(i + 1).padStart(2, '0')}.png`);
     if (s.type === 'game-data' && s.video) { // 영상 배경: 투명 오버레이 PNG는 임시 폴더에만 두고 02.mp4만 남긴다
       const tmp = path.join(CACHE, `overlay-${postId}-${i + 1}.png`);
@@ -547,6 +599,15 @@ try {
       const mp4 = file.replace(/\.png$/, '.mp4');
       composeVideo({ trailer: ctx.single.trailer, overlay: tmp, start: s.videoStart ?? 28, out: mp4 });
       console.log(path.relative(ROOT, mp4));
+      continue;
+    }
+    if (s.type === 'showcase-video') { // 글씨 오버레이는 임시 폴더에만 두고 NN.mp4만 남긴다
+      const tmp = path.join(CACHE, `overlay-${postId}-${i + 1}.png`);
+      await page.screenshot({ path: tmp, clip: { x: 0, y: 0, ...size }, omitBackground: true });
+      const mp4 = file.replace(/\.png$/, '.mp4');
+      const r = composeShowcase({ trailer: ctx.single.trailer, overlay: tmp, start: s.g.clipStart, out: mp4, name: ctx.single.name });
+      usedTrailers.find((u) => u.file === ctx.single.trailer).clip = r;
+      console.log(path.relative(ROOT, mp4), `(시작 ${r.start.toFixed(1)}초, ${r.length.toFixed(0)}초)`);
       continue;
     }
     await page.screenshot({ path: file, clip: { x: 0, y: 0, ...size } });
@@ -564,6 +625,8 @@ try {
 } finally {
   await browser.close();
 }
+if (showcaseMissing.length) console.log('시그니처 장에서 빠진 행:\n' + showcaseMissing.map((m) => `  ${m.name}: ${m.missing.join(', ') || '없음'}`).join('\n'));
+if (usedTrailers.length) console.log('사용한 트레일러:\n' + usedTrailers.map((u) => `  ${u.game}: ${u.trailer}`).join('\n'));
 if (roundupMissing.length) console.log('상세 장에서 빠진 행:\n' + roundupMissing.map((m) => `  ${m.name}: ${m.missing.join(', ') || '없음'}`).join('\n'));
 
 // out/<post-id>/ 를 out/<post-id>.zip 으로 묶는다 (기존 zip은 덮어씀, 파일이 없는 og는 건너뜀). zip 명령이 필요해요
