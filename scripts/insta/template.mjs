@@ -171,6 +171,20 @@ em { font-style: normal; color: #FFD84A; }
 .rg-info s { opacity: .75; }
 .rg-dash { margin-top: 6px; font-size: 26px; font-weight: 600; color: rgba(255,255,255,.6); line-height: 1.2; }
 .rg-desc { margin-top: 6px; font-size: 30px; font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; color: #fff; }
+/* roundup-detail — 사이트 톤(흑백 + 흰색 글로우, 주황 없음) */
+.rd-bg { position: absolute; inset: -20px; background-size: cover; background-position: center; filter: blur(8px); }
+.rd-dim { position: absolute; inset: 0; background: rgba(0,0,0,.65); }
+.rd-top { position: absolute; left: 72px; right: 72px; top: 72px; }
+.rd-label { display: inline-block; padding: 6px 20px; border-radius: 999px; border: 2px solid rgba(255,255,255,.4); font-size: 26px; font-weight: 600; color: #EDEDED; box-shadow: 0 0 14px rgba(255,255,255,.15); }
+.rd-name { margin-top: 24px; font-size: 52px; font-weight: 900; line-height: 1.2; letter-spacing: -0.03em; color: #fff; text-shadow: 0 0 22px rgba(255,255,255,.35); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rd-mid { position: absolute; left: 72px; right: 72px; top: 240px; bottom: 140px; display: flex; flex-direction: column; justify-content: center; gap: 38px; text-align: left; }
+.rd-label-s { font-size: 26px; font-weight: 500; color: rgba(255,255,255,.55); letter-spacing: -0.01em; }
+.rd-val { margin-top: 10px; font-size: 44px; font-weight: 700; line-height: 1.3; letter-spacing: -0.03em; color: #fff; text-shadow: 0 0 18px rgba(255,255,255,.28); }
+.rd-val.small { font-size: 36px; font-weight: 600; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.rd-chips { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
+.rd-chip { padding: 8px 24px; border-radius: 999px; border: 2px solid rgba(255,255,255,.45); font-size: 32px; font-weight: 600; color: #fff; box-shadow: 0 0 14px rgba(255,255,255,.12); }
+.rd-badge { display: inline-block; margin-left: 16px; padding: 4px 18px; border-radius: 999px; border: 2px solid rgba(255,255,255,.5); font-size: 28px; font-weight: 600; vertical-align: middle; text-shadow: none; box-shadow: 0 0 12px rgba(255,255,255,.15); }
+.rd-foot { position: absolute; left: 72px; right: 72px; bottom: 72px; font-size: 26px; font-weight: 500; color: rgba(255,255,255,.55); }
 .sp-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 2px; background: #000; }
 .sp-half { flex: 1; min-height: 0; background-size: cover; background-position: center; }
 .sp-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 45%; background: linear-gradient(to top, rgba(0,0,0,.92), rgba(0,0,0,0)); }
@@ -335,6 +349,17 @@ const BODY = {
       <div class="rg-desc">${rich(s.desc)}</div>
     </div>`;
   },
+  'roundup-detail': (s, ctx) => {
+    const g = ctx.single;
+    return `
+    <div class="rd-bg" style="background-image:url(${g.bg})"></div>
+    <div class="rd-dim"></div>
+    <div class="rd-top"><span class="rd-label">JamiDuNow 데이터</span><div class="rd-name" data-fit="52,34,1">${esc(g.name)}</div></div>
+    <div class="rd-mid">${g.rows.map((r) => `<div class="rd-row"><div class="rd-label-s">${esc(r.label)}</div>${r.chips
+      ? `<div class="rd-chips">${r.chips.map((c) => `<span class="rd-chip">${esc(c)}</span>`).join('')}</div>`
+      : `<div class="rd-val${r.label === '한 줄 평' ? ' small' : ''}">${esc(r.value)}${r.badge ? `<span class="rd-badge">${esc(r.badge)}</span>` : ''}</div>`}</div>`).join('')}</div>
+    <div class="rd-foot">더 자세한 비교는 jamidunow.com</div>`;
+  },
   'shot-pair': (s, ctx) => `
     <div class="sp-wrap">${ctx.single.images.map((u) => `<div class="sp-half" style="background-image:url(${u})"></div>`).join('')}</div>
     <div class="sp-shade"></div>
@@ -393,4 +418,4 @@ export function renderSlide(slide, index, total, ctx) {
 }
 
 export const SIZE = { width: W, height: H };
-const BARE = ['game-data', 'shot-pair', 'shot', 'follow-card', 'overview', 'minigame', 'roundup-cover', 'roundup-game']; // 페이지 번호·J 로고 없는 타입(poster-*와 같이)
+const BARE = ['game-data', 'shot-pair', 'shot', 'follow-card', 'overview', 'minigame', 'roundup-cover', 'roundup-game', 'roundup-detail']; // 페이지 번호·J 로고 없는 타입(poster-*와 같이)

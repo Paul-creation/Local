@@ -16,7 +16,7 @@ import { chromium } from 'playwright';
 import { renderSlide, sizeOf, SIZE } from './template.mjs';
 import { resolveGame, pickCandidates, gameTitle } from './pick.mjs';
 import { loadCopy, expandDetailed } from './detailed.mjs';
-import { expandRoundup } from './roundup.mjs';
+import { expandRoundup, detailRows } from './roundup.mjs';
 import { hasKorean, saleEndOf } from './pick-roundup.mjs';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -340,6 +340,7 @@ async function singleCtx(s) {
   if (s.type === 'follow-card') return { art: await posterArt(game) };
   if (s.type === 'roundup-cover') return { images: [await shotUri(game, s.shot)] };
   if (s.type === 'roundup-game') return roundupGameCtx(game, s);
+  if (s.type === 'roundup-detail') return roundupDetailCtx(game, s);
   if (s.type === 'overview' || s.type === 'minigame') return { images: [await shotUri(game, s.index)] };
   if (s.type === 'shot') return { images: [await shotUri(game, s.index)] };
   if (s.type === 'shot-pair') return { images: await Promise.all(s.index.map((n) => shotUri(game, n))) };
@@ -378,6 +379,23 @@ async function roundupGameCtx(game, s) {
   const ctx = { name: gameTitle(game), review: game.review_summary, korean: hasKorean(game), original: p.discount ? p.original : null, price: p.price, end: p.discount ? saleEndOf(db) : null, images };
   console.log(`${ctx.name} | ${ctx.review} | 한글${ctx.korean ? 'O' : 'X'} | ${p.discount ? `${p.original}→` : ''}${p.price}${ctx.end ? ` (~${ctx.end})` : ''}`);
   return ctx;
+}
+
+// 모음 상세 장: 배경 = 소개 장 2장과 겹치지 않는 다음 스크린샷(없으면 히어로 키아트), 행은 DB 값(없는 행은 생략하고 roundupMissing에 남김)
+const roundupMissing = [];
+async function roundupDetailCtx(game, s) {
+  const n = (game.screenshots ?? []).length;
+  const pick = s.detailShot ?? Array.from({ length: n }, (_, i) => i + 1).find((i) => !(s.shots ?? [1, 2]).includes(i));
+  let bg;
+  if (pick) bg = await shotUri(game, pick);
+  else if (game.hero_image_url) { const f = path.join(CACHE, `keyart-${game.steam_appid}.jpg`); await fetchCached(game.hero_image_url, f, `키아트(${gameTitle(game)})`); bg = jpgUri(f); console.log(`  ${gameTitle(game)}: 남는 스크린샷이 없어 키아트를 상세 장 배경으로`); }
+  else throw new Error(`${gameTitle(game)}: 상세 장 배경으로 쓸 이미지가 없어요`);
+  const db = latestKrw(game);
+  const p = (await steamPrice(game).catch(() => null)) ?? { price: db[0]?.price, discount: db[0]?.discount_percent };
+  const lowest = Math.min(...[...db.map((r) => r.price), game.lowest_price].filter((v) => v > 0));
+  const { rows, missing } = detailRows(game, { price: p.price, discount: p.discount, lowest: db.length > 1 || game.lowest_price ? lowest : null });
+  roundupMissing.push({ name: gameTitle(game), missing });
+  return { name: gameTitle(game), bg, rows };
 }
 
 async function posterCtx(s) {
@@ -492,7 +510,7 @@ try {
     const imgUri = (v) => (/^https?:/.test(v) ? v : dataUri(path.resolve(path.dirname(postFile), v)));
     if (s.type === 'game-card' && s.image) ctx.photo = imgUri(s.image);
     if (s.type === 'poster-cover' || s.type === 'poster-game') ctx.poster = await posterCtx(s);
-    if (['game-data', 'shot-pair', 'shot', 'follow-card', 'overview', 'minigame', 'roundup-cover', 'roundup-game'].includes(s.type)) ctx.single = await singleCtx(s);
+    if (['game-data', 'shot-pair', 'shot', 'follow-card', 'overview', 'minigame', 'roundup-cover', 'roundup-game', 'roundup-detail'].includes(s.type)) ctx.single = await singleCtx(s);
     if (s.type === 'collage-cover') ctx.photos = s.images.map(imgUri);
     const size = sizeOf(s);
     if (s.type === 'poster-cover' && s.variants) { // 배경 후보: 01a.png, 01b.png … (고른 뒤 json에 bg를 쓰고 variants를 지운다)
@@ -545,6 +563,7 @@ try {
 } finally {
   await browser.close();
 }
+if (roundupMissing.length) console.log('상세 장에서 빠진 행:\n' + roundupMissing.map((m) => `  ${m.name}: ${m.missing.join(', ') || '없음'}`).join('\n'));
 
 // out/<post-id>/ 를 out/<post-id>.zip 으로 묶는다 (기존 zip은 덮어씀, 파일이 없는 og는 건너뜀). zip 명령이 필요해요
 {
