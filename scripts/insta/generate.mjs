@@ -316,17 +316,27 @@ function specLine(minSpec) {
   return cpu && gpu && ram ? `${cpu} / ${gpu} / ${ram}` : null;
 }
 // 첫 번째 트레일러(스팀 appdetails movies[0])를 cache에 받는다 — mp4가 있으면 그대로, 없으면 hls를 ffmpeg로 받아 mp4로 묶는다
+// HLS 마스터 목록에서 높이가 maxHeight 이하인 가장 큰 화질의 영상 주소 (4K를 받지 않으려고)
+async function hlsVariant(master, maxHeight) {
+  const lines = (await (await fetch(master)).text()).split('\n').map((l) => l.trim());
+  const variants = lines.flatMap((l, i) => { const m = l.match(/^#EXT-X-STREAM-INF:.*RESOLUTION=(\d+)x(\d+)/); return m && lines[i + 1] ? [{ h: Number(m[2]), uri: new URL(lines[i + 1], master).href }] : []; });
+  const ok = variants.filter((v) => v.h <= maxHeight).sort((a, b) => b.h - a.h)[0] ?? variants.sort((a, b) => a.h - b.h)[0];
+  if (!ok) throw new Error(`HLS 목록에서 화질을 못 찾았어요: ${master}`);
+  console.log(`  HLS 화질 ${ok.h}p 선택 (${variants.map((v) => v.h).join('/')})`);
+  return ok.uri;
+}
 const usedTrailers = []; // --showcase 보고용: { game, trailer, file }
-async function trailerFile(game, name, { preferGameplay = false } = {}) {
+async function trailerFile(game, name, { preferGameplay = false, max1080 = false } = {}) {
   const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${game.steam_appid}&l=koreana`);
   const movies = (await res.json())[game.steam_appid]?.data?.movies ?? [];
   const movie = name ? movies.find((m) => m.name === name) : (preferGameplay && movies.find((m) => /gameplay/i.test(m.name))) || movies[0]; // name을 주면 그 이름의 트레일러, 아니면 (gameplay 이름 우선이면 그것, 없으면) 첫 번째
   if (!movie) throw new Error(`${gameTitle(game)}에 스팀 트레일러${name ? ` "${name}"` : ''}가 없어요 (${movies.map((m) => m.name).join(', ')})`);
-  const file = path.join(CACHE, `trailer-${game.steam_appid}-${movie.id}.mp4`);
+  const file = path.join(CACHE, `trailer-${game.steam_appid}-${movie.id}${max1080 ? '-1080' : ''}.mp4`); // 받은 원본은 cache에 두고 재사용
   usedTrailers.push({ game: gameTitle(game), trailer: movie.name.trim(), file });
   if (!stale(file)) return file;
   const mp4 = movie.mp4?.max ?? movie.mp4?.['480'];
   if (mp4) await fetchCached(mp4, file, `트레일러(${gameTitle(game)})`);
+  else if (max1080 && movie.hls_h264) execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', await hlsVariant(movie.hls_h264, 1080), '-an', '-c', 'copy', file], { stdio: 'inherit' }); // 영상만(무음 장용)
   else execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', movie.hls_h264 ?? movie.dash_h264, '-c', 'copy', file], { stdio: 'inherit' });
   return file;
 }
@@ -339,15 +349,16 @@ function composeVideo({ trailer, overlay, start, out }) {
     '-filter_complex', `[0:v]scale=-2:${SIZE.height},crop=${SIZE.width}:${SIZE.height},fps=30[v];[v][1:v]overlay=format=auto,format=yuv420p[o]`,
     '-map', '[o]', '-map', '0:a?', '-c:v', 'libx264', '-preset', 'veryfast', '-c:a', 'copy', '-movflags', '+faststart', '-shortest', out], { stdio: 'inherit' });
 }
-// --showcase 영상 장: 트레일러를 1080 너비 16:9 그대로(크롭 없음) 위에 두고 아래는 검은 패널, 그 위에 글씨 오버레이. 무음 · H.264 veryfast · 15초
+// --showcase 영상 장: 트레일러를 높이 840으로 키워 좌우 크롭해 위에 두고 아래는 검은 패널, 그 위에 글씨 오버레이. 무음 · H.264 veryfast · 15초
 // 시작점 = start(초) 또는 영상 길이의 20%. 시작점부터 15초가 안 남으면 앞으로 당기고, 영상이 15초보다 짧으면 전체를 쓴다
-function composeShowcase({ trailer, overlay, start, out, name }) {
+const VIDEO_AREA_H = 840; // 영상 영역 높이(좌우는 가운데 기준 크롭, copy.videoFocusX 0~1로 위치 조정). template.mjs의 .sv-panel top과 같아야 함
+function composeShowcase({ trailer, overlay, start, out, name, focus = 0.5 }) {
   const dur = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', trailer]).toString());
   const len = Math.min(SHOWCASE_SECONDS, dur);
   let ss = start ?? dur * START_RATIO;
   if (ss + len > dur) { const fixed = Math.max(0, dur - len); console.warn(`경고: ${name} 시작점 ${ss.toFixed(1)}초부터 ${len.toFixed(0)}초가 안 남아 ${fixed.toFixed(1)}초로 당김 (트레일러 ${dur.toFixed(1)}초)`); ss = fixed; }
   execFileSync('ffmpeg', ['-v', 'error', '-y', '-ss', String(ss), '-t', String(len), '-i', trailer, '-loop', '1', '-framerate', '30', '-t', String(len), '-i', overlay,
-    '-filter_complex', `[0:v]scale=${SIZE.width}:608,setsar=1,fps=30,pad=${SIZE.width}:${SIZE.height}:0:0:black[v];[v][1:v]overlay=format=auto,format=yuv420p[o]`,
+    '-filter_complex', `[0:v]scale=-2:${VIDEO_AREA_H},crop=${SIZE.width}:${VIDEO_AREA_H}:(iw-${SIZE.width})*${focus}:0,setsar=1,fps=30,pad=${SIZE.width}:${SIZE.height}:0:0:black[v];[v][1:v]overlay=format=auto,format=yuv420p[o]`,
     '-map', '[o]', '-an', '-c:v', 'libx264', '-preset', 'veryfast', '-movflags', '+faststart', '-shortest', out], { stdio: 'inherit' });
   return { start: ss, length: len, duration: dur };
 }
@@ -426,7 +437,7 @@ async function currentPrice(game) {
 }
 async function showcaseVideoCtx(game, s) {
   const p = await currentPrice(game);
-  const trailer = await trailerFile(game, s.g.trailer, { preferGameplay: true });
+  const trailer = await trailerFile(game, s.g.trailer, { preferGameplay: true, max1080: true });
   const info = infoLine(game, { korean: hasKorean(game), price: p.price, discount: p.discount });
   console.log(`${gameTitle(game)} | ${info} | 트레일러 ${usedTrailers.at(-1).trailer}`);
   return { name: gameTitle(game), info, trailer };
@@ -605,7 +616,7 @@ try {
       const tmp = path.join(CACHE, `overlay-${postId}-${i + 1}.png`);
       await page.screenshot({ path: tmp, clip: { x: 0, y: 0, ...size }, omitBackground: true });
       const mp4 = file.replace(/\.png$/, '.mp4');
-      const r = composeShowcase({ trailer: ctx.single.trailer, overlay: tmp, start: s.g.clipStart, out: mp4, name: ctx.single.name });
+      const r = composeShowcase({ trailer: ctx.single.trailer, overlay: tmp, start: s.g.clipStart, out: mp4, name: ctx.single.name, focus: Math.min(1, Math.max(0, s.g.videoFocusX ?? 0.5)) });
       usedTrailers.find((u) => u.file === ctx.single.trailer).clip = r;
       console.log(path.relative(ROOT, mp4), `(시작 ${r.start.toFixed(1)}초, ${r.length.toFixed(0)}초)`);
       continue;

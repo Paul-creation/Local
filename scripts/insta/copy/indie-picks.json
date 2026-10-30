@@ -1,5 +1,5 @@
 {
-  "_games": "games 순서가 슬라이드 순서. desc는 3줄(\\n으로 나눔, 줄당 24자 이내): 첫 줄은 '~게임!'으로 끝나는 요약, 둘째·셋째 줄은 구체적으로 뭘 하는지. trailer: 쓸 스팀 트레일러 이름(없으면 gameplay가 들어간 것, 그것도 없으면 첫 번째). barrierReason: 진입 장벽 사유(없으면 DB 값, DB를 고치기 전까지 화면용 덮어쓰기). clipStart: 시작 초(없으면 영상 길이의 20%). chipsLabel·chips·oneliner는 시그니처 장에 들어감",
+  "_games": "games 순서가 슬라이드 순서. desc는 3줄(\\n으로 나눔, 줄당 24자 이내): 첫 줄은 '~게임!'으로 끝나는 요약, 둘째·셋째 줄은 구체적으로 뭘 하는지. trailer: 쓸 스팀 트레일러 이름(없으면 gameplay가 들어간 것, 그것도 없으면 첫 번째). barrierReason: 진입 장벽 사유(없으면 DB 값, DB를 고치기 전까지 화면용 덮어쓰기). clipStart: 시작 초(없으면 영상 길이의 20%). videoFocusX: 영상 좌우 크롭 위치 0(왼쪽)~1(오른쪽), 기본 0.5. chipsLabel·chips·oneliner는 시그니처 장에 들어감",
   "coverShot": 1,
   "games": [
     {
