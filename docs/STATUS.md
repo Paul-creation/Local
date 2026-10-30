@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-30 (main 6e4a208)
+기준: 2026-10-30 (main b402c8c)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/30: style/insta-showcase-layout — --showcase 영상 장 영역을 높이 840px(좌우 가운데 크롭, copy.videoFocusX 0~1)로 키우고 아래 패널과 하드 엣지로 맞닿게(그라데이션 없음), 텍스트는 경계 30px 아래부터. 트레일러는 HLS 1080p 이하만 받아 cache(-1080.mp4)에 재사용. build·test 491개 통과
 - 10/30: feat/insta-showcase — scripts/insta --showcase(인디 게임 추천 9선, indie-picks): 표지 + 게임마다 영상 장(mp4: 위 16:9 트레일러 15초·무음 + 아래 검은 패널, 시작점은 copy.clipStart 또는 영상 길이 20%)·시그니처 장(지금 사도 될까?·동접·진입 장벽·칩·엔딩/플레이타임·비슷한 게임·한 줄 평) + 팔로우 카드 20장. 판정은 showcase.mjs buyVerdict(기록 120일 미만이면 "아직 할인 기록이 적어요", buyTiming.ts 문구를 둘째 줄에). 공통: roundup 설명문 38px·정보 줄 30px, 포인트 컬러 기본 민트(--accent, 할로윈 roundup은 json accent로 주황 유지). copy.barrierReason으로 진입 장벽 사유 덮어쓰기(DB 미반영). 사이트 코드 변경 없음. build·test 491개 통과
 - 10/30: feat/insta-roundup-cover — scripts/insta --roundup(할로윈 공포 협동 9선) 머지. 표지(제목 위 kicker 30px·제목 72/80px 자동 축소·하단 40% 그라데이션), 게임당 소개 장 + 상세 장(인원은 "최대 N인"만, 스팀 평가 행 "매우 긍정적 · 리뷰 N.N만 개", 한 줄 평은 copy oneliner 우선·큰따옴표, 칩은 copy chips·chipsLabel 우선). feat/insta-machine-party-copy의 커밋 5개(생성 후 zip, 8장 상세, blur 맞춤, 클로즈업 표지, 문구)도 함께 들어옴. data/meta/play-modes.json의 DBD solo를 possible로(DB 반영은 SQL 실행 필요). 사이트 코드 변경 없음. build·test 491개 통과
 - 10/30: feat/insta-video-title — scripts/insta 트레일러 슬라이드(game-data video)에 게임명(58px, 넘치면 최소 44px)·한 줄 소개(tagline 필드)·1.3배 가격·정보 줄·위로 올린 그라데이션 추가. --detailed 플래그: 표지·트레일러·팔로우 카드는 posts/<id>.json 그대로, 사이에 해봄(copy.review 있을 때만)·플레이 스크린샷 4장·이런 친구랑·알아둘 점을 넣은 10장(detailed.mjs). 문구는 scripts/insta/copy/<id>.json이 우선, 비면 DB 값으로 자동(AI 호출 없음). 한 판 길이는 DB에 없어 copy.notes.length로만 채움. 세로 아트 404면 cover_vertical_url→hero→첫 스크린샷으로 대체. machine-party 게시물·copy 1차 입력 포함, 사이트 코드 변경 없음. build·test 491개 통과
