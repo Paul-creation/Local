@@ -1,13 +1,43 @@
 {
-  "headline": "",
-  "tagline": "",
-  "review": { "label": "", "index": null, "headline": "", "body": "" },
+  "headline": "벅샷 룰렛 만든 사람이\n이번엔 친구를 갈아 넣음",
+  "tagline": "실수 한 번이면 끝나는 잔혹 미니게임 파티",
+  "review": {
+    "label": "",
+    "index": null,
+    "headline": "",
+    "body": ""
+  },
   "shots": [
-    { "index": null, "heading": "", "body": "" },
-    { "index": null, "heading": "", "body": "" },
-    { "index": null, "heading": "", "body": "" },
-    { "index": null, "heading": "", "body": "" }
+    {
+      "index": null,
+      "heading": "",
+      "body": ""
+    },
+    {
+      "index": null,
+      "heading": "",
+      "body": ""
+    },
+    {
+      "index": null,
+      "heading": "",
+      "body": ""
+    },
+    {
+      "index": null,
+      "heading": "",
+      "body": ""
+    }
   ],
-  "friends": ["", "", ""],
-  "notes": { "people": "", "mode": "", "length": "", "korean": "" }
+  "friends": [
+    "뒤통수 치는 게 취미인 친구",
+    "비명 소리가 큰 친구",
+    "딱 4명 모이는 단톡방"
+  ],
+  "notes": {
+    "people": "2~4인",
+    "mode": "",
+    "length": "",
+    "korean": ""
+  }
 }
