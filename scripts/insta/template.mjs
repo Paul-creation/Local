@@ -156,6 +156,21 @@ em { font-style: normal; color: #FFD84A; }
 .poster-bg.blurred { filter: blur(40px) brightness(.6); transform: scale(1.15); }
 .poster-fit { position: absolute; left: 0; top: 40%; width: 100%; overflow: hidden; transform: translateY(-50%); }
 .poster-fit img { display: block; height: auto; max-width: none; }
+/* roundup-cover · roundup-game — --roundup 전용 (주황 #FF7A1A) */
+.rc-shade { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,.55) 0%, rgba(0,0,0,.15) 30%, rgba(0,0,0,.55) 60%, rgba(0,0,0,.92) 100%); }
+.rc-kicker { position: absolute; left: 64px; right: 64px; top: 72px; font-size: 38px; font-weight: 700; color: #fff; letter-spacing: -0.02em; text-shadow: 0 2px 8px rgba(0,0,0,.4); }
+.rc-title { position: absolute; left: 64px; right: 64px; bottom: 190px; font-size: 76px; font-weight: 900; line-height: 1.22; letter-spacing: -0.045em; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,.35); }
+.rc-title div:nth-child(2) { color: #FF7A1A; }
+.rc-brand { position: absolute; left: 64px; bottom: 72px; display: flex; align-items: center; gap: 14px; }
+.rc-brand i { width: 56px; height: 56px; border-radius: 16px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-style: normal; font-size: 40px; font-weight: 900; line-height: 1; }
+.rc-brand b { font-size: 36px; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
+.rg-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 42%; background: linear-gradient(to top, rgba(0,0,0,.94) 0%, rgba(0,0,0,.8) 50%, rgba(0,0,0,0) 100%); }
+.rg-text { position: absolute; left: 64px; right: 64px; bottom: 64px; text-align: left; }
+.rg-name { font-size: 58px; font-weight: 900; line-height: 1.2; letter-spacing: -0.03em; color: #FF7A1A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rg-info { margin-top: 10px; font-size: 26px; font-weight: 600; color: #FF7A1A; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.rg-info s { opacity: .75; }
+.rg-dash { margin-top: 6px; font-size: 26px; font-weight: 600; color: rgba(255,255,255,.6); line-height: 1.2; }
+.rg-desc { margin-top: 6px; font-size: 30px; font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; color: #fff; }
 .sp-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 2px; background: #000; }
 .sp-half { flex: 1; min-height: 0; background-size: cover; background-position: center; }
 .sp-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 45%; background: linear-gradient(to top, rgba(0,0,0,.92), rgba(0,0,0,0)); }
@@ -301,6 +316,25 @@ const BODY = {
       ${s.heading ? `<div class="mg-head">${rich(s.heading)}</div>` : ''}
       ${s.body ? `<div class="mg-body">${rich(s.body)}</div>` : ''}
     </div>` : ''}`,
+  'roundup-cover': (s, ctx) => `
+    <div class="ov-bg" style="background-image:url(${ctx.single.images[0]})"></div>
+    <div class="rc-shade"></div>
+    <div class="rc-kicker">${rich(s.kicker)}</div>
+    <div class="rc-title"><div>${rich(s.title1)}</div><div>${rich(s.title2)}</div></div>
+    <div class="rc-brand"><i>J</i><b>JamiDuNow</b></div>`,
+  'roundup-game': (s, ctx) => {
+    const g = ctx.single;
+    const won = (n) => `${Math.round(n).toLocaleString('ko-KR')}원`;
+    return `
+    <div class="sp-wrap">${g.images.map((u) => `<div class="sp-half" style="background-image:url(${u})"></div>`).join('')}</div>
+    <div class="rg-shade"></div>
+    <div class="rg-text">
+      <div class="rg-name" data-fit="58,36,1">${esc(g.name)}</div>
+      <div class="rg-info">${[esc(g.review ?? '평가 없음'), `한글${g.korean ? 'O' : 'X'}`, '멀티O', `${g.original ? `<s>${won(g.original)}</s> → ` : ''}${won(g.price)}${g.end ? ` (~${esc(g.end)})` : ''}`].join(' | ')}</div>
+      <div class="rg-dash">-</div>
+      <div class="rg-desc">${rich(s.desc)}</div>
+    </div>`;
+  },
   'shot-pair': (s, ctx) => `
     <div class="sp-wrap">${ctx.single.images.map((u) => `<div class="sp-half" style="background-image:url(${u})"></div>`).join('')}</div>
     <div class="sp-shade"></div>
@@ -359,4 +393,4 @@ export function renderSlide(slide, index, total, ctx) {
 }
 
 export const SIZE = { width: W, height: H };
-const BARE = ['game-data', 'shot-pair', 'shot', 'follow-card', 'overview', 'minigame']; // 페이지 번호·J 로고 없는 타입(poster-*와 같이)
+const BARE = ['game-data', 'shot-pair', 'shot', 'follow-card', 'overview', 'minigame', 'roundup-cover', 'roundup-game']; // 페이지 번호·J 로고 없는 타입(poster-*와 같이)

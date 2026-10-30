@@ -5,6 +5,7 @@
 //       SITE=http://localhost:3000 npm run insta -- <post-id> --refresh
 //       npm run insta -- <post-id> --detailed  (표지·트레일러·팔로우 카드는 그대로, 사이에 개요·플레이 4장을 넣은 8장. 문구는 copy/<post-id>.json)
 //       (끝나면 out/<post-id>.zip도 같이 만든다 — zip 명령 필요)
+//       npm run insta -- <post-id> --roundup   (여러 게임 모음: 표지 + 게임당 1장 + 팔로우 카드. 게임·설명은 copy/<post-id>.json의 games, 가격은 스팀 KR 스토어에서 받음)
 //       npm run og                       (공유 미리보기 public/og-default.png, posts/og.json)
 // 처음 한 번: npm ci (브라우저가 없으면 npx playwright install chromium)
 import fs from 'fs';
@@ -15,6 +16,8 @@ import { chromium } from 'playwright';
 import { renderSlide, sizeOf, SIZE } from './template.mjs';
 import { resolveGame, pickCandidates, gameTitle } from './pick.mjs';
 import { loadCopy, expandDetailed } from './detailed.mjs';
+import { expandRoundup } from './roundup.mjs';
+import { hasKorean, saleEndOf } from './pick-roundup.mjs';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DIR, '../..');
@@ -23,16 +26,17 @@ const SITE = (process.env.SITE || 'https://jamidunow.com').replace(/\/$/, '');
 const args = process.argv.slice(2);
 const refresh = args.includes('--refresh');
 const detailed = args.includes('--detailed');
+const roundup = args.includes('--roundup');
 const coverZooms = (args.find((a) => a.startsWith('--cover-zoom='))?.slice(13) ?? '').split(',').filter(Boolean).map(Number); // 표지 blur 비교용: 01a·01b… 로 따로 저장
 const postId = args.find((a) => !a.startsWith('--'));
-if (!postId) { console.error('사용법: npm run insta -- <post-id> [--refresh] [--detailed] [--cover-zoom=1,1.3,1.6]'); process.exit(1); }
+if (!postId) { console.error('사용법: npm run insta -- <post-id> [--refresh] [--detailed|--roundup] [--cover-zoom=1,1.3,1.6]'); process.exit(1); }
 
 const postFile = path.join(DIR, 'posts', `${postId}.json`);
 if (!fs.existsSync(postFile)) { console.error(`게시물 파일이 없어요: ${path.relative(ROOT, postFile)}`); process.exit(1); }
 const raw = fs.readFileSync(postFile, 'utf8');
 if (raw.includes('재밌드나')) { console.error('화면에는 "재밌드나"를 쓰지 않아요. JamiDuNow만 쓰세요.'); process.exit(1); }
 const baseSlides = JSON.parse(raw);
-const slides = (detailed ? await expandDetailed(baseSlides, loadCopy(DIR, postId)) : baseSlides).flatMap((s) => (s.type === 'detail-split' ? Array.from({ length: s.slides ?? 1 }, (_, part) => ({ ...s, part, parts: s.slides ?? 1 })) : [s])); // detail-split 한 줄 = slides장
+const slides = (roundup ? expandRoundup(baseSlides, loadCopy(DIR, postId)) : detailed ? await expandDetailed(baseSlides, loadCopy(DIR, postId)) : baseSlides).flatMap((s) => (s.type === 'detail-split' ? Array.from({ length: s.slides ?? 1 }, (_, part) => ({ ...s, part, parts: s.slides ?? 1 })) : [s])); // detail-split 한 줄 = slides장
 if (!Array.isArray(slides) || slides.length === 0) { console.error('json은 슬라이드 배열이어야 해요.'); process.exit(1); }
 
 // 첫 방문자 투어(jdn_tour_v2)가 화면을 덮어 클릭을 막으니, 투어를 건너뛴 상태로 시작한다
@@ -334,6 +338,8 @@ function composeVideo({ trailer, overlay, start, out }) {
 async function singleCtx(s) {
   const game = await resolveGame(s.game);
   if (s.type === 'follow-card') return { art: await posterArt(game) };
+  if (s.type === 'roundup-cover') return { images: [await shotUri(game, s.shot)] };
+  if (s.type === 'roundup-game') return roundupGameCtx(game, s);
   if (s.type === 'overview' || s.type === 'minigame') return { images: [await shotUri(game, s.index)] };
   if (s.type === 'shot') return { images: [await shotUri(game, s.index)] };
   if (s.type === 'shot-pair') return { images: await Promise.all(s.index.map((n) => shotUri(game, n))) };
@@ -349,6 +355,29 @@ async function singleCtx(s) {
   const end = sale && now.sale_ends_at && new Date(now.sale_ends_at) > new Date() ? kstMD(now.sale_ends_at) : null;
   console.log(`${gameTitle(game)} | ${won(now.price)} ${sale ? `-${now.discount_percent}%` : ''} | ${chips.join(' · ')} | 종료 ${end ?? '-'} | ${specLine(game.min_spec) ?? '사양 없음'}`);
   return { video: !!s.video, trailer: s.video ? await trailerFile(game, s.trailer) : null, bg: s.video ? null : await shotUri(game, s.index), name: gameTitle(game), tagline: s.tagline ?? null, price: won(now.price), original: sale && now.original_price ? won(now.original_price) : null, discount: sale ? now.discount_percent : 0, chips, saleEnd: end, spec: specLine(game.min_spec) };
+}
+
+// 모음 게임 장: 가격은 스팀 KR 스토어(price_overview, 원 ×100 단위) — cache/price-<appid>.json, --refresh 때 다시 받음. 실패하면 DB 값. 종료일은 DB(ITAD) 만료일, 없으면 11/3
+async function steamPrice(game) {
+  const file = path.join(CACHE, `price-${game.steam_appid}.json`);
+  if (stale(file)) {
+    const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${game.steam_appid}&cc=kr&l=koreana&filters=price_overview`);
+    const po = (await res.json())[game.steam_appid]?.data?.price_overview;
+    if (!po) return null;
+    fs.writeFileSync(file, JSON.stringify({ original: po.initial / 100, price: po.final / 100, discount: po.discount_percent }));
+  }
+  return JSON.parse(fs.readFileSync(file, 'utf8'));
+}
+async function roundupGameCtx(game, s) {
+  const db = latestKrw(game)[0];
+  let p = await steamPrice(game).catch(() => null);
+  if (!p) { console.warn(`경고: ${gameTitle(game)} 스팀 가격을 못 받아 DB 값을 씀`); p = { original: db?.original_price, price: db?.price, discount: db?.discount_percent ?? 0 }; }
+  if (!p.discount) console.warn(`경고: ${gameTitle(game)}는 스팀에서 지금 할인 중이 아니에요`);
+  if (db && db.price !== p.price) console.log(`  가격 갱신: ${gameTitle(game)} DB ${db.price} → 스팀 ${p.price}`);
+  const images = await Promise.all((s.shots ?? [1, 2]).map((n) => shotUri(game, n)));
+  const ctx = { name: gameTitle(game), review: game.review_summary, korean: hasKorean(game), original: p.discount ? p.original : null, price: p.price, end: p.discount ? saleEndOf(db) : null, images };
+  console.log(`${ctx.name} | ${ctx.review} | 한글${ctx.korean ? 'O' : 'X'} | ${p.discount ? `${p.original}→` : ''}${p.price}${ctx.end ? ` (~${ctx.end})` : ''}`);
+  return ctx;
 }
 
 async function posterCtx(s) {
@@ -463,7 +492,7 @@ try {
     const imgUri = (v) => (/^https?:/.test(v) ? v : dataUri(path.resolve(path.dirname(postFile), v)));
     if (s.type === 'game-card' && s.image) ctx.photo = imgUri(s.image);
     if (s.type === 'poster-cover' || s.type === 'poster-game') ctx.poster = await posterCtx(s);
-    if (['game-data', 'shot-pair', 'shot', 'follow-card', 'overview', 'minigame'].includes(s.type)) ctx.single = await singleCtx(s);
+    if (['game-data', 'shot-pair', 'shot', 'follow-card', 'overview', 'minigame', 'roundup-cover', 'roundup-game'].includes(s.type)) ctx.single = await singleCtx(s);
     if (s.type === 'collage-cover') ctx.photos = s.images.map(imgUri);
     const size = sizeOf(s);
     if (s.type === 'poster-cover' && s.variants) { // 배경 후보: 01a.png, 01b.png … (고른 뒤 json에 bg를 쓰고 variants를 지운다)
