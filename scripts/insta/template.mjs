@@ -392,8 +392,8 @@ const BODY = {
       <div class="sv-name" data-fit="58,36,1">${esc(v.name)}</div>
       <div class="sv-info" data-fit="30,24,1">${esc(v.info)}</div>
       <div class="sv-desc">${rich(s.g.desc)}</div>
-    </div>
-    <div class="sv-brand"><i>J</i><b>JamiDuNow</b></div>`;
+      <div class="sv-brand"><i>J</i><b>JamiDuNow</b></div>
+    </div>`;
   },
   'showcase-sig': (s, ctx) => {
     const g = ctx.single;

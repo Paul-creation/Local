@@ -597,6 +597,11 @@ try {
     await page.setContent(renderSlide(s, i, slides.length, ctx), { waitUntil: 'load' });
     await page.evaluate(() => document.fonts.ready);
     await page.evaluate(FIT);
+    if (s.type === 'showcase-video') { // 설명 3줄·로고가 겹치거나 패널 밖으로 잘리면 경고 (그러면 VIDEO_AREA_H를 930까지 줄인다)
+      const m = await page.evaluate(() => { const r = (q) => document.querySelector(q).getBoundingClientRect(); return { descBottom: r('.sv-desc').bottom, brandTop: r('.sv-brand').top, brandBottom: r('.sv-brand').bottom }; });
+      if (m.brandTop < m.descBottom || m.brandBottom > SIZE.height) console.warn(`경고: ${ctx.single.name} 로고가 설명과 겹치거나 잘려요 (설명 끝 ${m.descBottom.toFixed(0)}, 로고 ${m.brandTop.toFixed(0)}~${m.brandBottom.toFixed(0)}, 높이 ${SIZE.height})`);
+      else console.log(`  로고 여유: 아래 ${(SIZE.height - m.brandBottom).toFixed(0)}px`);
+    }
     for (const [sel, who] of [['.rg-desc', '설명문'], ['.sv-desc', '설명문']]) { // 설명문은 최대 3줄, 줄당 24자 안팎 — 넘으면 경고
       const lines = await page.evaluate((q) => { const el = document.querySelector(q); return el ? Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight)) : 0; }, sel);
       const long = (s.desc ?? s.g?.desc ?? '').split('\n').filter((l) => [...l].length > 24);
