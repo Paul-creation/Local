@@ -4,6 +4,7 @@
 //       npm run insta -- <post-id> --refresh   (jamidunow.com에서 벽·스크린샷을 다시 찍음)
 //       SITE=http://localhost:3000 npm run insta -- <post-id> --refresh
 //       npm run insta -- <post-id> --detailed  (표지·트레일러·팔로우 카드는 그대로, 사이에 해봄·플레이·친구·알아둘 점을 넣은 10장. 문구는 copy/<post-id>.json)
+//       (끝나면 out/<post-id>.zip도 같이 만든다 — zip 명령 필요)
 //       npm run og                       (공유 미리보기 public/og-default.png, posts/og.json)
 // 처음 한 번: npm ci (브라우저가 없으면 npx playwright install chromium)
 import fs from 'fs';
@@ -493,4 +494,15 @@ try {
   }
 } finally {
   await browser.close();
+}
+
+// out/<post-id>/ 를 out/<post-id>.zip 으로 묶는다 (기존 zip은 덮어씀, 파일이 없는 og는 건너뜀). zip 명령이 필요해요
+{
+  const outDir = path.join(DIR, 'out', postId);
+  if (fs.existsSync(outDir) && fs.readdirSync(outDir).length) {
+    const zipFile = `${outDir}.zip`;
+    fs.rmSync(zipFile, { force: true });
+    execFileSync('zip', ['-q', '-r', zipFile, '.'], { cwd: outDir });
+    console.log(path.relative(ROOT, zipFile));
+  }
 }
