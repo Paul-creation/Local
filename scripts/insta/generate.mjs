@@ -338,7 +338,7 @@ async function singleCtx(s) {
   if (now && rows.length > 1 && now.price <= Math.min(...rows.map((p) => p.price))) chips.push('기록상 최저가');
   const end = sale && now.sale_ends_at && new Date(now.sale_ends_at) > new Date() ? kstMD(now.sale_ends_at) : null;
   console.log(`${gameTitle(game)} | ${won(now.price)} ${sale ? `-${now.discount_percent}%` : ''} | ${chips.join(' · ')} | 종료 ${end ?? '-'} | ${specLine(game.min_spec) ?? '사양 없음'}`);
-  return { video: !!s.video, trailer: s.video ? await trailerFile(game, s.trailer) : null, bg: s.video ? null : await shotUri(game, s.index), name: gameTitle(game), price: won(now.price), original: sale && now.original_price ? won(now.original_price) : null, discount: sale ? now.discount_percent : 0, chips, saleEnd: end, spec: specLine(game.min_spec) };
+  return { video: !!s.video, trailer: s.video ? await trailerFile(game, s.trailer) : null, bg: s.video ? null : await shotUri(game, s.index), name: gameTitle(game), tagline: s.tagline ?? null, price: won(now.price), original: sale && now.original_price ? won(now.original_price) : null, discount: sale ? now.discount_percent : 0, chips, saleEnd: end, spec: specLine(game.min_spec) };
 }
 
 async function posterCtx(s) {
@@ -458,6 +458,16 @@ try {
     await page.setViewportSize(size);
     await page.setContent(renderSlide(s, i, slides.length, ctx), { waitUntil: 'load' });
     await page.evaluate(() => document.fonts.ready);
+    await page.evaluate(() => { // data-fit="최대,최소": 한 줄에 안 들어가면 폰트를 최소까지 줄이고, 그래도 넘치면 2줄로 둔다
+      for (const el of document.querySelectorAll('[data-fit]')) {
+        const [max, min] = el.dataset.fit.split(',').map(Number);
+        el.style.whiteSpace = 'nowrap';
+        let px = max;
+        el.style.fontSize = `${px}px`;
+        while (px > min && el.scrollWidth > el.clientWidth) el.style.fontSize = `${--px}px`;
+        if (el.scrollWidth > el.clientWidth) el.style.whiteSpace = 'normal';
+      }
+    });
     const file = s.type === 'og' ? path.join(ROOT, 'public/og-default.png') : path.join(outDir, `${String(i + 1).padStart(2, '0')}.png`);
     if (s.type === 'game-data' && s.video) { // 영상 배경: 투명 오버레이 PNG는 임시 폴더에만 두고 02.mp4만 남긴다
       const tmp = path.join(CACHE, `overlay-${postId}-${i + 1}.png`);

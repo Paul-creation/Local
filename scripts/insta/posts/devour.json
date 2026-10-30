@@ -1,6 +1,6 @@
 [
   {"type": "poster-cover", "game": "1274570", "headline": "주인장도 하다가\n소리지른 게임", "chips": [], "bg": 3},
-  {"type": "game-data", "game": "1274570", "index": 5, "video": true, "videoStart": 18, "trailer": "Gameplay Trailer"},
+  {"type": "game-data", "game": "1274570", "index": 5, "video": true, "videoStart": 18, "trailer": "Gameplay Trailer", "tagline": "자외선 손전등 하나로 악마를 쫓아내는 4인 협동 공포"},
   {"type": "shot-pair", "game": "1274570", "index": [6, 7], "heading": "염소 악마 아자젤을 쫓아내라", "body": "무작위로 숨겨진 의식 물품을 찾아\n시간 안에 퇴마 의식을 끝내야 해요."},
   {"type": "shot-pair", "game": "1274570", "index": [1, 4], "heading": "무기는 손전등 하나뿐", "body": "자외선 손전등 하나로 숨고 도망치는 4인 협동.\n한 판 길어야 1시간, 짧고 굵게 비명 지르기 좋아요."},
   {"type": "shot", "game": "1274570", "index": 2},

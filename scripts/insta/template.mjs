@@ -131,15 +131,18 @@ em { font-style: normal; color: #FFD84A; }
 .gd-chip { border: 3px solid rgba(255,255,255,.4); border-radius: 999px; padding: 10px 28px; font-size: 38px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }
 .gd-sub { margin-top: 22px; font-size: 32px; font-weight: 500; color: #9A9A9A; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .gd-sub + .gd-sub { margin-top: 10px; }
-/* game-data 영상 배경 — 아래 30%만 검정 85%→0% 그라데이션, 글은 두 줄(가격 / 인원·특징)만 */
-.gv-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 30%; background: linear-gradient(to top, rgba(0,0,0,.85), rgba(0,0,0,0)); }
-.gv-text { position: absolute; left: 64px; right: 64px; bottom: 110px; }
-.gv-price { display: flex; align-items: baseline; gap: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.gv-now { font-size: 40px; font-weight: 800; letter-spacing: -0.02em; color: #4ADE80; line-height: 1.2; }
-.gv-orig { font-size: 24px; font-weight: 500; color: #9a9a9a; text-decoration: line-through; }
-.gv-off { font-size: 24px; font-weight: 500; color: #4ADE80; }
-.gv-end { align-self: center; font-size: 20px; font-weight: 500; color: #fff; border: 2px solid rgba(255,255,255,.25); border-radius: 999px; padding: 3px 14px; }
-.gv-facts { margin-top: 10px; font-size: 22px; font-weight: 500; color: rgba(255,255,255,.8); white-space: nowrap; }
+/* game-data 영상 배경 — 아래 쪽 검정 그라데이션 위에 게임명 / 한 줄 소개 / (여백 20px) / 가격 줄 / 인원·특징 줄 */
+.gv-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 52%; background: linear-gradient(to top, rgba(0,0,0,.9) 0%, rgba(0,0,0,.78) 40%, rgba(0,0,0,0) 100%); }
+.gv-text { position: absolute; left: 64px; right: 64px; bottom: 110px; text-align: left; }
+.gv-name { font-size: 58px; font-weight: 800; line-height: 1.2; letter-spacing: -0.03em; color: #fff; }
+.gv-tag { margin-top: 8px; font-size: 30px; font-weight: 500; line-height: 1.35; color: #fff; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.gv-gap { height: 20px; }
+.gv-price { display: flex; align-items: baseline; gap: 16px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.gv-now { font-size: 52px; font-weight: 800; letter-spacing: -0.02em; color: #4ADE80; line-height: 1.2; }
+.gv-orig { font-size: 31px; font-weight: 500; color: #9a9a9a; text-decoration: line-through; }
+.gv-off { font-size: 31px; font-weight: 500; color: #4ADE80; }
+.gv-end { align-self: center; font-size: 26px; font-weight: 500; color: #fff; border: 3px solid rgba(255,255,255,.25); border-radius: 999px; padding: 4px 18px; }
+.gv-facts { margin-top: 13px; font-size: 29px; font-weight: 500; color: rgba(255,255,255,.8); white-space: nowrap; }
 .sp-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 2px; background: #000; }
 .sp-half { flex: 1; min-height: 0; background-size: cover; background-position: center; }
 .sp-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 45%; background: linear-gradient(to top, rgba(0,0,0,.92), rgba(0,0,0,0)); }
@@ -243,6 +246,9 @@ const BODY = {
     <style>html, body { background: transparent !important; }</style>
     <div class="gv-shade"></div>
     <div class="gv-text">
+      <div class="gv-name" data-fit="58,44">${rich(g.name)}</div>
+      ${g.tagline ? `<div class="gv-tag">${rich(g.tagline)}</div>` : ''}
+      <div class="gv-gap"></div>
       <div class="gv-price">
         <span class="gv-now">${rich(g.price)}</span>
         ${g.original ? `<span class="gv-orig">${rich(g.original)}</span>` : ''}
