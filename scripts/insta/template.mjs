@@ -190,7 +190,6 @@ em { font-style: normal; color: #FFD84A; }
 .rd-foot { position: absolute; left: 72px; right: 72px; bottom: 72px; font-size: 26px; font-weight: 500; color: rgba(255,255,255,.55); }
 /* showcase-video — 위 16:9 트레일러(영상은 ffmpeg가 얹음) + 아래 검은 패널. 이 PNG는 글씨만 있는 투명 오버레이 */
 html:has(.sv), html:has(.sv) body { background: transparent !important; }
-.sv-grad { position: absolute; left: 0; right: 0; top: 720px; height: 120px; background: linear-gradient(to bottom, rgba(0,0,0,0), #000); }
 .sv-panel { position: absolute; left: 0; right: 0; top: 840px; bottom: 0; background: #000; padding: 30px 64px 0; text-align: left; }
 .sv-name { font-size: 58px; font-weight: 900; line-height: 1.2; letter-spacing: -0.03em; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sv-info { margin-top: 10px; font-size: 30px; font-weight: 600; color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -389,7 +388,6 @@ const BODY = {
     const v = ctx.single;
     return `
     <div class="sv"></div>
-    <div class="sv-grad"></div>
     <div class="sv-panel">
       <div class="sv-name" data-fit="58,36,1">${esc(v.name)}</div>
       <div class="sv-info" data-fit="30,24,1">${esc(v.info)}</div>
