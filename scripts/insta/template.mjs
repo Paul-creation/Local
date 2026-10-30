@@ -154,7 +154,8 @@ em { font-style: normal; color: #FFD84A; }
 .mg-head { font-size: 60px; font-weight: 900; line-height: 1.2; letter-spacing: -0.04em; color: #fff; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .mg-body { margin-top: 16px; font-size: 36px; font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; color: rgba(255,255,255,.9); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .poster-bg.blurred { filter: blur(40px) brightness(.6); transform: scale(1.15); }
-.poster-top { position: absolute; left: 0; top: 0; width: 100%; height: auto; display: block; }
+.poster-fit { position: absolute; left: 0; top: 40%; width: 100%; overflow: hidden; transform: translateY(-50%); }
+.poster-fit img { display: block; height: auto; max-width: none; }
 .sp-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 2px; background: #000; }
 .sp-half { flex: 1; min-height: 0; background-size: cover; background-position: center; }
 .sp-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 45%; background: linear-gradient(to top, rgba(0,0,0,.92), rgba(0,0,0,0)); }
@@ -178,8 +179,8 @@ const GRID_CELLS = [['people', '인원'], ['price', '가격·역대 최저가'],
 
 // 포스터 레이아웃 — 배경(세로 아트) · 아래 그라데이션 · 왼쪽 위 로고 · 왼쪽 아래 kicker/제목/칩. chips는 {text, sale}
 const poster = (s, ctx, headline, chips, brandBelow = false) => `
-    ${ctx.poster.top
-      ? `<div class="poster-bg blurred" style="background-image:url(${ctx.poster.image})"></div><img class="poster-top" src="${ctx.poster.image}">`
+    ${s.fit === 'blur'
+      ? `<div class="poster-bg blurred" style="background-image:url(${ctx.poster.image})"></div><div class="poster-fit"><img src="${ctx.poster.image}" style="width:${(s.zoom ?? 1.3) * 100}%; margin-left:-${((s.zoom ?? 1.3) - 1) * (s.focusX ?? 0.5) * 100}%"></div>`
       : `<div class="poster-bg" style="background-image:url(${ctx.poster.image})"></div>`}
     <div class="poster-shade"></div>
     ${brandBelow ? '' : '<div class="poster-logo"><i>J</i><b>JamiDuNow</b></div>'}
