@@ -181,7 +181,7 @@ const GRID_CELLS = [['people', '인원'], ['price', '가격·역대 최저가'],
 const poster = (s, ctx, headline, chips, brandBelow = false) => `
     ${s.fit === 'blur'
       ? `<div class="poster-bg blurred" style="background-image:url(${ctx.poster.image})"></div><div class="poster-fit"><img src="${ctx.poster.image}" style="width:${(s.zoom ?? 1.3) * 100}%; margin-left:-${((s.zoom ?? 1.3) - 1) * (s.focusX ?? 0.5) * 100}%"></div>`
-      : `<div class="poster-bg" style="background-image:url(${ctx.poster.image})"></div>`}
+      : `<div class="poster-bg" style="background-image:url(${ctx.poster.image});${s.zoom ? ` transform:scale(${s.zoom}); transform-origin:${(s.focusX ?? 0.5) * 100}% ${(s.focusY ?? 0.5) * 100}%;` : ''}"></div>`}
     <div class="poster-shade"></div>
     ${brandBelow ? '' : '<div class="poster-logo"><i>J</i><b>JamiDuNow</b></div>'}
     <div class="poster-text">

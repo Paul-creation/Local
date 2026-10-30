@@ -37,7 +37,7 @@ export async function expandDetailed(base, copy, log = console.log) {
   const pool = Array.from({ length: total }, (_, i) => i + 1).filter((n) => !used.has(n));
   const next = (explicit) => { const n = pick(explicit); if (n) { const at = pool.indexOf(Number(n)); if (at >= 0) pool.splice(at, 1); return Number(n); } return pool.shift(); };
 
-  const out = [{ ...cover, bg: coverImage ?? 'keyart', fit: pick(copy.coverFit), zoom: pick(copy.coverZoom), focusX: pick(copy.coverFocusX), headline: pick(copy.headline) ?? cover.headline }];
+  const out = [{ ...cover, bg: coverImage ?? 'keyart', fit: pick(copy.coverFit), zoom: pick(copy.coverZoom), focusX: pick(copy.coverFocusX), focusY: pick(copy.coverFocusY), headline: pick(copy.headline) ?? cover.headline }];
   out.push({ ...data, tagline: pick(copy.tagline) ?? data.tagline ?? autoTagline(game) });
 
   // overview는 객체({index,headline,body}) 또는 문자열(첫 줄 = 헤드라인, 나머지 줄 = 본문)

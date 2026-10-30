@@ -1,6 +1,11 @@
 {
-  "_coverImage": "표지를 직접 지정하려면 coverImage에 스크린샷 번호나 이미지 경로·주소를 넣는다(비우면 스팀 키아트). 키아트가 별로면 담배 아저씨 클로즈업 스크린샷 3번(scripts/insta/cache/shot-4108000-3.jpg)을 쓰려면 \"coverImage\": 3 — 이때 개요·플레이 슬라이드의 3번이 겹치니 shots[0].index도 바꿀 것",
-  "coverImage": null,
+  "_coverImage": "표지 이미지: 스크린샷 번호나 이미지 경로·주소(비우면 스팀 library_hero). 지금은 담배 아저씨 클로즈업(스크린샷 3번, scripts/insta/cache/shot-4108000-3.jpg). 스팀 키아트로 되돌리려면 coverImage를 null로 (이때 개요·플레이 슬라이드 배정은 그대로)",
+  "coverImage": 3,
+  "_coverFit": "coverFit: \"cover\"(꽉 채움) | \"blur\"(이미지 전체를 위쪽 40%에 놓고 남는 곳은 흐린 같은 이미지). coverZoom: blur는 가로 배율(기본 1.3, 1=가로 폭 맞춤), cover는 확대 배율(없으면 확대 안 함). coverFocusX·coverFocusY(0~1, 기본 0.5): cover의 확대 기준점(화면 안 위치) / blur의 좌우 위치(X만)",
+  "coverFit": "cover",
+  "coverZoom": 1.3,
+  "coverFocusX": 0.55,
+  "coverFocusY": 0.62,
   "headline": "벅샷 룰렛 만든 사람의\n잔혹한 파티게임",
   "tagline": "실수 한 번이면 끝나는 잔혹 미니게임 파티",
   "overview": "실수 한 번이면 바로 탈락\n벅샷 룰렛 개발자 Mike Klubnika의 신작.\n2~4명이 잔혹한 미니게임을 번갈아 치르며\n마지막까지 살아남는 사람이 이기는 파티게임이에요.",
@@ -26,6 +31,5 @@
       "heading": "끝까지 버티면 생존",
       "body": "가시 깔린 에스컬레이터 위에서\n마지막까지 버티는 사람이 이겨요."
     }
-  ],
-  "_coverFit": "coverFit: \"cover\"(기본, 꽉 채움) | \"blur\"(이미지 전체를 위쪽 40% 지점에 놓고 남는 곳은 흐린 같은 이미지). coverZoom(blur 전용, 기본 1.3, 1=가로 폭에 맞춤)·coverFocusX(0~1, 기본 0.5)"
+  ]
 }
