@@ -58,7 +58,10 @@ export async function expandDetailed(base, copy, log = console.log) {
   const out = [{ ...cover, headline: pick(copy.headline) ?? cover.headline }];
   out.push({ ...data, tagline: pick(copy.tagline) ?? data.tagline ?? autoTagline(game) });
 
-  const rv = copy.review ?? {};
+  // review는 객체({label,index,headline,body}) 또는 문자열(첫 줄 = 헤드라인, 나머지 줄 = 본문)
+  const rv = typeof copy.review === 'string'
+    ? (([head, ...rest]) => ({ headline: head, body: rest.join('\n') }))(copy.review.trim().split('\n'))
+    : copy.review ?? {};
   if (pick(rv.headline) && pick(rv.body)) {
     const index = next(rv.index);
     if (index) out.push({ type: 'review', game: gameKey, index, label: pick(rv.label) ?? '직접 해봤습니다', headline: rv.headline.trim(), body: rv.body.trim() });
