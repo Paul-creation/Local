@@ -207,6 +207,12 @@ html:has(.sv), html:has(.sv) body { background: transparent !important; }
 .ss-mid .rd-val.fit { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ss-mid .rd-chip { font-size: 30px; padding: 6px 22px; }
 .ss-mid .rd-chips { margin-top: 10px; }
+/* 시그니처 장 글로우는 roundup-detail의 절반(블러 반경·불투명도) — 은은하게만 */
+.ss-top .rd-label { box-shadow: 0 0 7px rgba(255,255,255,.08); }
+.ss-top .rd-name { text-shadow: 0 0 11px rgba(255,255,255,.18); }
+.ss-head { text-shadow: 0 0 12px rgba(255,255,255,.2); }
+.ss-mid .rd-val { text-shadow: 0 0 9px rgba(255,255,255,.14); }
+.ss-mid .rd-chip { box-shadow: 0 0 7px rgba(255,255,255,.06); }
 .sp-wrap { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 2px; background: #000; }
 .sp-half { flex: 1; min-height: 0; background-size: cover; background-position: center; }
 .sp-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 45%; background: linear-gradient(to top, rgba(0,0,0,.92), rgba(0,0,0,0)); }
@@ -400,7 +406,7 @@ const BODY = {
     return `
     <div class="rd-bg" style="background-image:url(${g.bg})"></div>
     <div class="rd-dim"></div>
-    <div class="rd-top"><span class="rd-label">JamiDuNow 데이터</span><div class="rd-name" data-fit="52,34,1">${esc(g.name)}</div></div>
+    <div class="rd-top ss-top"><span class="rd-label">JamiDuNow 데이터</span><div class="rd-name" data-fit="52,34,1">${esc(g.name)}</div></div>
     <div class="ss-mid">${g.rows.map((r) => r.key === 'verdict'
       ? `<div class="ss-verdict"><div class="rd-label-s">${esc(r.label)}</div><div class="ss-head" data-fit="56,38,1">${esc(r.value)}</div><div class="ss-sub">${esc(r.sub)}</div></div>`
       : `<div class="rd-row"><div class="rd-label-s">${esc(r.label)}</div>${r.chips
