@@ -363,7 +363,7 @@ const BODY = {
     <div class="rd-mid">${g.rows.map((r) => `<div class="rd-row"><div class="rd-label-s">${esc(r.label)}</div>${r.chips
       ? `<div class="rd-chips">${r.chips.map((c) => `<span class="rd-chip">${esc(c)}</span>`).join('')}</div>`
       : `<div class="rd-val${r.label === '한 줄 평' ? ' small' : ''}">${esc(r.value)}${r.badge ? `<span class="rd-badge">${esc(r.badge)}</span>` : ''}</div>`}</div>`).join('')}</div>
-    <div class="rd-foot">더 자세한 비교는 jamidunow.com</div>`;
+    <div class="rd-foot">자세한 정보는 jamidunow.com</div>`;
   },
   'shot-pair': (s, ctx) => `
     <div class="sp-wrap">${ctx.single.images.map((u) => `<div class="sp-half" style="background-image:url(${u})"></div>`).join('')}</div>
