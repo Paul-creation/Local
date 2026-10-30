@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-10-30 (main 0cf6c82)
+기준: 2026-10-30 (main 1780eaa)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 10/30: feat/insta-roundup-cover — scripts/insta --roundup(할로윈 공포 협동 9선) 머지. 표지(제목 위 kicker 30px·제목 72/80px 자동 축소·하단 40% 그라데이션), 게임당 소개 장 + 상세 장(인원은 "최대 N인"만, 스팀 평가 행 "매우 긍정적 · 리뷰 N.N만 개", 한 줄 평은 copy oneliner 우선·큰따옴표, 칩은 copy chips·chipsLabel 우선). feat/insta-machine-party-copy의 커밋 5개(생성 후 zip, 8장 상세, blur 맞춤, 클로즈업 표지, 문구)도 함께 들어옴. data/meta/play-modes.json의 DBD solo를 possible로(DB 반영은 SQL 실행 필요). 사이트 코드 변경 없음. build·test 491개 통과
 - 10/30: feat/insta-video-title — scripts/insta 트레일러 슬라이드(game-data video)에 게임명(58px, 넘치면 최소 44px)·한 줄 소개(tagline 필드)·1.3배 가격·정보 줄·위로 올린 그라데이션 추가. --detailed 플래그: 표지·트레일러·팔로우 카드는 posts/<id>.json 그대로, 사이에 해봄(copy.review 있을 때만)·플레이 스크린샷 4장·이런 친구랑·알아둘 점을 넣은 10장(detailed.mjs). 문구는 scripts/insta/copy/<id>.json이 우선, 비면 DB 값으로 자동(AI 호출 없음). 한 판 길이는 DB에 없어 copy.notes.length로만 채움. 세로 아트 404면 cover_vertical_url→hero→첫 스크린샷으로 대체. machine-party 게시물·copy 1차 입력 포함, 사이트 코드 변경 없음. build·test 491개 통과
 - 10/29: feat/insta-single-game — 인스타 "한 게시물 = 한 게임" 템플릿(scripts/insta, 사이트 코드 변경 없음). 타입 game-data(DB에서 가격·원가·할인율·할인 종료일·인원·협동·한국어·기록상 최저가·최소 사양 자동, video: true면 스팀 트레일러 12초 위에 오버레이 → out/<id>/02.mp4, ffmpeg 필요, videoStart·trailer(이름) 지정 가능)·shot-pair·shot·follow-card 추가, 페이지 번호·J 로고 없음. poster-cover는 bg("hero"=library_hero_2x 또는 스크린샷 번호)·variants(후보 01a·01b…)·kicker 생략 지원, 로고는 headline 아래. 스크린샷 번호는 스팀 갤러리 순서로 1부터. 이 브랜치에 feat/insta-halloween2의 poster 템플릿 커밋 2개(765230d·5b0cb7d)도 같이 들어옴. DEVOUR 게시물(posts/devour.json) 포함. build·test 491개 통과
 - 10/29: fix/isr-writes — Vercel 무료 플랜 ISR Writes(월 20만) 100% 소진 대응. revalidate: 게임 상세 3600→86400, 큐레이터 /c/[handle] 300→86400, /guide 3600→86400, 메인·/this-week·/api/games/list·/api/games/taste 300→3600. 스크립트·workflow는 revalidate를 부르지 않음(확인). 댓글 작성·삭제·신고 숨김의 revalidatePath는 그 게임 한 경로만이라 유지. 메인 반영 지연이 최대 5분→1시간. build·test 491개 통과
