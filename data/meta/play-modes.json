@@ -5916,10 +5916,10 @@
     "game_id": "fe26c12e-8d78-456c-aa34-d8d7ed616593",
     "steam_appid": "381210",
     "name": "Dead by Daylight",
-    "solo": "none",
+    "solo": "possible",
     "party_max": 5,
     "session_max": 5,
-    "reason": "온라인 비대칭 대전 전용 / 인원: 커스텀 매치로 생존자 4명 + 살인마 1명 (양 팀 합계), 같은 판 5명"
+    "reason": "온라인 매칭으로 혼자도 가능한 비대칭 대전 / 인원: 커스텀 매치로 생존자 4명 + 살인마 1명 (양 팀 합계), 같은 판 5명"
   },
   {
     "game_id": "fe7ab058-f4b6-4356-9c66-2dd3ca4f0159",

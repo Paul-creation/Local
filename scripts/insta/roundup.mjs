@@ -27,8 +27,7 @@ export { loadCopy };
 export function detailRows(game, { oneliner, chips: chipList, chipsLabel, price, discount, lowest }) {
   const rows = [], missing = [];
   const add = (label, value, extra = {}) => (value ? rows.push({ label, value, ...extra }) : missing.push(label));
-  const solo = game.solo_playable === true ? '혼자도 가능' : game.solo_playable === false ? '혼자는 어려움' : null;
-  add('인원', game.max_players ? [`최대 ${game.max_players}인`, solo].filter(Boolean).join(' · ') : null);
+  add('인원', game.max_players ? `최대 ${game.max_players}인` : null);
   const text = `${game.fun_description ?? ''} ${(game.tags ?? []).join(' ')}`;
   const modes = [/비대칭/.test(text) ? '비대칭 대전' : game.has_pvp && '대전', game.has_online_coop && '온라인 협동', game.has_local_coop && '로컬 협동'].filter(Boolean);
   add('플레이 방식', modes.join(' · '));
