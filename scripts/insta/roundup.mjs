@@ -11,10 +11,10 @@ export function expandRoundup(base, copy) {
   const follow = base.find((s) => s.type === 'follow-card') ?? { type: 'follow-card', title: '친구랑 할 게임, 고민되면' };
   const fill = (v) => String(v).replace('{N}', games.length);
   const out = [
-    { ...cover, game: games[0].appid, all: games.map((g) => g.appid), shot: copy.coverShot ?? 1, title1: fill(cover.title1), title2: fill(cover.title2) },
+    { ...cover, game: games[0].appid, shot: copy.coverShot ?? 1, title1: fill(cover.title1), title2: fill(cover.title2) },
     ...games.flatMap((g) => {
       const shots = g.shots ?? [1, 2];
-      return [{ type: 'roundup-game', game: g.appid, desc: g.desc, shots }, { type: 'roundup-detail', game: g.appid, shots, detailShot: g.detailShot }];
+      return [{ type: 'roundup-game', game: g.appid, desc: g.desc, shots }, { type: 'roundup-detail', game: g.appid, oneliner: g.oneliner, shots, detailShot: g.detailShot }];
     }),
     { ...follow, game: follow.game ?? games[0].appid },
   ];
@@ -24,7 +24,7 @@ export function expandRoundup(base, copy) {
 export { loadCopy };
 
 // 상세 장 행: DB에 있는 값만 (없으면 행을 만들지 않고 missing에 이름을 남긴다). price는 스팀 KR 가격 {price, discount}, lowest는 가격 기록 안의 최저가
-export function detailRows(game, { price, discount, lowest }) {
+export function detailRows(game, { oneliner, price, discount, lowest }) {
   const rows = [], missing = [];
   const add = (label, value, extra = {}) => (value ? rows.push({ label, value, ...extra }) : missing.push(label));
   const solo = game.solo_playable === true ? '혼자도 가능' : game.solo_playable === false ? '혼자는 어려움' : null;
@@ -35,7 +35,9 @@ export function detailRows(game, { price, discount, lowest }) {
   add('난이도', game.difficulty);
   const acts = (game.activities ?? []).slice(0, 4);
   add('이런 걸 해요', acts.length ? 'chips' : null, { chips: acts });
+  const man = (n) => (n >= 10000 ? `${(Math.floor(n / 1000) / 10).toFixed(1).replace(/\.0$/, '')}만` : n.toLocaleString('ko-KR'));
+  add('스팀 평가', game.review_summary && game.review_total ? `${game.review_summary} · 리뷰 ${man(game.review_total)} 개` : null);
   add('가격', price ? `${Math.round(price).toLocaleString('ko-KR')}원${discount ? ` (-${discount}%)` : ''}` : null, { badge: price && lowest != null && price <= lowest ? '기록상 최저가' : null });
-  add('한 줄 평', (game.fun_description ?? '').split(/(?<=[.다요])\s+/)[0]?.trim());
+  add('한 줄 평', oneliner ? `"${oneliner}"` : (game.fun_description ?? '').split(/(?<=[.다요])\s+/)[0]?.trim());
   return { rows, missing };
 }

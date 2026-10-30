@@ -3,25 +3,7 @@
     "type": "roundup-cover",
     "kicker": "@할로윈에 친구랑 할 게임 다 쟁여놔!!",
     "title1": "스팀 할로윈 할인 🎃",
-    "title2": "지금 사야 하는 공포 협동 게임 {N}",
-    "variants": [
-      {
-        "suffix": "a",
-        "game": "381210",
-        "keyart": true,
-        "coverFocusX": 0.65
-      },
-      {
-        "suffix": "b",
-        "game": "739630",
-        "keyart": true,
-        "coverFocusX": 0.665
-      },
-      {
-        "suffix": "c",
-        "collage": true
-      }
-    ]
+    "title2": "지금 사야 하는 공포 협동 게임 {N}"
   },
   {
     "type": "follow-card",

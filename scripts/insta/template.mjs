@@ -164,8 +164,6 @@ em { font-style: normal; color: #FFD84A; }
 .rc-title div { white-space: nowrap; }
 .rc-t1 { font-size: 72px; color: #fff; }
 .rc-t2 { font-size: 80px; color: #FF7A1A; }
-.rc-grid { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); }
-.rc-grid div { background-size: cover; background-position: center; }
 .rc-brand { position: absolute; left: 64px; bottom: 72px; display: flex; align-items: center; gap: 14px; }
 .rc-brand i { width: 56px; height: 56px; border-radius: 16px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-style: normal; font-size: 40px; font-weight: 900; line-height: 1; }
 .rc-brand b { font-size: 36px; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
@@ -336,7 +334,7 @@ const BODY = {
       ${s.body ? `<div class="mg-body">${rich(s.body)}</div>` : ''}
     </div>` : ''}`,
   'roundup-cover': (s, ctx) => `
-    ${ctx.single.collage ? `<div class="rc-grid">${ctx.single.collage.map((u) => `<div style="background-image:url(${u})"></div>`).join('')}</div>` : `<div class="ov-bg" style="background-image:url(${ctx.single.images[0]})${ctx.single.bgPosX != null ? `; background-size: auto 100%; background-position: ${ctx.single.bgPosX}% 50%` : ''}"></div>`}
+    <div class="ov-bg" style="background-image:url(${ctx.single.images[0]})"></div>
     <div class="rc-shade"></div>
     <div class="rc-text">
       <div class="rc-kicker">${rich(s.kicker)}</div>
