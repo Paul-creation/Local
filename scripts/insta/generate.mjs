@@ -7,6 +7,7 @@
 //       (끝나면 out/<post-id>.zip도 같이 만든다 — zip 명령 필요)
 //       npm run insta -- <post-id> --roundup   (여러 게임 모음: 표지 + 게임당 1장 + 팔로우 카드. 게임·설명은 copy/<post-id>.json의 games, 가격은 스팀 KR 스토어에서 받음)
 //       npm run insta -- <post-id> --showcase  (인디 추천: 표지 + 게임마다 영상 장(mp4, 위 트레일러 + 아래 검은 패널)과 시그니처 장(데이터 상세) + 팔로우 카드. 문구는 copy/<post-id>.json)
+//       npm run insta -- <post-id> --reel      (세로 릴스 1080×1920: 훅 + 게임 장 + 팔로우 카드 → out/<post-id>/reel.mp4 + 장별 미리보기 png. 무음, 트레일러·가격은 DB 값만. 문구는 copy/<post-id>.json)
 //       npm run og                       (공유 미리보기 public/og-default.png, posts/og.json)
 // 처음 한 번: npm ci (브라우저가 없으면 npx playwright install chromium)
 import fs from 'fs';
@@ -20,6 +21,7 @@ import { loadCopy, expandDetailed } from './detailed.mjs';
 import { expandRoundup, detailRows } from './roundup.mjs';
 import { expandShowcase, showcaseData, buyVerdict, sigRows, infoLine, VIDEO_SECONDS as SHOWCASE_SECONDS, START_RATIO } from './showcase.mjs';
 import { hasKorean, saleEndOf } from './pick-roundup.mjs';
+import { REEL, expandReel, reelInfo, trailerFromDb, composeHook, composeGame, composeEnd, concatScenes, stillOf } from './reel.mjs';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DIR, '../..');
@@ -30,16 +32,17 @@ const refresh = args.includes('--refresh');
 const detailed = args.includes('--detailed');
 const roundup = args.includes('--roundup');
 const showcase = args.includes('--showcase');
+const reel = args.includes('--reel');
 const coverZooms = (args.find((a) => a.startsWith('--cover-zoom='))?.slice(13) ?? '').split(',').filter(Boolean).map(Number); // 표지 blur 비교용: 01a·01b… 로 따로 저장
 const postId = args.find((a) => !a.startsWith('--'));
-if (!postId) { console.error('사용법: npm run insta -- <post-id> [--refresh] [--detailed|--roundup|--showcase] [--cover-zoom=1,1.3,1.6]'); process.exit(1); }
+if (!postId) { console.error('사용법: npm run insta -- <post-id> [--refresh] [--detailed|--roundup|--showcase|--reel] [--cover-zoom=1,1.3,1.6]'); process.exit(1); }
 
 const postFile = path.join(DIR, 'posts', `${postId}.json`);
 if (!fs.existsSync(postFile)) { console.error(`게시물 파일이 없어요: ${path.relative(ROOT, postFile)}`); process.exit(1); }
 const raw = fs.readFileSync(postFile, 'utf8');
 if (raw.includes('재밌드나')) { console.error('화면에는 "재밌드나"를 쓰지 않아요. JamiDuNow만 쓰세요.'); process.exit(1); }
 const baseSlides = JSON.parse(raw);
-const slides = (showcase ? expandShowcase(baseSlides, loadCopy(DIR, postId)) : roundup ? expandRoundup(baseSlides, loadCopy(DIR, postId)) : detailed ? await expandDetailed(baseSlides, loadCopy(DIR, postId)) : baseSlides).flatMap((s) => (s.type === 'detail-split' ? Array.from({ length: s.slides ?? 1 }, (_, part) => ({ ...s, part, parts: s.slides ?? 1 })) : [s])); // detail-split 한 줄 = slides장
+const slides = (reel ? expandReel(baseSlides, loadCopy(DIR, postId)) : showcase ? expandShowcase(baseSlides, loadCopy(DIR, postId)) : roundup ? expandRoundup(baseSlides, loadCopy(DIR, postId)) : detailed ? await expandDetailed(baseSlides, loadCopy(DIR, postId)) : baseSlides).flatMap((s) => (s.type === 'detail-split' ? Array.from({ length: s.slides ?? 1 }, (_, part) => ({ ...s, part, parts: s.slides ?? 1 })) : [s])); // detail-split 한 줄 = slides장
 if (!Array.isArray(slides) || slides.length === 0) { console.error('json은 슬라이드 배열이어야 해요.'); process.exit(1); }
 
 // 첫 방문자 투어(jdn_tour_v2)가 화면을 덮어 클릭을 막으니, 투어를 건너뛴 상태로 시작한다
@@ -367,6 +370,9 @@ async function singleCtx(s) {
   const game = await resolveGame(s.game);
   if (s.type === 'follow-card') return { art: await posterArt(game) };
   if (s.type === 'roundup-cover') return { images: [await shotUri(game, s.shot)] };
+  if (s.type === 'reel-hook') return { trailer: await trailerFromDb(game, CACHE, refresh) };
+  if (s.type === 'reel-game') return reelGameCtx(game, s);
+  if (s.type === 'reel-end') return { art: await posterArt(game) };
   if (s.type === 'showcase-video') return showcaseVideoCtx(game, s);
   if (s.type === 'showcase-sig') return showcaseSigCtx(game, s);
   if (s.type === 'roundup-game') return roundupGameCtx(game, s);
@@ -441,6 +447,12 @@ async function showcaseVideoCtx(game, s) {
   const info = infoLine(s.g.maxPlayers ? { ...game, max_players: Number(s.g.maxPlayers) } : game, { korean: hasKorean(game), price: p.price, discount: p.discount });
   console.log(`${gameTitle(game)} | ${info} | 트레일러 ${usedTrailers.at(-1).trailer}`);
   return { name: gameTitle(game), info, trailer };
+}
+// --reel 게임 장: 정보 줄·배지는 DB 값만(스팀 API 호출 없음), 가격은 DB 최근 원화 기록
+async function reelGameCtx(game, s) {
+  const info = reelInfo(game, s.g, { latestPrice: latestKrw(game)[0]?.price });
+  console.log(`${gameTitle(game)} | ${info.info}${info.badge ? ` | 카드 ${info.badge}` : ''}`);
+  return { name: gameTitle(game), trailer: await trailerFromDb(game, CACHE, refresh), ...info };
 }
 // --showcase 시그니처 장: 배경 = copy.sigShot번 스크린샷(기본 2번, 없으면 1번)
 const showcaseMissing = [];
@@ -561,6 +573,7 @@ try {
   fs.mkdirSync(outDir, { recursive: true });
 
   const page = await browser.newPage({ viewport: SIZE });
+  const reelScenes = []; // --reel: { file(장 mp4), still(미리보기 png 이름) }
   for (let i = 0; i < slides.length; i++) {
     const s = slides[i];
     const ctx = { font };
@@ -578,7 +591,7 @@ try {
     const imgUri = (v) => (/^https?:/.test(v) ? v : dataUri(path.resolve(path.dirname(postFile), v)));
     if (s.type === 'game-card' && s.image) ctx.photo = imgUri(s.image);
     if (s.type === 'poster-cover' || s.type === 'poster-game') ctx.poster = await posterCtx(s);
-    if (['game-data', 'shot-pair', 'shot', 'follow-card', 'overview', 'minigame', 'roundup-cover', 'roundup-game', 'roundup-detail', 'showcase-video', 'showcase-sig'].includes(s.type)) ctx.single = await singleCtx(s);
+    if (['game-data', 'shot-pair', 'shot', 'follow-card', 'overview', 'minigame', 'roundup-cover', 'roundup-game', 'roundup-detail', 'showcase-video', 'showcase-sig', 'reel-hook', 'reel-game', 'reel-end'].includes(s.type)) ctx.single = await singleCtx(s);
     if (s.type === 'collage-cover') ctx.photos = s.images.map(imgUri);
     const size = sizeOf(s);
     if (s.type === 'poster-cover' && s.variants) { // 배경 후보: 01a.png, 01b.png … (고른 뒤 json에 bg를 쓰고 variants를 지운다)
@@ -617,6 +630,29 @@ try {
       console.log(path.relative(ROOT, mp4));
       continue;
     }
+    if (reel) { // 릴스 장: 글씨 오버레이 → 장 mp4(cache) + 미리보기 png(장 한가운데 프레임)
+      const n = String(i + 1).padStart(2, '0');
+      const scene = path.join(CACHE, `reel-${postId}-${n}.mp4`);
+      const still = path.join(outDir, `preview-${n}.png`);
+      if (s.type === 'reel-end') {
+        await page.screenshot({ path: still, clip: { x: 0, y: 0, ...size } });
+        composeEnd({ image: still, out: scene });
+      } else {
+        const tmp = path.join(CACHE, `overlay-${postId}-${n}.png`);
+        await page.screenshot({ path: tmp, clip: { x: 0, y: 0, ...size }, omitBackground: true });
+        const name = ctx.single.name ?? 'hook';
+        const r = s.type === 'reel-hook'
+          ? composeHook({ trailer: ctx.single.trailer, overlay: tmp, start: s.hookStart, out: scene, name })
+          : composeGame({ trailer: ctx.single.trailer, overlay: tmp, start: s.g.clipStart, out: scene, name, focus: Math.min(1, Math.max(0, s.g.videoFocusX ?? 0.5)) });
+        stillOf(scene, still, r.length / 2);
+        const lines = s.type === 'reel-game' ? await page.evaluate(() => { const el = document.querySelector('.rl-desc'); return Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight)); }) : 0;
+        if (lines > 2) console.warn(`경고: ${name} 설명이 ${lines}줄이에요 (최대 2줄)`);
+        console.log(`  ${name}: 영상 ${r.start.toFixed(1)}초부터 ${r.length}초`);
+      }
+      reelScenes.push(scene);
+      console.log(path.relative(ROOT, still));
+      continue;
+    }
     if (s.type === 'showcase-video') { // 글씨 오버레이는 임시 폴더에만 두고 NN.mp4만 남긴다
       const tmp = path.join(CACHE, `overlay-${postId}-${i + 1}.png`);
       await page.screenshot({ path: tmp, clip: { x: 0, y: 0, ...size }, omitBackground: true });
@@ -637,6 +673,11 @@ try {
         console.log(path.relative(ROOT, vf), `(blur, 배율 ${zoom})`);
       }
     }
+  }
+  if (reelScenes.length) {
+    const reelFile = path.join(outDir, 'reel.mp4');
+    concatScenes(reelScenes, reelFile, path.join(CACHE, `reel-${postId}.txt`));
+    console.log(path.relative(ROOT, reelFile), `(${slides.length}장, 약 ${(REEL.hook + REEL.game * (slides.length - 2) + REEL.end).toFixed(1)}초, 무음)`);
   }
 } finally {
   await browser.close();

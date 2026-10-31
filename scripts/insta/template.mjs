@@ -189,6 +189,31 @@ em { font-style: normal; color: #FFD84A; }
 .rd-chip { white-space: nowrap; padding: 8px 24px; border-radius: 999px; border: 2px solid rgba(255,255,255,.45); font-size: 32px; font-weight: 600; color: #fff; box-shadow: 0 0 14px rgba(255,255,255,.12); }
 .rd-badge { display: inline-block; margin-left: 16px; padding: 4px 18px; border-radius: 999px; border: 2px solid rgba(255,255,255,.5); font-size: 28px; font-weight: 600; vertical-align: middle; text-shadow: none; box-shadow: 0 0 12px rgba(255,255,255,.15); }
 .rd-foot { position: absolute; left: 72px; right: 72px; bottom: 72px; font-size: 26px; font-weight: 500; color: rgba(255,255,255,.55); }
+/* reel-hook · reel-game — 1080×1920 릴스. 영상은 ffmpeg가 얹고 이 PNG는 투명 오버레이(reel-end는 불투명) */
+html:has(.rl), html:has(.rl) body { background: transparent !important; }
+.rl-logo { display: flex; align-items: center; gap: 14px; }
+.rl-logo i { width: 56px; height: 56px; border-radius: 16px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-style: normal; font-size: 40px; font-weight: 900; line-height: 1; }
+.rl-logo b { font-size: 38px; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
+.rl-bar { position: absolute; left: 0; right: 0; top: 0; height: 150px; background: #000; display: flex; align-items: center; justify-content: center; }
+.rl-card { position: absolute; left: 40px; right: 40px; top: 174px; padding: 18px 28px 20px; border-radius: 20px; background: rgba(0,0,0,.62); }
+.rl-card-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.rl-label { font-size: 24px; font-weight: 700; color: var(--accent); }
+.rl-badge { padding: 4px 16px; border-radius: 999px; border: 2px solid var(--accent); font-size: 24px; font-weight: 700; color: var(--accent); white-space: nowrap; }
+.rl-one { margin-top: 8px; font-size: 40px; font-weight: 800; letter-spacing: -0.03em; color: #fff; white-space: nowrap; overflow: hidden; }
+.rl-panel { position: absolute; left: 0; right: 0; top: 1150px; bottom: 0; background: #000; padding: 40px 64px 0; }
+.rl-name { font-size: 72px; font-weight: 900; line-height: 1.2; letter-spacing: -0.03em; color: #fff; white-space: nowrap; overflow: hidden; }
+.rl-name em { color: var(--accent); margin-left: 16px; font-size: 0.6em; letter-spacing: 0; }
+.rl-info { margin-top: 8px; font-size: 30px; font-weight: 600; color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.rl-desc { margin-top: 26px; font-size: 38px; font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; color: #fff; }
+.rl-hook-shade { position: absolute; left: 0; right: 0; bottom: 0; height: 60%; background: linear-gradient(to top, rgba(0,0,0,.88) 0%, rgba(0,0,0,.7) 45%, rgba(0,0,0,0) 100%); }
+.rl-hook { position: absolute; left: 64px; right: 64px; bottom: 220px; }
+.rl-hook-small { font-size: 36px; font-weight: 600; color: #fff; white-space: nowrap; }
+.rl-hook-title { margin-top: 18px; font-weight: 900; line-height: 1.18; letter-spacing: -0.04em; color: #fff; }
+.rl-hook-title > div { font-size: 92px; white-space: nowrap; }
+.rl-hook-title em { color: var(--accent); }
+.rl-hook .rl-logo { margin-top: 36px; }
+.rl-hook .rl-logo i { width: 44px; height: 44px; border-radius: 13px; font-size: 32px; }
+.rl-hook .rl-logo b { font-size: 30px; }
 /* showcase-video — 위 16:9 트레일러(영상은 ffmpeg가 얹음) + 아래 검은 패널. 이 PNG는 글씨만 있는 투명 오버레이 */
 html:has(.sv), html:has(.sv) body { background: transparent !important; }
 .sv-panel { position: absolute; left: 0; right: 0; top: 950px; bottom: 0; background: #000; padding: 20px 64px 0; text-align: left; }
@@ -391,6 +416,30 @@ const BODY = {
       : `<div class="rd-val${r.label === '한 줄 평' ? ' small' : ''}">${esc(r.value)}${r.badge ? `<span class="rd-badge">${esc(r.badge)}</span>` : ''}</div>`}</div>`).join('')}</div>
     <div class="rd-foot">더 자세한 비교는 jamidunow.com</div>`;
   },
+  'reel-hook': (s) => `
+    <div class="rl"></div>
+    <div class="rl-hook-shade"></div>
+    <div class="rl-hook">
+      <div class="rl-hook-small" data-fit="36,26,1">${esc(s.small)}</div>
+      <div class="rl-hook-title"><div data-fit="92,60,1">${rich(s.title1)}</div><div data-fit="92,60,1">${rich(s.title2)}</div></div>
+      <div class="rl-logo"><i>J</i><b>JamiDuNow</b></div>
+    </div>`,
+  'reel-game': (s, ctx) => {
+    const v = ctx.single;
+    return `
+    <div class="rl"></div>
+    <div class="rl-bar"><div class="rl-logo"><i>J</i><b>JamiDuNow</b></div></div>
+    <div class="rl-card">
+      <div class="rl-card-head"><span class="rl-label">JamiDuNow 한 줄 평</span>${v.badge ? `<span class="rl-badge">${esc(v.badge)}</span>` : ''}</div>
+      <div class="rl-one" data-fit="40,26,1">${esc(s.g.oneliner)}</div>
+    </div>
+    <div class="rl-panel">
+      <div class="rl-name" data-fit="72,44,1">${esc(v.name)}${v.demo ? '<em>DEMO</em>' : ''}</div>
+      <div class="rl-info" data-fit="30,24,1">${esc(v.info)}</div>
+      <div class="rl-desc">${rich(s.g.desc)}</div>
+    </div>`;
+  },
+  'reel-end': (s, ctx) => BODY['follow-card'](s, ctx),
   'showcase-video': (s, ctx) => {
     const v = ctx.single;
     return `
@@ -458,7 +507,7 @@ const BODY = {
 
 export const SLIDE_TYPES = Object.keys(BODY);
 
-export const sizeOf = (slide) => (slide.type === 'og' ? { width: 1200, height: 630 } : SIZE);
+export const sizeOf = (slide) => (slide.type === 'og' ? { width: 1200, height: 630 } : slide.type.startsWith('reel-') ? { width: 1080, height: 1920 } : SIZE);
 
 export function renderSlide(slide, index, total, ctx) {
   const body = BODY[slide.type];
@@ -473,4 +522,4 @@ export function renderSlide(slide, index, total, ctx) {
 }
 
 export const SIZE = { width: W, height: H };
-const BARE = ['game-data', 'shot-pair', 'shot', 'follow-card', 'overview', 'minigame', 'roundup-cover', 'roundup-game', 'roundup-detail', 'showcase-video', 'showcase-sig']; // 페이지 번호·J 로고 없는 타입(poster-*와 같이)
+const BARE = ['game-data', 'shot-pair', 'shot', 'follow-card', 'overview', 'minigame', 'roundup-cover', 'roundup-game', 'roundup-detail', 'showcase-video', 'showcase-sig', 'reel-hook', 'reel-game', 'reel-end']; // 페이지 번호·J 로고 없는 타입(poster-*와 같이)
