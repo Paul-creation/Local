@@ -434,7 +434,7 @@ const BODY = {
       <div class="rl-one" data-fit="40,26,1">${esc(s.g.oneliner)}</div>
     </div>
     <div class="rl-panel">
-      <div class="rl-name" data-fit="72,44,1">${esc(v.name)}${v.demo ? '<em>DEMO</em>' : ''}</div>
+      <div class="rl-name"${v.nameEn ? '' : ' data-fit="72,44,1"'}>${esc(v.name)}${v.nameEn ? `<span class="rl-en"> (${esc(v.nameEn)})</span>` : ''}${v.demo ? '<em>DEMO</em>' : ''}</div>
       <div class="rl-info" data-fit="30,24,1">${esc(v.info)}</div>
       <div class="rl-desc">${rich(s.g.desc)}</div>
     </div>`;

@@ -452,7 +452,7 @@ async function showcaseVideoCtx(game, s) {
 async function reelGameCtx(game, s) {
   const info = reelInfo(game, s.g, { latestPrice: latestKrw(game)[0]?.price });
   console.log(`${gameTitle(game)} | ${info.info}${info.badge ? ` | 카드 ${info.badge}` : ''}`);
-  return { name: gameTitle(game), trailer: await trailerFromDb(game, CACHE, refresh), ...info };
+  return { name: gameTitle(game), nameEn: s.g.nameEn ?? null, trailer: await trailerFromDb(game, CACHE, refresh), ...info };
 }
 // --showcase 시그니처 장: 배경 = copy.sigShot번 스크린샷(기본 2번, 없으면 1번)
 const showcaseMissing = [];
@@ -640,6 +640,11 @@ try {
       } else {
         const tmp = path.join(CACHE, `overlay-${postId}-${n}.png`);
         const name = ctx.single.name ?? 'hook';
+        if (ctx.single.nameEn) { // 영문 원제 병기: 한 줄에 안 들어가면 "(영문)"만 게임명 글자 크기의 70%로
+          const overflow = () => page.evaluate(() => { const el = document.querySelector('.rl-name'); return el.scrollWidth > el.clientWidth; });
+          if (await overflow()) { await page.evaluate(() => { document.querySelector('.rl-en').style.fontSize = '0.7em'; }); console.warn(`  ${name}: 영문명을 70% 크기로 줄임`); }
+          if (await overflow()) console.warn(`경고: ${name} 게임명이 70% 영문명으로도 한 줄을 넘어요`);
+        }
         if (s.type === 'reel-game') { // 설명은 38px로 3줄 안에 안 들어가면 34px로 줄인다
           const descLines = () => page.evaluate(() => { const el = document.querySelector('.rl-desc'); return Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight)); });
           if (await descLines() > 3) { await page.evaluate(() => { document.querySelector('.rl-desc').style.fontSize = '34px'; }); console.warn(`  ${name}: 설명 34px로 줄임`); }
