@@ -153,6 +153,7 @@ em { font-style: normal; color: #FFD84A; }
 .mg-text { position: absolute; left: 64px; right: 64px; bottom: 80px; }
 .mg-head { font-size: 60px; font-weight: 900; line-height: 1.2; letter-spacing: -0.04em; color: #fff; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .mg-body { margin-top: 16px; font-size: 36px; font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; color: rgba(255,255,255,.9); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ov-text.has-foot, .mg-text.has-foot { bottom: 130px; } /* copy.foot가 있으면 하단 안내 문구 자리를 비움 */
 .poster-bg.blurred { filter: blur(40px) brightness(.6); transform: scale(1.15); }
 .poster-fit { position: absolute; left: 0; top: 40%; width: 100%; overflow: hidden; transform: translateY(-50%); }
 .poster-fit img { display: block; height: auto; max-width: none; }
@@ -347,17 +348,17 @@ const BODY = {
   overview: (s, ctx) => `
     <div class="ov-bg" style="background-image:url(${ctx.single.images[0]})"></div>
     <div class="ov-shade"></div>
-    <div class="ov-text">
+    <div class="ov-text${s.foot ? ' has-foot' : ''}">
       <div class="ov-head" data-fit="64,44,1">${rich(s.headline)}</div>
       <div class="ov-body">${rich(s.body)}</div>
-    </div>`,
+    </div>${s.foot ? `<div class="rd-foot">${esc(s.foot)}</div>` : ''}`,
   minigame: (s, ctx) => `
     <div class="mg-bg" style="background-image:url(${ctx.single.images[0]})"></div>
     ${s.heading || s.body ? `<div class="mg-shade"></div>
-    <div class="mg-text">
+    <div class="mg-text${s.foot ? ' has-foot' : ''}">
       ${s.heading ? `<div class="mg-head">${rich(s.heading)}</div>` : ''}
       ${s.body ? `<div class="mg-body">${rich(s.body)}</div>` : ''}
-    </div>` : ''}`,
+    </div>` : ''}${s.foot ? `<div class="rd-foot">${esc(s.foot)}</div>` : ''}`,
   'roundup-cover': (s, ctx) => `
     <div class="ov-bg" style="background-image:url(${ctx.single.images[0]})"></div>
     <div class="rc-shade"></div>

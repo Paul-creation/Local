@@ -38,7 +38,10 @@ export async function expandDetailed(base, copy, log = console.log) {
   const next = (explicit) => { const n = pick(explicit); if (n) { const at = pool.indexOf(Number(n)); if (at >= 0) pool.splice(at, 1); return Number(n); } return pool.shift(); };
 
   const out = [{ ...cover, bg: coverImage ?? 'keyart', fit: pick(copy.coverFit), zoom: pick(copy.coverZoom), focusX: pick(copy.coverFocusX), focusY: pick(copy.coverFocusY), headline: pick(copy.headline) ?? cover.headline }];
-  out.push({ ...data, tagline: pick(copy.tagline) ?? data.tagline ?? autoTagline(game) });
+  // copy.desc가 있으면 소개 장을 --showcase 영상 장(트레일러 + 검은 패널, 설명 3줄)으로. 포인트 색은 표지 accent
+  if (pick(copy.desc)) out.push({ type: 'showcase-video', game: gameKey, accent: cover.accent ?? data.accent, g: { appid: String(game.steam_appid), desc: copy.desc, trailer: pick(copy.trailer), clipStart: pick(copy.clipStart), videoFocusX: pick(copy.videoFocusX) } });
+  else out.push({ ...data, tagline: pick(copy.tagline) ?? data.tagline ?? autoTagline(game) });
+  const foot = pick(copy.foot); // 개요·플레이 장 하단 안내 문구
 
   // overview는 객체({index,headline,body}) 또는 문자열(첫 줄 = 헤드라인, 나머지 줄 = 본문)
   const ov = typeof copy.overview === 'string'
@@ -46,7 +49,7 @@ export async function expandDetailed(base, copy, log = console.log) {
     : copy.overview ?? {};
   if (pick(ov.headline) && pick(ov.body)) {
     const index = next(copy.overviewIndex ?? ov.index); // 문자열 형식일 땐 copy.overviewIndex로 스크린샷 지정
-    if (index) out.push({ type: 'overview', game: gameKey, index, headline: ov.headline.trim(), body: ov.body.trim() });
+    if (index) out.push({ type: 'overview', game: gameKey, index, foot, headline: ov.headline.trim(), body: ov.body.trim() });
     else log('경고: 스크린샷이 없어 개요 슬라이드를 건너뜀');
   } else log('개요 슬라이드 생략 (copy의 overview가 비어 있음)');
 
@@ -55,7 +58,7 @@ export async function expandDetailed(base, copy, log = console.log) {
     const c = (copy.shots ?? [])[i] ?? {};
     const index = next(c.index);
     if (!index) break;
-    minis.push({ type: 'minigame', game: gameKey, index, heading: pick(c.heading), body: pick(c.body) });
+    minis.push({ type: 'minigame', game: gameKey, index, heading: pick(c.heading), body: pick(c.body), foot });
   }
   if (minis.length < 4) log(`경고: 스크린샷이 부족해 플레이 슬라이드 ${minis.length}장만 만들어요 (스팀 스크린샷 ${total}장)`);
   out.push(...minis);
