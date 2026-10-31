@@ -6,7 +6,7 @@ import path from 'path';
 import { execFileSync } from 'child_process';
 import { hasKorean } from './pick-roundup.mjs';
 
-export const REEL = { w: 1080, h: 1920, fps: 30, hook: 2, game: 3.4, end: 1.5, videoTop: 150, videoH: 1150 };
+export const REEL = { w: 1080, h: 1920, fps: 30, hook: 2, game: 4.4, end: 1.5, videoTop: 150, videoH: 1150 };
 const START_RATIO = 0.2;
 
 // 릴스 장: 훅 + 게임 + 끝. base = posts json(reel-hook·follow-card), copy.games = [{appid, name, desc, oneliner, maxPlayers, clipStart, videoFocusX}]
