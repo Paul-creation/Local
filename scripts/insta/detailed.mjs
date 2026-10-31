@@ -39,7 +39,7 @@ export async function expandDetailed(base, copy, log = console.log) {
 
   const out = [{ ...cover, bg: coverImage ?? 'keyart', fit: pick(copy.coverFit), zoom: pick(copy.coverZoom), focusX: pick(copy.coverFocusX), focusY: pick(copy.coverFocusY), headline: pick(copy.headline) ?? cover.headline }];
   // copy.desc가 있으면 소개 장을 --showcase 영상 장(트레일러 + 검은 패널, 설명 3줄)으로. 포인트 색은 표지 accent
-  if (pick(copy.desc)) out.push({ type: 'showcase-video', game: gameKey, accent: cover.accent ?? data.accent, g: { appid: String(game.steam_appid), desc: copy.desc, trailer: pick(copy.trailer), clipStart: pick(copy.clipStart), videoFocusX: pick(copy.videoFocusX) } });
+  if (pick(copy.desc)) out.push({ type: 'showcase-video', game: gameKey, accent: cover.accent ?? data.accent, g: { appid: String(game.steam_appid), desc: copy.desc, trailer: pick(copy.trailer), clipStart: pick(copy.clipStart), videoFocusX: pick(copy.videoFocusX), maxPlayers: pick(copy.maxPlayers) } });
   else out.push({ ...data, tagline: pick(copy.tagline) ?? data.tagline ?? autoTagline(game) });
   const foot = pick(copy.foot); // 개요·플레이 장 하단 안내 문구
 

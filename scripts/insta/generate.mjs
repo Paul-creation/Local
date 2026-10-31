@@ -438,7 +438,7 @@ async function currentPrice(game) {
 async function showcaseVideoCtx(game, s) {
   const p = await currentPrice(game);
   const trailer = await trailerFile(game, s.g.trailer, { preferGameplay: true, max1080: true });
-  const info = infoLine(game, { korean: hasKorean(game), price: p.price, discount: p.discount });
+  const info = infoLine(s.g.maxPlayers ? { ...game, max_players: Number(s.g.maxPlayers) } : game, { korean: hasKorean(game), price: p.price, discount: p.discount });
   console.log(`${gameTitle(game)} | ${info} | 트레일러 ${usedTrailers.at(-1).trailer}`);
   return { name: gameTitle(game), info, trailer };
 }
