@@ -200,7 +200,7 @@ html:has(.rl), html:has(.rl) body { background: transparent !important; }
 .rl-label { font-size: 24px; font-weight: 700; color: var(--accent); }
 .rl-badge { padding: 4px 16px; border-radius: 999px; border: 2px solid var(--accent); font-size: 24px; font-weight: 700; color: var(--accent); white-space: nowrap; }
 .rl-one { margin-top: 8px; font-size: 40px; font-weight: 800; letter-spacing: -0.03em; color: #fff; white-space: nowrap; overflow: hidden; }
-.rl-panel { position: absolute; left: 0; right: 0; top: 1150px; bottom: 0; background: #000; padding: 40px 64px 0; }
+.rl-panel { position: absolute; left: 0; right: 0; top: 1300px; bottom: 0; background: #000; padding: 32px 64px 0; } /* 1300 = 로고 바 150 + 영상 1150 (reel.mjs REEL.videoTop+videoH) */
 .rl-name { font-size: 72px; font-weight: 900; line-height: 1.2; letter-spacing: -0.03em; color: #fff; white-space: nowrap; overflow: hidden; }
 .rl-name em { color: var(--accent); margin-left: 16px; font-size: 0.6em; letter-spacing: 0; }
 .rl-info { margin-top: 8px; font-size: 30px; font-weight: 600; color: var(--accent); white-space: nowrap; font-variant-numeric: tabular-nums; }

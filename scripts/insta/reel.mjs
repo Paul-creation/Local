@@ -6,7 +6,7 @@ import path from 'path';
 import { execFileSync } from 'child_process';
 import { hasKorean } from './pick-roundup.mjs';
 
-export const REEL = { w: 1080, h: 1920, fps: 30, hook: 2, game: 3.4, end: 1.5, videoTop: 150, videoH: 1000 };
+export const REEL = { w: 1080, h: 1920, fps: 30, hook: 2, game: 3.4, end: 1.5, videoTop: 150, videoH: 1150 };
 const START_RATIO = 0.2;
 
 // 릴스 장: 훅 + 게임 + 끝. base = posts json(reel-hook·follow-card), copy.games = [{appid, name, desc, oneliner, maxPlayers, clipStart, videoFocusX}]
@@ -19,7 +19,7 @@ export function expandReel(base, copy) {
   for (const g of games) {
     if (!g.oneliner) throw new Error(`--reel: ${g.name} 한 줄 평(oneliner)이 없어요`);
     const bad = String(g.desc ?? '').split('\n');
-    if (bad.length > 2 || bad.some((l) => [...l].length > 24)) throw new Error(`--reel: ${g.name} 설명은 최대 2줄, 줄당 24자 이내여야 해요`);
+    if (bad.length > 3 || bad.some((l) => [...l].length > 24)) throw new Error(`--reel: ${g.name} 설명은 최대 3줄, 줄당 24자 이내여야 해요`);
   }
   return [
     { ...hook, type: 'reel-hook', game: hook.game ?? games[0].appid, hookStart: copy.hookStart },
@@ -94,7 +94,7 @@ export function composeHook({ trailer, overlay, start, out, name, focus = 0.5 })
     '-map', '[o]', ...enc, '-shortest', out], { stdio: 'inherit' });
   return { start: r.start, length: hook };
 }
-// 게임 장: 1080p 원본에서 1080×1000을 가운데(focus) 크롭 — 확대·축소 없이 원본 픽셀 그대로, 검은 바 아래에 둠
+// 게임 장: 1080p 원본을 높이 videoH(1150)에 맞춰 키워(원본이 더 낮을 때만) 1080×videoH를 가운데(focus) 크롭, 검은 바 아래에 둠
 export function composeGame({ trailer, overlay, start, out, name, focus = 0.5 }) {
   const { w, h, fps, game, videoTop, videoH } = REEL;
   const r = window_(trailer, game, start, name);

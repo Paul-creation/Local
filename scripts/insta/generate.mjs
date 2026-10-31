@@ -639,14 +639,17 @@ try {
         composeEnd({ image: still, out: scene });
       } else {
         const tmp = path.join(CACHE, `overlay-${postId}-${n}.png`);
-        await page.screenshot({ path: tmp, clip: { x: 0, y: 0, ...size }, omitBackground: true });
         const name = ctx.single.name ?? 'hook';
+        if (s.type === 'reel-game') { // 설명은 38px로 3줄 안에 안 들어가면 34px로 줄인다
+          const descLines = () => page.evaluate(() => { const el = document.querySelector('.rl-desc'); return Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight)); });
+          if (await descLines() > 3) { await page.evaluate(() => { document.querySelector('.rl-desc').style.fontSize = '34px'; }); console.warn(`  ${name}: 설명 34px로 줄임`); }
+          if (await descLines() > 3) console.warn(`경고: ${name} 설명이 34px로도 3줄을 넘어요`);
+        }
+        await page.screenshot({ path: tmp, clip: { x: 0, y: 0, ...size }, omitBackground: true });
         const r = s.type === 'reel-hook'
           ? composeHook({ trailer: ctx.single.trailer, overlay: tmp, start: s.hookStart, out: scene, name })
           : composeGame({ trailer: ctx.single.trailer, overlay: tmp, start: s.g.clipStart, out: scene, name, focus: Math.min(1, Math.max(0, s.g.videoFocusX ?? 0.5)) });
         stillOf(scene, still, r.length / 2);
-        const lines = s.type === 'reel-game' ? await page.evaluate(() => { const el = document.querySelector('.rl-desc'); return Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight)); }) : 0;
-        if (lines > 2) console.warn(`경고: ${name} 설명이 ${lines}줄이에요 (최대 2줄)`);
         console.log(`  ${name}: 영상 ${r.start.toFixed(1)}초부터 ${r.length}초`);
       }
       reelScenes.push(scene);
