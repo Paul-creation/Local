@@ -113,7 +113,7 @@ export function buildAudio({ audio, copy, out }) {
   const r = spawnSync('ffmpeg', ['-hide_banner', '-y', ...inputs, '-filter_complex', `${cut.join(';')};${xf.join(';')};${chain}loudnorm=I=${LUFS}:TP=-1.5:LRA=11:print_format=json[o]`, '-map', '[o]', '-f', 'null', '-'], { encoding: 'utf8' });
   const m = JSON.parse(r.stderr.slice(r.stderr.lastIndexOf('{'), r.stderr.lastIndexOf('}') + 1));
   const ln = `loudnorm=I=${LUFS}:TP=-1.5:LRA=11:measured_I=${m.input_i}:measured_TP=${m.input_tp}:measured_LRA=${m.input_lra}:measured_thresh=${m.input_thresh}:offset=${m.target_offset}:linear=true`;
-  ff([...inputs, '-filter_complex', `${cut.join(';')};${xf.join(';')};${chain}${ln},afade=t=out:st=${(total - FADE_OUT).toFixed(2)}:d=${FADE_OUT}[o]`, '-map', '[o]', '-t', String(total), '-c:a', 'aac', '-b:a', '192k', out]);
+  ff([...inputs, '-filter_complex', `${cut.join(';')};${xf.join(';')};${chain}${ln},alimiter=limit=0.85:level=disabled,afade=t=out:st=${(total - FADE_OUT).toFixed(2)}:d=${FADE_OUT}[o]`, '-map', '[o]', '-t', String(total), '-c:a', 'aac', '-b:a', '192k', out]);
   return { measured: Number(m.input_i) };
 }
 
