@@ -3,7 +3,7 @@
 // 레이아웃(--reel 가운데 정렬 규칙): 위 로고 · 글씨 y 300~520 · 영상 y 560~1168(1080×608) · 설명 y 1230~1400 · 오른쪽 140px 비움
 // 실행: npm run insta -- <post-id> --reel-single [--audio]   (문구·구간은 copy/<post-id>.json, 가격·인원·한국어는 DB 값)
 //   --audio(또는 copy의 "audio": true): 트레일러 원본 오디오를 같은 구간만큼 붙인다(컷 경계 0.1초 크로스페이드, -14 LUFS, 끝 0.8초 페이드아웃). --audio 플래그는 reel-audio.mp4를 따로, copy의 audio는 reel.mp4에 바로 넣는다. 기본은 무음
-// copy 옵션: movie(스팀 appdetails movies의 영상 이름 — 없으면 DB video_url), layout:"wide"(영상 1080×668 가운데 크롭 y 560~1228, 큰 제목 96px(안 들어가면 92px까지), 설명 52px Bold 가운데 정렬 영상 아래 50px·줄 간격 1.3, 오른쪽 140px과 겹치면 48px),
+// copy 옵션: movie(스팀 appdetails movies의 영상 이름 — 없으면 DB video_url), layout:"wide"(영상 1080×668 가운데 크롭 y 560~1228, 큰 제목 96px(안 들어가면 92px까지), 설명 52px Bold 가운데 정렬 영상 아래 50px·줄 간격 1.2, 오른쪽 140px과 겹치면 48px),
 //   brightness(예: "brightness=0.05:gamma=1.15" → ffmpeg eq), videoFocusX(0~1, 좌우 크롭 위치)
 // 정보 줄: 할인 중이면 "~M/D -N% 할인 / 최대 N인 / 한국어 …", 아니면 "₩13,800 / 최대 N인 / 한국어 …" (한국어는 DB korean_support 값, 없으면 미지원)
 import fs from 'fs';
@@ -48,7 +48,7 @@ function html(copy, info, font) {
 .kicker { top: 300px; font-size: 40px; font-weight: 800; letter-spacing: -0.02em; color: #fff; white-space: nowrap; }
 .title { top: 356px; font-size: ${W ? 96 : 84}px; font-weight: 900; letter-spacing: -0.04em; line-height: 1.2; color: ${MINT}; white-space: nowrap; }
 .info { top: ${W ? 490 : 480}px; font-size: 30px; font-weight: 600; color: #a3a3a3; white-space: nowrap; font-variant-numeric: tabular-nums; }
-${W ? `.desc { left: 0; width: ${w}px; top: ${descTop}px; font-size: 52px; font-weight: 700; line-height: 1.3; letter-spacing: -0.02em; color: #fff; white-space: pre-line; text-align: center; }` : `.desc { top: 1230px; font-size: 38px; font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; color: #fff; white-space: pre-line; }`}
+${W ? `.desc { left: 0; width: ${w}px; top: ${descTop}px; font-size: 52px; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; color: #fff; white-space: pre-line; text-align: center; }` : `.desc { top: 1230px; font-size: 38px; font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; color: #fff; white-space: pre-line; }`}
 </style>
 <div class="box logo"><i>J</i><b>JamiDuNow</b></div>
 <div class="box kicker">${esc(copy.kicker)}</div>
@@ -98,7 +98,7 @@ function buildAudio({ audio, copy, out }) {
   const r = spawnSync('ffmpeg', ['-hide_banner', '-y', ...inputs, '-filter_complex', `${cut.join(';')};${xf.join(';')};${chain}loudnorm=I=${LUFS}:TP=-1.5:LRA=11:print_format=json[o]`, '-map', '[o]', '-f', 'null', '-'], { encoding: 'utf8' });
   const m = JSON.parse(r.stderr.slice(r.stderr.lastIndexOf('{'), r.stderr.lastIndexOf('}') + 1));
   const ln = `loudnorm=I=${LUFS}:TP=-1.5:LRA=11:measured_I=${m.input_i}:measured_TP=${m.input_tp}:measured_LRA=${m.input_lra}:measured_thresh=${m.input_thresh}:offset=${m.target_offset}:linear=true`;
-  ff([...inputs, '-filter_complex', `${cut.join(';')};${xf.join(';')};${chain}${ln},afade=t=out:st=${(total - FADE_OUT).toFixed(2)}:d=${FADE_OUT}[o]`, '-map', '[o]', '-t', String(total), '-c:a', 'aac', '-b:a', '192k', out]);
+  ff([...inputs, '-filter_complex', `${cut.join(';')};${xf.join(';')};${chain}${ln},alimiter=limit=0.85:level=disabled,afade=t=out:st=${(total - FADE_OUT).toFixed(2)}:d=${FADE_OUT}[o]`, '-map', '[o]', '-t', String(total), '-c:a', 'aac', '-b:a', '192k', out]);
   return { measured: Number(m.input_i) };
 }
 
