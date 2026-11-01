@@ -1,0 +1,12 @@
+{
+  "_doc": "--reel-single 고정 텍스트. 가격·할인·종료일·인원·한국어는 DB 값으로 정보 줄을 만든다. movie: 스팀 영상 이름, segments: 영상 [시작초, 끝초] 목록(글자 카드·검은 화면 제외), endClip: 마지막 로고 장면, audio: reel.mp4에 원본 오디오 포함, layout wide: 영상 1080×668",
+  "appid": "4069520",
+  "movie": "Super Battle Golf - Launch Trailer",
+  "layout": "wide",
+  "audio": true,
+  "kicker": "친구랑 할 스팀 게임",
+  "title": "총 들고 치는 8인 골프",
+  "desc": "1등 하던 중에\n친구 방해 한 방에 꼴등됨ㅋㅋㅋ",
+  "segments": [[10.4, 15.0], [18.0, 21.0], [43.5, 47.0], [47.5, 50.5], [61.5, 63.5], [66.0, 69.0], [76.0, 79.0]],
+  "endClip": [86.0, 88.0]
+}
