@@ -1,11 +1,12 @@
 // scripts/insta/reel-single.mjs
 // --reel-single: 게임 하나를 소개하는 세로 릴스(1080×1920, 무음). 텍스트 고정형 — 처음부터 끝까지 같은 글씨, 트레일러만 흐른다
 // 레이아웃(--reel 가운데 정렬 규칙): 위 로고 · 글씨 y 300~520 · 영상 y 560~1168(1080×608) · 설명 y 1230~1400 · 오른쪽 140px 비움
-// 실행: npm run insta -- <post-id> --reel-single   (문구·구간은 copy/<post-id>.json, 가격·인원·한국어는 DB 값)
+// 실행: npm run insta -- <post-id> --reel-single [--audio]   (문구·구간은 copy/<post-id>.json, 가격·인원·한국어는 DB 값)
+//   --audio: 트레일러 원본 오디오를 같은 구간만큼 붙여 reel-audio.mp4도 만든다(컷 경계 0.1초 크로스페이드, -14 LUFS, 끝 0.8초 페이드아웃). 기본은 무음
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { execFileSync } from 'child_process';
+import { execFileSync, spawnSync } from 'child_process';
 import { chromium } from 'playwright';
 import { createClient } from '@supabase/supabase-js';
 import { hasKorean, latestKrw, saleEndOf } from './pick-roundup.mjs';
@@ -56,7 +57,39 @@ function compose({ trailer, overlay, copy, out }) {
   execFileSync('ffmpeg', ['-v', 'error', '-y', ...inputs, '-loop', '1', '-framerate', String(fps), '-i', overlay, '-filter_complex', fc, '-map', '[o]', '-an', '-c:v', 'libx264', '-preset', 'veryfast', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-shortest', out], { stdio: 'inherit' });
 }
 
-export async function runReelSingle(postId, { refresh = false } = {}) {
+const XFADE = 0.1, FADE_OUT = 0.8, LUFS = -14;
+const ff = (args) => execFileSync('ffmpeg', ['-v', 'error', '-y', ...args], { stdio: 'inherit' });
+
+// HLS 마스터의 오디오 목록(EXT-X-MEDIA TYPE=AUDIO)을 m4a로 받아 cache에 둔다
+async function trailerAudioFromDb(game, cacheDir, refresh) {
+  const file = path.join(cacheDir, `reel-trailer-audio-${game.steam_appid}.m4a`);
+  if (!refresh && fs.existsSync(file)) return file;
+  const master = game.video_url;
+  const uri = (await (await fetch(master)).text()).split('\n').map((l) => l.match(/^#EXT-X-MEDIA:TYPE=AUDIO.*URI="([^"]+)"/)?.[1]).find(Boolean);
+  if (!uri) throw new Error(`--reel-single --audio: ${game.name} 트레일러에 오디오가 없어요`);
+  ff(['-i', new URL(uri, master).href, '-vn', '-c', 'copy', file]);
+  return file;
+}
+
+// 구간별 오디오를 이어 붙인다. 크로스페이드가 겹친 만큼 줄어드니, 구간(마지막 빼고) 끝에 0.1초를 더 떠서 영상 길이·싱크를 맞춘다
+function buildAudio({ audio, copy, out }) {
+  const parts = [...copy.segments, copy.endClip];
+  const n = parts.length;
+  const total = parts.reduce((t, [a, b]) => t + b - a, 0);
+  const inputs = parts.flatMap(([a, b], i) => ['-ss', String(a), '-t', String(b - a + (i < n - 1 ? XFADE : 0)), '-i', audio]);
+  const cut = parts.map((_, i) => `[${i}:a]aresample=48000,aformat=channel_layouts=stereo,asetpts=PTS-STARTPTS[a${i}]`);
+  let chain = '[a0]';
+  const xf = [];
+  for (let i = 1; i < n; i++) { xf.push(`${chain}[a${i}]acrossfade=d=${XFADE}:c1=tri:c2=tri[x${i}]`); chain = `[x${i}]`; }
+  // 1차: 음량 측정, 2차: 측정값으로 -14 LUFS에 맞추고 끝 0.8초 페이드아웃
+  const r = spawnSync('ffmpeg', ['-hide_banner', '-y', ...inputs, '-filter_complex', `${cut.join(';')};${xf.join(';')};${chain}loudnorm=I=${LUFS}:TP=-1.5:LRA=11:print_format=json[o]`, '-map', '[o]', '-f', 'null', '-'], { encoding: 'utf8' });
+  const m = JSON.parse(r.stderr.slice(r.stderr.lastIndexOf('{'), r.stderr.lastIndexOf('}') + 1));
+  const ln = `loudnorm=I=${LUFS}:TP=-1.5:LRA=11:measured_I=${m.input_i}:measured_TP=${m.input_tp}:measured_LRA=${m.input_lra}:measured_thresh=${m.input_thresh}:offset=${m.target_offset}:linear=true`;
+  ff([...inputs, '-filter_complex', `${cut.join(';')};${xf.join(';')};${chain}${ln},afade=t=out:st=${(total - FADE_OUT).toFixed(2)}:d=${FADE_OUT}[o]`, '-map', '[o]', '-t', String(total), '-c:a', 'aac', '-b:a', '192k', out]);
+  return { measured: Number(m.input_i) };
+}
+
+export async function runReelSingle(postId, { refresh = false, audio = false } = {}) {
   try { if (!process.env.NEXT_PUBLIC_SUPABASE_URL) process.loadEnvFile('.env.local'); } catch { /* .env.local 없음 */ }
   const copyFile = path.join(DIR, 'copy', `${postId}.json`);
   if (!fs.existsSync(copyFile)) throw new Error(`--reel-single: ${path.relative(ROOT, copyFile)}이 없어요`);
@@ -96,6 +129,13 @@ export async function runReelSingle(postId, { refresh = false } = {}) {
   const total = copy.segments.concat([copy.endClip]).reduce((s, [a, b]) => s + b - a, 0);
   const still = path.join(outDir, 'still.png');
   execFileSync('ffmpeg', ['-v', 'error', '-y', '-ss', '10', '-i', mp4, '-frames:v', '1', still], { stdio: 'inherit' });
+  if (audio) {
+    const m4a = path.join(CACHE, `reel-${postId}-audio.m4a`);
+    const { measured } = buildAudio({ audio: await trailerAudioFromDb(game, CACHE, refresh), copy, out: m4a });
+    const withAudio = path.join(outDir, 'reel-audio.mp4');
+    ff(['-i', mp4, '-i', m4a, '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'copy', '-movflags', '+faststart', '-shortest', withAudio]);
+    console.log(path.relative(ROOT, withAudio), `(트레일러 원본 오디오, 측정 ${measured} LUFS → ${LUFS} LUFS, 구간 경계 ${XFADE}초 크로스페이드, 끝 ${FADE_OUT}초 페이드아웃)`);
+  }
   console.log(info);
   console.log(path.relative(ROOT, mp4), `(약 ${total.toFixed(1)}초, 무음)`);
   console.log(path.relative(ROOT, still));
