@@ -8,6 +8,7 @@
 //       npm run insta -- <post-id> --roundup   (여러 게임 모음: 표지 + 게임당 1장 + 팔로우 카드. 게임·설명은 copy/<post-id>.json의 games, 가격은 스팀 KR 스토어에서 받음)
 //       npm run insta -- <post-id> --showcase  (인디 추천: 표지 + 게임마다 영상 장(mp4, 위 트레일러 + 아래 검은 패널)과 시그니처 장(데이터 상세) + 팔로우 카드. 문구는 copy/<post-id>.json)
 //       npm run insta -- <post-id> --reel      (세로 릴스 1080×1920: 훅 + 게임 장 + 팔로우 카드 → out/<post-id>/reel.mp4 + 장별 미리보기 png. 무음, 트레일러·가격은 DB 값만. 문구는 copy/<post-id>.json)
+//       npm run insta -- <post-id> --reel-single (게임 하나 소개 세로 릴스 1080×1920, 텍스트 고정형: 로고·제목·정보 줄·트레일러·설명. 문구·구간은 copy/<post-id>.json → out/<post-id>/reel.mp4 + still.png)
 //       npm run og                       (공유 미리보기 public/og-default.png, posts/og.json)
 // 처음 한 번: npm ci (브라우저가 없으면 npx playwright install chromium)
 import fs from 'fs';
@@ -35,7 +36,12 @@ const showcase = args.includes('--showcase');
 const reel = args.includes('--reel');
 const coverZooms = (args.find((a) => a.startsWith('--cover-zoom='))?.slice(13) ?? '').split(',').filter(Boolean).map(Number); // 표지 blur 비교용: 01a·01b… 로 따로 저장
 const postId = args.find((a) => !a.startsWith('--'));
-if (!postId) { console.error('사용법: npm run insta -- <post-id> [--refresh] [--detailed|--roundup|--showcase|--reel] [--cover-zoom=1,1.3,1.6]'); process.exit(1); }
+if (!postId) { console.error('사용법: npm run insta -- <post-id> [--refresh] [--detailed|--roundup|--showcase|--reel|--reel-single] [--cover-zoom=1,1.3,1.6]'); process.exit(1); }
+
+if (args.includes('--reel-single')) { // 게임 하나 릴스: posts json 없이 copy/<post-id>.json만 쓴다
+  try { await (await import('./reel-single.mjs')).runReelSingle(postId, { refresh }); } catch (e) { console.error(e.message); process.exit(1); }
+  process.exit(0);
+}
 
 const postFile = path.join(DIR, 'posts', `${postId}.json`);
 if (!fs.existsSync(postFile)) { console.error(`게시물 파일이 없어요: ${path.relative(ROOT, postFile)}`); process.exit(1); }
