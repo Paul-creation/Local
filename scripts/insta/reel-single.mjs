@@ -1,11 +1,13 @@
 // scripts/insta/reel-single.mjs
 // --reel-single: 게임 하나를 소개하는 세로 릴스(1080×1920, 무음). 텍스트 고정형 — 처음부터 끝까지 같은 글씨, 트레일러만 흐른다
-// 레이아웃(--reel 가운데 정렬 규칙): 위 로고 · 글씨 y 300~520 · 영상 y 560~1168(1080×608) · 설명 y 1230~1400 · 오른쪽 140px 비움
+// 레이아웃: 위 로고 · 글씨(전부 가운데 정렬, 기준 x 470 = 오른쪽 140px 비운 폭의 가운데) y 232~ · 영상 y 560~1168(1080×608) · 설명 y 1230~1400
+//   글씨 블록: 1줄 흰색 88px Bold(title1) · 2줄 민트 96px Bold(title2), 줄 간격 1.15 · 그 아래 작은 정보 2줄 흰색 34px(info1: copy 문구, info2: "한국어 … / N~N인" DB 값)
+//   옛 copy(kicker+title)는 kicker→title1, title→title2로 읽고, info1이 없으면 정보 줄 1줄(infoLine)만 쓴다
 // 실행: npm run insta -- <post-id> --reel-single [--audio]   (문구·구간은 copy/<post-id>.json, 가격·인원·한국어는 DB 값)
 //   --audio(또는 copy의 "audio": true): 트레일러 원본 오디오를 같은 구간만큼 붙인다(컷 경계 0.1초 크로스페이드, -14 LUFS, 끝 0.8초 페이드아웃). --audio 플래그는 reel-audio.mp4를 따로, copy의 audio는 reel.mp4에 바로 넣는다. 기본은 무음
-// copy 옵션: movie(스팀 appdetails movies의 영상 이름 — 없으면 DB video_url), layout:"wide"(영상 1080×668 가운데 크롭 y 560~1228, 큰 제목 96px(안 들어가면 92px까지), 설명 52px Bold 가운데 정렬 영상 아래 50px·줄 간격 1.3, 오른쪽 140px과 겹치면 48px),
+// copy 옵션: movie(스팀 appdetails movies의 영상 이름 — 없으면 DB video_url), layout:"wide"(영상 1080×668 가운데 크롭 y 560~1228, 설명 52px Bold 가운데 정렬 영상 아래 50px·줄 간격 1.2, 오른쪽 140px과 겹치면 48px),
 //   brightness(예: "brightness=0.05:gamma=1.15" → ffmpeg eq), videoFocusX(0~1, 좌우 크롭 위치)
-// 정보 줄: 할인 중이면 "~M/D -N% 할인 / 최대 N인 / 한국어 …", 아니면 "₩13,800 / 최대 N인 / 한국어 …" (한국어는 DB korean_support 값, 없으면 미지원)
+// 정보 줄: 출시 예정(release_status coming_soon + 날짜 있음)이면 "MM.DD 출시 예정 / 무료 데모 / 최대 N인 / 한국어 …"(데모 있을 때만 "무료 데모" 칸), 출시 30일 이내(할인 없음)면 "MM.DD 출시 / ₩가격 / 최대 N인 / 한국어 …". 그 외: 할인 중이면 "~M/D -N% 할인 / 최대 N인 / 한국어 …", 아니면 "₩13,800 / 최대 N인 / 한국어 …" (한국어는 DB korean_support 값, 없으면 미지원)
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -24,16 +26,30 @@ const esc = (t) => String(t).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt
 export function infoLine(game) {
   const row = latestKrw(game);
   const ko = hasKorean(game) ? `한국어 ${game.korean_support}` : '한국어 미지원';
+  const rel = game.release_date && /^\d{4}-(\d\d)-(\d\d)/.exec(game.release_date);
+  const mmdd = rel ? `${rel[1]}.${rel[2]}` : null;
+  const price = game.is_free ? '무료' : row ? `₩${Math.round(row.price).toLocaleString('ko-KR')}` : null;
+  if (game.release_status === 'coming_soon' && mmdd) return [`${mmdd} 출시 예정`, game.demo_appid && '무료 데모', `최대 ${game.max_players}인`, ko].filter(Boolean).join(' / ');
+  const days = rel ? (Date.now() - new Date(game.release_date).getTime()) / 864e5 : null;
+  if (mmdd && days >= 0 && days <= 30 && !(row?.discount_percent > 0) && price) return `${mmdd} 출시 / ${price} / 최대 ${game.max_players}인 / ${ko}`;
   const head = row?.discount_percent > 0 ? `~${saleEndOf(row)} -${row.discount_percent}% 할인`
     : game.is_free ? '무료' : row ? `₩${Math.round(row.price).toLocaleString('ko-KR')}` : null;
   if (!head) throw new Error(`--reel-single: ${game.name} 가격이 DB에 없어요`);
   return `${head} / 최대 ${game.max_players}인 / ${ko}`;
 }
 
+// 새 정보 2줄: 1줄은 copy.info1(없으면 infoLine), 2줄은 "한국어 … / 1~4인"(DB min_players·max_players·korean_support)
+export function infoLines(game, copy) {
+  if (!copy.info1) return [infoLine(game)];
+  const ko = hasKorean(game) ? `한국어 ${game.korean_support}` : '한국어 미지원';
+  const lo = game.min_players ?? 1, hi = game.max_players;
+  return [copy.info1, `${ko} / ${lo === hi ? hi : `${lo}~${hi}`}인`];
+}
+
 const wide = (copy) => copy.layout === 'wide';
 const videoHOf = (copy) => (wide(copy) ? 668 : RS.videoH);
 
-function html(copy, info, font) {
+function html(copy, infos, font) {
   const { w, h, left, rightGap } = RS;
   const W = wide(copy);
   const descTop = RS.videoTop + videoHOf(copy) + (W ? 50 : 2); // 와이드: 영상 아래 50px
@@ -45,15 +61,14 @@ function html(copy, info, font) {
 .logo { top: 150px; display: flex; align-items: center; gap: 12px; }
 .logo i { width: 44px; height: 44px; border-radius: 13px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-style: normal; font-size: 32px; font-weight: 900; line-height: 1; }
 .logo b { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
-.kicker { top: 300px; font-size: 40px; font-weight: 800; letter-spacing: -0.02em; color: #fff; white-space: nowrap; }
-.title { top: 356px; font-size: ${W ? 96 : 84}px; font-weight: 900; letter-spacing: -0.04em; line-height: 1.2; color: ${MINT}; white-space: nowrap; }
-.info { top: ${W ? 490 : 480}px; font-size: 30px; font-weight: 600; color: #a3a3a3; white-space: nowrap; font-variant-numeric: tabular-nums; }
-${W ? `.desc { left: 0; width: ${w}px; top: ${descTop}px; font-size: 52px; font-weight: 700; line-height: 1.3; letter-spacing: -0.02em; color: #fff; white-space: pre-line; text-align: center; }` : `.desc { top: 1230px; font-size: 38px; font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; color: #fff; white-space: pre-line; }`}
+.block { position: absolute; top: 232px; left: 0; width: ${w - rightGap}px; text-align: center; white-space: nowrap; }
+.t1 { font-size: 88px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; color: #fff; }
+.t2 { font-size: 96px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; color: ${MINT}; }
+.inf { margin-top: 18px; font-size: 34px; font-weight: 600; line-height: 1.35; color: #fff; font-variant-numeric: tabular-nums; }
+${W ? `.desc { left: 0; width: ${w}px; top: ${descTop}px; font-size: 52px; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; color: #fff; white-space: pre-line; text-align: center; }` : `.desc { top: 1230px; font-size: 38px; font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; color: #fff; white-space: pre-line; }`}
 </style>
 <div class="box logo"><i>J</i><b>JamiDuNow</b></div>
-<div class="box kicker">${esc(copy.kicker)}</div>
-<div class="box title" id="t">${esc(copy.title)}</div>
-<div class="box info" id="i">${esc(info)}</div>
+<div class="block"><div class="t1" id="t1">${esc(copy.title1 ?? copy.kicker ?? '')}</div><div class="t2" id="t2">${esc(copy.title2 ?? copy.title)}</div><div class="inf" id="i">${infos.map(esc).join('<br>')}</div></div>
 <div class="box desc">${esc(copy.desc)}</div>`;
 }
 
@@ -118,9 +133,9 @@ export async function runReelSingle(postId, { refresh = false, audio = false } =
   if (JSON.stringify(copy).includes('재밌드나')) throw new Error('화면에는 "재밌드나"를 쓰지 않아요. JamiDuNow만 쓰세요.');
   if (copy.desc.split('\n').length > 2) throw new Error('--reel-single: 설명은 최대 2줄이에요');
   const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-  const { data: game, error } = await db.from('games').select('id, name, display_name, steam_appid, max_players, korean_support, is_free, video_url, price_history(price, original_price, discount_percent, sale_ends_at, checked_at)').eq('steam_appid', copy.appid).single();
+  const { data: game, error } = await db.from('games').select('id, name, display_name, steam_appid, min_players, max_players, korean_support, is_free, video_url, release_status, release_date, demo_appid, price_history(price, original_price, discount_percent, sale_ends_at, checked_at)').eq('steam_appid', copy.appid).single();
   if (error) throw new Error(`게임 조회 실패: ${error.message}`);
-  const info = infoLine(game);
+  const info = infoLines(game, copy);
   const CACHE = path.join(DIR, 'cache');
   fs.mkdirSync(CACHE, { recursive: true });
   const src = copy.movie ? await steamMovie(game, copy.movie) : game; // movie가 있으면 스팀 appdetails의 그 영상, 없으면 DB video_url
@@ -136,16 +151,16 @@ export async function runReelSingle(postId, { refresh = false, audio = false } =
     const page = await browser.newPage({ viewport: { width: RS.w, height: RS.h } });
     await page.setContent(html(copy, info, font), { waitUntil: 'load' });
     await page.evaluate(() => document.fonts.ready);
-    for (const [id, min] of [['t', wide(copy) ? 92 : 56], ['i', 22]]) { // 한 줄에 안 들어가면 글자 크기를 줄인다
+    for (const [id, min] of [['t1', 60], ['t2', 60], ['i', 22]]) { // 한 줄에 안 들어가면 글자 크기를 줄인다
       const size = await page.evaluate(({ id, min }) => { const el = document.getElementById(id); let s = parseFloat(getComputedStyle(el).fontSize); while (el.scrollWidth > el.clientWidth + 1 && s > min) { s -= 1; el.style.fontSize = `${s}px`; } return s; }, { id, min });
-      console.log(`  ${id === 't' ? '큰 제목' : '정보 줄'} ${size}px`);
+      console.log(`  ${id === 'i' ? '정보 줄' : id === 't1' ? '1줄 제목' : '2줄 제목'} ${size}px`);
     }
     if (wide(copy)) { // 설명: 가운데 정렬한 줄의 오른쪽 끝이 x 940을 넘으면 52px → 48px까지만 줄인다
       const right = () => page.evaluate(() => { const el = document.querySelector('.desc'); const r = document.createRange(); r.selectNodeContents(el); return Math.max(...[...r.getClientRects()].map((q) => q.right)); });
       if (await right() > RS.w - RS.rightGap) { await page.evaluate(() => { document.querySelector('.desc').style.fontSize = '48px'; }); console.warn('  설명 48px로 줄임'); }
       console.log(`  설명 오른쪽 끝 x ${Math.round(await right())} (한계 ${RS.w - RS.rightGap})`);
     }
-    const m = await page.evaluate(() => Object.fromEntries(['.kicker', '.title', '.info', '.desc'].map((q) => { const r = document.querySelector(q).getBoundingClientRect(); return [q, [Math.round(r.left), Math.round(r.top), Math.round(r.right), Math.round(r.bottom)]]; })));
+    const m = await page.evaluate(() => Object.fromEntries(['.t1', '.t2', '.inf', '.desc'].map((q) => { const r = document.querySelector(q).getBoundingClientRect(); return [q, [Math.round(r.left), Math.round(r.top), Math.round(r.right), Math.round(r.bottom)]]; })));
     console.log('  글씨 영역(left,top,right,bottom):', JSON.stringify(m));
     if (Object.entries(m).some(([q, r]) => q !== '.desc' && r[2] > RS.w - RS.rightGap)) console.warn('경고: 글씨가 오른쪽 140px 안으로 들어가요');
     await page.screenshot({ path: overlay, clip: { x: 0, y: 0, width: RS.w, height: RS.h }, omitBackground: true });
@@ -166,7 +181,7 @@ export async function runReelSingle(postId, { refresh = false, audio = false } =
   else if (audio) await mux(path.join(outDir, 'reel-audio.mp4'));
   const still = path.join(outDir, 'still.png');
   ff(['-ss', String(Math.min(10, total / 2)), '-i', mp4, '-frames:v', '1', still]);
-  console.log(info);
+  console.log(info.join(' | '));
   console.log(path.relative(ROOT, mp4), `(약 ${total.toFixed(1)}초, ${withAudioInReel ? '원본 오디오' : '무음'})`);
   console.log(path.relative(ROOT, still));
 }

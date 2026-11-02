@@ -1,0 +1,14 @@
+{
+  "_doc": "--reel-single 고정 텍스트. title1 흰색 88px, title2 민트 96px, info1은 직접 쓴 문구(출시일은 한국 시각 12/4), info2(한국어·인원)는 DB 값. movie: 스팀 영상 이름, segments: 영상 [시작초, 끝초] 목록(글자 카드·검은 화면 제외), endClip: 마지막 로고 장면, audio: reel.mp4에 원본 오디오 포함, brightness: ffmpeg eq",
+  "appid": "2870790",
+  "movie": "Dumpster Gang Demo Trailer",
+  "layout": "wide",
+  "audio": true,
+  "brightness": "brightness=0.05:gamma=1.15",
+  "title1": "친구들이랑",
+  "title2": "너구리로 집털기",
+  "info1": "(26년 12월 4일 출시 예정 · 무료 데모)",
+  "desc": "간식만 훔치자고 했는데\n친구가 집 통째로 털고 있음ㅋㅋㅋ",
+  "segments": [[21.0, 25.0], [32.0, 36.0], [60.0, 64.5], [40.0, 45.0], [74.0, 78.0]],
+  "endClip": [86.0, 87.9]
+}
