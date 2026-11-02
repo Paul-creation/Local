@@ -2,7 +2,7 @@
 // --reel-trend: 신작·화제작 세로 릴스(1080×1920, 약 25초). 트레일러가 화면 전체를 채우고(가운데 크롭) 가운데 단어 자막 7비트 + 정보 카드 + 루프(첫 컷·끝 컷이 같은 장면)
 // 레이아웃: 영상 전체 화면 · 로고는 왼쪽 위 작은 워터마크 · 자막/카드는 가운데 y≈900, 오른쪽 140px·아래 25%(y>1440)는 비움(가로 기준 x 470 = 오른쪽 140px을 뺀 폭의 가운데)
 // 자막: 흰색 Extra Bold 90px + 검은 외곽선 7px, 최대 2줄·줄당 10자 안팎(어절 단위). 비트당 (전체 길이 - 카드 시간) / 비트 수 초
-// 정보 카드: beats[cardAfterBeat - 1] 다음에 cardSec초(자막은 그동안 숨김). 가격·인원·한국어는 스팀 appdetails(kr) 값(할인 중이면 "₩6,790 (-15%, 11/3까지)" — 종료일은 상점 페이지의 할인 타이머에서 읽고 못 찾으면 "₩6,790 (-15%)"), copy.maxPlayers가 있으면 인원만 덮어씀
+// 정보 카드: beats[cardAfterBeat - 1] 다음에 cardSec초(자막은 그동안 숨김). 가격·인원·한국어는 스팀 appdetails(kr) 값(할인 종료가 3일 넘게 남았을 때만 "₩6,790 (-15%, 11/3까지)", 3일 이내·종료 시각 불명이면 정가만), copy.maxPlayers가 있으면 인원만 덮어씀
 // 내레이션(copy.narration = {voiceId, text, anchors[7]}): ElevenLabs with-timestamps로 만들어 out/<post-id>/narration.mp3·json에 캐시. 자막은 말하는 타이밍에 바뀌고, 카드는 "더 센 장비" 비트 뒤 내레이션 쉼에 끼운다(내레이션도 그동안 쉼). 영상 길이는 내레이션에 맞춰 컷을 비율로 줄인다. 내레이션 -14 LUFS, 게임 소리는 말 구간에서 -10dB(≈-24 LUFS)
 // 오디오: 트레일러 원본(컷 경계 0.1초 크로스페이드, -14 LUFS, 끝 0.8초 페이드아웃)
 // 실행: npm run insta -- <post-id> --reel-trend   (문구·구간은 copy/<post-id>.json → out/<post-id>/reel.mp4 + still-subtitle.png + still-card.png)
@@ -48,13 +48,13 @@ export async function steamFacts(appid, copy) {
   const won = (v) => `₩${Math.round(v / 100).toLocaleString('ko-KR')}`;
   let price = d.is_free ? '무료' : po ? won(po.initial) : null;
   let saleEnd = null;
-  if (po?.discount_percent > 0) { // 할인 중: "₩6,790 (-15%, 11/3까지)". 종료일은 appdetails에 없어 상점 페이지의 할인 타이머(InitDailyDealTimer, 종료 시각)에서 읽고, 못 찾으면 종료일은 뺀다
+  if (po?.discount_percent > 0) { // 할인 종료가 3일 넘게 남았을 때만 "₩6,790 (-15%, 11/3까지)". 3일 이내이거나 종료 시각을 못 찾으면 정가만 쓴다(영상이 올라갈 때쯤 할인이 끝나 있을 수 있어서)
     try {
       const html = await (await fetch(`https://store.steampowered.com/app/${appid}/?l=koreana&cc=kr`, { headers: { cookie: 'birthtime=0; wants_mature_content=1' } })).text();
-      const ts = Number(/InitDailyDealTimer\(\s*\$DiscountCountdown,\s*(\d+)/.exec(html)?.[1]);
-      if (ts > Date.now() / 1000) { const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric' }).formatToParts(new Date(ts * 1000)).map((x) => [x.type, x.value])); saleEnd = `${p.month}/${p.day}`; }
-    } catch { /* 종료일 없이 진행 */ }
-    price = `${won(po.final)} (-${po.discount_percent}%${saleEnd ? `, ${saleEnd}까지` : ''})`;
+      const ts = Number(/InitDailyDealTimer\(\s*\$DiscountCountdown,\s*(\d+)/.exec(html)?.[1]); // 종료 시각(appdetails에는 없어 상점 페이지에서 읽음)
+      if (ts * 1000 - Date.now() > 3 * 864e5) { const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric' }).formatToParts(new Date(ts * 1000)).map((x) => [x.type, x.value])); saleEnd = `${p.month}/${p.day}`; }
+    } catch { /* 종료 시각을 못 읽으면 정가 */ }
+    if (saleEnd) price = `${won(po.final)} (-${po.discount_percent}%, ${saleEnd}까지)`;
   }
   const kor = /Korean(<strong>\*<\/strong>)?/.exec(en.supported_languages ?? '');
   const range = /(\d+)\s*~\s*(\d+)\s*인/.exec(d.short_description ?? '');
