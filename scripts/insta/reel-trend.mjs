@@ -1,12 +1,13 @@
 // scripts/insta/reel-trend.mjs
-// --reel-trend: 신작·화제작 세로 릴스(1080×1920, 약 25초). 트레일러가 화면 전체를 채우고(가운데 크롭) 가운데 단어 자막 7비트 + 정보 카드 + 루프(첫 컷·끝 컷이 같은 장면)
+// --reel-trend: 신작·화제작 세로 릴스(1080×1920). 트레일러가 화면 전체를 채우고(가운데 크롭) ElevenLabs 내레이션 + 말하는 어절에 맞춰 팝으로 바뀌는 가운데 자막 + 정보 카드 + 루프(첫 컷·끝 컷이 같은 장면)
 // 레이아웃: 영상 전체 화면 · 로고는 왼쪽 위 작은 워터마크 · 자막/카드는 가운데 y≈900, 오른쪽 140px·아래 25%(y>1440)는 비움(가로 기준 x 470 = 오른쪽 140px을 뺀 폭의 가운데)
-// 자막: 흰색 Extra Bold 90px + 검은 외곽선 7px, 최대 2줄·줄당 10자 안팎(어절 단위). 비트당 (전체 길이 - 카드 시간) / 비트 수 초
-// 정보 카드: beats[cardAfterBeat - 1] 다음에 cardSec초(자막은 그동안 숨김). 가격·인원·한국어는 스팀 appdetails(kr) 값(할인 종료가 3일 넘게 남았을 때만 "₩6,790 (-15%, 11/3까지)", 3일 이내·종료 시각 불명이면 정가만), copy.maxPlayers가 있으면 인원만 덮어씀
-// 내레이션(copy.narration = {voiceId, text, anchors[7]}): ElevenLabs with-timestamps로 만들어 out/<post-id>/narration.mp3·json에 캐시. 자막은 말하는 타이밍에 바뀌고, 카드는 "더 센 장비" 비트 뒤 내레이션 쉼에 끼운다(내레이션도 그동안 쉼). 영상 길이는 내레이션에 맞춰 컷을 비율로 줄인다. 내레이션 -14 LUFS, 게임 소리는 말 구간에서 -10dB(≈-24 LUFS)
-// 오디오: 트레일러 원본(컷 경계 0.1초 크로스페이드, -14 LUFS, 끝 0.8초 페이드아웃)
-// 실행: npm run insta -- <post-id> --reel-trend   (문구·구간은 copy/<post-id>.json → out/<post-id>/reel.mp4 + still-subtitle.png + still-card.png)
-// copy: appid, movie(스팀 영상 이름), segments([시작초, 끝초] 목록), endClip(첫 컷과 같은 장면), beats(7개 문구, 줄바꿈은 \n으로 직접 지정 가능), cardAfterBeat(기본 5), cardSec(기본 2.5), cardTitle(기본 스팀 이름), maxPlayers(선택)
+// 자막: 1~2어절씩, 내레이션 글자별 타이밍(with-timestamps)에 맞춰 바뀐다. 흰색 Extra Bold 100px + 검은 외곽선 8px, 핵심 단어([ ]로 표시)는 민트. 나올 때 0.08초 동안 85%→100% 팝, 그 외 움직임·페이드 없음
+// 정보 카드: 지정한 말(card.chunk) 시작에 화면 아래에서 0.2초 동안 올라와 card.sec초 머문다. 그동안 자막은 카드 위(y 430)로 비켜서 계속 나온다. 가격·인원·한국어는 스팀 appdetails(kr) 값(할인 종료가 3일 넘게 남았을 때만 "₩6,790 (-15%, 11/3까지)", 3일 이내·종료 시각 불명이면 정가만), copy.maxPlayers가 있으면 인원만 덮어씀
+// 내레이션: ElevenLabs(eleven_multilingual_v2, voiceSettings) with-timestamps를 대본 통째로 한 번에 생성해 out/<post-id>/<cacheName>.mp3·json에 캐시(대본·목소리·설정이 같으면 API를 다시 부르지 않는다)
+// 오디오: 배경음악 없음. 내레이션 -14 LUFS, 트레일러 원본은 -14 LUFS로 맞춘 뒤 내레이션 중에 -8dB(≈-22 LUFS)로 덕킹(말 사이 0.7초 넘는 쉼에는 원래대로), 컷 경계 0.1초 크로스페이드, 끝 0.8초 페이드아웃
+// 영상 길이 = 내레이션 길이 + 1초(마지막 1초는 첫 컷과 같은 알 장면 — 루프). 컷은 copy.cuts의 t(초, 내레이션 기준)에서 바뀐다
+// 실행: npm run insta -- <post-id> --reel-trend   (copy/<post-id>.json → out/<post-id>/reel.mp4 + still-subtitle.png + still-card.png)
+// copy: appid, movie(스팀 영상 이름), maxPlayers(선택), cardTitle(선택), narration{voiceId, cacheName, voiceSettings, text}, chunks[](자막 어절 묶음, 대본 순서, [핵심]), card{chunk, sec}, cuts[{t, src:[시작초, 끝초]}](t=0부터), endClip(첫 컷과 같은 알 장면, 1초만 쓴다)
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -21,22 +22,10 @@ const ROOT = path.resolve(DIR, '../..');
 const MINT = '#5CF2B0';
 const CX = (RS.w - RS.rightGap) / 2; // 자막·카드 가운데 x = 470
 const SUB_Y = 900; // 자막·카드 가운데 y
+const SUB_Y_CARD = 430; // 카드가 떠 있는 동안 자막 y(카드 위)
 const SAFE_BOTTOM = RS.h * 0.75; // 1440
+const POP = 0.08, POP_FROM = 0.85, CARD_IN = 0.2, CARD_SLIDE = 640;
 const esc = (t) => String(t).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
-
-// 어절 단위 줄바꿈: 10자 이하면 1줄, 넘으면 두 줄의 긴 쪽이 가장 짧아지는 지점에서 나눈다. \n이 있으면 그대로 쓴다
-export function wrapBeat(text, max = 10) {
-  if (text.includes('\n')) return text.split('\n');
-  const words = text.split(' ');
-  if ([...text].length <= max || words.length < 2) return [text];
-  let best = null;
-  for (let i = 1; i < words.length; i++) {
-    const a = words.slice(0, i).join(' '), b = words.slice(i).join(' ');
-    const w = Math.max([...a].length, [...b].length);
-    if (!best || w < best.w) best = { w, lines: [a, b] };
-  }
-  return best.lines;
-}
 
 // 스팀 appdetails(kr) — 가격(정가)·출시일·한국어·최대 인원. DB에 없는 게임도 쓸 수 있게 스팀에서 직접 읽는다
 export async function steamFacts(appid, copy) {
@@ -72,10 +61,11 @@ const logoHtml = (font) => `<!doctype html><meta charset="utf-8"><style>${baseCs
 .logo b { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #fff; text-shadow: 0 0 8px rgba(0,0,0,.6); }
 </style><div class="logo"><i>J</i><b>JamiDuNow</b></div>`;
 
-// 자막: 흰 글씨 + 검은 외곽선 7px(바깥쪽). 글줄 묶음의 세로 가운데가 y=900
-const subHtml = (font, lines) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
-.sub { position: absolute; left: 0; width: ${RS.w - RS.rightGap}px; top: ${SUB_Y}px; transform: translateY(-50%); text-align: center; white-space: nowrap; font-size: 90px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.2; color: #fff; -webkit-text-stroke: 14px #000; paint-order: stroke fill; stroke-linejoin: round; }
-</style><div class="sub" id="s">${lines.map(esc).join('<br>')}</div>`;
+// 자막 한 덩어리: 흰 글씨 100px Extra Bold + 검은 외곽선 8px(바깥쪽, 16px 선 + paint-order). [ ]로 감싼 핵심 단어는 민트
+const subHtml = (font, text) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
+.sub { position: absolute; left: ${CX}px; top: ${SUB_Y}px; transform: translate(-50%, -50%); white-space: nowrap; font-size: 100px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.2; color: #fff; -webkit-text-stroke: 16px #000; paint-order: stroke fill; stroke-linejoin: round; }
+.sub .k { color: ${MINT}; }
+</style><div class="sub" id="s">${esc(text).replace(/\[([^\]]+)\]/g, '<span class="k">$1</span>')}</div>`;
 
 // 정보 카드: 둥근 검은 카드 + 민트 포인트. 대표 이미지(스팀 header) · 이름 · 정보 2줄 · 아래 작게 jamidunow.com
 const cardHtml = (font, f, title, imgB64) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
@@ -90,9 +80,10 @@ const cardHtml = (font, f, title, imgB64) => `<!doctype html><meta charset="utf-
 
 // ── ElevenLabs 내레이션 ──
 // 내레이션 mp3·글자별 타이밍은 out/<post-id>/narration.mp3·json에 캐시(대본·목소리가 같으면 API를 다시 부르지 않는다)
-async function getNarration(outDir, cfg) {
-  const mp3 = path.join(outDir, 'narration.mp3'), js = path.join(outDir, 'narration.json');
-  const key = crypto.createHash('sha1').update(`${cfg.voiceId}|eleven_multilingual_v2|${cfg.text}`).digest('hex');
+export async function getNarration(outDir, cfg) {
+  const name = cfg.cacheName ?? 'narration'; // narration-v2 → out/<post-id>/narration-v2.mp3·json
+  const mp3 = path.join(outDir, `${name}.mp3`), js = path.join(outDir, `${name}.json`);
+  const key = crypto.createHash('sha1').update(`${cfg.voiceId}|eleven_multilingual_v2|${cfg.text}|${JSON.stringify(cfg.voiceSettings ?? null)}`).digest('hex');
   if (fs.existsSync(mp3) && fs.existsSync(js)) {
     const c = JSON.parse(fs.readFileSync(js, 'utf8'));
     if (c.key === key) { console.log('  내레이션: 캐시 사용(API 호출 없음)'); return { mp3, ...c }; }
@@ -103,7 +94,7 @@ async function getNarration(outDir, cfg) {
   console.log(`  내레이션: ElevenLabs 호출(글자 ${[...cfg.text].length}자)`);
   const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${cfg.voiceId}/with-timestamps?output_format=mp3_44100_128`, {
     method: 'POST', headers: { 'xi-api-key': apiKey, 'content-type': 'application/json' },
-    body: JSON.stringify({ text: cfg.text, model_id: 'eleven_multilingual_v2' }),
+    body: JSON.stringify({ text: cfg.text, model_id: 'eleven_multilingual_v2', ...(cfg.voiceSettings ? { voice_settings: cfg.voiceSettings } : {}) }),
   });
   if (!r.ok) { const t = await r.text(); throw new Error(`--reel-trend: ElevenLabs ${r.status} ${t.slice(0, 300).replaceAll(apiKey, '***')}`); }
   const j = await r.json();
@@ -116,39 +107,51 @@ async function getNarration(outDir, cfg) {
   return { mp3, ...c };
 }
 
-// 비트별 자막 구간·카드 구간·전체 길이. anchors[i] = 대본에서 i번째 비트가 시작하는 말(앞에서부터 순서대로 찾는다)
-// 카드는 after번째 비트 말이 끝난 뒤, 다음 비트 첫 글자 직전(말 사이 쉼 안)에 끼우고 그 뒤 내레이션은 cardSec만큼 밀린다
-export function narrationTimeline(nar, anchors, after, cardSec, tail = 0.5) {
-  const joined = nar.chars.join('');
-  let from = 0;
-  const idx = anchors.map((a) => { const k = joined.indexOf(a, from); if (k < 0) throw new Error(`--reel-trend: 대본에서 "${a}"를 못 찾았어요`); from = k + a.length; return k; });
-  const st = idx.map((k) => nar.starts[k]);
-  const gapStart = nar.ends[idx[after] - 1]; // 카드 앞 비트의 마지막 글자 끝
-  const tb = Math.min(Math.max(gapStart + 0.03, st[after] - 0.12), st[after] - 0.02); // 내레이션을 가를 지점(말 사이 쉼 안, 다음 비트 첫 글자보다는 반드시 앞)
-  const at = (i) => (i < after ? st[i] : st[i] + cardSec); // 카드 뒤 비트는 cardSec만큼 밀린다
-  const total = nar.duration + cardSec + tail;
-  const win = idx.map((_, i) => [i === 0 ? 0 : at(i), i === idx.length - 1 ? total : i === after - 1 ? tb : at(i + 1)]);
-  const speech = [[st[0], tb], [st[after] + cardSec, nar.duration + cardSec]]; // 덕킹 구간(내레이션이 나오는 곳)
-  return { win, cardWin: [tb, tb + cardSec], total, tb, speech };
-}
 
 const run = (args) => spawnSync('ffmpeg', ['-hide_banner', '-y', ...args], { encoding: 'utf8' });
+const chunkPlain = (c) => c.replace(/[\[\]\s.,!?~]/g, '');
 
-// 내레이션(카드 자리 cardSec초는 무음) -14 LUFS + 게임 소리 -14 LUFS(이미 맞춤)를 내레이션 구간에서 -10dB(≈-24 LUFS)로 낮춰 섞는다
-function mixNarration({ game, narr, cardSec, total, out }) {
-  const DUCK = 0.316; // -10dB
-  const tb = narr.tb.toFixed(3);
-  const pre = `[0:a]atrim=0:${tb},asetpts=PTS-STARTPTS,aresample=48000,aformat=channel_layouts=stereo[na];[0:a]atrim=start=${tb},asetpts=PTS-STARTPTS,aresample=48000,aformat=channel_layouts=stereo[nb];anullsrc=r=48000:cl=stereo,atrim=0:${cardSec},asetpts=PTS-STARTPTS[ng];[na][ng][nb]concat=n=3:v=0:a=1`;
-  const m1 = run(['-i', narr.mp3, '-filter_complex', `${pre},loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json[o]`, '-map', '[o]', '-f', 'null', '-']);
+// 자막 덩어리를 내레이션 글자 타이밍에 붙인다(공백·문장부호 빼고 대본 순서대로 찾음). 덩어리는 다음 덩어리가 시작할 때까지(최대 자기 말이 끝난 뒤 0.4초) 보인다
+export function chunkTimeline(nar, chunks, total) {
+  const keep = nar.chars.map((c, i) => (/[\s.,!?~]/.test(c) ? -1 : i)).filter((i) => i >= 0);
+  const compact = keep.map((i) => nar.chars[i]).join('');
+  let from = 0;
+  const found = chunks.map((c) => {
+    const p = chunkPlain(c);
+    const k = compact.indexOf(p, from);
+    if (k < 0) throw new Error(`--reel-trend: 대본에서 자막 "${c}"를 순서대로 찾지 못했어요`);
+    from = k + p.length;
+    return { text: c, start: nar.starts[keep[k]], end: nar.ends[keep[k + p.length - 1]] };
+  });
+  return found.map((f, i) => ({ ...f, to: i + 1 < found.length ? Math.min(found[i + 1].start, f.end + 0.4) : Math.min(f.end + 0.6, total) }));
+}
+
+// 컷: t(내레이션 기준)에서 바뀐다. 마지막은 endClip 1초(루프용 알 장면). 컷 길이만큼 원본을 시작초부터 쓴다
+export function cutTimeline(cuts, endClip, narDur) {
+  if (cuts[0].t !== 0) throw new Error('--reel-trend: 첫 컷의 t는 0이어야 해요');
+  const segs = cuts.map((c, i) => {
+    const dur = (cuts[i + 1]?.t ?? narDur) - c.t;
+    if (dur > c.src[1] - c.src[0] + 0.1) console.warn(`  경고: 컷 t=${c.t} ${dur.toFixed(2)}초가 원본 구간(${c.src.join('~')})보다 길어요 — 장면 경계를 넘을 수 있어요`);
+    return { t: c.t, dur, src: [c.src[0], c.src[0] + dur] };
+  });
+  return { parts: [...segs.map((s) => s.src), [endClip[0], endClip[0] + 1]], segs, total: narDur + 1 };
+}
+
+// 내레이션 -14 LUFS + 트레일러 소리(-14 LUFS로 맞춘 것)를 내레이션 중에 -8dB(≈-22 LUFS)로 덕킹해 섞는다
+function mixNarration({ game, nar, total, out }) {
+  const DUCK = Math.pow(10, -8 / 20);
+  const m1 = run(['-i', nar.mp3, '-filter_complex', '[0:a]aresample=48000,aformat=channel_layouts=stereo,loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json[o]', '-map', '[o]', '-f', 'null', '-']);
   const m = JSON.parse(m1.stderr.slice(m1.stderr.lastIndexOf('{'), m1.stderr.lastIndexOf('}') + 1));
   const ln = `loudnorm=I=-14:TP=-1.5:LRA=11:measured_I=${m.input_i}:measured_TP=${m.input_tp}:measured_LRA=${m.input_lra}:measured_thresh=${m.input_thresh}:offset=${m.target_offset}:linear=true`;
-  // 덕킹: 말 구간 앞 0.2초에 내려가고 뒤 0.3초에 올라오는 이득 곡선
-  const g = narr.speech.map(([a, b]) => `clip(min((t-${(a - 0.2).toFixed(3)})/0.2,(${(b + 0.3).toFixed(3)}-t)/0.3),0,1)`);
-  const vol = `1-${(1 - DUCK).toFixed(3)}*max(${g.join(',')})`;
-  const fc = `${pre},${ln},apad=whole_dur=${total.toFixed(3)}[n];[1:a]volume='${vol}':eval=frame[g];[g][n]amix=inputs=2:duration=longest:normalize=0,atrim=0:${total.toFixed(3)},afade=t=out:st=${(total - 0.8).toFixed(2)}:d=0.8[o]`;
-  const r = run(['-i', narr.mp3, '-i', game, '-filter_complex', fc, '-map', '[o]', '-c:a', 'aac', '-b:a', '192k', out]);
+  // 말 구간: 글자 사이 쉼이 0.7초 넘으면 끊는다. 앞 0.15초에 내려가고 뒤 0.3초에 올라오는 이득 곡선
+  const win = [];
+  nar.chars.forEach((c, i) => { if (/\s/.test(c)) return; const last = win[win.length - 1]; if (last && nar.starts[i] - last[1] <= 0.7) last[1] = nar.ends[i]; else win.push([nar.starts[i], nar.ends[i]]); });
+  const g = win.map(([a, b]) => `clip(min((t-(${(a - 0.15).toFixed(3)}))/0.15,(${(b + 0.3).toFixed(3)}-t)/0.3),0,1)`);
+  const vol = `1-${(1 - DUCK).toFixed(3)}*${g.reduce((a, b) => `max(${a},${b})`)}`; // 창이 하나면 max 없이
+  const fc = `[0:a]aresample=48000,aformat=channel_layouts=stereo,${ln},apad=whole_dur=${total.toFixed(3)}[n];[1:a]volume='${vol}':eval=frame[g];[g][n]amix=inputs=2:duration=longest:normalize=0,atrim=0:${total.toFixed(3)},afade=t=out:st=${(total - 0.8).toFixed(2)}:d=0.8[o]`;
+  const r = run(['-i', nar.mp3, '-i', game, '-filter_complex', fc, '-map', '[o]', '-c:a', 'aac', '-b:a', '192k', out]);
   if (r.status !== 0) throw new Error(`--reel-trend: 오디오 믹스 실패\n${r.stderr.slice(-600)}`);
-  console.log(`  내레이션 측정 ${m.input_i} LUFS → -14 LUFS, 게임 소리 말 구간 -10dB(≈-24 LUFS)`);
+  console.log(`  내레이션 측정 ${m.input_i} LUFS → -14 LUFS, 게임 소리 말 구간 -8dB(≈-22 LUFS), 덕킹 구간 ${win.length}개`);
 }
 
 export async function runReelTrend(postId, { refresh = false } = {}) {
@@ -156,9 +159,7 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   if (!fs.existsSync(copyFile)) throw new Error(`--reel-trend: ${path.relative(ROOT, copyFile)}이 없어요`);
   const copy = JSON.parse(fs.readFileSync(copyFile, 'utf8'));
   if (JSON.stringify(copy).includes('재밌드나')) throw new Error('화면에는 "재밌드나"를 쓰지 않아요. JamiDuNow만 쓰세요.');
-  const beats = copy.beats ?? [];
-  if (beats.length !== 7) throw new Error('--reel-trend: beats는 7개여야 해요');
-  const after = copy.cardAfterBeat ?? 5, cardSec = copy.cardSec ?? 2.5;
+  for (const k of ['narration', 'chunks', 'card', 'cuts', 'endClip']) if (!copy[k]) throw new Error(`--reel-trend: copy에 ${k}가 없어요`);
   const facts = await steamFacts(copy.appid, copy);
   const title = copy.cardTitle ?? facts.name;
   console.log('  스팀 값:', JSON.stringify({ ...facts, header: undefined }));
@@ -169,90 +170,83 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   const trailer = await trailerFromDb(src, CACHE, refresh);
   const outDir = path.join(DIR, 'out', postId);
   fs.mkdirSync(outDir, { recursive: true });
-  for (const f of ['reel.mp4', 'still-subtitle.png', 'still-card.png']) fs.rmSync(path.join(outDir, f), { force: true }); // narration.mp3·json(캐시)과 voice-samples는 남긴다
+  for (const f of ['reel.mp4', 'still-subtitle.png', 'still-card.png']) fs.rmSync(path.join(outDir, f), { force: true }); // 내레이션 캐시(narration*.mp3·json)와 voice-samples는 남긴다
 
-  let segments = copy.segments, win, cardWin, total, narr = null;
-  if (copy.narration) { // 내레이션 모드: 자막·카드 타이밍은 내레이션 글자별 타이밍, 영상 길이는 내레이션 길이에 맞춘다
-    const nar = await getNarration(outDir, copy.narration);
-    const tl = narrationTimeline(nar, copy.narration.anchors, after, cardSec);
-    ({ win, cardWin, total } = tl);
-    narr = { ...tl, mp3: nar.mp3 };
-    const endDur = copy.endClip[1] - copy.endClip[0];
-    const sum = copy.segments.reduce((t, [x, y]) => t + y - x, 0);
-    const f = (total - endDur) / sum; // 컷 길이를 비율로 맞춘다(줄이는 쪽은 장면 안이라 안전)
-    if (f > 1.05) console.warn(`  경고: 컷을 ${f.toFixed(2)}배로 늘려요 — 장면 경계를 넘을 수 있어요`);
-    segments = copy.segments.map(([x, y]) => [x, x + (y - x) * f]);
-    console.log(`  내레이션 ${nar.duration.toFixed(2)}초 + 카드 ${cardSec}초 → 영상 ${total.toFixed(2)}초 (컷 ×${f.toFixed(2)})`);
-  } else {
-    const sum = [...copy.segments, copy.endClip].reduce((t, [x, y]) => t + y - x, 0);
-    total = sum;
-    const d = (total - cardSec) / beats.length; // 비트당 길이
-    win = beats.map((_, i) => { const st = i < after ? i * d : i * d + cardSec; return [st, st + d]; });
-    cardWin = [after * d, after * d + cardSec];
-    console.log(`  총 ${total.toFixed(2)}초 · 비트당 ${d.toFixed(2)}초`);
-  }
-  console.log('  자막 구간:', win.map(([x, y]) => `${x.toFixed(2)}~${y.toFixed(2)}`).join(' | '), `· 카드 ${cardWin[0].toFixed(2)}~${cardWin[1].toFixed(2)}`);
-  const parts = [...segments, copy.endClip];
+  const nar = await getNarration(outDir, copy.narration);
+  const { parts, segs, total } = cutTimeline(copy.cuts, copy.endClip, nar.duration);
+  const chunks = chunkTimeline(nar, copy.chunks, total);
+  const cardChunk = chunks.find((c) => chunkPlain(c.text) === chunkPlain(copy.card.chunk));
+  if (!cardChunk) throw new Error(`--reel-trend: card.chunk "${copy.card.chunk}"와 같은 자막이 없어요`);
+  const c0 = cardChunk.start, c1 = c0 + copy.card.sec;
+  console.log(`  내레이션 ${nar.duration.toFixed(2)}초 → 영상 ${total.toFixed(2)}초 · 카드 ${c0.toFixed(2)}~${c1.toFixed(2)}초`);
+  console.log('  컷:', segs.map((s) => `${s.t.toFixed(2)}(${s.dur.toFixed(2)})`).join(' '), `· 마지막 알 ${nar.duration.toFixed(2)}`);
+  console.log('  자막:', chunks.map((c) => `${c.text} ${c.start.toFixed(2)}~${c.to.toFixed(2)}`).join(' | '));
   const font = fs.readFileSync(path.join(ROOT, 'node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2')).toString('base64');
   const imgB64 = Buffer.from(await (await fetch(facts.header)).arrayBuffer()).toString('base64');
 
-  const shot = async (page, html, file, sel) => {
-    if (html) { await page.setContent(html, { waitUntil: 'load' }); await page.evaluate(() => document.fonts.ready); }
-    const r = sel ? await page.evaluate((q) => { const b = document.querySelector(q).getBoundingClientRect(); return [Math.round(b.left), Math.round(b.top), Math.round(b.right), Math.round(b.bottom)]; }, sel) : null;
-    await page.screenshot({ path: file, clip: { x: 0, y: 0, width: RS.w, height: RS.h }, omitBackground: true });
-    return r;
-  };
-  const overlays = [];
+  // 오버레이 PNG: 로고(전체 화면) · 자막 덩어리별(글자 영역만 잘라냄, 가운데 좌표 기억) · 카드(전체 화면)
+  const subs = [];
+  const logoPng = path.join(CACHE, `trend-${postId}-logo.png`), cardPng = path.join(CACHE, `trend-${postId}-card.png`);
   const browser = await chromium.launch();
   try {
     const page = await browser.newPage({ viewport: { width: RS.w, height: RS.h } });
-    const wm = path.join(CACHE, `trend-${postId}-logo.png`);
-    await shot(page, logoHtml(font), wm);
-    overlays.push({ file: wm, from: 0, to: total });
-    for (let i = 0; i < beats.length; i++) {
-      const lines = wrapBeat(beats[i]);
-      if (lines.length > 2 || lines.some((l) => [...l].length > 11)) throw new Error(`--reel-trend: "${beats[i]}"는 2줄·줄당 10자 안팎을 넘어요`);
-      const f = path.join(CACHE, `trend-${postId}-sub${i}.png`);
-      const r = await shot(page, subHtml(font, lines), f, '#s');
-      console.log(`  자막 ${i + 1}: ${lines.join(' / ')}  영역 ${JSON.stringify(r)}`);
-      if (r[2] > RS.w - RS.rightGap || r[0] < 0 || r[3] > SAFE_BOTTOM) throw new Error(`--reel-trend: 자막 ${i + 1}이 안전 영역(오른쪽 140px·아래 25%)을 넘어요`);
-      overlays.push({ file: f, from: win[i][0], to: win[i][1] });
+    const full = { x: 0, y: 0, width: RS.w, height: RS.h };
+    const load = async (html) => { await page.setContent(html, { waitUntil: 'load' }); await page.evaluate(() => document.fonts.ready); };
+    await load(logoHtml(font));
+    await page.screenshot({ path: logoPng, clip: full, omitBackground: true });
+    for (let i = 0; i < chunks.length; i++) {
+      await load(subHtml(font, chunks[i].text));
+      const r = await page.evaluate(() => { const b = document.getElementById('s').getBoundingClientRect(); return { l: b.left, t: b.top, w: b.width, h: b.height }; });
+      const W = Math.ceil(r.w / 2) * 2 + 64, H = Math.ceil(r.h / 2) * 2 + 64; // 외곽선 여유, 가운데 유지
+      const file = path.join(CACHE, `trend-${postId}-sub${i}.png`);
+      await page.screenshot({ path: file, clip: { x: Math.round(CX - W / 2), y: Math.round(SUB_Y - H / 2), width: W, height: H }, omitBackground: true });
+      if (CX + r.w / 2 > RS.w - RS.rightGap || CX - r.w / 2 < 0) throw new Error(`--reel-trend: 자막 "${chunks[i].text}"가 안전 영역(오른쪽 140px)을 넘어요`);
+      subs.push({ file, ...chunks[i] });
     }
-    const cf = path.join(CACHE, `trend-${postId}-card.png`);
-    await page.setContent(cardHtml(font, facts, title, imgB64), { waitUntil: 'load' });
-    await page.evaluate(() => document.fonts.ready);
+    await load(cardHtml(font, facts, title, imgB64));
     const fit = await page.evaluate(() => { const el = document.querySelector('.i'); const max = el.clientWidth; let sz = 40; el.style.whiteSpace = 'nowrap'; el.style.display = 'inline-block'; el.style.width = 'auto'; while (el.scrollWidth > max && sz > 26) { sz -= 1; el.style.fontSize = `${sz}px`; } const ok = el.scrollWidth <= max; el.style.display = ''; el.style.width = ''; return { sz, ok }; });
     console.log(`  카드 정보 줄 ${fit.sz}px${fit.ok ? '' : ' (넘침)'}`);
-    const cr = await shot(page, null, cf, '#c');
+    const cr = await page.evaluate(() => { const b = document.getElementById('c').getBoundingClientRect(); return [Math.round(b.left), Math.round(b.top), Math.round(b.right), Math.round(b.bottom)]; });
     console.log(`  카드 영역 ${JSON.stringify(cr)}`);
     if (cr[2] > RS.w - RS.rightGap || cr[3] > SAFE_BOTTOM) throw new Error('--reel-trend: 정보 카드가 안전 영역을 넘어요');
-    overlays.push({ file: cf, from: cardWin[0], to: cardWin[1] });
+    await page.screenshot({ path: cardPng, clip: full, omitBackground: true });
   } finally { await browser.close(); }
 
-  // 영상: 구간 이어 붙이고 1920 높이로 맞춘 뒤 가운데 크롭(1080×1920), 워터마크·자막·카드를 시간대별로 얹는다
+  // 영상: 컷을 이어 붙여 1920 높이로 맞춘 뒤 가운데 크롭(1080×1920). 워터마크 → 자막(팝, 카드 중엔 위로) → 카드(아래에서 올라옴)
   const { w, h, fps } = RS;
   const n = parts.length;
-  const inputs = parts.flatMap(([a, b]) => ['-ss', String(a), '-t', String(b - a), '-i', trailer]);
-  const ovIn = overlays.flatMap((o) => ['-loop', '1', '-framerate', String(fps), '-t', total.toFixed(3), '-i', o.file]);
+  const T = (v) => v.toFixed(3);
+  const vin = parts.flatMap(([a, b]) => ['-ss', String(a), '-t', String(b - a), '-i', trailer]);
+  const oin = [
+    ['-loop', '1', '-framerate', String(fps), '-t', T(total), '-i', logoPng],
+    ...subs.map((c) => ['-itsoffset', T(c.start), '-loop', '1', '-framerate', String(fps), '-t', T(c.to - c.start + 0.1), '-i', c.file]),
+    ['-itsoffset', T(c0), '-loop', '1', '-framerate', String(fps), '-t', T(copy.card.sec + 0.1), '-i', cardPng],
+  ].flat();
   const scaled = parts.map((_, i) => `[${i}:v]scale=-2:${h},crop=${w}:${h}:(iw-${w})/2:0,setsar=1,fps=${fps}[s${i}]`);
-  let chain = '[v]';
-  const ov = overlays.map((o, i) => { const out = `[o${i}]`; const s = `${chain}[${n + i}:v]overlay=format=auto:enable='between(t,${o.from.toFixed(3)},${o.to.toFixed(3)})'${out}`; chain = out; return s; });
-  const fc = `${scaled.join(';')};${parts.map((_, i) => `[s${i}]`).join('')}concat=n=${n}:v=1:a=0[v];${ov.join(';')};${chain}format=yuv420p[o]`;
+  const g = [`${scaled.join(';')};${parts.map((_, i) => `[s${i}]`).join('')}concat=n=${n}:v=1:a=0[v0]`];
+  g.push(`[v0][${n}:v]overlay=format=auto[v1]`);
+  subs.forEach((c, i) => {
+    const k = n + 1 + i, P = `(${POP_FROM}+${1 - POP_FROM}*min(1,max(0,(t-${T(c.start)})/${POP})))`;
+    g.push(`[${k}:v]format=rgba,scale=w='trunc(iw*${P}/2)*2':h='trunc(ih*${P}/2)*2':eval=frame[p${i}]`);
+    g.push(`[v${i + 1}][p${i}]overlay=x='${CX}-w/2':y='if(between(t,${T(c0)},${T(c1)}),${SUB_Y_CARD},${SUB_Y})-h/2':eof_action=pass:enable='between(t,${T(c.start)},${T(c.to)})':format=auto[v${i + 2}]`);
+  });
+  const kc = n + 1 + subs.length, last = subs.length + 1;
+  g.push(`[v${last}][${kc}:v]overlay=x=0:y='if(lt(t-${T(c0)},${CARD_IN}),${CARD_SLIDE}*pow(1-(t-${T(c0)})/${CARD_IN},2),0)':eof_action=pass:enable='between(t,${T(c0)},${T(c1)})':format=auto,format=yuv420p[o]`);
   const silent = path.join(CACHE, `trend-${postId}-silent.mp4`);
-  ff([...inputs, ...ovIn, '-filter_complex', fc, '-map', '[o]', '-an', '-t', total.toFixed(3), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p', silent]);
+  if (process.env.REEL_DEBUG) fs.writeFileSync(path.join(CACHE, `trend-${postId}-graph.txt`), JSON.stringify({ args: [...vin, ...oin], graph: g.join(';') }));
+  ff(['-filter_threads', '1', ...vin, ...oin, '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', T(total), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p', silent]);
 
-  const m4a = path.join(CACHE, `trend-${postId}-audio.m4a`);
-  const gameM4a = path.join(CACHE, `trend-${postId}-game.m4a`);
-  const { measured } = buildAudio({ audio: await trailerAudioFromDb(src, CACHE, refresh), copy: { segments, endClip: copy.endClip }, out: narr ? gameM4a : m4a });
-  if (narr) mixNarration({ game: gameM4a, narr, cardSec, total, out: m4a });
+  const m4a = path.join(CACHE, `trend-${postId}-audio.m4a`), gameM4a = path.join(CACHE, `trend-${postId}-game.m4a`);
+  const { measured } = buildAudio({ audio: await trailerAudioFromDb(src, CACHE, refresh), copy: { segments: parts.slice(0, -1), endClip: parts[parts.length - 1] }, out: gameM4a });
+  mixNarration({ game: gameM4a, nar, total, out: m4a });
   const mp4 = path.join(outDir, 'reel.mp4');
   ff(['-i', silent, '-i', m4a, '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'copy', '-movflags', '+faststart', '-shortest', mp4]);
 
-  // 정지 이미지: 자막 장면(곡괭이 비트 가운데) 1장, 정보 카드 1장
-  const subAt = (win[2][0] + win[2][1]) / 2, cardAt = (cardWin[0] + cardWin[1]) / 2;
-  ff(['-ss', subAt.toFixed(2), '-i', mp4, '-frames:v', '1', path.join(outDir, 'still-subtitle.png')]);
-  ff(['-ss', cardAt.toFixed(2), '-i', mp4, '-frames:v', '1', path.join(outDir, 'still-card.png')]);
+  // 정지 이미지: 자막 장면 1장(곡괭이 비트, 팝이 끝난 뒤), 정보 카드 1장(다 올라온 뒤)
+  const pick = chunks.find((c) => chunkPlain(c.text).includes('곡괭이')) ?? chunks[Math.floor(chunks.length / 2)];
+  ff(['-ss', T(pick.start + 0.25), '-i', mp4, '-frames:v', '1', path.join(outDir, 'still-subtitle.png')]);
+  ff(['-ss', T(c0 + 1.2), '-i', mp4, '-frames:v', '1', path.join(outDir, 'still-card.png')]);
   const dur = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', mp4]).toString());
-  console.log(`${path.relative(ROOT, mp4)} (${dur.toFixed(2)}초, ${narr ? '내레이션 + 덕킹한 ' : ''}원본 오디오 측정 ${measured} LUFS → -14 LUFS, 구간 경계 0.1초 크로스페이드)`);
+  console.log(`${path.relative(ROOT, mp4)} (${dur.toFixed(2)}초, 내레이션 + 덕킹한 원본 오디오 측정 ${measured} LUFS → -14 LUFS, 구간 경계 0.1초 크로스페이드)`);
   console.log(path.relative(ROOT, path.join(outDir, 'still-subtitle.png')), path.relative(ROOT, path.join(outDir, 'still-card.png')));
 }
