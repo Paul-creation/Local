@@ -86,10 +86,10 @@ function compose({ trailer, overlay, copy, out }) {
 }
 
 const XFADE = 0.1, FADE_OUT = 0.8, LUFS = -14;
-const ff = (args) => execFileSync('ffmpeg', ['-v', 'error', '-y', ...args], { stdio: 'inherit' });
+export const ff = (args) => execFileSync('ffmpeg', ['-v', 'error', '-y', ...args], { stdio: 'inherit' });
 
 // HLS 마스터의 오디오 목록(EXT-X-MEDIA TYPE=AUDIO)을 m4a로 받아 cache에 둔다
-async function trailerAudioFromDb(game, cacheDir, refresh) {
+export async function trailerAudioFromDb(game, cacheDir, refresh) {
   const file = path.join(cacheDir, `reel-trailer-audio-${game.steam_appid}.m4a`);
   if (!refresh && fs.existsSync(file)) return file;
   const master = game.video_url;
@@ -100,7 +100,7 @@ async function trailerAudioFromDb(game, cacheDir, refresh) {
 }
 
 // 구간별 오디오를 이어 붙인다. 크로스페이드가 겹친 만큼 줄어드니, 구간(마지막 빼고) 끝에 0.1초를 더 떠서 영상 길이·싱크를 맞춘다
-function buildAudio({ audio, copy, out }) {
+export function buildAudio({ audio, copy, out }) {
   const parts = [...copy.segments, copy.endClip];
   const n = parts.length;
   const total = parts.reduce((t, [a, b]) => t + b - a, 0);
