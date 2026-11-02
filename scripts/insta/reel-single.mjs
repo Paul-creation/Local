@@ -40,6 +40,7 @@ export function infoLine(game) {
 
 // 새 정보 2줄: 1줄은 copy.info1(없으면 infoLine), 2줄은 "한국어 … / 1~4인"(DB min_players·max_players·korean_support)
 export function infoLines(game, copy) {
+  if (copy.infoText) return [copy.infoText]; // 고정 문구(DB 값 대신 그대로 쓴다)
   if (copy.infoAuto) { // 한 줄 "(MM.DD 출시 예정 · 무료 데모 / 1~4인 / 한국어 …)": 날짜는 coming_soon+날짜 있을 때만, 무료 데모는 demo_appid 있을 때만, 인원은 DB(혼자 가능이면 1부터)
     const rel = game.release_date && /^\d{4}-(\d\d)-(\d\d)/.exec(game.release_date);
     const lo = game.solo_playable ? 1 : (game.min_players ?? 1), hi = game.max_players;
