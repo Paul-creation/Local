@@ -5,7 +5,7 @@
 //   옛 copy(kicker+title)는 kicker→title1, title→title2로 읽고, info1이 없으면 정보 줄 1줄(infoLine)만 쓴다
 // 실행: npm run insta -- <post-id> --reel-single [--audio]   (문구·구간은 copy/<post-id>.json, 가격·인원·한국어는 DB 값)
 //   --audio(또는 copy의 "audio": true): 트레일러 원본 오디오를 같은 구간만큼 붙인다(컷 경계 0.1초 크로스페이드, -14 LUFS, 끝 0.8초 페이드아웃). --audio 플래그는 reel-audio.mp4를 따로, copy의 audio는 reel.mp4에 바로 넣는다. 기본은 무음
-// copy 옵션: movie(스팀 appdetails movies의 영상 이름 — 없으면 DB video_url), layout:"wide"(영상 1080×668 가운데 크롭 y 560~1228, 설명 52px Bold 가운데 정렬 영상 아래 50px·줄 간격 1.2, 오른쪽 140px과 겹치면 48px),
+// copy 옵션: movie(스팀 appdetails movies의 영상 이름 — 없으면 DB video_url), layout 기본은 "wide"(옛 레이아웃은 "classic". 영상 1080×668 가운데 크롭 y 560~1228, 설명 52px Bold 가운데 정렬 영상 아래 50px·줄 간격 1.2, 오른쪽 140px과 겹치면 48px),
 //   brightness(예: "brightness=0.05:gamma=1.15" → ffmpeg eq), videoFocusX(0~1, 좌우 크롭 위치)
 // 정보 줄: 출시 예정(release_status coming_soon + 날짜 있음)이면 "MM.DD 출시 예정 / 무료 데모 / 최대 N인 / 한국어 …"(데모 있을 때만 "무료 데모" 칸), 출시 30일 이내(할인 없음)면 "MM.DD 출시 / ₩가격 / 최대 N인 / 한국어 …". 그 외: 할인 중이면 "~M/D -N% 할인 / 최대 N인 / 한국어 …", 아니면 "₩13,800 / 최대 N인 / 한국어 …" (한국어는 DB korean_support 값, 없으면 미지원)
 import fs from 'fs';
@@ -40,13 +40,20 @@ export function infoLine(game) {
 
 // 새 정보 2줄: 1줄은 copy.info1(없으면 infoLine), 2줄은 "한국어 … / 1~4인"(DB min_players·max_players·korean_support)
 export function infoLines(game, copy) {
+  if (copy.infoAuto) { // 한 줄 "(MM.DD 출시 예정 · 무료 데모 / 1~4인 / 한국어 …)": 날짜는 coming_soon+날짜 있을 때만, 무료 데모는 demo_appid 있을 때만, 인원은 DB(혼자 가능이면 1부터)
+    const rel = game.release_date && /^\d{4}-(\d\d)-(\d\d)/.exec(game.release_date);
+    const lo = game.solo_playable ? 1 : (game.min_players ?? 1), hi = game.max_players;
+    const ko = hasKorean(game) ? `한국어 ${game.korean_support}` : '한국어 미지원';
+    const head = game.release_status === 'coming_soon' && rel ? `${rel[1]}.${rel[2]} 출시 예정 · ` : '';
+    return [`(${head}${[game.demo_appid && '무료 데모', `${lo === hi ? hi : `${lo}~${hi}`}인`, ko].filter(Boolean).join(' / ')})`];
+  }
   if (!copy.info1) return [infoLine(game)];
   const ko = hasKorean(game) ? `한국어 ${game.korean_support}` : '한국어 미지원';
   const lo = game.min_players ?? 1, hi = game.max_players;
   return [copy.info1, `${ko} / ${lo === hi ? hi : `${lo}~${hi}`}인`];
 }
 
-const wide = (copy) => copy.layout === 'wide';
+const wide = (copy) => copy.layout !== 'classic'; // 가운데 정렬 와이드가 기본, 옛 레이아웃은 copy.layout:"classic"
 const videoHOf = (copy) => (wide(copy) ? 668 : RS.videoH);
 
 function html(copy, infos, font) {
@@ -58,9 +65,9 @@ function html(copy, infos, font) {
 @font-face { font-family: P; src: url(data:font/woff2;base64,${font}); font-weight: 100 900; }
 * { margin: 0; box-sizing: border-box; } html, body { width: ${w}px; height: ${h}px; background: transparent; overflow: hidden; font-family: P, sans-serif; }
 .box { position: absolute; left: ${left}px; width: ${width}px; }
-.logo { top: 150px; display: flex; align-items: center; gap: 12px; }
-.logo i { width: 44px; height: 44px; border-radius: 13px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-style: normal; font-size: 32px; font-weight: 900; line-height: 1; }
-.logo b { font-size: 30px; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
+.logo { top: ${W ? RS.videoTop + 18 : 150}px; ${W ? 'left: 22px; ' : ''}display: flex; align-items: center; gap: ${W ? 8 : 12}px; ${W ? 'opacity: 0.85; ' : ''}}
+.logo i { width: ${W ? 30 : 44}px; height: ${W ? 30 : 44}px; border-radius: ${W ? 9 : 13}px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-style: normal; font-size: ${W ? 22 : 32}px; font-weight: 900; line-height: 1; }
+.logo b { font-size: ${W ? 21 : 30}px; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
 .block { position: absolute; top: 232px; left: 0; width: ${w - rightGap}px; text-align: center; white-space: nowrap; }
 .t1 { font-size: 88px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; color: #fff; }
 .t2 { font-size: 96px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; color: ${MINT}; }
@@ -133,7 +140,7 @@ export async function runReelSingle(postId, { refresh = false, audio = false } =
   if (JSON.stringify(copy).includes('재밌드나')) throw new Error('화면에는 "재밌드나"를 쓰지 않아요. JamiDuNow만 쓰세요.');
   if (copy.desc.split('\n').length > 2) throw new Error('--reel-single: 설명은 최대 2줄이에요');
   const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-  const { data: game, error } = await db.from('games').select('id, name, display_name, steam_appid, min_players, max_players, korean_support, is_free, video_url, release_status, release_date, demo_appid, price_history(price, original_price, discount_percent, sale_ends_at, checked_at)').eq('steam_appid', copy.appid).single();
+  const { data: game, error } = await db.from('games').select('id, name, display_name, steam_appid, solo_playable, min_players, max_players, korean_support, is_free, video_url, release_status, release_date, demo_appid, price_history(price, original_price, discount_percent, sale_ends_at, checked_at)').eq('steam_appid', copy.appid).single();
   if (error) throw new Error(`게임 조회 실패: ${error.message}`);
   const info = infoLines(game, copy);
   const CACHE = path.join(DIR, 'cache');
