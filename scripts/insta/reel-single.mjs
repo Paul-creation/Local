@@ -167,7 +167,7 @@ export async function runReelSingle(postId, { refresh = false, audio = false } =
       if (await right() > RS.w - RS.rightGap) { await page.evaluate(() => { document.querySelector('.desc').style.fontSize = '48px'; }); console.warn('  설명 48px로 줄임'); }
       console.log(`  설명 오른쪽 끝 x ${Math.round(await right())} (한계 ${RS.w - RS.rightGap})`);
     }
-    const m = await page.evaluate(() => Object.fromEntries(['.t1', '.t2', '.inf', '.desc'].map((q) => { const r = document.querySelector(q).getBoundingClientRect(); return [q, [Math.round(r.left), Math.round(r.top), Math.round(r.right), Math.round(r.bottom)]]; })));
+    const m = await page.evaluate(() => Object.fromEntries(['.t1', '.t2', '.inf', '.desc'].map((q) => { const el = document.querySelector(q); const r = el.getBoundingClientRect(); const rg = document.createRange(); rg.selectNodeContents(el); const t = rg.getBoundingClientRect(); return [q, [Math.round(t.left), Math.round(r.top), Math.round(t.right), Math.round(r.bottom)]]; })));
     console.log('  글씨 영역(left,top,right,bottom):', JSON.stringify(m));
     if (Object.entries(m).some(([q, r]) => q !== '.desc' && r[2] > RS.w - RS.rightGap)) console.warn('경고: 글씨가 오른쪽 140px 안으로 들어가요');
     await page.screenshot({ path: overlay, clip: { x: 0, y: 0, width: RS.w, height: RS.h }, omitBackground: true });
