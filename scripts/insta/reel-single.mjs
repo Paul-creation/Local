@@ -68,7 +68,7 @@ function html(copy, infos, font) {
 .logo { top: ${W ? RS.videoTop + 18 : 150}px; ${W ? 'left: 22px; ' : ''}display: flex; align-items: center; gap: ${W ? 8 : 12}px; ${W ? 'opacity: 0.85; ' : ''}}
 .logo i { width: ${W ? 30 : 44}px; height: ${W ? 30 : 44}px; border-radius: ${W ? 9 : 13}px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-style: normal; font-size: ${W ? 22 : 32}px; font-weight: 900; line-height: 1; }
 .logo b { font-size: ${W ? 21 : 30}px; font-weight: 800; letter-spacing: -0.02em; color: #fff; }
-.block { position: absolute; top: 232px; left: 0; width: ${w - rightGap}px; text-align: center; white-space: nowrap; }
+.block { position: absolute; top: 232px; left: 0; width: ${w}px; text-align: center; white-space: nowrap; }
 .t1 { font-size: 88px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; color: #fff; }
 .t2 { font-size: 96px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.15; color: ${MINT}; }
 .inf { margin-top: 18px; font-size: 34px; font-weight: 600; line-height: 1.35; color: #fff; font-variant-numeric: tabular-nums; }
