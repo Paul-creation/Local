@@ -4,23 +4,23 @@
  "maxPlayers": 4,
  "narration": {
   "voiceId": "uyVNoMrnUku1dZyVEXwD",
-  "cacheName": "narration-v5",
+  "cacheName": "narration-v6",
   "voiceSettings": {
-   "stability": 0.35,
+   "stability": 0.5,
    "similarity_boost": 0.8,
-   "style": 0.5,
+   "style": 0.25,
    "speed": 1.1
   },
-  "text": "친구랑 하면 진짜 미치는 게임 찾았습니다. 출근했더니 연구소에 거대한 알이 떨어져 있는데요, 상사가 이걸 깨래요. 이유는 묻지 말고요. 그래서 깨봤더니… 촉수가 튀어나옵니다. 친구는 다이너마이트 던지고, 저는 껍질에 맞고, 다 같이 미끄러지고, 번 돈은 슬롯머신에 전부 탕진하는데요. 게임 이름은 크랙입니다. 근데 진짜, 이 알 안에 뭐가 들었을까요?"
+  "text": "친구랑 하면 진짜 미치는 게임 찾았습니다. 출근했는데 연구소에 웬 거대한 알이 있어요. 상사가 이걸 깨래요. 왜냐고요? 그건 아무도 몰라요. 그래서 깨봤더니… 촉수가 튀어나옵니다. 친구는 다이너마이트 던지고, 저는 파편에 맞고, 다 같이 미끄러지고, 번 돈은 도박으로 다 날려요. 게임 이름은 크랙입니다. 근데 진짜, 이 알 안에 뭐가 들었을까요?"
  },
  "card": {
-  "word": "크랙입니다",
-  "hold": 0.5
+  "after": 7,
+  "from": "게임",
+  "to": "크랙입니다"
  },
- "loopTail": 0.5,
+ "loopTail": 0.4,
  "cuts": [
   {
-   "endWord": "있는데요",
    "parts": [
     {
      "clip": "1. Hook - The Very First",
@@ -35,10 +35,10 @@
      "x0": 0.5,
      "x1": 0.5
     }
-   ]
+   ],
+   "until": "상사가"
   },
   {
-   "endWord": "말고요",
    "parts": [
     {
      "clip": "13. Cracking With Robots",
@@ -46,10 +46,10 @@
      "x0": 0.35,
      "x1": 0.35
     }
-   ]
+   ],
+   "until": "그래서"
   },
   {
-   "endWord": "튀어나옵니다",
    "parts": [
     {
      "clip": "2. Hook - Tentacle Catch",
@@ -64,10 +64,10 @@
      "x0": 0.5,
      "x1": 0.5
     }
-   ]
+   ],
+   "until": "친구는"
   },
   {
-   "endWord": "던지고",
    "unduckAt": 5.6,
    "parts": [
     {
@@ -76,10 +76,10 @@
      "x0": 0.7,
      "x1": 0.5
     }
-   ]
+   ],
+   "until": "저는"
   },
   {
-   "endWord": "맞고",
    "parts": [
     {
      "clip": "23. Egg in Face",
@@ -87,10 +87,10 @@
      "x0": 0.42,
      "x1": 0.45
     }
-   ]
+   ],
+   "until": "다"
   },
   {
-   "endWord": "미끄러지고",
    "parts": [
     {
      "clip": "27. Everyone Slipping",
@@ -105,22 +105,21 @@
      "x0": 0.45,
      "x1": 0.45
     }
-   ]
+   ],
+   "until": "번"
   },
   {
-   "endWord": "크랙입니다",
    "parts": [
     {
      "clip": "3.5 Winning Slot Machine",
-     "endAt": 8.6,
+     "a": 5.4,
      "x0": 0.43,
      "x1": 0.48
     }
    ],
-   "hold": 0.5
+   "until": "게임"
   },
   {
-   "endWord": "들었을까요",
    "parts": [
     {
      "clip": "1.75 - Hook",

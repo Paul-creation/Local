@@ -1,7 +1,7 @@
 // scripts/insta/reel-clips.mjs
 // 개발사 원본 클립으로 만드는 세로 릴스(1080×1920) + ElevenLabs 내레이션.
-// 컷 길이 = 내레이션 타이밍(copy.cuts[].endWord 어절이 끝나는 곳에서 컷 전환). 클립은 scripts/insta/assets/crack/clips/(gitignore), 컷마다 가로 크롭 위치(x0→x1)를 지정. 컷 경계는 크로스페이드 없이 바로 컷.
-// 자막(레퍼런스 스타일): 한 번에 한 어절, 내레이션에서 말하는 순간 바로 바뀌고 다음 어절까지 유지. x540·y860 고정, Pretendard Bold 56px 흰색 + 검은 외곽선 3px + 약한 그림자(검정 40%, 2px 아래), 팝·강조색 없음. 정보 카드(게임 이름을 말하는 순간~그 어절이 끝나고 0.5초 뒤)가 뜨는 동안은 자막 숨김, 카드 뒤 영상 40% 어둡게.
+// 컷 길이 = 내레이션 타이밍(copy.cuts[].until = 다음 컷 첫 어절이 시작하는 글자 타이밍에서 하드컷). 카드 컷: card.from 어절 시작에서 하드컷으로 전환(배경은 앞 컷 마지막 프레임 흐리게+40% 어둡게), card.to 어절이 끝나면 다음 컷. 페이드 없음, 카드는 등장할 때만 0.06초 96%→100% 스냅. 클립은 scripts/insta/assets/crack/clips/(gitignore), 컷마다 가로 크롭 위치(x0→x1)를 지정. 컷 경계는 크로스페이드 없이 바로 컷.
+// 자막(레퍼런스 스타일): 한 번에 한 어절, 내레이션에서 말하는 순간 바로 바뀌고 다음 어절까지 유지. x540·y860 고정, Pretendard Bold 56px 흰색 + 검은 외곽선 3px + 약한 그림자(검정 40%, 2px 아래), 팝·강조색 없음. 카드 컷 동안은 자막 숨김.
 // 오디오: 내레이션 -14 LUFS, 게임 소리(-14 LUFS로 맞춤)는 내레이션 중 -24 LUFS로 덕킹(내레이션 쉬는 구간·unduckAt 순간은 원래 크기). 배경음악 없음.
 // 실행: node scripts/insta/reel-clips.mjs crack-trend-v2   (copy/<id>.json → out/crack-trend/reel-v2.mp4 + still-subtitle-v2.png + still-card-v2.png)
 import fs from 'fs';
@@ -19,7 +19,7 @@ const OUT = path.join(DIR, 'out/crack-trend');
 const CACHE = path.join(DIR, 'cache');
 const MINT = '#5CF2B0';
 const CX = RS.w / 2, SUB_Y = 860, CARD_Y = 900, SAFE_BOTTOM = RS.h * 0.75, CARD_W = 800; // 카드는 오른쪽 140px 안전 영역 안(140~940)
-const CARD_IN = 0.25, CARD_OUT = 0.2, CARD_SLIDE = 90, DIM = 0.4; // 카드: 0.25초 아래에서 올라오며 페이드인, 0.2초 페이드아웃, 뒤 영상 40% 어둡게
+const DIM = 0.4; // 카드 컷 배경(앞 컷 마지막 프레임)을 흐리게 + 40% 어둡게
 const DUCK_DB = -10; // 게임 -14 LUFS → 내레이션 중 -24 LUFS
 const T = (v) => v.toFixed(3);
 const esc = (t) => String(t).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
@@ -72,20 +72,25 @@ const words = []; // 공백으로 나눈 어절: {raw, text(표시용), start, e
   });
   words.forEach((w) => { w.text = w.raw.replace(/[,.…]+$/g, ''); w.plain = w.raw.replace(/[^가-힣A-Za-z0-9]/g, ''); });
 }
-// 컷 경계: endWord(대본 순서대로 찾음)를 말한 뒤 ~ 다음 어절 시작 사이의 가운데
+// 컷 경계: 다음 컷의 첫 어절(until)이 시작하는 글자 타이밍에 정확히. 카드 컷은 card.from 어절 시작 ~ card.to 어절 끝(카드 앞 컷의 until이 card.from), 그 뒤 마지막 컷은 loopTail초까지
+const wi = (plain, from, label) => { const k = words.findIndex((w, j) => j >= from && w.plain === plain); if (k < 0) throw new Error(`${label}: 대본에서 어절 "${plain}"를 순서대로 찾지 못했어요`); return k; };
 const cuts = [];
-let cursor = 0, t0 = 0;
+let cursor = 0, t0 = 0, c0 = null, c1 = null;
 copy.cuts.forEach((c, i) => {
-  const k = words.findIndex((w, j) => j >= cursor && w.plain === c.endWord);
-  if (k < 0) throw new Error(`컷 ${i + 1}: 대본에서 어절 "${c.endWord}"를 순서대로 찾지 못했어요`);
-  const last = i === copy.cuts.length - 1;
-  const end = last ? words[k].end + copy.loopTail : c.hold != null ? words[k].end + c.hold : (words[k].end + words[k + 1].start) / 2; // hold: 다음 컷을 이 어절이 끝난 뒤 hold초에 시작(카드가 컷 경계에 걸리지 않게)
-  cuts.push({ ...c, first: cursor, last: k, start: t0, end });
-  cursor = k + 1; t0 = end;
+  const isLast = i === copy.cuts.length - 1;
+  const end = isLast ? words.at(-1).end + copy.loopTail : words[wi(c.until, cursor, `컷 ${i + 1}`)].start;
+  cuts.push({ ...c, start: t0, end });
+  t0 = end;
+  if (!isLast) cursor = wi(c.until, cursor, `컷 ${i + 1}`);
+  if (i + 1 === copy.card.after) { // 카드 컷: from 어절 시작 ~ to 어절 끝
+    const kf = wi(copy.card.from, cursor, '카드'), kt = wi(copy.card.to, kf, '카드');
+    if (Math.abs(words[kf].start - t0) > 1e-6) throw new Error('카드 시작은 앞 컷이 끝나는 곳(card.from)이어야 해요');
+    c0 = words[kf].start; c1 = words[kt].end; t0 = c1; cursor = kt + 1;
+  }
 });
 const total = t0;
 
-// ── 컷 → 클립 구간 ──
+// ── 컷 → 클립 구간(카드 컷은 앞 컷의 마지막 프레임을 흐리게·40% 어둡게 깐 화면, 게임 소리 없음) ──
 const parts = [];
 cuts.forEach((c, i) => {
   let rem = c.end - c.start;
@@ -103,18 +108,20 @@ cuts.forEach((c, i) => {
     parts.push({ ...p, file, a, dur: len, cut: i });
     rem -= len; acc += len;
   });
+  if (i + 1 === copy.card.after) {
+    const prev = parts.at(-1), still = path.join(CACHE, 'clips-card-bg.png');
+    ff(['-ss', T(prev.a + prev.dur - 0.04), '-i', prev.file, '-frames:v', '1', still]);
+    parts.push({ card: true, still, x0: prev.x1, x1: prev.x1, dur: c1 - c0, cut: i });
+  }
 });
 
 const facts = await steamFacts(copy.appid, copy);
 console.log('  스팀 값:', JSON.stringify({ ...facts, header: undefined }));
-const cw = words.find((x) => x.plain === copy.card.word);
-if (!cw) throw new Error(`card.word "${copy.card.word}"를 대본에서 찾지 못했어요`);
-const c0 = cw.start, c1 = cw.end + copy.card.hold; // 게임 이름을 말하는 순간 등장, 그 어절이 끝나고 hold초 뒤 퇴장
 console.log(`  내레이션 ${nar.duration.toFixed(2)}초(마지막 어절 ${words.at(-1).end.toFixed(2)}초) → 영상 ${total.toFixed(2)}초 · 카드 ${c0.toFixed(2)}~${c1.toFixed(2)}초`);
 console.log('  컷:', cuts.map((c, i) => `${i + 1}:${c.start.toFixed(2)}~${c.end.toFixed(2)}`).join(' '));
 
 // ── 자막 어절 타임라인(카드 동안 숨김, 빈 구간은 빈 이미지) ──
-const intervals = words.map((w, i) => ({ text: w.text, start: w.start, end: i + 1 < words.length ? words[i + 1].start : Math.min(w.end + 0.4, total) }));
+const intervals = words.map((w, i) => { const end = i + 1 < words.length ? words[i + 1].start : Math.min(w.end + 0.4, total); return { text: w.text, start: w.start, end: w.start >= c0 - 1e-6 && w.start < c1 ? Math.min(end, c1) : end }; }); // 카드 컷 안에서 시작한 어절은 카드가 끝나면 사라진다(다음 컷에 남지 않게)
 const shown = [];
 let tl = 0;
 const push = (text, a, b) => { if (b - a > 0.001) shown.push({ text, start: a, end: b }); };
@@ -142,6 +149,7 @@ const subDir = path.join(CACHE, 'clips-subs');
 fs.rmSync(subDir, { recursive: true, force: true }); fs.mkdirSync(subDir, { recursive: true });
 const browser = await chromium.launch();
 const imgFor = new Map();
+let cardBox = null;
 try {
   const page = await browser.newPage({ viewport: { width: RS.w, height: RS.h } });
   const full = { x: 0, y: 0, width: RS.w, height: RS.h };
@@ -160,38 +168,46 @@ try {
   await load(cardHtml(font, facts, imgB64));
   const cr = await page.evaluate(() => { const b = document.getElementById('c').getBoundingClientRect(); return [Math.round(b.right), Math.round(b.bottom)]; });
   if (cr[0] > RS.w - RS.rightGap || cr[1] > SAFE_BOTTOM) throw new Error('정보 카드가 안전 영역을 넘어요');
-  await page.screenshot({ path: cardPng, clip: full, omitBackground: true });
+  const bb = await page.evaluate(() => { const b = document.getElementById('c').getBoundingClientRect(); return { x: b.left, y: b.top, w: b.width, h: b.height }; });
+  const PAD = 40;
+  cardBox = { cx: bb.x + bb.w / 2, cy: bb.y + bb.h / 2 };
+  await page.screenshot({ path: cardPng, clip: { x: Math.round(bb.x) - PAD, y: Math.round(bb.y) - PAD, width: Math.round(bb.w) + 2 * PAD, height: Math.round(bb.h) + 2 * PAD }, omitBackground: true });
 } finally { await browser.close(); }
 const list = path.join(CACHE, 'clips-subs.txt');
 fs.writeFileSync(list, timeline.map((s) => `file '${(s.text == null ? blankPng : imgFor.get(s.text)).replaceAll("'", "'\\''")}'\nduration ${T(s.end - s.start)}`).join('\n') + `\nfile '${blankPng}'\n`);
 
 // ── 영상: 구간을 1920 높이로 맞춰 가로 크롭(x0→x1 선형 이동) → 이어 붙임 → 워터마크 → 자막(어절 이미지 시퀀스) → 카드 ──
 const { w, h, fps } = RS, n = parts.length;
-const vin = parts.flatMap((p) => ['-ss', T(p.a), '-t', T(p.dur), '-i', p.file]);
+const vin = [];
+let ni = 0;
+parts.forEach((p) => {
+  if (p.card) { // 카드 컷: 정지 화면 + 무음
+    vin.push('-loop', '1', '-framerate', String(fps), '-t', T(p.dur), '-i', p.still); p.vi = ni++;
+    vin.push('-f', 'lavfi', '-t', T(p.dur), '-i', 'anullsrc=r=48000:cl=stereo'); p.ai = ni++;
+  } else { vin.push('-ss', T(p.a), '-t', T(p.dur), '-i', p.file); p.vi = p.ai = ni++; }
+});
 const oin = [
   ['-loop', '1', '-framerate', String(fps), '-t', T(total), '-i', logoPng],
   ['-f', 'concat', '-safe', '0', '-i', list],
   ['-loop', '1', '-framerate', String(fps), '-t', T(total), '-i', cardPng],
-  ['-f', 'lavfi', '-i', `color=c=black:s=${w}x${h}:r=${fps}:d=${T(total)}`],
 ].flat();
-const vf = parts.map((p, i) => `[${i}:v]scale=-2:${h},crop=${w}:${h}:x='(iw-${w})*(${p.x0}+(${p.x1 - p.x0})*min(1,t/${T(p.dur)}))':y=0,setsar=1,fps=${fps}[s${i}]`);
-const fade = `fade=t=in:st=${T(c0)}:d=${CARD_IN}:alpha=1,fade=t=out:st=${T(c1 - CARD_OUT)}:d=${CARD_OUT}:alpha=1`;
+const crop = (p) => `scale=-2:${h},crop=${w}:${h}:x='(iw-${w})*(${p.x0}+(${p.x1 - p.x0})*min(1,t/${T(p.dur)}))':y=0,setsar=1,fps=${fps}`;
+const vf = parts.map((p, i) => `[${p.vi}:v]${crop(p)}${p.card ? `,gblur=sigma=30,colorchannelmixer=rr=${1 - DIM}:gg=${1 - DIM}:bb=${1 - DIM}` : ''},format=yuv420p[s${i}]`);
+const L = ni, SNAP = 0.06, SNAP_FROM = 0.96; // 카드: 하드컷 등장(페이드 없음), 등장할 때만 0.06초 동안 96%→100%
 const g = [
   `${vf.join(';')};${parts.map((_, i) => `[s${i}]`).join('')}concat=n=${n}:v=1:a=0[v0]`,
-  `[${n + 3}:v]format=rgba,colorchannelmixer=aa=${DIM},${fade}[dim]`,
-  `[v0][dim]overlay=format=auto[v0d]`,
-  `[v0d][${n}:v]overlay=format=auto[v1]`,
-  `[${n + 1}:v]fps=${fps},format=rgba[sub]`,
+  `[v0][${L}:v]overlay=format=auto[v1]`,
+  `[${L + 1}:v]fps=${fps},format=rgba[sub]`,
   `[v1][sub]overlay=x=0:y=0:eof_action=pass:format=auto[v2]`,
-  `[${n + 2}:v]format=rgba,${fade}[cd]`,
-  `[v2][cd]overlay=x=0:y='if(lt(t-${T(c0)},${CARD_IN}),${CARD_SLIDE}*pow(1-(t-${T(c0)})/${CARD_IN},2),0)':eof_action=pass:format=auto,format=yuv420p[o]`,
+  `[${L + 2}:v]format=rgba,scale=w='trunc(iw*(${SNAP_FROM}+${1 - SNAP_FROM}*min(1,max(0,(t-${T(c0)})/${SNAP})))/2)*2':h='trunc(ih*(${SNAP_FROM}+${1 - SNAP_FROM}*min(1,max(0,(t-${T(c0)})/${SNAP})))/2)*2':eval=frame[cd]`,
+  `[v2][cd]overlay=x='${cardBox.cx.toFixed(1)}-w/2':y='${cardBox.cy.toFixed(1)}-h/2':eof_action=pass:enable='between(t,${T(c0)},${T(c1)})':format=auto,format=yuv420p[o]`,
 ];
 const silent = path.join(CACHE, 'clips-silent.mp4');
 ff(['-filter_threads', '1', ...vin, ...oin, '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', T(total), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p', silent]);
 
 // ── 오디오 ──
 // 1) 게임 소리: 구간 소리를 이어 붙이고(구간 끝 5ms 페이드) 2패스 loudnorm -14 LUFS
-const af = parts.map((p, i) => `[${i}:a]aresample=48000,aformat=channel_layouts=stereo,afade=t=in:d=0.005,afade=t=out:st=${T(p.dur - 0.005)}:d=0.005[a${i}]`);
+const af = parts.map((p, i) => `[${p.ai}:a]aresample=48000,aformat=channel_layouts=stereo,afade=t=in:d=0.005,afade=t=out:st=${T(p.dur - 0.005)}:d=0.005[a${i}]`);
 const rawWav = path.join(CACHE, 'clips-audio-raw.wav'), gameWav = path.join(CACHE, 'clips-audio-game.wav');
 ff([...vin, '-filter_complex', `${af.join(';')};${parts.map((_, i) => `[a${i}]`).join('')}concat=n=${n}:v=0:a=1[o]`, '-map', '[o]', '-c:a', 'pcm_s16le', rawWav]);
 const gm = loud(run(['-i', rawWav, '-af', 'loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json', '-f', 'null', '-']).stderr);
@@ -216,7 +232,7 @@ ff(['-i', silent, '-i', m4a, '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a
 // 정지 이미지: 자막 장면(다이너마이트를 말하는 순간), 정보 카드(다 올라온 뒤)
 const dyn = words.find((x) => x.plain === '다이너마이트');
 ff(['-ss', T(dyn.start + 0.3), '-i', mp4, '-frames:v', '1', path.join(OUT, 'still-subtitle-v2.png')]);
-ff(['-ss', T(c0 + 1.0), '-i', mp4, '-frames:v', '1', path.join(OUT, 'still-card-v2.png')]);
+ff(['-ss', T(c0 + 0.7), '-i', mp4, '-frames:v', '1', path.join(OUT, 'still-card-v2.png')]);
 const dur = probeDur(mp4);
 const fin = loud(run(['-i', mp4, '-af', 'loudnorm=I=-14:print_format=json', '-f', 'null', '-']).stderr);
 console.log(`${path.relative(ROOT, mp4)} (${dur.toFixed(2)}초, 최종 믹스 ${fin.input_i} LUFS)`);
