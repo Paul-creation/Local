@@ -1,7 +1,7 @@
 // scripts/insta/reel-clips.mjs
 // 개발사 원본 클립으로 만드는 세로 릴스(1080×1920). 내레이션·BGM 없음, 클립 원본 소리 -14 LUFS.
 // 클립: scripts/insta/assets/crack/clips/ (gitignore). 컷마다 가로 크롭 위치(x0→x1)를 지정한다. 컷 경계는 크로스페이드 없이 바로 컷.
-// 자막: 흰색 Extra Bold 88px + 검은 외곽선 8px, 0.08초 팝(85%→100%), 최대 2줄, 핵심 단어 민트. 정보 카드는 copy.card.cut 컷에서 올라와 sec초 머문다(자막은 카드 위로).
+// 자막(레퍼런스 스타일): 화면 정가운데(540,900) 한 줄 고정, 한 번에 한 비트, 흰색 Extra Bold 104px + 검은 외곽선 9px, 0.08초 팝(85%→100%), 비트 사이 빈 화면 없음, 민트는 [ ]로 표시한 비트. 컷의 beats를 컷 길이(또는 beatsSec)에 균등 배분. 정보 카드는 copy.card.cut 컷의 delay초 뒤 올라와 sec초 머물고 그동안 자막은 없다(beatsSec로 비트를 앞쪽에 몰아둠).
 // 실행: node scripts/insta/reel-clips.mjs crack-trend-v2   (copy/<id>.json → out/crack-trend/reel-v2.mp4 + still-subtitle-v2.png + still-card-v2.png)
 import fs from 'fs';
 import path from 'path';
@@ -16,7 +16,7 @@ const ROOT = path.resolve(DIR, '../..');
 const CLIPS = path.join(DIR, 'assets/crack/clips');
 const OUT = path.join(DIR, 'out/crack-trend');
 const MINT = '#5CF2B0';
-const CX = (RS.w - RS.rightGap) / 2, SUB_Y = 900, SUB_Y_CARD = 430, SAFE_BOTTOM = RS.h * 0.75;
+const CX = RS.w / 2, SUB_Y = 900, SAFE_BOTTOM = RS.h * 0.75, CARD_W = 800; // 자막·카드 가운데 x=540,y=900 고정. 카드는 오른쪽 140px 안전 영역 안(140~940)
 const POP = 0.08, POP_FROM = 0.85, CARD_IN = 0.2, CARD_SLIDE = 640;
 const T = (v) => v.toFixed(3);
 const esc = (t) => String(t).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
@@ -29,16 +29,16 @@ const logoHtml = (font) => `<!doctype html><meta charset="utf-8"><style>${baseCs
 .logo b { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #fff; text-shadow: 0 0 8px rgba(0,0,0,.6); }
 </style><div class="logo"><i>J</i><b>JamiDuNow</b></div>`;
 const subHtml = (font, text) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
-.sub { position: absolute; left: ${CX}px; top: ${SUB_Y}px; transform: translate(-50%, -50%); text-align: center; white-space: nowrap; font-size: 88px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.25; color: #fff; -webkit-text-stroke: 16px #000; paint-order: stroke fill; stroke-linejoin: round; }
+.sub { position: absolute; left: ${CX}px; top: ${SUB_Y}px; transform: translate(-50%, -50%); text-align: center; white-space: nowrap; font-size: 104px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.25; color: #fff; -webkit-text-stroke: 18px #000; paint-order: stroke fill; stroke-linejoin: round; }
 .sub .k { color: ${MINT}; }
-</style><div class="sub" id="s">${esc(text).split(/\s*\/\s*/).map((l) => l.replace(/\[([^\]]+)\]/g, '<span class="k">$1</span>')).join('<br>')}</div>`;
+</style><div class="sub" id="s">${esc(text).replace(/\[([^\]]+)\]/g, '<span class="k">$1</span>')}</div>`;
 const cardHtml = (font, f, imgB64) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
-.card { position: absolute; left: ${CX - 380}px; width: 760px; top: ${SUB_Y}px; transform: translateY(-50%); padding: 28px 28px 24px; border-radius: 44px; background: rgba(10,10,10,.95); border: 3px solid ${MINT}; text-align: center; color: #fff; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
+.card { position: absolute; left: ${CX - CARD_W / 2}px; width: ${CARD_W}px; top: ${SUB_Y}px; transform: translateY(-50%); padding: 28px 28px 24px; border-radius: 44px; background: rgba(10,10,10,.95); border: 3px solid ${MINT}; text-align: center; color: #fff; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
 .card img { display: block; width: 100%; border-radius: 26px; }
-.t { margin-top: 24px; font-size: 92px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.05; }
-.i { margin-top: 14px; font-size: 40px; font-weight: 700; line-height: 1.45; font-variant-numeric: tabular-nums; }
+.t { margin-top: 24px; font-size: 104px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.05; }
+.i { margin-top: 16px; font-size: 46px; font-weight: 700; line-height: 1.45; font-variant-numeric: tabular-nums; }
 .i em { font-style: normal; color: ${MINT}; }
-.u { margin-top: 18px; font-size: 24px; font-weight: 600; color: rgba(255,255,255,.55); letter-spacing: .02em; }
+.u { margin-top: 20px; font-size: 28px; font-weight: 600; color: rgba(255,255,255,.55); letter-spacing: .02em; }
 </style><div class="card" id="c"><img src="data:image/jpeg;base64,${imgB64}"><div class="t">CRACK</div>
 <div class="i"><em>${esc(f.mmdd)} 출시</em> / ${esc(f.regular ?? f.price)}<br>최대 ${f.max}인 / ${esc(f.korean)}</div><div class="u">jamidunow.com</div></div>`;
 
@@ -58,7 +58,7 @@ let t0 = 0;
 copy.cuts.forEach((c, i) => {
   const start = t0;
   c.parts.forEach((p) => { parts.push({ ...p, file: clipFile(p.clip), dur: p.b - p.a, cut: i }); t0 += p.b - p.a; });
-  cuts.push({ start, end: t0, text: c.text });
+  cuts.push({ start, end: t0, beats: c.beats, beatsSec: c.beatsSec ?? t0 - start });
 });
 const total = t0;
 const facts = await steamFacts(copy.appid, copy);
@@ -77,13 +77,17 @@ try {
   const load = async (html) => { await page.setContent(html, { waitUntil: 'load' }); await page.evaluate(() => document.fonts.ready); };
   await load(logoHtml(font)); await page.screenshot({ path: logoPng, clip: full, omitBackground: true });
   for (let i = 0; i < cuts.length; i++) {
-    await load(subHtml(font, cuts[i].text));
-    const r = await page.evaluate(() => { const b = document.getElementById('s').getBoundingClientRect(); return { w: b.width, h: b.height }; });
-    if (CX + r.w / 2 > RS.w - RS.rightGap || CX - r.w / 2 < 0) throw new Error(`자막 "${cuts[i].text}"가 안전 영역을 넘어요 (${Math.round(r.w)}px)`);
-    const W = Math.ceil(r.w / 2) * 2 + 64, H = Math.ceil(r.h / 2) * 2 + 64;
-    const file = path.join(CACHE, `clips-sub${i}.png`);
-    await page.screenshot({ path: file, clip: { x: Math.round(CX - W / 2), y: Math.round(SUB_Y - H / 2), width: W, height: H }, omitBackground: true });
-    subs.push({ file, ...cuts[i] });
+    const c = cuts[i], per = c.beatsSec / c.beats.length; // 컷 안에서 비트를 균등 배분. 비트 사이 빈 화면 없음(끝=다음 비트 시작)
+    for (let j = 0; j < c.beats.length; j++) {
+      const text = c.beats[j];
+      await load(subHtml(font, text));
+      const r = await page.evaluate(() => { const b = document.getElementById('s').getBoundingClientRect(); return { w: b.width, h: b.height }; });
+      if (CX + r.w / 2 > RS.w - 40 || CX - r.w / 2 < 40) throw new Error(`자막 "${text}"가 화면 폭을 넘어요 (${Math.round(r.w)}px)`);
+      const W = Math.ceil(r.w / 2) * 2 + 64, H = Math.ceil(r.h / 2) * 2 + 64;
+      const file = path.join(CACHE, `clips-sub${i}-${j}.png`);
+      await page.screenshot({ path: file, clip: { x: Math.round(CX - W / 2), y: Math.round(SUB_Y - H / 2), width: W, height: H }, omitBackground: true });
+      subs.push({ file, start: c.start + j * per, end: c.start + (j + 1) * per, text });
+    }
   }
   await load(cardHtml(font, facts, imgB64));
   const cr = await page.evaluate(() => { const b = document.getElementById('c').getBoundingClientRect(); return [Math.round(b.right), Math.round(b.bottom)]; });
@@ -103,9 +107,8 @@ const vf = parts.map((p, i) => `[${i}:v]scale=-2:${h},crop=${w}:${h}:x='(iw-${w}
 const g = [`${vf.join(';')};${parts.map((_, i) => `[s${i}]`).join('')}concat=n=${n}:v=1:a=0[v0]`, `[v0][${n}:v]overlay=format=auto[v1]`];
 subs.forEach((c, i) => {
   const k = n + 1 + i, P = `(${POP_FROM}+${1 - POP_FROM}*min(1,max(0,(t-${T(c.start)})/${POP})))`;
-  const moves = i === copy.card.cut - 1;
   g.push(`[${k}:v]format=rgba,scale=w='trunc(iw*${P}/2)*2':h='trunc(ih*${P}/2)*2':eval=frame[p${i}]`);
-  g.push(`[v${i + 1}][p${i}]overlay=x='${CX}-w/2':y='${moves ? `if(between(t,${T(c0)},${T(c1)}),${SUB_Y_CARD},${SUB_Y})` : SUB_Y}-h/2':eof_action=pass:enable='between(t,${T(c.start)},${T(c.end)})':format=auto[v${i + 2}]`);
+  g.push(`[v${i + 1}][p${i}]overlay=x='${CX}-w/2':y='${SUB_Y}-h/2':eof_action=pass:enable='between(t,${T(c.start)},${T(c.end)})':format=auto[v${i + 2}]`);
 });
 const kc = n + 1 + subs.length;
 g.push(`[v${subs.length + 1}][${kc}:v]overlay=x=0:y='if(lt(t-${T(c0)},${CARD_IN}),${CARD_SLIDE}*pow(1-(t-${T(c0)})/${CARD_IN},2),0)':eof_action=pass:enable='between(t,${T(c0)},${T(c1)})':format=auto,format=yuv420p[o]`);
@@ -123,7 +126,7 @@ ff(['-i', rawWav, '-af', `loudnorm=I=-14:TP=-1.5:LRA=11:measured_I=${m.input_i}:
 const mp4 = path.join(OUT, 'reel-v2.mp4');
 ff(['-i', silent, '-i', m4a, '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'copy', '-movflags', '+faststart', '-shortest', mp4]);
 // 정지 이미지: 자막 장면(다이너마이트 폭발), 정보 카드(다 올라온 뒤)
-ff(['-ss', T(cuts[3].start + 1.9), '-i', mp4, '-frames:v', '1', path.join(OUT, 'still-subtitle-v2.png')]);
+ff(['-ss', T(cuts[3].start + 1.5), '-i', mp4, '-frames:v', '1', path.join(OUT, 'still-subtitle-v2.png')]);
 ff(['-ss', T(c0 + 1.0), '-i', mp4, '-frames:v', '1', path.join(OUT, 'still-card-v2.png')]);
 const dur = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', mp4]).toString());
 const vs = spawnSync('ffmpeg', ['-hide_banner', '-i', mp4, '-af', 'loudnorm=I=-14:print_format=json', '-f', 'null', '-'], { encoding: 'utf8' });
