@@ -7,6 +7,7 @@
 // 오디오: 배경음악 없음. 내레이션 -14 LUFS, 트레일러 원본은 -14 LUFS로 맞춘 뒤 내레이션 중에 -8dB(≈-22 LUFS)로 덕킹(말 사이 0.7초 넘는 쉼에는 원래대로), 컷 경계 0.1초 크로스페이드, 끝 0.8초 페이드아웃
 // 영상 길이 = 내레이션 길이 + 1초(마지막 1초는 첫 컷과 같은 알 장면 — 루프). 컷은 copy.cuts의 t(초, 내레이션 기준)에서 바뀐다
 // 실행: npm run insta -- <post-id> --reel-trend   (copy/<post-id>.json → out/<post-id>/reel.mp4 + still-subtitle.png + still-card.png)
+// 자막: copy.chunks(직접 지정, [핵심]) 없으면 자동(copy.keys = 민트 구절). 0.35초 미만 덩어리 합치기·12자·3어절 규칙은 subtitle-chunks.mjs
 // copy: appid, movie(스팀 영상 이름), maxPlayers(선택), cardTitle(선택), narration{voiceId, cacheName, voiceSettings, text}, chunks[](자막 어절 묶음, 대본 순서, [핵심]), card{chunk, sec}, cuts[{t, src:[시작초, 끝초]}](t=0부터), endClip(첫 컷과 같은 알 장면, 1초만 쓴다)
 import fs from 'fs';
 import path from 'path';
@@ -17,6 +18,7 @@ import { chromium } from 'playwright';
 import { RS, ff, buildAudio, trailerAudioFromDb, steamMovie } from './reel-single.mjs';
 import { trailerFromDb } from './reel.mjs';
 import { getNarrationBySentence } from './narration-sentences.mjs';
+import { autoChunks, mergeShortChunks, MIN_SEC } from './subtitle-chunks.mjs';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DIR, '../..');
@@ -343,7 +345,7 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   const copy = JSON.parse(fs.readFileSync(copyFile, 'utf8'));
   if (JSON.stringify(copy).includes('재밌드나')) throw new Error('화면에는 "재밌드나"를 쓰지 않아요. JamiDuNow만 쓰세요.');
   const OUTRO = copy.outro !== false; // 기본: 끝에 공통 엔딩 샷 2초(copy.outro:false면 예전처럼 endClip 1초 루프)
-  for (const k of ['narration', 'chunks', 'cuts', ...(OUTRO ? [] : ['endClip'])]) if (!copy[k]) throw new Error(`--reel-trend: copy에 ${k}가 없어요`);
+  for (const k of ['narration', 'cuts', ...(OUTRO ? [] : ['endClip'])]) if (!copy[k]) throw new Error(`--reel-trend: copy에 ${k}가 없어요`);
   const facts = await steamFacts(copy.appid, copy);
   const title = copy.cardTitle ?? facts.name;
   console.log('  스팀 값:', JSON.stringify({ ...facts, header: undefined }));
@@ -362,18 +364,20 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   const rawNar = await getNarration(outDir, copy.narration);
   const nar = copy.narration.tighten === false ? rawNar : tightenNarration(outDir, rawNar, copy.narration.cacheName ?? 'narration', { ...copy.narration.silence, ...(copy.narration.atempo !== undefined ? { atempo: copy.narration.atempo } : {}) }); // 무음 압축(기본)
   const bodyLen = nar.duration + (endSpec ? 1 : 0);
-  const chunks = chunkTimeline(nar, copy.chunks, bodyLen);
+  // 자막 덩어리(기본): copy.chunks가 없으면 대본을 의미 단위로 자동 분할(subtitle-chunks.mjs, copy.keys = 민트 핵심 구절). 표시 시간이 0.35초(copy.minChunkSec)보다 짧은 덩어리는 다음 덩어리와 합친다
+  const chunks = mergeShortChunks(chunkTimeline(nar, copy.chunks ?? autoChunks(copy.narration.text, copy.keys ?? []), bodyLen), copy.minChunkSec ?? MIN_SEC);
+  const findChunk = (at) => { const a = chunkPlain(at); return chunks.find((k) => chunkPlain(k.text) === a) ?? chunks.find((k) => chunkPlain(k.text).startsWith(a)) ?? chunks.find((k) => chunkPlain(k.text).includes(a)); }; // 합쳐진 덩어리도 앞부분·포함으로 찾는다
   // 컷 시각: t(초)를 직접 쓰거나, at(자막 덩어리 글자)·offset(초)로 그 말이 시작하는 시각에 맞춘다 — 내레이션 타이밍이 바뀌어도 컷이 말을 따라간다
   const cuts = copy.cuts.map((c, i) => {
     if (c.at === undefined) return c;
-    const hit = chunks.find((k) => chunkPlain(k.text) === chunkPlain(c.at));
+    const hit = findChunk(c.at);
     if (!hit) throw new Error(`--reel-trend: cuts[${i}].at "${c.at}"와 같은 자막이 없어요`);
     return { ...c, t: +(hit.start + (c.offset ?? 0)).toFixed(3) };
-  });
+  }).filter((c, i, a) => i === 0 || c.t - a[i - 1].t > 0.05); // 자막 덩어리가 합쳐져 같은 시각이 된 컷은 앞 컷만 쓴다
   const all = cutTimeline(cuts, endSpec?.src, nar.duration); // 전체 컷(소리용)
   const bodyDur = all.total; // 내레이션 끝(엔딩 직전)
   // cardFrom: 이 자막(어절)이 시작하는 순간부터 내레이션 끝까지 정보 카드 장면(하드컷, 자막 숨김). 그 뒤 컷은 영상에서 빠지고 소리만 이어서 쓴다
-  const cardHit = copy.cardFrom ? chunks.find((c) => chunkPlain(c.text) === chunkPlain(copy.cardFrom)) : null;
+  const cardHit = copy.cardFrom ? findChunk(copy.cardFrom) : null;
   if (copy.cardFrom && !cardHit) throw new Error(`--reel-trend: cardFrom "${copy.cardFrom}"와 같은 자막이 없어요`);
   const cardAt = cardHit ? +cardHit.start.toFixed(3) : null;
   const cardScene = cardAt !== null;
@@ -386,7 +390,7 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   const hasCard = !!copy.card; // card가 없으면 정보 카드 없이(로고 장면 등으로 대신)
   let c0 = -10, c1 = -10;
   if (hasCard) {
-    const cardChunk = chunks.find((c) => chunkPlain(c.text) === chunkPlain(copy.card.chunk));
+    const cardChunk = findChunk(copy.card.chunk);
     if (!cardChunk) throw new Error(`--reel-trend: card.chunk "${copy.card.chunk}"와 같은 자막이 없어요`);
     c0 = cardChunk.start; c1 = c0 + copy.card.sec;
   }
