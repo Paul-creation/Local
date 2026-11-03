@@ -21,7 +21,7 @@ const DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DIR, '../..');
 const MINT = '#5CF2B0';
 const CX = (RS.w - RS.rightGap) / 2; // 자막·카드 가운데 x = 470
-const OUTRO_SEC = 2.0, OUTRO_GAME_TAIL = 0.3;
+const OUTRO_GAME_TAIL = 0.3, OUTRO_PAD = 0.6; // 엔딩 길이 = 시그니처 음성 길이 + 0.6초, 게임 소리는 엔딩 진입 0.3초 안에 사라진다
 const SUB_X = 540, SUB_Y = 1000; // 자막 가운데(고정)
 const FG_Y = 285, FG_W = 1080, FG_H = 1350; // 영상은 원본 높이 기준 4:5로 가운데 크롭(컷마다 cut.x 0~1로 가로 위치 조정, 기본 0.5)해 y 285~1635에 두고, 위아래는 같은 영상을 크게 블러·어둡게 깐다
 const FG_X = 0;
@@ -85,9 +85,11 @@ const cardHtml = (font, f, title, imgB64) => `<!doctype html><meta charset="utf-
 <div class="i"><em>${esc(f.mmdd)} 출시</em> / ${esc(f.price)}<br>최대 ${f.max}인 / ${esc(f.korean)}</div><div class="u">jamidunow.com</div></div>`;
 
 // ── ElevenLabs 내레이션 ──
+const DEFAULT_VOICE = 'uyVNoMrnUku1dZyVEXwD';
+const DEFAULT_VOICE_SETTINGS = { stability: 0.4, similarity_boost: 0.8, style: 0.15, speed: 1.2 };
 // 내레이션 mp3·글자별 타이밍은 out/<post-id>/narration.mp3·json에 캐시(대본·목소리가 같으면 API를 다시 부르지 않는다)
 export async function getNarration(outDir, cfg) {
-  cfg = { ...cfg, voiceSettings: { speed: 1.2, ...cfg.voiceSettings } }; // 기본 속도 1.2(ElevenLabs 최대값), copy에서 speed를 적으면 그 값
+  cfg = { voiceId: DEFAULT_VOICE, ...cfg, voiceSettings: { ...DEFAULT_VOICE_SETTINGS, ...cfg.voiceSettings } }; // 기본 목소리·설정(속도 1.2 = ElevenLabs 최대값). copy에서 적은 값이 우선
   const name = cfg.cacheName ?? 'narration'; // narration-v2 → out/<post-id>/narration-v2.mp3·json
   const mp3 = path.join(outDir, `${name}.mp3`), js = path.join(outDir, `${name}.json`);
   const key = crypto.createHash('sha1').update(`${cfg.voiceId}|eleven_multilingual_v2|${cfg.text}|${JSON.stringify(cfg.voiceSettings ?? null)}`).digest('hex');
@@ -200,7 +202,37 @@ export function cutTimeline(cuts, endClip, narDur) {
 }
 
 // 내레이션 -14 LUFS + 트레일러 소리(-14 LUFS로 맞춘 것)를 내레이션 중에 -8dB(≈-22 LUFS)로 덕킹해 섞는다
-function mixNarration({ game, nar, total, out, duckDb = -8, gapDb = 0, gapMin = 0.7 }) {
+// ── 엔딩 샷 자산(assets/brand 우선, 없으면 public/brand) ──
+const BRAND_DIRS = [path.join(DIR, 'assets/brand'), path.join(ROOT, 'public/brand')];
+const brandFile = (n) => BRAND_DIRS.map((d) => path.join(d, n)).find((p) => fs.existsSync(p)) ?? null;
+// 시그니처 음성: outro-voice.mp3(고른 테이크)가 있으면 그것, 없으면 take1. "재미두나우" 시작 시각은 같은 이름의 .json 글자 타이밍에서, 없으면 마지막 쉼 뒤로 잡는다
+function loadOutro() {
+  const voice = brandFile('outro-voice.mp3') ?? brandFile('outro-voice-take1.mp3');
+  const pop = brandFile('sfx-pop.mp3'), whoosh = brandFile('sfx-whoosh.mp3');
+  if (!pop) console.warn('  경고: assets/brand/sfx-pop.mp3가 없어 로고 팝 효과음 없이 만들어요');
+  if (!whoosh) console.warn('  경고: sfx-whoosh.mp3가 없어 전환 효과음 없이 만들어요');
+  if (!voice) { console.warn('  경고: 시그니처 음성(assets/brand/outro-voice*.mp3)이 없어 엔딩을 무음 2초로 만들어요'); return { voice: null, sec: 2.0, nameAt: 0.15, pop, whoosh }; }
+  const dur = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', voice]).toString());
+  let nameAt = null;
+  const js = voice.replace(/\.mp3$/, '.json');
+  if (fs.existsSync(js)) { const j = JSON.parse(fs.readFileSync(js, 'utf8')); const i = j.chars.indexOf('재'); if (i >= 0) nameAt = j.starts[i]; }
+  if (nameAt === null) {
+    const r = run(['-i', voice, '-af', 'silencedetect=n=-35dB:d=0.1', '-f', 'null', '-']);
+    const ends = [...r.stderr.matchAll(/silence_end: ([\d.]+)/g)].map((m) => Number(m[1])).filter((v) => v < dur - 0.4);
+    nameAt = ends.length ? ends[ends.length - 1] : dur * 0.5;
+  }
+  return { voice, sec: dur + OUTRO_PAD, nameAt, pop, whoosh, voiceDur: dur };
+}
+// 파일의 소리 크기(LUFS)를 target에 맞추는 이득(dB). 0.4초보다 짧은 효과음은 LUFS가 안 재져서 평균 음량(RMS)으로 어림한다
+function gainDb(file, target) {
+  const r = run(['-i', file, '-af', 'ebur128=peak=true,volumedetect', '-f', 'null', '-']);
+  const lufs = Number(/\n\s+I:\s+(-?[\d.]+) LUFS/.exec(r.stderr)?.[1]);
+  const rms = Number(/mean_volume: (-?[\d.]+) dB/.exec(r.stderr)?.[1]);
+  const cur = Number.isFinite(lufs) && lufs > -69 ? lufs : rms;
+  return { db: target - cur, from: cur };
+}
+
+function mixNarration({ game, nar, total, out, duckDb = -8, gapDb = 0, gapMin = 0.7, extras = [], fadeOut = true }) {
   const DUCK = Math.pow(10, duckDb / 20), GAP = Math.pow(10, gapDb / 20);
   const att = Math.min(0.15, gapMin / 3), rel = Math.min(0.3, gapMin * 0.4); // 내려가는 시간·올라오는 시간
   const m1 = run(['-i', nar.mp3, '-filter_complex', '[0:a]aresample=48000,aformat=channel_layouts=stereo,loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json[o]', '-map', '[o]', '-f', 'null', '-']);
@@ -211,8 +243,11 @@ function mixNarration({ game, nar, total, out, duckDb = -8, gapDb = 0, gapMin = 
   nar.chars.forEach((c, i) => { if (/\s/.test(c)) return; const last = win[win.length - 1]; if (last && nar.starts[i] - last[1] <= gapMin) last[1] = nar.ends[i]; else win.push([nar.starts[i], nar.ends[i]]); });
   const g = win.map(([a, b]) => `clip(min((t-(${(a - att).toFixed(3)}))/${att.toFixed(3)},(${(b + rel).toFixed(3)}-t)/${rel.toFixed(3)}),0,1)`);
   const vol = `${GAP.toFixed(4)}-${(GAP - DUCK).toFixed(4)}*${g.reduce((a, b) => `max(${a},${b})`)}`; // 창이 하나면 max 없이
-  const fc = `[0:a]aresample=48000,aformat=channel_layouts=stereo,${ln},apad=whole_dur=${total.toFixed(3)}[n];[1:a]volume='${vol}':eval=frame[g];[g][n]amix=inputs=2:duration=longest:normalize=0,atrim=0:${total.toFixed(3)},afade=t=out:st=${(total - 0.8).toFixed(2)}:d=0.8[o]`;
-  const r = run(['-i', nar.mp3, '-i', game, '-filter_complex', fc, '-map', '[o]', '-c:a', 'aac', '-b:a', '192k', out]);
+  // 엔딩 음성·효과음: {file, at(초), lufs}. 소리 크기를 맞춰 at 시각에 얹는다(짧은 소리는 -1dBFS 리미터)
+  const ex = extras.map((e, k) => { const g = gainDb(e.file, e.lufs); console.log(`  ${e.name}: ${g.from.toFixed(1)} → ${e.lufs} LUFS (${g.db >= 0 ? '+' : ''}${g.db.toFixed(1)}dB), ${e.at.toFixed(2)}초`); const ms = Math.round(e.at * 1000); return `[${k + 2}:a]aresample=48000,aformat=channel_layouts=stereo,volume=${g.db.toFixed(2)}dB,alimiter=limit=0.891:attack=2:release=20,adelay=${ms}|${ms}[e${k}]`; });
+  const mixIn = ['[g]', '[n]', ...extras.map((_, k) => `[e${k}]`)];
+  const fc = `[0:a]aresample=48000,aformat=channel_layouts=stereo,${ln},apad=whole_dur=${total.toFixed(3)}[n];[1:a]volume='${vol}':eval=frame[g];${ex.map((x) => x + ';').join('')}${mixIn.join('')}amix=inputs=${mixIn.length}:duration=longest:normalize=0,atrim=0:${total.toFixed(3)}${fadeOut ? `,afade=t=out:st=${(total - 0.8).toFixed(2)}:d=0.8` : ''}[o]`;
+  const r = run(['-i', nar.mp3, '-i', game, ...extras.flatMap((e) => ['-i', e.file]), '-filter_complex', fc, '-map', '[o]', '-c:a', 'aac', '-b:a', '192k', out]);
   if (r.status !== 0) throw new Error(`--reel-trend: 오디오 믹스 실패\n${r.stderr.slice(-600)}`);
   console.log(`  내레이션 측정 ${m.input_i} LUFS → -14 LUFS, 게임 소리 말 구간 ${duckDb}dB(≈${-14 + duckDb} LUFS)·빈틈(${gapMin}초 초과) ${gapDb}dB, 덕킹 구간 ${win.length}개`);
 }
@@ -227,7 +262,7 @@ const outroHtml = (font) => `<!doctype html><meta charset="utf-8"><style>${baseC
 .url { margin-top: 64px; font-size: 34px; font-weight: 500; line-height: 1.3; color: #9A9A9A; letter-spacing: .01em; }
 </style><div class="blk"><div class="lg" id="lg">J</div><div class="nm" id="nm">JamiDuNow</div><div class="tg" id="tg">친구랑 할 게임, 여기서 찾자</div><div class="url" id="url">jamidunow.com</div></div>`;
 
-async function composeOutro({ font, lastPng, out, CACHE, postId }) {
+async function composeOutro({ font, lastPng, out, CACHE, postId, outro }) {
   const { w, h, fps } = RS;
   const bg = path.join(CACHE, `trend-${postId}-outro-bg.png`);
   ff(['-i', lastPng, '-vf', `scale=${w / 4}:${h / 4},gblur=sigma=10,scale=${w}:${h},colorchannelmixer=rr=0.25:gg=0.25:bb=0.25`, '-frames:v', '1', bg]); // 1/4로 줄여 시그마 10 = 원래 크기 약 40px 블러, 75% 어둡게
@@ -246,16 +281,16 @@ async function composeOutro({ font, lastPng, out, CACHE, postId }) {
       items.push({ id, file, x, y, w: cw, h: ch });
     }
   } finally { await browser.close(); }
-  const loop = (file) => ['-loop', '1', '-framerate', String(fps), '-t', String(OUTRO_SEC), '-i', file];
+  const loop = (file) => ['-loop', '1', '-framerate', String(fps), '-t', outro.sec.toFixed(3), '-i', file];
   const [lg, ...texts] = items;
   const P = '(0.85+0.15*min(1,t/0.15))'; // 로고 0.15초 동안 85%→100%
   const g = [`[1:v]format=rgba,scale=w='trunc(iw*${P}/2)*2':h='trunc(ih*${P}/2)*2':eval=frame[lg]`, `[0:v][lg]overlay=x='${lg.x + lg.w / 2}-w/2':y='${lg.y + lg.h / 2}-h/2':format=auto[o1]`];
   texts.forEach((it, i) => {
-    g.push(`[${i + 2}:v]format=rgba,fade=t=in:st=${(0.15 + 0.1 * i).toFixed(2)}:d=0.12:alpha=1[t${i}]`); // 팝이 끝난 뒤 0.1초 간격으로 0.12초 페이드인
+    g.push(`[${i + 2}:v]format=rgba,fade=t=in:st=${(outro.nameAt + 0.1 * i).toFixed(3)}:d=0.12:alpha=1[t${i}]`); // "재미두나우!" 순간에 이름, 이어서 0.1초 간격으로 나머지 두 줄(각 0.12초 페이드인)
     g.push(`[o${i + 1}][t${i}]overlay=x=${it.x}:y=${it.y}:format=auto[o${i + 2}]`);
   });
   g.push(`[o${texts.length + 1}]format=yuv420p[o]`);
-  ff([...loop(bg), ...loop(lg.file), ...texts.flatMap((t) => loop(t.file)), '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', String(OUTRO_SEC), '-r', String(fps), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p', out]);
+  ff([...loop(bg), ...loop(lg.file), ...texts.flatMap((t) => loop(t.file)), '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', outro.sec.toFixed(3), '-r', String(fps), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p', out]);
 }
 
 export async function runReelTrend(postId, { refresh = false } = {}) {
@@ -292,7 +327,8 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
     return { ...c, t: +(hit.start + (c.offset ?? 0)).toFixed(3) };
   });
   const { parts, segs, total: bodyDur } = cutTimeline(cuts, endSpec?.src, nar.duration);
-  const total = bodyDur + (OUTRO ? OUTRO_SEC : 0); // 전체 길이(엔딩 샷 포함). 본편 영상·자막은 bodyDur까지
+  const outro = OUTRO ? loadOutro() : null;
+  const total = bodyDur + (outro ? outro.sec : 0); // 전체 길이(엔딩 샷 포함). 본편 영상·자막은 bodyDur까지
   const hasCard = !!copy.card; // card가 없으면 정보 카드 없이(로고 장면 등으로 대신)
   let c0 = -10, c1 = -10;
   if (hasCard) {
@@ -371,11 +407,17 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   for (const mv of movieNames) audioFiles[mv] = await trailerAudioFromDb(srcs[mv], CACHE, refresh);
   const aParts = parts.map((p, i) => (OUTRO && i === parts.length - 1 ? [p[0], p[1] + OUTRO_GAME_TAIL] : p)); // 엔딩 샷이 붙으면 마지막 컷 소리를 0.3초 더 떠서, 컷 뒤 0.3초 동안 페이드아웃
   const { measured } = buildAudio({ audio: partMovies.map((mv) => audioFiles[mv]), copy: { segments: aParts.slice(0, -1), endClip: aParts[aParts.length - 1] }, out: gameM4a });
-  mixNarration({ game: gameM4a, nar, total, out: m4a, duckDb: copy.duckDb, gapDb: copy.gapDb, gapMin: copy.gapMin });
+  const extras = !outro ? [] : [
+    ...(outro.whoosh ? [{ name: '전환 효과음(whoosh)', file: outro.whoosh, at: Math.max(0, bodyDur - 0.2), lufs: -18 }] : []), // 휙 끝나는 시점에 컷이 오도록 0.2초 앞당김
+    ...(outro.voice ? [{ name: '시그니처 음성', file: outro.voice, at: bodyDur, lufs: -14 }] : []),
+    ...(outro.pop ? [{ name: '로고 팝 효과음', file: outro.pop, at: bodyDur, lufs: -20 }] : []),
+  ];
+  mixNarration({ game: gameM4a, nar, total, out: m4a, duckDb: copy.duckDb, gapDb: copy.gapDb, gapMin: copy.gapMin, extras, fadeOut: !outro });
   let silentAll = silent;
   if (OUTRO) {
     const outroMp4 = path.join(CACHE, `trend-${postId}-outro.mp4`);
-    await composeOutro({ font, lastPng, out: outroMp4, CACHE, postId });
+    await composeOutro({ font, lastPng, out: outroMp4, CACHE, postId, outro });
+    console.log(`  엔딩 ${outro.sec.toFixed(2)}초(시그니처 음성 ${outro.voice ? path.relative(ROOT, outro.voice) : '없음'}, 이름 등장 ${outro.nameAt.toFixed(2)}초)`);
     const list = path.join(CACHE, `trend-${postId}-concat.txt`);
     fs.writeFileSync(list, `file '${silent}'\nfile '${outroMp4}'\n`);
     silentAll = path.join(CACHE, `trend-${postId}-silent-all.mp4`);
@@ -387,9 +429,10 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   // 정지 이미지: 자막 장면 1장(곡괭이 비트, 팝이 끝난 뒤), 정보 카드 1장(다 올라온 뒤)
   const pick = chunks.find((c) => chunkPlain(c.text).includes(chunkPlain(copy.stillChunk ?? '곡괭이'))) ?? chunks[Math.floor(chunks.length / 2)];
   ff(['-ss', T(pick.start + 0.25), '-i', mp4, '-frames:v', '1', path.join(outDir, 'still-subtitle.png')]);
-  const second = hasCard ? 'still-card.png' : 'still-end.png'; // 카드가 없으면 마지막 로고 장면
-  ff(['-ss', T(hasCard ? c0 + 1.2 : bodyDur - 0.3), '-i', mp4, '-frames:v', '1', path.join(outDir, second)]);
-  if (OUTRO) ff(['-ss', T(bodyDur + 1.5), '-i', mp4, '-frames:v', '1', path.join(outDir, 'still-outro.png')]);
+  const second = hasCard ? 'still-card.png' : OUTRO ? 'still-outro.png' : 'still-end.png'; // 카드가 있으면 카드, 없으면 엔딩 샷(없으면 마지막 로고 장면)
+  const secondAt = hasCard ? c0 + 1.2 : OUTRO ? bodyDur + Math.min(outro.sec - 0.2, outro.nameAt + 0.6) : bodyDur - 0.3; // 엔딩은 세 줄이 다 나온 뒤
+  ff(['-ss', T(secondAt), '-i', mp4, '-frames:v', '1', path.join(outDir, second)]);
+  if (hasCard && OUTRO) ff(['-ss', T(bodyDur + Math.min(outro.sec - 0.2, outro.nameAt + 0.6)), '-i', mp4, '-frames:v', '1', path.join(outDir, 'still-outro.png')]);
   const dur = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', mp4]).toString());
   console.log(`${path.relative(ROOT, mp4)} (${dur.toFixed(2)}초, 내레이션 + 덕킹한 원본 오디오 측정 ${measured} LUFS → -14 LUFS, 구간 경계 0.1초 크로스페이드)`);
   console.log(path.relative(ROOT, path.join(outDir, 'still-subtitle.png')), path.relative(ROOT, path.join(outDir, second)));

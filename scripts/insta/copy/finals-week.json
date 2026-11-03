@@ -1,5 +1,5 @@
 {
- "_doc": "Finals Week 릴스(--reel-trend). card 없음, 공통 엔딩 샷(기본), 컷마다 movie와 x(4:5 가로 크롭 위치 0~1, 기본 0.5), 게임 소리: 말하는 동안 duckDb -20(≈-34 LUFS), 말 사이 gapMin초 넘는 빈틈은 gapDb -8(≈-22 LUFS)",
+ "_doc": "Finals Week 릴스(--reel-trend). card 없음, 공통 엔딩 샷(시그니처 음성+효과음, 기본), 컷마다 movie와 x(4:5 가로 크롭 위치 0~1, 기본 0.5)·at(그 말이 시작하는 시각에 컷), 게임 소리: 말하는 동안 duckDb -20(≈-34 LUFS), 말 사이 gapMin초 넘는 빈틈은 gapDb -8(≈-22 LUFS)",
  "appid": "4715160",
  "movie": "Launch Trailer",
  "maxPlayers": 4,
@@ -7,7 +7,7 @@
  "stillChunk": "컨닝으로",
  "narration": {
   "voiceId": "uyVNoMrnUku1dZyVEXwD",
-  "cacheName": "narration-fast2",
+  "cacheName": "narration-final",
   "voiceSettings": {
    "stability": 0.4,
    "similarity_boost": 0.8,
@@ -233,8 +233,7 @@
    ]
   },
   {
-   "at": "파이널스 위크",
-   "offset": -0.11,
+   "at": "이름은",
    "movie": "Launch Trailer",
    "src": [
     94,
