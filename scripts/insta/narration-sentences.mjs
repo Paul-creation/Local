@@ -21,7 +21,7 @@ async function takeOf({ dir, i, t, sentences, cfg, apiKey }) {
   const mp3 = path.join(dir, `s${i}-t${t}.mp3`), js = path.join(dir, `s${i}-t${t}.json`);
   const prev = sentences.slice(Math.max(0, i - 2), i).join(' '), next = sentences.slice(i + 1, i + 3).join(' ');
   const key = crypto.createHash('sha1').update(JSON.stringify([cfg.voiceId, sentences[i], prev, next, cfg.voiceSettings, t])).digest('hex');
-  if (fs.existsSync(mp3) && fs.existsSync(js)) { const c = JSON.parse(fs.readFileSync(js, 'utf8')); if (c.key === key) return { mp3, ...c, cached: true }; }
+  if (fs.existsSync(mp3) && fs.existsSync(js)) { const c = JSON.parse(fs.readFileSync(js, 'utf8')); if (c.key === key || (cfg.reuseCached && c.chars.join('').replace(/\s/g, '') === sentences[i].replace(/\s/g, ''))) return { mp3, ...c, cached: true }; } // reuseCached: 문장 글자가 같으면 앞뒤 문장이 바뀌어도 그 테이크를 재사용
   const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${cfg.voiceId}/with-timestamps?output_format=mp3_44100_128`, {
     method: 'POST', headers: { 'xi-api-key': apiKey, 'content-type': 'application/json' },
     body: JSON.stringify({ text: sentences[i], model_id: 'eleven_multilingual_v2', voice_settings: cfg.voiceSettings, ...(prev ? { previous_text: prev } : {}), ...(next ? { next_text: next } : {}) }),
