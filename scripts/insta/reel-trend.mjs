@@ -54,8 +54,9 @@ export async function steamFacts(appid, copy) {
   const kor = /Korean(<strong>\*<\/strong>)?/.exec(en.supported_languages ?? '');
   const range = /(\d+)\s*~\s*(\d+)\s*인/.exec(d.short_description ?? '');
   const max = copy.maxPlayers ?? (range ? Number(range[2]) : null);
-  if (!rel || !price || !kor || !max) throw new Error(`--reel-trend: 출시일·가격·한국어·인원 중 빠진 게 있어요 ${JSON.stringify({ rel: !!rel, price, kor: !!kor, max })} (인원은 copy.maxPlayers로 지정)`);
-  return { name: en.name, header: d.header_image, mmdd: `${rel[2].padStart(2, '0')}.${rel[3].padStart(2, '0')}`, price, regular: d.is_free ? null : po ? won(po.initial) : null, saleEnd, korean: kor[1] ? '한국어 자막+더빙' : '한국어 자막', max, moviesCount: d.movies?.length ?? 0 };
+  const soon = !!d.release_date?.coming_soon; // 출시 예정: 출시일·가격이 없어도 된다(카드에 "출시 예정"만 쓰고 가격은 뺀다)
+  if ((!rel && !soon) || (!price && !soon) || !kor || !max) throw new Error(`--reel-trend: 출시일·가격·한국어·인원 중 빠진 게 있어요 ${JSON.stringify({ rel: !!rel, price, kor: !!kor, max })} (인원은 copy.maxPlayers로 지정)`);
+  return { name: en.name, header: d.header_image, soon, mmdd: rel ? `${rel[2].padStart(2, '0')}.${rel[3].padStart(2, '0')}` : null, price, regular: d.is_free ? null : po ? won(po.initial) : null, saleEnd, korean: kor[1] ? '한국어 자막+더빙' : '한국어 자막', max, moviesCount: d.movies?.length ?? 0 };
 }
 
 const baseCss = (font) => `@font-face { font-family: P; src: url(data:font/woff2;base64,${font}); font-weight: 100 900; }
@@ -84,7 +85,7 @@ const cardHtml = (font, f, title, imgB64) => `<!doctype html><meta charset="utf-
 .i em { font-style: normal; color: ${MINT}; }
 .u { margin-top: 18px; font-size: 24px; font-weight: 600; color: rgba(255,255,255,.55); letter-spacing: .02em; }
 </style><div class="card" id="c"><img src="data:image/jpeg;base64,${imgB64}"><div class="t">${esc(title)}</div>
-<div class="i"><em>${esc(f.mmdd)} 출시</em> / ${esc(f.price)}<br>최대 ${f.max}인 / ${esc(f.korean)}</div><div class="u">jamidunow.com</div></div>`;
+<div class="i"><em>${f.mmdd ? `${esc(f.mmdd)} 출시` : '출시 예정'}</em>${f.price ? ` / ${esc(f.price)}` : ''}<br>최대 ${f.max}인 / ${esc(f.korean)}</div><div class="u">jamidunow.com</div></div>`;
 
 // ── ElevenLabs 내레이션 ──
 const DEFAULT_VOICE = 'uyVNoMrnUku1dZyVEXwD';
