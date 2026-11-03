@@ -87,6 +87,7 @@ const cardHtml = (font, f, title, imgB64) => `<!doctype html><meta charset="utf-
 // ── ElevenLabs 내레이션 ──
 // 내레이션 mp3·글자별 타이밍은 out/<post-id>/narration.mp3·json에 캐시(대본·목소리가 같으면 API를 다시 부르지 않는다)
 export async function getNarration(outDir, cfg) {
+  cfg = { ...cfg, voiceSettings: { speed: 1.2, ...cfg.voiceSettings } }; // 기본 속도 1.2(ElevenLabs 최대값), copy에서 speed를 적으면 그 값
   const name = cfg.cacheName ?? 'narration'; // narration-v2 → out/<post-id>/narration-v2.mp3·json
   const mp3 = path.join(outDir, `${name}.mp3`), js = path.join(outDir, `${name}.json`);
   const key = crypto.createHash('sha1').update(`${cfg.voiceId}|eleven_multilingual_v2|${cfg.text}|${JSON.stringify(cfg.voiceSettings ?? null)}`).digest('hex');
@@ -114,10 +115,10 @@ export async function getNarration(outDir, cfg) {
 }
 
 
-// ── 무음 압축(--reel-trend 기본 후처리) ──
-// with-timestamps의 글자 타이밍으로 어절 사이 무음을 찾아 줄인다: 문장 안 0.18초 초과 → 0.12초, 문장 사이 0.35초 초과 → 0.25초, 마지막 문장은 어절 사이를 0.08초까지(한 호흡).
-// 자르는 곳은 10ms 크로스페이드. 줄인 만큼 글자 타이밍을 당겨 새 mp3(wav)·타이밍을 돌려준다. 끄려면 copy.narration.tighten=false, 값은 copy.narration.silence로 바꾼다
-const SILENCE = { word: 0.18, wordTo: 0.12, sentence: 0.35, sentenceTo: 0.25, lastGap: 0.08 };
+// ── 무음 압축 + 속도(--reel-trend 기본 후처리) ──
+// with-timestamps의 글자 타이밍으로 어절 사이 무음을 찾아 줄인다: 문장 안 0.18초 초과 → 0.08초, 문장 사이 0.3초 초과 → 0.18초, 마지막 문장은 어절 사이를 0.06초까지(한 호흡). 그다음 atempo 1.06배.
+// 자르는 곳은 10ms 크로스페이드. 줄인 만큼·빨라진 만큼 글자 타이밍을 당겨 새 mp3(wav)·타이밍을 돌려준다. 끄려면 copy.narration.tighten=false, 값은 copy.narration.silence로 바꾼다
+const SILENCE = { word: 0.18, wordTo: 0.08, sentence: 0.3, sentenceTo: 0.18, lastGap: 0.06, atempo: 1.06 }; // atempo: 무음을 줄인 뒤 전체 내레이션을 음높이 유지로 이만큼 빠르게
 export function silenceSpans(nar, cfg = {}) {
   const o = { ...SILENCE, ...cfg };
   const tokens = [];
@@ -147,7 +148,8 @@ export function tightenNarration(outDir, nar, cfgName, cfg = {}) {
   const spans = silenceSpans(nar, cfg);
   const key = crypto.createHash('sha1').update(`${nar.key}|${JSON.stringify({ ...SILENCE, ...cfg })}`).digest('hex');
   const wav = path.join(outDir, `${cfgName}-tight.wav`), js = path.join(outDir, `${cfgName}-tight.json`);
-  const remap = (t) => t - spans.reduce((s, p) => s + Math.max(0, Math.min(t, p.b) - p.a), 0);
+  const tempo = { ...SILENCE, ...cfg }.atempo;
+  const remap = (t) => (t - spans.reduce((s, p) => s + Math.max(0, Math.min(t, p.b) - p.a), 0)) / tempo;
   const base = (duration) => ({ mp3: wav, key, text: nar.text, chars: nar.chars, starts: nar.starts.map(remap), ends: nar.ends.map(remap), duration });
   if (fs.existsSync(wav) && fs.existsSync(js) && JSON.parse(fs.readFileSync(js, 'utf8')).key === key) { const d = JSON.parse(fs.readFileSync(js, 'utf8')); console.log(`  무음 압축: 캐시 사용(${spans.length}곳, ${d.removed.toFixed(2)}초 줄임)`); return { ...base(d.duration), removed: d.removed }; }
   const X = 0.01; // 크로스페이드 10ms: 조각 끝에 10ms를 더 떠서, 겹친 만큼을 보충한다
@@ -159,12 +161,12 @@ export function tightenNarration(outDir, nar, cfgName, cfg = {}) {
   let chain = '[a0]';
   const xf = [];
   for (let i = 1; i < pieces.length; i++) { xf.push(`${chain}[a${i}]acrossfade=d=${X}:c1=tri:c2=tri[x${i}]`); chain = `[x${i}]`; }
-  const r = run([...inputs, '-filter_complex', `${cut.join(';')}${xf.length ? ';' + xf.join(';') : ''}`, '-map', chain, '-c:a', 'pcm_s16le', wav]);
+  const r = run([...inputs, '-filter_complex', `${cut.join(';')}${xf.length ? ';' + xf.join(';') : ''};${chain}atempo=${tempo}[t]`, '-map', '[t]', '-c:a', 'pcm_s16le', wav]);
   if (r.status !== 0) throw new Error(`--reel-trend: 무음 압축 실패\n${r.stderr.slice(-500)}`);
   const duration = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', wav]).toString());
-  const removed = nar.duration - duration;
+  const removed = nar.duration - duration; // 무음 + 속도로 줄어든 전체 길이
   fs.writeFileSync(js, JSON.stringify({ key, duration, removed }));
-  console.log(`  무음 압축: ${spans.length}곳, ${nar.duration.toFixed(2)}초 → ${duration.toFixed(2)}초(${removed.toFixed(2)}초 줄임)`);
+  console.log(`  무음 압축 ${spans.length}곳 + atempo ${tempo}: ${nar.duration.toFixed(2)}초 → ${duration.toFixed(2)}초(${removed.toFixed(2)}초 줄임)`);
   return { ...base(duration), removed };
 }
 
@@ -279,7 +281,7 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   for (const f of ['reel.mp4', 'still-subtitle.png', 'still-card.png', 'still-end.png', 'still-outro.png']) fs.rmSync(path.join(outDir, f), { force: true }); // 내레이션 캐시(narration*.mp3·json)와 voice-samples는 남긴다
 
   const rawNar = await getNarration(outDir, copy.narration);
-  const nar = copy.narration.tighten === false ? rawNar : tightenNarration(outDir, rawNar, copy.narration.cacheName ?? 'narration', copy.narration.silence); // 무음 압축(기본)
+  const nar = copy.narration.tighten === false ? rawNar : tightenNarration(outDir, rawNar, copy.narration.cacheName ?? 'narration', { ...copy.narration.silence, ...(copy.narration.atempo !== undefined ? { atempo: copy.narration.atempo } : {}) }); // 무음 압축(기본)
   const bodyLen = nar.duration + (endSpec ? 1 : 0);
   const chunks = chunkTimeline(nar, copy.chunks, bodyLen);
   // 컷 시각: t(초)를 직접 쓰거나, at(자막 덩어리 글자)·offset(초)로 그 말이 시작하는 시각에 맞춘다 — 내레이션 타이밍이 바뀌어도 컷이 말을 따라간다
