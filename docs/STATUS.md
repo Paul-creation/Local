@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-11-01 (main 065f15b)
+기준: 2026-11-03 (main 4cdd911)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 11/3: insta/reel-trend — scripts/insta --reel-trend(세로 릴스 1080×1920, 트레일러 4:5 가운데 크롭 + 블러·어둡게 배경, 컷마다 x 크롭·movie·at(말 시작에 맞춘 하드컷), copy/<id>.json). ElevenLabs 내레이션은 문장 단위 생성(previous/next_text) + 끝 억양 검사(scripts/insta/pitch-end.py, librosa pyin, 문장 평균보다 2반음 넘게 올라가면 그 문장 최대 3번 재생성; narration-sentences.mjs, copy.narration.perSentence:false면 통째 생성), 글자 타이밍 기준 무음 압축(앞뒤 50ms 보존·크로스페이드 20ms·약한 자음 앞 절반)과 atempo 1.06, 자막은 한 어절·72px Black·y 1000·민트 강조(KEY_WORDS), 게임 소리 덕킹(말 중 -34 LUFS·빈틈 -22 LUFS), cardFrom 정보 카드 장면(정중앙·Steam header_2x 고해상도), 공통 엔딩 샷 1.6초(로고 팝 → JamiDuNow·문구·주소 페이드인, scripts/insta/assets/brand/의 sfx-whoosh·sfx-pop·outro-voice.mp3가 있으면 사용, gitignore 대상), 최종 H.264 CRF 18 medium·AAC 192k. finals-week 카피 포함, crack-trend copy는 perSentence:false(업로드 완료, 다시 생성 방지). 사이트 코드 변경 없음. build·test 491개 통과
 - 11/1: insta/reel-single — scripts/insta --reel-single(게임 하나 소개 세로 릴스 1080×1920, 텍스트 고정형: 로고·흰 제목·민트 큰 제목·회색 정보 줄·트레일러·설명, copy/<id>.json). 정보 줄은 DB 값(할인 중이면 "~M/D -N% 할인 / 최대 N인 / 한국어 …", 할인 없으면 "₩가격 / …", 한국어는 korean_support 값). copy.movie로 스팀 appdetails 영상 지정, copy.layout "wide"(영상 1080×668 y 560~1228·설명 52px 가운데), copy.audio로 트레일러 원본 오디오(구간 경계 0.1초 크로스페이드·-14 LUFS·끝 0.8초 페이드아웃), --audio는 reel-audio.mp4 별도 생성. pick-reel-single.mjs(후보 선정, DB 읽기만). 사이트 코드 변경 없음. build·test 491개 통과
 - 11/1: insta/reel — scripts/insta --reel(세로 릴스: 훅 + 게임 장 + 팔로우 카드, indie-reel-1) + CLAUDE.md 인스타 규칙(인지도 단정 표현 금지·한국어 이름 게임은 영어 원제 병기). 사이트 코드 변경 없음. build·test 491개 통과
 - 10/31: insta/halloween-night — scripts/insta --detailed 할로윈 당일 단일 게임 게시물(Barotrauma, posts·copy/halloween-night.json). copy.desc가 있으면 소개 장을 showcase 영상 장(트레일러 1080p + 검은 패널)으로, copy.foot으로 개요·플레이 장 하단 문구, copy.maxPlayers로 인원 화면용 덮어쓰기(DB max_players 8이 스팀 16인과 달라서). 사이트 코드 변경 없음. build·test 491개 통과
@@ -150,6 +151,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- insta finals-week 확인 대기(사용자): out/finals-week/reel.mp4(still-subtitle·still-card·still-outro). scripts/insta/assets/brand/sfx-pop.mp3가 Codespace에 없어 로고 팝 효과음 없이 렌더됨 — 파일을 넣고 finals-week만 다시 렌더(내레이션은 narration-final3 캐시, API 호출 없음) 필요. Finals Week(4715160) games 추가 SQL은 사용자 실행 대기(미확인).
 - insta 릴스 확인 대기(사용자): out/gtfo-reel(reel.mp4 무음·reel-audio.mp4 원본 오디오), out/super-battle-golf-reel(reel.mp4 원본 오디오). 게시 여부·구간 수정은 확인 뒤 결정
 - Barotrauma games.max_players 8 → 16 반영은 SQL 실행 필요(update games set max_players = 16 where steam_appid = 602960;). 반영 뒤 halloween-night copy의 maxPlayers 제거 가능
 - 머지 후 확인 대기 (프로덕션 화면·다음 daily/weekly 로그 확인, 모두 미확인):
