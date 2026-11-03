@@ -44,7 +44,8 @@ export async function steamFacts(appid, copy) {
   if (po?.discount_percent > 0) { // 할인 종료가 3일 넘게 남았을 때만 "₩6,790 (-15%, 11/3까지)". 3일 이내이거나 종료 시각을 못 찾으면 정가만 쓴다(영상이 올라갈 때쯤 할인이 끝나 있을 수 있어서)
     try {
       const html = await (await fetch(`https://store.steampowered.com/app/${appid}/?l=koreana&cc=kr`, { headers: { cookie: 'birthtime=0; wants_mature_content=1' } })).text();
-      const ts = Number(/InitDailyDealTimer\(\s*\$DiscountCountdown,\s*(\d+)/.exec(html)?.[1]); // 종료 시각(appdetails에는 없어 상점 페이지에서 읽음)
+      let ts = Number(/InitDailyDealTimer\(\s*\$DiscountCountdown,\s*(\d+)/.exec(html)?.[1]); // 종료 시각(appdetails에는 없어 상점 페이지에서 읽음)
+      if (!ts) { const m = /종료일:\s*(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/.exec(html); if (m) ts = new Date(`${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}T23:59:00+09:00`).getTime() / 1000; } // 타이머 대신 "종료일: 2026년 11월 12일" 글자만 있는 페이지(그 날 끝까지로 본다)
       if (ts * 1000 - Date.now() > 3 * 864e5) { const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric' }).formatToParts(new Date(ts * 1000)).map((x) => [x.type, x.value])); saleEnd = `${p.month}/${p.day}`; }
     } catch { /* 종료 시각을 못 읽으면 정가 */ }
     if (saleEnd) price = `${won(po.final)} (-${po.discount_percent}%, ${saleEnd}까지)`;
@@ -301,6 +302,16 @@ async function composeOutro({ font, lastPng, out, CACHE, postId, outro }) {
   ff([...loop(bg), ...loop(lg.file), ...texts.flatMap((t) => loop(t.file)), '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', outro.sec.toFixed(3), '-r', String(fps), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p', out]);
 }
 
+// 카드 장면: 직전 컷의 마지막 장면을 블러(40px) + 40% 어둡게 한 정지 배경 위에, 정보 카드가 하드컷으로 나타난다(0.06초 동안 96%→100% 스냅). 오버레이를 같은 구성으로 얹는다
+function composeCardScene({ lastPng, clip, sec, out, CACHE, postId }) {
+  const { w, h, fps } = RS;
+  const bg = path.join(CACHE, `trend-${postId}-cardbg.png`);
+  ff(['-i', lastPng, '-vf', `scale=${w / 4}:${h / 4},gblur=sigma=10,scale=${w}:${h},colorchannelmixer=rr=0.6:gg=0.6:bb=0.6`, '-frames:v', '1', bg]);
+  const P = '(0.96+0.04*min(1,t/0.06))';
+  const g = `[1:v]format=rgba,scale=w='trunc(iw*${P}/2)*2':h='trunc(ih*${P}/2)*2':eval=frame[c];[0:v][c]overlay=x='${clip.cx}-w/2':y='${clip.cy}-h/2':format=auto,format=yuv420p[o]`;
+  ff(['-loop', '1', '-framerate', String(fps), '-t', sec.toFixed(3), '-i', bg, '-loop', '1', '-framerate', String(fps), '-t', sec.toFixed(3), '-i', clip.file, '-filter_complex', g, '-map', '[o]', '-an', '-t', sec.toFixed(3), '-r', String(fps), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p', out]);
+}
+
 export async function runReelTrend(postId, { refresh = false } = {}) {
   const copyFile = path.join(DIR, 'copy', `${postId}.json`);
   if (!fs.existsSync(copyFile)) throw new Error(`--reel-trend: ${path.relative(ROOT, copyFile)}이 없어요`);
@@ -334,7 +345,17 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
     if (!hit) throw new Error(`--reel-trend: cuts[${i}].at "${c.at}"와 같은 자막이 없어요`);
     return { ...c, t: +(hit.start + (c.offset ?? 0)).toFixed(3) };
   });
-  const { parts, segs, total: bodyDur } = cutTimeline(cuts, endSpec?.src, nar.duration);
+  const all = cutTimeline(cuts, endSpec?.src, nar.duration); // 전체 컷(소리용)
+  const bodyDur = all.total; // 내레이션 끝(엔딩 직전)
+  // cardFrom: 이 자막(어절)이 시작하는 순간부터 내레이션 끝까지 정보 카드 장면(하드컷, 자막 숨김). 그 뒤 컷은 영상에서 빠지고 소리만 이어서 쓴다
+  const cardHit = copy.cardFrom ? chunks.find((c) => chunkPlain(c.text) === chunkPlain(copy.cardFrom)) : null;
+  if (copy.cardFrom && !cardHit) throw new Error(`--reel-trend: cardFrom "${copy.cardFrom}"와 같은 자막이 없어요`);
+  const cardAt = cardHit ? +cardHit.start.toFixed(3) : null;
+  const cardScene = cardAt !== null;
+  if (cardScene && !OUTRO) throw new Error('--reel-trend: cardFrom(카드 장면)은 엔딩 샷(outro)과 함께 써요');
+  const vid = cardScene ? cutTimeline(cuts.filter((c) => c.t < cardAt - 0.0005), null, cardAt) : all; // 영상에 쓰는 컷
+  const { parts, segs } = vid;
+  const vidDur = vid.total;
   const outro = OUTRO ? loadOutro() : null;
   const total = bodyDur + (outro ? outro.sec : 0); // 전체 길이(엔딩 샷 포함). 본편 영상·자막은 bodyDur까지
   const hasCard = !!copy.card; // card가 없으면 정보 카드 없이(로고 장면 등으로 대신)
@@ -348,10 +369,11 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   console.log('  컷:', segs.map((s) => `${s.t.toFixed(2)}(${s.dur.toFixed(2)})`).join(' '), `· 마지막 알 ${nar.duration.toFixed(2)}`);
   console.log('  자막:', chunks.map((c) => `${c.text} ${c.start.toFixed(2)}~${c.to.toFixed(2)}`).join(' | '));
   const font = fs.readFileSync(path.join(ROOT, 'node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2')).toString('base64');
-  const imgB64 = hasCard ? Buffer.from(await (await fetch(facts.header)).arrayBuffer()).toString('base64') : '';
+  const imgB64 = hasCard || cardScene ? Buffer.from(await (await fetch(facts.header)).arrayBuffer()).toString('base64') : '';
 
   // 오버레이 PNG: 로고(전체 화면) · 자막 덩어리별(글자 영역만 잘라냄, 가운데 좌표 기억) · 카드(전체 화면)
   const subs = [];
+  let cardClip = null;
   const logoPng = path.join(CACHE, `trend-${postId}-logo.png`), cardPng = path.join(CACHE, `trend-${postId}-card.png`);
   const browser = await chromium.launch();
   try {
@@ -361,6 +383,8 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
     await load(logoHtml(font));
     await page.screenshot({ path: logoPng, clip: full, omitBackground: true });
     for (let i = 0; i < chunks.length; i++) {
+      if (cardScene && chunks[i].start >= vidDur - 0.02) break; // 카드 장면에는 자막 없음
+      if (cardScene) chunks[i].to = Math.min(chunks[i].to, vidDur);
       await load(subHtml(font, chunks[i].text));
       const r = await page.evaluate(() => { const b = document.getElementById('s').getBoundingClientRect(); return { l: b.left, t: b.top, w: b.width, h: b.height }; });
       const W = Math.ceil(r.w / 2) * 2 + 64, H = Math.ceil(r.h / 2) * 2 + 64; // 외곽선 여유, 가운데 유지
@@ -369,14 +393,20 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
       if (SUB_X + r.w / 2 > RS.w - RS.rightGap || SUB_X - r.w / 2 < 0) throw new Error(`--reel-trend: 자막 "${chunks[i].text}"가 안전 영역(오른쪽 140px)을 넘어요`);
       subs.push({ file, ...chunks[i] });
     }
-    if (hasCard) {
+    if (hasCard || cardScene) {
     await load(cardHtml(font, facts, title, imgB64));
     const fit = await page.evaluate(() => { const el = document.querySelector('.i'); const max = el.clientWidth; let sz = 40; el.style.whiteSpace = 'nowrap'; el.style.display = 'inline-block'; el.style.width = 'auto'; while (el.scrollWidth > max && sz > 26) { sz -= 1; el.style.fontSize = `${sz}px`; } const ok = el.scrollWidth <= max; el.style.display = ''; el.style.width = ''; return { sz, ok }; });
     console.log(`  카드 정보 줄 ${fit.sz}px${fit.ok ? '' : ' (넘침)'}`);
     const cr = await page.evaluate(() => { const b = document.getElementById('c').getBoundingClientRect(); return [Math.round(b.left), Math.round(b.top), Math.round(b.right), Math.round(b.bottom)]; });
     console.log(`  카드 영역 ${JSON.stringify(cr)}`);
     if (cr[2] > RS.w - RS.rightGap || cr[3] > SAFE_BOTTOM) throw new Error('--reel-trend: 정보 카드가 안전 영역을 넘어요');
-    await page.screenshot({ path: cardPng, clip: full, omitBackground: true });
+    if (hasCard) await page.screenshot({ path: cardPng, clip: full, omitBackground: true });
+    if (cardScene) { // 카드 장면용: 카드만 잘라냄(그림자 여유 60px), 가운데 좌표 기억
+      const P = 60;
+      cardClip = { file: path.join(CACHE, `trend-${postId}-cardclip.png`), cx: (cr[0] + cr[2]) / 2, cy: (cr[1] + cr[3]) / 2 };
+      await page.screenshot({ path: cardClip.file, clip: { x: Math.max(0, cr[0] - P), y: cr[1] - P, width: Math.min(RS.w - Math.max(0, cr[0] - P), cr[2] - cr[0] + 2 * P), height: cr[3] - cr[1] + 2 * P }, omitBackground: true });
+      cardClip.cx = Math.max(0, cr[0] - P) + Math.min(RS.w - Math.max(0, cr[0] - P), cr[2] - cr[0] + 2 * P) / 2; cardClip.cy = cr[1] - P + (cr[3] - cr[1] + 2 * P) / 2;
+    }
     }
   } finally { await browser.close(); }
 
@@ -386,7 +416,7 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   const T = (v) => v.toFixed(3);
   const vin = parts.flatMap(([a, b], i) => ['-ss', String(a), '-t', String(b - a), '-i', trailers[partMovies[i]]]);
   const oin = [
-    ['-loop', '1', '-framerate', String(fps), '-t', T(bodyDur), '-i', logoPng],
+    ['-loop', '1', '-framerate', String(fps), '-t', T(vidDur), '-i', logoPng],
     ...subs.map((c) => ['-itsoffset', T(c.start), '-loop', '1', '-framerate', String(fps), '-t', T(c.to - c.start + 0.1), '-i', c.file]),
     ...(hasCard ? [['-itsoffset', T(c0), '-loop', '1', '-framerate', String(fps), '-t', T(copy.card.sec + 0.1), '-i', cardPng]] : []),
   ].flat();
@@ -404,16 +434,16 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   else g.push(`[v${last}][${kc}:v]overlay=x=0:y='if(lt(t-${T(c0)},${CARD_IN}),${CARD_SLIDE}*pow(1-(t-${T(c0)})/${CARD_IN},2),0)':eof_action=pass:enable='between(t,${T(c0)},${T(c1)})':format=auto,format=yuv420p[o]`);
   const silent = path.join(CACHE, `trend-${postId}-silent.mp4`), lastPng = path.join(CACHE, `trend-${postId}-last.png`);
   if (process.env.REEL_DEBUG) fs.writeFileSync(path.join(CACHE, `trend-${postId}-graph.txt`), JSON.stringify({ args: [...vin, ...oin], graph: g.join(';') }));
-  ff(['-filter_threads', '1', ...vin, ...oin, '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', T(bodyDur), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p', silent]);
+  ff(['-filter_threads', '1', ...vin, ...oin, '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', T(vidDur), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p', silent]);
   { // 엔딩 샷 배경: 마지막 컷의 장면 1장을 본편과 같은 4:5 + 블러 구성으로(로고·자막 없이)
     const li = parts.length - 1, [la, lb] = parts[li];
-    ff(['-ss', T((la + lb) / 2), '-i', trailers[partMovies[li]], '-frames:v', '1', '-filter_complex', `[0:v]split[a][b];[a]crop=ih*4/5:ih:(iw-ih*4/5)*${xs[li]}:0,scale=${FG_W}:${FG_H}[f];[b]scale=-2:480,crop=270:480,gblur=sigma=10,scale=${w}:${h},colorchannelmixer=rr=0.65:gg=0.65:bb=0.65[g];[g][f]overlay=x=${FG_X}:y=${FG_Y}:format=auto[o]`, '-map', '[o]', lastPng]);
+    ff(['-ss', T(lb - 0.05), '-i', trailers[partMovies[li]], '-frames:v', '1', '-filter_complex', `[0:v]split[a][b];[a]crop=ih*4/5:ih:(iw-ih*4/5)*${xs[li]}:0,scale=${FG_W}:${FG_H}[f];[b]scale=-2:480,crop=270:480,gblur=sigma=10,scale=${w}:${h},colorchannelmixer=rr=0.65:gg=0.65:bb=0.65[g];[g][f]overlay=x=${FG_X}:y=${FG_Y}:format=auto[o]`, '-map', '[o]', lastPng]);
   }
 
   const m4a = path.join(CACHE, `trend-${postId}-audio.m4a`), gameM4a = path.join(CACHE, `trend-${postId}-game.m4a`);
   const audioFiles = {};
   for (const mv of movieNames) audioFiles[mv] = await trailerAudioFromDb(srcs[mv], CACHE, refresh);
-  const aParts = parts.map((p, i) => (OUTRO && i === parts.length - 1 ? [p[0], p[1] + OUTRO_GAME_TAIL] : p)); // 엔딩 샷이 붙으면 마지막 컷 소리를 0.3초 더 떠서, 컷 뒤 0.3초 동안 페이드아웃
+  const aParts = all.parts.map((p, i) => (OUTRO && i === all.parts.length - 1 ? [p[0], p[1] + OUTRO_GAME_TAIL] : p)); // 엔딩 샷이 붙으면 마지막 컷 소리를 0.3초 더 떠서, 컷 뒤 0.3초 동안 페이드아웃
   const { measured } = buildAudio({ audio: partMovies.map((mv) => audioFiles[mv]), copy: { segments: aParts.slice(0, -1), endClip: aParts[aParts.length - 1] }, out: gameM4a });
   const extras = !outro ? [] : [
     ...(outro.whoosh ? [{ name: '전환 효과음(whoosh)', file: outro.whoosh, at: Math.max(0, bodyDur - 0.2), lufs: -18 }] : []), // 휙 끝나는 시점에 컷이 오도록 0.2초 앞당김
@@ -427,7 +457,9 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
     await composeOutro({ font, lastPng, out: outroMp4, CACHE, postId, outro });
     console.log(`  엔딩 ${outro.sec.toFixed(2)}초(음성 ${outro.voice ? path.relative(ROOT, outro.voice) : '없음'}, 이름 등장 ${outro.nameAt.toFixed(2)}초)`);
     const list = path.join(CACHE, `trend-${postId}-concat.txt`);
-    fs.writeFileSync(list, `file '${silent}'\nfile '${outroMp4}'\n`);
+    let cardMp4 = null;
+    if (cardScene) { cardMp4 = path.join(CACHE, `trend-${postId}-cardscene.mp4`); composeCardScene({ lastPng, clip: cardClip, sec: bodyDur - cardAt, out: cardMp4, CACHE, postId }); console.log(`  카드 장면 ${cardAt.toFixed(2)}~${bodyDur.toFixed(2)}초(자막 숨김)`); }
+    fs.writeFileSync(list, `file '${silent}'\n${cardMp4 ? `file '${cardMp4}'\n` : ''}file '${outroMp4}'\n`);
     silentAll = path.join(CACHE, `trend-${postId}-silent-all.mp4`);
     ff(['-f', 'concat', '-safe', '0', '-i', list, '-c', 'copy', silentAll]);
   }
@@ -440,7 +472,8 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   const second = hasCard ? 'still-card.png' : OUTRO ? 'still-outro.png' : 'still-end.png'; // 카드가 있으면 카드, 없으면 엔딩 샷(없으면 마지막 로고 장면)
   const secondAt = hasCard ? c0 + 1.2 : OUTRO ? bodyDur + Math.min(outro.sec - 0.2, outro.nameAt + 0.6) : bodyDur - 0.3; // 엔딩은 세 줄이 다 나온 뒤
   ff(['-ss', T(secondAt), '-i', mp4, '-frames:v', '1', path.join(outDir, second)]);
-  if (hasCard && OUTRO) ff(['-ss', T(bodyDur + Math.min(outro.sec - 0.2, outro.nameAt + 0.6)), '-i', mp4, '-frames:v', '1', path.join(outDir, 'still-outro.png')]);
+  if (cardScene) ff(['-ss', T(cardAt + 0.4), '-i', mp4, '-frames:v', '1', path.join(outDir, 'still-card.png')]);
+  if ((hasCard || cardScene) && OUTRO) ff(['-ss', T(bodyDur + Math.min(outro.sec - 0.2, outro.nameAt + 0.6)), '-i', mp4, '-frames:v', '1', path.join(outDir, 'still-outro.png')]);
   const dur = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', mp4]).toString());
   console.log(`${path.relative(ROOT, mp4)} (${dur.toFixed(2)}초, 내레이션 + 덕킹한 원본 오디오 측정 ${measured} LUFS → -14 LUFS, 구간 경계 0.1초 크로스페이드)`);
   console.log(path.relative(ROOT, path.join(outDir, 'still-subtitle.png')), path.relative(ROOT, path.join(outDir, second)));
