@@ -32,5 +32,10 @@
   { "steam_appid": "3932330", "name": "Zanerdin: The Unbound" },
   { "steam_appid": "5088660", "name": "던전 광부" },
   { "steam_appid": "2264780", "name": "Legion of Judgment: Fallen Angel" },
-  { "steam_appid": "4821050", "name": "Kimbap Factory" }
+  { "steam_appid": "4821050", "name": "Kimbap Factory" },
+  { "steam_appid": "2121510", "name": "Tenebris Somnia" },
+  { "steam_appid": "4625350", "name": "Pipe it: Sketchy Plumber Simulator" },
+  { "steam_appid": "2888960", "name": "Graytail" },
+  { "steam_appid": "3965430", "name": "The Mailroom" },
+  { "steam_appid": "4840700", "name": "The Boo Club" }
 ]
