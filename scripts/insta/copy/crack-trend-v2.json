@@ -2,7 +2,7 @@
  "_doc": "reel-clips.mjs(개발사 원본 클립 릴스). cuts[].parts: clip(파일명 앞부분)·a~b(원본 초)·x0→x1(가로 크롭 위치 0~1, 컷 안에서 선형 이동). text: 자막([ ]=민트, /=줄바꿈). card: 정보 카드가 뜨는 컷 번호(1부터)와 머무는 초",
  "appid": "4312190",
  "maxPlayers": 4,
- "card": { "cut": 7, "delay": 0.1, "sec": 2.5 },
+ "card": { "cut": 6, "delay": 0.1, "sec": 2.5 },
  "cuts": [
   { "text": "출근했더니 / 거대한 [알]이 떨어짐", "parts": [{ "clip": "1. Hook - The Very First", "a": 4.9, "b": 7.9, "x0": 0.5, "x1": 0.5 }] },
   { "text": "우리 일은 딱 하나 / [이거 깨기]", "parts": [{ "clip": "13. Cracking With Robots", "a": 1.0, "b": 4.0, "x0": 0.35, "x1": 0.35 }] },
