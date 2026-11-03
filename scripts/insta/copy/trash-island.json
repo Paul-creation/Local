@@ -1,0 +1,230 @@
+{
+ "_doc": "Trash Island 릴스(--reel-trend). 출시 예정 게임이라 정보 카드는 출시일·가격 없이 '출시 예정' + 인원·한국어만. cardFrom: 이 어절부터 정보 카드 장면.",
+ "appid": "5107900",
+ "movie": "Gameplay Trailer",
+ "maxPlayers": 4,
+ "duckDb": -20,
+ "stillChunk": "분쇄기에",
+ "narration": {
+  "voiceId": "uyVNoMrnUku1dZyVEXwD",
+  "cacheName": "narration-v1",
+  "voiceSettings": {
+   "stability": 0.55,
+   "similarity_boost": 0.8,
+   "style": 0,
+   "speed": 1.2
+  },
+  "text": "이 게임엔 쓰레기라는 게 없어요. 아직 안 갈아 넣은 재료만 있을 뿐이죠. 쓰레기로 뒤덮인 섬에 떠밀려 오면, 일단 전부 분쇄기에 넣어요. 플라스틱, 고철, 나무판자. 반대편으로 재료가 돼서 나와요. 그걸로 집을 짓고, 배를 만들고, 바다로 나가서 떠다니는 쓰레기를 쫓아다녀요. 가끔 헬기가 지나가면서 좋은 걸 떨어뜨려 주거든요. 근데 이 쓰레기를 다 치우면, 그 밑에 진짜 섬이 있어요. 이름은 트래시 아일랜드입니다. 지금 바로 친구들이랑 해보세요!"
+ },
+ "chunks": [
+  "이 게임엔",
+  "[쓰레기라는]",
+  "[게 없어요]",
+  "아직 안",
+  "갈아 넣은",
+  "재료만",
+  "있을 뿐이죠",
+  "쓰레기로",
+  "뒤덮인 섬에",
+  "떠밀려 오면",
+  "일단 전부",
+  "[분쇄기에]",
+  "넣어요",
+  "플라스틱",
+  "고철",
+  "나무판자",
+  "반대편으로",
+  "[재료가]",
+  "돼서 나와요",
+  "그걸로",
+  "집을 짓고",
+  "배를 만들고",
+  "바다로 나가서",
+  "떠다니는",
+  "쓰레기를",
+  "쫓아다녀요",
+  "가끔",
+  "[헬기가]",
+  "지나가면서",
+  "좋은 걸",
+  "떨어뜨려 주거든요",
+  "근데",
+  "이 쓰레기를",
+  "다 치우면",
+  "그 밑에",
+  "[진짜 섬이]",
+  "있어요",
+  "이름은",
+  "[트래시 아일랜드]",
+  "입니다",
+  "지금 바로",
+  "친구들이랑",
+  "해보세요"
+ ],
+ "cuts": [
+  {
+   "t": 0,
+   "movie": "Gameplay Trailer",
+   "src": [
+    48,
+    51
+   ]
+  },
+  {
+   "at": "아직 안",
+   "movie": "Gameplay Trailer",
+   "src": [
+    16,
+    19
+   ]
+  },
+  {
+   "at": "쓰레기로",
+   "movie": "Gameplay Trailer",
+   "src": [
+    5.5,
+    8.5
+   ]
+  },
+  {
+   "at": "떠밀려 오면",
+   "movie": "Gameplay Trailer",
+   "src": [
+    11.5,
+    14.5
+   ]
+  },
+  {
+   "at": "일단 전부",
+   "movie": "Gameplay Trailer",
+   "src": [
+    19,
+    21.5
+   ]
+  },
+  {
+   "at": "분쇄기에",
+   "movie": "Gameplay Trailer",
+   "src": [
+    22,
+    25
+   ]
+  },
+  {
+   "at": "플라스틱",
+   "movie": "Gameplay Trailer",
+   "src": [
+    20,
+    21.2
+   ]
+  },
+  {
+   "at": "고철",
+   "movie": "Gameplay Trailer",
+   "src": [
+    27,
+    28.2
+   ]
+  },
+  {
+   "at": "나무판자",
+   "movie": "Gameplay Trailer",
+   "src": [
+    32,
+    33.2
+   ]
+  },
+  {
+   "at": "반대편으로",
+   "movie": "Gameplay Trailer",
+   "src": [
+    29,
+    31.5
+   ]
+  },
+  {
+   "at": "그걸로",
+   "movie": "Gameplay Trailer",
+   "src": [
+    32.5,
+    34
+   ]
+  },
+  {
+   "at": "집을 짓고",
+   "movie": "Gameplay Trailer",
+   "src": [
+    34,
+    36.5
+   ]
+  },
+  {
+   "at": "배를 만들고",
+   "movie": "Gameplay Trailer",
+   "src": [
+    74,
+    75.6
+   ]
+  },
+  {
+   "at": "바다로 나가서",
+   "movie": "Gameplay Trailer",
+   "src": [
+    75.6,
+    77.4
+   ]
+  },
+  {
+   "at": "떠다니는",
+   "movie": "Gameplay Trailer",
+   "src": [
+    76,
+    78.5
+   ]
+  },
+  {
+   "at": "가끔",
+   "movie": "Gameplay Trailer",
+   "src": [
+    44,
+    47.3
+   ]
+  },
+  {
+   "at": "좋은 걸",
+   "movie": "Gameplay Trailer",
+   "src": [
+    48.5,
+    51
+   ]
+  },
+  {
+   "at": "근데",
+   "movie": "Gameplay Trailer",
+   "src": [
+    51,
+    53
+   ]
+  },
+  {
+   "at": "그 밑에",
+   "movie": "Gameplay Trailer",
+   "src": [
+    55,
+    57
+   ]
+  },
+  {
+   "at": "이름은",
+   "movie": "Gameplay Trailer",
+   "src": [
+    74,
+    77
+   ]
+  }
+ ],
+ "gapDb": -8,
+ "gapMin": 0.3,
+ "cardFrom": "이름은",
+ "cardTitle": "Trash Island"
+}
