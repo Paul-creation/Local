@@ -16,6 +16,7 @@ import { execFileSync, spawnSync } from 'child_process';
 import { chromium } from 'playwright';
 import { RS, ff, buildAudio, trailerAudioFromDb, steamMovie } from './reel-single.mjs';
 import { trailerFromDb } from './reel.mjs';
+import { getNarrationBySentence } from './narration-sentences.mjs';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DIR, '../..');
@@ -25,7 +26,7 @@ const OUTRO_GAME_TAIL = 0.3, OUTRO_PAD = 0.6, OUTRO_SEC_NO_VOICE = 1.6; // 엔�
 const SUB_X = 540, SUB_Y = 1000; // 자막 가운데(고정)
 const FG_Y = 285, FG_W = 1080, FG_H = 1350; // 영상은 원본 높이 기준 4:5로 가운데 크롭(컷마다 cut.x 0~1로 가로 위치 조정, 기본 0.5)해 y 285~1635에 두고, 위아래는 같은 영상을 크게 블러·어둡게 깐다
 const FG_X = 0;
-const CARD_Y = 900; // 카드 가운데 y
+const CARD_CX = 540, CARD_Y = 960; // 정보 카드는 항상 화면 정중앙(오른쪽 140px 여백 규칙은 카드에 적용하지 않는다) // 카드 가운데 y
 const SUB_Y_CARD = 430; // 카드가 떠 있는 동안 자막 y(카드 위)
 const SAFE_BOTTOM = RS.h * 0.75; // 1440
 const POP = 0.08, POP_FROM = 0.85, CARD_IN = 0.2, CARD_SLIDE = 640;
@@ -76,8 +77,8 @@ const subHtml = (font, text) => `<!doctype html><meta charset="utf-8"><style>${b
 
 // 정보 카드: 둥근 검은 카드 + 민트 포인트. 대표 이미지(스팀 header) · 이름 · 정보 2줄 · 아래 작게 jamidunow.com
 const cardHtml = (font, f, title, imgB64) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
-.card { position: absolute; left: ${CX - 380}px; width: 760px; top: ${CARD_Y}px; transform: translateY(-50%); padding: 28px 28px 24px; border-radius: 44px; background: rgba(10,10,10,.95); border: 3px solid ${MINT}; text-align: center; color: #fff; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
-.card img { display: block; width: 100%; border-radius: 26px; }
+.card { position: absolute; left: ${CARD_CX - 380}px; width: 760px; top: ${CARD_Y}px; transform: translateY(-50%); padding: 28px 28px 24px; border-radius: 44px; background: rgba(10,10,10,.95); border: 3px solid ${MINT}; text-align: center; color: #fff; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
+.card img { display: block; width: auto; max-width: 100%; margin: 0 auto; border-radius: 26px; } /* 원본보다 크게 늘리지 않는다(원본이 넓으면 카드 폭에 맞춰 줄임) */
 .t { margin-top: 24px; font-size: 92px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.05; }
 .i { margin-top: 14px; font-size: 40px; font-weight: 700; line-height: 1.45; font-variant-numeric: tabular-nums; }
 .i em { font-style: normal; color: ${MINT}; }
@@ -87,10 +88,11 @@ const cardHtml = (font, f, title, imgB64) => `<!doctype html><meta charset="utf-
 
 // ── ElevenLabs 내레이션 ──
 const DEFAULT_VOICE = 'uyVNoMrnUku1dZyVEXwD';
-const DEFAULT_VOICE_SETTINGS = { stability: 0.4, similarity_boost: 0.8, style: 0.15, speed: 1.2 };
+const DEFAULT_VOICE_SETTINGS = { stability: 0.55, similarity_boost: 0.8, style: 0, speed: 1.2 }; // 문장 끝이 올라가는 걸 줄이려고 안정성을 올리고 스타일은 0
 // 내레이션 mp3·글자별 타이밍은 out/<post-id>/narration.mp3·json에 캐시(대본·목소리가 같으면 API를 다시 부르지 않는다)
 export async function getNarration(outDir, cfg) {
   cfg = { voiceId: DEFAULT_VOICE, ...cfg, voiceSettings: { ...DEFAULT_VOICE_SETTINGS, ...cfg.voiceSettings } }; // 기본 목소리·설정(속도 1.2 = ElevenLabs 최대값). copy에서 적은 값이 우선
+  if (cfg.perSentence !== false) return getNarrationBySentence(outDir, cfg); // 기본: 문장 단위 생성 + 끝 억양 검사(narration-sentences.mjs). copy.narration.perSentence:false면 대본 통째로 한 번에
   const name = cfg.cacheName ?? 'narration'; // narration-v2 → out/<post-id>/narration-v2.mp3·json
   const mp3 = path.join(outDir, `${name}.mp3`), js = path.join(outDir, `${name}.json`);
   const key = crypto.createHash('sha1').update(`${cfg.voiceId}|eleven_multilingual_v2|${cfg.text}|${JSON.stringify(cfg.voiceSettings ?? null)}`).digest('hex');
@@ -117,6 +119,28 @@ export async function getNarration(outDir, cfg) {
   return { mp3, ...c };
 }
 
+
+// 카드 이미지: 스팀 스토어 API(IStoreBrowseService)의 고해상도 에셋을 우선 쓴다 — header_2x(920×430, 헤더와 같은 비율) → main_capsule_2x(1232×706) → header → main_capsule → library_capsule. 없으면 appdetails header_image
+async function fetchCardImage(appid, headerUrl) {
+  const get = async (u) => { try { const r = await fetch(u); return r.ok ? Buffer.from(await r.arrayBuffer()) : null; } catch { return null; } };
+  let names = [];
+  try {
+    const j = await (await fetch(`https://api.steampowered.com/IStoreBrowseService/GetItems/v1?input_json=${encodeURIComponent(JSON.stringify({ ids: [{ appid: Number(appid) }], context: { language: 'koreana', country_code: 'KR' }, data_request: { include_assets: true } }))}`)).json();
+    const a = j.response?.store_items?.[0]?.assets;
+    if (a) names = ['header_2x', 'main_capsule_2x', 'header', 'main_capsule', 'library_capsule'].filter((k) => a[k]).map((k) => ({ k, url: `https://shared.akamai.steamstatic.com/store_item_assets/${a.asset_url_format.replace('${FILENAME}', a[k])}` }));
+  } catch { /* API 실패하면 header_image로 */ }
+  names.push({ k: 'header_image(appdetails)', url: headerUrl });
+  for (const n of names) {
+    const buf = await get(n.url);
+    if (!buf) continue;
+    const tmp = path.join(DIR, 'cache', `cardimg-${appid}.bin`);
+    fs.writeFileSync(tmp, buf);
+    const [w, h] = execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'stream=width,height', '-of', 'csv=p=0:s=x', tmp]).toString().trim().split('x').map(Number);
+    console.log(`  카드 이미지: ${n.k} ${w}×${h}`);
+    return { b64: buf.toString('base64'), w, h, name: n.k };
+  }
+  throw new Error('--reel-trend: 카드 이미지를 못 받았어요');
+}
 
 // ── 무음 압축 + 속도(--reel-trend 기본 후처리) ──
 // with-timestamps의 글자 타이밍으로 어절 사이 무음을 찾아 줄인다: 문장 안 0.18초 초과 → 0.08초, 문장 사이 0.3초 초과 → 0.18초, 마지막 문장은 어절 사이를 0.06초까지(한 호흡). 그다음 atempo 1.06배.
@@ -299,7 +323,7 @@ async function composeOutro({ font, lastPng, out, CACHE, postId, outro }) {
     g.push(`[o${i + 1}][t${i}]overlay=x=${it.x}:y=${it.y}:format=auto[o${i + 2}]`);
   });
   g.push(`[o${texts.length + 1}]format=yuv420p[o]`);
-  ff([...loop(bg), ...loop(lg.file), ...texts.flatMap((t) => loop(t.file)), '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', outro.sec.toFixed(3), '-r', String(fps), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p', out]);
+  ff([...loop(bg), ...loop(lg.file), ...texts.flatMap((t) => loop(t.file)), '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', outro.sec.toFixed(3), '-r', String(fps), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '10', '-pix_fmt', 'yuv420p', out]);
 }
 
 // 카드 장면: 직전 컷의 마지막 장면을 블러(40px) + 40% 어둡게 한 정지 배경 위에, 정보 카드가 하드컷으로 나타난다(0.06초 동안 96%→100% 스냅). 오버레이를 같은 구성으로 얹는다
@@ -309,7 +333,7 @@ function composeCardScene({ lastPng, clip, sec, out, CACHE, postId }) {
   ff(['-i', lastPng, '-vf', `scale=${w / 4}:${h / 4},gblur=sigma=10,scale=${w}:${h},colorchannelmixer=rr=0.6:gg=0.6:bb=0.6`, '-frames:v', '1', bg]);
   const P = '(0.96+0.04*min(1,t/0.06))';
   const g = `[1:v]format=rgba,scale=w='trunc(iw*${P}/2)*2':h='trunc(ih*${P}/2)*2':eval=frame[c];[0:v][c]overlay=x='${clip.cx}-w/2':y='${clip.cy}-h/2':format=auto,format=yuv420p[o]`;
-  ff(['-loop', '1', '-framerate', String(fps), '-t', sec.toFixed(3), '-i', bg, '-loop', '1', '-framerate', String(fps), '-t', sec.toFixed(3), '-i', clip.file, '-filter_complex', g, '-map', '[o]', '-an', '-t', sec.toFixed(3), '-r', String(fps), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p', out]);
+  ff(['-loop', '1', '-framerate', String(fps), '-t', sec.toFixed(3), '-i', bg, '-loop', '1', '-framerate', String(fps), '-t', sec.toFixed(3), '-i', clip.file, '-filter_complex', g, '-map', '[o]', '-an', '-t', sec.toFixed(3), '-r', String(fps), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '10', '-pix_fmt', 'yuv420p', out]);
 }
 
 export async function runReelTrend(postId, { refresh = false } = {}) {
@@ -369,7 +393,7 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   console.log('  컷:', segs.map((s) => `${s.t.toFixed(2)}(${s.dur.toFixed(2)})`).join(' '), `· 마지막 알 ${nar.duration.toFixed(2)}`);
   console.log('  자막:', chunks.map((c) => `${c.text} ${c.start.toFixed(2)}~${c.to.toFixed(2)}`).join(' | '));
   const font = fs.readFileSync(path.join(ROOT, 'node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2')).toString('base64');
-  const imgB64 = hasCard || cardScene ? Buffer.from(await (await fetch(facts.header)).arrayBuffer()).toString('base64') : '';
+  const imgB64 = hasCard || cardScene ? (await fetchCardImage(copy.appid, facts.header)).b64 : '';
 
   // 오버레이 PNG: 로고(전체 화면) · 자막 덩어리별(글자 영역만 잘라냄, 가운데 좌표 기억) · 카드(전체 화면)
   const subs = [];
@@ -399,7 +423,7 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
     console.log(`  카드 정보 줄 ${fit.sz}px${fit.ok ? '' : ' (넘침)'}`);
     const cr = await page.evaluate(() => { const b = document.getElementById('c').getBoundingClientRect(); return [Math.round(b.left), Math.round(b.top), Math.round(b.right), Math.round(b.bottom)]; });
     console.log(`  카드 영역 ${JSON.stringify(cr)}`);
-    if (cr[2] > RS.w - RS.rightGap || cr[3] > SAFE_BOTTOM) throw new Error('--reel-trend: 정보 카드가 안전 영역을 넘어요');
+    if (cr[0] < 0 || cr[2] > RS.w || cr[3] > SAFE_BOTTOM) throw new Error('--reel-trend: 정보 카드가 화면(아래 25% 제외)을 넘어요'); // 가운데 고정이라 오른쪽 여백 규칙은 안 쓴다
     if (hasCard) await page.screenshot({ path: cardPng, clip: full, omitBackground: true });
     if (cardScene) { // 카드 장면용: 카드만 잘라냄(그림자 여유 60px), 가운데 좌표 기억
       const P = 60;
@@ -434,7 +458,7 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   else g.push(`[v${last}][${kc}:v]overlay=x=0:y='if(lt(t-${T(c0)},${CARD_IN}),${CARD_SLIDE}*pow(1-(t-${T(c0)})/${CARD_IN},2),0)':eof_action=pass:enable='between(t,${T(c0)},${T(c1)})':format=auto,format=yuv420p[o]`);
   const silent = path.join(CACHE, `trend-${postId}-silent.mp4`), lastPng = path.join(CACHE, `trend-${postId}-last.png`);
   if (process.env.REEL_DEBUG) fs.writeFileSync(path.join(CACHE, `trend-${postId}-graph.txt`), JSON.stringify({ args: [...vin, ...oin], graph: g.join(';') }));
-  ff(['-filter_threads', '1', ...vin, ...oin, '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', T(vidDur), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p', silent]);
+  ff(['-filter_threads', '1', ...vin, ...oin, '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', T(vidDur), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '10', '-pix_fmt', 'yuv420p', silent]); // 중간 파일은 거의 무손실(crf 10) — 마지막에 한 번만 crf 18로 인코딩
   { // 엔딩 샷 배경: 마지막 컷의 장면 1장을 본편과 같은 4:5 + 블러 구성으로(로고·자막 없이)
     const li = parts.length - 1, [la, lb] = parts[li];
     ff(['-ss', T(lb - 0.05), '-i', trailers[partMovies[li]], '-frames:v', '1', '-filter_complex', `[0:v]split[a][b];[a]crop=ih*4/5:ih:(iw-ih*4/5)*${xs[li]}:0,scale=${FG_W}:${FG_H}[f];[b]scale=-2:480,crop=270:480,gblur=sigma=10,scale=${w}:${h},colorchannelmixer=rr=0.65:gg=0.65:bb=0.65[g];[g][f]overlay=x=${FG_X}:y=${FG_Y}:format=auto[o]`, '-map', '[o]', lastPng]);
@@ -464,7 +488,8 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
     ff(['-f', 'concat', '-safe', '0', '-i', list, '-c', 'copy', silentAll]);
   }
   const mp4 = path.join(outDir, 'reel.mp4');
-  ff(['-i', silentAll, '-i', m4a, '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'copy', '-movflags', '+faststart', '-shortest', mp4]);
+  // 최종 인코딩: H.264 CRF 18 · preset medium · 1080×1920 · 30fps · 오디오 AAC 192k(믹스 단계에서 이미 AAC 192k라 그대로 담는다)
+  ff(['-i', silentAll, '-i', m4a, '-map', '0:v', '-map', '1:a', '-vf', `scale=${w}:${h},fps=${fps}`, '-c:v', 'libx264', '-preset', 'medium', '-crf', '18', '-pix_fmt', 'yuv420p', '-c:a', 'copy', '-movflags', '+faststart', '-shortest', mp4]);
 
   // 정지 이미지: 자막 장면 1장(곡괭이 비트, 팝이 끝난 뒤), 정보 카드 1장(다 올라온 뒤)
   const pick = chunks.find((c) => chunkPlain(c.text).includes(chunkPlain(copy.stillChunk ?? '곡괭이'))) ?? chunks[Math.floor(chunks.length / 2)];
