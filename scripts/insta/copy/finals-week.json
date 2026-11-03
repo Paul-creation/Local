@@ -1,17 +1,10 @@
 {
- "_doc": "Finals Week 릴스(--reel-trend). card 없음, 컷마다 movie와 x(4:5 가로 크롭 위치 0~1, 기본 0.5), 게임 소리: 말하는 동안 duckDb -20(≈-34 LUFS), 말 사이 gapMin초 넘는 빈틈은 gapDb -8(≈-22 LUFS), endClip은 {movie, src}",
+ "_doc": "Finals Week 릴스(--reel-trend). card 없음, 공통 엔딩 샷(기본), 컷마다 movie와 x(4:5 가로 크롭 위치 0~1, 기본 0.5), 게임 소리: 말하는 동안 duckDb -20(≈-34 LUFS), 말 사이 gapMin초 넘는 빈틈은 gapDb -8(≈-22 LUFS)",
  "appid": "4715160",
  "movie": "Launch Trailer",
  "maxPlayers": 4,
  "duckDb": -20,
  "stillChunk": "컨닝으로",
- "endClip": {
-  "movie": "Launch Trailer",
-  "src": [
-   96,
-   97
-  ]
- },
  "narration": {
   "voiceId": "uyVNoMrnUku1dZyVEXwD",
   "cacheName": "narration-v2",
@@ -21,7 +14,7 @@
    "style": 0.15,
    "speed": 1
   },
-  "text": "이 게임은 시험을 공부가 아니라 컨닝으로 통과하는 게임이에요. 시험 시간엔 선생님이 교실을 계속 돌아다니는데요, 책을 몰래 펴거나 친구랑 속닥거리다 걸리면 지우개가 그대로 날아옵니다. 그래서 다들 머리를 엄청 써요. 무전기로 답을 불러주기도 하고, 쪽지를 몰래 넘기기도 하고, 아예 반에서 제일 공부 잘하는 애를 기절시키고 답을 베끼기도 해요. 근데 이게 나만 붙으면 끝나는 게 아니라, 친구들이랑 다 같이 붙어야 하거든요. 최대 네 명이서 공부는 하나도 안 하고 컨닝으로만 졸업하는 게임, 이름은 파이널스 위크입니다."
+  "text": "이 게임은 시험을 공부가 아니라 컨닝으로 통과하는 게임이에요. 시험 시간엔 선생님이 교실을 계속 돌아다니는데요, 책을 몰래 펴거나 친구랑 속닥거리다 걸리면 지우개가 그대로 날아옵니다. 그래서 다들 머리를 엄청 써요. 무전기로 답을 불러주기도 하고, 쪽지를 몰래 넘기기도 하고, 아예 반에서 제일 공부 잘하는 애를 기절시키고 답을 베끼기도 해요. 근데 이게 나만 붙으면 끝나는 게 아니라, 친구들이랑 다 같이 붙어야 하거든요. 최대 네 명이서 공부는 하나도 안 하고 컨닝으로만 졸업하는 게임, 이름은 파이널스 위크입니다. 지금 바로 친구들이랑 해보세요!"
  },
  "chunks": [
   "이",
@@ -93,7 +86,11 @@
   "게임",
   "이름은",
   "파이널스 위크",
-  "입니다"
+  "입니다",
+  "지금",
+  "바로",
+  "친구들이랑",
+  "해보세요!"
  ],
  "cuts": [
   {
@@ -101,93 +98,93 @@
    "movie": "Release Date Announcement Trailer",
    "src": [
     8,
-    9.96
+    10.032
    ],
    "x": 0.55
   },
   {
-   "t": 1.96,
+   "t": 2.03,
    "movie": "Release Date Announcement Trailer",
    "src": [
     24,
-    26.44
+    26.426
    ]
   },
   {
-   "t": 4.4,
+   "t": 4.46,
    "movie": "Launch Trailer",
    "src": [
     0,
-    0.8
+    0.801
    ]
   },
   {
-   "t": 5.2,
+   "t": 5.26,
    "movie": "Release Date Announcement Trailer",
    "src": [
     17,
-    19.78
+    19.903
    ]
   },
   {
-   "t": 7.98,
+   "t": 8.16,
    "movie": "Release Date Announcement Trailer",
    "src": [
     14.4,
-    15.94
+    16.014
    ]
   },
   {
-   "t": 9.52,
+   "t": 9.78,
    "movie": "Launch Trailer",
    "src": [
     58.5,
-    60.45
+    60.508
    ]
   },
   {
-   "t": 11.47,
+   "t": 11.78,
    "movie": "Launch Trailer",
    "src": [
     9.4,
-    11.96
+    12.106
    ]
   },
   {
-   "t": 14.03,
+   "t": 14.49,
    "movie": "Launch Trailer",
    "src": [
     41.5,
-    44.01
+    44.309
    ]
   },
   {
-   "t": 16.54,
+   "t": 17.3,
    "movie": "Launch Trailer",
    "src": [
     52.2,
-    54.61
+    54.569
    ],
    "x": 0.95
   },
   {
-   "t": 18.95,
+   "t": 19.67,
    "movie": "Launch Trailer",
    "src": [
     34.5,
-    36.85
+    36.891
    ]
   },
   {
-   "t": 21.3,
+   "t": 22.06,
    "movie": "Release Date Announcement Trailer",
    "src": [
     21.4,
-    23.9
+    23.943
    ]
   },
   {
-   "t": 23.8,
+   "t": 24.6,
    "movie": "Launch Trailer",
    "src": [
     47,
@@ -196,51 +193,51 @@
    "x": 0.65
   },
   {
-   "t": 25.1,
+   "t": 25.9,
    "movie": "Launch Trailer",
    "src": [
     29.9,
-    31.6
+    31.618
    ]
   },
   {
-   "t": 26.8,
+   "t": 27.62,
    "movie": "Launch Trailer",
    "src": [
     70.9,
-    73.89
+    74.348
    ]
   },
   {
-   "t": 29.79,
+   "t": 31.07,
    "movie": "Launch Trailer",
    "src": [
     75.9,
-    79.02
+    79.058
    ]
   },
   {
-   "t": 32.91,
+   "t": 34.23,
    "movie": "Launch Trailer",
    "src": [
     80.2,
-    82.82
+    82.882
    ]
   },
   {
-   "t": 35.53,
+   "t": 36.91,
    "movie": "Release Date Announcement Trailer",
    "src": [
     66,
-    68.07
+    68.154
    ]
   },
   {
-   "t": 37.6,
+   "t": 39.06,
    "movie": "Launch Trailer",
    "src": [
-    94.2,
-    96.019
+    94,
+    99.32
    ]
   }
  ],
