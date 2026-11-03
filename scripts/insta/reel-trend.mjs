@@ -21,7 +21,7 @@ const DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DIR, '../..');
 const MINT = '#5CF2B0';
 const CX = (RS.w - RS.rightGap) / 2; // 자막·카드 가운데 x = 470
-const OUTRO_GAME_TAIL = 0.3, OUTRO_PAD = 0.6; // 엔딩 길이 = 시그니처 음성 길이 + 0.6초, 게임 소리는 엔딩 진입 0.3초 안에 사라진다
+const OUTRO_GAME_TAIL = 0.3, OUTRO_PAD = 0.6, OUTRO_SEC_NO_VOICE = 1.6; // 엔딩 길이 = 시그니처 음성 길이 + 0.6초, 게임 소리는 엔딩 진입 0.3초 안에 사라진다
 const SUB_X = 540, SUB_Y = 1000; // 자막 가운데(고정)
 const FG_Y = 285, FG_W = 1080, FG_H = 1350; // 영상은 원본 높이 기준 4:5로 가운데 크롭(컷마다 cut.x 0~1로 가로 위치 조정, 기본 0.5)해 y 285~1635에 두고, 위아래는 같은 영상을 크게 블러·어둡게 깐다
 const FG_X = 0;
@@ -120,16 +120,19 @@ export async function getNarration(outDir, cfg) {
 // ── 무음 압축 + 속도(--reel-trend 기본 후처리) ──
 // with-timestamps의 글자 타이밍으로 어절 사이 무음을 찾아 줄인다: 문장 안 0.18초 초과 → 0.08초, 문장 사이 0.3초 초과 → 0.18초, 마지막 문장은 어절 사이를 0.06초까지(한 호흡). 그다음 atempo 1.06배.
 // 자르는 곳은 10ms 크로스페이드. 줄인 만큼·빨라진 만큼 글자 타이밍을 당겨 새 mp3(wav)·타이밍을 돌려준다. 끄려면 copy.narration.tighten=false, 값은 copy.narration.silence로 바꾼다
-const SILENCE = { word: 0.18, wordTo: 0.08, sentence: 0.3, sentenceTo: 0.18, lastGap: 0.06, atempo: 1.06 }; // atempo: 무음을 줄인 뒤 전체 내레이션을 음높이 유지로 이만큼 빠르게
+const SILENCE = { word: 0.18, wordTo: 0.08, sentence: 0.3, sentenceTo: 0.18, lastGap: 0.06, atempo: 1.06, margin: 0.05, xfade: 0.02, weakHalf: true }; // atempo: 무음을 줄인 뒤 전체 내레이션을 음높이 유지로 이만큼 빠르게. margin: 자른 곳 앞뒤로 각각 무조건 남기는 시간(그래서 어절 사이는 아무리 줄여도 2×margin=0.1초 아래로 안 간다). xfade: 크로스페이드. weakHalf: 약한 자음(ㅎㅅㅆㅊㅋㅌㅍ)으로 시작하는 글자 앞은 줄이는 양을 절반만
+// 한글 초성이 ㅅ ㅆ ㅊ ㅋ ㅌ ㅍ ㅎ(약하게 시작해서 타이밍이 늦게 찍히기 쉬운 소리)인가
+const WEAK_INITIALS = new Set([9, 10, 14, 15, 16, 17, 18]);
+const isWeakStart = (ch) => { const c = (ch ?? '').charCodeAt(0) - 0xAC00; return c >= 0 && c < 11172 && WEAK_INITIALS.has(Math.floor(c / 588)); };
 export function silenceSpans(nar, cfg = {}) {
   const o = { ...SILENCE, ...cfg };
   const tokens = [];
   let cur = null;
   nar.chars.forEach((c, i) => {
     if (/\s/.test(c)) { cur = null; return; }
-    if (!cur) { cur = { text: '', a: null, b: null }; tokens.push(cur); }
+    if (!cur) { cur = { text: '', a: null, b: null, first: '' }; tokens.push(cur); }
     cur.text += c;
-    if (!/[.,!?~…]/.test(c)) { cur.a ??= nar.starts[i]; cur.b = nar.ends[i]; } // 구두점은 무음을 같이 먹어서 시작·끝 계산에서 뺀다
+    if (!/[.,!?~…]/.test(c)) { if (cur.a === null) cur.first = c; cur.a ??= nar.starts[i]; cur.b = nar.ends[i]; } // 구두점은 무음을 같이 먹어서 시작·끝 계산에서 뺀다
   });
   const words = tokens.filter((t) => t.a !== null);
   let sent = 0;
@@ -142,7 +145,12 @@ export function silenceSpans(nar, cfg = {}) {
     if (/[.!?…]$/.test(w.text)) { if (gap > o.sentence) to = o.sentenceTo; }
     else if (w.sent === last && o.lastGap != null) { if (gap > o.lastGap) to = o.lastGap; }
     else if (gap > o.word) to = o.wordTo;
-    if (to !== null) spans.push({ a: w.b + to / 2, b: words[k + 1].a - to / 2 });
+    if (to === null) continue;
+    let cut = gap - to; // 줄일 양
+    if (o.weakHalf && isWeakStart(words[k + 1].first)) cut *= 0.5; // 다음 글자가 ㅎㅅㅆㅊㅋㅌㅍ으로 시작하면 절반만
+    cut = Math.min(cut, gap - 2 * o.margin); // 앞뒤로 margin씩은 무조건 남긴다
+    if (cut < 0.03) continue; // 줄어드는 게 너무 적으면 안 자른다
+    spans.push({ a: w.b + (gap - cut) / 2, b: words[k + 1].a - (gap - cut) / 2 });
   }
   return spans;
 }
@@ -154,7 +162,7 @@ export function tightenNarration(outDir, nar, cfgName, cfg = {}) {
   const remap = (t) => (t - spans.reduce((s, p) => s + Math.max(0, Math.min(t, p.b) - p.a), 0)) / tempo;
   const base = (duration) => ({ mp3: wav, key, text: nar.text, chars: nar.chars, starts: nar.starts.map(remap), ends: nar.ends.map(remap), duration });
   if (fs.existsSync(wav) && fs.existsSync(js) && JSON.parse(fs.readFileSync(js, 'utf8')).key === key) { const d = JSON.parse(fs.readFileSync(js, 'utf8')); console.log(`  무음 압축: 캐시 사용(${spans.length}곳, ${d.removed.toFixed(2)}초 줄임)`); return { ...base(d.duration), removed: d.removed }; }
-  const X = 0.01; // 크로스페이드 10ms: 조각 끝에 10ms를 더 떠서, 겹친 만큼을 보충한다
+  const X = { ...SILENCE, ...cfg }.xfade; // 크로스페이드(기본 20ms): 조각 끝에 X를 더 떠서, 겹친 만큼을 보충한다
   const edges = [0, ...spans.flatMap((p) => [p.a, p.b]), nar.duration];
   const pieces = [];
   for (let i = 0; i < edges.length; i += 2) pieces.push([edges[i], edges[i + 1]]);
@@ -205,13 +213,13 @@ export function cutTimeline(cuts, endClip, narDur) {
 // ── 엔딩 샷 자산(assets/brand 우선, 없으면 public/brand) ──
 const BRAND_DIRS = [path.join(DIR, 'assets/brand'), path.join(ROOT, 'public/brand')];
 const brandFile = (n) => BRAND_DIRS.map((d) => path.join(d, n)).find((p) => fs.existsSync(p)) ?? null;
-// 시그니처 음성: outro-voice.mp3(고른 테이크)가 있으면 그것, 없으면 take1. "재미두나우" 시작 시각은 같은 이름의 .json 글자 타이밍에서, 없으면 마지막 쉼 뒤로 잡는다
+// 엔딩 음성: 기본은 없음(엔딩 1.6초 고정, 로고 팝 → 0.1초 간격 페이드인). assets/brand/outro-voice.mp3가 있으면 자동으로 쓴다(엔딩 = 음성 길이 + 0.6초, 이름은 "재미두나우" 순간에 등장). 그 시각은 같은 이름의 .json 글자 타이밍에서, 없으면 마지막 쉼 뒤로 잡는다. 테이크 후보(outro-voice-take*.mp3)는 자동으로 쓰지 않는다
 function loadOutro() {
-  const voice = brandFile('outro-voice.mp3') ?? brandFile('outro-voice-take1.mp3');
+  const voice = brandFile('outro-voice.mp3');
   const pop = brandFile('sfx-pop.mp3'), whoosh = brandFile('sfx-whoosh.mp3');
   if (!pop) console.warn('  경고: assets/brand/sfx-pop.mp3가 없어 로고 팝 효과음 없이 만들어요');
   if (!whoosh) console.warn('  경고: sfx-whoosh.mp3가 없어 전환 효과음 없이 만들어요');
-  if (!voice) { console.warn('  경고: 시그니처 음성(assets/brand/outro-voice*.mp3)이 없어 엔딩을 무음 2초로 만들어요'); return { voice: null, sec: 2.0, nameAt: 0.15, pop, whoosh }; }
+  if (!voice) return { voice: null, sec: OUTRO_SEC_NO_VOICE, nameAt: 0.15, pop, whoosh }; // 음성 없음: 로고 팝(0~0.15초) 뒤에 이름, 0.1초 간격으로 나머지 줄
   const dur = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', voice]).toString());
   let nameAt = null;
   const js = voice.replace(/\.mp3$/, '.json');
@@ -417,7 +425,7 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   if (OUTRO) {
     const outroMp4 = path.join(CACHE, `trend-${postId}-outro.mp4`);
     await composeOutro({ font, lastPng, out: outroMp4, CACHE, postId, outro });
-    console.log(`  엔딩 ${outro.sec.toFixed(2)}초(시그니처 음성 ${outro.voice ? path.relative(ROOT, outro.voice) : '없음'}, 이름 등장 ${outro.nameAt.toFixed(2)}초)`);
+    console.log(`  엔딩 ${outro.sec.toFixed(2)}초(음성 ${outro.voice ? path.relative(ROOT, outro.voice) : '없음'}, 이름 등장 ${outro.nameAt.toFixed(2)}초)`);
     const list = path.join(CACHE, `trend-${postId}-concat.txt`);
     fs.writeFileSync(list, `file '${silent}'\nfile '${outroMp4}'\n`);
     silentAll = path.join(CACHE, `trend-${postId}-silent-all.mp4`);
