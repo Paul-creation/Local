@@ -48,3 +48,4 @@ data/verification/
 # instagram image generator
 /scripts/insta/cache/
 /scripts/insta/out/
+/scripts/insta/assets/
