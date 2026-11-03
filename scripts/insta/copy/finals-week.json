@@ -1,0 +1,244 @@
+{
+ "_doc": "Finals Week 릴스(--reel-trend). card 없음, 컷마다 movie, duckDb -10(게임 소리 ≈-24 LUFS), endClip은 {movie, src}",
+ "appid": "4715160",
+ "movie": "Launch Trailer",
+ "maxPlayers": 4,
+ "duckDb": -10,
+ "stillChunk": "컨닝으로",
+ "endClip": {
+  "movie": "Launch Trailer",
+  "src": [
+   96,
+   97
+  ]
+ },
+ "narration": {
+  "voiceId": "uyVNoMrnUku1dZyVEXwD",
+  "cacheName": "narration-v2",
+  "voiceSettings": {
+   "stability": 0.45,
+   "similarity_boost": 0.8,
+   "style": 0.15,
+   "speed": 1
+  },
+  "text": "이 게임은 시험을 공부가 아니라 컨닝으로 통과하는 게임이에요. 시험 시간엔 선생님이 교실을 계속 돌아다니는데요, 책을 몰래 펴거나 친구랑 속닥거리다 걸리면 지우개가 그대로 날아옵니다. 그래서 다들 머리를 엄청 써요. 무전기로 답을 불러주기도 하고, 쪽지를 몰래 넘기기도 하고, 아예 반에서 제일 공부 잘하는 애를 기절시키고 답을 베끼기도 해요. 근데 이게 나만 붙으면 끝나는 게 아니라, 친구들이랑 다 같이 붙어야 하거든요. 최대 네 명이서 공부는 하나도 안 하고 컨닝으로만 졸업하는 게임, 이름은 파이널스 위크입니다."
+ },
+ "chunks": [
+  "이",
+  "게임은",
+  "시험을",
+  "공부가",
+  "아니라",
+  "컨닝으로",
+  "통과하는",
+  "게임이에요",
+  "시험",
+  "시간엔",
+  "선생님이",
+  "교실을",
+  "계속",
+  "돌아다니는데요",
+  "책을",
+  "몰래",
+  "펴거나",
+  "친구랑",
+  "속닥거리다",
+  "걸리면",
+  "지우개가",
+  "그대로",
+  "날아옵니다",
+  "그래서",
+  "다들",
+  "머리를",
+  "엄청",
+  "써요",
+  "무전기로",
+  "답을",
+  "불러주기도",
+  "하고",
+  "쪽지를",
+  "몰래",
+  "넘기기도",
+  "하고",
+  "아예",
+  "반에서",
+  "제일",
+  "공부",
+  "잘하는",
+  "애를",
+  "기절시키고",
+  "답을",
+  "베끼기도",
+  "해요",
+  "근데",
+  "이게",
+  "나만",
+  "붙으면",
+  "끝나는",
+  "게",
+  "아니라",
+  "친구들이랑",
+  "다 같이",
+  "붙어야",
+  "하거든요",
+  "최대",
+  "네",
+  "명이서",
+  "공부는",
+  "하나도",
+  "안",
+  "하고",
+  "컨닝으로만",
+  "졸업하는",
+  "게임",
+  "이름은",
+  "파이널스 위크",
+  "입니다"
+ ],
+ "cuts": [
+  {
+   "t": 0,
+   "movie": "Release Date Announcement Trailer",
+   "src": [
+    8,
+    9.96
+   ]
+  },
+  {
+   "t": 1.96,
+   "movie": "Release Date Announcement Trailer",
+   "src": [
+    24,
+    26.44
+   ]
+  },
+  {
+   "t": 4.4,
+   "movie": "Launch Trailer",
+   "src": [
+    0,
+    0.8
+   ]
+  },
+  {
+   "t": 5.2,
+   "movie": "Release Date Announcement Trailer",
+   "src": [
+    17,
+    19.78
+   ]
+  },
+  {
+   "t": 7.98,
+   "movie": "Release Date Announcement Trailer",
+   "src": [
+    14.4,
+    15.94
+   ]
+  },
+  {
+   "t": 9.52,
+   "movie": "Launch Trailer",
+   "src": [
+    58.5,
+    60.45
+   ]
+  },
+  {
+   "t": 11.47,
+   "movie": "Launch Trailer",
+   "src": [
+    9.4,
+    11.96
+   ]
+  },
+  {
+   "t": 14.03,
+   "movie": "Launch Trailer",
+   "src": [
+    41.5,
+    44.01
+   ]
+  },
+  {
+   "t": 16.54,
+   "movie": "Launch Trailer",
+   "src": [
+    52.2,
+    54.61
+   ]
+  },
+  {
+   "t": 18.95,
+   "movie": "Launch Trailer",
+   "src": [
+    34.5,
+    36.85
+   ]
+  },
+  {
+   "t": 21.3,
+   "movie": "Release Date Announcement Trailer",
+   "src": [
+    21.4,
+    23.9
+   ]
+  },
+  {
+   "t": 23.8,
+   "movie": "Launch Trailer",
+   "src": [
+    47,
+    48.3
+   ]
+  },
+  {
+   "t": 25.1,
+   "movie": "Launch Trailer",
+   "src": [
+    29.9,
+    31.6
+   ]
+  },
+  {
+   "t": 26.8,
+   "movie": "Launch Trailer",
+   "src": [
+    70.9,
+    73.89
+   ]
+  },
+  {
+   "t": 29.79,
+   "movie": "Launch Trailer",
+   "src": [
+    75.9,
+    79.02
+   ]
+  },
+  {
+   "t": 32.91,
+   "movie": "Launch Trailer",
+   "src": [
+    80.2,
+    82.82
+   ]
+  },
+  {
+   "t": 35.53,
+   "movie": "Release Date Announcement Trailer",
+   "src": [
+    66,
+    68.07
+   ]
+  },
+  {
+   "t": 37.6,
+   "movie": "Launch Trailer",
+   "src": [
+    94.2,
+    96.019
+   ]
+  }
+ ]
+}

@@ -104,7 +104,7 @@ export function buildAudio({ audio, copy, out }) {
   const parts = [...copy.segments, copy.endClip];
   const n = parts.length;
   const total = parts.reduce((t, [a, b]) => t + b - a, 0);
-  const inputs = parts.flatMap(([a, b], i) => ['-ss', String(a), '-t', String(b - a + (i < n - 1 ? XFADE : 0)), '-i', audio]);
+  const inputs = parts.flatMap(([a, b], i) => ['-ss', String(a), '-t', String(b - a + (i < n - 1 ? XFADE : 0)), '-i', Array.isArray(audio) ? audio[i] : audio]); // audio: 파일 하나, 또는 구간별 파일 배열
   const cut = parts.map((_, i) => `[${i}:a]aresample=48000,aformat=channel_layouts=stereo,asetpts=PTS-STARTPTS[a${i}]`);
   let chain = '[a0]';
   const xf = [];

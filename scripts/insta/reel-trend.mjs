@@ -21,7 +21,8 @@ const DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DIR, '../..');
 const MINT = '#5CF2B0';
 const CX = (RS.w - RS.rightGap) / 2; // 자막·카드 가운데 x = 470
-const SUB_Y = 900; // 자막·카드 가운데 y
+const SUB_X = 540, SUB_Y = 1000; // 자막 가운데(고정)
+const CARD_Y = 900; // 카드 가운데 y
 const SUB_Y_CARD = 430; // 카드가 떠 있는 동안 자막 y(카드 위)
 const SAFE_BOTTOM = RS.h * 0.75; // 1440
 const POP = 0.08, POP_FROM = 0.85, CARD_IN = 0.2, CARD_SLIDE = 640;
@@ -61,15 +62,17 @@ const logoHtml = (font) => `<!doctype html><meta charset="utf-8"><style>${baseCs
 .logo b { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #fff; text-shadow: 0 0 8px rgba(0,0,0,.6); }
 </style><div class="logo"><i>J</i><b>JamiDuNow</b></div>`;
 
-// 자막 한 덩어리: 흰 글씨 100px Extra Bold + 검은 외곽선 8px(바깥쪽, 16px 선 + paint-order). [ ]로 감싼 핵심 단어는 민트
+// 자막 한 덩어리: 흰 글씨 72px Black(900) + 검은 외곽선 5px(바깥쪽, 10px 선 + paint-order). [ ]로 감싼 말, 그리고 KEY_WORDS는 민트
+const KEY_WORDS = ['컨닝으로', '지우개가', '무전기로', '기절시키고', '다 같이', '파이널스 위크'];
+const subMark = (text) => (/\[/.test(text) ? text : KEY_WORDS.includes(text.trim()) ? `[${text.trim()}]` : text);
 const subHtml = (font, text) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
-.sub { position: absolute; left: ${CX}px; top: ${SUB_Y}px; transform: translate(-50%, -50%); white-space: nowrap; font-size: 100px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.2; color: #fff; -webkit-text-stroke: 16px #000; paint-order: stroke fill; stroke-linejoin: round; }
+.sub { position: absolute; left: ${SUB_X}px; top: ${SUB_Y}px; transform: translate(-50%, -50%); white-space: nowrap; font-size: 72px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.2; color: #fff; -webkit-text-stroke: 10px #000; paint-order: stroke fill; stroke-linejoin: round; }
 .sub .k { color: ${MINT}; }
-</style><div class="sub" id="s">${esc(text).replace(/\[([^\]]+)\]/g, '<span class="k">$1</span>')}</div>`;
+</style><div class="sub" id="s">${esc(subMark(text)).replace(/\[([^\]]+)\]/g, '<span class="k">$1</span>')}</div>`;
 
 // 정보 카드: 둥근 검은 카드 + 민트 포인트. 대표 이미지(스팀 header) · 이름 · 정보 2줄 · 아래 작게 jamidunow.com
 const cardHtml = (font, f, title, imgB64) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
-.card { position: absolute; left: ${CX - 380}px; width: 760px; top: ${SUB_Y}px; transform: translateY(-50%); padding: 28px 28px 24px; border-radius: 44px; background: rgba(10,10,10,.95); border: 3px solid ${MINT}; text-align: center; color: #fff; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
+.card { position: absolute; left: ${CX - 380}px; width: 760px; top: ${CARD_Y}px; transform: translateY(-50%); padding: 28px 28px 24px; border-radius: 44px; background: rgba(10,10,10,.95); border: 3px solid ${MINT}; text-align: center; color: #fff; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
 .card img { display: block; width: 100%; border-radius: 26px; }
 .t { margin-top: 24px; font-size: 92px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.05; }
 .i { margin-top: 14px; font-size: 40px; font-weight: 700; line-height: 1.45; font-variant-numeric: tabular-nums; }
@@ -138,8 +141,8 @@ export function cutTimeline(cuts, endClip, narDur) {
 }
 
 // 내레이션 -14 LUFS + 트레일러 소리(-14 LUFS로 맞춘 것)를 내레이션 중에 -8dB(≈-22 LUFS)로 덕킹해 섞는다
-function mixNarration({ game, nar, total, out }) {
-  const DUCK = Math.pow(10, -8 / 20);
+function mixNarration({ game, nar, total, out, duckDb = -8 }) {
+  const DUCK = Math.pow(10, duckDb / 20);
   const m1 = run(['-i', nar.mp3, '-filter_complex', '[0:a]aresample=48000,aformat=channel_layouts=stereo,loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json[o]', '-map', '[o]', '-f', 'null', '-']);
   const m = JSON.parse(m1.stderr.slice(m1.stderr.lastIndexOf('{'), m1.stderr.lastIndexOf('}') + 1));
   const ln = `loudnorm=I=-14:TP=-1.5:LRA=11:measured_I=${m.input_i}:measured_TP=${m.input_tp}:measured_LRA=${m.input_lra}:measured_thresh=${m.input_thresh}:offset=${m.target_offset}:linear=true`;
@@ -151,7 +154,7 @@ function mixNarration({ game, nar, total, out }) {
   const fc = `[0:a]aresample=48000,aformat=channel_layouts=stereo,${ln},apad=whole_dur=${total.toFixed(3)}[n];[1:a]volume='${vol}':eval=frame[g];[g][n]amix=inputs=2:duration=longest:normalize=0,atrim=0:${total.toFixed(3)},afade=t=out:st=${(total - 0.8).toFixed(2)}:d=0.8[o]`;
   const r = run(['-i', nar.mp3, '-i', game, '-filter_complex', fc, '-map', '[o]', '-c:a', 'aac', '-b:a', '192k', out]);
   if (r.status !== 0) throw new Error(`--reel-trend: 오디오 믹스 실패\n${r.stderr.slice(-600)}`);
-  console.log(`  내레이션 측정 ${m.input_i} LUFS → -14 LUFS, 게임 소리 말 구간 -8dB(≈-22 LUFS), 덕킹 구간 ${win.length}개`);
+  console.log(`  내레이션 측정 ${m.input_i} LUFS → -14 LUFS, 게임 소리 말 구간 ${duckDb}dB(≈${-14 + duckDb} LUFS), 덕킹 구간 ${win.length}개`);
 }
 
 export async function runReelTrend(postId, { refresh = false } = {}) {
@@ -159,30 +162,37 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   if (!fs.existsSync(copyFile)) throw new Error(`--reel-trend: ${path.relative(ROOT, copyFile)}이 없어요`);
   const copy = JSON.parse(fs.readFileSync(copyFile, 'utf8'));
   if (JSON.stringify(copy).includes('재밌드나')) throw new Error('화면에는 "재밌드나"를 쓰지 않아요. JamiDuNow만 쓰세요.');
-  for (const k of ['narration', 'chunks', 'card', 'cuts', 'endClip']) if (!copy[k]) throw new Error(`--reel-trend: copy에 ${k}가 없어요`);
+  for (const k of ['narration', 'chunks', 'cuts', 'endClip']) if (!copy[k]) throw new Error(`--reel-trend: copy에 ${k}가 없어요`);
   const facts = await steamFacts(copy.appid, copy);
   const title = copy.cardTitle ?? facts.name;
   console.log('  스팀 값:', JSON.stringify({ ...facts, header: undefined }));
 
   const CACHE = path.join(DIR, 'cache');
   fs.mkdirSync(CACHE, { recursive: true });
-  const src = await steamMovie({ name: facts.name, steam_appid: copy.appid }, copy.movie);
-  const trailer = await trailerFromDb(src, CACHE, refresh);
+  const endSpec = Array.isArray(copy.endClip) ? { src: copy.endClip } : copy.endClip; // {movie?, src:[시작초, 끝초]}
+  const movieNames = [...new Set([...copy.cuts.map((c) => c.movie ?? copy.movie), endSpec.movie ?? copy.movie])]; // 컷마다 movie(영상 이름)를 따로 쓸 수 있다
+  const srcs = {}, trailers = {};
+  for (const mv of movieNames) { srcs[mv] = await steamMovie({ name: facts.name, steam_appid: copy.appid }, mv); trailers[mv] = await trailerFromDb(srcs[mv], CACHE, refresh); }
+  const partMovies = [...copy.cuts.map((c) => c.movie ?? copy.movie), endSpec.movie ?? copy.movie];
   const outDir = path.join(DIR, 'out', postId);
   fs.mkdirSync(outDir, { recursive: true });
-  for (const f of ['reel.mp4', 'still-subtitle.png', 'still-card.png']) fs.rmSync(path.join(outDir, f), { force: true }); // 내레이션 캐시(narration*.mp3·json)와 voice-samples는 남긴다
+  for (const f of ['reel.mp4', 'still-subtitle.png', 'still-card.png', 'still-end.png']) fs.rmSync(path.join(outDir, f), { force: true }); // 내레이션 캐시(narration*.mp3·json)와 voice-samples는 남긴다
 
   const nar = await getNarration(outDir, copy.narration);
-  const { parts, segs, total } = cutTimeline(copy.cuts, copy.endClip, nar.duration);
+  const { parts, segs, total } = cutTimeline(copy.cuts, endSpec.src, nar.duration);
   const chunks = chunkTimeline(nar, copy.chunks, total);
-  const cardChunk = chunks.find((c) => chunkPlain(c.text) === chunkPlain(copy.card.chunk));
-  if (!cardChunk) throw new Error(`--reel-trend: card.chunk "${copy.card.chunk}"와 같은 자막이 없어요`);
-  const c0 = cardChunk.start, c1 = c0 + copy.card.sec;
-  console.log(`  내레이션 ${nar.duration.toFixed(2)}초 → 영상 ${total.toFixed(2)}초 · 카드 ${c0.toFixed(2)}~${c1.toFixed(2)}초`);
+  const hasCard = !!copy.card; // card가 없으면 정보 카드 없이(로고 장면 등으로 대신)
+  let c0 = -10, c1 = -10;
+  if (hasCard) {
+    const cardChunk = chunks.find((c) => chunkPlain(c.text) === chunkPlain(copy.card.chunk));
+    if (!cardChunk) throw new Error(`--reel-trend: card.chunk "${copy.card.chunk}"와 같은 자막이 없어요`);
+    c0 = cardChunk.start; c1 = c0 + copy.card.sec;
+  }
+  console.log(`  내레이션 ${nar.duration.toFixed(2)}초 → 영상 ${total.toFixed(2)}초${hasCard ? ` · 카드 ${c0.toFixed(2)}~${c1.toFixed(2)}초` : ' · 카드 없음'}`);
   console.log('  컷:', segs.map((s) => `${s.t.toFixed(2)}(${s.dur.toFixed(2)})`).join(' '), `· 마지막 알 ${nar.duration.toFixed(2)}`);
   console.log('  자막:', chunks.map((c) => `${c.text} ${c.start.toFixed(2)}~${c.to.toFixed(2)}`).join(' | '));
   const font = fs.readFileSync(path.join(ROOT, 'node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2')).toString('base64');
-  const imgB64 = Buffer.from(await (await fetch(facts.header)).arrayBuffer()).toString('base64');
+  const imgB64 = hasCard ? Buffer.from(await (await fetch(facts.header)).arrayBuffer()).toString('base64') : '';
 
   // 오버레이 PNG: 로고(전체 화면) · 자막 덩어리별(글자 영역만 잘라냄, 가운데 좌표 기억) · 카드(전체 화면)
   const subs = [];
@@ -199,10 +209,11 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
       const r = await page.evaluate(() => { const b = document.getElementById('s').getBoundingClientRect(); return { l: b.left, t: b.top, w: b.width, h: b.height }; });
       const W = Math.ceil(r.w / 2) * 2 + 64, H = Math.ceil(r.h / 2) * 2 + 64; // 외곽선 여유, 가운데 유지
       const file = path.join(CACHE, `trend-${postId}-sub${i}.png`);
-      await page.screenshot({ path: file, clip: { x: Math.round(CX - W / 2), y: Math.round(SUB_Y - H / 2), width: W, height: H }, omitBackground: true });
-      if (CX + r.w / 2 > RS.w - RS.rightGap || CX - r.w / 2 < 0) throw new Error(`--reel-trend: 자막 "${chunks[i].text}"가 안전 영역(오른쪽 140px)을 넘어요`);
+      await page.screenshot({ path: file, clip: { x: Math.round(SUB_X - W / 2), y: Math.round(SUB_Y - H / 2), width: W, height: H }, omitBackground: true });
+      if (SUB_X + r.w / 2 > RS.w - RS.rightGap || SUB_X - r.w / 2 < 0) throw new Error(`--reel-trend: 자막 "${chunks[i].text}"가 안전 영역(오른쪽 140px)을 넘어요`);
       subs.push({ file, ...chunks[i] });
     }
+    if (hasCard) {
     await load(cardHtml(font, facts, title, imgB64));
     const fit = await page.evaluate(() => { const el = document.querySelector('.i'); const max = el.clientWidth; let sz = 40; el.style.whiteSpace = 'nowrap'; el.style.display = 'inline-block'; el.style.width = 'auto'; while (el.scrollWidth > max && sz > 26) { sz -= 1; el.style.fontSize = `${sz}px`; } const ok = el.scrollWidth <= max; el.style.display = ''; el.style.width = ''; return { sz, ok }; });
     console.log(`  카드 정보 줄 ${fit.sz}px${fit.ok ? '' : ' (넘침)'}`);
@@ -210,17 +221,18 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
     console.log(`  카드 영역 ${JSON.stringify(cr)}`);
     if (cr[2] > RS.w - RS.rightGap || cr[3] > SAFE_BOTTOM) throw new Error('--reel-trend: 정보 카드가 안전 영역을 넘어요');
     await page.screenshot({ path: cardPng, clip: full, omitBackground: true });
+    }
   } finally { await browser.close(); }
 
   // 영상: 컷을 이어 붙여 1920 높이로 맞춘 뒤 가운데 크롭(1080×1920). 워터마크 → 자막(팝, 카드 중엔 위로) → 카드(아래에서 올라옴)
   const { w, h, fps } = RS;
   const n = parts.length;
   const T = (v) => v.toFixed(3);
-  const vin = parts.flatMap(([a, b]) => ['-ss', String(a), '-t', String(b - a), '-i', trailer]);
+  const vin = parts.flatMap(([a, b], i) => ['-ss', String(a), '-t', String(b - a), '-i', trailers[partMovies[i]]]);
   const oin = [
     ['-loop', '1', '-framerate', String(fps), '-t', T(total), '-i', logoPng],
     ...subs.map((c) => ['-itsoffset', T(c.start), '-loop', '1', '-framerate', String(fps), '-t', T(c.to - c.start + 0.1), '-i', c.file]),
-    ['-itsoffset', T(c0), '-loop', '1', '-framerate', String(fps), '-t', T(copy.card.sec + 0.1), '-i', cardPng],
+    ...(hasCard ? [['-itsoffset', T(c0), '-loop', '1', '-framerate', String(fps), '-t', T(copy.card.sec + 0.1), '-i', cardPng]] : []),
   ].flat();
   const scaled = parts.map((_, i) => `[${i}:v]scale=-2:${h},crop=${w}:${h}:(iw-${w})/2:0,setsar=1,fps=${fps}[s${i}]`);
   const g = [`${scaled.join(';')};${parts.map((_, i) => `[s${i}]`).join('')}concat=n=${n}:v=1:a=0[v0]`];
@@ -228,25 +240,29 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   subs.forEach((c, i) => {
     const k = n + 1 + i, P = `(${POP_FROM}+${1 - POP_FROM}*min(1,max(0,(t-${T(c.start)})/${POP})))`;
     g.push(`[${k}:v]format=rgba,scale=w='trunc(iw*${P}/2)*2':h='trunc(ih*${P}/2)*2':eval=frame[p${i}]`);
-    g.push(`[v${i + 1}][p${i}]overlay=x='${CX}-w/2':y='if(between(t,${T(c0)},${T(c1)}),${SUB_Y_CARD},${SUB_Y})-h/2':eof_action=pass:enable='between(t,${T(c.start)},${T(c.to)})':format=auto[v${i + 2}]`);
+    g.push(`[v${i + 1}][p${i}]overlay=x='${SUB_X}-w/2':y='if(between(t,${T(c0)},${T(c1)}),${SUB_Y_CARD},${SUB_Y})-h/2':eof_action=pass:enable='between(t,${T(c.start)},${T(c.to)})':format=auto[v${i + 2}]`);
   });
   const kc = n + 1 + subs.length, last = subs.length + 1;
-  g.push(`[v${last}][${kc}:v]overlay=x=0:y='if(lt(t-${T(c0)},${CARD_IN}),${CARD_SLIDE}*pow(1-(t-${T(c0)})/${CARD_IN},2),0)':eof_action=pass:enable='between(t,${T(c0)},${T(c1)})':format=auto,format=yuv420p[o]`);
+  if (!hasCard) g.push(`[v${last}]format=yuv420p[o]`);
+  else g.push(`[v${last}][${kc}:v]overlay=x=0:y='if(lt(t-${T(c0)},${CARD_IN}),${CARD_SLIDE}*pow(1-(t-${T(c0)})/${CARD_IN},2),0)':eof_action=pass:enable='between(t,${T(c0)},${T(c1)})':format=auto,format=yuv420p[o]`);
   const silent = path.join(CACHE, `trend-${postId}-silent.mp4`);
   if (process.env.REEL_DEBUG) fs.writeFileSync(path.join(CACHE, `trend-${postId}-graph.txt`), JSON.stringify({ args: [...vin, ...oin], graph: g.join(';') }));
   ff(['-filter_threads', '1', ...vin, ...oin, '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', T(total), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p', silent]);
 
   const m4a = path.join(CACHE, `trend-${postId}-audio.m4a`), gameM4a = path.join(CACHE, `trend-${postId}-game.m4a`);
-  const { measured } = buildAudio({ audio: await trailerAudioFromDb(src, CACHE, refresh), copy: { segments: parts.slice(0, -1), endClip: parts[parts.length - 1] }, out: gameM4a });
-  mixNarration({ game: gameM4a, nar, total, out: m4a });
+  const audioFiles = {};
+  for (const mv of movieNames) audioFiles[mv] = await trailerAudioFromDb(srcs[mv], CACHE, refresh);
+  const { measured } = buildAudio({ audio: partMovies.map((mv) => audioFiles[mv]), copy: { segments: parts.slice(0, -1), endClip: parts[parts.length - 1] }, out: gameM4a });
+  mixNarration({ game: gameM4a, nar, total, out: m4a, duckDb: copy.duckDb });
   const mp4 = path.join(outDir, 'reel.mp4');
   ff(['-i', silent, '-i', m4a, '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'copy', '-movflags', '+faststart', '-shortest', mp4]);
 
   // 정지 이미지: 자막 장면 1장(곡괭이 비트, 팝이 끝난 뒤), 정보 카드 1장(다 올라온 뒤)
-  const pick = chunks.find((c) => chunkPlain(c.text).includes('곡괭이')) ?? chunks[Math.floor(chunks.length / 2)];
+  const pick = chunks.find((c) => chunkPlain(c.text).includes(chunkPlain(copy.stillChunk ?? '곡괭이'))) ?? chunks[Math.floor(chunks.length / 2)];
   ff(['-ss', T(pick.start + 0.25), '-i', mp4, '-frames:v', '1', path.join(outDir, 'still-subtitle.png')]);
-  ff(['-ss', T(c0 + 1.2), '-i', mp4, '-frames:v', '1', path.join(outDir, 'still-card.png')]);
+  const second = hasCard ? 'still-card.png' : 'still-end.png'; // 카드가 없으면 마지막 로고 장면
+  ff(['-ss', T(hasCard ? c0 + 1.2 : total - 0.3), '-i', mp4, '-frames:v', '1', path.join(outDir, second)]);
   const dur = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', mp4]).toString());
   console.log(`${path.relative(ROOT, mp4)} (${dur.toFixed(2)}초, 내레이션 + 덕킹한 원본 오디오 측정 ${measured} LUFS → -14 LUFS, 구간 경계 0.1초 크로스페이드)`);
-  console.log(path.relative(ROOT, path.join(outDir, 'still-subtitle.png')), path.relative(ROOT, path.join(outDir, 'still-card.png')));
+  console.log(path.relative(ROOT, path.join(outDir, 'still-subtitle.png')), path.relative(ROOT, path.join(outDir, second)));
 }
