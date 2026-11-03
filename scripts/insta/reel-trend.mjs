@@ -114,6 +114,60 @@ export async function getNarration(outDir, cfg) {
 }
 
 
+// ── 무음 압축(--reel-trend 기본 후처리) ──
+// with-timestamps의 글자 타이밍으로 어절 사이 무음을 찾아 줄인다: 문장 안 0.18초 초과 → 0.12초, 문장 사이 0.35초 초과 → 0.25초, 마지막 문장은 어절 사이를 0.08초까지(한 호흡).
+// 자르는 곳은 10ms 크로스페이드. 줄인 만큼 글자 타이밍을 당겨 새 mp3(wav)·타이밍을 돌려준다. 끄려면 copy.narration.tighten=false, 값은 copy.narration.silence로 바꾼다
+const SILENCE = { word: 0.18, wordTo: 0.12, sentence: 0.35, sentenceTo: 0.25, lastGap: 0.08 };
+export function silenceSpans(nar, cfg = {}) {
+  const o = { ...SILENCE, ...cfg };
+  const tokens = [];
+  let cur = null;
+  nar.chars.forEach((c, i) => {
+    if (/\s/.test(c)) { cur = null; return; }
+    if (!cur) { cur = { text: '', a: null, b: null }; tokens.push(cur); }
+    cur.text += c;
+    if (!/[.,!?~…]/.test(c)) { cur.a ??= nar.starts[i]; cur.b = nar.ends[i]; } // 구두점은 무음을 같이 먹어서 시작·끝 계산에서 뺀다
+  });
+  const words = tokens.filter((t) => t.a !== null);
+  let sent = 0;
+  words.forEach((t) => { t.sent = sent; if (/[.!?…]$/.test(t.text)) sent++; });
+  const last = words[words.length - 1].sent;
+  const spans = [];
+  for (let k = 0; k + 1 < words.length; k++) {
+    const gap = words[k + 1].a - words[k].b, w = words[k];
+    let to = null;
+    if (/[.!?…]$/.test(w.text)) { if (gap > o.sentence) to = o.sentenceTo; }
+    else if (w.sent === last && o.lastGap != null) { if (gap > o.lastGap) to = o.lastGap; }
+    else if (gap > o.word) to = o.wordTo;
+    if (to !== null) spans.push({ a: w.b + to / 2, b: words[k + 1].a - to / 2 });
+  }
+  return spans;
+}
+export function tightenNarration(outDir, nar, cfgName, cfg = {}) {
+  const spans = silenceSpans(nar, cfg);
+  const key = crypto.createHash('sha1').update(`${nar.key}|${JSON.stringify({ ...SILENCE, ...cfg })}`).digest('hex');
+  const wav = path.join(outDir, `${cfgName}-tight.wav`), js = path.join(outDir, `${cfgName}-tight.json`);
+  const remap = (t) => t - spans.reduce((s, p) => s + Math.max(0, Math.min(t, p.b) - p.a), 0);
+  const base = (duration) => ({ mp3: wav, key, text: nar.text, chars: nar.chars, starts: nar.starts.map(remap), ends: nar.ends.map(remap), duration });
+  if (fs.existsSync(wav) && fs.existsSync(js) && JSON.parse(fs.readFileSync(js, 'utf8')).key === key) { const d = JSON.parse(fs.readFileSync(js, 'utf8')); console.log(`  무음 압축: 캐시 사용(${spans.length}곳, ${d.removed.toFixed(2)}초 줄임)`); return { ...base(d.duration), removed: d.removed }; }
+  const X = 0.01; // 크로스페이드 10ms: 조각 끝에 10ms를 더 떠서, 겹친 만큼을 보충한다
+  const edges = [0, ...spans.flatMap((p) => [p.a, p.b]), nar.duration];
+  const pieces = [];
+  for (let i = 0; i < edges.length; i += 2) pieces.push([edges[i], edges[i + 1]]);
+  const inputs = pieces.flatMap(([a, b], i) => ['-ss', a.toFixed(4), '-t', (b - a + (i < pieces.length - 1 ? X : 0)).toFixed(4), '-i', nar.mp3]);
+  const cut = pieces.map((_, i) => `[${i}:a]aresample=44100,aformat=channel_layouts=mono,asetpts=PTS-STARTPTS[a${i}]`);
+  let chain = '[a0]';
+  const xf = [];
+  for (let i = 1; i < pieces.length; i++) { xf.push(`${chain}[a${i}]acrossfade=d=${X}:c1=tri:c2=tri[x${i}]`); chain = `[x${i}]`; }
+  const r = run([...inputs, '-filter_complex', `${cut.join(';')}${xf.length ? ';' + xf.join(';') : ''}`, '-map', chain, '-c:a', 'pcm_s16le', wav]);
+  if (r.status !== 0) throw new Error(`--reel-trend: 무음 압축 실패\n${r.stderr.slice(-500)}`);
+  const duration = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', wav]).toString());
+  const removed = nar.duration - duration;
+  fs.writeFileSync(js, JSON.stringify({ key, duration, removed }));
+  console.log(`  무음 압축: ${spans.length}곳, ${nar.duration.toFixed(2)}초 → ${duration.toFixed(2)}초(${removed.toFixed(2)}초 줄임)`);
+  return { ...base(duration), removed };
+}
+
 const run = (args) => spawnSync('ffmpeg', ['-hide_banner', '-y', ...args], { encoding: 'utf8' });
 const chunkPlain = (c) => c.replace(/[\[\]\s.,!?~]/g, '');
 
@@ -224,10 +278,19 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   fs.mkdirSync(outDir, { recursive: true });
   for (const f of ['reel.mp4', 'still-subtitle.png', 'still-card.png', 'still-end.png', 'still-outro.png']) fs.rmSync(path.join(outDir, f), { force: true }); // 내레이션 캐시(narration*.mp3·json)와 voice-samples는 남긴다
 
-  const nar = await getNarration(outDir, copy.narration);
-  const { parts, segs, total: bodyDur } = cutTimeline(copy.cuts, endSpec?.src, nar.duration);
+  const rawNar = await getNarration(outDir, copy.narration);
+  const nar = copy.narration.tighten === false ? rawNar : tightenNarration(outDir, rawNar, copy.narration.cacheName ?? 'narration', copy.narration.silence); // 무음 압축(기본)
+  const bodyLen = nar.duration + (endSpec ? 1 : 0);
+  const chunks = chunkTimeline(nar, copy.chunks, bodyLen);
+  // 컷 시각: t(초)를 직접 쓰거나, at(자막 덩어리 글자)·offset(초)로 그 말이 시작하는 시각에 맞춘다 — 내레이션 타이밍이 바뀌어도 컷이 말을 따라간다
+  const cuts = copy.cuts.map((c, i) => {
+    if (c.at === undefined) return c;
+    const hit = chunks.find((k) => chunkPlain(k.text) === chunkPlain(c.at));
+    if (!hit) throw new Error(`--reel-trend: cuts[${i}].at "${c.at}"와 같은 자막이 없어요`);
+    return { ...c, t: +(hit.start + (c.offset ?? 0)).toFixed(3) };
+  });
+  const { parts, segs, total: bodyDur } = cutTimeline(cuts, endSpec?.src, nar.duration);
   const total = bodyDur + (OUTRO ? OUTRO_SEC : 0); // 전체 길이(엔딩 샷 포함). 본편 영상·자막은 bodyDur까지
-  const chunks = chunkTimeline(nar, copy.chunks, bodyDur);
   const hasCard = !!copy.card; // card가 없으면 정보 카드 없이(로고 장면 등으로 대신)
   let c0 = -10, c1 = -10;
   if (hasCard) {
@@ -281,7 +344,7 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
     ...subs.map((c) => ['-itsoffset', T(c.start), '-loop', '1', '-framerate', String(fps), '-t', T(c.to - c.start + 0.1), '-i', c.file]),
     ...(hasCard ? [['-itsoffset', T(c0), '-loop', '1', '-framerate', String(fps), '-t', T(copy.card.sec + 0.1), '-i', cardPng]] : []),
   ].flat();
-  const xs = [...copy.cuts.map((c) => c.x ?? 0.5), 0.5]; // 구간별 가로 크롭 위치(0=왼쪽 끝, 1=오른쪽 끝)
+  const xs = [...cuts.map((c) => c.x ?? 0.5), 0.5]; // 구간별 가로 크롭 위치(0=왼쪽 끝, 1=오른쪽 끝)
   const per = parts.map((_, i) => `[${i}:v]fps=${fps},setsar=1,split[a${i}][b${i}];[a${i}]crop=ih*4/5:ih:(iw-ih*4/5)*${xs[i]}:0,scale=${FG_W}:${FG_H}[f${i}];[b${i}]scale=-2:480,crop=270:480,gblur=sigma=10,scale=${w}:${h},colorchannelmixer=rr=0.65:gg=0.65:bb=0.65[g${i}]`); // 배경: 1/4로 줄여 시그마 10으로 블러(=원래 크기 약 40px)한 뒤 키우고 35% 어둡게
   const g = [`${per.join(';')};${parts.map((_, i) => `[f${i}]`).join('')}concat=n=${n}:v=1:a=0[vf];${parts.map((_, i) => `[g${i}]`).join('')}concat=n=${n}:v=1:a=0[vb];[vb][vf]overlay=x=${FG_X}:y=${FG_Y}:format=auto[v0]`];
   g.push(`[v0][${n}:v]overlay=format=auto[v1]`);
