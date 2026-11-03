@@ -90,7 +90,7 @@ copy.cuts.forEach((c, i) => {
 });
 const total = t0;
 
-// ── 컷 → 클립 구간(카드 컷은 앞 컷의 마지막 프레임을 흐리게·40% 어둡게 깐 화면, 게임 소리 없음) ──
+// ── 컷 → 클립 구간(카드 컷은 앞 컷의 마지막 프레임을 흐리게·40% 어둡게 깐 화면, 앞 컷 클립 소리를 이어서) ──
 const parts = [];
 cuts.forEach((c, i) => {
   let rem = c.end - c.start;
@@ -111,7 +111,9 @@ cuts.forEach((c, i) => {
   if (i + 1 === copy.card.after) {
     const prev = parts.at(-1), still = path.join(CACHE, 'clips-card-bg.png');
     ff(['-ss', T(prev.a + prev.dur - 0.04), '-i', prev.file, '-frames:v', '1', still]);
-    parts.push({ card: true, still, x0: prev.x1, x1: prev.x1, dur: c1 - c0, cut: i });
+    const cdur = c1 - c0, cl = probeDur(prev.file);
+    if (prev.a + prev.dur + cdur > cl + 0.05) throw new Error(`카드 컷 소리가 클립(${cl.toFixed(1)}초) 밖이에요 — 컷 ${i + 1}의 a를 앞당기세요`);
+    parts.push({ card: true, still, file: prev.file, audioFrom: prev.a + prev.dur, x0: prev.x1, x1: prev.x1, dur: cdur, cut: i }); // 소리는 앞 컷 클립을 이어서
   }
 });
 
@@ -181,9 +183,9 @@ const { w, h, fps } = RS, n = parts.length;
 const vin = [];
 let ni = 0;
 parts.forEach((p) => {
-  if (p.card) { // 카드 컷: 정지 화면 + 무음
+  if (p.card) { // 카드 컷: 정지 화면 + 앞 컷 클립 소리 이어서
     vin.push('-loop', '1', '-framerate', String(fps), '-t', T(p.dur), '-i', p.still); p.vi = ni++;
-    vin.push('-f', 'lavfi', '-t', T(p.dur), '-i', 'anullsrc=r=48000:cl=stereo'); p.ai = ni++;
+    vin.push('-ss', T(p.audioFrom), '-t', T(p.dur), '-i', p.file); p.ai = ni++;
   } else { vin.push('-ss', T(p.a), '-t', T(p.dur), '-i', p.file); p.vi = p.ai = ni++; }
 });
 const oin = [
