@@ -22,6 +22,8 @@ const ROOT = path.resolve(DIR, '../..');
 const MINT = '#5CF2B0';
 const CX = (RS.w - RS.rightGap) / 2; // 자막·카드 가운데 x = 470
 const SUB_X = 540, SUB_Y = 1000; // 자막 가운데(고정)
+const FG_Y = 285, FG_W = 1080, FG_H = 1350; // 영상은 원본 높이 기준 4:5로 가운데 크롭(컷마다 cut.x 0~1로 가로 위치 조정, 기본 0.5)해 y 285~1635에 두고, 위아래는 같은 영상을 크게 블러·어둡게 깐다
+const FG_X = 0;
 const CARD_Y = 900; // 카드 가운데 y
 const SUB_Y_CARD = 430; // 카드가 떠 있는 동안 자막 y(카드 위)
 const SAFE_BOTTOM = RS.h * 0.75; // 1440
@@ -57,7 +59,7 @@ const baseCss = (font) => `@font-face { font-family: P; src: url(data:font/woff2
 * { margin: 0; box-sizing: border-box; } html, body { width: ${RS.w}px; height: ${RS.h}px; background: transparent; overflow: hidden; font-family: P, sans-serif; }`;
 
 const logoHtml = (font) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
-.logo { position: absolute; left: 44px; top: 150px; display: flex; align-items: center; gap: 10px; opacity: 0.92; }
+.logo { position: absolute; left: ${FG_X + 28}px; top: ${FG_Y + 26}px; display: flex; align-items: center; gap: 10px; opacity: 0.92; }
 .logo i { width: 38px; height: 38px; border-radius: 11px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-style: normal; font-size: 27px; font-weight: 900; line-height: 1; }
 .logo b { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #fff; text-shadow: 0 0 8px rgba(0,0,0,.6); }
 </style><div class="logo"><i>J</i><b>JamiDuNow</b></div>`;
@@ -141,20 +143,21 @@ export function cutTimeline(cuts, endClip, narDur) {
 }
 
 // 내레이션 -14 LUFS + 트레일러 소리(-14 LUFS로 맞춘 것)를 내레이션 중에 -8dB(≈-22 LUFS)로 덕킹해 섞는다
-function mixNarration({ game, nar, total, out, duckDb = -8 }) {
-  const DUCK = Math.pow(10, duckDb / 20);
+function mixNarration({ game, nar, total, out, duckDb = -8, gapDb = 0, gapMin = 0.7 }) {
+  const DUCK = Math.pow(10, duckDb / 20), GAP = Math.pow(10, gapDb / 20);
+  const att = Math.min(0.15, gapMin / 3), rel = Math.min(0.3, gapMin * 0.4); // 내려가는 시간·올라오는 시간
   const m1 = run(['-i', nar.mp3, '-filter_complex', '[0:a]aresample=48000,aformat=channel_layouts=stereo,loudnorm=I=-14:TP=-1.5:LRA=11:print_format=json[o]', '-map', '[o]', '-f', 'null', '-']);
   const m = JSON.parse(m1.stderr.slice(m1.stderr.lastIndexOf('{'), m1.stderr.lastIndexOf('}') + 1));
   const ln = `loudnorm=I=-14:TP=-1.5:LRA=11:measured_I=${m.input_i}:measured_TP=${m.input_tp}:measured_LRA=${m.input_lra}:measured_thresh=${m.input_thresh}:offset=${m.target_offset}:linear=true`;
   // 말 구간: 글자 사이 쉼이 0.7초 넘으면 끊는다. 앞 0.15초에 내려가고 뒤 0.3초에 올라오는 이득 곡선
   const win = [];
-  nar.chars.forEach((c, i) => { if (/\s/.test(c)) return; const last = win[win.length - 1]; if (last && nar.starts[i] - last[1] <= 0.7) last[1] = nar.ends[i]; else win.push([nar.starts[i], nar.ends[i]]); });
-  const g = win.map(([a, b]) => `clip(min((t-(${(a - 0.15).toFixed(3)}))/0.15,(${(b + 0.3).toFixed(3)}-t)/0.3),0,1)`);
-  const vol = `1-${(1 - DUCK).toFixed(3)}*${g.reduce((a, b) => `max(${a},${b})`)}`; // 창이 하나면 max 없이
+  nar.chars.forEach((c, i) => { if (/\s/.test(c)) return; const last = win[win.length - 1]; if (last && nar.starts[i] - last[1] <= gapMin) last[1] = nar.ends[i]; else win.push([nar.starts[i], nar.ends[i]]); });
+  const g = win.map(([a, b]) => `clip(min((t-(${(a - att).toFixed(3)}))/${att.toFixed(3)},(${(b + rel).toFixed(3)}-t)/${rel.toFixed(3)}),0,1)`);
+  const vol = `${GAP.toFixed(4)}-${(GAP - DUCK).toFixed(4)}*${g.reduce((a, b) => `max(${a},${b})`)}`; // 창이 하나면 max 없이
   const fc = `[0:a]aresample=48000,aformat=channel_layouts=stereo,${ln},apad=whole_dur=${total.toFixed(3)}[n];[1:a]volume='${vol}':eval=frame[g];[g][n]amix=inputs=2:duration=longest:normalize=0,atrim=0:${total.toFixed(3)},afade=t=out:st=${(total - 0.8).toFixed(2)}:d=0.8[o]`;
   const r = run(['-i', nar.mp3, '-i', game, '-filter_complex', fc, '-map', '[o]', '-c:a', 'aac', '-b:a', '192k', out]);
   if (r.status !== 0) throw new Error(`--reel-trend: 오디오 믹스 실패\n${r.stderr.slice(-600)}`);
-  console.log(`  내레이션 측정 ${m.input_i} LUFS → -14 LUFS, 게임 소리 말 구간 ${duckDb}dB(≈${-14 + duckDb} LUFS), 덕킹 구간 ${win.length}개`);
+  console.log(`  내레이션 측정 ${m.input_i} LUFS → -14 LUFS, 게임 소리 말 구간 ${duckDb}dB(≈${-14 + duckDb} LUFS)·빈틈(${gapMin}초 초과) ${gapDb}dB, 덕킹 구간 ${win.length}개`);
 }
 
 export async function runReelTrend(postId, { refresh = false } = {}) {
@@ -234,8 +237,9 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
     ...subs.map((c) => ['-itsoffset', T(c.start), '-loop', '1', '-framerate', String(fps), '-t', T(c.to - c.start + 0.1), '-i', c.file]),
     ...(hasCard ? [['-itsoffset', T(c0), '-loop', '1', '-framerate', String(fps), '-t', T(copy.card.sec + 0.1), '-i', cardPng]] : []),
   ].flat();
-  const scaled = parts.map((_, i) => `[${i}:v]scale=-2:${h},crop=${w}:${h}:(iw-${w})/2:0,setsar=1,fps=${fps}[s${i}]`);
-  const g = [`${scaled.join(';')};${parts.map((_, i) => `[s${i}]`).join('')}concat=n=${n}:v=1:a=0[v0]`];
+  const xs = [...copy.cuts.map((c) => c.x ?? 0.5), 0.5]; // 구간별 가로 크롭 위치(0=왼쪽 끝, 1=오른쪽 끝)
+  const per = parts.map((_, i) => `[${i}:v]fps=${fps},setsar=1,split[a${i}][b${i}];[a${i}]crop=ih*4/5:ih:(iw-ih*4/5)*${xs[i]}:0,scale=${FG_W}:${FG_H}[f${i}];[b${i}]scale=-2:480,crop=270:480,gblur=sigma=10,scale=${w}:${h},colorchannelmixer=rr=0.65:gg=0.65:bb=0.65[g${i}]`); // 배경: 1/4로 줄여 시그마 10으로 블러(=원래 크기 약 40px)한 뒤 키우고 35% 어둡게
+  const g = [`${per.join(';')};${parts.map((_, i) => `[f${i}]`).join('')}concat=n=${n}:v=1:a=0[vf];${parts.map((_, i) => `[g${i}]`).join('')}concat=n=${n}:v=1:a=0[vb];[vb][vf]overlay=x=${FG_X}:y=${FG_Y}:format=auto[v0]`];
   g.push(`[v0][${n}:v]overlay=format=auto[v1]`);
   subs.forEach((c, i) => {
     const k = n + 1 + i, P = `(${POP_FROM}+${1 - POP_FROM}*min(1,max(0,(t-${T(c.start)})/${POP})))`;
@@ -253,7 +257,7 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   const audioFiles = {};
   for (const mv of movieNames) audioFiles[mv] = await trailerAudioFromDb(srcs[mv], CACHE, refresh);
   const { measured } = buildAudio({ audio: partMovies.map((mv) => audioFiles[mv]), copy: { segments: parts.slice(0, -1), endClip: parts[parts.length - 1] }, out: gameM4a });
-  mixNarration({ game: gameM4a, nar, total, out: m4a, duckDb: copy.duckDb });
+  mixNarration({ game: gameM4a, nar, total, out: m4a, duckDb: copy.duckDb, gapDb: copy.gapDb, gapMin: copy.gapMin });
   const mp4 = path.join(outDir, 'reel.mp4');
   ff(['-i', silent, '-i', m4a, '-map', '0:v', '-map', '1:a', '-c:v', 'copy', '-c:a', 'copy', '-movflags', '+faststart', '-shortest', mp4]);
 

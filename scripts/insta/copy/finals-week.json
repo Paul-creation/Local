@@ -1,9 +1,9 @@
 {
- "_doc": "Finals Week 릴스(--reel-trend). card 없음, 컷마다 movie, duckDb -10(게임 소리 ≈-24 LUFS), endClip은 {movie, src}",
+ "_doc": "Finals Week 릴스(--reel-trend). card 없음, 컷마다 movie와 x(4:5 가로 크롭 위치 0~1, 기본 0.5), 게임 소리: 말하는 동안 duckDb -20(≈-34 LUFS), 말 사이 gapMin초 넘는 빈틈은 gapDb -8(≈-22 LUFS), endClip은 {movie, src}",
  "appid": "4715160",
  "movie": "Launch Trailer",
  "maxPlayers": 4,
- "duckDb": -10,
+ "duckDb": -20,
  "stillChunk": "컨닝으로",
  "endClip": {
   "movie": "Launch Trailer",
@@ -102,7 +102,8 @@
    "src": [
     8,
     9.96
-   ]
+   ],
+   "x": 0.55
   },
   {
    "t": 1.96,
@@ -166,7 +167,8 @@
    "src": [
     52.2,
     54.61
-   ]
+   ],
+   "x": 0.95
   },
   {
    "t": 18.95,
@@ -190,7 +192,8 @@
    "src": [
     47,
     48.3
-   ]
+   ],
+   "x": 0.65
   },
   {
    "t": 25.1,
@@ -240,5 +243,7 @@
     96.019
    ]
   }
- ]
+ ],
+ "gapDb": -8,
+ "gapMin": 0.3
 }
