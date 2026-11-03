@@ -1,7 +1,7 @@
 // scripts/insta/reel-clips.mjs
 // 개발사 원본 클립으로 만드는 세로 릴스(1080×1920) + ElevenLabs 내레이션.
 // 컷 길이 = 내레이션 타이밍(copy.cuts[].endWord 어절이 끝나는 곳에서 컷 전환). 클립은 scripts/insta/assets/crack/clips/(gitignore), 컷마다 가로 크롭 위치(x0→x1)를 지정. 컷 경계는 크로스페이드 없이 바로 컷.
-// 자막(레퍼런스 스타일): 한 번에 한 어절, 내레이션에서 말하는 순간 바로 바뀌고 다음 어절까지 유지. x540·y860 고정, Pretendard Bold 56px 흰색 + 검은 외곽선 3px + 약한 그림자(검정 40%, 2px 아래), 팝·강조색 없음. 정보 카드가 뜨는 동안은 자막 숨김.
+// 자막(레퍼런스 스타일): 한 번에 한 어절, 내레이션에서 말하는 순간 바로 바뀌고 다음 어절까지 유지. x540·y860 고정, Pretendard Bold 56px 흰색 + 검은 외곽선 3px + 약한 그림자(검정 40%, 2px 아래), 팝·강조색 없음. 정보 카드(게임 이름을 말하는 순간~그 어절이 끝나고 0.5초 뒤)가 뜨는 동안은 자막 숨김, 카드 뒤 영상 40% 어둡게.
 // 오디오: 내레이션 -14 LUFS, 게임 소리(-14 LUFS로 맞춤)는 내레이션 중 -24 LUFS로 덕킹(내레이션 쉬는 구간·unduckAt 순간은 원래 크기). 배경음악 없음.
 // 실행: node scripts/insta/reel-clips.mjs crack-trend-v2   (copy/<id>.json → out/crack-trend/reel-v2.mp4 + still-subtitle-v2.png + still-card-v2.png)
 import fs from 'fs';
@@ -19,7 +19,7 @@ const OUT = path.join(DIR, 'out/crack-trend');
 const CACHE = path.join(DIR, 'cache');
 const MINT = '#5CF2B0';
 const CX = RS.w / 2, SUB_Y = 860, CARD_Y = 900, SAFE_BOTTOM = RS.h * 0.75, CARD_W = 800; // 카드는 오른쪽 140px 안전 영역 안(140~940)
-const CARD_IN = 0.2, CARD_SLIDE = 640;
+const CARD_IN = 0.25, CARD_OUT = 0.2, CARD_SLIDE = 90, DIM = 0.4; // 카드: 0.25초 아래에서 올라오며 페이드인, 0.2초 페이드아웃, 뒤 영상 40% 어둡게
 const DUCK_DB = -10; // 게임 -14 LUFS → 내레이션 중 -24 LUFS
 const T = (v) => v.toFixed(3);
 const esc = (t) => String(t).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
@@ -79,7 +79,7 @@ copy.cuts.forEach((c, i) => {
   const k = words.findIndex((w, j) => j >= cursor && w.plain === c.endWord);
   if (k < 0) throw new Error(`컷 ${i + 1}: 대본에서 어절 "${c.endWord}"를 순서대로 찾지 못했어요`);
   const last = i === copy.cuts.length - 1;
-  const end = last ? words[k].end + copy.loopTail : (words[k].end + words[k + 1].start) / 2;
+  const end = last ? words[k].end + copy.loopTail : c.hold != null ? words[k].end + c.hold : (words[k].end + words[k + 1].start) / 2; // hold: 다음 컷을 이 어절이 끝난 뒤 hold초에 시작(카드가 컷 경계에 걸리지 않게)
   cuts.push({ ...c, first: cursor, last: k, start: t0, end });
   cursor = k + 1; t0 = end;
 });
@@ -107,8 +107,9 @@ cuts.forEach((c, i) => {
 
 const facts = await steamFacts(copy.appid, copy);
 console.log('  스팀 값:', JSON.stringify({ ...facts, header: undefined }));
-const cc = cuts[copy.card.cut - 1];
-const c0 = words[cc.first + copy.card.afterWords].start, c1 = c0 + copy.card.sec;
+const cw = words.find((x) => x.plain === copy.card.word);
+if (!cw) throw new Error(`card.word "${copy.card.word}"를 대본에서 찾지 못했어요`);
+const c0 = cw.start, c1 = cw.end + copy.card.hold; // 게임 이름을 말하는 순간 등장, 그 어절이 끝나고 hold초 뒤 퇴장
 console.log(`  내레이션 ${nar.duration.toFixed(2)}초(마지막 어절 ${words.at(-1).end.toFixed(2)}초) → 영상 ${total.toFixed(2)}초 · 카드 ${c0.toFixed(2)}~${c1.toFixed(2)}초`);
 console.log('  컷:', cuts.map((c, i) => `${i + 1}:${c.start.toFixed(2)}~${c.end.toFixed(2)}`).join(' '));
 
@@ -170,15 +171,20 @@ const vin = parts.flatMap((p) => ['-ss', T(p.a), '-t', T(p.dur), '-i', p.file]);
 const oin = [
   ['-loop', '1', '-framerate', String(fps), '-t', T(total), '-i', logoPng],
   ['-f', 'concat', '-safe', '0', '-i', list],
-  ['-itsoffset', T(c0), '-loop', '1', '-framerate', String(fps), '-t', T(copy.card.sec + 0.1), '-i', cardPng],
+  ['-loop', '1', '-framerate', String(fps), '-t', T(total), '-i', cardPng],
+  ['-f', 'lavfi', '-i', `color=c=black:s=${w}x${h}:r=${fps}:d=${T(total)}`],
 ].flat();
 const vf = parts.map((p, i) => `[${i}:v]scale=-2:${h},crop=${w}:${h}:x='(iw-${w})*(${p.x0}+(${p.x1 - p.x0})*min(1,t/${T(p.dur)}))':y=0,setsar=1,fps=${fps}[s${i}]`);
+const fade = `fade=t=in:st=${T(c0)}:d=${CARD_IN}:alpha=1,fade=t=out:st=${T(c1 - CARD_OUT)}:d=${CARD_OUT}:alpha=1`;
 const g = [
   `${vf.join(';')};${parts.map((_, i) => `[s${i}]`).join('')}concat=n=${n}:v=1:a=0[v0]`,
-  `[v0][${n}:v]overlay=format=auto[v1]`,
+  `[${n + 3}:v]format=rgba,colorchannelmixer=aa=${DIM},${fade}[dim]`,
+  `[v0][dim]overlay=format=auto[v0d]`,
+  `[v0d][${n}:v]overlay=format=auto[v1]`,
   `[${n + 1}:v]fps=${fps},format=rgba[sub]`,
   `[v1][sub]overlay=x=0:y=0:eof_action=pass:format=auto[v2]`,
-  `[v2][${n + 2}:v]overlay=x=0:y='if(lt(t-${T(c0)},${CARD_IN}),${CARD_SLIDE}*pow(1-(t-${T(c0)})/${CARD_IN},2),0)':eof_action=pass:enable='between(t,${T(c0)},${T(c1)})':format=auto,format=yuv420p[o]`,
+  `[${n + 2}:v]format=rgba,${fade}[cd]`,
+  `[v2][cd]overlay=x=0:y='if(lt(t-${T(c0)},${CARD_IN}),${CARD_SLIDE}*pow(1-(t-${T(c0)})/${CARD_IN},2),0)':eof_action=pass:format=auto,format=yuv420p[o]`,
 ];
 const silent = path.join(CACHE, 'clips-silent.mp4');
 ff(['-filter_threads', '1', ...vin, ...oin, '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', T(total), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '18', '-pix_fmt', 'yuv420p', silent]);

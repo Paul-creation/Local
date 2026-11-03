@@ -1,22 +1,21 @@
 {
- "_doc": "reel-clips.mjs(개발사 원본 클립 릴스, 내레이션 타이밍). narration: ElevenLabs(voiceId·cacheName=out/crack-trend/<cacheName>.mp3·json 캐시·voiceSettings·text 한 번에). cuts[].endWord: 이 컷이 끝나는 어절(대본 순서대로 찾음, 컷 길이=내레이션 타이밍). parts: clip(파일명 앞부분)·a(원본 시작초)·max(이 구간 최대 길이)·endAt(원본 끝초, 끝에 맞추고 앞을 자름)·x0→x1(가로 크롭 0~1). unduckAt: 원본 클립 초(폭발 등) — 그 순간은 게임 소리를 원래 크기로. card: 정보 카드가 뜨는 컷·afterWords(그 컷에서 몇 어절 뒤)·sec(머무는 초), 카드 동안 자막 없음. loopTail: 마지막 컷 뒤 루프용 초",
+ "_doc": "reel-clips.mjs(개발사 원본 클립 릴스, 내레이션 타이밍). narration: ElevenLabs(voiceId·cacheName=out/crack-trend/<cacheName>.mp3·json 캐시·voiceSettings·text 한 번에). cuts[].endWord: 이 컷이 끝나는 어절(대본 순서대로 찾음, 컷 길이=내레이션 타이밍). parts: clip(파일명 앞부분)·a(원본 시작초)·max(이 구간 최대 길이)·endAt(원본 끝초, 끝에 맞추고 앞을 자름)·x0→x1(가로 크롭 0~1). unduckAt: 원본 클립 초(폭발 등) — 그 순간은 게임 소리를 원래 크기로. card: word(이 어절을 말하는 순간 정보 카드 등장)·hold(그 어절이 끝나고 몇 초 뒤 퇴장), 카드 동안 자막 없음·뒤 영상 40% 어둡게. cuts[].hold: 이 컷을 어절 끝 hold초 뒤에 끝냄. loopTail: 마지막 컷 뒤 루프용 초",
  "appid": "4312190",
  "maxPlayers": 4,
  "narration": {
   "voiceId": "uyVNoMrnUku1dZyVEXwD",
-  "cacheName": "narration-v4",
+  "cacheName": "narration-v5",
   "voiceSettings": {
    "stability": 0.35,
    "similarity_boost": 0.8,
    "style": 0.5,
    "speed": 1.1
   },
-  "text": "친구랑 하면 진짜 미치는 게임 찾았습니다. 출근했더니 연구소에 거대한 알이 떨어져 있는데요, 상사가 이걸 깨래요. 이유는 묻지 말고요. 그래서 깨봤더니… 촉수가 튀어나옵니다. 친구는 다이너마이트 던지고, 저는 껍질에 맞고, 다 같이 미끄러지고, 번 돈은 슬롯머신에 전부 탕진하는데요. 근데 진짜, 이 알 안에 뭐가 들었을까요?"
+  "text": "친구랑 하면 진짜 미치는 게임 찾았습니다. 출근했더니 연구소에 거대한 알이 떨어져 있는데요, 상사가 이걸 깨래요. 이유는 묻지 말고요. 그래서 깨봤더니… 촉수가 튀어나옵니다. 친구는 다이너마이트 던지고, 저는 껍질에 맞고, 다 같이 미끄러지고, 번 돈은 슬롯머신에 전부 탕진하는데요. 게임 이름은 크랙입니다. 근데 진짜, 이 알 안에 뭐가 들었을까요?"
  },
  "card": {
-  "cut": 6,
-  "afterWords": 1,
-  "sec": 2.0
+  "word": "크랙입니다",
+  "hold": 0.5
  },
  "loopTail": 0.5,
  "cuts": [
@@ -109,15 +108,16 @@
    ]
   },
   {
-   "endWord": "탕진하는데요",
+   "endWord": "크랙입니다",
    "parts": [
     {
      "clip": "3.5 Winning Slot Machine",
-     "a": 5.2,
+     "endAt": 8.6,
      "x0": 0.43,
      "x1": 0.48
     }
-   ]
+   ],
+   "hold": 0.5
   },
   {
    "endWord": "들었을까요",
