@@ -6,6 +6,7 @@
 // 내레이션: ElevenLabs(eleven_multilingual_v2, voiceSettings) with-timestamps를 대본 통째로 한 번에 생성해 out/<post-id>/<cacheName>.mp3·json에 캐시(대본·목소리·설정이 같으면 API를 다시 부르지 않는다)
 // 오디오: 배경음악 없음. 내레이션 -14 LUFS, 트레일러 원본은 -14 LUFS로 맞춘 뒤 내레이션 중에 -8dB(≈-22 LUFS)로 덕킹(말 사이 0.7초 넘는 쉼에는 원래대로), 컷 경계 0.1초 크로스페이드, 끝 0.8초 페이드아웃
 // 영상 길이 = 내레이션 길이 + 1초(마지막 1초는 첫 컷과 같은 알 장면 — 루프). 컷은 copy.cuts의 t(초, 내레이션 기준)에서 바뀐다
+// 컷 기본 규칙(scene-cuts.mjs): 컷 경계 +0.3초(copy.cutExtend)·0.8초 미만 컷은 옆 컷과 합침(copy.minCut)·트레일러 원본 장면 전환(ffmpeg select gt(scene,0.3))이 컷·카드 경계 앞뒤 0.5초 안에 끼지 않게 원본 구간을 옮기고 확인(copy.sceneAvoid:false로 끔)
 // 실행: npm run insta -- <post-id> --reel-trend   (copy/<post-id>.json → out/<post-id>/reel.mp4 + still-subtitle.png + still-card.png)
 // 자막: copy.chunks(직접 지정, [핵심]) 없으면 자동(copy.keys = 민트 구절). 0.35초 미만 덩어리 합치기·12자·3어절 규칙은 subtitle-chunks.mjs
 // copy: appid, movie(스팀 영상 이름), maxPlayers(선택), cardTitle(선택), narration{voiceId, cacheName, voiceSettings, text}, chunks[](자막 어절 묶음, 대본 순서, [핵심]), card{chunk, sec}, cuts[{t, src:[시작초, 끝초]}](t=0부터), endClip(첫 컷과 같은 알 장면, 1초만 쓴다)
@@ -19,6 +20,7 @@ import { RS, ff, buildAudio, trailerAudioFromDb, steamMovie } from './reel-singl
 import { trailerFromDb } from './reel.mjs';
 import { getNarrationBySentence } from './narration-sentences.mjs';
 import { autoChunks, mergeShortChunks, MIN_SEC } from './subtitle-chunks.mjs';
+import { CUT_EXTEND, MIN_CUT, SCENE_GAP, stretchCuts, avoidSceneCuts, detectSceneCuts } from './scene-cuts.mjs';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DIR, '../..');
@@ -368,18 +370,36 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   const chunks = mergeShortChunks(chunkTimeline(nar, copy.chunks ?? autoChunks(copy.narration.text, copy.keys ?? []), bodyLen), copy.minChunkSec ?? MIN_SEC);
   const findChunk = (at) => { const a = chunkPlain(at); return chunks.find((k) => chunkPlain(k.text) === a) ?? chunks.find((k) => chunkPlain(k.text).startsWith(a)) ?? chunks.find((k) => chunkPlain(k.text).includes(a)); }; // 합쳐진 덩어리도 앞부분·포함으로 찾는다
   // 컷 시각: t(초)를 직접 쓰거나, at(자막 덩어리 글자)·offset(초)로 그 말이 시작하는 시각에 맞춘다 — 내레이션 타이밍이 바뀌어도 컷이 말을 따라간다
-  const cuts = copy.cuts.map((c, i) => {
+  let cuts = copy.cuts.map((c, i) => {
     if (c.at === undefined) return c;
     const hit = findChunk(c.at);
     if (!hit) throw new Error(`--reel-trend: cuts[${i}].at "${c.at}"와 같은 자막이 없어요`);
     return { ...c, t: +(hit.start + (c.offset ?? 0)).toFixed(3) };
   }).filter((c, i, a) => i === 0 || c.t - a[i - 1].t > 0.05); // 자막 덩어리가 합쳐져 같은 시각이 된 컷은 앞 컷만 쓴다
-  const all = cutTimeline(cuts, endSpec?.src, nar.duration); // 전체 컷(소리용)
-  const bodyDur = all.total; // 내레이션 끝(엔딩 직전)
   // cardFrom: 이 자막(어절)이 시작하는 순간부터 내레이션 끝까지 정보 카드 장면(하드컷, 자막 숨김). 그 뒤 컷은 영상에서 빠지고 소리만 이어서 쓴다
   const cardHit = copy.cardFrom ? findChunk(copy.cardFrom) : null;
   if (copy.cardFrom && !cardHit) throw new Error(`--reel-trend: cardFrom "${copy.cardFrom}"와 같은 자막이 없어요`);
   const cardAt = cardHit ? +cardHit.start.toFixed(3) : null;
+  // 기본 규칙 1: 컷 경계를 +0.3초 늦추고(내레이션 그대로, copy.cutExtend로 바꿈) 0.8초보다 짧은 컷은 옆 컷과 합친다(copy.minCut). copy.cutExtend:0이면 늦추지 않는다
+  if (!endSpec) {
+    const before = cuts.length;
+    cuts = stretchCuts(cuts, { extend: copy.cutExtend ?? CUT_EXTEND, minCut: copy.minCut ?? MIN_CUT, end: nar.duration, card: cardAt });
+    console.log(`  컷 경계 +${copy.cutExtend ?? CUT_EXTEND}초, ${copy.minCut ?? MIN_CUT}초 미만 컷 합치기: ${before}컷 → ${cuts.length}컷`);
+  }
+  // 기본 규칙 2: 트레일러 원본의 장면 전환(ffmpeg select gt(scene,0.3))이 컷 경계·카드 경계 앞뒤 0.5초 안에 끼지 않게 컷의 원본 구간을 옮기고 결과를 확인한다(copy.sceneAvoid:false로 끔)
+  if (!endSpec && copy.sceneAvoid !== false) {
+    const vcuts = cuts.filter((c) => cardAt === null || c.t < cardAt - 0.0005);
+    const durOfMovie = {}, probe = (mv) => (durOfMovie[mv] ??= Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', trailers[mv]]).toString()));
+    const segIn = vcuts.map((c, i) => ({ movie: c.movie ?? copy.movie, a: c.src[0], dur: Math.min(vcuts[i + 1]?.t ?? Infinity, cardAt ?? Infinity, nar.duration) - c.t }));
+    const adj = avoidSceneCuts(segIn, (mv) => detectSceneCuts(trailers[mv], CACHE), { gap: SCENE_GAP, durOf: probe });
+    adj.forEach((a, i) => { const c = vcuts[i]; c.src = [a.a, a.a + (c.src[1] - c.src[0])]; });
+    const bad = adj.filter((a) => !a.clean || a.hits.length);
+    adj.forEach((a, i) => { if (a.shift) console.log(`  장면 전환 회피: 컷 ${i + 1}(t=${vcuts[i].t.toFixed(2)}) 원본 구간 ${a.shift > 0 ? '+' : ''}${a.shift}초 이동 → ${a.a.toFixed(2)}~${(a.a + a.dur).toFixed(2)}`); });
+    for (const mv of new Set(segIn.map((s) => s.movie))) console.log(`  원본 장면 전환(${mv}) ${detectSceneCuts(trailers[mv], CACHE).length}곳`);
+    console.log(bad.length ? `  ⚠ 컷 경계·카드 경계 ${SCENE_GAP}초 안에 원본 장면 전환이 남은 컷: ${bad.map((a) => `${adj.indexOf(a) + 1}번(${a.hits.join(',')})`).join(' ')}` : `  ✅ 컷 경계·카드 경계 ${SCENE_GAP}초 안에 원본 장면 전환 없음(컷 ${adj.length}개${adj.some((a) => a.inner.length) ? `, 구간 안쪽 전환 ${adj.filter((a) => a.inner.length).length}컷에 남음` : ', 구간 안쪽 전환도 없음'})`);
+  }
+  const all = cutTimeline(cuts, endSpec?.src, nar.duration); // 전체 컷(소리용)
+  const bodyDur = all.total; // 내레이션 끝(엔딩 직전)
   const cardScene = cardAt !== null;
   if (cardScene && !OUTRO) throw new Error('--reel-trend: cardFrom(카드 장면)은 엔딩 샷(outro)과 함께 써요');
   const vid = cardScene ? cutTimeline(cuts.filter((c) => c.t < cardAt - 0.0005), null, cardAt) : all; // 영상에 쓰는 컷
