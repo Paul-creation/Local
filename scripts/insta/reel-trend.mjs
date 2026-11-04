@@ -32,7 +32,7 @@ const ROOT = path.resolve(DIR, '../..');
 const MINT = '#5CF2B0';
 const CX = (RS.w - RS.rightGap) / 2; // 자막·카드 가운데 x = 470
 const OUTRO_GAME_TAIL = 0.3, OUTRO_PAD = 0.6, OUTRO_SEC_NO_VOICE = 1.6; // 엔딩 길이 = 시그니처 음성 길이 + 0.6초, 게임 소리는 엔딩 진입 0.3초 안에 사라진다
-const SUB_X = 540, SUB_Y = 1000; // 자막 가운데(고정)
+const SUB_X = 540, SUB_Y = 1000, SUB_Y_FULL = 960; // 자막 가운데(고정). full 레이아웃은 화면 정중앙(960)
 const FG_Y = 285, FG_W = 1080, FG_H = 1350; // 영상은 원본 높이 기준 4:5로 가운데 크롭(컷마다 cut.x 0~1로 가로 위치 조정, 기본 0.5)해 y 285~1635에 두고, 위아래는 같은 영상을 크게 블러·어둡게 깐다
 const FG_X = 0;
 const CARD_CX = 540, CARD_Y = 960; // 정보 카드는 항상 화면 정중앙(오른쪽 140px 여백 규칙은 카드에 적용하지 않는다) // 카드 가운데 y
@@ -81,8 +81,8 @@ const logoHtml = (font, top = FG_Y + 26, full = false) => `<!doctype html><meta 
 // 자막 한 덩어리: 흰 글씨 72px Black(900) + 검은 외곽선 5px(바깥쪽, 10px 선 + paint-order, 둥근 모서리), 그림자 없음. 2배 해상도(144px·외곽선 10px)로 그린 뒤 50%로 줄여 합성(가장자리 매끈하게). [ ]로 감싼 말, 그리고 KEY_WORDS는 민트
 const KEY_WORDS = ['컨닝으로', '지우개가', '무전기로', '기절시키고', '다 같이', '파이널스 위크'];
 const subMark = (text) => (/\[/.test(text) ? text : KEY_WORDS.includes(text.trim()) ? `[${text.trim()}]` : text);
-const subHtml = (font, text, size = 72) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
-.sub { position: absolute; left: ${SUB_X}px; top: ${SUB_Y}px; transform: translate(-50%, -50%); white-space: nowrap; font-size: ${size}px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.2; color: #fff; -webkit-text-stroke: 10px #000; paint-order: stroke fill; stroke-linejoin: round; }
+const subHtml = (font, text, size = 72, full = false) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
+.sub { position: absolute; left: ${SUB_X}px; top: ${full ? SUB_Y_FULL : SUB_Y}px; transform: translate(-50%, -50%); white-space: nowrap; font-size: ${size}px; font-weight: ${full ? 800 : 900}; letter-spacing: -0.03em; line-height: 1.2; color: #fff; -webkit-text-stroke: ${full ? 14 : 10}px #000; paint-order: stroke fill; stroke-linejoin: round;${full ? ' filter: drop-shadow(0 4px 0 rgba(0,0,0,.6));' : ''} }
 .sub .k { color: ${MINT}; }
 </style><div class="sub" id="s">${esc(subMark(text)).replace(/\[([^\]]+)\]/g, '<span class="k">$1</span>')}</div>`;
 
@@ -542,11 +542,11 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
     for (let i = 0; i < chunks.length; i++) {
       if (cardScene && chunks[i].start >= vidDur - 0.02) break; // 카드 장면에는 자막 없음
       if (cardScene) chunks[i].to = Math.min(chunks[i].to, vidDur);
-      await subPage.setContent(subHtml(font, chunks[i].text, FULL && i === 0 ? 96 : 72), { waitUntil: 'load' }); await subPage.evaluate(() => document.fonts.ready);
+      await subPage.setContent(subHtml(font, chunks[i].text, FULL ? (i === 0 ? 104 : 84) : 72, FULL), { waitUntil: 'load' }); await subPage.evaluate(() => document.fonts.ready);
       const r = await subPage.evaluate(() => { const b = document.getElementById('s').getBoundingClientRect(); return { l: b.left, t: b.top, w: b.width, h: b.height }; });
       const W = Math.ceil(r.w / 2) * 2 + 64, H = Math.ceil(r.h / 2) * 2 + 64; // 외곽선 여유, 가운데 유지
       const file = path.join(CACHE, `trend-${postId}-sub${i}.png`);
-      const big = await subPage.screenshot({ clip: { x: Math.round(SUB_X - W / 2), y: Math.round(SUB_Y - H / 2), width: W, height: H }, omitBackground: true }); // 2배(2W×2H)
+      const big = await subPage.screenshot({ clip: { x: Math.round(SUB_X - W / 2), y: Math.round((FULL ? SUB_Y_FULL : SUB_Y) - H / 2), width: W, height: H }, omitBackground: true }); // 2배(2W×2H)
       await sharp(big).resize(W, H, { kernel: 'lanczos3' }).png().toFile(file); // 50%로 줄임
       if (SUB_X + r.w / 2 > RS.w - RS.rightGap || SUB_X - r.w / 2 < 0) throw new Error(`--reel-trend: 자막 "${chunks[i].text}"가 안전 영역(오른쪽 140px)을 넘어요`);
       subs.push({ file, ...chunks[i] });
@@ -589,7 +589,7 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
   subs.forEach((c, i) => {
     const k = n + 1 + i, P = `(${POP_FROM}+${1 - POP_FROM}*min(1,max(0,(t-${T(c.start)})/${POP})))`;
     g.push(`[${k}:v]format=rgba,scale=w='trunc(iw*${P}/2)*2':h='trunc(ih*${P}/2)*2':eval=frame[p${i}]`);
-    g.push(`[v${i + 1}][p${i}]overlay=x='${SUB_X}-w/2':y='if(between(t,${T(c0)},${T(c1)}),${SUB_Y_CARD},${SUB_Y})-h/2':eof_action=pass:enable='between(t,${T(c.start)},${T(c.to)})':format=auto[v${i + 2}]`);
+    g.push(`[v${i + 1}][p${i}]overlay=x='${SUB_X}-w/2':y='if(between(t,${T(c0)},${T(c1)}),${SUB_Y_CARD},${FULL ? SUB_Y_FULL : SUB_Y})-h/2':eof_action=pass:enable='between(t,${T(c.start)},${T(c.to)})':format=auto[v${i + 2}]`);
   });
   const kc = n + 1 + subs.length, last = subs.length + 1;
   if (!hasCard) g.push(`[v${last}]format=yuv420p[o]`);
