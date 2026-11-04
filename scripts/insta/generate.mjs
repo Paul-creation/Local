@@ -9,7 +9,7 @@
 //       npm run insta -- <post-id> --showcase  (인디 추천: 표지 + 게임마다 영상 장(mp4, 위 트레일러 + 아래 검은 패널)과 시그니처 장(데이터 상세) + 팔로우 카드. 문구는 copy/<post-id>.json)
 //       npm run insta -- <post-id> --reel      (세로 릴스 1080×1920: 훅 + 게임 장 + 팔로우 카드 → out/<post-id>/reel.mp4 + 장별 미리보기 png. 무음, 트레일러·가격은 DB 값만. 문구는 copy/<post-id>.json)
 //       npm run insta -- <post-id> --reel-single (게임 하나 소개 세로 릴스 1080×1920, 텍스트 고정형: 로고·제목·정보 줄·트레일러·설명. 문구·구간은 copy/<post-id>.json → out/<post-id>/reel.mp4 + still.png)
-//       npm run insta -- <post-id> --reel-trend (신작 릴스 1080×1920 약 25초: 트레일러 전체 화면 + 가운데 단어 자막 7비트 + 정보 카드 + 루프, 원본 오디오. 문구·구간은 copy/<post-id>.json → out/<post-id>/reel.mp4 + still-subtitle.png + still-card.png)
+//       npm run insta -- <post-id> --reel-trend (신작 릴스 1080×1920 약 25초: 트레일러 전체 화면 + 가운데 단어 자막 7비트 + 정보 카드 + 루프, 원본 오디오. 문구·구간은 copy/<post-id>.json → out/<post-id>/reel-ig.mp4 + still-subtitle.png + still-card.png)
 //       npm run og                       (공유 미리보기 public/og-default.png, posts/og.json)
 // 처음 한 번: npm ci (브라우저가 없으면 npx playwright install chromium)
 import fs from 'fs';
