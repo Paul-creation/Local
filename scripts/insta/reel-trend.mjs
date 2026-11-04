@@ -7,6 +7,9 @@
 // 오디오: 배경음악 없음. 내레이션 -14 LUFS, 트레일러 원본은 -14 LUFS로 맞춘 뒤 내레이션 중에 -8dB(≈-22 LUFS)로 덕킹(말 사이 0.7초 넘는 쉼에는 원래대로), 컷 경계 0.1초 크로스페이드, 끝 0.8초 페이드아웃
 // 영상 길이 = 내레이션 길이 + 1초(마지막 1초는 첫 컷과 같은 알 장면 — 루프). 컷은 copy.cuts의 t(초, 내레이션 기준)에서 바뀐다
 // 컷 기본 규칙(scene-cuts.mjs): 컷 경계 +0.3초(copy.cutExtend)·0.8초 미만 컷은 옆 컷과 합침(copy.minCut)·트레일러 원본 장면 전환(ffmpeg select gt(scene,0.3))이 컷·카드 경계 앞뒤 0.5초 안에 끼지 않게 원본 구간을 옮기고 확인(copy.sceneAvoid:false로 끔)
+// copy.sceneExtra: 자동 감지(급한 전환만 잡음)가 놓치는 느린 디졸브를 직접 등록 {영상 이름: [시각…]}
+// 원본 구간 중복 방지(기본): 컷의 원본 구간은 한 번만 쓴다 — 다른 컷과 조금이라도 겹치면 아직 안 쓴 다른 구간으로 옮긴다(scene-cuts.mjs uniqueSources). 렌더 뒤 연속한 두 컷의 첫 프레임 SSIM이 0.9 이상이면 실패로 보고 그 컷을 다른 구간으로 골라 다시 렌더(최대 4번)
+// 카드 전환(cardFrom): 카드 직전 컷은 카드 끝까지 이어지는 한 장면(카드 시작 1초 전~카드 끝에 원본 장면 전환 없음)이고, 카드 시작에 하드컷 대신 그 장면이 계속 재생되면서 0.4초 동안 블러 0→30px·밝기 100→60%(ease-out), 카드는 0.05초 늦게 0.35초 동안 불투명도 0→100%·94→100%·20px 아래에서 위로(ease-out). 카드 진입 효과음 없음. 카드→엔딩은 sfx-whoosh와 하드컷
 // 실행: npm run insta -- <post-id> --reel-trend   (copy/<post-id>.json → out/<post-id>/reel.mp4 + still-subtitle.png + still-card.png)
 // 자막: copy.chunks(직접 지정, [핵심]) 없으면 자동(copy.keys = 민트 구절). 0.35초 미만 덩어리 합치기·12자·3어절 규칙은 subtitle-chunks.mjs
 // copy: appid, movie(스팀 영상 이름), maxPlayers(선택), cardTitle(선택), narration{voiceId, cacheName, voiceSettings, text}, chunks[](자막 어절 묶음, 대본 순서, [핵심]), card{chunk, sec}, cuts[{t, src:[시작초, 끝초]}](t=0부터), endClip(첫 컷과 같은 알 장면, 1초만 쓴다)
@@ -20,7 +23,7 @@ import { RS, ff, buildAudio, trailerAudioFromDb, steamMovie } from './reel-singl
 import { trailerFromDb } from './reel.mjs';
 import { getNarrationBySentence } from './narration-sentences.mjs';
 import { autoChunks, mergeShortChunks, MIN_SEC } from './subtitle-chunks.mjs';
-import { CUT_EXTEND, MIN_CUT, SCENE_GAP, stretchCuts, avoidSceneCuts, detectSceneCuts } from './scene-cuts.mjs';
+import { CUT_EXTEND, MIN_CUT, SCENE_GAP, stretchCuts, uniqueSources, detectSceneCuts } from './scene-cuts.mjs';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DIR, '../..');
@@ -331,17 +334,54 @@ async function composeOutro({ font, lastPng, out, CACHE, postId, outro }) {
   ff([...loop(bg), ...loop(lg.file), ...texts.flatMap((t) => loop(t.file)), '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', outro.sec.toFixed(3), '-r', String(fps), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '10', '-pix_fmt', 'yuv420p', out]);
 }
 
-// 카드 장면: 직전 컷의 마지막 장면을 블러(40px) + 40% 어둡게 한 정지 배경 위에, 정보 카드가 하드컷으로 나타난다(0.06초 동안 96%→100% 스냅). 오버레이를 같은 구성으로 얹는다
-function composeCardScene({ lastPng, clip, sec, out, CACHE, postId }) {
-  const { w, h, fps } = RS;
-  const bg = path.join(CACHE, `trend-${postId}-cardbg.png`);
-  ff(['-i', lastPng, '-vf', `scale=${w / 4}:${h / 4},gblur=sigma=10,scale=${w}:${h},colorchannelmixer=rr=0.6:gg=0.6:bb=0.6`, '-frames:v', '1', bg]);
-  const P = '(0.96+0.04*min(1,t/0.06))';
-  const g = `[1:v]format=rgba,scale=w='trunc(iw*${P}/2)*2':h='trunc(ih*${P}/2)*2':eval=frame[c];[0:v][c]overlay=x='${clip.cx}-w/2':y='${clip.cy}-h/2':format=auto,format=yuv420p[o]`;
-  ff(['-loop', '1', '-framerate', String(fps), '-t', sec.toFixed(3), '-i', bg, '-loop', '1', '-framerate', String(fps), '-t', sec.toFixed(3), '-i', clip.file, '-filter_complex', g, '-map', '[o]', '-an', '-t', sec.toFixed(3), '-r', String(fps), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '10', '-pix_fmt', 'yuv420p', out]);
+// 카드 장면(블러 디졸브): 카드 직전 컷의 장면이 멈추지 않고 계속 재생되면서(원본 trailer a초부터 sec초) 0.4초 동안 배경 블러 0→30px(가우시안 sigma)·밝기 100→60%(ease-out). 카드는 0.05초 늦게 시작해 0.35초 동안 불투명도 0→100%·크기 94→100%·20px 아래에서 위로(ease-out). 값은 프레임마다 sendcmd로 바꾼다
+const DISSOLVE = { blurSec: 0.4, blurMax: 30, dim: 0.6, cardDelay: 0.05, cardSec: 0.35, cardFrom: 0.94, cardRise: 20 };
+const easeOut = (x) => 1 - (1 - Math.min(1, Math.max(0, x))) ** 3;
+function composeCardScene({ trailer, a, sec, x, clip, out, CACHE, postId }) {
+  const { w, h, fps } = RS, D = DISSOLVE;
+  const cmd = path.join(CACHE, `trend-${postId}-dissolve.txt`);
+  const lines = [];
+  for (let k = 0; k <= Math.ceil(D.blurSec * fps) + 1; k++) { // 프레임마다 값 갱신(끝난 뒤에는 마지막 값 유지)
+    const t = k / fps, eb = easeOut(t / D.blurSec), ec = easeOut((t - D.cardDelay) / D.cardSec), br = (1 - (1 - D.dim) * eb).toFixed(4);
+    lines.push(`${t.toFixed(4)} gblur@bl sigma ${Math.max(0.01, D.blurMax * eb).toFixed(3)}, colorchannelmixer@dm rr ${br}, colorchannelmixer@dm gg ${br}, colorchannelmixer@dm bb ${br}, colorchannelmixer@ca aa ${ec.toFixed(4)};`);
+  }
+  fs.writeFileSync(cmd, lines.join('\n') + '\n');
+  const E = `(1-pow(1-clip((t-${D.cardDelay})/${D.cardSec},0,1),3))`; // 카드 ease-out 진행도 0→1
+  const P = `(${D.cardFrom}+${1 - D.cardFrom}*${E})`;
+  const g = [
+    `[0:v]fps=${fps},setsar=1,setpts=PTS-STARTPTS,split[a][b]`,
+    `[a]crop=ih*4/5:ih:(iw-ih*4/5)*${x}:0,scale=${FG_W}:${FG_H}[f]`,
+    `[b]scale=-2:480,crop=270:480,gblur=sigma=10,scale=${w}:${h},colorchannelmixer=rr=0.65:gg=0.65:bb=0.65[g]`,
+    `[g][f]overlay=x=${FG_X}:y=${FG_Y}:format=auto,format=yuv420p,sendcmd=f='${cmd}',gblur@bl=sigma=0.01,colorchannelmixer@dm=rr=1:gg=1:bb=1[bg]`,
+    `[1:v]format=rgba,colorchannelmixer@ca=aa=0,scale=w='trunc(iw*${P}/2)*2':h='trunc(ih*${P}/2)*2':eval=frame[c]`,
+    `[bg][c]overlay=x='${clip.cx}-w/2':y='${clip.cy}-h/2+${D.cardRise}*(1-${E})':format=auto,format=yuv420p[o]`,
+  ];
+  ff(['-ss', a.toFixed(3), '-t', sec.toFixed(3), '-i', trailer, '-loop', '1', '-framerate', String(fps), '-t', sec.toFixed(3), '-i', clip.file, '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', sec.toFixed(3), '-r', String(fps), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '10', '-pix_fmt', 'yuv420p', out]);
 }
 
-export async function runReelTrend(postId, { refresh = false } = {}) {
+// 렌더 후 검사용: 최종 영상에서 연속한 두 컷의 첫 프레임(영상 부분 4:5 영역)의 SSIM
+function ssimOf(a, b) {
+  const r = run(['-i', a, '-i', b, '-lavfi', 'ssim', '-f', 'null', '-']);
+  const m = /All:([\d.]+)/.exec(r.stderr);
+  if (!m) throw new Error('--reel-trend: SSIM을 못 쟀어요');
+  return Number(m[1]);
+}
+export const SSIM_MAX = 0.9, RETRY_MAX = 4;
+
+// 렌더 + 검사: 연속 컷의 첫 프레임 SSIM이 0.9 이상이면 실패로 보고 그 컷(뒤쪽)의 원본 구간 ±3초를 빼고 다시 고른다(최대 4번)
+export async function runReelTrend(postId, opts = {}) {
+  const banned = [];
+  for (let attempt = 0; ; attempt++) {
+    const r = await runReelTrendOnce(postId, opts, banned);
+    if (!r?.bad?.length) return r;
+    console.log(`  ⚠ 연속 컷 첫 프레임 SSIM ${SSIM_MAX} 이상: ${r.bad.map((b) => `컷 ${b.i}→${b.i + 1} (${b.ssim.toFixed(3)})`).join(', ')}`);
+    if (attempt >= RETRY_MAX) { console.log(`  ⛔ ${RETRY_MAX}번 다시 골랐지만 비슷한 컷이 남았어요`); return r; }
+    for (const b of r.bad) banned.push({ movie: b.movie, a: b.a - 3, b: b.b + 3 });
+    console.log(`  → 그 컷의 원본 구간(±3초)을 빼고 다시 골라 렌더합니다 (${attempt + 1}/${RETRY_MAX})`);
+  }
+}
+
+async function runReelTrendOnce(postId, { refresh = false } = {}, banned = []) {
   const copyFile = path.join(DIR, 'copy', `${postId}.json`);
   if (!fs.existsSync(copyFile)) throw new Error(`--reel-trend: ${path.relative(ROOT, copyFile)}이 없어요`);
   const copy = JSON.parse(fs.readFileSync(copyFile, 'utf8'));
@@ -361,7 +401,7 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   const partMovies = [...copy.cuts.map((c) => c.movie ?? copy.movie), ...(endSpec ? [endSpec.movie ?? copy.movie] : [])];
   const outDir = path.join(DIR, 'out', postId);
   fs.mkdirSync(outDir, { recursive: true });
-  for (const f of ['reel.mp4', 'still-subtitle.png', 'still-card.png', 'still-end.png', 'still-outro.png']) fs.rmSync(path.join(outDir, f), { force: true }); // 내레이션 캐시(narration*.mp3·json)와 voice-samples는 남긴다
+  if (!process.env.REEL_PLAN_ONLY) for (const f of ['reel.mp4', 'still-subtitle.png', 'still-card.png', 'still-end.png', 'still-outro.png']) fs.rmSync(path.join(outDir, f), { force: true }); // 내레이션 캐시(narration*.mp3·json)와 voice-samples는 남긴다
 
   const rawNar = await getNarration(outDir, copy.narration);
   const nar = copy.narration.tighten === false ? rawNar : tightenNarration(outDir, rawNar, copy.narration.cacheName ?? 'narration', { ...copy.narration.silence, ...(copy.narration.atempo !== undefined ? { atempo: copy.narration.atempo } : {}) }); // 무음 압축(기본)
@@ -386,19 +426,38 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
     cuts = stretchCuts(cuts, { extend: copy.cutExtend ?? CUT_EXTEND, minCut: copy.minCut ?? MIN_CUT, end: nar.duration, card: cardAt });
     console.log(`  컷 경계 +${copy.cutExtend ?? CUT_EXTEND}초, ${copy.minCut ?? MIN_CUT}초 미만 컷 합치기: ${before}컷 → ${cuts.length}컷`);
   }
-  // 기본 규칙 2: 트레일러 원본의 장면 전환(ffmpeg select gt(scene,0.3))이 컷 경계·카드 경계 앞뒤 0.5초 안에 끼지 않게 컷의 원본 구간을 옮기고 결과를 확인한다(copy.sceneAvoid:false로 끔)
-  if (!endSpec && copy.sceneAvoid !== false) {
-    const vcuts = cuts.filter((c) => cardAt === null || c.t < cardAt - 0.0005);
-    const durOfMovie = {}, probe = (mv) => (durOfMovie[mv] ??= Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', trailers[mv]]).toString()));
-    const segIn = vcuts.map((c, i) => ({ movie: c.movie ?? copy.movie, a: c.src[0], dur: Math.min(vcuts[i + 1]?.t ?? Infinity, cardAt ?? Infinity, nar.duration) - c.t }));
-    const adj = avoidSceneCuts(segIn, (mv) => detectSceneCuts(trailers[mv], CACHE), { gap: SCENE_GAP, durOf: probe });
-    adj.forEach((a, i) => { const c = vcuts[i]; c.src = [a.a, a.a + (c.src[1] - c.src[0])]; });
-    const bad = adj.filter((a) => !a.clean || a.hits.length);
-    adj.forEach((a, i) => { if (a.shift) console.log(`  장면 전환 회피: 컷 ${i + 1}(t=${vcuts[i].t.toFixed(2)}) 원본 구간 ${a.shift > 0 ? '+' : ''}${a.shift}초 이동 → ${a.a.toFixed(2)}~${(a.a + a.dur).toFixed(2)}`); });
-    for (const mv of new Set(segIn.map((s) => s.movie))) console.log(`  원본 장면 전환(${mv}) ${detectSceneCuts(trailers[mv], CACHE).length}곳`);
-    console.log(bad.length ? `  ⚠ 컷 경계·카드 경계 ${SCENE_GAP}초 안에 원본 장면 전환이 남은 컷: ${bad.map((a) => `${adj.indexOf(a) + 1}번(${a.hits.join(',')})`).join(' ')}` : `  ✅ 컷 경계·카드 경계 ${SCENE_GAP}초 안에 원본 장면 전환 없음(컷 ${adj.length}개${adj.some((a) => a.inner.length) ? `, 구간 안쪽 전환 ${adj.filter((a) => a.inner.length).length}컷에 남음` : ', 구간 안쪽 전환도 없음'})`);
+  // 기본 규칙 2: 원본 구간 중복 방지 + 장면 전환 회피. 컷의 원본 구간은 한 번만 쓴다(다른 컷과 조금이라도 겹치면 아직 안 쓴 다른 구간으로 옮김). 트레일러 원본의 장면 전환(ffmpeg select gt(scene,0.3))이 컷 경계·카드 경계 앞뒤 0.5초 안에 끼지 않게 하고, 구간 안에 전환이 없는 자리를 우선한다(copy.sceneAvoid:false로 전환 회피만 끔)
+  // 카드 장면(cardFrom): 카드 직전 컷은 카드 끝까지 한 장면으로 이어진다 — 카드 시작 1초 전부터 카드 끝까지 원본 장면 전환이 없는 구간을 쓰고, 그 컷이 1초보다 짧으면 앞으로 늘린다
+  let plannedSegs = null;
+  if (cardAt !== null) {
+    cuts = cuts.filter((c) => c.t < cardAt - 0.0005); // 카드 뒤 컷은 쓰지 않는다(소리도 마지막 컷이 이어서)
+    const lead = Math.max(0, cardAt - 1), last = cuts.at(-1);
+    if (last.t > lead + 0.0005) { // 마지막 컷이 1초보다 짧으면 앞으로 늘린다(앞 컷은 그만큼 줄고, 0.8초 미만이 되면 없앤다)
+      cuts = [...cuts.slice(0, -1).filter((c, i) => i === 0 || c.t < lead - MIN_CUT), { ...last, t: +lead.toFixed(3) }];
+      console.log(`  카드 직전 컷을 ${last.t.toFixed(2)}→${lead.toFixed(2)}초부터로 앞당김(카드 1초 전부터 한 장면)`);
+    }
   }
-  const all = cutTimeline(cuts, endSpec?.src, nar.duration); // 전체 컷(소리용)
+  if (!endSpec) {
+    const durOfMovie = {}, probe = (mv) => (durOfMovie[mv] ??= Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', trailers[mv]]).toString()));
+    const sceneOf = (mv) => (copy.sceneAvoid === false ? [] : [...detectSceneCuts(trailers[mv], CACHE), ...(copy.sceneExtra?.[mv] ?? [])].sort((x, y) => x - y)); // copy.sceneExtra: {영상 이름: [초…]} — 느린 디졸브처럼 자동 감지가 놓치는 전환을 눈으로 확인해 직접 적는다
+    const segIn = cuts.map((c, i) => ({ movie: c.movie ?? copy.movie, a: c.src[0], dur: (cuts[i + 1]?.t ?? nar.duration) - c.t }));
+    const adj = uniqueSources(segIn, sceneOf, { durOf: probe, gap: SCENE_GAP, banned });
+    adj.forEach((a, i) => { cuts[i].src = [a.a, +(a.a + a.dur).toFixed(3)]; });
+    adj.forEach((a, i) => { if (a.moved) console.log(`  원본 구간 이동: 컷 ${i + 1}(t=${cuts[i].t.toFixed(2)}) ${a.shift > 0 ? '+' : ''}${a.shift}초 → ${a.a.toFixed(2)}~${(a.a + a.dur).toFixed(2)}`); });
+    for (const mv of new Set(segIn.map((x) => x.movie))) console.log(`  원본 장면 전환(${mv}) ${sceneOf(mv).length}곳`);
+    const bad = adj.filter((a) => !a.clean || a.hits.length);
+    console.log(bad.length ? `  ⚠ 구간 안·양 끝 ${SCENE_GAP}초 안에 원본 장면 전환이 남은 컷: ${bad.map((a) => `${adj.indexOf(a) + 1}번(${[...a.hits, ...a.inner].join(',')})`).join(' ')}` : `  ✅ 원본 구간 중복 없음 · 컷 안·경계에 원본 장면 전환 없음(컷 ${adj.length}개)`);
+    if (cardAt !== null && bad.includes(adj.at(-1))) throw new Error('--reel-trend: 카드 직전 컷에 장면 전환 없는 구간을 못 찾았어요');
+    const ov = adj.flatMap((x, i) => adj.slice(i + 1).map((y, k) => ({ i, j: i + 1 + k, o: Math.min(x.a + x.dur, y.a + y.dur) - Math.max(x.a, y.a) }))).filter((p) => p.o > 0.001);
+    if (ov.length) throw new Error(`--reel-trend: 원본 구간이 겹치는 컷이 남았어요 ${JSON.stringify(ov)}`);
+    plannedSegs = adj;
+  }
+  if (process.env.REEL_PLAN_ONLY) { // 계획만 출력(렌더 안 함)
+    const plan = cutTimeline(cuts, null, nar.duration).segs;
+    console.log(`  컷 원본 구간(card ${cardAt}, 끝 ${nar.duration.toFixed(2)}): ${plan.map((x, i) => `${i + 1}[t${x.t.toFixed(2)}]:${x.src[0].toFixed(2)}~${x.src[1].toFixed(2)}`).join(' ')}`);
+    return;
+  }
+  const all = cutTimeline(cuts, endSpec?.src, nar.duration); // 전체 컷(소리용). 카드 장면이 있으면 마지막 컷이 카드 끝까지 이어진다
   const bodyDur = all.total; // 내레이션 끝(엔딩 직전)
   const cardScene = cardAt !== null;
   if (cardScene && !OUTRO) throw new Error('--reel-trend: cardFrom(카드 장면)은 엔딩 샷(outro)과 함께 써요');
@@ -485,7 +544,7 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   if (process.env.REEL_DEBUG) fs.writeFileSync(path.join(CACHE, `trend-${postId}-graph.txt`), JSON.stringify({ args: [...vin, ...oin], graph: g.join(';') }));
   ff(['-filter_threads', '1', ...vin, ...oin, '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', T(vidDur), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '10', '-pix_fmt', 'yuv420p', silent]); // 중간 파일은 거의 무손실(crf 10) — 마지막에 한 번만 crf 18로 인코딩
   { // 엔딩 샷 배경: 마지막 컷의 장면 1장을 본편과 같은 4:5 + 블러 구성으로(로고·자막 없이)
-    const li = parts.length - 1, [la, lb] = parts[li];
+    const li = cuts.length - 1, [la, lb] = all.parts[li]; // 마지막 컷(카드 장면이 있으면 카드 끝까지 이어진 구간)의 끝 장면
     ff(['-ss', T(lb - 0.05), '-i', trailers[partMovies[li]], '-frames:v', '1', '-filter_complex', `[0:v]split[a][b];[a]crop=ih*4/5:ih:(iw-ih*4/5)*${xs[li]}:0,scale=${FG_W}:${FG_H}[f];[b]scale=-2:480,crop=270:480,gblur=sigma=10,scale=${w}:${h},colorchannelmixer=rr=0.65:gg=0.65:bb=0.65[g];[g][f]overlay=x=${FG_X}:y=${FG_Y}:format=auto[o]`, '-map', '[o]', lastPng]);
   }
 
@@ -507,7 +566,12 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
     console.log(`  엔딩 ${outro.sec.toFixed(2)}초(음성 ${outro.voice ? path.relative(ROOT, outro.voice) : '없음'}, 이름 등장 ${outro.nameAt.toFixed(2)}초)`);
     const list = path.join(CACHE, `trend-${postId}-concat.txt`);
     let cardMp4 = null;
-    if (cardScene) { cardMp4 = path.join(CACHE, `trend-${postId}-cardscene.mp4`); composeCardScene({ lastPng, clip: cardClip, sec: bodyDur - cardAt, out: cardMp4, CACHE, postId }); console.log(`  카드 장면 ${cardAt.toFixed(2)}~${bodyDur.toFixed(2)}초(자막 숨김)`); }
+    if (cardScene) {
+      cardMp4 = path.join(CACHE, `trend-${postId}-cardscene.mp4`);
+      const ls = all.segs.at(-1), li = cuts.length - 1;
+      composeCardScene({ trailer: trailers[cuts[li].movie ?? copy.movie], a: ls.src[0] + (cardAt - ls.t), sec: bodyDur - cardAt, x: xs[li], clip: cardClip, out: cardMp4, CACHE, postId });
+      console.log(`  카드 장면 ${cardAt.toFixed(2)}~${bodyDur.toFixed(2)}초: 직전 컷 장면 계속 재생(원본 ${(ls.src[0] + (cardAt - ls.t)).toFixed(2)}~${ls.src[1].toFixed(2)}) + 블러 디졸브, 자막 숨김`);
+    }
     fs.writeFileSync(list, `file '${silent}'\n${cardMp4 ? `file '${cardMp4}'\n` : ''}file '${outroMp4}'\n`);
     silentAll = path.join(CACHE, `trend-${postId}-silent-all.mp4`);
     ff(['-f', 'concat', '-safe', '0', '-i', list, '-c', 'copy', silentAll]);
@@ -515,6 +579,18 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   const mp4 = path.join(outDir, 'reel.mp4');
   // 최종 인코딩: H.264 CRF 18 · preset medium · 1080×1920 · 30fps · 오디오 AAC 192k(믹스 단계에서 이미 AAC 192k라 그대로 담는다)
   ff(['-i', silentAll, '-i', m4a, '-map', '0:v', '-map', '1:a', '-vf', `scale=${w}:${h},fps=${fps}`, '-c:v', 'libx264', '-preset', 'medium', '-crf', '18', '-pix_fmt', 'yuv420p', '-c:a', 'copy', '-movflags', '+faststart', '-shortest', mp4]);
+
+  // 렌더 후 검사: 연속한 두 컷의 첫 프레임(영상 4:5 영역)이 거의 같으면(SSIM 0.9 이상) 실패
+  const bad = [], ssims = [];
+  {
+    const fr = segs.map((x, i) => { const f = path.join(CACHE, `trend-${postId}-first${i}.png`); ff(['-ss', T(x.t + 0.02), '-i', mp4, '-frames:v', '1', '-vf', `crop=${FG_W}:${FG_H}:${FG_X}:${FG_Y}`, f]); return f; });
+    for (let i = 1; i < fr.length; i++) {
+      const v = ssimOf(fr[i - 1], fr[i]);
+      ssims.push(v);
+      if (v >= SSIM_MAX) { const sg = plannedSegs?.[i]; if (sg) bad.push({ i, ssim: v, movie: sg.movie, a: sg.a, b: sg.a + sg.dur }); }
+    }
+    console.log(`  연속 컷 첫 프레임 SSIM: 최대 ${Math.max(...ssims).toFixed(3)} (기준 ${SSIM_MAX} 미만이어야 통과) — ${ssims.map((v) => v.toFixed(2)).join(' ')}`);
+  }
 
   // 정지 이미지: 자막 장면 1장(곡괭이 비트, 팝이 끝난 뒤), 정보 카드 1장(다 올라온 뒤)
   const pick = chunks.find((c) => chunkPlain(c.text).includes(chunkPlain(copy.stillChunk ?? '곡괭이'))) ?? chunks[Math.floor(chunks.length / 2)];
@@ -527,4 +603,5 @@ export async function runReelTrend(postId, { refresh = false } = {}) {
   const dur = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', mp4]).toString());
   console.log(`${path.relative(ROOT, mp4)} (${dur.toFixed(2)}초, 내레이션 + 덕킹한 원본 오디오 측정 ${measured} LUFS → -14 LUFS, 구간 경계 0.1초 크로스페이드)`);
   console.log(path.relative(ROOT, path.join(outDir, 'still-subtitle.png')), path.relative(ROOT, path.join(outDir, second)));
+  return { bad, ssims };
 }

@@ -3,6 +3,7 @@
  "appid": "5107900",
  "movie": "Gameplay Trailer",
  "maxPlayers": 4,
+ "sceneExtra": {"Gameplay Trailer": [56.35, 57.2]},
  "duckDb": -20,
  "stillChunk": "분쇄기에",
  "narration": {
