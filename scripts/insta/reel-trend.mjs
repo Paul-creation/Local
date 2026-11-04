@@ -72,10 +72,10 @@ export async function steamFacts(appid, copy) {
 const baseCss = (font) => `@font-face { font-family: P; src: url(data:font/woff2;base64,${font}); font-weight: 100 900; }
 * { margin: 0; box-sizing: border-box; } html, body { width: ${RS.w}px; height: ${RS.h}px; background: transparent; overflow: hidden; font-family: P, sans-serif; }`;
 
-const logoHtml = (font, top = FG_Y + 26) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
-.logo { position: absolute; left: ${FG_X + 28}px; top: ${top}px; display: flex; align-items: center; gap: 10px; opacity: 0.92; }
+const logoHtml = (font, top = FG_Y + 26, full = false) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
+.logo { position: absolute; left: ${full ? 48 : FG_X + 28}px; top: ${top}px; display: flex; align-items: center; gap: 10px; opacity: ${full ? 0.85 : 0.92}; ${full ? 'transform: scale(0.8); transform-origin: 0 0; filter: drop-shadow(0 0 4px rgba(0,0,0,.4));' : ''} }
 .logo i { width: 38px; height: 38px; border-radius: 11px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-style: normal; font-size: 27px; font-weight: 900; line-height: 1; }
-.logo b { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #fff; text-shadow: 0 0 8px rgba(0,0,0,.6); }
+.logo b { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #fff; ${full ? '' : 'text-shadow: 0 0 8px rgba(0,0,0,.6);'} }
 </style><div class="logo"><i>J</i><b>JamiDuNow</b></div>`;
 
 // 자막 한 덩어리: 흰 글씨 72px Black(900) + 검은 외곽선 5px(바깥쪽, 10px 선 + paint-order, 둥근 모서리), 그림자 없음. 2배 해상도(144px·외곽선 10px)로 그린 뒤 50%로 줄여 합성(가장자리 매끈하게). [ ]로 감싼 말, 그리고 KEY_WORDS는 민트
@@ -537,7 +537,7 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
     const subPage = await (await browser.newContext({ viewport: { width: RS.w, height: RS.h }, deviceScaleFactor: 2 })).newPage(); // 자막은 2배 해상도로 그린다
     const full = { x: 0, y: 0, width: RS.w, height: RS.h };
     const load = async (html) => { await page.setContent(html, { waitUntil: 'load' }); await page.evaluate(() => document.fonts.ready); };
-    await load(logoHtml(font, FULL ? 200 : undefined));
+    await load(logoHtml(font, FULL ? 170 : undefined, FULL));
     await page.screenshot({ path: logoPng, clip: full, omitBackground: true });
     for (let i = 0; i < chunks.length; i++) {
       if (cardScene && chunks[i].start >= vidDur - 0.02) break; // 카드 장면에는 자막 없음
