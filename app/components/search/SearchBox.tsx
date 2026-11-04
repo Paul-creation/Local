@@ -16,6 +16,8 @@ import { gameName } from '../../lib/gameName';
 const MAX_SUGGESTIONS = 6;
 const MAX_TAG_SUGGESTIONS = 4;
 const MAX_ACT_SUGGESTIONS = 2;
+const MAX_SIDE_WITH_GAMES = 2;
+const MAX_SIDE_NO_GAMES = 4;
 
 const playersLabel = (g: any) => playersText(g);
 
@@ -73,10 +75,20 @@ export default function SearchBox({ games, filters, leading, trailing, shortPlac
     ...suggestActivities(lastWord, taken, MAX_ACT_SUGGESTIONS),
     ...tagMatches.map(activityForTag).filter((a): a is ActivityKey => !!a && !taken.includes(a)),
   ])];
-  const suggestions = [
+  // 표시 순서: (검색어와 이름이 똑같은 태그·활동 1개) → 게임 → 나머지 태그·활동. 게임이 있으면 태그는 2개까지, 없으면 4개까지
+  type Sug = { kind: 'tag'; tag: string } | { kind: 'act'; act: ActivityKey } | { kind: 'game'; g: any };
+  const side: Sug[] = [
     ...tagSuggestions.map((tag) => ({ kind: 'tag' as const, tag })),
     ...actSuggestions.map((act) => ({ kind: 'act' as const, act })),
+  ];
+  const sideLabel = (x: Sug) => (x.kind === 'tag' ? tagKeyLabel(x.tag, tree) : x.kind === 'act' ? activityLabel(x.act) : '');
+  const exactAt = q ? side.findIndex((x) => sideLabel(x).toLowerCase() === q.toLowerCase()) : -1;
+  const exact = exactAt >= 0 ? side.splice(exactAt, 1) : [];
+  const sideMax = (gameSuggestions.length ? MAX_SIDE_WITH_GAMES : MAX_SIDE_NO_GAMES) - exact.length;
+  const suggestions: Sug[] = [
+    ...exact,
     ...gameSuggestions.map((g) => ({ kind: 'game' as const, g })),
+    ...side.slice(0, Math.max(0, sideMax)),
   ];
   const showList = open && suggestions.length > 0;
 

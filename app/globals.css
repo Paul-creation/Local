@@ -672,7 +672,7 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
   left: 0;
   right: 0;
   z-index: 50;
-  max-height: 288px;
+  max-height: min(45vh, 308px);
   overflow-y: auto;
   overscroll-behavior: contain;
   margin: 0;
