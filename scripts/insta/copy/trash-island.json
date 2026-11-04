@@ -117,26 +117,8 @@
    "at": "배를 만들고",
    "movie": "Gameplay Trailer",
    "src": [
-    74.6,
-    76.1
-   ],
-   "x": 0.2,
-   "pin": true
-  },
-  {
-   "at": "바다로 나가서",
-   "movie": "Gameplay Trailer",
-   "src": [
-    75.6,
-    77.4
-   ]
-  },
-  {
-   "at": "떠다니는 쓰레기를",
-   "movie": "Gameplay Trailer",
-   "src": [
-    52.9,
-    54.4
+    74.1,
+    77.3
    ],
    "pin": true
   },
@@ -237,15 +219,5 @@
   "출시 후",
   "플레이해보세요"
  ],
- "minCut": 1.0,
- "checkTiles": [
-  [
-   12,
-   16
-  ],
-  [
-   21,
-   23
-  ]
- ]
+ "minCut": 1.0
 }

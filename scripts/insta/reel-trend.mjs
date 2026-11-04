@@ -9,7 +9,7 @@
 // 컷 기본 규칙(scene-cuts.mjs): 컷 경계 +0.3초(copy.cutExtend)·0.8초 미만 컷은 옆 컷과 합침(copy.minCut)·트레일러 원본 장면 전환(ffmpeg select gt(scene,0.3))이 컷·카드 경계 앞뒤 0.5초 안에 끼지 않게 원본 구간을 옮기고 확인(copy.sceneAvoid:false로 끔)
 // copy.sceneExtra: 자동 감지(급한 전환만 잡음)가 놓치는 느린 디졸브를 직접 등록 {영상 이름: [시각…]}
 // 원본 구간 중복 방지(기본): 컷의 원본 구간은 한 번만 쓴다 — 다른 컷과 조금이라도 겹치면 아직 안 쓴 다른 구간으로 옮긴다(scene-cuts.mjs uniqueSources). 렌더 뒤 연속한 두 컷의 첫 프레임 SSIM이 0.9 이상이면 실패로 보고 그 컷을 다른 구간으로 골라 다시 렌더(최대 4번)
-// 카드 전환(cardFrom): 카드 직전 컷은 카드 끝까지 이어지는 한 장면(카드 시작 1초 전~카드 끝에 원본 장면 전환 없음)이고, 카드 시작에 하드컷 대신 그 장면이 계속 재생되면서 0.4초 동안 블러 0→30px·밝기 100→60%(ease-out), 카드는 0.05초 늦게 0.35초 동안 불투명도 0→100%·94→100%·20px 아래에서 위로(ease-out). 카드 진입 효과음 없음. 카드→엔딩은 sfx-whoosh와 하드컷
+// 카드 전환(cardFrom): 카드 직전 컷은 카드 직전까지 이어지는 한 장면(카드 시작 1초 전~카드 끝에 원본 장면 전환 없음)이고, 카드 시작에 하드컷 대신 그 장면이 계속 재생되면서 0.4초 동안 블러 0→30px·밝기 100→60%(ease-out), 카드는 0.05초 늦게 0.35초 동안 불투명도 0→100%·94→100%·20px 아래에서 위로(ease-out). 카드 진입 효과음 없음. 카드→엔딩은 sfx-whoosh와 하드컷
 // 실행: npm run insta -- <post-id> --reel-trend   (copy/<post-id>.json → out/<post-id>/reel.mp4 + still-subtitle.png + still-card.png)
 // 자막: copy.chunks(직접 지정, [핵심]) 없으면 자동(copy.keys = 민트 구절). 0.35초 미만 덩어리 합치기·12자·3어절 규칙은 subtitle-chunks.mjs
 // copy: appid, movie(스팀 영상 이름), maxPlayers(선택), cardTitle(선택), narration{voiceId, cacheName, voiceSettings, text}, chunks[](자막 어절 묶음, 대본 순서, [핵심]), card{chunk, sec}, cuts[{t, src:[시작초, 끝초]}](t=0부터), endClip(첫 컷과 같은 알 장면, 1초만 쓴다)
@@ -335,7 +335,7 @@ async function composeOutro({ font, lastPng, out, CACHE, postId, outro }) {
   ff([...loop(bg), ...loop(lg.file), ...texts.flatMap((t) => loop(t.file)), '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', outro.sec.toFixed(3), '-r', String(fps), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '10', '-pix_fmt', 'yuv420p', out]);
 }
 
-// 카드 장면(블러 디졸브): 카드 직전 컷의 장면이 멈추지 않고 계속 재생되면서(원본 trailer a초부터 sec초) 0.4초 동안 배경 블러 0→30px(가우시안 sigma)·밝기 100→60%(ease-out). 카드는 0.05초 늦게 시작해 0.35초 동안 불투명도 0→100%·크기 94→100%·20px 아래에서 위로(ease-out). 값은 프레임마다 sendcmd로 바꾼다
+// 카드 장면(블러 디졸브): 카드 직전 컷의 마지막 프레임을 정지 화면으로 깔고(원본 trailer a초 직전 1프레임) 0.4초 동안 배경 블러 0→30px(가우시안 sigma)·밝기 100→60%(ease-out). 카드는 0.05초 늦게 시작해 0.35초 동안 불투명도 0→100%·크기 94→100%·20px 아래에서 위로(ease-out). 값은 프레임마다 sendcmd로 바꾼다
 const DISSOLVE = { blurSec: 0.4, blurMax: 30, dim: 0.6, cardDelay: 0.05, cardSec: 0.35, cardFrom: 0.94, cardRise: 20 };
 const easeOut = (x) => 1 - (1 - Math.min(1, Math.max(0, x))) ** 3;
 function composeCardScene({ trailer, a, sec, x, clip, out, CACHE, postId }) {
@@ -357,7 +357,9 @@ function composeCardScene({ trailer, a, sec, x, clip, out, CACHE, postId }) {
     `[1:v]format=rgba,colorchannelmixer@ca=aa=0,scale=w='trunc(iw*${P}/2)*2':h='trunc(ih*${P}/2)*2':eval=frame[c]`,
     `[bg][c]overlay=x='${clip.cx}-w/2':y='${clip.cy}-h/2+${D.cardRise}*(1-${E})':format=auto,format=yuv420p[o]`,
   ];
-  ff(['-ss', a.toFixed(3), '-t', sec.toFixed(3), '-i', trailer, '-loop', '1', '-framerate', String(fps), '-t', sec.toFixed(3), '-i', clip.file, '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', sec.toFixed(3), '-r', String(fps), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '10', '-pix_fmt', 'yuv420p', out]);
+  const freeze = path.join(CACHE, `trend-${postId}-freeze.png`); // 카드 배경: 직전 컷의 마지막 프레임(카드 시작 직전 프레임)을 정지 화면으로
+  ff(['-ss', Math.max(0, a - 1 / fps).toFixed(4), '-i', trailer, '-frames:v', '1', freeze]);
+  ff(['-loop', '1', '-framerate', String(fps), '-t', sec.toFixed(3), '-i', freeze, '-loop', '1', '-framerate', String(fps), '-t', sec.toFixed(3), '-i', clip.file, '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', sec.toFixed(3), '-r', String(fps), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '10', '-pix_fmt', 'yuv420p', out]);
 }
 
 // 렌더 후 검사용: 최종 영상에서 연속한 두 컷의 첫 프레임(영상 부분 4:5 영역)의 SSIM
@@ -595,7 +597,7 @@ async function runReelTrendOnce(postId, { refresh = false } = {}, banned = []) {
       cardMp4 = path.join(CACHE, `trend-${postId}-cardscene.mp4`);
       const ls = all.segs.at(-1), li = cuts.length - 1;
       composeCardScene({ trailer: trailers[cuts[li].movie ?? copy.movie], a: ls.src[0] + (cardAt - ls.t), sec: bodyDur - cardAt, x: xs[li], clip: cardClip, out: cardMp4, CACHE, postId });
-      console.log(`  카드 장면 ${cardAt.toFixed(2)}~${bodyDur.toFixed(2)}초: 직전 컷 장면 계속 재생(원본 ${(ls.src[0] + (cardAt - ls.t)).toFixed(2)}~${ls.src[1].toFixed(2)}) + 블러 디졸브, 자막 숨김`);
+      console.log(`  카드 장면 ${cardAt.toFixed(2)}~${bodyDur.toFixed(2)}초: 직전 컷 마지막 프레임 정지(원본 ${(ls.src[0] + (cardAt - ls.t) - 1 / RS.fps).toFixed(3)}) + 블러 디졸브, 자막 숨김`);
     }
     fs.writeFileSync(list, `file '${silent}'\n${cardMp4 ? `file '${cardMp4}'\n` : ''}file '${outroMp4}'\n`);
     silentAll = path.join(CACHE, `trend-${postId}-silent-all.mp4`);
