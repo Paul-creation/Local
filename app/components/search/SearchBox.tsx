@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import type { GameFilters } from '../../lib/useGameFilters';
 import { matchRank } from '../../lib/searchMatch';
@@ -18,6 +18,9 @@ const MAX_TAG_SUGGESTIONS = 4;
 const MAX_ACT_SUGGESTIONS = 2;
 const MAX_SIDE_WITH_GAMES = 2;
 const MAX_SIDE_NO_GAMES = 4;
+const SUGGEST_MAX = 308;     // globals.css의 .search-suggest 기본 상한과 같은 값
+const SUGGEST_MARGIN = 16;   // 드롭다운 아랫변과 화면 아래 사이 여유
+const SUGGEST_MIN_ROOM = 150; // 게임 3개 높이 — 남은 공간이 이보다 작으면 검색창을 화면 위쪽으로 올린다
 
 const playersLabel = (g: any) => playersText(g);
 
@@ -46,6 +49,9 @@ export default function SearchBox({ games, filters, leading, trailing, shortPlac
   const boxRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
+  const ulRef = useRef<HTMLUListElement>(null);
+  const [maxH, setMaxH] = useState<number | null>(null);
+  const scrolledRef = useRef(false);
 
   const q = input.trim();
   // 이름(영어·한국어·별명 중 하나)이 검색어로 시작하는 게임을 먼저, 그다음 이름에 포함된 게임
@@ -91,6 +97,30 @@ export default function SearchBox({ games, filters, leading, trailing, shortPlac
     ...side.slice(0, Math.max(0, sideMax)),
   ];
   const showList = open && suggestions.length > 0;
+
+  // 드롭다운 높이 = min(308, 화면 아래 남은 공간 - 16). 열릴 때·창 크기·스크롤 때 다시 잰다.
+  // 남은 공간이 너무 좁으면 열릴 때 한 번만 검색창을 화면 위쪽으로 부드럽게 올린다 (입력할 때마다 반복하지 않음)
+  useLayoutEffect(() => {
+    if (!showList) { scrolledRef.current = false; return; }
+    const measure = () => {
+      const ul = ulRef.current;
+      if (!ul) return;
+      const room = window.innerHeight - ul.getBoundingClientRect().top - SUGGEST_MARGIN;
+      setMaxH(Math.max(0, Math.min(SUGGEST_MAX, Math.floor(room))));
+      return room;
+    };
+    const room = measure();
+    if (room !== undefined && room < SUGGEST_MIN_ROOM && !scrolledRef.current) {
+      scrolledRef.current = true;
+      boxRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
+    window.addEventListener('resize', measure);
+    window.addEventListener('scroll', measure, { passive: true });
+    return () => {
+      window.removeEventListener('resize', measure);
+      window.removeEventListener('scroll', measure);
+    };
+  }, [showList]);
 
   // 바깥을 누르면 닫기
   useEffect(() => {
@@ -166,7 +196,7 @@ export default function SearchBox({ games, filters, leading, trailing, shortPlac
   };
 
   return (
-    <div className="search-box" ref={boxRef}>
+    <div className="search-box" ref={boxRef} style={{ scrollMarginTop: 84 }}>
       <div className="search-box-field">
       <div className={`search-bar-clean${selectedTags.length || selectedActs.length ? ' has-chips' : ''}`}>
         {leading}
@@ -202,7 +232,7 @@ export default function SearchBox({ games, filters, leading, trailing, shortPlac
       </div>
 
       {showList && (
-        <ul className="search-suggest" id="search-suggest" role="listbox">
+        <ul className="search-suggest" id="search-suggest" role="listbox" ref={ulRef} style={maxH != null ? { maxHeight: maxH } : undefined}>
           {suggestions.map((s, i) => s.kind === 'act' ? (
             <li key={`act-${s.act}`} role="option" id={`search-suggest-${i}`} aria-selected={i === active}>
               <button

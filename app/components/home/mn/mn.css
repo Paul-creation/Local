@@ -193,3 +193,12 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
 
 /* 단축키 표시는 터치 기기·768px 미만에서 숨김 (CSS라 마운트 전후 차이 없음) */
 @media (max-width: 767px), (pointer: coarse), (hover: none) { .mn-kbd { display: none; } }
+
+/* 낮은 데스크톱 화면(세로 820px 이하, 가로 768px 이상): 검색창이 화면 위 40% 안에 오도록 히어로 위쪽을 줄인다. 큰 화면·휴대폰은 그대로 */
+@media (min-width: 768px) and (max-height: 820px) {
+  .mn-hero { padding: 16px 0 56px; }
+  .mn .hero-label { margin-bottom: 10px; }
+  .mn-h1 { margin-bottom: 10px; font-size: clamp(36px, 7vw, 48px); }
+  .mn-sub { margin-bottom: 20px; }
+  .mn-sub br { display: none; }
+}
