@@ -49,3 +49,28 @@ export function avoidSceneCuts(segs, sceneOf, { gap = SCENE_GAP, maxShift = 6, d
     return { ...s, a: +a.toFixed(3), shift: +(d ?? 0).toFixed(2), clean: d !== undefined, hits: edgeHits(cutsAt, a, s.dur, gap), inner: innerHits(cutsAt, a, s.dur) };
   });
 }
+
+// 원본 구간 중복 방지: 시간순으로 구간을 확정하며, 이미 쓴 구간(placed)과 1프레임이라도 겹치면 아직 안 쓴 다른 구간으로 옮긴다. 원래 자리가 비어 있으면 그대로 둔다.
+// 후보는 원래 자리에서 가까운 순(±0.05초 단위, 영상 전체). 우선순위: ① 구간 안·양 끝에 원본 장면 전환이 없고 뒤 컷의 원래 자리와도 안 겹침 ② 장면 전환 없음 ③ 겹치지 않기만.
+// segs: [{movie, a, dur}] (시간순). banned: [{movie, a, b}] 추가로 쓰지 않을 구간(렌더 후 검사에서 걸린 곳). 반환: [{...seg, a, moved, clean}]
+export const OVERLAP_EPS = 0.001, SOURCE_PAD = 0.5; // SOURCE_PAD: 쓴 구간 앞뒤로 이만큼(초)도 비워서, 바로 이어지는 같은 장면이 다시 나오지 않게 한다
+export function uniqueSources(segs, sceneOf, { durOf, gap = SCENE_GAP, banned = [], minStart = 0, endMargin = 0 }) {
+  const placed = banned.map((b) => ({ movie: b.movie, a: b.a, b: b.b }));
+  const hit = (movie, a, b, list, pad = 0) => list.some((o) => o.movie === movie && Math.min(b, o.b + pad) - Math.max(a, o.a - pad) > OVERLAP_EPS);
+  return segs.map((s, i) => {
+    const cutsAt = sceneOf(s.movie), total = durOf(s.movie) - endMargin;
+    const later = segs.slice(i + 1).map((o) => ({ movie: o.movie, a: o.a, b: o.a + o.dur }));
+    const okRange = (a) => a >= minStart && a + s.dur <= total;
+    const free = (a) => okRange(a) && !hit(s.movie, a, a + s.dur, placed, SOURCE_PAD);
+    const noScene = (a) => !edgeHits(cutsAt, a, s.dur, gap).length && !innerHits(cutsAt, a, s.dur).length;
+    const tries = [0];
+    for (let d = 0.05; d <= total + 1e-9; d += 0.05) tries.push(d, -d);
+    const stay = free(s.a) && noScene(s.a); // 원래 자리가 비었고 장면 전환도 없으면 그대로
+    const pick = (f) => tries.find((d) => f(s.a + d));
+    const d = stay ? 0 : (pick((a) => free(a) && noScene(a) && !hit(s.movie, a, a + s.dur, later)) ?? pick((a) => free(a) && noScene(a)) ?? pick(free));
+    if (d === undefined) throw new Error(`--reel-trend: 컷 ${i + 1}에 쓸 수 있는 안 쓴 원본 구간이 없어요 (${s.dur.toFixed(2)}초)`);
+    const a = +(s.a + d).toFixed(3);
+    placed.push({ movie: s.movie, a, b: a + s.dur });
+    return { ...s, a, moved: Math.abs(d) > 1e-9, shift: +d.toFixed(2), clean: noScene(a), hits: edgeHits(cutsAt, a, s.dur, gap), inner: innerHits(cutsAt, a, s.dur) };
+  });
+}
