@@ -114,11 +114,18 @@ export default function SearchBox({ games, filters, leading, trailing, shortPlac
       scrolledRef.current = true;
       boxRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
     }
-    window.addEventListener('resize', measure);
-    window.addEventListener('scroll', measure, { passive: true });
+    // 스크롤·resize는 프레임당 한 번만 다시 잰다
+    let raf = 0;
+    const onChange = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => { raf = 0; measure(); });
+    };
+    window.addEventListener('resize', onChange, { passive: true });
+    window.addEventListener('scroll', onChange, { passive: true });
     return () => {
-      window.removeEventListener('resize', measure);
-      window.removeEventListener('scroll', measure);
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener('resize', onChange);
+      window.removeEventListener('scroll', onChange);
     };
   }, [showList]);
 
