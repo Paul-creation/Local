@@ -23,7 +23,7 @@ export function stretchCuts(cuts, { extend = CUT_EXTEND, minCut = MIN_CUT, end, 
   let out = cuts.map((c, i) => ({ ...c, t: i === 0 ? c.t : +(c.t + extend).toFixed(3) })).filter((c) => c.t < end - 0.001);
   for (;;) { // 가장 짧은 컷이 minCut 미만이면 합친다: 앞 컷이 그 구간을 이어받는다(첫 컷이 짧으면 둘째 컷을 없애 첫 컷이 이어받는다)
     const durs = out.map((c, i) => (c.t >= (card ?? Infinity) ? Infinity : Math.min(out[i + 1]?.t ?? end, card ?? Infinity) - c.t)); // 카드 장면 뒤 컷은 소리만 쓰이므로 길이 검사 제외
-    const k = durs.findIndex((d) => d < minCut - 1e-6);
+    const m = Math.min(...durs), k = m < minCut - 1e-6 ? durs.indexOf(m) : -1; // 가장 짧은 컷부터 합친다
     if (k < 0 || out.length === 1) return out;
     out.splice(k === 0 ? 1 : k, 1);
   }
@@ -55,16 +55,23 @@ export function avoidSceneCuts(segs, sceneOf, { gap = SCENE_GAP, maxShift = 6, d
 // segs: [{movie, a, dur}] (시간순). banned: [{movie, a, b}] 추가로 쓰지 않을 구간(렌더 후 검사에서 걸린 곳). 반환: [{...seg, a, moved, clean}]
 export const OVERLAP_EPS = 0.001, SOURCE_PAD = 0.5; // SOURCE_PAD: 쓴 구간 앞뒤로 이만큼(초)도 비워서, 바로 이어지는 같은 장면이 다시 나오지 않게 한다
 export function uniqueSources(segs, sceneOf, { durOf, gap = SCENE_GAP, banned = [], minStart = 0, endMargin = 0 }) {
-  const placed = banned.map((b) => ({ movie: b.movie, a: b.a, b: b.b }));
-  const hit = (movie, a, b, list, pad = 0) => list.some((o) => o.movie === movie && Math.min(b, o.b + pad) - Math.max(a, o.a - pad) > OVERLAP_EPS);
+  const bans = banned.map((b) => ({ movie: b.movie, a: b.a, b: b.b, forCut: b.forCut })); // forCut이 있으면 그 번째 컷만 피한다
+  const placed = [];
+  segs.forEach((x) => { if (x.pin) placed.push({ movie: x.movie, a: x.a, b: x.a + x.dur, pad: 0.05 }); }); // pin: 사람이 눈으로 골라 고정한 구간 — 옮기지 않고, 다른 컷이 이 자리를 피한다
+  const hit = (movie, a, b, list, pad = 0) => list.some((o) => o.movie === movie && Math.min(b, o.b + (o.pad ?? pad)) - Math.max(a, o.a - (o.pad ?? pad)) > OVERLAP_EPS);
   return segs.map((s, i) => {
     const cutsAt = sceneOf(s.movie), total = durOf(s.movie) - endMargin;
     const later = segs.slice(i + 1).map((o) => ({ movie: o.movie, a: o.a, b: o.a + o.dur }));
     const okRange = (a) => a >= minStart && a + s.dur <= total;
-    const free = (a) => okRange(a) && !hit(s.movie, a, a + s.dur, placed, SOURCE_PAD);
+    const mine = bans.filter((o) => o.forCut === undefined || o.forCut === i);
+    const free = (a) => okRange(a) && !hit(s.movie, a, a + s.dur, placed, SOURCE_PAD) && !hit(s.movie, a, a + s.dur, mine, 0);
     const noScene = (a) => !edgeHits(cutsAt, a, s.dur, gap).length && !innerHits(cutsAt, a, s.dur).length;
     const tries = [0];
     for (let d = 0.05; d <= total + 1e-9; d += 0.05) tries.push(d, -d);
+    if (s.pin) { // 고정 구간: 옮기지 않는다(다른 고정 구간과 겹치면 오류, 장면 전환이 끼면 clean:false로 알림)
+      if (segs.some((o, j) => j !== i && o.pin && o.movie === s.movie && Math.min(s.a + s.dur, o.a + o.dur) - Math.max(s.a, o.a) > OVERLAP_EPS)) throw new Error(`--reel-trend: 고정(pin) 컷 ${i + 1}의 원본 구간이 다른 고정 컷과 겹쳐요`);
+      return { ...s, moved: false, shift: 0, clean: noScene(s.a), hits: edgeHits(cutsAt, s.a, s.dur, gap), inner: innerHits(cutsAt, s.a, s.dur) };
+    }
     const stay = free(s.a) && noScene(s.a); // 원래 자리가 비었고 장면 전환도 없으면 그대로
     const pick = (f) => tries.find((d) => f(s.a + d));
     const d = stay ? 0 : (pick((a) => free(a) && noScene(a) && !hit(s.movie, a, a + s.dur, later)) ?? pick((a) => free(a) && noScene(a)) ?? pick(free));

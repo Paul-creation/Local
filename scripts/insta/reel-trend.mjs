@@ -37,6 +37,7 @@ const CARD_CX = 540, CARD_Y = 960; // 정보 카드는 항상 화면 정중앙(�
 const SUB_Y_CARD = 430; // 카드가 떠 있는 동안 자막 y(카드 위)
 const SAFE_BOTTOM = RS.h * 0.75; // 1440
 const POP = 0.08, POP_FROM = 0.85, CARD_IN = 0.2, CARD_SLIDE = 640;
+const T3 = (v) => Number(v).toFixed(3);
 const esc = (t) => String(t).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
 
 // 스팀 appdetails(kr) — 가격(정가)·출시일·한국어·최대 인원. DB에 없는 게임도 쓸 수 있게 스팀에서 직접 읽는다
@@ -366,7 +367,8 @@ function ssimOf(a, b) {
   if (!m) throw new Error('--reel-trend: SSIM을 못 쟀어요');
   return Number(m[1]);
 }
-export const SSIM_MAX = 0.9, RETRY_MAX = 4;
+export const SCENE_TOL = 0.4;
+export const SSIM_MAX = 0.6, RETRY_MAX = 0, SCENE_PICK = 0.2; // SSIM_MAX: 연속 컷의 첫 프레임끼리·중간 프레임끼리 SSIM이 이 값 이상이면 같은 장면으로 본다. SCENE_PICK: 구간을 고를 때 쓰는 장면 전환 감지 기준(0.3보다 예민하게 — 빠른 편집 구간을 피한다)
 
 // 렌더 + 검사: 연속 컷의 첫 프레임 SSIM이 0.9 이상이면 실패로 보고 그 컷(뒤쪽)의 원본 구간 ±3초를 빼고 다시 고른다(최대 4번)
 export async function runReelTrend(postId, opts = {}) {
@@ -374,7 +376,7 @@ export async function runReelTrend(postId, opts = {}) {
   for (let attempt = 0; ; attempt++) {
     const r = await runReelTrendOnce(postId, opts, banned);
     if (!r?.bad?.length) return r;
-    console.log(`  ⚠ 연속 컷 첫 프레임 SSIM ${SSIM_MAX} 이상: ${r.bad.map((b) => `컷 ${b.i}→${b.i + 1} (${b.ssim.toFixed(3)})`).join(', ')}`);
+    console.log(`  ⚠ 연속 컷 SSIM ${SSIM_MAX} 이상(같은 장면): ${r.bad.map((b) => `컷 ${b.i}→${b.i + 1} (${b.ssim.toFixed(3)}, 교체 대상 컷 ${b.k + 1})`).join(', ')}`);
     if (attempt >= RETRY_MAX) { console.log(`  ⛔ ${RETRY_MAX}번 다시 골랐지만 비슷한 컷이 남았어요`); return r; }
     for (const b of r.bad) banned.push({ movie: b.movie, a: b.a - 3, b: b.b + 3 });
     console.log(`  → 그 컷의 원본 구간(±3초)을 빼고 다시 골라 렌더합니다 (${attempt + 1}/${RETRY_MAX})`);
@@ -428,7 +430,7 @@ async function runReelTrendOnce(postId, { refresh = false } = {}, banned = []) {
   }
   // 기본 규칙 2: 원본 구간 중복 방지 + 장면 전환 회피. 컷의 원본 구간은 한 번만 쓴다(다른 컷과 조금이라도 겹치면 아직 안 쓴 다른 구간으로 옮김). 트레일러 원본의 장면 전환(ffmpeg select gt(scene,0.3))이 컷 경계·카드 경계 앞뒤 0.5초 안에 끼지 않게 하고, 구간 안에 전환이 없는 자리를 우선한다(copy.sceneAvoid:false로 전환 회피만 끔)
   // 카드 장면(cardFrom): 카드 직전 컷은 카드 끝까지 한 장면으로 이어진다 — 카드 시작 1초 전부터 카드 끝까지 원본 장면 전환이 없는 구간을 쓰고, 그 컷이 1초보다 짧으면 앞으로 늘린다
-  let plannedSegs = null;
+  let plannedSegs = null, sceneReport = null;
   if (cardAt !== null) {
     cuts = cuts.filter((c) => c.t < cardAt - 0.0005); // 카드 뒤 컷은 쓰지 않는다(소리도 마지막 컷이 이어서)
     const lead = Math.max(0, cardAt - 1), last = cuts.at(-1);
@@ -439,9 +441,32 @@ async function runReelTrendOnce(postId, { refresh = false } = {}, banned = []) {
   }
   if (!endSpec) {
     const durOfMovie = {}, probe = (mv) => (durOfMovie[mv] ??= Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', trailers[mv]]).toString()));
-    const sceneOf = (mv) => (copy.sceneAvoid === false ? [] : [...detectSceneCuts(trailers[mv], CACHE), ...(copy.sceneExtra?.[mv] ?? [])].sort((x, y) => x - y)); // copy.sceneExtra: {영상 이름: [초…]} — 느린 디졸브처럼 자동 감지가 놓치는 전환을 눈으로 확인해 직접 적는다
-    const segIn = cuts.map((c, i) => ({ movie: c.movie ?? copy.movie, a: c.src[0], dur: (cuts[i + 1]?.t ?? nar.duration) - c.t }));
-    const adj = uniqueSources(segIn, sceneOf, { durOf: probe, gap: SCENE_GAP, banned });
+    const sceneOf = (mv) => (copy.sceneAvoid === false ? [] : [...detectSceneCuts(trailers[mv], CACHE, SCENE_PICK), ...(copy.sceneExtra?.[mv] ?? [])].sort((x, y) => x - y)); // copy.sceneExtra: {영상 이름: [초…]} — 느린 디졸브처럼 자동 감지가 놓치는 전환을 눈으로 확인해 직접 적는다
+    const segIn = cuts.map((c, i) => ({ movie: c.movie ?? copy.movie, a: c.src[0], pin: !!c.pin, dur: (cuts[i + 1]?.t ?? nar.duration) - c.t }));
+    // 렌더 전에 원본 프레임으로 먼저 거른다: 연속한 두 컷의 첫 프레임끼리·중간 프레임끼리 SSIM이 0.6 이상이면 같은 장면 — 고정(pin)이 아닌 쪽 컷을 그 구간 ±2초를 빼고 다시 고른다(최대 8번)
+    const xOf = (i) => cuts[i].x ?? 0.5, gdir = path.join(CACHE, `trend-${postId}-plan`);
+    fs.mkdirSync(gdir, { recursive: true });
+    const grab = (a, i, tag) => { const f = path.join(gdir, `${tag}${i}.png`); ff(['-ss', T3(a), '-i', trailers[segIn[i].movie], '-frames:v', '1', '-vf', `crop=ih*4/5:ih:(iw-ih*4/5)*${xOf(i)}:0,scale=${FG_W}:${FG_H}`, f]); return f; };
+    const planBans = [...banned];
+    let adj;
+    for (let it = 0; ; it++) {
+      adj = uniqueSources(segIn, sceneOf, { durOf: probe, gap: SCENE_GAP, banned: planBans });
+      const fr = adj.map((a, i) => [grab(a.a + 0.02, i, 'f'), grab(a.a + a.dur / 2, i, 'm')]);
+      const sims = [];
+      let changed = false;
+      for (let i = 1; i < adj.length; i++) {
+        const v = Math.max(ssimOf(fr[i - 1][0], fr[i][0]), ssimOf(fr[i - 1][1], fr[i][1]));
+        sims.push(v);
+        if (v < SSIM_MAX) continue;
+        const k = !adj[i].pin ? i : !adj[i - 1].pin ? i - 1 : -1;
+        if (k < 0) { console.log(`  ⚠ 컷 ${i}→${i + 1}: 원본 프레임 SSIM ${v.toFixed(2)}(비슷)인데 둘 다 고정(pin)이라 못 바꿔요`); continue; }
+        planBans.push({ movie: adj[k].movie, a: adj[k].a - 2, b: adj[k].a + adj[k].dur + 2, forCut: k });
+        console.log(`  같은 장면(원본 SSIM ${v.toFixed(2)}): 컷 ${i}→${i + 1} → 컷 ${k + 1}을 다른 구간으로 교체`);
+        changed = true;
+        break; // 하나 바꾸면 처음부터 다시(뒤 컷이 따라 움직일 수 있어서)
+      }
+      if (!changed || it >= 8) { console.log(`  원본 프레임 SSIM(연속 컷, 기준 ${SSIM_MAX} 미만): 최대 ${Math.max(...sims).toFixed(2)}`); break; }
+    }
     adj.forEach((a, i) => { cuts[i].src = [a.a, +(a.a + a.dur).toFixed(3)]; });
     adj.forEach((a, i) => { if (a.moved) console.log(`  원본 구간 이동: 컷 ${i + 1}(t=${cuts[i].t.toFixed(2)}) ${a.shift > 0 ? '+' : ''}${a.shift}초 → ${a.a.toFixed(2)}~${(a.a + a.dur).toFixed(2)}`); });
     for (const mv of new Set(segIn.map((x) => x.movie))) console.log(`  원본 장면 전환(${mv}) ${sceneOf(mv).length}곳`);
@@ -580,16 +605,40 @@ async function runReelTrendOnce(postId, { refresh = false } = {}, banned = []) {
   // 최종 인코딩: H.264 CRF 18 · preset medium · 1080×1920 · 30fps · 오디오 AAC 192k(믹스 단계에서 이미 AAC 192k라 그대로 담는다)
   ff(['-i', silentAll, '-i', m4a, '-map', '0:v', '-map', '1:a', '-vf', `scale=${w}:${h},fps=${fps}`, '-c:v', 'libx264', '-preset', 'medium', '-crf', '18', '-pix_fmt', 'yuv420p', '-c:a', 'copy', '-movflags', '+faststart', '-shortest', mp4]);
 
-  // 렌더 후 검사: 연속한 두 컷의 첫 프레임(영상 4:5 영역)이 거의 같으면(SSIM 0.9 이상) 실패
+  // 렌더 후 검사 1: 연속한 두 컷의 첫 프레임끼리·중간 프레임끼리(영상 4:5 영역) SSIM이 0.6 이상이면 같은 장면으로 보고 뒤 컷을 다른 구간으로 교체(고정 pin 컷이면 앞 컷을 교체)
   const bad = [], ssims = [];
   {
-    const fr = segs.map((x, i) => { const f = path.join(CACHE, `trend-${postId}-first${i}.png`); ff(['-ss', T(x.t + 0.02), '-i', mp4, '-frames:v', '1', '-vf', `crop=${FG_W}:${FG_H}:${FG_X}:${FG_Y}`, f]); return f; });
-    for (let i = 1; i < fr.length; i++) {
-      const v = ssimOf(fr[i - 1], fr[i]);
-      ssims.push(v);
-      if (v >= SSIM_MAX) { const sg = plannedSegs?.[i]; if (sg) bad.push({ i, ssim: v, movie: sg.movie, a: sg.a, b: sg.a + sg.dur }); }
+    const grab = (name, at) => { const f = path.join(CACHE, `trend-${postId}-${name}.png`); ff(['-ss', T(at), '-i', mp4, '-frames:v', '1', '-vf', `crop=${FG_W}:${FG_H}:${FG_X}:${FG_Y}`, f]); return f; };
+    const first = segs.map((x, i) => grab(`first${i}`, x.t + 0.02)), mid = segs.map((x, i) => grab(`mid${i}`, x.t + x.dur / 2));
+    for (let i = 1; i < segs.length; i++) {
+      const a = ssimOf(first[i - 1], first[i]), b = ssimOf(mid[i - 1], mid[i]);
+      ssims.push({ i, first: a, mid: b });
+      if (Math.max(a, b) >= SSIM_MAX) {
+        const k = plannedSegs?.[i]?.pin ? i - 1 : i, sg = plannedSegs?.[k];
+        if (sg && !sg.pin) bad.push({ i, k, ssim: Math.max(a, b), movie: sg.movie, a: sg.a, b: sg.a + sg.dur });
+        else console.log(`  ⚠ 컷 ${i}→${i + 1}가 비슷하지만(SSIM ${Math.max(a, b).toFixed(2)}) 둘 다 고정(pin)이라 못 바꿔요`);
+      }
     }
-    console.log(`  연속 컷 첫 프레임 SSIM: 최대 ${Math.max(...ssims).toFixed(3)} (기준 ${SSIM_MAX} 미만이어야 통과) — ${ssims.map((v) => v.toFixed(2)).join(' ')}`);
+    console.log(`  연속 컷 SSIM(첫 프레임/중간 프레임, 기준 ${SSIM_MAX} 미만): 최대 ${Math.max(...ssims.map((v) => Math.max(v.first, v.mid))).toFixed(3)} — ${ssims.map((v) => `${v.i}→${v.i + 1} ${v.first.toFixed(2)}/${v.mid.toFixed(2)}`).join(' ')}`);
+  }
+  // 렌더 후 검사 2: 최종 영상의 장면 전환 시각(ffmpeg select gt(scene,0.25)) 전부 + 의도한 경계(컷 경계·카드 시작·엔딩 시작)와 대조
+  {
+    const r = run(['-i', mp4, '-an', '-vf', "scale=320:-2,select='gt(scene,0.25)',showinfo", '-f', 'null', '-']);
+    const times = [...r.stderr.matchAll(/pts_time:([\d.]+)/g)].map((m) => Number(m[1]));
+    const planned = [...segs.map((x) => x.t).slice(1), ...(cardScene ? [cardAt] : []), bodyDur];
+    const unplanned = times.filter((x) => !planned.some((p) => Math.abs(p - x) < SCENE_TOL)); // planned = 컷 +0.3초 연장을 이미 반영한 실제 경계(segs.t). 허용 오차 0.4초(컷 경계 앞뒤 원본 전환·페이드 때문에 감지 시각이 조금 어긋남)
+    const doubles = times.slice(1).map((x, i) => [times[i], x]).filter(([x, y]) => y - x < 0.3); // 0.3초 안에 전환이 두 번 난 곳
+    sceneReport = { times, planned, unplanned, doubles };
+    fs.writeFileSync(path.join(outDir, 'scene-check.txt'), `최종 영상 장면 전환(gt(scene,0.25)) ${times.length}곳\n${times.map((x) => x.toFixed(3)).join(' ')}\n의도한 경계 ${planned.length}곳\n${planned.map((x) => x.toFixed(3)).join(' ')}\n의도하지 않은 전환 ${unplanned.length}곳\n${unplanned.map((x) => x.toFixed(3)).join(' ')}\n0.3초 안에 두 번 난 전환 ${doubles.length}곳\n${doubles.map(([x, y]) => `${x.toFixed(3)}~${y.toFixed(3)}`).join(' ')}\n`);
+    console.log(`  최종 영상 장면 전환 ${times.length}곳: ${times.map((x) => x.toFixed(2)).join(' ')}`);
+    console.log(`  의도한 경계 ${planned.length}곳: ${planned.map((x) => x.toFixed(2)).join(' ')} → 의도 밖 전환(±${SCENE_TOL}초 밖) ${unplanned.length}곳${unplanned.length ? ': ' + unplanned.map((x) => x.toFixed(2)).join(' ') : ''}`);
+    console.log(`  0.3초 안에 전환이 두 번 난 곳 ${doubles.length}곳${doubles.length ? ': ' + doubles.map(([x, y]) => `${x.toFixed(3)}·${y.toFixed(3)}`).join(' ') : ''}`);
+  }
+  // 확인용 타일(copy.checkTiles: [[시작초, 끝초], …]) — 0.1초 간격 프레임 → out/<post-id>/check-<시작>-<끝>.png
+  for (const [a, b] of copy.checkTiles ?? []) {
+    const f = path.join(outDir, `check-${a}-${b}.png`);
+    ff(['-ss', T(a), '-t', T(b - a), '-i', mp4, '-an', '-vf', `fps=10,scale=216:-2,drawtext=text='%{pts\\:flt}':x=4:y=4:fontsize=20:fontcolor=yellow:box=1:boxcolor=black@0.6,tile=10x${Math.ceil(((b - a) * 10) / 10)}`, '-frames:v', '1', f]);
+    console.log(`  확인 타일: ${path.relative(ROOT, f)}`);
   }
 
   // 정지 이미지: 자막 장면 1장(곡괭이 비트, 팝이 끝난 뒤), 정보 카드 1장(다 올라온 뒤)
@@ -603,5 +652,5 @@ async function runReelTrendOnce(postId, { refresh = false } = {}, banned = []) {
   const dur = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', mp4]).toString());
   console.log(`${path.relative(ROOT, mp4)} (${dur.toFixed(2)}초, 내레이션 + 덕킹한 원본 오디오 측정 ${measured} LUFS → -14 LUFS, 구간 경계 0.1초 크로스페이드)`);
   console.log(path.relative(ROOT, path.join(outDir, 'still-subtitle.png')), path.relative(ROOT, path.join(outDir, second)));
-  return { bad, ssims };
+  return { bad, ssims, sceneReport };
 }
