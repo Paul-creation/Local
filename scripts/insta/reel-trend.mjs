@@ -338,7 +338,7 @@ async function composeOutro({ font, lastPng, out, CACHE, postId, outro }) {
 // 카드 장면(블러 디졸브): 카드 직전 컷의 마지막 프레임을 정지 화면으로 깔고(원본 trailer a초 직전 1프레임) 0.4초 동안 배경 블러 0→30px(가우시안 sigma)·밝기 100→60%(ease-out). 카드는 0.05초 늦게 시작해 0.35초 동안 불투명도 0→100%·크기 94→100%·20px 아래에서 위로(ease-out). 값은 프레임마다 sendcmd로 바꾼다
 const DISSOLVE = { blurSec: 0.4, blurMax: 30, dim: 0.6, cardDelay: 0.05, cardSec: 0.35, cardFrom: 0.94, cardRise: 20 };
 const easeOut = (x) => 1 - (1 - Math.min(1, Math.max(0, x))) ** 3;
-function composeCardScene({ trailer, a, sec, x, clip, out, CACHE, postId }) {
+function composeCardScene({ freeze, sec, clip, out, CACHE, postId }) {
   const { w, h, fps } = RS, D = DISSOLVE;
   const cmd = path.join(CACHE, `trend-${postId}-dissolve.txt`);
   const lines = [];
@@ -350,15 +350,10 @@ function composeCardScene({ trailer, a, sec, x, clip, out, CACHE, postId }) {
   const E = `(1-pow(1-clip((t-${D.cardDelay})/${D.cardSec},0,1),3))`; // 카드 ease-out 진행도 0→1
   const P = `(${D.cardFrom}+${1 - D.cardFrom}*${E})`;
   const g = [
-    `[0:v]fps=${fps},setsar=1,setpts=PTS-STARTPTS,split[a][b]`,
-    `[a]crop=ih*4/5:ih:(iw-ih*4/5)*${x}:0,scale=${FG_W}:${FG_H}[f]`,
-    `[b]scale=-2:480,crop=270:480,gblur=sigma=10,scale=${w}:${h},colorchannelmixer=rr=0.65:gg=0.65:bb=0.65[g]`,
-    `[g][f]overlay=x=${FG_X}:y=${FG_Y}:format=auto,format=yuv420p,sendcmd=f='${cmd}',gblur@bl=sigma=0.01,colorchannelmixer@dm=rr=1:gg=1:bb=1[bg]`,
+    `[0:v]fps=${fps},setsar=1,setpts=PTS-STARTPTS,scale=${w}:${h},format=yuv420p,sendcmd=f='${cmd}',gblur@bl=sigma=0.01,colorchannelmixer@dm=rr=1:gg=1:bb=1[bg]`, // freeze = 본편 마지막 프레임(영상 4:5 + 블러 배경까지 합친 1080×1920)
     `[1:v]format=rgba,colorchannelmixer@ca=aa=0,scale=w='trunc(iw*${P}/2)*2':h='trunc(ih*${P}/2)*2':eval=frame[c]`,
     `[bg][c]overlay=x='${clip.cx}-w/2':y='${clip.cy}-h/2+${D.cardRise}*(1-${E})':format=auto,format=yuv420p[o]`,
   ];
-  const freeze = path.join(CACHE, `trend-${postId}-freeze.png`); // 카드 배경: 직전 컷의 마지막 프레임(카드 시작 직전 프레임)을 정지 화면으로
-  ff(['-ss', Math.max(0, a - 1 / fps).toFixed(4), '-i', trailer, '-frames:v', '1', freeze]);
   ff(['-loop', '1', '-framerate', String(fps), '-t', sec.toFixed(3), '-i', freeze, '-loop', '1', '-framerate', String(fps), '-t', sec.toFixed(3), '-i', clip.file, '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', sec.toFixed(3), '-r', String(fps), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '10', '-pix_fmt', 'yuv420p', out]);
 }
 
@@ -557,7 +552,7 @@ async function runReelTrendOnce(postId, { refresh = false } = {}, banned = []) {
   ].flat();
   const xs = [...cuts.map((c) => c.x ?? 0.5), 0.5]; // 구간별 가로 크롭 위치(0=왼쪽 끝, 1=오른쪽 끝)
   const per = parts.map((_, i) => `[${i}:v]fps=${fps},setsar=1,split[a${i}][b${i}];[a${i}]crop=ih*4/5:ih:(iw-ih*4/5)*${xs[i]}:0,scale=${FG_W}:${FG_H}[f${i}];[b${i}]scale=-2:480,crop=270:480,gblur=sigma=10,scale=${w}:${h},colorchannelmixer=rr=0.65:gg=0.65:bb=0.65[g${i}]`); // 배경: 1/4로 줄여 시그마 10으로 블러(=원래 크기 약 40px)한 뒤 키우고 35% 어둡게
-  const g = [`${per.join(';')};${parts.map((_, i) => `[f${i}]`).join('')}concat=n=${n}:v=1:a=0[vf];${parts.map((_, i) => `[g${i}]`).join('')}concat=n=${n}:v=1:a=0[vb];[vb][vf]overlay=x=${FG_X}:y=${FG_Y}:format=auto[v0]`];
+  const g = [`${per.join(';')};${parts.map((_, i) => `[f${i}]`).join('')}concat=n=${n}:v=1:a=0[vf];${parts.map((_, i) => `[g${i}]`).join('')}concat=n=${n}:v=1:a=0[vb];[vb][vf]overlay=x=${FG_X}:y=${FG_Y}:format=auto,split[v0][v0c]`];
   g.push(`[v0][${n}:v]overlay=format=auto[v1]`);
   subs.forEach((c, i) => {
     const k = n + 1 + i, P = `(${POP_FROM}+${1 - POP_FROM}*min(1,max(0,(t-${T(c.start)})/${POP})))`;
@@ -567,9 +562,9 @@ async function runReelTrendOnce(postId, { refresh = false } = {}, banned = []) {
   const kc = n + 1 + subs.length, last = subs.length + 1;
   if (!hasCard) g.push(`[v${last}]format=yuv420p[o]`);
   else g.push(`[v${last}][${kc}:v]overlay=x=0:y='if(lt(t-${T(c0)},${CARD_IN}),${CARD_SLIDE}*pow(1-(t-${T(c0)})/${CARD_IN},2),0)':eof_action=pass:enable='between(t,${T(c0)},${T(c1)})':format=auto,format=yuv420p[o]`);
-  const silent = path.join(CACHE, `trend-${postId}-silent.mp4`), lastPng = path.join(CACHE, `trend-${postId}-last.png`);
+  const silent = path.join(CACHE, `trend-${postId}-silent.mp4`), cleanMp4 = path.join(CACHE, `trend-${postId}-clean.mp4`), lastPng = path.join(CACHE, `trend-${postId}-last.png`);
   if (process.env.REEL_DEBUG) fs.writeFileSync(path.join(CACHE, `trend-${postId}-graph.txt`), JSON.stringify({ args: [...vin, ...oin], graph: g.join(';') }));
-  ff(['-filter_threads', '1', ...vin, ...oin, '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', T(vidDur), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '10', '-pix_fmt', 'yuv420p', silent]); // 중간 파일은 거의 무손실(crf 10) — 마지막에 한 번만 crf 18로 인코딩
+  ff(['-filter_threads', '1', ...vin, ...oin, '-filter_complex', g.join(';'), '-map', '[o]', '-an', '-t', T(vidDur), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '10', '-pix_fmt', 'yuv420p', silent, '-map', '[v0c]', '-an', '-t', T(vidDur), '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '10', '-pix_fmt', 'yuv420p', cleanMp4]); // 중간 파일은 거의 무손실(crf 10) — 마지막에 한 번만 crf 18로 인코딩
   { // 엔딩 샷 배경: 마지막 컷의 장면 1장을 본편과 같은 4:5 + 블러 구성으로(로고·자막 없이)
     const li = cuts.length - 1, [la, lb] = all.parts[li]; // 마지막 컷(카드 장면이 있으면 카드 끝까지 이어진 구간)의 끝 장면
     ff(['-ss', T(lb - 0.05), '-i', trailers[partMovies[li]], '-frames:v', '1', '-filter_complex', `[0:v]split[a][b];[a]crop=ih*4/5:ih:(iw-ih*4/5)*${xs[li]}:0,scale=${FG_W}:${FG_H}[f];[b]scale=-2:480,crop=270:480,gblur=sigma=10,scale=${w}:${h},colorchannelmixer=rr=0.65:gg=0.65:bb=0.65[g];[g][f]overlay=x=${FG_X}:y=${FG_Y}:format=auto[o]`, '-map', '[o]', lastPng]);
@@ -595,9 +590,10 @@ async function runReelTrendOnce(postId, { refresh = false } = {}, banned = []) {
     let cardMp4 = null;
     if (cardScene) {
       cardMp4 = path.join(CACHE, `trend-${postId}-cardscene.mp4`);
-      const ls = all.segs.at(-1), li = cuts.length - 1;
-      composeCardScene({ trailer: trailers[cuts[li].movie ?? copy.movie], a: ls.src[0] + (cardAt - ls.t), sec: bodyDur - cardAt, x: xs[li], clip: cardClip, out: cardMp4, CACHE, postId });
-      console.log(`  카드 장면 ${cardAt.toFixed(2)}~${bodyDur.toFixed(2)}초: 직전 컷 마지막 프레임 정지(원본 ${(ls.src[0] + (cardAt - ls.t) - 1 / RS.fps).toFixed(3)}) + 블러 디졸브, 자막 숨김`);
+      const freeze = path.join(CACHE, `trend-${postId}-freeze.png`); // 카드 배경 = 본편 영상의 실제 마지막 프레임(블러가 시작되는 순간 화면에 보이던 프레임, 자막·로고만 뺌)
+      ff(['-sseof', '-0.2', '-i', cleanMp4, '-update', '1', freeze]); // 구간 끝 0.2초를 모두 풀어 마지막 프레임이 남는다
+      composeCardScene({ freeze, sec: bodyDur - cardAt, clip: cardClip, out: cardMp4, CACHE, postId });
+      console.log(`  카드 장면 ${cardAt.toFixed(2)}~${bodyDur.toFixed(2)}초: 본편 마지막 프레임 정지 + 블러 디졸브, 자막 숨김`);
     }
     fs.writeFileSync(list, `file '${silent}'\n${cardMp4 ? `file '${cardMp4}'\n` : ''}file '${outroMp4}'\n`);
     silentAll = path.join(CACHE, `trend-${postId}-silent-all.mp4`);
