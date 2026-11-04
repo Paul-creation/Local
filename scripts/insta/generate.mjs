@@ -40,7 +40,7 @@ const postId = args.find((a) => !a.startsWith('--'));
 if (!postId) { console.error('사용법: npm run insta -- <post-id> [--refresh] [--detailed|--roundup|--showcase|--reel|--reel-single [--audio]|--reel-trend] [--cover-zoom=1,1.3,1.6]'); process.exit(1); }
 
 if (args.includes('--reel-trend')) { // 신작 릴스(풀스크린·단어 자막·정보 카드·루프): copy/<post-id>.json만 쓴다
-  try { await (await import('./reel-trend.mjs')).runReelTrend(postId, { refresh }); } catch (e) { console.error(e.message); process.exit(1); }
+  try { await (await import('./reel-trend.mjs')).runReelTrend(postId, { refresh, layout: (args.find((x) => x.startsWith('--layout=')) ?? '').slice(9) || undefined }); } catch (e) { console.error(e.message); process.exit(1); }
   process.exit(0);
 }
 
