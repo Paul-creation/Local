@@ -19,6 +19,7 @@ import { fileURLToPath } from 'url';
 import crypto from 'crypto';
 import { execFileSync, spawnSync } from 'child_process';
 import { chromium } from 'playwright';
+import sharp from 'sharp';
 import { RS, ff, buildAudio, trailerAudioFromDb, steamMovie } from './reel-single.mjs';
 import { trailerFromDb } from './reel.mjs';
 import { getNarrationBySentence } from './narration-sentences.mjs';
@@ -76,11 +77,11 @@ const logoHtml = (font) => `<!doctype html><meta charset="utf-8"><style>${baseCs
 .logo b { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #fff; text-shadow: 0 0 8px rgba(0,0,0,.6); }
 </style><div class="logo"><i>J</i><b>JamiDuNow</b></div>`;
 
-// 자막 한 덩어리: 흰 글씨 72px Black(900) + 검은 외곽선 5px(바깥쪽, 10px 선 + paint-order). [ ]로 감싼 말, 그리고 KEY_WORDS는 민트
+// 자막 한 덩어리: 흰 글씨 72px Black(900) + 검은 외곽선 5px(바깥쪽, 10px 선 + paint-order, 둥근 모서리), 그림자 없음. 2배 해상도(144px·외곽선 10px)로 그린 뒤 50%로 줄여 합성(가장자리 매끈하게). [ ]로 감싼 말, 그리고 KEY_WORDS는 민트
 const KEY_WORDS = ['컨닝으로', '지우개가', '무전기로', '기절시키고', '다 같이', '파이널스 위크'];
 const subMark = (text) => (/\[/.test(text) ? text : KEY_WORDS.includes(text.trim()) ? `[${text.trim()}]` : text);
 const subHtml = (font, text) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
-.sub { position: absolute; left: ${SUB_X}px; top: ${SUB_Y}px; transform: translate(-50%, -50%); white-space: nowrap; font-size: 72px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.2; color: #fff; -webkit-text-stroke: 6px #000; paint-order: stroke fill; stroke-linejoin: round; filter: drop-shadow(0 2px 6px rgba(0,0,0,.5)); }
+.sub { position: absolute; left: ${SUB_X}px; top: ${SUB_Y}px; transform: translate(-50%, -50%); white-space: nowrap; font-size: 72px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.2; color: #fff; -webkit-text-stroke: 10px #000; paint-order: stroke fill; stroke-linejoin: round; }
 .sub .k { color: ${MINT}; }
 </style><div class="sub" id="s">${esc(subMark(text)).replace(/\[([^\]]+)\]/g, '<span class="k">$1</span>')}</div>`;
 
@@ -519,6 +520,7 @@ async function runReelTrendOnce(postId, { refresh = false } = {}, banned = []) {
   const browser = await chromium.launch();
   try {
     const page = await browser.newPage({ viewport: { width: RS.w, height: RS.h } });
+    const subPage = await (await browser.newContext({ viewport: { width: RS.w, height: RS.h }, deviceScaleFactor: 2 })).newPage(); // 자막은 2배 해상도로 그린다
     const full = { x: 0, y: 0, width: RS.w, height: RS.h };
     const load = async (html) => { await page.setContent(html, { waitUntil: 'load' }); await page.evaluate(() => document.fonts.ready); };
     await load(logoHtml(font));
@@ -526,11 +528,12 @@ async function runReelTrendOnce(postId, { refresh = false } = {}, banned = []) {
     for (let i = 0; i < chunks.length; i++) {
       if (cardScene && chunks[i].start >= vidDur - 0.02) break; // 카드 장면에는 자막 없음
       if (cardScene) chunks[i].to = Math.min(chunks[i].to, vidDur);
-      await load(subHtml(font, chunks[i].text));
-      const r = await page.evaluate(() => { const b = document.getElementById('s').getBoundingClientRect(); return { l: b.left, t: b.top, w: b.width, h: b.height }; });
+      await subPage.setContent(subHtml(font, chunks[i].text), { waitUntil: 'load' }); await subPage.evaluate(() => document.fonts.ready);
+      const r = await subPage.evaluate(() => { const b = document.getElementById('s').getBoundingClientRect(); return { l: b.left, t: b.top, w: b.width, h: b.height }; });
       const W = Math.ceil(r.w / 2) * 2 + 64, H = Math.ceil(r.h / 2) * 2 + 64; // 외곽선 여유, 가운데 유지
       const file = path.join(CACHE, `trend-${postId}-sub${i}.png`);
-      await page.screenshot({ path: file, clip: { x: Math.round(SUB_X - W / 2), y: Math.round(SUB_Y - H / 2), width: W, height: H }, omitBackground: true });
+      const big = await subPage.screenshot({ clip: { x: Math.round(SUB_X - W / 2), y: Math.round(SUB_Y - H / 2), width: W, height: H }, omitBackground: true }); // 2배(2W×2H)
+      await sharp(big).resize(W, H, { kernel: 'lanczos3' }).png().toFile(file); // 50%로 줄임
       if (SUB_X + r.w / 2 > RS.w - RS.rightGap || SUB_X - r.w / 2 < 0) throw new Error(`--reel-trend: 자막 "${chunks[i].text}"가 안전 영역(오른쪽 140px)을 넘어요`);
       subs.push({ file, ...chunks[i] });
     }
