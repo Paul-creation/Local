@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { TasteRow } from './taste';
 
-// 취향 추천용 게임별 태그·득표·활동(/api/games/taste, 5분 캐시) — enabled일 때(로그인한 사용자가 취향 탭을 열었을 때)만 받는다. 받은 값은 탭 안에서 5분 기억
+// 취향 추천용 게임별 태그·득표·활동(/api/games/taste, 1시간 캐시) — enabled일 때(로그인한 사용자가 취향 탭을 열었을 때)만 받는다. 받은 값은 탭 안에서 5분 기억
 const KEEP_MS = 5 * 60 * 1000;
 let cached: { at: number; rows: TasteRow[] } | null = null;
 let inflight: Promise<TasteRow[]> | null = null;
