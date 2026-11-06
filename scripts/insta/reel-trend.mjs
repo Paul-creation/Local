@@ -513,14 +513,26 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
   let fsegs = null;
   if (FULL) {
     const vcuts = cuts.filter((c) => cardAt === null || cardMid || c.t < cardAt - 0.0005);
-    fsegs = vcuts.map((c, i) => {
-      const end = vcuts[i + 1]?.t ?? (cardMid ? null : cardAt) ?? nar.duration, dur = +(end - c.t).toFixed(3), L = c.src[1] - c.src[0];
-      const speed = c.speed ?? (dur > L + 0.08 ? 0.9 : 1), // c.speed: 원본이 짧은 컷에 더 느린 속도를 직접 지정(없으면 0.9 슬로우)
-         use = Math.min(L, dur * speed), hold = Math.max(0, +(dur - use / speed).toFixed(3));
-      const pan = c.pan ?? [c.x ?? 0.5, c.x ?? 0.5];
-      return { t: c.t, dur, a: c.src[0], L, speed, use, hold, pan, movie: c.movie ?? copy.movie, tail: i === vcuts.length - 1 ? nar.duration - c.t : dur };
+    // 정지 프레임(hold) 금지: 문장(컷)이 원본 구간보다 길면 0.9배까지만 늘린다. 그래도 모자라면 cuts[].fill([{src:[시작,끝], x|pan, movie?}…])의 다른 장면을 뒤에 이어 붙여 채운다(문장당 한 장면 예외, 장면 전환 없는 구간만·같은 장면 반복 금지는 copy 작성자가 지킨다). 그래도 모자라면 오류
+    const holdErrors = [];
+    fsegs = vcuts.flatMap((c, i) => {
+      const end = vcuts[i + 1]?.t ?? (cardMid ? null : cardAt) ?? nar.duration, dur = +(end - c.t).toFixed(3), lastCut = i === vcuts.length - 1;
+      const pieces = [{ src: c.src, pan: c.pan ?? [c.x ?? 0.5, c.x ?? 0.5], movie: c.movie ?? copy.movie }, ...(c.fill ?? []).map((p) => ({ src: p.src, pan: p.pan ?? [p.x ?? 0.5, p.x ?? 0.5], movie: p.movie ?? c.movie ?? copy.movie }))];
+      const Ls = pieces.map((p) => p.src[1] - p.src[0]), SL = Ls.reduce((a, b) => a + b, 0);
+      const speed = pieces.length === 1 ? (c.speed ?? (dur > SL + 0.08 ? 0.9 : 1)) : Math.min(1, SL / dur); // 여러 장면이면 전체를 같은 속도(0.9~1.0)로
+      if (SL / speed < dur - 0.04 || speed < 0.9 - 1e-6) { // 모자람(전부 모아서 한 번에 알린다)
+        holdErrors.push(`--reel-trend: 컷 ${i + 1}(t=${c.t.toFixed(2)}, ${dur.toFixed(2)}초)이 원본 ${SL.toFixed(2)}초(최대 ${(SL / 0.9).toFixed(2)}초까지 0.9배)보다 길어 정지 프레임이 생겨요 — cuts[${i}].fill에 다른 장면(장면 전환 없는 구간)을 추가하거나 문장을 줄이세요`);
+      }
+      let t = c.t;
+      return pieces.map((pc, k) => {
+        const d = pieces.length === 1 ? dur : +(dur * Ls[k] / SL).toFixed(3), L = Ls[k], use = Math.min(L, d * speed), last = lastCut && k === pieces.length - 1;
+        const f = { t: +t.toFixed(3), dur: d, a: pc.src[0], L, speed, use, hold: 0, pan: pc.pan, movie: pc.movie, tail: last ? nar.duration - t : d, piece: k + 1, pieces: pieces.length, cut: i + 1 };
+        t += d;
+        return f;
+      });
     });
-    for (const [i, f] of fsegs.entries()) console.log(`  컷 ${i + 1}: t=${f.t.toFixed(2)} 길이 ${f.dur.toFixed(2)}초 · 원본 ${f.a}~${(f.a + f.L).toFixed(2)}(${f.L.toFixed(2)}초) · 속도 ${f.speed}${f.hold ? ` · 마지막 프레임 ${f.hold.toFixed(2)}초 잡아둠` : ''}`);
+    if (holdErrors.length) throw new Error(holdErrors.join('\n'));
+    for (const [i, f] of fsegs.entries()) console.log(`  컷 ${f.cut}${f.pieces > 1 ? `-${f.piece}` : ''}: t=${f.t.toFixed(2)} 길이 ${f.dur.toFixed(2)}초 · 원본 ${f.a}~${(f.a + f.L).toFixed(2)}(${f.L.toFixed(2)}초) · 속도 ${f.speed}`);
   }
   if (process.env.REEL_PLAN_ONLY) { // 계획만 출력(렌더 안 함)
     const plan = cutTimeline(cuts, null, nar.duration).segs;
@@ -592,7 +604,7 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
 
   // 영상: 컷을 이어 붙여 1920 높이로 맞춘 뒤 가운데 크롭(1080×1920). 워터마크 → 자막(팝, 카드 중엔 위로) → 카드(아래에서 올라옴)
   const { w, h, fps } = RS;
-  const n = parts.length;
+  const n = FULL ? fsegs.length : parts.length; // full: 입력 하나 = 컷 조각 하나(fill 포함)
   const T = (v) => v.toFixed(3);
   const vin = FULL ? fsegs.flatMap((f, i) => ['-ss', String(f.a), '-t', T(f.use + 0.05), '-i', trailers[f.movie]]) : parts.flatMap(([a, b], i) => ['-ss', String(a), '-t', String(b - a), '-i', trailers[partMovies[i]]]);
   const oin = [
@@ -606,7 +618,7 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
     return `[${i}:v]setpts=(PTS-STARTPTS)/${f.speed},fps=${fps},setsar=1,tpad=stop_mode=clone:stop_duration=${T(f.dur + 1)},trim=duration=${T(f.dur)},setpts=PTS-STARTPTS,crop=w=trunc(ih*9/16/2)*2:h=ih:x='(iw-ow)*${xe}':y=0,scale=${w}:${h}:flags=lanczos,setsar=1[f${i}]`;
   }) : null;
   const per = FULL ? fullPer : parts.map((_, i) => `[${i}:v]fps=${fps},setsar=1,split[a${i}][b${i}];[a${i}]crop=ih*4/5:ih:(iw-ih*4/5)*${xs[i]}:0,scale=${FG_W}:${FG_H}[f${i}];[b${i}]trim=end_frame=1,tpad=stop_mode=clone:stop_duration=${T(parts[i][1] - parts[i][0] + 1)},scale=-2:480,crop=270:480,gblur=sigma=10,scale=${w}:${h},colorchannelmixer=rr=0.65:gg=0.65:bb=0.65[g${i}]`); // 배경: 컷의 첫 프레임 한 장을 정지 화면으로 — 1/4로 줄여 시그마 10으로 블러(=원래 크기 약 40px)한 뒤 키우고 35% 어둡게(움직이는 배경은 인스타 압축에서 뭉개진다)
-  const g = [FULL ? `${per.join(';')};${parts.map((_, i) => `[f${i}]`).join('')}concat=n=${n}:v=1:a=0[vf];[vf]format=yuv420p,split[v0][v0c]` : `${per.join(';')};${parts.map((_, i) => `[f${i}]`).join('')}concat=n=${n}:v=1:a=0[vf];${parts.map((_, i) => `[g${i}]`).join('')}concat=n=${n}:v=1:a=0[vb];[vb][vf]overlay=x=${FG_X}:y=${FG_Y}:format=auto,split[v0][v0c]`];
+  const g = [FULL ? `${per.join(';')};${fsegs.map((_, i) => `[f${i}]`).join('')}concat=n=${n}:v=1:a=0[vf];[vf]format=yuv420p,split[v0][v0c]` : `${per.join(';')};${parts.map((_, i) => `[f${i}]`).join('')}concat=n=${n}:v=1:a=0[vf];${parts.map((_, i) => `[g${i}]`).join('')}concat=n=${n}:v=1:a=0[vb];[vb][vf]overlay=x=${FG_X}:y=${FG_Y}:format=auto,split[v0][v0c]`];
   g.push(`[v0][${n}:v]overlay=format=auto[v1]`);
   subs.forEach((c, i) => {
     const k = n + 1 + i, P = `(${POP_FROM}+${1 - POP_FROM}*min(1,max(0,(t-${T(c.start)})/${POP})))`;
@@ -703,7 +715,7 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
   {
     const r = run(['-i', mp4, '-an', '-vf', "scale=320:-2,select='gt(scene,0.25)',showinfo", '-f', 'null', '-']);
     const times = [...r.stderr.matchAll(/pts_time:([\d.]+)/g)].map((m) => Number(m[1]));
-    const planned = [...segs.map((x) => x.t).slice(1), ...(cardAt !== null ? [cardAt] : []), bodyDur];
+    const planned = [...new Set([...segs.map((x) => x.t).slice(1), ...(fsegs ? fsegs.map((x) => x.t).slice(1) : []), ...(cardAt !== null ? [cardAt] : []), bodyDur])];
     const unplanned = times.filter((x) => !planned.some((p) => Math.abs(p - x) < SCENE_TOL)); // planned = 컷 +0.3초 연장을 이미 반영한 실제 경계(segs.t). 허용 오차 0.4초(컷 경계 앞뒤 원본 전환·페이드 때문에 감지 시각이 조금 어긋남)
     const doubles = times.slice(1).map((x, i) => [times[i], x]).filter(([x, y]) => y - x < 0.3); // 0.3초 안에 전환이 두 번 난 곳
     sceneReport = { times, planned, unplanned, doubles };
@@ -711,6 +723,19 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
     console.log(`  최종 영상 장면 전환 ${times.length}곳: ${times.map((x) => x.toFixed(2)).join(' ')}`);
     console.log(`  의도한 경계 ${planned.length}곳: ${planned.map((x) => x.toFixed(2)).join(' ')} → 의도 밖 전환(±${SCENE_TOL}초 밖) ${unplanned.length}곳${unplanned.length ? ': ' + unplanned.map((x) => x.toFixed(2)).join(' ') : ''}`);
     console.log(`  0.3초 안에 전환이 두 번 난 곳 ${doubles.length}곳${doubles.length ? ': ' + doubles.map(([x, y]) => `${x.toFixed(3)}·${y.toFixed(3)}`).join(' ') : ''}`);
+  }
+  // 렌더 후 검사 3(기본): freezedetect(n=0.003, d=0.25) — 엔딩 카드 구간(카드 장면 시작 또는 엔딩 시작부터 끝까지)을 뺀 곳에 정지가 하나라도 있으면 실패. 구간은 scene-check.txt에 적는다
+  let freezeFail = null;
+  {
+    const exemptFrom = cardAt ?? bodyDur;
+    const r = run(['-i', mp4, '-an', '-vf', 'freezedetect=n=0.003:d=0.25', '-f', 'null', '-']);
+    const st = [...r.stderr.matchAll(/freeze_start: ([\d.]+)/g)].map((m) => Number(m[1])), en = [...r.stderr.matchAll(/freeze_end: ([\d.]+)/g)].map((m) => Number(m[1]));
+    const total = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', mp4]).toString());
+    const freezes = st.map((a, k) => ({ a, b: en[k] ?? total })).filter((f) => f.a < exemptFrom - 0.05);
+    freezeFail = freezes;
+    const line = freezes.length ? `정지(freezedetect n=0.003 d=0.25, 엔딩 카드 ${exemptFrom.toFixed(2)}초~ 제외) ${freezes.length}곳 — 실패\n${freezes.map((f) => `${f.a.toFixed(3)}~${f.b.toFixed(3)} (${(f.b - f.a).toFixed(2)}초)`).join('\n')}\n` : `정지(freezedetect n=0.003 d=0.25, 엔딩 카드 ${exemptFrom.toFixed(2)}초~ 제외) 0곳 — 통과\n`;
+    fs.appendFileSync(path.join(outDir, 'scene-check.txt'), line);
+    console.log(`  ${freezes.length ? '⛔ ' : '✅ '}${line.split('\n')[0]}${freezes.length ? ': ' + freezes.map((f) => `${f.a.toFixed(2)}~${f.b.toFixed(2)}`).join(' ') : ''}`);
   }
   // 확인용 타일(copy.checkTiles: [[시작초, 끝초], …]) — 0.1초 간격 프레임 → out/<post-id>/check-<시작>-<끝>.png
   for (const [a, b] of copy.checkTiles ?? []) {
@@ -730,5 +755,6 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
   const dur = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', mp4]).toString());
   console.log(`${path.relative(ROOT, mp4)} (${dur.toFixed(2)}초, 내레이션 + 덕킹한 원본 오디오 측정 ${measured} LUFS → -14 LUFS, 구간 경계 0.1초 크로스페이드)`);
   console.log(path.relative(ROOT, path.join(outDir, 'still-subtitle.png')), path.relative(ROOT, path.join(outDir, second)));
+  if (freezeFail?.length) throw new Error(`--reel-trend: 정지 프레임 ${freezeFail.length}곳(${freezeFail.map((f) => `${f.a.toFixed(2)}~${f.b.toFixed(2)}`).join(' ')}) — scene-check.txt 참고`);
   return { bad, ssims, sceneReport };
 }
