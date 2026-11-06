@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-11-04 (main 44dd6bd)
+기준: 2026-11-06 (main 28d4615)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 11/6: insta/trash-island — Trash Island 릴스 생성과 --reel-trend 개선(의미 단위 자막, 원본 장면 전환 회피·구간 중복 방지, 카드 블러 디졸브, 자막 2배 렌더·외곽선, full 레이아웃 9:16·문장당 한 장면·상단 안전 영역 로고·자막 굵기·그림자) 15커밋. scripts/insta 변경만(사이트 코드 무변경), build·test 491개 통과
 - 11/4: fix/search-suggest-overlap — 홈 검색 자동완성 드롭다운이 아래 섹션 카드에 가려지던 문제 수정(.mn-hero isolation에 z-index 20 추가). 제안 순서를 게임 먼저·태그/활동은 최대 2개(게임 0개면 4개, 검색어와 이름이 같은 태그는 1개만 맨 위)로 바꿈. 드롭다운 max-height는 CSS min(45vh, 308px) 기본값 + JS로 min(308, 남은 공간-16) 계산(열릴 때·resize·scroll, rAF·passive, 닫히면 해제), 남은 공간 150px 미만이면 열릴 때 한 번만 검색창을 위로 스크롤. 세로 820px 이하 데스크톱(가로 768 이상)에서만 히어로 위쪽 여백·h1·설명 축소(1366×768 검색창 top 511 → 294). 큰 화면·휴대폰 레이아웃 그대로(1440×900·1920×1080 511px, 375px 376px). build·test 491개 통과, 프리뷰 확인 안 함(사용자 지시로 머지)
 - 11/3: data/gamelog-new-4 — curator-games.json에 큐레이터 신작 15개 추가(겜로그 Space Savory 3760770·Potato Please 5266240·Cucina Stellata 3976340·PC방 시뮬레이터 3375990, 글리치 Carry On Together 4776500, 게임 큐레이션 Witchbrook 1846700·Dokimon Quest: II 4670270·Zanerdin 3932330·던전 광부 5088660·Legion of Judgment 2264780·Kimbap Factory 4821050, 겜위시 Tenebris Somnia 2121510·Pipe it 4625350·Graytail 2888960·The Mailroom 3965430·The Boo Club 4840700). bulk-import --curator --apply→--ids 보강(AI Haiku 합계 약 $0.05) 실행, Finals Week(4715160)는 파일 없이 import. 코드 변경 없음, build·test 491개 통과
 - 11/3: insta/reel-trend — scripts/insta --reel-trend(세로 릴스 1080×1920, 트레일러 4:5 가운데 크롭 + 블러·어둡게 배경, 컷마다 x 크롭·movie·at(말 시작에 맞춘 하드컷), copy/<id>.json). ElevenLabs 내레이션은 문장 단위 생성(previous/next_text) + 끝 억양 검사(scripts/insta/pitch-end.py, librosa pyin, 문장 평균보다 2반음 넘게 올라가면 그 문장 최대 3번 재생성; narration-sentences.mjs, copy.narration.perSentence:false면 통째 생성), 글자 타이밍 기준 무음 압축(앞뒤 50ms 보존·크로스페이드 20ms·약한 자음 앞 절반)과 atempo 1.06, 자막은 한 어절·72px Black·y 1000·민트 강조(KEY_WORDS), 게임 소리 덕킹(말 중 -34 LUFS·빈틈 -22 LUFS), cardFrom 정보 카드 장면(정중앙·Steam header_2x 고해상도), 공통 엔딩 샷 1.6초(로고 팝 → JamiDuNow·문구·주소 페이드인, scripts/insta/assets/brand/의 sfx-whoosh·sfx-pop·outro-voice.mp3가 있으면 사용, gitignore 대상), 최종 H.264 CRF 18 medium·AAC 192k. finals-week 카피 포함, crack-trend copy는 perSentence:false(업로드 완료, 다시 생성 방지). 사이트 코드 변경 없음. build·test 491개 통과
@@ -153,6 +154,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- insta trash-island 릴스 확인 대기(사용자): 렌더 결과물 확인 뒤 게시 여부 결정
 - 큐레이터 게시물 SQL 실행 대기(사용자): 겜로그·글리치·게임 큐레이션 curator_posts 연결, 겜위시는 out/gamewish-posts.sql(8줄). Witchbrook max_players 4, Finals Week fun_description SQL도 대기. Zanerdin max_players·던전 광부 solo_mode는 비어 있음
 - insta finals-week 확인 대기(사용자): out/finals-week/reel.mp4(still-subtitle·still-card·still-outro). scripts/insta/assets/brand/sfx-pop.mp3가 Codespace에 없어 로고 팝 효과음 없이 렌더됨 — 파일을 넣고 finals-week만 다시 렌더(내레이션은 narration-final3 캐시, API 호출 없음) 필요. Finals Week(4715160) games 추가 SQL은 사용자 실행 대기(미확인).
 - insta 릴스 확인 대기(사용자): out/gtfo-reel(reel.mp4 무음·reel-audio.mp4 원본 오디오), out/super-battle-golf-reel(reel.mp4 원본 오디오). 게시 여부·구간 수정은 확인 뒤 결정
