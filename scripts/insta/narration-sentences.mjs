@@ -44,17 +44,16 @@ function spans(take) {
   while (w > 0 && letters[w - 1] === letters[w] - 1) w--; // 공백이 없는 연속 글자 = 마지막 어절
   return { s0: take.starts[letters[0]], s1: take.ends[letters[letters.length - 1]], w0: take.starts[letters[w]], w1: take.ends[letters[letters.length - 1]] };
 }
-function riseOf(take, python) {
+function pitchOf(take, python) {
   const sp = spans(take);
-  const out = JSON.parse(sh(python, [PITCH, take.mp3, sp.s0, sp.s1, sp.w0, sp.w1]).trim().split('\n').pop());
-  return out.rise_st;
+  return JSON.parse(sh(python, [PITCH, take.mp3, sp.s0, sp.s1, sp.w0, sp.w1]).trim().split('\n').pop());
 }
 
 export async function getNarrationBySentence(outDir, cfg, log = console.log) {
   const name = cfg.cacheName ?? 'narration';
   const pc = { maxRise: 2, retries: 3, gap: 0.15, ...cfg.pitch };
   const wav = path.join(outDir, `${name}.wav`), js = path.join(outDir, `${name}.json`);
-  const key = crypto.createHash('sha1').update(`sentence-v1|${cfg.voiceId}|eleven_multilingual_v2|${cfg.text}|${JSON.stringify(cfg.voiceSettings)}|${JSON.stringify(pc)}`).digest('hex');
+  const key = crypto.createHash('sha1').update(`sentence-v1|${cfg.voiceId}|eleven_multilingual_v2|${cfg.text}|${JSON.stringify(cfg.voiceSettings)}|${JSON.stringify(pc)}|${JSON.stringify(cfg.sentenceSettings ?? {})}`).digest('hex');
   if (fs.existsSync(wav) && fs.existsSync(js)) { const c = JSON.parse(fs.readFileSync(js, 'utf8')); if (c.key === key) { log('  내레이션: 캐시 사용(API 호출 없음)'); return { mp3: wav, ...c }; } }
   try { if (!process.env.ELEVENLABS_API_KEY) process.loadEnvFile(path.join(ROOT, '.env.local')); } catch { /* .env.local 없음 */ }
   const apiKey = process.env.ELEVENLABS_API_KEY;
@@ -66,19 +65,23 @@ export async function getNarrationBySentence(outDir, cfg, log = console.log) {
   log(`  내레이션: 문장 ${sentences.length}개를 따로 생성(글자 ${[...cfg.text].length}자, 억양 검사 ${pc.maxRise}반음 초과면 최대 ${pc.retries}번 다시)`);
   const table = [], chosen = [];
   for (let i = 0; i < sentences.length; i++) {
-    const takes = [];
-    for (let t = 1; t <= 1 + pc.retries; t++) {
-      const tk = await takeOf({ dir, i, t, sentences, cfg, apiKey });
-      tk.rise = riseOf(tk, python);
+    const takes = [], need = pc.takes ?? 1; // pc.takes: 문장마다 최소 이 개수의 테이크를 만들고(통과가 하나도 없으면 retries까지), 통과한 것 중 음높이 폭(range_st)이 가장 큰(=표현이 큰) 테이크를 고른다
+    const scfg = { ...cfg, voiceSettings: { ...cfg.voiceSettings, ...(cfg.sentenceSettings?.[i + 1] ?? {}) } }; // sentenceSettings: {"1": {stability, style…}} 문장별 설정(1부터)
+    const pass = (tk) => tk.rise !== null && tk.rise <= pc.maxRise;
+    for (let t = 1; t <= Math.max(need, 1) + pc.retries; t++) {
+      const tk = await takeOf({ dir, i, t, sentences, cfg: scfg, apiKey });
+      Object.assign(tk, (({ rise_st, range_st, std_st }) => ({ rise: rise_st, range: range_st, std: std_st }))(pitchOf(tk, python)));
       takes.push(tk);
-      log(`    문장 ${i + 1} 테이크 ${t}: 끝 ${tk.rise === null ? '측정 불가' : (tk.rise >= 0 ? '+' : '') + tk.rise + '반음'}${tk.cached ? ' (캐시)' : ''}`);
-      if (tk.rise === null || tk.rise <= pc.maxRise) break;
+      log(`    문장 ${i + 1} 테이크 ${t}: 끝 ${tk.rise === null ? '측정 불가' : (tk.rise >= 0 ? '+' : '') + tk.rise + '반음'}, 음높이 폭 ${tk.range ?? '-'}반음${tk.cached ? ' (캐시)' : ''}`);
+      if (takes.length >= need && takes.some(pass)) break;
     }
-    // 제일 덜 올라간 테이크(측정 불가는 맨 뒤)
+    // 통과한 테이크 중 음높이 폭이 가장 큰 것. 통과가 없으면 제일 덜 올라간 테이크(측정 불가는 맨 뒤)
     let best = 0;
-    takes.forEach((tk, k) => { const a = tk.rise ?? Infinity, b = takes[best].rise ?? Infinity; if (a < b) best = k; });
+    const passed = takes.map((tk, k) => k).filter((k) => pass(takes[k]));
+    if (passed.length) best = passed.reduce((a, b) => ((takes[b].range ?? 0) > (takes[a].range ?? 0) ? b : a));
+    else takes.forEach((tk, k) => { const a = tk.rise ?? Infinity, b = takes[best].rise ?? Infinity; if (a < b) best = k; });
     chosen.push(takes[best]);
-    table.push({ sentence: i + 1, text: sentences[i], rises: takes.map((x) => x.rise), chosen: best + 1, ok: takes[best].rise !== null && takes[best].rise <= pc.maxRise });
+    table.push({ sentence: i + 1, text: sentences[i], rises: takes.map((x) => x.rise), ranges: takes.map((x) => x.range), chosen: best + 1, ok: takes[best].rise !== null && takes[best].rise <= pc.maxRise });
   }
   // 합치기: 문장 wav(44.1k 모노) + 문장 사이 pc.gap초 무음
   const parts = [], offsets = [];
