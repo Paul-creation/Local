@@ -1,0 +1,150 @@
+{
+ "_doc": "Mountain Goatastrophe 릴스(--reel-trend, layout full: 9:16 꽉 채움, 문장 하나에 장면 하나 7컷). 출시 예정이라 카드는 '출시 예정' + 인원·한국어만. 소스는 스팀 상점 영상 4개(clips, 1170×658 무음). cardFrom/cardOffset/cardEnd:nextCut: 게임 이름 문장에서만 블러 디졸브 카드가 뜨고 그 문장이 끝나면 뒤 컷이 이어진다.",
+ "appid": "4465610",
+ "movie": "c1",
+ "maxPlayers": 4,
+ "clips": {
+  "c1": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4465610/extras/ca597f156c1028433d0ef6d9e137988b.webm",
+  "c2": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4465610/extras/1d21541f25921e6df6e237e6c1b2f8a3.webm",
+  "c3": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4465610/extras/a72622383214b4074aae4f13632525ee.webm",
+  "c4": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/4465610/extras/0e41c3cdf74291bf748ee2d771fbd232.webm"
+ },
+ "duckDb": -20,
+ "stillChunk": "굴러떨어지는",
+ "narration": {
+  "voiceId": "uyVNoMrnUku1dZyVEXwD",
+  "cacheName": "narration-v1",
+  "voiceSettings": {
+   "stability": 0.55,
+   "similarity_boost": 0.8,
+   "style": 0,
+   "speed": 1.08
+  },
+  "text": "한 명만 미끄러져도, 넷이 다 같이 굴러떨어지는 게임이 있어요. Mountain Goatastrophe라는 협동 게임인데요. 최대 네 명이 밧줄 하나에 묶여서 정상까지 올라가야 하거든요. 근데 이 밧줄이, 바위든 나무든 지나가는 건 다 감겨요. 한 명이 늦으면 나머지가 질질 끌고 가야 돼요. 줄이 빨개지면, 곧 누가 떨어진다는 뜻이에요. 아직 출시 전이라, 스팀에서 찜해두면 돼요.",
+  "reuseCached": false,
+  "atempo": 1,
+  "silence": {
+   "word": 0.15,
+   "wordTo": 0.1,
+   "sentence": 0.35,
+   "sentenceTo": 0.35,
+   "lastGap": null
+  }
+ },
+ "cuts": [
+  {
+   "t": 0,
+   "movie": "c4",
+   "src": [
+    4.0,
+    7.7
+   ],
+   "pan": [
+    0.45,
+    0.4
+   ]
+  },
+  {
+   "at": "Mountain",
+   "movie": "c1",
+   "src": [
+    6.9,
+    10.0
+   ],
+   "pan": [
+    0.55,
+    0.45
+   ]
+  },
+  {
+   "at": "최대 네 명이",
+   "movie": "c1",
+   "src": [
+    0.0,
+    2.4
+   ],
+   "x": 0.43,
+   "speed": 0.6
+  },
+  {
+   "at": "근데 이 밧줄이",
+   "movie": "c3",
+   "src": [
+    2.5,
+    4.2
+   ],
+   "x": 0.5,
+   "speed": 0.45
+  },
+  {
+   "at": "한 명이 늦으면",
+   "movie": "c2",
+   "src": [
+    1.0,
+    4.0
+   ],
+   "pan": [
+    0.4,
+    0.5
+   ]
+  },
+  {
+   "at": "줄이 빨개지면",
+   "movie": "c4",
+   "src": [
+    0.2,
+    3.85
+   ],
+   "x": 0.4
+  },
+  {
+   "at": "아직 출시 전이라",
+   "movie": "c1",
+   "src": [
+    3.2,
+    6.7
+   ],
+   "x": 0.35
+  }
+ ],
+ "gapDb": -8,
+ "gapMin": 0.3,
+ "cardFrom": "Mountain",
+ "cardOffset": 0.5,
+ "cardEnd": "nextCut",
+ "cardTitle": "Mountain Goatastrophe",
+ "chunks": [
+  "한 명만",
+  "미끄러져도",
+  "[넷이 다 같이]",
+  "[굴러떨어지는]",
+  "게임이 있어요",
+  "[Mountain]",
+  "[Goatastrophe]라는",
+  "협동 게임인데요",
+  "최대 네 명이",
+  "[밧줄 하나]에",
+  "묶여서",
+  "정상까지",
+  "올라가야 하거든요",
+  "근데 이 밧줄이",
+  "바위든 나무든",
+  "지나가는 건",
+  "[다 감겨요]",
+  "한 명이 늦으면",
+  "나머지가",
+  "[질질 끌고]",
+  "가야 돼요",
+  "[줄이 빨개지면]",
+  "곧 누가",
+  "떨어진다는",
+  "뜻이에요",
+  "아직 출시 전이라",
+  "스팀에서",
+  "[찜해두면]",
+  "돼요"
+ ],
+ "minCut": 1.0,
+ "layout": "full",
+ "cutExtend": 0
+}
