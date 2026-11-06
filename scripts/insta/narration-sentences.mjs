@@ -20,11 +20,12 @@ export const splitSentences = (text) => text.split(/(?<=[.!?])\s+/).map((s) => s
 async function takeOf({ dir, i, t, sentences, cfg, apiKey }) {
   const mp3 = path.join(dir, `s${i}-t${t}.mp3`), js = path.join(dir, `s${i}-t${t}.json`);
   const prev = sentences.slice(Math.max(0, i - 2), i).join(' '), next = sentences.slice(i + 1, i + 3).join(' ');
-  const key = crypto.createHash('sha1').update(JSON.stringify([cfg.voiceId, sentences[i], prev, next, cfg.voiceSettings, t])).digest('hex');
-  if (fs.existsSync(mp3) && fs.existsSync(js)) { const c = JSON.parse(fs.readFileSync(js, 'utf8')); if (c.key === key || (cfg.reuseCached && c.chars.join('').replace(/\s/g, '') === sentences[i].replace(/\s/g, ''))) return { mp3, ...c, cached: true }; } // reuseCached: 문장 글자가 같으면 앞뒤 문장이 바뀌어도 그 테이크를 재사용
+  const text = cfg.tts?.[i + 1] ?? sentences[i]; // cfg.tts: {"문장번호": "TTS에 넣는 글(자막·대본은 그대로)"} — 발음을 바꿀 때
+  const key = crypto.createHash('sha1').update(JSON.stringify([cfg.voiceId, sentences[i], prev, next, cfg.voiceSettings, t, ...(cfg.tts?.[i + 1] ? [text] : [])])).digest('hex');
+  if (fs.existsSync(mp3) && fs.existsSync(js)) { const c = JSON.parse(fs.readFileSync(js, 'utf8')); if (c.key === key || (cfg.reuseCached && c.chars.join('').replace(/\s/g, '') === text.replace(/\s/g, ''))) return { mp3, ...c, cached: true }; } // reuseCached: 문장 글자가 같으면 앞뒤 문장이 바뀌어도 그 테이크를 재사용
   const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${cfg.voiceId}/with-timestamps?output_format=mp3_44100_128`, {
     method: 'POST', headers: { 'xi-api-key': apiKey, 'content-type': 'application/json' },
-    body: JSON.stringify({ text: sentences[i], model_id: 'eleven_multilingual_v2', voice_settings: cfg.voiceSettings, ...(prev ? { previous_text: prev } : {}), ...(next ? { next_text: next } : {}) }),
+    body: JSON.stringify({ text, model_id: 'eleven_multilingual_v2', voice_settings: cfg.voiceSettings, ...(prev ? { previous_text: prev } : {}), ...(next ? { next_text: next } : {}) }),
   });
   if (!r.ok) throw new Error(`--reel-trend: ElevenLabs ${r.status} ${(await r.text()).slice(0, 300).replaceAll(apiKey, '***')}`);
   const j = await r.json();
@@ -49,11 +50,27 @@ function pitchOf(take, python) {
   return JSON.parse(sh(python, [PITCH, take.mp3, sp.s0, sp.s1, sp.w0, sp.w1]).trim().split('\n').pop());
 }
 
+// TTS 입력 글과 자막(대본) 글이 다른 문장: 앞뒤 같은 글자는 그대로, 다른 가운데 부분은 TTS 글자들이 차지한 시간을 자막 글자 수로 균등하게 나눠 대본 글자로 바꾼다
+function toDisplay(tk, display) {
+  const src = tk.chars, dst = [...display];
+  let p = 0; while (p < src.length && p < dst.length && src[p] === dst[p]) p++;
+  let q = 0; while (q < src.length - p && q < dst.length - p && src[src.length - 1 - q] === dst[dst.length - 1 - q]) q++;
+  const sm = src.length - p - q, dm = dst.length - p - q;
+  const chars = [...dst], starts = [], ends = [];
+  for (let k = 0; k < p; k++) { starts.push(tk.starts[k]); ends.push(tk.ends[k]); }
+  if (dm > 0) {
+    const a = sm > 0 ? tk.starts[p] : tk.ends[p - 1] ?? 0, b = sm > 0 ? tk.ends[p + sm - 1] : a + 0.01;
+    for (let k = 0; k < dm; k++) { starts.push(a + (b - a) * k / dm); ends.push(a + (b - a) * (k + 1) / dm); }
+  }
+  for (let k = 0; k < q; k++) { starts.push(tk.starts[src.length - q + k]); ends.push(tk.ends[src.length - q + k]); }
+  return { chars, starts, ends };
+}
+
 export async function getNarrationBySentence(outDir, cfg, log = console.log) {
   const name = cfg.cacheName ?? 'narration';
   const pc = { maxRise: 2, retries: 3, gap: 0.15, ...cfg.pitch };
   const wav = path.join(outDir, `${name}.wav`), js = path.join(outDir, `${name}.json`);
-  const key = crypto.createHash('sha1').update(`sentence-v1|${cfg.voiceId}|eleven_multilingual_v2|${cfg.text}|${JSON.stringify(cfg.voiceSettings)}|${JSON.stringify(pc)}|${JSON.stringify(cfg.sentenceSettings ?? {})}`).digest('hex');
+  const key = crypto.createHash('sha1').update(`sentence-v1|${cfg.voiceId}|eleven_multilingual_v2|${cfg.text}|${JSON.stringify(cfg.voiceSettings)}|${JSON.stringify(pc)}|${JSON.stringify(cfg.sentenceSettings ?? {})}|${JSON.stringify(cfg.tts ?? {})}`).digest('hex');
   if (fs.existsSync(wav) && fs.existsSync(js)) { const c = JSON.parse(fs.readFileSync(js, 'utf8')); if (c.key === key) { log('  내레이션: 캐시 사용(API 호출 없음)'); return { mp3: wav, ...c }; } }
   try { if (!process.env.ELEVENLABS_API_KEY) process.loadEnvFile(path.join(ROOT, '.env.local')); } catch { /* .env.local 없음 */ }
   const apiKey = process.env.ELEVENLABS_API_KEY;
@@ -102,7 +119,8 @@ export async function getNarrationBySentence(outDir, cfg, log = console.log) {
   const chars = [], starts = [], ends = [];
   chosen.forEach((tk, i) => {
     if (i > 0) { chars.push(' '); starts.push(ends[ends.length - 1]); ends.push(offsets[i] + tk.starts[0]); }
-    tk.chars.forEach((c, k) => { chars.push(c); starts.push(offsets[i] + tk.starts[k]); ends.push(offsets[i] + tk.ends[k]); });
+    const m = cfg.tts?.[i + 1] ? toDisplay(tk, sentences[i]) : tk;
+    m.chars.forEach((c, k) => { chars.push(c); starts.push(offsets[i] + m.starts[k]); ends.push(offsets[i] + m.ends[k]); });
   });
   const duration = probe(wav);
   fs.writeFileSync(js, JSON.stringify({ key, text: cfg.text, chars, starts, ends, duration, takes: table }));

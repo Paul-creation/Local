@@ -56,6 +56,9 @@
    "sentence": 0.35,
    "sentenceTo": 0.35,
    "lastGap": null
+  },
+  "tts": {
+   "1": "넷 중에 한 명만 미끄러져도… 전원 다시 산 미치에요."
   }
  },
  "cuts": [
@@ -230,6 +233,6 @@
   "플레이해보세요"
  ],
  "minCut": 1.0,
- "layout": "full",
+ "layout": "fit-blur",
  "cutExtend": 0
 }

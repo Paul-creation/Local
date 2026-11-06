@@ -72,8 +72,8 @@ export async function steamFacts(appid, copy) {
 const baseCss = (font) => `@font-face { font-family: P; src: url(data:font/woff2;base64,${font}); font-weight: 100 900; }
 * { margin: 0; box-sizing: border-box; } html, body { width: ${RS.w}px; height: ${RS.h}px; background: transparent; overflow: hidden; font-family: P, sans-serif; }`;
 
-const logoHtml = (font, top = FG_Y + 26, full = false) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
-.logo { position: absolute; left: ${full ? 48 : FG_X + 28}px; top: ${top}px; display: flex; align-items: center; gap: 10px; opacity: ${full ? 0.85 : 0.92}; ${full ? 'transform: scale(0.8); transform-origin: 0 0; filter: drop-shadow(0 0 4px rgba(0,0,0,.4));' : ''} }
+const logoHtml = (font, top = FG_Y + 26, full = false, o = {}) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
+.logo { position: absolute; left: ${o.x ?? (full ? 48 : FG_X + 28)}px; top: ${top}px; display: flex; align-items: center; gap: 10px; opacity: ${full ? 0.85 : 0.92}; ${full ? 'transform: scale(${o.scale ?? 0.8}); transform-origin: 0 0; filter: drop-shadow(0 0 4px rgba(0,0,0,.4));' : ''} }
 .logo i { width: 38px; height: 38px; border-radius: 11px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-style: normal; font-size: 27px; font-weight: 900; line-height: 1; }
 .logo b { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #fff; ${full ? '' : 'text-shadow: 0 0 8px rgba(0,0,0,.6);'} }
 </style><div class="logo"><i>J</i><b>JamiDuNow</b></div>`;
@@ -412,7 +412,11 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
   if (!fs.existsSync(copyFile)) throw new Error(`--reel-trend: ${path.relative(ROOT, copyFile)}이 없어요`);
   const copy = JSON.parse(fs.readFileSync(copyFile, 'utf8'));
   if (JSON.stringify(copy).includes('재밌드나')) throw new Error('화면에는 "재밌드나"를 쓰지 않아요. JamiDuNow만 쓰세요.');
-  const FULL = (layout ?? copy.layout) === 'full'; // 9:16 꽉 채우기
+  const LAYOUT = layout ?? copy.layout;
+  const FIT = LAYOUT === 'fit-blur'; // fit-blur: 소스 가운데 1:1(확대 없음)을 화면 세로 중앙에 두고, 위아래는 같은 장면을 9:16으로 꽉 채워 키운 뒤 블러(sigma 30)·밝기 -0.15. 컷마다 cx(0~1, 주인공의 가로 위치)로 1:1 영역·배경 위치를 정한다(pan/x가 있으면 full 기준 값을 cx로 환산). 엔딩 카드·로고 엔딩은 9:16 전체
+  const FULL = LAYOUT === 'full' || FIT; // 9:16 꽉 채우기(fit-blur도 같은 컷·오디오 처리)
+  const LOGO = FIT ? { x: 72, y: 300, scale: 1.04, ...copy.logo } : null; // 인스타 Reels 안전 영역(위 270px·아래 35%·오른쪽 버튼 줄) 안: full의 0.8배 × 1.3
+  const FIT_BLUR = 30, FIT_BRIGHT = -0.15;
   const OUTRO = copy.outro !== false; // 기본: 끝에 공통 엔딩 샷 2초(copy.outro:false면 예전처럼 endClip 1초 루프)
   for (const k of ['narration', 'cuts', ...(OUTRO ? [] : ['endClip'])]) if (!copy[k]) throw new Error(`--reel-trend: copy에 ${k}가 없어요`);
   const facts = await steamFacts(copy.appid, copy);
@@ -517,7 +521,13 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
     const holdErrors = [];
     fsegs = vcuts.flatMap((c, i) => {
       const end = vcuts[i + 1]?.t ?? (cardMid ? null : cardAt) ?? nar.duration, dur = +(end - c.t).toFixed(3), lastCut = i === vcuts.length - 1;
-      const pieces = [{ src: c.src, pan: c.pan ?? [c.x ?? 0.5, c.x ?? 0.5], movie: c.movie ?? copy.movie }, ...(c.fill ?? []).map((p) => ({ src: p.src, pan: p.pan ?? [p.x ?? 0.5, p.x ?? 0.5], movie: p.movie ?? c.movie ?? copy.movie }))];
+      const cl = (v) => +Math.min(1, Math.max(0, v)).toFixed(4);
+      const panOf = (o) => { // fit-blur: cx → 1:1 영역 위치(fg)·9:16 배경/엔딩 위치(pan). 16:9 소스 기준(1:1 폭 0.5625, 9:16 폭 0.3164)
+        if (!FIT) return { pan: o.pan ?? [o.x ?? 0.5, o.x ?? 0.5] };
+        const cx = o.cx !== undefined ? [].concat(o.cx, o.cx).slice(0, 2) : (o.pan ?? [o.x ?? 0.5, o.x ?? 0.5]).map((v) => v * 0.6836 + 0.1582);
+        return { pan: cx.map((v) => cl((v - 0.1582) / 0.6836)), fg: cx.map((v) => cl((v - 0.28125) / 0.4375)) };
+      };
+      const pieces = [{ src: c.src, ...panOf(c), movie: c.movie ?? copy.movie }, ...(c.fill ?? []).map((p) => ({ src: p.src, ...panOf(p), movie: p.movie ?? c.movie ?? copy.movie }))];
       const Ls = pieces.map((p) => p.src[1] - p.src[0]), SL = Ls.reduce((a, b) => a + b, 0);
       const speed = pieces.length === 1 ? (c.speed ?? (dur > SL + 0.08 ? 0.9 : 1)) : Math.min(1, SL / dur); // 여러 장면이면 전체를 같은 속도(0.9~1.0)로
       if (SL / speed < dur - 0.04 || speed < 0.9 - 1e-6) { // 모자람(전부 모아서 한 번에 알린다)
@@ -526,7 +536,7 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
       let t = c.t;
       return pieces.map((pc, k) => {
         const d = pieces.length === 1 ? dur : +(dur * Ls[k] / SL).toFixed(3), L = Ls[k], use = Math.min(L, d * speed), last = lastCut && k === pieces.length - 1;
-        const f = { t: +t.toFixed(3), dur: d, a: pc.src[0], L, speed, use, hold: 0, pan: pc.pan, movie: pc.movie, tail: last ? nar.duration - t : d, piece: k + 1, pieces: pieces.length, cut: i + 1 };
+        const f = { t: +t.toFixed(3), dur: d, a: pc.src[0], L, speed, use, hold: 0, pan: pc.pan, fg: pc.fg, movie: pc.movie, tail: last ? nar.duration - t : d, piece: k + 1, pieces: pieces.length, cut: i + 1 };
         t += d;
         return f;
       });
@@ -571,7 +581,12 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
     const subPage = await (await browser.newContext({ viewport: { width: RS.w, height: RS.h }, deviceScaleFactor: 2 })).newPage(); // 자막은 2배 해상도로 그린다
     const full = { x: 0, y: 0, width: RS.w, height: RS.h };
     const load = async (html) => { await page.setContent(html, { waitUntil: 'load' }); await page.evaluate(() => document.fonts.ready); };
-    await load(logoHtml(font, FULL ? 170 : undefined, FULL));
+    await load(logoHtml(font, FIT ? LOGO.y : FULL ? 170 : undefined, FULL, FIT ? LOGO : {}));
+    if (FIT) { // 인스타 Reels 안전 영역 검사: 위 270px · 아래 35%(y>1248) · 오른쪽 140px 밖
+      const lr = await page.evaluate(() => { const b = document.querySelector('.logo').getBoundingClientRect(); return [Math.round(b.left), Math.round(b.top), Math.round(b.right), Math.round(b.bottom)]; });
+      console.log(`  워터마크 영역 [${lr}] (x ${lr[0]}~${lr[2]}, y ${lr[1]}~${lr[3]}) · 안전 영역: y ${Math.round(RS.h * 0.14)}~${Math.round(RS.h * 0.65)}, x ≤ ${RS.w - RS.rightGap}`);
+      if (lr[1] < 270 || lr[3] > RS.h * 0.65 || lr[2] > RS.w - RS.rightGap || lr[0] < 0) throw new Error('--reel-trend: 워터마크가 인스타 Reels 안전 영역(위 270px·아래 35%·오른쪽 140px)을 벗어나요');
+    }
     await page.screenshot({ path: logoPng, clip: full, omitBackground: true });
     for (let i = 0; i < chunks.length; i++) {
       if (cardScene && chunks[i].start >= vidDur - 0.02) break; // 카드 장면에는 자막 없음
@@ -615,7 +630,12 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
   const xs = [...cuts.map((c) => c.x ?? 0.5), 0.5]; // 구간별 가로 크롭 위치(0=왼쪽 끝, 1=오른쪽 끝)
   const fullPer = FULL ? fsegs.map((f, i) => { // 9:16 가운데 크롭(컷마다 x·pan), 슬로우·잡아두기 반영
     const [x0, x1] = f.pan, xe = x0 === x1 ? `${x0}` : `(${x0}+(${x1}-${x0})*min(1,t/${T(f.dur)}))`;
-    return `[${i}:v]setpts=(PTS-STARTPTS)/${f.speed},fps=${fps},setsar=1,tpad=stop_mode=clone:stop_duration=${T(f.dur + 1)},trim=duration=${T(f.dur)},setpts=PTS-STARTPTS,crop=w=trunc(ih*9/16/2)*2:h=ih:x='(iw-ow)*${xe}':y=0,scale=${w}:${h}:flags=lanczos,setsar=1[f${i}]`;
+    const head = `[${i}:v]setpts=(PTS-STARTPTS)/${f.speed},fps=${fps},setsar=1,tpad=stop_mode=clone:stop_duration=${T(f.dur + 1)},trim=duration=${T(f.dur)},setpts=PTS-STARTPTS`;
+    if (FIT) { // 배경: 같은 장면 9:16 크롭을 꽉 채워 키우고(1/4 크기에서 블러 sigma 30/4 → 확대) 어둡게 / 앞: 가운데 1:1을 확대 없이 세로 중앙에
+      const [g0, g1] = f.fg, ge = g0 === g1 ? `${g0}` : `(${g0}+(${g1}-${g0})*min(1,t/${T(f.dur)}))`;
+      return `${head},split[a${i}][b${i}];[b${i}]crop=w=trunc(ih*9/16/2)*2:h=ih:x='(iw-ow)*${xe}':y=0,scale=${w / 4}:${h / 4}:flags=bilinear,gblur=sigma=${FIT_BLUR / 4},scale=${w}:${h}:flags=bicubic,eq=brightness=${FIT_BRIGHT}[g${i}];[a${i}]crop=w=ih:h=ih:x='(iw-ow)*${ge}':y=0,scale=${w}:${w}:flags=lanczos[c${i}];[g${i}][c${i}]overlay=x=0:y=(H-h)/2,setsar=1[f${i}]`;
+    }
+    return `${head},crop=w=trunc(ih*9/16/2)*2:h=ih:x='(iw-ow)*${xe}':y=0,scale=${w}:${h}:flags=lanczos,setsar=1[f${i}]`;
   }) : null;
   const per = FULL ? fullPer : parts.map((_, i) => `[${i}:v]fps=${fps},setsar=1,split[a${i}][b${i}];[a${i}]crop=ih*4/5:ih:(iw-ih*4/5)*${xs[i]}:0,scale=${FG_W}:${FG_H}[f${i}];[b${i}]trim=end_frame=1,tpad=stop_mode=clone:stop_duration=${T(parts[i][1] - parts[i][0] + 1)},scale=-2:480,crop=270:480,gblur=sigma=10,scale=${w}:${h},colorchannelmixer=rr=0.65:gg=0.65:bb=0.65[g${i}]`); // 배경: 컷의 첫 프레임 한 장을 정지 화면으로 — 1/4로 줄여 시그마 10으로 블러(=원래 크기 약 40px)한 뒤 키우고 35% 어둡게(움직이는 배경은 인스타 압축에서 뭉개진다)
   const g = [FULL ? `${per.join(';')};${fsegs.map((_, i) => `[f${i}]`).join('')}concat=n=${n}:v=1:a=0[vf];[vf]format=yuv420p,split[v0][v0c]` : `${per.join(';')};${parts.map((_, i) => `[f${i}]`).join('')}concat=n=${n}:v=1:a=0[vf];${parts.map((_, i) => `[g${i}]`).join('')}concat=n=${n}:v=1:a=0[vb];[vb][vf]overlay=x=${FG_X}:y=${FG_Y}:format=auto,split[v0][v0c]`];
