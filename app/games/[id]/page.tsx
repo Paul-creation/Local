@@ -320,11 +320,15 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
                 {hasReleaseDate(game) && <p className="price-card-now">{game.release_date_text}</p>}
                 <p className="price-card-lowest">아직 출시 전이라 가격·할인 정보가 없어요</p>
                 <div className="price-card-buttons">
-                  {demo && (
+                  {demo ? (
                     <a href={demoStoreUrl(game.demo_appid)} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg price-card-buy">
                       스팀에서 데모 받기 ↗
                     </a>
-                  )}
+                  ) : game.steam_appid ? (
+                    <a href={buyUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg price-card-buy">
+                      스팀에서 찜하기 ↗
+                    </a>
+                  ) : null}
                   <AddToCompare gameId={game.id} name={gameName(game)} thumb={game.cover_image_url || game.card_image_url} />
                 </div>
                 <p className="price-card-note">출시일은 스팀 표기 기준이며 바뀔 수 있어요. 출시되면 가격 정보를 보여드려요.</p>

@@ -66,6 +66,8 @@ jobs:
       - if: steps.guard.outputs.skip != 'true'
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          ADMIN_REVALIDATE_KEY: ${{ secrets.ADMIN_REVALIDATE_KEY }}
         run: |
           [ -n "$DISCORD_WEBHOOK_URL" ] || unset DISCORD_WEBHOOK_URL
+          [ -n "$ADMIN_REVALIDATE_KEY" ] || unset ADMIN_REVALIDATE_KEY
           node scripts/run-steps.mjs daily
