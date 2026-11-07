@@ -1,7 +1,8 @@
 // scripts/insta/narration-sentences.mjs — --reel-trend 내레이션을 문장 단위로 생성(기본)
 // 문장마다 ElevenLabs(eleven_multilingual_v2, with-timestamps)를 따로 부르되 previous_text/next_text로 앞뒤 문장을 넘겨 톤을 잇는다.
 // 문장 끝 억양 검사: 마지막 어절 끝 음높이가 그 문장 평균보다 maxRise(기본 2)반음 넘게 올라가면 그 문장만 다시 생성(최대 retries=3번).
-// 그래도 올라가면 제일 덜 올라간 테이크를 쓴다. 분석은 scripts/insta/pitch-end.py(librosa.pyin) — python은 환경변수 PITCH_PYTHON(없으면 python3)
+// 그래도 올라가면 제일 덜 올라간 테이크를 쓴다.
+// 발음 검사(기본): 각 테이크를 faster-whisper(small, 한국어; scripts/insta/stt-check.py)로 받아 적어 대본과의 글자 오류율(CER, 공백·문장부호 제외, ㅐ/ㅔ 동음·되요/돼요 표기 차이는 같은 글자 — 규칙은 stt-check.py)을 계산하고, 억양 검사를 통과한 테이크 중 CER이 가장 낮은 것을 고른다. CER이 maxCer(기본 5%)를 넘으면 한 번 더 생성하고, 그래도 넘으면 문장과 받아쓰기를 보여주고 멈춘다(pitch.stt:false로 끔). 분석은 scripts/insta/pitch-end.py(librosa.pyin) — python은 환경변수 PITCH_PYTHON(없으면 python3)
 // 캐시: out/<post-id>/<cacheName>.wav·json(합친 결과) + <cacheName>-s/ 문장별 테이크(mp3·json). 대본·목소리·설정·검사 값이 같으면 API를 다시 부르지 않는다
 import fs from 'fs';
 import path from 'path';
@@ -15,6 +16,19 @@ const PITCH = path.join(DIR, 'pitch-end.py');
 const sh = (cmd, args) => { const r = spawnSync(cmd, args, { encoding: 'utf8' }); if (r.status !== 0) throw new Error(`${cmd} 실패: ${(r.stderr || '').slice(-400)}`); return r.stdout; };
 const probe = (f) => Number(sh('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', f]));
 export const splitSentences = (text) => text.split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter(Boolean);
+
+
+const STT = path.join(DIR, 'stt-check.py');
+// CER 규칙은 stt-check.py(norm): 띄어쓰기·문장부호 제외, ㅐ/ㅔ 동음·되요/돼요 표기 차이는 같은 글자
+export const cerOf = (ref, hyp, python = process.env.PITCH_PYTHON || 'python3', equal = []) => JSON.parse(sh(python, [STT, '--cer', ref, hyp, ...equal]).trim().split('\n').pop()).cer;
+// 받아쓰기(테이크 옆 .stt.json에 캐시). 캐시는 오디오 파일 내용(sha1)이 같을 때만 쓴다 — 같은 이름의 테이크가 다시 생성되면 다시 받아쓴다
+function sttOf(take, python) {
+  const f = take.mp3.replace(/\.mp3$/, '.stt.json'), sha = crypto.createHash('sha1').update(fs.readFileSync(take.mp3)).digest('hex');
+  if (fs.existsSync(f)) { const c = JSON.parse(fs.readFileSync(f, 'utf8')); if (c.sha === sha) return c.text; }
+  const text = JSON.parse(sh(python, [STT, take.mp3]).trim().split('\n').pop()).text;
+  fs.writeFileSync(f, JSON.stringify({ sha, text }));
+  return text;
+}
 
 // 한 테이크 생성(캐시). 같은 문장·앞뒤 문장·설정·테이크 번호면 그대로 쓴다
 async function takeOf({ dir, i, t, sentences, cfg, apiKey }) {
@@ -70,7 +84,7 @@ export async function getNarrationBySentence(outDir, cfg, log = console.log) {
   const name = cfg.cacheName ?? 'narration';
   const pc = { maxRise: 2, retries: 3, gap: 0.15, ...cfg.pitch };
   const wav = path.join(outDir, `${name}.wav`), js = path.join(outDir, `${name}.json`);
-  const key = crypto.createHash('sha1').update(`sentence-v1|${cfg.voiceId}|eleven_multilingual_v2|${cfg.text}|${JSON.stringify(cfg.voiceSettings)}|${JSON.stringify(pc)}|${JSON.stringify(cfg.sentenceSettings ?? {})}|${JSON.stringify(cfg.tts ?? {})}`).digest('hex');
+  const key = crypto.createHash('sha1').update(`sentence-v5|cer-jamo|${JSON.stringify(cfg.sttAllow ?? [])}|stt${pc.stt === false ? 0 : 1}|${pc.maxCer ?? 0.05}|${cfg.voiceId}|eleven_multilingual_v2|${cfg.text}|${JSON.stringify(cfg.voiceSettings)}|${JSON.stringify(pc)}|${JSON.stringify(cfg.sentenceSettings ?? {})}|${JSON.stringify(cfg.tts ?? {})}`).digest('hex');
   if (fs.existsSync(wav) && fs.existsSync(js)) { const c = JSON.parse(fs.readFileSync(js, 'utf8')); if (c.key === key) { log('  내레이션: 캐시 사용(API 호출 없음)'); return { mp3: wav, ...c }; } }
   try { if (!process.env.ELEVENLABS_API_KEY) process.loadEnvFile(path.join(ROOT, '.env.local')); } catch { /* .env.local 없음 */ }
   const apiKey = process.env.ELEVENLABS_API_KEY;
@@ -82,23 +96,34 @@ export async function getNarrationBySentence(outDir, cfg, log = console.log) {
   log(`  내레이션: 문장 ${sentences.length}개를 따로 생성(글자 ${[...cfg.text].length}자, 억양 검사 ${pc.maxRise}반음 초과면 최대 ${pc.retries}번 다시)`);
   const table = [], chosen = [];
   for (let i = 0; i < sentences.length; i++) {
-    const takes = [], need = pc.takes ?? 1; // pc.takes: 문장마다 최소 이 개수의 테이크를 만들고(통과가 하나도 없으면 retries까지), 통과한 것 중 음높이 폭(range_st)이 가장 큰(=표현이 큰) 테이크를 고른다
+    const takes = [], need = pc.takes ?? 1; // pc.takes: 문장마다 최소 이 개수의 테이크를 만든다(억양 통과가 하나도 없으면 retries까지). 억양 통과 테이크 중 CER이 가장 낮은 것(같으면 음높이 폭이 큰 것)을 고른다
     const scfg = { ...cfg, voiceSettings: { ...cfg.voiceSettings, ...(cfg.sentenceSettings?.[i + 1] ?? {}) } }; // sentenceSettings: {"1": {stability, style…}} 문장별 설정(1부터)
+    const ref = cfg.tts?.[i + 1] ?? sentences[i]; // 실제로 읽히는 글(발음 지정이 있으면 그 글)
+    const useStt = pc.stt !== false, maxCer = pc.maxCer ?? 0.05;
+    const allow = (cfg.sttAllow ?? []).filter((e) => ref.includes(e.match)).flatMap((e) => e.equal); // copy.narration.sttAllow: [{match: 문장에 들어 있는 글, equal: ["대본 표기=허용 표기"]}] — 문장별 받아쓰기 허용 표기
     const pass = (tk) => tk.rise !== null && tk.rise <= pc.maxRise;
-    for (let t = 1; t <= Math.max(need, 1) + pc.retries; t++) {
+    let cerRetried = false;
+    for (let t = 1; t <= Math.max(need, 1) + pc.retries + (useStt ? 1 : 0); t++) {
       const tk = await takeOf({ dir, i, t, sentences, cfg: scfg, apiKey });
       Object.assign(tk, (({ rise_st, range_st, std_st }) => ({ rise: rise_st, range: range_st, std: std_st }))(pitchOf(tk, python)));
+      if (useStt) { tk.stt = sttOf(tk, python); tk.cer = cerOf(ref, tk.stt, python, allow); }
       takes.push(tk);
-      log(`    문장 ${i + 1} 테이크 ${t}: 끝 ${tk.rise === null ? '측정 불가' : (tk.rise >= 0 ? '+' : '') + tk.rise + '반음'}, 음높이 폭 ${tk.range ?? '-'}반음${tk.cached ? ' (캐시)' : ''}`);
-      if (takes.length >= need && takes.some(pass)) break;
+      log(`    문장 ${i + 1} 테이크 ${t}: 끝 ${tk.rise === null ? '측정 불가' : (tk.rise >= 0 ? '+' : '') + tk.rise + '반음'}, 음높이 폭 ${tk.range ?? '-'}반음${useStt ? `, CER ${(tk.cer * 100).toFixed(1)}%` : ''}${tk.cached ? ' (캐시)' : ''}`);
+      if (takes.length < need) continue;
+      const ok = takes.filter(pass);
+      if (!ok.length) { if (t >= Math.max(need, 1) + pc.retries) break; continue; } // 억양 통과 없음 → 더 생성
+      if (!useStt || Math.min(...ok.map((x) => x.cer)) <= maxCer) break;
+      if (cerRetried) break; // CER이 넘어서 한 번 더 생성했는데도 넘으면 여기서 끝(아래에서 멈춤)
+      cerRetried = true;
     }
-    // 통과한 테이크 중 음높이 폭이 가장 큰 것. 통과가 없으면 제일 덜 올라간 테이크(측정 불가는 맨 뒤)
+    // 억양 통과 테이크 중 CER 최저(같으면 음높이 폭이 큰 것). 통과가 없으면 제일 덜 올라간 테이크(측정 불가는 맨 뒤)
     let best = 0;
     const passed = takes.map((tk, k) => k).filter((k) => pass(takes[k]));
-    if (passed.length) best = passed.reduce((a, b) => ((takes[b].range ?? 0) > (takes[a].range ?? 0) ? b : a));
+    if (passed.length) best = passed.reduce((a, b) => ((takes[b].cer ?? 0) < (takes[a].cer ?? 0) - 1e-9 || (Math.abs((takes[b].cer ?? 0) - (takes[a].cer ?? 0)) <= 1e-9 && (takes[b].range ?? 0) > (takes[a].range ?? 0)) ? b : a));
     else takes.forEach((tk, k) => { const a = tk.rise ?? Infinity, b = takes[best].rise ?? Infinity; if (a < b) best = k; });
+    if (useStt && takes[best].cer > maxCer) throw new Error(`--reel-trend: 문장 ${i + 1} 발음 검사 실패 — 선택된 테이크 ${best + 1}의 CER ${(takes[best].cer * 100).toFixed(1)}% > ${maxCer * 100}%\n  대본: ${ref}\n${takes.map((tk, k) => `  테이크 ${k + 1} (CER ${(tk.cer * 100).toFixed(1)}%, 끝 ${tk.rise}반음): ${tk.stt}`).join('\n')}`);
     chosen.push(takes[best]);
-    table.push({ sentence: i + 1, text: sentences[i], rises: takes.map((x) => x.rise), ranges: takes.map((x) => x.range), chosen: best + 1, ok: takes[best].rise !== null && takes[best].rise <= pc.maxRise });
+    table.push({ sentence: i + 1, text: sentences[i], rises: takes.map((x) => x.rise), ranges: takes.map((x) => x.range), cers: takes.map((x) => (x.cer === undefined ? null : +x.cer.toFixed(4))), stt: takes.map((x) => x.stt ?? null), chosen: best + 1, cer: takes[best].cer ?? null, ok: takes[best].rise !== null && takes[best].rise <= pc.maxRise });
   }
   // 합치기: 문장 wav(44.1k 모노) + 문장 사이 pc.gap초 무음
   const parts = [], offsets = [];

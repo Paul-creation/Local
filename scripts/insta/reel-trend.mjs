@@ -82,8 +82,10 @@ const logoHtml = (font, top = FG_Y + 26, full = false, o = {}) => `<!doctype htm
 // 자막 한 덩어리: 흰 글씨 72px Black(900) + 검은 외곽선 5px(바깥쪽, 10px 선 + paint-order, 둥근 모서리), 그림자 없음. 2배 해상도(144px·외곽선 10px)로 그린 뒤 50%로 줄여 합성(가장자리 매끈하게). [ ]로 감싼 말, 그리고 KEY_WORDS는 민트
 const KEY_WORDS = ['컨닝으로', '지우개가', '무전기로', '기절시키고', '다 같이', '파이널스 위크'];
 const subMark = (text) => (/\[/.test(text) ? text : KEY_WORDS.includes(text.trim()) ? `[${text.trim()}]` : text);
-const subHtml = (font, text, size = 72, full = false, y = full ? SUB_Y_FULL : SUB_Y) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
-.sub { position: absolute; left: ${SUB_X}px; top: ${y}px; transform: translate(-50%, -50%); white-space: nowrap; font-size: ${size}px; font-weight: ${full ? 800 : 900}; letter-spacing: -0.03em; line-height: 1.2; color: #fff; -webkit-text-stroke: ${full ? 14 : 10}px #000; paint-order: stroke fill; stroke-linejoin: round;${full ? ' filter: drop-shadow(0 4px 0 rgba(0,0,0,.6));' : ''} }
+// 자막 스타일. 기본(full·옛 레이아웃)은 굵은 큰 글씨. fit-blur는 CRACK 스타일(reel-clips.mjs와 같음): Pretendard Bold 48px(첫 덩어리 60px), 바깥쪽 3px 검은 외곽선(6px 선 + paint-order), 아주 약한 그림자. copy.subStyle {size, first, weight, stroke}로 덮어쓴다
+const SUB_FIT = { size: 48, first: 60, weight: 700, stroke: 6 };
+const subHtml = (font, text, size = 72, full = false, y = full ? SUB_Y_FULL : SUB_Y, st = null) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
+.sub { position: absolute; left: ${SUB_X}px; top: ${y}px; transform: translate(-50%, -50%); white-space: nowrap; font-size: ${size}px; font-weight: ${st ? st.weight : full ? 800 : 900}; letter-spacing: ${st ? '-0.02em' : '-0.03em'}; line-height: 1.2; color: #fff; -webkit-text-stroke: ${st ? st.stroke : full ? 14 : 10}px #000; paint-order: stroke fill; stroke-linejoin: round;${st ? ' text-shadow: 0 2px 0 rgba(0,0,0,.4);' : full ? ' filter: drop-shadow(0 4px 0 rgba(0,0,0,.6));' : ''} }
 .sub .k { color: ${MINT}; }
 </style><div class="sub" id="s">${esc(subMark(text)).replace(/\[([^\]]+)\]/g, '<span class="k">$1</span>')}</div>`;
 
@@ -100,7 +102,7 @@ const cardHtml = (font, f, title, imgB64) => `<!doctype html><meta charset="utf-
 
 // ── ElevenLabs 내레이션 ──
 const DEFAULT_VOICE = 'uyVNoMrnUku1dZyVEXwD';
-const DEFAULT_VOICE_SETTINGS = { stability: 0.55, similarity_boost: 0.8, style: 0, speed: 1.2 }; // 문장 끝이 올라가는 걸 줄이려고 안정성을 올리고 스타일은 0
+const DEFAULT_VOICE_SETTINGS = { stability: 0.45, similarity_boost: 0.8, style: 0.15, speed: 1.2 }; // 스냅제이 톤(과장 없이 차분하게): 안정성 0.45·스타일 0.15·속도 1.2(ElevenLabs 최대). 마지막 멘트 템플릿(closing-template.mjs)은 자기 설정을 따로 가진다
 // 내레이션 mp3·글자별 타이밍은 out/<post-id>/narration.mp3·json에 캐시(대본·목소리가 같으면 API를 다시 부르지 않는다)
 export async function getNarration(outDir, cfg) {
   cfg = { voiceId: DEFAULT_VOICE, ...cfg, voiceSettings: { ...DEFAULT_VOICE_SETTINGS, ...cfg.voiceSettings } }; // 기본 목소리·설정(속도 1.2 = ElevenLabs 최대값). copy에서 적은 값이 우선
@@ -414,12 +416,13 @@ async function runReelTrendOnce(postId, { refresh = false, layout, fitRatio } = 
   const copy = JSON.parse(fs.readFileSync(copyFile, 'utf8'));
   if (JSON.stringify(copy).includes('재밌드나')) throw new Error('화면에는 "재밌드나"를 쓰지 않아요. JamiDuNow만 쓰세요.');
   const LAYOUT = layout ?? copy.layout;
-  const FIT = LAYOUT === 'fit-blur'; // fit-blur: 소스에서 비율(--fit-ratio 1:1·4:5·4:3, 기본 4:3, copy.fitRatio)대로 자른 영역을 가로 1080으로 화면 세로 중앙에 두고(4:3이면 1080×810), 위아래는 같은 장면 9:16 크롭을 꽉 채워 키운 뒤 블러(sigma 30)·밝기 -0.15. 컷마다 cx(0~1, 주인공의 가로 위치)로 앞 영역·배경 위치를 정한다(pan/x가 있으면 full 기준 값을 cx로 환산). 엔딩 카드·로고 엔딩은 9:16 전체
+  const FIT = LAYOUT === 'fit-blur'; // fit-blur: 소스에서 비율(--fit-ratio 1:1·4:5·4:3, 기본 4:5, copy.fitRatio)대로 자른 영역을 가로 1080으로 화면 세로 중앙에 두고(4:3이면 1080×810), 위아래는 같은 장면 9:16 크롭을 꽉 채워 키운 뒤 블러(sigma 30)·밝기 -0.15. 컷마다 cx(0~1, 주인공의 가로 위치)로 앞 영역·배경 위치를 정한다(pan/x가 있으면 full 기준 값을 cx로 환산). 엔딩 카드·로고 엔딩은 9:16 전체
   const FULL = LAYOUT === 'full' || FIT; // 9:16 꽉 채우기(fit-blur도 같은 컷·오디오 처리)
-  const FIT_RATIO = fitRatio ?? copy.fitRatio ?? '4:3';
+  const FIT_RATIO = fitRatio ?? copy.fitRatio ?? '4:5'; // 기본 4:5(1080×1350, 화면 세로 중앙 y 285~1635)
   if (!['1:1', '4:5', '4:3'].includes(FIT_RATIO)) throw new Error(`--reel-trend: --fit-ratio는 1:1, 4:5, 4:3 중 하나예요 (${FIT_RATIO})`);
   const [RW, RH] = FIT_RATIO.split(':').map(Number), FIT_H = Math.round((1080 * RH) / RW / 2) * 2; // 앞 영역 높이: 4:3 → 810, 1:1 → 1080, 4:5 → 1350
   const SUBY = FIT ? SUB_Y_FIT : FULL ? SUB_Y_FULL : SUB_Y;
+  const SUBST = FIT ? { ...SUB_FIT, ...copy.subStyle } : null; // fit-blur 자막 스타일(기본 CRACK 스타일)
   const LOGO = { x: 72, y: 300, scale: 1, ...copy.logo }; // 워터마크 기본값(모든 레이아웃): 인스타 Reels 안전 영역(위 270px·아래 35%·오른쪽 버튼 줄) 안, Goatastrophe 릴스와 같은 위치·크기(아이콘 38px = scale 1)
   const FIT_BLUR = 30, FIT_BRIGHT = -0.15;
   const OUTRO = copy.outro !== false; // 기본: 끝에 공통 엔딩 샷 2초(copy.outro:false면 예전처럼 endClip 1초 루프)
@@ -429,7 +432,14 @@ async function runReelTrendOnce(postId, { refresh = false, layout, fitRatio } = 
   { // 마지막 멘트 고정 템플릿(출시 예정 → Trash Island, 출시작 → CRACK). 게임 이름 자리만 copy.closingName ?? cardTitle ?? 스팀 이름으로 바뀐다. 이름이 영어면 copy.narration.tts로 발음을 따로 지정
     try { if (!process.env.NEXT_PUBLIC_SUPABASE_URL) process.loadEnvFile(path.join(ROOT, '.env.local')); } catch { /* .env.local 없음 */ }
     const rs = await releaseState(copy.appid, facts.soon);
+    const scriptSents = copy.narration?.text ? copy.narration.text.split(/(?<=[.!?])\s+/) : [];
     const ap = applyClosing(copy, { state: rs.state, name: copy.closingName ?? title });
+    if (!ap.skipped) { // 대본 외 연결 멘트 금지: 최종 문장은 copy에 적힌 문장 + 마지막 멘트 템플릿 문장뿐이어야 한다
+      const allowed = new Set([...scriptSents, ...ap.sentences]);
+      const extra = copy.narration.text.split(/(?<=[.!?])\s+/).filter((x) => !allowed.has(x));
+      if (extra.length) throw new Error(`--reel-trend: copy 대본에 없는 문장이 들어갔어요: ${extra.join(' / ')}`);
+      console.log(`  대본 확인: copy 문장 ${scriptSents.length}개 + 마지막 멘트 템플릿 ${ap.sentences.length}문장, 그 외 연결 멘트 없음`);
+    }
     console.log(ap.skipped ? `  마지막 멘트 템플릿: 건너뜀(${ap.skipped})` : `  마지막 멘트 템플릿: ${ap.template}(${rs.state}, 출시 상태 출처 ${rs.source}) — ${ap.sentences.join(' ')}`);
   }
   console.log('  스팀 값:', JSON.stringify({ ...facts, header: undefined }));
@@ -437,7 +447,7 @@ async function runReelTrendOnce(postId, { refresh = false, layout, fitRatio } = 
   const CACHE = path.join(DIR, 'cache');
   fs.mkdirSync(CACHE, { recursive: true });
   const endSpec = OUTRO ? null : Array.isArray(copy.endClip) ? { src: copy.endClip } : copy.endClip; // {movie?, src:[시작초, 끝초]}
-  const movieNames = [...new Set([...copy.cuts.map((c) => c.movie ?? copy.movie), ...(endSpec ? [endSpec.movie ?? copy.movie] : [])])]; // 컷마다 movie(영상 이름)를 따로 쓸 수 있다
+  const movieNames = [...new Set([...copy.cuts.flatMap((c) => [c.movie ?? copy.movie, ...(c.fill ?? []).map((p) => p.movie ?? c.movie ?? copy.movie)]), ...(endSpec ? [endSpec.movie ?? copy.movie] : [])])]; // 컷마다 movie(영상 이름)를 따로 쓸 수 있다
   const srcs = {}, trailers = {};
   for (const mv of movieNames) {
     if (copy.clips?.[mv]) { srcs[mv] = await prepareClip(copy.appid, mv, copy.clips[mv], CACHE, refresh); trailers[mv] = srcs[mv].local.video; continue; }
@@ -598,13 +608,14 @@ async function runReelTrendOnce(postId, { refresh = false, layout, fitRatio } = 
     { // 인스타 Reels 안전 영역 검사: 위 270px · 아래 35%(y>1248) · 오른쪽 140px 밖
       const lr = await page.evaluate(() => { const b = document.querySelector('.logo').getBoundingClientRect(); return [Math.round(b.left), Math.round(b.top), Math.round(b.right), Math.round(b.bottom)]; });
       console.log(`  워터마크 영역 [${lr}] (x ${lr[0]}~${lr[2]}, y ${lr[1]}~${lr[3]}) · 안전 영역: y ${Math.round(RS.h * 0.14)}~${Math.round(RS.h * 0.65)}, x ≤ ${RS.w - RS.rightGap}`);
+      if (FIT) { const top = (RS.h - FIT_H) / 2, bot = top + FIT_H; if (lr[1] < top || lr[3] > bot || lr[0] < 0 || lr[2] > RS.w) throw new Error(`--reel-trend: 워터마크가 영상 영역(y ${top}~${bot}) 밖이에요 [${lr}]`); console.log(`  ✅ 워터마크가 영상 영역(y ${top}~${bot}) 안에 있어요`); }
       if (lr[1] < 270 || lr[3] > RS.h * 0.65 || lr[2] > RS.w - RS.rightGap || lr[0] < 0) throw new Error('--reel-trend: 워터마크가 인스타 Reels 안전 영역(위 270px·아래 35%·오른쪽 140px)을 벗어나요');
     }
     await page.screenshot({ path: logoPng, clip: full, omitBackground: true });
     for (let i = 0; i < chunks.length; i++) {
       if (cardScene && chunks[i].start >= vidDur - 0.02) break; // 카드 장면에는 자막 없음
       if (cardScene) chunks[i].to = Math.min(chunks[i].to, vidDur);
-      await subPage.setContent(subHtml(font, chunks[i].text, FULL ? (i === 0 ? (copy.subFirstSize ?? 104) : 84) : 72, FULL, SUBY), { waitUntil: 'load' }); await subPage.evaluate(() => document.fonts.ready);
+      await subPage.setContent(subHtml(font, chunks[i].text, SUBST ? (i === 0 ? SUBST.first : SUBST.size) : FULL ? (i === 0 ? (copy.subFirstSize ?? 104) : 84) : 72, FULL, SUBY, SUBST), { waitUntil: 'load' }); await subPage.evaluate(() => document.fonts.ready);
       const r = await subPage.evaluate(() => { const b = document.getElementById('s').getBoundingClientRect(); return { l: b.left, t: b.top, w: b.width, h: b.height }; });
       const W = Math.ceil(r.w / 2) * 2 + 64, H = Math.ceil(r.h / 2) * 2 + 64; // 외곽선 여유, 가운데 유지
       const file = path.join(CACHE, `trend-${postId}-sub${i}.png`);
@@ -794,5 +805,13 @@ async function runReelTrendOnce(postId, { refresh = false, layout, fitRatio } = 
   console.log(`${path.relative(ROOT, mp4)} (${dur.toFixed(2)}초, 내레이션 + 덕킹한 원본 오디오 측정 ${measured} LUFS → -14 LUFS, 구간 경계 0.1초 크로스페이드)`);
   console.log(path.relative(ROOT, path.join(outDir, 'still-subtitle.png')), path.relative(ROOT, path.join(outDir, second)));
   if (freezeFail?.length) throw new Error(`--reel-trend: 정지 프레임 ${freezeFail.length}곳(${freezeFail.map((f) => `${f.a.toFixed(2)}~${f.b.toFixed(2)}`).join(' ')}) — scene-check.txt 참고`);
+  if (copy.targetSec && (dur < copy.targetSec[0] || dur > copy.targetSec[1])) throw new Error(`--reel-trend: 길이 ${dur.toFixed(2)}초가 목표 ${copy.targetSec[0]}~${copy.targetSec[1]}초 밖이에요 — 문장 사이 쉼(narration.pitch.gap·silence.sentence)으로 맞추세요(버전 파일은 저장하지 않음)`);
+  if (copy.versionedOut) { // 버전 관리 출력: reel-v<N>.mp4로 저장하고 이전 버전은 지우지 않는다. dir(메인 레포 out 폴더)에서 가장 높은 번호 + 1(start보다 작으면 start). 워크트리 out 폴더에도 같은 번호로 복사
+    const vd = copy.versionedOut.dir ?? outDir; fs.mkdirSync(vd, { recursive: true });
+    const have = [...fs.readdirSync(vd), ...fs.readdirSync(outDir)].map((f) => /^reel-v(\d+)\.mp4$/.exec(f)?.[1]).filter(Boolean).map(Number);
+    const ver = Math.max(copy.versionedOut.start ?? 1, (have.length ? Math.max(...have) + 1 : 1));
+    for (const d of new Set([vd, outDir])) fs.copyFileSync(mp4, path.join(d, `reel-v${ver}.mp4`));
+    console.log(`  버전 저장: ${path.join(vd, `reel-v${ver}.mp4`)}`);
+  }
   return { bad, ssims, sceneReport };
 }
