@@ -33,7 +33,7 @@ const ROOT = path.resolve(DIR, '../..');
 const MINT = '#5CF2B0';
 const CX = (RS.w - RS.rightGap) / 2; // 자막·카드 가운데 x = 470
 const OUTRO_GAME_TAIL = 0.3, OUTRO_PAD = 0.6, OUTRO_SEC_NO_VOICE = 1.6; // 엔딩 길이 = 시그니처 음성 길이 + 0.6초, 게임 소리는 엔딩 진입 0.3초 안에 사라진다
-const SUB_X = 540, SUB_Y = 1000, SUB_Y_FULL = 960; // 자막 가운데(고정). full 레이아웃은 화면 정중앙(960)
+const SUB_X = 540, SUB_Y = 1000, SUB_Y_FULL = 960, SUB_Y_FIT = 860; // 자막 가운데(고정). full 레이아웃은 화면 정중앙(960), fit-blur는 영상 영역(가운데 4:3이면 y 555~1365) 안 860
 const FG_Y = 285, FG_W = 1080, FG_H = 1350; // 영상은 원본 높이 기준 4:5로 가운데 크롭(컷마다 cut.x 0~1로 가로 위치 조정, 기본 0.5)해 y 285~1635에 두고, 위아래는 같은 영상을 크게 블러·어둡게 깐다
 const FG_X = 0;
 const CARD_CX = 540, CARD_Y = 960; // 정보 카드는 항상 화면 정중앙(오른쪽 140px 여백 규칙은 카드에 적용하지 않는다) // 카드 가운데 y
@@ -74,7 +74,7 @@ const baseCss = (font) => `@font-face { font-family: P; src: url(data:font/woff2
 * { margin: 0; box-sizing: border-box; } html, body { width: ${RS.w}px; height: ${RS.h}px; background: transparent; overflow: hidden; font-family: P, sans-serif; }`;
 
 const logoHtml = (font, top = FG_Y + 26, full = false, o = {}) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
-.logo { position: absolute; left: ${o.x ?? (full ? 48 : FG_X + 28)}px; top: ${top}px; display: flex; align-items: center; gap: 10px; opacity: ${full ? 0.85 : 0.92}; ${full ? 'transform: scale(${o.scale ?? 0.8}); transform-origin: 0 0; filter: drop-shadow(0 0 4px rgba(0,0,0,.4));' : ''} }
+.logo { position: absolute; left: ${o.x ?? (full ? 48 : FG_X + 28)}px; top: ${top}px; display: flex; align-items: center; gap: 10px; opacity: ${full ? 0.85 : 0.92}; ${full ? `transform: scale(${o.scale ?? 1}); transform-origin: 0 0; filter: drop-shadow(0 0 4px rgba(0,0,0,.4));` : ''} }
 .logo i { width: 38px; height: 38px; border-radius: 11px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-style: normal; font-size: 27px; font-weight: 900; line-height: 1; }
 .logo b { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #fff; ${full ? '' : 'text-shadow: 0 0 8px rgba(0,0,0,.6);'} }
 </style><div class="logo"><i>J</i><b>JamiDuNow</b></div>`;
@@ -82,8 +82,8 @@ const logoHtml = (font, top = FG_Y + 26, full = false, o = {}) => `<!doctype htm
 // 자막 한 덩어리: 흰 글씨 72px Black(900) + 검은 외곽선 5px(바깥쪽, 10px 선 + paint-order, 둥근 모서리), 그림자 없음. 2배 해상도(144px·외곽선 10px)로 그린 뒤 50%로 줄여 합성(가장자리 매끈하게). [ ]로 감싼 말, 그리고 KEY_WORDS는 민트
 const KEY_WORDS = ['컨닝으로', '지우개가', '무전기로', '기절시키고', '다 같이', '파이널스 위크'];
 const subMark = (text) => (/\[/.test(text) ? text : KEY_WORDS.includes(text.trim()) ? `[${text.trim()}]` : text);
-const subHtml = (font, text, size = 72, full = false) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
-.sub { position: absolute; left: ${SUB_X}px; top: ${full ? SUB_Y_FULL : SUB_Y}px; transform: translate(-50%, -50%); white-space: nowrap; font-size: ${size}px; font-weight: ${full ? 800 : 900}; letter-spacing: -0.03em; line-height: 1.2; color: #fff; -webkit-text-stroke: ${full ? 14 : 10}px #000; paint-order: stroke fill; stroke-linejoin: round;${full ? ' filter: drop-shadow(0 4px 0 rgba(0,0,0,.6));' : ''} }
+const subHtml = (font, text, size = 72, full = false, y = full ? SUB_Y_FULL : SUB_Y) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
+.sub { position: absolute; left: ${SUB_X}px; top: ${y}px; transform: translate(-50%, -50%); white-space: nowrap; font-size: ${size}px; font-weight: ${full ? 800 : 900}; letter-spacing: -0.03em; line-height: 1.2; color: #fff; -webkit-text-stroke: ${full ? 14 : 10}px #000; paint-order: stroke fill; stroke-linejoin: round;${full ? ' filter: drop-shadow(0 4px 0 rgba(0,0,0,.6));' : ''} }
 .sub .k { color: ${MINT}; }
 </style><div class="sub" id="s">${esc(subMark(text)).replace(/\[([^\]]+)\]/g, '<span class="k">$1</span>')}</div>`;
 
@@ -408,15 +408,19 @@ async function prepareClip(appid, name, url, CACHE, refresh) {
   return { name, steam_appid: id, video_url: url, local: { video, audio } };
 }
 
-async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned = []) {
+async function runReelTrendOnce(postId, { refresh = false, layout, fitRatio } = {}, banned = []) {
   const copyFile = path.join(DIR, 'copy', `${postId}.json`);
   if (!fs.existsSync(copyFile)) throw new Error(`--reel-trend: ${path.relative(ROOT, copyFile)}이 없어요`);
   const copy = JSON.parse(fs.readFileSync(copyFile, 'utf8'));
   if (JSON.stringify(copy).includes('재밌드나')) throw new Error('화면에는 "재밌드나"를 쓰지 않아요. JamiDuNow만 쓰세요.');
   const LAYOUT = layout ?? copy.layout;
-  const FIT = LAYOUT === 'fit-blur'; // fit-blur: 소스 가운데 1:1(확대 없음)을 화면 세로 중앙에 두고, 위아래는 같은 장면을 9:16으로 꽉 채워 키운 뒤 블러(sigma 30)·밝기 -0.15. 컷마다 cx(0~1, 주인공의 가로 위치)로 1:1 영역·배경 위치를 정한다(pan/x가 있으면 full 기준 값을 cx로 환산). 엔딩 카드·로고 엔딩은 9:16 전체
+  const FIT = LAYOUT === 'fit-blur'; // fit-blur: 소스에서 비율(--fit-ratio 1:1·4:5·4:3, 기본 4:3, copy.fitRatio)대로 자른 영역을 가로 1080으로 화면 세로 중앙에 두고(4:3이면 1080×810), 위아래는 같은 장면 9:16 크롭을 꽉 채워 키운 뒤 블러(sigma 30)·밝기 -0.15. 컷마다 cx(0~1, 주인공의 가로 위치)로 앞 영역·배경 위치를 정한다(pan/x가 있으면 full 기준 값을 cx로 환산). 엔딩 카드·로고 엔딩은 9:16 전체
   const FULL = LAYOUT === 'full' || FIT; // 9:16 꽉 채우기(fit-blur도 같은 컷·오디오 처리)
-  const LOGO = FIT ? { x: 72, y: 300, scale: 1.04, ...copy.logo } : null; // 인스타 Reels 안전 영역(위 270px·아래 35%·오른쪽 버튼 줄) 안: full의 0.8배 × 1.3
+  const FIT_RATIO = fitRatio ?? copy.fitRatio ?? '4:3';
+  if (!['1:1', '4:5', '4:3'].includes(FIT_RATIO)) throw new Error(`--reel-trend: --fit-ratio는 1:1, 4:5, 4:3 중 하나예요 (${FIT_RATIO})`);
+  const [RW, RH] = FIT_RATIO.split(':').map(Number), FIT_H = Math.round((1080 * RH) / RW / 2) * 2; // 앞 영역 높이: 4:3 → 810, 1:1 → 1080, 4:5 → 1350
+  const SUBY = FIT ? SUB_Y_FIT : FULL ? SUB_Y_FULL : SUB_Y;
+  const LOGO = { x: 72, y: 300, scale: 1, ...copy.logo }; // 워터마크 기본값(모든 레이아웃): 인스타 Reels 안전 영역(위 270px·아래 35%·오른쪽 버튼 줄) 안, Goatastrophe 릴스와 같은 위치·크기(아이콘 38px = scale 1)
   const FIT_BLUR = 30, FIT_BRIGHT = -0.15;
   const OUTRO = copy.outro !== false; // 기본: 끝에 공통 엔딩 샷 2초(copy.outro:false면 예전처럼 endClip 1초 루프)
   for (const k of ['narration', 'cuts', ...(OUTRO ? [] : ['endClip'])]) if (!copy[k]) throw new Error(`--reel-trend: copy에 ${k}가 없어요`);
@@ -526,15 +530,17 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
     const vcuts = cuts.filter((c) => cardAt === null || cardMid || c.t < cardAt - 0.0005);
     // 정지 프레임(hold) 금지: 문장(컷)이 원본 구간보다 길면 0.9배까지만 늘린다. 그래도 모자라면 cuts[].fill([{src:[시작,끝], x|pan, movie?}…])의 다른 장면을 뒤에 이어 붙여 채운다(문장당 한 장면 예외, 장면 전환 없는 구간만·같은 장면 반복 금지는 copy 작성자가 지킨다). 그래도 모자라면 오류
     const holdErrors = [];
+    const DIM = {}; for (const [mv, file] of Object.entries(trailers)) { const [dw, dh] = execFileSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', file]).toString().trim().split(',').map(Number); DIM[mv] = { w: dw, h: dh }; }
     fsegs = vcuts.flatMap((c, i) => {
       const end = vcuts[i + 1]?.t ?? (cardMid ? null : cardAt) ?? nar.duration, dur = +(end - c.t).toFixed(3), lastCut = i === vcuts.length - 1;
       const cl = (v) => +Math.min(1, Math.max(0, v)).toFixed(4);
-      const panOf = (o) => { // fit-blur: cx → 1:1 영역 위치(fg)·9:16 배경/엔딩 위치(pan). 16:9 소스 기준(1:1 폭 0.5625, 9:16 폭 0.3164)
+      const panOf = (o, mv) => { // fit-blur: cx(원본 가로 위치 0~1) → 앞 영역(fg)·9:16 배경/엔딩 위치(pan). 원본 비율은 파일에서 읽는다
         if (!FIT) return { pan: o.pan ?? [o.x ?? 0.5, o.x ?? 0.5] };
-        const cx = o.cx !== undefined ? [].concat(o.cx, o.cx).slice(0, 2) : (o.pan ?? [o.x ?? 0.5, o.x ?? 0.5]).map((v) => v * 0.6836 + 0.1582);
-        return { pan: cx.map((v) => cl((v - 0.1582) / 0.6836)), fg: cx.map((v) => cl((v - 0.28125) / 0.4375)) };
+        const asp = DIM[mv].w / DIM[mv].h, bw = 9 / 16 / asp, fw = Math.min(1, RW / RH / asp); // 9:16 폭·앞 영역 폭(원본 폭 대비)
+        const cx = o.cx !== undefined ? [].concat(o.cx, o.cx).slice(0, 2) : (o.pan ?? [o.x ?? 0.5, o.x ?? 0.5]).map((v) => v * (1 - bw) + bw / 2);
+        return { pan: cx.map((v) => cl((v - bw / 2) / (1 - bw))), fg: cx.map((v) => (fw >= 1 ? 0.5 : cl((v - fw / 2) / (1 - fw)))) };
       };
-      const pieces = [{ src: c.src, ...panOf(c), movie: c.movie ?? copy.movie }, ...(c.fill ?? []).map((p) => ({ src: p.src, ...panOf(p), movie: p.movie ?? c.movie ?? copy.movie }))];
+      const pieces = [{ src: c.src, ...panOf(c, c.movie ?? copy.movie), movie: c.movie ?? copy.movie }, ...(c.fill ?? []).map((p) => ({ src: p.src, ...panOf(p, p.movie ?? c.movie ?? copy.movie), movie: p.movie ?? c.movie ?? copy.movie }))];
       const Ls = pieces.map((p) => p.src[1] - p.src[0]), SL = Ls.reduce((a, b) => a + b, 0);
       const speed = pieces.length === 1 ? (c.speed ?? (dur > SL + 0.08 ? 0.9 : 1)) : Math.min(1, SL / dur); // 여러 장면이면 전체를 같은 속도(0.9~1.0)로
       if (SL / speed < dur - 0.04 || speed < 0.9 - 1e-6) { // 모자람(전부 모아서 한 번에 알린다)
@@ -549,7 +555,7 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
       });
     });
     if (holdErrors.length) throw new Error(holdErrors.join('\n'));
-    for (const [i, f] of fsegs.entries()) console.log(`  컷 ${f.cut}${f.pieces > 1 ? `-${f.piece}` : ''}: t=${f.t.toFixed(2)} 길이 ${f.dur.toFixed(2)}초 · 원본 ${f.a}~${(f.a + f.L).toFixed(2)}(${f.L.toFixed(2)}초) · 속도 ${f.speed}`);
+    for (const [i, f] of fsegs.entries()) console.log(`  컷 ${f.cut}${f.pieces > 1 ? `-${f.piece}` : ''}: t=${f.t.toFixed(2)} 길이 ${f.dur.toFixed(2)}초 · 원본 ${f.a}~${(f.a + f.L).toFixed(2)}(${f.L.toFixed(2)}초) · 속도 ${f.speed}${FULL ? ` · 확대 ${FIT ? `앞 ${(1080 / (DIM[f.movie].h * RW / RH)).toFixed(3)}배(${FIT_RATIO}) · 배경 ` : ''}${(RS.h / DIM[f.movie].h).toFixed(3)}배` : ''}`);
   }
   if (process.env.REEL_PLAN_ONLY) { // 계획만 출력(렌더 안 함)
     const plan = cutTimeline(cuts, null, nar.duration).segs;
@@ -588,8 +594,8 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
     const subPage = await (await browser.newContext({ viewport: { width: RS.w, height: RS.h }, deviceScaleFactor: 2 })).newPage(); // 자막은 2배 해상도로 그린다
     const full = { x: 0, y: 0, width: RS.w, height: RS.h };
     const load = async (html) => { await page.setContent(html, { waitUntil: 'load' }); await page.evaluate(() => document.fonts.ready); };
-    await load(logoHtml(font, FIT ? LOGO.y : FULL ? 170 : undefined, FULL, FIT ? LOGO : {}));
-    if (FIT) { // 인스타 Reels 안전 영역 검사: 위 270px · 아래 35%(y>1248) · 오른쪽 140px 밖
+    await load(logoHtml(font, LOGO.y, FULL, LOGO));
+    { // 인스타 Reels 안전 영역 검사: 위 270px · 아래 35%(y>1248) · 오른쪽 140px 밖
       const lr = await page.evaluate(() => { const b = document.querySelector('.logo').getBoundingClientRect(); return [Math.round(b.left), Math.round(b.top), Math.round(b.right), Math.round(b.bottom)]; });
       console.log(`  워터마크 영역 [${lr}] (x ${lr[0]}~${lr[2]}, y ${lr[1]}~${lr[3]}) · 안전 영역: y ${Math.round(RS.h * 0.14)}~${Math.round(RS.h * 0.65)}, x ≤ ${RS.w - RS.rightGap}`);
       if (lr[1] < 270 || lr[3] > RS.h * 0.65 || lr[2] > RS.w - RS.rightGap || lr[0] < 0) throw new Error('--reel-trend: 워터마크가 인스타 Reels 안전 영역(위 270px·아래 35%·오른쪽 140px)을 벗어나요');
@@ -598,13 +604,18 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
     for (let i = 0; i < chunks.length; i++) {
       if (cardScene && chunks[i].start >= vidDur - 0.02) break; // 카드 장면에는 자막 없음
       if (cardScene) chunks[i].to = Math.min(chunks[i].to, vidDur);
-      await subPage.setContent(subHtml(font, chunks[i].text, FULL ? (i === 0 ? 104 : 84) : 72, FULL), { waitUntil: 'load' }); await subPage.evaluate(() => document.fonts.ready);
+      await subPage.setContent(subHtml(font, chunks[i].text, FULL ? (i === 0 ? 104 : 84) : 72, FULL, SUBY), { waitUntil: 'load' }); await subPage.evaluate(() => document.fonts.ready);
       const r = await subPage.evaluate(() => { const b = document.getElementById('s').getBoundingClientRect(); return { l: b.left, t: b.top, w: b.width, h: b.height }; });
       const W = Math.ceil(r.w / 2) * 2 + 64, H = Math.ceil(r.h / 2) * 2 + 64; // 외곽선 여유, 가운데 유지
       const file = path.join(CACHE, `trend-${postId}-sub${i}.png`);
-      const big = await subPage.screenshot({ clip: { x: Math.round(SUB_X - W / 2), y: Math.round((FULL ? SUB_Y_FULL : SUB_Y) - H / 2), width: W, height: H }, omitBackground: true }); // 2배(2W×2H)
+      const big = await subPage.screenshot({ clip: { x: Math.round(SUB_X - W / 2), y: Math.round(SUBY - H / 2), width: W, height: H }, omitBackground: true }); // 2배(2W×2H)
       await sharp(big).resize(W, H, { kernel: 'lanczos3' }).png().toFile(file); // 50%로 줄임
       if (SUB_X + r.w / 2 > RS.w - RS.rightGap || SUB_X - r.w / 2 < 0) throw new Error(`--reel-trend: 자막 "${chunks[i].text}"가 안전 영역(오른쪽 140px)을 넘어요`);
+      if (FIT) { // 자막이 앞 영상 영역(화면 세로 중앙) 안에 있는지 검사
+        const y0 = (RS.h - FIT_H) / 2, y1 = (RS.h + FIT_H) / 2, st = SUBY - r.h / 2, sb = SUBY + r.h / 2;
+        if (i === 0) console.log(`  자막 y ${SUBY}(상자 ${Math.round(st)}~${Math.round(sb)}) · 영상 영역 y ${y0}~${y1}(${FIT_RATIO}) → ${st >= y0 && sb <= y1 ? '안에 들어옴' : '벗어남'}`);
+        if (st < y0 || sb > y1) throw new Error(`--reel-trend: 자막 "${chunks[i].text}"가 영상 영역(y ${y0}~${y1})을 벗어나요`);
+      }
       subs.push({ file, ...chunks[i] });
     }
     if (hasCard || cardAt !== null) {
@@ -638,9 +649,9 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
   const fullPer = FULL ? fsegs.map((f, i) => { // 9:16 가운데 크롭(컷마다 x·pan), 슬로우·잡아두기 반영
     const [x0, x1] = f.pan, xe = x0 === x1 ? `${x0}` : `(${x0}+(${x1}-${x0})*min(1,t/${T(f.dur)}))`;
     const head = `[${i}:v]setpts=(PTS-STARTPTS)/${f.speed},fps=${fps},setsar=1,tpad=stop_mode=clone:stop_duration=${T(f.dur + 1)},trim=duration=${T(f.dur)},setpts=PTS-STARTPTS`;
-    if (FIT) { // 배경: 같은 장면 9:16 크롭을 꽉 채워 키우고(1/4 크기에서 블러 sigma 30/4 → 확대) 어둡게 / 앞: 가운데 1:1을 확대 없이 세로 중앙에
+    if (FIT) { // 배경: 같은 장면 9:16 크롭을 꽉 채워 키우고(1/4 크기에서 블러 sigma 30/4 → 확대) 어둡게 / 앞: 비율 영역(기본 4:3)을 가로 1080에 맞춰 세로 중앙에
       const [g0, g1] = f.fg, ge = g0 === g1 ? `${g0}` : `(${g0}+(${g1}-${g0})*min(1,t/${T(f.dur)}))`;
-      return `${head},split[a${i}][b${i}];[b${i}]crop=w=trunc(ih*9/16/2)*2:h=ih:x='(iw-ow)*${xe}':y=0,scale=${w / 4}:${h / 4}:flags=bilinear,gblur=sigma=${FIT_BLUR / 4},scale=${w}:${h}:flags=bicubic,eq=brightness=${FIT_BRIGHT}[g${i}];[a${i}]crop=w=ih:h=ih:x='(iw-ow)*${ge}':y=0,scale=${w}:${w}:flags=lanczos[c${i}];[g${i}][c${i}]overlay=x=0:y=(H-h)/2,setsar=1[f${i}]`;
+      return `${head},split[a${i}][b${i}];[b${i}]crop=w=trunc(ih*9/16/2)*2:h=ih:x='(iw-ow)*${xe}':y=0,scale=${w / 4}:${h / 4}:flags=bilinear,gblur=sigma=${FIT_BLUR / 4},scale=${w}:${h}:flags=bicubic,eq=brightness=${FIT_BRIGHT}[g${i}];[a${i}]crop=w=trunc(ih*${RW}/${RH}/2)*2:h=ih:x='(iw-ow)*${ge}':y=0,scale=${w}:${FIT_H}:flags=lanczos[c${i}];[g${i}][c${i}]overlay=x=0:y=(H-h)/2,setsar=1[f${i}]`;
     }
     return `${head},crop=w=trunc(ih*9/16/2)*2:h=ih:x='(iw-ow)*${xe}':y=0,scale=${w}:${h}:flags=lanczos,setsar=1[f${i}]`;
   }) : null;
@@ -650,7 +661,7 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
   subs.forEach((c, i) => {
     const k = n + 1 + i, P = `(${POP_FROM}+${1 - POP_FROM}*min(1,max(0,(t-${T(c.start)})/${POP})))`;
     g.push(`[${k}:v]format=rgba,scale=w='trunc(iw*${P}/2)*2':h='trunc(ih*${P}/2)*2':eval=frame[p${i}]`);
-    g.push(`[v${i + 1}][p${i}]overlay=x='${SUB_X}-w/2':y='if(between(t,${T(c0)},${T(c1)}),${SUB_Y_CARD},${FULL ? SUB_Y_FULL : SUB_Y})-h/2':eof_action=pass:enable='between(t,${T(c.start)},${T(c.to)})':format=auto[v${i + 2}]`);
+    g.push(`[v${i + 1}][p${i}]overlay=x='${SUB_X}-w/2':y='if(between(t,${T(c0)},${T(c1)}),${SUB_Y_CARD},${SUBY})-h/2':eof_action=pass:enable='between(t,${T(c.start)},${T(c.to)})':format=auto[v${i + 2}]`);
   });
   const kc = n + 1 + subs.length, last = subs.length + 1;
   if (!hasCard) g.push(`[v${last}]format=yuv420p[o]`);

@@ -1,5 +1,5 @@
 {
- "_doc": "One Tank Trip 릴스(--reel-trend, layout full: 9:16 꽉 채움, 문장 하나에 장면 하나·3번만 문장 안 컷). 친구 때리는 문장은 뺌. 소스는 개발사 프레스킷 4K 트레일러(4096×2160, 9:16 크롭 0.889배). 마지막 문장(cardFrom)에서 trash-island 방식 블러 디졸브 정보 카드 뒤 로고 엔딩. 감정: sentenceSettings(1 황당함·4 멈칫) + pitch.takes 2.",
+ "_doc": "One Tank Trip 릴스(--reel-trend, layout fit-blur(4:3 앞 영역 1080×810 + 블러 배경), 문장 하나에 장면 하나·3번만 문장 안 컷). 친구 때리는 문장은 뺌. 소스는 개발사 프레스킷 4K 트레일러(4096×2160, 앞 영역 4:3 크롭·배경 9:16 크롭). 마지막 문장(cardFrom)에서 trash-island 방식 블러 디졸브 정보 카드 뒤 로고 엔딩. 감정: sentenceSettings(1 황당함·4 멈칫) + pitch.takes 2.",
  "appid": "5483960",
  "movie": "OneTankTrip_4K",
  "clips": {
@@ -12,7 +12,7 @@
  "gapMin": 0.3,
  "cardFrom": "이름은",
  "cardTitle": "One Tank Trip",
- "layout": "full",
+ "layout": "fit-blur",
  "minCut": 1.0,
  "cutExtend": 0,
  "chunks": [
