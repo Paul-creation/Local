@@ -15,10 +15,22 @@ const startedAt = Date.now();
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
+// 바뀐 게임이 있으면 /api/games/list 캐시 무효화 (ADMIN_REVALIDATE_KEY가 없으면 건너뜀 — 캐시는 5분 뒤 저절로 갱신됨)
+async function revalidateList(changed) {
+  if (!APPLY || !changed) return;
+  const key = process.env.ADMIN_REVALIDATE_KEY;
+  if (!key) { console.log('ℹ️  ADMIN_REVALIDATE_KEY 없음 — 캐시 무효화 생략'); return; }
+  const site = (process.env.NEXT_PUBLIC_SITE_URL || 'https://jamidunow.com').replace(/\/$/, '');
+  try {
+    const res = await fetch(`${site}/api/admin/revalidate`, { method: 'POST', headers: { 'x-admin-key': key } });
+    console.log(res.ok ? '♻️  /api/games/list 캐시 무효화' : `⚠️ 캐시 무효화 실패 (${res.status})`);
+  } catch (e) { console.log(`⚠️ 캐시 무효화 실패 (${e.message})`); }
+}
+
 async function main() {
   const { data: games, error } = await supabase
     .from('games')
-    .select('id, name, steam_appid, release_date_text, demo_appid')
+    .select('id, name, steam_appid, release_date, release_date_text, demo_appid')
     .eq('hidden', false)
     .eq('release_status', 'coming_soon')
     .not('steam_appid', 'is', null)
@@ -46,6 +58,7 @@ async function main() {
       console.log(`   ⚠️ ${game.name}: ${e.message} (내일 다시 확인)`);
     }
   }
+  await revalidateList(released + updated);
   console.log(`\n출시 전환 ${released}개 · 출시일·데모 갱신 ${updated}개 · 확인 실패 ${failed}개 (확인 ${checked}개)`);
   if (APPLY) recordComingSoonCheck({ checked, released, failed });
   else console.log('미리보기만 했어요. 반영하려면 --apply를 붙여 주세요');

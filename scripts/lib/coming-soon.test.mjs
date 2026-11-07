@@ -1,7 +1,7 @@
 // 실행: npm test — 출시 예정·데모 칸 판정, 매일 출시 전환 패치, 일일 요약 줄
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { releaseFields, comingSoonPatch, comingSoonLine, demoUrl } from './coming-soon.mjs';
+import { exactDate, releaseFields, comingSoonPatch, comingSoonLine, demoUrl } from './coming-soon.mjs';
 
 const soon = (extra = {}) => ({ release_date: { coming_soon: true, date: '2026년 11월' }, ...extra });
 
@@ -22,7 +22,8 @@ test('출시된 게임이나 정보 없음은 released, 데모·출시일 원문
 
 test('매일 확인: 출시됐으면 release_status만, 아직이면 바뀐 칸만, 응답에 값이 없다고 비우지 않음', () => {
   const cur = { release_date_text: '출시 예정', demo_appid: null };
-  assert.deepEqual(comingSoonPatch(cur, { release_date: { coming_soon: false, date: '2026년 10월 30일' } }), { released: true, patch: { release_status: 'released' } });
+  assert.deepEqual(comingSoonPatch(cur, { release_date: { coming_soon: false, date: '2026년 10월 30일' } }), { released: true, patch: { release_status: 'released', release_date: '2026-10-30' } });
+  assert.deepEqual(comingSoonPatch({ ...cur, release_date: '2026-10-30' }, { release_date: { coming_soon: false, date: '2026년 10월 30일' } }), { released: true, patch: { release_status: 'released' } });
   assert.deepEqual(comingSoonPatch(cur, soon({ demos: [{ appid: 7 }] })), { released: false, patch: { release_date_text: '2026년 11월', demo_appid: '7' } });
   assert.deepEqual(comingSoonPatch({ release_date_text: '2026년 11월', demo_appid: '7' }, soon({ demos: [{ appid: 7 }] })), { released: false, patch: null });
   assert.deepEqual(comingSoonPatch({ release_date_text: '2026년 11월', demo_appid: '7' }, { release_date: { coming_soon: true, date: '' } }), { released: false, patch: null });
@@ -37,4 +38,12 @@ test('일일 요약 줄: 확인한 게임이 없으면 줄을 뺌', () => {
 
 test('데모 상점 페이지 주소', () => {
   assert.equal(demoUrl('7'), 'https://store.steampowered.com/app/7');
+});
+
+test('연기: 일까지 나오면 release_date도 갱신, 월·분기로 바뀌면 어긋난 날짜를 비움', () => {
+  assert.equal(exactDate('2027년 1월 7일'), '2027-01-07');
+  assert.equal(exactDate('2027년 1분기'), null);
+  const cur = { release_date: '2026-10-27', release_date_text: '2026년 10월 27일', demo_appid: null };
+  assert.deepEqual(comingSoonPatch(cur, { release_date: { coming_soon: true, date: '2027년 1월 7일' } }).patch, { release_date_text: '2027년 1월 7일', release_date: '2027-01-07' });
+  assert.deepEqual(comingSoonPatch(cur, { release_date: { coming_soon: true, date: '2027년 1분기' } }).patch, { release_date_text: '2027년 1분기', release_date: null });
 });
