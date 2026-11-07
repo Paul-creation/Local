@@ -47,7 +47,7 @@
  ],
  "narration": {
   "voiceId": "uyVNoMrnUku1dZyVEXwD",
-  "cacheName": "narration-v4",
+  "cacheName": "narration-v5",
   "voiceSettings": {
    "stability": 0.35,
    "similarity_boost": 0.8,
@@ -226,5 +226,6 @@
     }
    ]
   }
- ]
+ ],
+ "closingName": "원 탱크 트립"
 }

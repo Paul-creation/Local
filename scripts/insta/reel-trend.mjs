@@ -21,6 +21,7 @@ import crypto from 'crypto';
 import { execFileSync, spawnSync } from 'child_process';
 import { chromium } from 'playwright';
 import sharp from 'sharp';
+import { releaseState, applyClosing } from '../lib/closing-template.mjs';
 import { RS, ff, buildAudio, trailerAudioFromDb, steamMovie } from './reel-single.mjs';
 import { trailerFromDb } from './reel.mjs';
 import { getNarrationBySentence } from './narration-sentences.mjs';
@@ -421,6 +422,12 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
   for (const k of ['narration', 'cuts', ...(OUTRO ? [] : ['endClip'])]) if (!copy[k]) throw new Error(`--reel-trend: copy에 ${k}가 없어요`);
   const facts = await steamFacts(copy.appid, copy);
   const title = copy.cardTitle ?? facts.name;
+  { // 마지막 멘트 고정 템플릿(출시 예정 → Trash Island, 출시작 → CRACK). 게임 이름 자리만 copy.closingName ?? cardTitle ?? 스팀 이름으로 바뀐다. 이름이 영어면 copy.narration.tts로 발음을 따로 지정
+    try { if (!process.env.NEXT_PUBLIC_SUPABASE_URL) process.loadEnvFile(path.join(ROOT, '.env.local')); } catch { /* .env.local 없음 */ }
+    const rs = await releaseState(copy.appid, facts.soon);
+    const ap = applyClosing(copy, { state: rs.state, name: copy.closingName ?? title });
+    console.log(ap.skipped ? `  마지막 멘트 템플릿: 건너뜀(${ap.skipped})` : `  마지막 멘트 템플릿: ${ap.template}(${rs.state}, 출시 상태 출처 ${rs.source}) — ${ap.sentences.join(' ')}`);
+  }
   console.log('  스팀 값:', JSON.stringify({ ...facts, header: undefined }));
 
   const CACHE = path.join(DIR, 'cache');
