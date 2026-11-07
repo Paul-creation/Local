@@ -1,6 +1,6 @@
 # scripts/insta/stt-check.py — 내레이션 테이크 발음 검사(받아쓰기 + 글자 오류율 CER)
 # 사용:
-#   python3 stt-check.py <audio>              → faster-whisper(small, 한국어, CPU int8)로 받아쓰기, 마지막 줄에 {"text": "..."}
+#   python3 stt-check.py <audio>              → faster-whisper(small, 한국어, CPU int8)로 받아쓰기 + 단어별 시작·끝(초), 마지막 줄에 {"text": "...", "words": [{"w","s","e"}]}
 #   python3 stt-check.py --cer <대본> <받아쓰기> [대본표기=허용표기 …] → CER만 계산(모델 안 불러옴), 마지막 줄에 {"cer": 0.0, "ref": "...", "hyp": "..."}
 # CER 규칙(기본값): 띄어쓰기·문장부호 제외, ㅐ/ㅔ 동음(데/대·게/개·세/새, ㅒ/ㅖ)은 같은 글자, 맞춤법만 다른 표기(되요/돼요: ㅙ·ㅞ→ㅚ)도 같은 글자로 본다.
 # 허용 표기 목록(copy.narration.sttAllow)에 적은 표기는 그 문장에서만 같은 글자로 본다.
@@ -50,5 +50,7 @@ if __name__ == "__main__":
     else:
         from faster_whisper import WhisperModel
         model = WhisperModel("small", device="cpu", compute_type="int8")
-        segs, _ = model.transcribe(sys.argv[1], language="ko", beam_size=5, vad_filter=False, condition_on_previous_text=False)
-        print(json.dumps({"text": "".join(s.text for s in segs).strip()}, ensure_ascii=False))
+        segs, _ = model.transcribe(sys.argv[1], language="ko", beam_size=5, vad_filter=False, condition_on_previous_text=False, word_timestamps=True)
+        segs = list(segs)
+        words = [{"w": w.word.strip(), "s": round(w.start, 3), "e": round(w.end, 3)} for sg in segs for w in (sg.words or [])]
+        print(json.dumps({"text": "".join(sg.text for sg in segs).strip(), "words": words}, ensure_ascii=False))
