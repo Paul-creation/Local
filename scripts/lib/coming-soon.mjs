@@ -21,14 +21,31 @@ export function releaseFields(data) {
   };
 }
 
+// 한국어 상점의 "2026년 11월 6일" → "2026-11-06". 일까지 있어야 날짜로 침 (월·분기만 있으면 null)
+export function exactDate(text) {
+  const m = typeof text === 'string' ? text.match(/(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일/) : null;
+  return m ? `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}` : null;
+}
+
 // 이미 coming_soon인 게임의 새 appdetails → DB에 바꿀 칸 (바뀐 칸만, 없으면 null)
-// - 출시됐으면 release_status만 바꿈 (다음 데일리부터 가격·리뷰 수집, 데모·출시일 원문은 건드리지 않음)
+// - 출시됐으면 release_status(+스팀이 일까지 알려 주면 release_date)만 바꿈 (다음 데일리 단계부터 가격·리뷰 수집, 데모·출시일 원문은 건드리지 않음)
 // - 아직 출시 전이면 출시일 원문·데모가 스팀에서 바뀐 경우만 따라감. 스팀 응답에 값이 없다고 기존 값을 비우지는 않음
 export function comingSoonPatch(current, data) {
   const next = releaseFields(data);
-  if (next.release_status === 'released') return { released: true, patch: { release_status: 'released' } };
+  if (next.release_status === 'released') {
+    // 출시일(release_date)은 스팀이 일까지 알려 줄 때만 맞춰 둠 (연기돼 어긋난 값 정정)
+    const day = exactDate(data?.release_date?.date);
+    const patch = { release_status: 'released' };
+    if (day && day !== current.release_date) patch.release_date = day;
+    return { released: true, patch };
+  }
   const patch = {};
-  if (next.release_date_text && next.release_date_text !== current.release_date_text) patch.release_date_text = next.release_date_text;
+  const textChanged = next.release_date_text && next.release_date_text !== current.release_date_text;
+  if (textChanged) patch.release_date_text = next.release_date_text;
+  // 일까지 나오는 날짜면 release_date를 맞춤 (연기로 어긋난 값 정정). 월·분기로 바뀌었는데 옛 날짜가 남아 있으면 비움
+  const day = exactDate(next.release_date_text || current.release_date_text);
+  if (day) { if (day !== current.release_date) patch.release_date = day; }
+  else if (textChanged && current.release_date) patch.release_date = null;
   if (next.demo_appid && next.demo_appid !== current.demo_appid) patch.demo_appid = next.demo_appid;
   return { released: false, patch: Object.keys(patch).length ? patch : null };
 }
