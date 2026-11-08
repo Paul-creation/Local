@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-11-08 (main 69308fa)
+기준: 2026-11-08 (main 271a398)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 11/8: feat/fill-new-game — 새 게임을 weekly를 기다리지 않고 바로 채우는 scripts/fill-new-game.mjs(기본 최근 14일, --days·--ids·--dry-run·--skip·--activities-max). 단계 22개는 scripts/lib/new-game-steps.mjs(weekly 순서, 한국어 소개 write-fun-descriptions는 fun_description 빈 게임만, 활동 fill-activities-v2는 한 번에 최대 10개·나머지는 weekly). bulk-import --curator --apply는 끝에서 자동 호출(일반 수집은 --fill-new, --no-fill로 끔), import-curator-queue는 자체 보강 목록을 없앰. 한국어 판정을 scripts/lib/korean-support.mjs로 통일(enrich-specs·fix-data-gaps·reel-trend, 음성 지원 *도 인식). judge-new-games에 --days, 스팀 Single-player면 possible 이상. 상세 페이지: korean_support가 null이면 한국어 칸 숨김, 영어 스팀 설명은 우리 한국어 소개가 있으면 숨김. 신규 33개에 실제 실행(실패 단계 0). build·test 514개 통과
 - 11/8: fix/search-tag-suggest — 메인 검색 자동완성이 마지막 단어 하나로만 매칭해 "finals w"에 태그 전쟁·무협이 뜨던 문제 수정. 새 app/lib/tagSuggestQuery.ts: 단어 하나는 그대로, 앞 단어가 전부 태그면(이어 치기) 마지막 단어로(영문·숫자 한 글자만 막고 한글 한 글자는 허용), 앞에 태그가 아닌 단어가 있으면 입력 전체(띄어쓰기 포함)로 태그 후보를 찾음. 게임 결과도 같은 원칙(이어 치기는 그 태그를 모두 가진 게임 안에서만 마지막 단어로 이름·별칭 매칭, 영문·숫자 한 글자면 이름 매칭 없이 그 태그의 인기 게임(heat_rank순), 그 밖은 입력 전체). 전체가 안 맞을 때 태그 단어를 뺀 나머지로 찾는 기존 동작은 이어 치기 외에 유지. 테스트 추가(501개), build 통과, 프리뷰 확인 없이 사용자 지시로 머지
 - 11/8: fix/admin-revalidate-scope — POST /api/admin/revalidate가 /api/games/list에 더해 /·/this-week도 revalidatePath, 응답 revalidated에 세 경로. daily 끝의 무효화(check-coming-soon)도 같은 엔드포인트라 같은 범위. 히어로 "비교할 수 있는 게임" 1,590은 hidden=true 11개(따로 숨긴 5·합쳐진 6)가 빠진 값이라 그대로 둠(캐시 문제 아님). build·test 492개 통과
 - 11/8: fix/mobile-search-bar — 폭 430px 이하 메인 커맨드바: 검색 상자를 display:contents로 풀어 윗줄 = 검색 아이콘 + 입력칸(전체 폭, × 입력칸 안쪽 오른쪽), 아랫줄 = 필터 · AI 추천, 자동완성 목록은 커맨드바 전체 폭(SearchBox가 입력칸 아래로 top 계산, 스크롤 대상은 .search-row). 데스크톱 CSS 무변경(mn.css 미디어쿼리 안). 375·390·430px 로컬 캡처에서 "finals week"·결과 이름 안 잘림·가로 넘침 없음. build·test 492개 통과, 프리뷰 확인은 사용자 지시로 머지
@@ -160,6 +161,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- 배포 뒤 확인 대기(사용자): feat/fill-new-game — 다음 daily 로그에서 import-curator-queue 안의 fill-new-game 단계 실행 시간과 활동(최대 10개) 처리 여부. 신규 게임 중 solo_mode·진입장벽 보류 3개(Idle Champions·표류도시·Knightica)는 weekly가 재시도
 - 머지 후 확인 대기(사용자): fix/search-tag-suggest — 프로덕션 메인 검색에서 "finals w"(Finals Week만, 태그 후보 없음), "좀비 w"(좀비 태그 게임만), "좀비 협"(게임 없음·협동 계열 태그 후보), "war"(전쟁 태그 그대로)
 - 배포 뒤 확인 대기(사용자): fix/admin-revalidate-scope — curl -X POST https://jamidunow.com/api/admin/revalidate -H "x-admin-key: $ADMIN_REVALIDATE_KEY" 응답의 revalidated에 세 경로가 나오는지
 - 머지 후 확인 대기(사용자): fix/mobile-search-bar — 프로덕션 홈(375·430px)에서 "finals week" 입력 시 입력칸·결과 이름이 안 잘리는지, 태그 칩이 여러 개일 때 줄바꿈 모양, 데스크톱 검색창 그대로인지. 배포 뒤 site-demo 재촬영(reel-v3) 예정
