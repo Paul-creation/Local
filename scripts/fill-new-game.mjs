@@ -3,7 +3,8 @@
 // 실행: node --env-file=.env.local scripts/fill-new-game.mjs                  (최근 14일 안에 들어온 숨기지 않은 게임)
 //       node --env-file=.env.local scripts/fill-new-game.mjs --days 7          (일수 지정)
 //       node --env-file=.env.local scripts/fill-new-game.mjs --ids <id>,<id>   (게임 id 목록, 또는 [{ "id": ... }] JSON 파일 경로)
-//       --skip a,b  건너뛸 단계 (환경변수 FILL_NEW_SKIP도 같음. 데일리의 import-curator-queue는 시간 때문에 fill-activities-v2를 건너뜀 — 다음 weekly가 --new-days 14로 채움)
+//       --activities-max N  가능한 활동(Sonnet 배치)을 한 번에 최대 N개까지 (기본 10, 넘는 건 다음 weekly가 --new-days 14로 채움)
+//       --skip a,b  건너뛸 단계 (환경변수 FILL_NEW_SKIP도 같음)
 //       --dry-run  대상 게임과 실행할 단계만 출력 (DB·AI 안 씀)
 // - 단계 목록은 lib/new-game-steps.mjs. 각 단계는 weekly와 같은 스크립트·같은 방식(빈 칸만 채움, 처리한 건 다시 안 함)이라 여러 번 돌려도 안전
 // - 한국어 소개(write-fun-descriptions)는 fun_description이 빈 게임만 넘김 (이미 쓴 소개는 안 덮음)
@@ -16,6 +17,7 @@ import { NEW_GAME_STEPS, stepArgs, parseIdsArg } from './lib/new-game-steps.mjs'
 const arg = (f) => (process.argv.includes(f) ? process.argv[process.argv.indexOf(f) + 1] : null);
 const DRY = process.argv.includes('--dry-run');
 const SKIP = (arg('--skip') || process.env.FILL_NEW_SKIP || '').split(',').filter(Boolean);
+const ACT_MAX = Number(arg('--activities-max')) || 10;
 const DAYS = Number(arg('--days')) || 14;
 const CACHE = 'scripts/.cache';
 const STEP_TIMEOUT_MIN = { 'fill-activities-v2': 90 };
@@ -57,7 +59,7 @@ async function main() {
 
   const results = [];
   for (const step of NEW_GAME_STEPS) {
-    const [name, args] = stepArgs(step, { idsFile, funIdsFile, days: DAYS });
+    const [name, args] = stepArgs(step, { idsFile, funIdsFile, days: DAYS, actMax: ACT_MAX });
     if (SKIP.includes(name)) { console.log(`\n──── ${name} — 건너뜀 (--skip)`); continue; }
     if (DRY) { console.log(`  · ${name} ${args.join(' ')}`); continue; }
     if (name === 'write-fun-descriptions' && !needFun.length) { console.log('\n──── write-fun-descriptions — 빈 게임 없음, 건너뜀'); continue; }

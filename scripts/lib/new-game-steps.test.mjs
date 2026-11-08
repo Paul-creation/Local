@@ -15,9 +15,14 @@ test('스팀 카테고리는 판단·AI 단계보다 먼저', () => {
   assert.ok(at('judge-new-games') < at('write-fun-descriptions'));
 });
 test('인자 치환', () => {
-  const o = { idsFile: 'a.json', funIdsFile: 'b.json', days: 14 };
+  const o = { idsFile: 'a.json', funIdsFile: 'b.json', days: 14, actMax: 10 };
   assert.deepEqual(stepArgs(['judge-new-games', '--apply', '--days', 'DAYS', 'IDS'], o), ['judge-new-games', ['--apply', '--days', '14', '--ids', 'a.json']]);
   assert.deepEqual(stepArgs(['write-fun-descriptions', '--ids-file', 'FUN_IDS'], o), ['write-fun-descriptions', ['--ids-file', 'b.json']]);
+});
+test('활동 단계에 상한이 붙는다', () => {
+  const step = NEW_GAME_STEPS.find((x) => x[0] === 'fill-activities-v2');
+  const [, args] = stepArgs(step, { idsFile: 'a.json', funIdsFile: 'b.json', days: 14, actMax: 10 });
+  assert.deepEqual(args.slice(args.indexOf('--limit'), args.indexOf('--limit') + 2), ['--limit', '10']);
 });
 test('--ids는 쉼표 목록·JSON 파일 둘 다', () => {
   assert.deepEqual(parseIdsArg('a, b', null), ['a', 'b']);

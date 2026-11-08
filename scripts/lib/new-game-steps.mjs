@@ -1,6 +1,6 @@
 // scripts/lib/new-game-steps.mjs
 // 새 게임 한 번에 채우기(fill-new-game)가 도는 단계 — 매주 갱신(run-steps weekly)의 순서를 따르되 새 게임 id만 대상
-// 각 항목: [스크립트 이름, ...인자]. 'IDS'는 --ids <파일>, 'FUN_IDS'는 --ids-file <한국어 설명이 빈 게임 파일>, 'DAYS'는 일수로 바뀜
+// 각 항목: [스크립트 이름, ...인자]. 'IDS'는 --ids <파일>, 'FUN_IDS'는 --ids-file <한국어 설명이 빈 게임 파일>, 'DAYS'는 일수, 'ACT_MAX'는 활동 단계 상한으로 바뀜
 export const NEW_GAME_STEPS = [
   ['backfill-steam-categories', '--apply', 'IDS'], // 스팀 카테고리 원문 — 플레이 방식 검사 근거라 AI 단계보다 먼저
   ['fill-players-from-store', '--apply', 'IDS'], // 최대 인원
@@ -21,14 +21,14 @@ export const NEW_GAME_STEPS = [
   ['enrich-screenshots', 'IDS'],
   ['write-fun-descriptions', '--ids-file', 'FUN_IDS'], // 한국어 한 줄 소개 (fun_description이 빈 게임만, Haiku)
   ['fill-search-names', 'IDS'],
-  ['fill-activities-v2', '--apply', '--yes', '--new-days', 'DAYS', 'IDS'], // 가능한 활동 (Sonnet 5.5 배치)
+  ['fill-activities-v2', '--apply', '--yes', '--new-days', 'DAYS', '--limit', 'ACT_MAX', 'IDS'], // 가능한 활동 (Sonnet 5.5 배치, 한 번에 최대 ACT_MAX개 — 넘는 건 weekly가 채움)
   ['fill-english-names', '--apply', 'IDS'],
   ['enrich-update-date', 'IDS'],
 ];
 
-export function stepArgs(step, { idsFile, funIdsFile, days }) {
+export function stepArgs(step, { idsFile, funIdsFile, days, actMax }) {
   const [name, ...rest] = step;
-  return [name, rest.map((a) => (a === 'IDS' ? ['--ids', idsFile] : a === 'FUN_IDS' ? [funIdsFile] : a === 'DAYS' ? [String(days)] : [a])).flat()];
+  return [name, rest.map((a) => (a === 'IDS' ? ['--ids', idsFile] : a === 'FUN_IDS' ? [funIdsFile] : a === 'DAYS' ? [String(days)] : a === 'ACT_MAX' ? [String(actMax)] : [a])).flat()];
 }
 
 // --ids 값: 쉼표로 나눈 게임 id 목록 또는 JSON 파일 경로 → id 배열

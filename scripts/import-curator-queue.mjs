@@ -3,7 +3,7 @@
 // 실행: node --env-file=.env.local scripts/import-curator-queue.mjs           (미리보기 — 대기 중인 appid만 출력, DB·파일 안 건드림)
 //       node --env-file=.env.local scripts/import-curator-queue.mjs --apply   (가져오기·보강·연결·imported_at 기록)
 // 순서: DB에 없는 appid → bulk-import --curator --apply → (bulk-import가 끝에서 fill-new-game으로 새 게임 보강) → 같은 게시물에 curator_posts 연결 → imported_at 기록
-// - 가격·리뷰·동접·ITAD는 이 단계 뒤의 데일리 단계가 모든 게임을 대상으로 받으므로 여기서 안 함. enrich-other-stores·ai-other·videos(--ids 없음)·fill-activities-v2(Sonnet)는 다음 weekly
+// - 가격·리뷰·동접·ITAD는 이 단계 뒤의 데일리 단계가 모든 게임을 대상으로 받으므로 여기서 안 함. enrich-other-stores·ai-other·videos(--ids 없음)는 다음 weekly. 활동(fill-activities-v2, Sonnet)은 fill-new-game이 한 번에 최대 10개까지, 넘는 건 weekly
 // - 못 가져온 appid(스팀 기준 미달 등)는 대기열에 남기고 14일 동안만 다시 시도. 이미 연결된 (계정, 게임, 게시물)은 건너뜀. 삭제 없음
 // - 결과 숫자는 scripts/.cache/curator-queue.json → 일일 요약 "큐레이터 게임 추가 N개"
 import { createClient } from '@supabase/supabase-js';
@@ -16,7 +16,6 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.
 const envArgs = fs.existsSync('.env.local') ? ['--env-file=.env.local'] : [];
 const CACHE = 'scripts/.cache';
 const MAX_ROWS = 100;
-process.env.FILL_NEW_SKIP = 'fill-activities-v2'; // bulk-import가 부르는 fill-new-game에서 Sonnet 배치는 건너뜀 (데일리 단계 시간 제한, 다음 weekly가 채움)
 
 function run(script, args) {
   return new Promise((resolve) => {
