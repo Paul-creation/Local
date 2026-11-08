@@ -397,7 +397,7 @@ export async function runReelTrend(postId, opts = {}) {
   }
 }
 
-async function runReelTrendOnce(postId, { refresh = false, layout, siteDemo = false } = {}, banned = []) {
+async function runReelTrendOnce(postId, { refresh = false, layout, siteDemo = false, reelName = 'reel-v2' } = {}, banned = []) {
   const copyFile = path.join(DIR, 'copy', `${postId}.json`);
   if (!fs.existsSync(copyFile)) throw new Error(`--reel-trend: ${path.relative(ROOT, copyFile)}이 없어요`);
   const copy = JSON.parse(fs.readFileSync(copyFile, 'utf8'));
@@ -418,7 +418,7 @@ async function runReelTrendOnce(postId, { refresh = false, layout, siteDemo = fa
   const partMovies = [...copy.cuts.map((c) => c.movie ?? copy.movie), ...(endSpec ? [endSpec.movie ?? copy.movie] : [])];
   const outDir = path.join(DIR, 'out', postId);
   fs.mkdirSync(outDir, { recursive: true });
-  const SUF = siteDemo ? '-v2' : ''; // --site-demo는 reel-v2.mp4와 -v2 확인 이미지로 따로 저장(기존 reel-ig.mp4·still은 지우지도 덮어쓰지도 않는다)
+  const SUF = siteDemo ? reelName.replace(/^reel/, '') : ''; // --site-demo는 reel-v2.mp4와 -v2 확인 이미지로 따로 저장(기존 reel-ig.mp4·still은 지우지도 덮어쓰지도 않는다)
   if (!process.env.REEL_PLAN_ONLY && !siteDemo) for (const f of ['reel-ig.mp4', 'reel-full.mp4', 'still-subtitle.png', 'still-card.png', 'still-end.png', 'still-outro.png']) fs.rmSync(path.join(outDir, f), { force: true }); // 내레이션 캐시(narration*.mp3·json)와 voice-samples는 남긴다
 
   const rawNar = await getNarration(outDir, copy.narration);
@@ -668,7 +668,7 @@ async function runReelTrendOnce(postId, { refresh = false, layout, siteDemo = fa
       console.log(`  소개 영상 ${(bodyDur - DEMO_XFADE).toFixed(2)}~${(outroAt + DEMO_XFADE).toFixed(2)}초(앞뒤 ${DEMO_XFADE}초 크로스페이드), 엔딩 ${outroAt.toFixed(2)}초부터, 전체 ${total.toFixed(2)}초`);
     }
   }
-  const mp4 = path.join(outDir, siteDemo ? 'reel-v2.mp4' : FULL ? 'reel-full.mp4' : 'reel-ig.mp4');
+  const mp4 = path.join(outDir, siteDemo ? `${reelName}.mp4` : FULL ? 'reel-full.mp4' : 'reel-ig.mp4');
   // 최종 인코딩: 인스타 업로드용(encodeInstaFinal) — 믹스 오디오(96kHz)도 여기서 48kHz AAC로 다시 담는다
   encodeInstaFinal({ video: silentAll, audio: m4a, out: mp4, w, h, fps, passlog: path.join(CACHE, `trend-${postId}-x264pass`) });
 

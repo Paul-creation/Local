@@ -5,7 +5,7 @@
 //   → out/<label 슬러그>/site-demo.mp4(H.264 High 8Mbps 30fps bt709, 무음) + site-demo-scene2/4/6.png
 // --reel-trend --site-demo는 renderSiteDemo()의 raw(crf 10 중간 파일)를 가져다 쓴다(copy.siteDemo = {game, query, label})
 // 장면: 0~0.5 홈(줌 1.00→1.03) · 0.5~0.8 검색창 탭 · 0.8~1.9 타이핑(글자당 약 0.08초, 불규칙) · 1.9~2.4 결과 드롭다운 + 결과 줄 탭(2.1~) · 2.4~2.7 상세로 0.3초 크로스페이드 · 2.7~5.3 상세 스크롤(타일에서 0.4초 멈춤) · 5.3~5.6 정지 · 5.6~6.0 페이드아웃
-// 안내 문구(Pretendard Bold 48px·외곽선 3px·y 1500)는 DOM이 아니라 별도 PNG로 올려서 줌·크로스페이드와 무관하게 고정
+// 안내 문구(Pretendard Bold 48px·외곽선 3px·위쪽 y 300·검정 70% 알약 배경, 860px 넘으면 두 줄)는 DOM이 아니라 별도 PNG로 올려서 줌·크로스페이드와 무관하게 고정
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
@@ -18,7 +18,6 @@ const ROOT = path.resolve(DIR, '../..');
 const W = 1080, H = 1920, FPS = 30, VW = 390, VH = 693, DSF = W / VW;
 export const DEMO_SEC = 6;
 const T = { zoomEnd: 0.5, tap1: 0.5, typeStart: 0.8, typeEnd: 1.82, tap2: 2.1, tapDur: 0.3, xfade0: 2.4, xfade1: 2.7, scroll0: 2.7, hold0: 3.6, hold1: 4.0, scroll1: 5.3, fade0: 5.6, end: 6.0 };
-const CAPTION_Y = 1500;
 const TOUR_OFF = JSON.stringify({ status: 'done', step: 0 }); // app/lib/tour.ts: localStorage jdn_tour_v2 — 사용 가이드 말풍선 끄기
 
 const clamp01 = (x) => Math.min(1, Math.max(0, x));
@@ -60,18 +59,27 @@ const setTap = (page, pt, p) => page.evaluate(([pt, p]) => {
   d.style.cssText += `;left:${pt.x}px;top:${pt.y}px;width:${2 * r}px;height:${2 * r}px;opacity:${(0.8 * (1 - p) ** 1.3).toFixed(3)}`;
 }, [pt, p]);
 
-async function captionPng(file, text) { // 자막 스타일: Pretendard Bold 48px, 흰 글씨 + 검은 외곽선 3px(바깥쪽: 6px 선 + paint-order), 가운데, y 1500. 2배 해상도로 그려 절반으로 줄여 합성
+// 안내 문구: Pretendard Bold 48px 흰 글씨 + 검은 외곽선 3px(바깥쪽: 6px 선 + paint-order), 뒤에 검정 70% 알약 배경(좌우 여백 32px, 둥근 모서리).
+// 위치: 화면 위쪽 y 300(인스타 상단 메뉴 바로 아래 — 아래 35%는 캡션 영역이라 피한다). 가로는 오른쪽 버튼 줄(140px)을 피해 가운데 x 470, 문구 폭 최대 860px — 한 줄이 넘치면 두 줄로 나눈다(줄바꿈 위치는 text에 \n)
+// 2배 해상도로 그려 절반으로 줄여 합성
+const CAPTION_Y = 300, CAPTION_CX = (W - 140) / 2, CAPTION_MAX_W = 860, CAPTION_PAD_X = 32;
+async function captionPng(file, lines) { // lines: 한 줄짜리 [text] 또는 두 줄 [a, b]. 한 줄이 860px를 넘으면 두 줄 쪽을 쓴다
   const font = fs.readFileSync(path.join(ROOT, 'node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2')).toString('base64');
   const b = await chromium.launch();
   try {
     const page = await (await b.newContext({ viewport: { width: W, height: H }, deviceScaleFactor: 2 })).newPage();
     await page.setContent(`<!doctype html><meta charset="utf-8"><style>@font-face{font-family:P;src:url(data:font/woff2;base64,${font});font-weight:100 900}
 *{margin:0}html,body{width:${W}px;height:${H}px;background:transparent;overflow:hidden;font-family:P,sans-serif}
-.c{position:absolute;left:${W / 2}px;top:${CAPTION_Y}px;transform:translate(-50%,-50%);white-space:nowrap;font-size:48px;font-weight:700;letter-spacing:-0.02em;line-height:1.3;color:#fff;-webkit-text-stroke:6px #000;paint-order:stroke fill;stroke-linejoin:round}</style><div class="c" id="c"></div>`);
-    await page.evaluate((t) => { document.getElementById('c').textContent = t; return document.fonts.ready; }, text);
-    const r = await page.evaluate(() => { const x = document.getElementById('c').getBoundingClientRect(); return { x: x.left, y: x.top, w: x.width, h: x.height }; });
-    const pad = 12, x = Math.max(0, Math.floor(r.x - pad)), y = Math.floor(r.y - pad), w = Math.min(W - x, Math.ceil(r.w + pad * 2)), h = Math.ceil(r.h + pad * 2);
-    if (r.x < 24 || r.x + r.w > W - 24) console.warn(`  경고: 안내 문구가 화면 폭(${Math.round(r.w)}px)에 가까워요`);
+.pill{position:absolute;left:${CAPTION_CX}px;top:${CAPTION_Y}px;transform:translate(-50%,-50%);padding:18px ${CAPTION_PAD_X}px;background:rgba(0,0,0,.7);border-radius:44px;text-align:center}
+.t{display:block;white-space:nowrap;font-size:48px;font-weight:700;letter-spacing:-0.02em;line-height:1.3;color:#fff;-webkit-text-stroke:6px #000;paint-order:stroke fill;stroke-linejoin:round}</style><div class="pill" id="p"></div>`);
+    const draw = async (ls) => page.evaluate(async (ls) => { const p = document.getElementById('p'); p.innerHTML = ''; for (const l of ls) { const e = document.createElement('span'); e.className = 't'; e.textContent = l; p.appendChild(e); } await document.fonts.ready; return Math.max(...[...p.children].map((e) => e.getBoundingClientRect().width)); }, ls);
+    const oneW = await draw([lines.join(' ')]);
+    const useLines = oneW <= CAPTION_MAX_W ? [lines.join(' ')] : lines;
+    const textW = await draw(useLines);
+    if (textW > CAPTION_MAX_W) throw new Error(`site-demo: 안내 문구 한 줄이 ${Math.round(textW)}px예요(최대 ${CAPTION_MAX_W}px) — 문구를 줄이세요`);
+    const r = await page.evaluate(() => { const x = document.getElementById('p').getBoundingClientRect(); return { x: x.left, y: x.top, w: x.width, h: x.height }; });
+    console.log(`  안내 문구 ${useLines.length}줄, 글자 폭 ${Math.round(textW)}px, 알약 x ${Math.round(r.x)}~${Math.round(r.x + r.w)}, y ${Math.round(r.y)}~${Math.round(r.y + r.h)}`);
+    const pad = 4, x = Math.max(0, Math.floor(r.x - pad)), y = Math.floor(r.y - pad), w = Math.min(W - x, Math.ceil(r.w + pad * 2)), h = Math.ceil(r.h + pad * 2);
     await page.screenshot({ path: file, clip: { x, y, width: w, height: h }, omitBackground: true });
     return { x, y };
   } finally { await b.close(); }
@@ -81,7 +89,7 @@ export async function renderSiteDemo({ game, query, label, base = 'https://jamid
   if (!game || !query || !label) throw new Error('site-demo: game·query·label이 모두 필요해요');
   fs.mkdirSync(cacheDir, { recursive: true });
   fs.mkdirSync(outDir, { recursive: true });
-  const key = crypto.createHash('sha1').update(JSON.stringify({ game, query, label, base, v: 1 })).digest('hex').slice(0, 10);
+  const key = crypto.createHash('sha1').update(JSON.stringify({ game, query, label, base, v: 2 })).digest('hex').slice(0, 10);
   const raw = path.join(cacheDir, `site-demo-${key}-raw.mp4`);
   const finalMp4 = path.join(outDir, 'site-demo.mp4');
   const stills = { 2: path.join(outDir, 'site-demo-scene2.png'), 4: path.join(outDir, 'site-demo-scene4.png'), 6: path.join(outDir, 'site-demo-scene6.png') };
@@ -167,7 +175,7 @@ export async function renderSiteDemo({ game, query, label, base = 'https://jamid
 
   // 안내 문구 PNG + 인코딩: 프레임 → 문구 올리기 → 마지막 0.4초 검은 화면으로 페이드아웃 → bt709 중간 파일(crf 10)
   const capFile = path.join(cacheDir, `site-demo-${key}-caption.png`);
-  const cap = await captionPng(capFile, `jamidunow.com에서 '${label}' 검색해보세요`);
+  const cap = await captionPng(capFile, ['jamidunow.com에서', `'${label}' 검색해보세요`]);
   const sizeOf = (f) => { const o = execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', f]).toString().trim().split(','); return { w: +o[0], h: +o[1] }; };
   const cs = sizeOf(capFile);
   const first = sizeOf(fname(0));
