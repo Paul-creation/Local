@@ -7,7 +7,8 @@ import { useRouter } from 'next/navigation';
 import type { GameFilters } from '../../lib/useGameFilters';
 import { matchRank } from '../../lib/searchMatch';
 import { playersText } from '../../lib/players';
-import { splitWords, suggestTags, tagKeyLabel } from '../../lib/tagSearch';
+import { parseSearchInput, splitWords, suggestTags, tagKeyLabel } from '../../lib/tagSearch';
+import { suggestQuery } from '../../lib/tagSuggestQuery';
 import { suggestActivities } from '../../lib/activitySearch';
 import { activityForTag, activityLabel, type ActivityKey } from '../../lib/activities';
 import GameImage from '../GameImage';
@@ -71,14 +72,18 @@ export default function SearchBox({ games, filters, leading, trailing, shortPlac
   // 지금 입력 중인 마지막 단어로 태그 후보 (쉼표·띄어쓰기를 막 친 뒤에는 안 보여줌)
   const words = splitWords(input);
   const lastWord = /[,\s]$/.test(input) ? '' : words[words.length - 1] || '';
-  const tagMatches = suggestTags(lastWord, tagLookup, selectedTags, MAX_TAG_SUGGESTIONS);
+  // 검색어 전체가 태그 이름·별칭에 포함될 때만 후보 — 앞 단어가 전부 태그일 때(태그 이어 치기)만 마지막 단어로 (app/lib/tagSuggestQuery)
+  const sWords = lastWord ? words : [];
+  const prefixAllTags = sWords.length > 1 && !parseSearchInput(sWords.slice(0, -1).join(' '), tagLookup).rest;
+  const tagQuery = suggestQuery(sWords, prefixAllTags);
+  const tagMatches = suggestTags(tagQuery, tagLookup, selectedTags, MAX_TAG_SUGGESTIONS);
   // 활동 라벨("운전"·"낚시")을 치면 그 활동 필터를 후보로 — 고르면 "가능한 활동" 조건이 걸린다 (app/lib/activitySearch)
   // 활동과 같은 뜻의 태그(운전↔Driving 등)는 활동 한 줄로 합친다. 이미 적용된 활동·같은 뜻의 태그는 다시 제안하지 않는다
   const selectedTagActs = selectedTags.map(activityForTag).filter((a): a is ActivityKey => !!a);
   const taken = [...selectedActs, ...selectedTagActs];
   const tagSuggestions = tagMatches.filter((t) => !activityForTag(t));
   const actSuggestions = [...new Set([
-    ...suggestActivities(lastWord, taken, MAX_ACT_SUGGESTIONS),
+    ...suggestActivities(tagQuery, taken, MAX_ACT_SUGGESTIONS),
     ...tagMatches.map(activityForTag).filter((a): a is ActivityKey => !!a && !taken.includes(a)),
   ])];
   // 표시 순서: (검색어와 이름이 똑같은 태그·활동 1개) → 게임 → 나머지 태그·활동. 게임이 있으면 태그는 2개까지, 없으면 4개까지
