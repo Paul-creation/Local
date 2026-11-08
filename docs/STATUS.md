@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-11-08 (main 4fe5f91)
+기준: 2026-11-08 (main d8621ec)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 11/8: feat/coming-soon-release-date(나머지 2커밋) — 릴스 끝 사이트 소개 애니메이션 scripts/insta/site-demo.mjs + reel-trend --site-demo(copy.siteDemo {game, query, label}), 안내 문구 상단 이동·배경. 앞 2커밋(출시 상태 daily 갱신·날짜 미정 표시)은 이미 main에 있어 rebase에서 빠짐. build·test 531개 통과
 - 11/8: feat/detail-reorder — 게임 상세 섹션을 "친구랑 살지 정하는 순서"로 재배치(데스크톱·모바일 한 줄): 한눈에 보기(상단 타일에 제목) → 가격·할인(가격 카드+할인 기록 합침) → 플레이 방식(협동 방식 칩·인원 범위·혼자 하기·크로스플레이·서버 방식·진입장벽 이유) → 어떤 게임인가요?(소개·스크린샷·활동·엔딩·특징 태그) → 게임 정보(개발·배급·출시일·플랫폼·도전과제·DLC·가족 공유·업데이트·용량) → PC 사양 → 영상 → 투표 → 링크. "소개"·"같이 하기"·"할인 전적"·"더 자세히" 이름 삭제, 값 없는 항목·빈 섹션 숨김, 섹션 색은 기존 토큰 재배정(새 색 없음). build·test 530개 통과 추가: 헤더 개발·배급 줄 삭제(게임 정보에만), is_esports(스팀 카테고리 24=Shared/Split Screen이라 오판정)를 enrich-specs·enrich-ai-other에서 삭제하고 화면에서 숨김, 카테고리 24는 steam_categories로 상세 플레이 방식에 "화면 분할" 칩. 한 줄 소개 해요체 전환 scripts/polite-fun-descriptions.mjs(생성 1,621개 캐시 완료 약 $0.59, --apply는 fun_description_before 칸 SQL 실행 뒤), write-fun-descriptions 프롬프트·검사를 해요체로. 인스타 상세 캡처 선택자 갱신
 - 11/8: feat/ko-description-coming-soon-tiles — 스팀 한국어 설명이 없는 게임의 한국어 상세 설명(games.description_ko·description_ko_at, scripts/fill-description-ko.mjs: 스팀 영어 about → Haiku, 해요체 2~3문장 250자 이내, 사실 위주·"협동" 용어, 한 번 처리한 게임은 다시 안 함, fill-new-game 단계에 포함). 상세 소개는 한 줄 요약 아래에 보이고 있으면 영어 원문은 숨김. 출시 예정 상세는 평가·동접 대신 출시까지 D-N(날짜까지 있는 원문만, 아니면 원문)·데모 있음/없음·스팀 인기 출시 예정 순위 타일(games.upcoming_rank, scripts/fill-upcoming-rank.mjs, daily의 check-coming-soon 뒤). 259개 작성(탈락 Fallout 2개·영어 설명 없음 6개). build·test 530개 통과
 - 11/8: feat/weekly-new-coop-games — 주간 스팀 협동 신작 자동 추가(scripts/find-new-coop-games.mjs, scripts/lib/new-coop-rules.mjs, weekly의 bulk-import 다음 단계 `--apply`). 기준: 협동 또는 온라인 협동 카테고리 필수(멀티·PvP만은 제외), 성인 표시·제외 장르·이미 있는 appid·판매 중단 제외, 출시작은 최근 14일+리뷰 50개 이상(주 20개, 리뷰 많은 순), 출시 예정작은 출시일 60일 안+스팀 인기 출시 예정 30위 안(주 10개, 출시일 가까운 순; 팔로워 수는 로그인 없이 못 받아 순위로 대신함). 후보는 스팀 검색+GetItems, 추가는 bulk-import --curator를 그대로 씀. 추가 뒤 /api/admin/revalidate 호출, Actions 요약에 추가 목록, scripts/.cache/new-coop-added.json에 게임 id 목록. 첫 실행(--backfill-days 30, 출시작 40+출시 예정 10)으로 50개 추가(출시작 40·출시 예정 10, 로컬에는 ADMIN_REVALIDATE_KEY가 없어 캐시 무효화는 생략). 새 게임 정보는 다음 weekly·daily 단계가 채우고, 첫 실행 50개는 머지 뒤 fill-new-game --ids로 바로 채움. build·test 통과
