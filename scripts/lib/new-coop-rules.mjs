@@ -4,14 +4,15 @@ import { EXCLUDE_GENRES } from './catalog-rules.mjs';
 import { isNonGame } from './non-game.mjs';
 
 export const WINDOW_DAYS = 14; // 출시작: 최근 이 기간 안에 출시
-export const MIN_REVIEWS = 20; // 출시작: 리뷰 이만큼 이상 또는
-export const MIN_CCU = 100; //   현재 동접 이만큼 이상
+export const MIN_REVIEWS = 50; // 출시작: 리뷰 이만큼 이상
 export const UPCOMING_TOP_RANK = 30; // 출시 예정작: 스팀 "인기 출시 예정" 순위가 이 안 (팔로워 수는 로그인 없이 못 받아 순위로 대신함)
+export const UPCOMING_WITHIN_DAYS = 60; // 출시 예정작: 출시일이 이 기간 안 (출시일을 모르면 탈락)
 export const WEEKLY_MAX = 30;
+export const UPCOMING_QUOTA = 10; // 상한을 넘을 때 출시 예정작이 최소 이만큼 자리를 가짐 (출시작이 모자라면 더 가져감)
 export const SEXUAL_DESCRIPTOR_IDS = [1, 3, 4]; // ContentNotice와 같은 기준 (일부 노출·성인 전용·빈번한 노출)
 
-// GetItems의 supported_player_categoryids → 스팀 카테고리 이름 (요청한 네 가지만)
-export const COOP_CATEGORY_IDS = { 1: 'Multi-player', 9: 'Co-op', 38: 'Online Co-op', 36: 'Online PvP' };
+// GetItems의 supported_player_categoryids → 스팀 카테고리 이름 (협동·온라인 협동 중 하나는 필수, 멀티·PvP만 있는 게임은 제외)
+export const COOP_CATEGORY_IDS = { 9: 'Co-op', 38: 'Online Co-op' };
 
 export function coopCategories(item) {
   const ids = item?.categories?.supported_player_categoryids || [];
@@ -40,10 +41,13 @@ export function normalizeItem(it) {
 export function firstPass(c, { nowTs, rank = null, windowDays = WINDOW_DAYS } = {}) {
   if (!c.success) return { drop: true, reason: '스팀 상점 정보 없음' };
   if (c.type !== 0) return { drop: true, reason: '종류가 game이 아님 (DLC·사운드트랙·소프트웨어 등)' };
-  if (!c.categories.length) return { drop: true, reason: '협동·멀티 카테고리 없음' };
+  if (!c.categories.length) return { drop: true, reason: '협동·온라인 협동 카테고리 없음' };
   if (c.comingSoon) {
     if (rank == null) return { drop: true, reason: '출시 예정 · 인기 순위 목록 밖' };
     if (rank > UPCOMING_TOP_RANK) return { drop: true, reason: `출시 예정 · 인기 순위 ${rank}위 (기준 ${UPCOMING_TOP_RANK}위 안)` };
+    if (c.releaseTs == null) return { drop: true, reason: '출시 예정 · 출시일 모름' };
+    const left = (c.releaseTs - nowTs) / 86400;
+    if (left > UPCOMING_WITHIN_DAYS) return { drop: true, reason: `출시 예정 · 출시까지 ${Math.ceil(left)}일 (기준 ${UPCOMING_WITHIN_DAYS}일 안)` };
     return { kind: 'upcoming' };
   }
   if (c.releaseTs == null) return { drop: true, reason: '출시일 모름' };
@@ -53,11 +57,10 @@ export function firstPass(c, { nowTs, rank = null, windowDays = WINDOW_DAYS } = 
   return { kind: 'released' };
 }
 
-// 출시작 품질: 리뷰 또는 동접. ccu는 모르면 null
-export function releasedQuality(c, ccu) {
+// 출시작 품질: 리뷰 수
+export function releasedQuality(c) {
   if (c.reviews >= MIN_REVIEWS) return { ok: true, why: `리뷰 ${c.reviews.toLocaleString('ko-KR')}개` };
-  if (ccu != null && ccu >= MIN_CCU) return { ok: true, why: `동접 ${ccu.toLocaleString('ko-KR')}명` };
-  return { ok: false, why: `리뷰 ${c.reviews}개${ccu != null ? ` · 동접 ${ccu}명` : ''}` };
+  return { ok: false, why: `리뷰 ${c.reviews}개` };
 }
 
 // appdetails(영어) 기준 2차 판정: 성인 표시·제외 장르·도구류
@@ -71,9 +74,12 @@ export function secondPass(data) {
   return { ok: true };
 }
 
-// 주 최대 개수로 자르기: 출시작은 리뷰(동접은 3배로 환산)·출시 예정은 순위 기준 점수로 정렬해 섞어서 상위 max개
-// (리뷰 20개 ≈ 132점, 300개 ≈ 250점, 3,000개 ≈ 350점 / 출시 예정 1위 295점, 30위 150점)
-export function rankPassed(list, max = WEEKLY_MAX) {
-  const score = (x) => (x.kind === 'upcoming' ? Math.max(0, 300 - (x.rank || 60) * 5) : Math.log10(1 + Math.max(x.reviews, (x.ccu || 0) * 3)) * 100);
-  return [...list].sort((a, b) => score(b) - score(a)).slice(0, max);
+// 주 최대 개수로 자르기: 출시작은 리뷰 많은 순, 출시 예정작은 출시일 가까운 순.
+// 합쳐서 max개를 넘으면 출시 예정작은 최소 UPCOMING_QUOTA개(출시작이 모자라면 남는 자리까지)를 가짐
+export function rankPassed(list, max = WEEKLY_MAX, quota = UPCOMING_QUOTA) {
+  const rel = list.filter((x) => x.kind !== 'upcoming').sort((a, b) => b.reviews - a.reviews);
+  const up = list.filter((x) => x.kind === 'upcoming').sort((a, b) => a.releaseTs - b.releaseTs);
+  const upN = Math.min(up.length, Math.max(quota, max - rel.length));
+  const relN = Math.min(rel.length, max - upN);
+  return [...rel.slice(0, relN), ...up.slice(0, upN)];
 }

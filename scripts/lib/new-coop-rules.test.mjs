@@ -7,40 +7,47 @@ const NOW = 1_800_000_000;
 const DAY = 86400;
 const item = (o = {}) => normalizeItem({ appid: 1, id: 1, name: 'G', success: 1, type: 0, categories: { supported_player_categoryids: [1, 9] }, reviews: { summary_filtered: { review_count: 50, percent_positive: 80 } }, release: { steam_release_date: NOW - 3 * DAY }, ...o });
 
-test('협동·멀티 카테고리 id만 이름으로 바꿈', () => {
-  assert.deepEqual(coopCategories({ categories: { supported_player_categoryids: [2, 1, 38, 49, 36] } }), ['Multi-player', 'Online Co-op', 'Online PvP']);
+test('협동·온라인 협동 id만 이름으로 바꿈 (멀티·PvP는 제외)', () => {
+  assert.deepEqual(coopCategories({ categories: { supported_player_categoryids: [2, 1, 38, 49, 36, 9] } }), ['Online Co-op', 'Co-op']);
 });
-test('출시작: 14일 안이면 후보, 넘으면 탈락', () => {
+test('출시작: 14일 안이면 후보, 넘으면 탈락, 기간 옵션 반영', () => {
   assert.equal(firstPass(item(), { nowTs: NOW }).kind, 'released');
-  assert.equal(firstPass(item({ release: { steam_release_date: NOW - 15 * DAY } }), { nowTs: NOW }).drop, true);
+  const old = item({ release: { steam_release_date: NOW - 20 * DAY } });
+  assert.equal(firstPass(old, { nowTs: NOW }).drop, true);
+  assert.equal(firstPass(old, { nowTs: NOW, windowDays: 30 }).kind, 'released');
 });
-test('DLC·소프트웨어(type != 0)와 협동 카테고리 없는 게임은 탈락', () => {
+test('DLC·소프트웨어(type != 0)와 협동 카테고리 없는 게임(멀티·PvP만)은 탈락', () => {
   assert.equal(firstPass(item({ type: 4 }), { nowTs: NOW }).drop, true);
-  assert.equal(firstPass(item({ categories: { supported_player_categoryids: [2] } }), { nowTs: NOW }).reason, '협동·멀티 카테고리 없음');
+  assert.equal(firstPass(item({ categories: { supported_player_categoryids: [1, 36, 49] } }), { nowTs: NOW }).reason, '협동·온라인 협동 카테고리 없음');
 });
-test('출시 예정: 인기 순위 안이면 후보, 밖이면 탈락', () => {
-  const up = item({ is_coming_soon: true, release: { steam_release_date: NOW + 30 * DAY, is_coming_soon: true } });
-  assert.equal(firstPass(up, { nowTs: NOW, rank: 5 }).kind, 'upcoming');
-  assert.equal(firstPass(up, { nowTs: NOW, rank: 80 }).drop, true);
-  assert.equal(firstPass(up, { nowTs: NOW }).drop, true);
+test('출시 예정: 순위 30위 안 + 출시일 60일 안이면 후보', () => {
+  const up = (days, o = {}) => item({ is_coming_soon: true, release: { steam_release_date: NOW + days * DAY, is_coming_soon: true }, ...o });
+  assert.equal(firstPass(up(30), { nowTs: NOW, rank: 5 }).kind, 'upcoming');
+  assert.equal(firstPass(up(30), { nowTs: NOW, rank: 31 }).drop, true);
+  assert.equal(firstPass(up(30), { nowTs: NOW }).drop, true);
+  assert.equal(firstPass(up(61), { nowTs: NOW, rank: 5 }).drop, true);
+  assert.equal(firstPass(up(60), { nowTs: NOW, rank: 5 }).kind, 'upcoming');
+  assert.equal(firstPass(up(10, { release: { is_coming_soon: true } }), { nowTs: NOW, rank: 5 }).reason, '출시 예정 · 출시일 모름');
 });
-test('출시작 품질: 리뷰 20개 또는 동접 100명', () => {
-  assert.equal(releasedQuality(item(), null).ok, true);
-  const low = item({ reviews: { summary_filtered: { review_count: 5, percent_positive: 90 } } });
-  assert.equal(releasedQuality(low, 99).ok, false);
-  assert.equal(releasedQuality(low, 100).ok, true);
+test('출시작 품질: 리뷰 50개 이상', () => {
+  assert.equal(releasedQuality(item({ reviews: { summary_filtered: { review_count: 50, percent_positive: 90 } } })).ok, true);
+  assert.equal(releasedQuality(item({ reviews: { summary_filtered: { review_count: 49, percent_positive: 90 } } })).ok, false);
 });
 test('성인 표시·제외 장르 탈락', () => {
   assert.equal(secondPass({ type: 'game', content_descriptors: { ids: [3] }, genres: [], categories: [] }).ok, false);
   assert.equal(secondPass({ type: 'game', content_descriptors: { ids: [2, 5] }, genres: [{ description: 'Action' }], categories: [{ description: 'Co-op' }], name: 'X' }).ok, true);
   assert.equal(secondPass({ type: 'game', genres: [{ description: 'Utilities' }], categories: [] }).ok, false);
 });
-test('주 최대 개수로 자름', () => {
-  const list = Array.from({ length: 40 }, (_, i) => ({ kind: 'released', reviews: i, ccu: 0 }));
-  assert.equal(rankPassed(list, 30).length, 30);
-  assert.equal(rankPassed(list, 30)[0].reviews, 39);
-});
-test('정렬: 리뷰 많은 출시작이 순위 낮은 출시 예정작보다 앞', () => {
-  const out = rankPassed([{ kind: 'upcoming', rank: 30, reviews: 0 }, { kind: 'released', reviews: 3000, ccu: 0 }, { kind: 'released', reviews: 20, ccu: 0 }], 3);
-  assert.deepEqual(out.map((x) => x.kind + (x.reviews || '')), ['released3000', 'upcoming', 'released20']);
+test('상한: 출시작은 리뷰 많은 순, 출시 예정작은 출시일 가까운 순, 출시 예정 최소 자리', () => {
+  const rel = Array.from({ length: 40 }, (_, i) => ({ kind: 'released', reviews: 50 + i }));
+  const up = Array.from({ length: 15 }, (_, i) => ({ kind: 'upcoming', releaseTs: 100 - i }));
+  const out = rankPassed([...rel, ...up], 30, 10);
+  assert.equal(out.length, 30);
+  assert.equal(out.filter((x) => x.kind === 'upcoming').length, 10);
+  assert.equal(out[0].reviews, 89);
+  assert.equal(out.find((x) => x.kind === 'upcoming').releaseTs, 86); // 가장 가까운 출시일
+  const few = rankPassed([...rel.slice(0, 5), ...up], 30, 10);
+  assert.equal(few.length, 20); // 둘 다 모자라면 있는 만큼
+  const mostlyUp = rankPassed([...rel.slice(0, 5), ...Array.from({ length: 40 }, (_, i) => ({ kind: 'upcoming', releaseTs: i }))], 30, 10);
+  assert.equal(mostlyUp.filter((x) => x.kind === 'upcoming').length, 25); // 출시작이 모자라면 남는 자리까지
 });
