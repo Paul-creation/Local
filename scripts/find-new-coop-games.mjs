@@ -9,8 +9,8 @@
 //   출시 예정작: 출시일이 60일 안 + 스팀 "인기 출시 예정" 30위 안 (팔로워 수는 로그인 없이 못 받아 이 순위로 대신함)
 //   주 상한: 출시작 20개(리뷰 많은 순) + 출시 예정작 10개(출시일 가까운 순). 첫 실행(--backfill-days)은 출시작 40 + 출시 예정 10 (--max-released N으로 직접 지정 가능)
 // 데이터: 스팀 검색(협동·온라인 협동 카테고리를 하나씩 검색해 합침) → IStoreBrowseService/GetItems(100개씩, 종류·카테고리·출시일·리뷰) → appdetails(통과 후보만, 성인·장르). 요청 간격 2초(steam.mjs), AI 안 씀
-// 추가는 bulk-import --curator를 그대로 씀 (출시 예정작 처리·카테고리·크로스플레이 저장 재사용). 이 단계에서 새로 넣은 게임은 weekly 뒤 단계와 daily가 채움
-// 끝나면: 추가된 게임이 있으면 /api/admin/revalidate 호출, Actions 요약(GITHUB_STEP_SUMMARY)에 추가 목록, scripts/.cache/new-coop-added.json에 결과 저장
+// 추가는 bulk-import --curator(--no-fill: 새 게임 채우기는 뒤 weekly 단계가 하므로 여기서 안 돌림 — 45분 단계 제한)를 그대로 씀 (출시 예정작 처리·카테고리·크로스플레이 저장 재사용). 이 단계에서 새로 넣은 게임은 weekly 뒤 단계와 daily가 채움
+// 끝나면: 추가된 게임이 있으면 /api/admin/revalidate 호출, Actions 요약(GITHUB_STEP_SUMMARY)에 추가 목록, scripts/.cache/new-coop-added.json에 추가된 게임 배열 저장 (fill-new-game --ids에 그대로 넣을 수 있음)
 import { createClient } from '@supabase/supabase-js';
 import { spawnSync } from 'node:child_process';
 import { writeFileSync, appendFileSync, mkdirSync } from 'node:fs';
@@ -158,7 +158,7 @@ async function main() {
   writeFileSync(listFile, JSON.stringify(top.map((r) => ({ steam_appid: r.c.appid, name: r.c.name })), null, 1));
   const envArgs = process.execArgv.filter((a) => a.startsWith('--env-file'));
   console.log(`\n▶ bulk-import --curator ${listFile} --apply (${top.length}개)\n`);
-  const res = spawnSync('node', [...envArgs, 'scripts/bulk-import.mjs', '--curator', listFile, '--apply'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+  const res = spawnSync('node', [...envArgs, 'scripts/bulk-import.mjs', '--curator', listFile, '--apply', '--no-fill'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
   process.stdout.write(res.stdout || '');
   if (res.stderr) process.stderr.write(res.stderr);
   const addedApps = [...(res.stdout || '').matchAll(/✅ 추가됨: (.+) \((\d+)\) —/g)].map((m) => ({ appid: m[2], name: m[1] }));
@@ -175,7 +175,7 @@ async function main() {
 }
 
 function writeSummary(added) {
-  writeFileSync('scripts/.cache/new-coop-added.json', JSON.stringify({ at: new Date().toISOString(), windowDays: WINDOW, added }, null, 1));
+  writeFileSync('scripts/.cache/new-coop-added.json', JSON.stringify(added, null, 1)); // [{ id, appid, name, ... }] — fill-new-game --ids <이 파일>로 바로 쓸 수 있는 배열
   if (!process.env.GITHUB_STEP_SUMMARY) return;
   const lines = [`## 이번 주 추가된 협동 신작 ${added.length}개`, ''];
   if (added.length) lines.push('| 이름 | appid | 구분 | 출시일 | 리뷰 |', '|---|---|---|---|---|', ...added.map((a) => `| ${a.name.replace(/\|/g, '/')} | ${a.appid} | ${a.kind === 'upcoming' ? '출시 예정' : '출시작'} | ${a.release} | ${a.kind === 'upcoming' ? '-' : a.reviews} |`));
