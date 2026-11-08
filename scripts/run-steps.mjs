@@ -31,6 +31,7 @@ const GROUPS = {
   // 매주: 새 게임 수집 + 게임 정보 보강
   weekly: [
     'bulk-import --apply', // 기본은 미리보기라 --apply로 실제 추가 (판매 순위 새 게임 최대 200개)
+    'find-new-coop-games --apply', // 최근 14일 협동·온라인 협동 신작(리뷰 50개 이상, 최대 20개) + 60일 안 출시 예정 인기 30위 안(최대 10개)을 bulk-import --curator로 추가. 추가 뒤 /api/admin/revalidate 호출, Actions 요약에 추가 목록. 성인 표시·제외 장르·이미 있는 appid 제외. 아래 단계가 새 게임을 채움. AI 안 씀
     'backfill-steam-categories --apply', // 스팀 카테고리 원문(games.steam_categories)이 빈 게임 채움 (캐시 먼저, 없으면 appdetails 최대 400개, AI 안 씀). 플레이 방식 검사 근거라 AI 보강 단계(judge-new-games 등)보다 먼저. 칸이 없으면(마이그레이션 전) 안내만 하고 끝남
     'fill-players-from-store --apply', // 최대 인원이 빈 새 게임을 스팀 상점 소개문에서 채움 (숫자가 확실할 때만, 여럿·17명 이상은 scripts/.cache/players-store-pending.json 대기 목록. AI 안 씀, 한 번 본 게임은 다시 안 봄). 칸이 없으면(마이그레이션 전) 실패로 표시
     'link-new-game-tags --apply', // 태그 없는 게임을 태그 나무(game_tags)에 연결 (스팀 태그 투표, AI 안 씀). 새 스팀 태그는 일일 요약에 알림

@@ -7,7 +7,7 @@
 //   공통: 스팀 카테고리에 협동(9) 또는 온라인 협동(38) 필수 (멀티·PvP만 있는 게임 제외), 종류 game, 성인 콘텐츠 표시(1·3·4번)·제외 장르 제외, 이미 games에 있는 appid(hidden 포함)·판매 중단 목록 제외
 //   출시작: 최근 14일(--backfill-days로 변경) 안 출시 + 리뷰 50개 이상
 //   출시 예정작: 출시일이 60일 안 + 스팀 "인기 출시 예정" 30위 안 (팔로워 수는 로그인 없이 못 받아 이 순위로 대신함)
-//   주 최대 30개 — 넘으면 출시작은 리뷰 많은 순, 출시 예정작은 출시일 가까운 순 (출시 예정작 최소 10자리)
+//   주 상한: 출시작 20개(리뷰 많은 순) + 출시 예정작 10개(출시일 가까운 순). 첫 실행(--backfill-days)은 출시작 40 + 출시 예정 10 (--max-released N으로 직접 지정 가능)
 // 데이터: 스팀 검색(협동·온라인 협동 카테고리를 하나씩 검색해 합침) → IStoreBrowseService/GetItems(100개씩, 종류·카테고리·출시일·리뷰) → appdetails(통과 후보만, 성인·장르). 요청 간격 2초(steam.mjs), AI 안 씀
 // 추가는 bulk-import --curator를 그대로 씀 (출시 예정작 처리·카테고리·크로스플레이 저장 재사용). 이 단계에서 새로 넣은 게임은 weekly 뒤 단계와 daily가 채움
 // 끝나면: 추가된 게임이 있으면 /api/admin/revalidate 호출, Actions 요약(GITHUB_STEP_SUMMARY)에 추가 목록, scripts/.cache/new-coop-added.json에 결과 저장
@@ -15,12 +15,17 @@ import { createClient } from '@supabase/supabase-js';
 import { spawnSync } from 'node:child_process';
 import { writeFileSync, appendFileSync, mkdirSync } from 'node:fs';
 import { steamGet, appdetailsUrl } from './lib/steam.mjs';
-import { normalizeItem, firstPass, releasedQuality, secondPass, rankPassed, WINDOW_DAYS, WEEKLY_MAX, UPCOMING_TOP_RANK, UPCOMING_WITHIN_DAYS, MIN_REVIEWS } from './lib/new-coop-rules.mjs';
+import { normalizeItem, firstPass, releasedQuality, secondPass, rankPassed, WINDOW_DAYS, WEEKLY_MAX_RELEASED, WEEKLY_MAX_UPCOMING, UPCOMING_TOP_RANK, UPCOMING_WITHIN_DAYS, MIN_REVIEWS } from './lib/new-coop-rules.mjs';
 
 const APPLY = process.argv.includes('--apply');
 const bi = process.argv.indexOf('--backfill-days');
 const WINDOW = bi >= 0 ? Number(process.argv[bi + 1]) : WINDOW_DAYS;
 if (bi >= 0 && !(WINDOW >= 1 && WINDOW <= 90)) { console.error('--backfill-days는 1~90 사이 숫자여야 해요'); process.exit(1); }
+// 첫 실행(--backfill-days)만 출시작 40 + 출시 예정 10으로 늘림. 평소는 출시작 20 + 출시 예정 10 (--max-released로 직접 지정도 가능)
+const mi = process.argv.indexOf('--max-released');
+const MAX_RELEASED = mi >= 0 ? Number(process.argv[mi + 1]) : bi >= 0 ? 40 : WEEKLY_MAX_RELEASED;
+const MAX_UPCOMING = WEEKLY_MAX_UPCOMING;
+if (!(MAX_RELEASED >= 1 && MAX_RELEASED <= 100)) { console.error('--max-released는 1~100 사이 숫자여야 해요'); process.exit(1); }
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const nowTs = Math.floor(Date.now() / 1000);
@@ -124,17 +129,17 @@ async function main() {
 
   // 4) 출력
   const passed = rows.filter((r) => r.status === 'pass').map((r) => ({ ...r, reviews: r.c.reviews, releaseTs: r.c.releaseTs }));
-  const top = rankPassed(passed, WEEKLY_MAX);
+  const top = rankPassed(passed, { released: MAX_RELEASED, upcoming: MAX_UPCOMING });
   const topIds = new Set(top.map((r) => r.c.appid));
   const cell = (s) => String(s ?? '').replace(/\|/g, '/');
-  const line = (r) => `| ${cell(r.c.name)} | ${r.c.appid} | ${r.c.comingSoon ? '출시 예정' : '출시'} ${fmtDate(r.c.releaseTs)} | ${r.c.categories.join(', ') || '-'} | ${r.c.comingSoon ? `인기순위 ${r.rank ?? '-'}` : `리뷰 ${r.c.reviews}`} | ${r.status === 'pass' ? (topIds.has(r.c.appid) ? '통과 ✅' : '통과 (주 30개 초과)') : r.reason} |`;
+  const line = (r) => `| ${cell(r.c.name)} | ${r.c.appid} | ${r.c.comingSoon ? '출시 예정' : '출시'} ${fmtDate(r.c.releaseTs)} | ${r.c.categories.join(', ') || '-'} | ${r.c.comingSoon ? `인기순위 ${r.rank ?? '-'}` : `리뷰 ${r.c.reviews}`} | ${r.status === 'pass' ? (topIds.has(r.c.appid) ? '통과 ✅' : '통과 (상한 초과)') : r.reason} |`;
   const head = '| 이름 | appid | 출시일·상태 | 협동 카테고리 | 리뷰/순위 | 통과/탈락 이유 |\n|---|---|---|---|---|---|';
   const rel = top.filter((r) => r.kind === 'released');
   const up = top.filter((r) => r.kind === 'upcoming');
   console.log(`## 통과 ${passed.length}개 (이번 추가 대상 ${top.length}개 = 출시작 ${rel.length} + 출시 예정 ${up.length})\n${head}`);
   for (const r of [...rel, ...up]) console.log(line(r));
   const over = passed.filter((r) => !topIds.has(r.c.appid));
-  if (over.length) { console.log(`\n### 통과했지만 주 ${WEEKLY_MAX}개 초과로 밀린 것 ${over.length}개\n${head}`); for (const r of over) console.log(line(r)); }
+  if (over.length) { console.log(`\n### 통과했지만 상한(출시작 ${MAX_RELEASED} + 출시 예정 ${MAX_UPCOMING})을 넘어 밀린 것 ${over.length}개\n${head}`); for (const r of over) console.log(line(r)); }
   const near = rows.filter((r) => r.status === 'near');
   console.log(`\n## 아까운 탈락 ${near.length}개 (상위 10)\n${head}`);
   for (const r of near.sort((a, b) => b.c.reviews - a.c.reviews).slice(0, 10)) console.log(line(r));
@@ -156,9 +161,12 @@ async function main() {
   const res = spawnSync('node', [...envArgs, 'scripts/bulk-import.mjs', '--curator', listFile, '--apply'], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
   process.stdout.write(res.stdout || '');
   if (res.stderr) process.stderr.write(res.stderr);
-  const added = [...(res.stdout || '').matchAll(/✅ 추가됨: (.+) \((\d+)\) —/g)].map((m) => {
-    const r = top.find((x) => x.c.appid === m[2]);
-    return { appid: m[2], name: m[1], kind: r?.kind, release: fmtDate(r?.c.releaseTs), reviews: r?.c.reviews ?? 0 };
+  const addedApps = [...(res.stdout || '').matchAll(/✅ 추가됨: (.+) \((\d+)\) —/g)].map((m) => ({ appid: m[2], name: m[1] }));
+  const { data: idRows } = addedApps.length ? await supabase.from('games').select('id, steam_appid').in('steam_appid', addedApps.map((a) => a.appid)) : { data: [] };
+  const idOf = new Map((idRows || []).map((g) => [String(g.steam_appid), g.id]));
+  const added = addedApps.map((a) => {
+    const r = top.find((x) => x.c.appid === a.appid);
+    return { id: idOf.get(a.appid) ?? null, appid: a.appid, name: a.name, kind: r?.kind, release: fmtDate(r?.c.releaseTs), reviews: r?.c.reviews ?? 0 };
   });
   console.log(`\n이번에 추가된 게임 ${added.length}개 (대상 ${top.length}개 중)`);
   writeSummary(added);

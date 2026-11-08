@@ -7,8 +7,8 @@ export const WINDOW_DAYS = 14; // 출시작: 최근 이 기간 안에 출시
 export const MIN_REVIEWS = 50; // 출시작: 리뷰 이만큼 이상
 export const UPCOMING_TOP_RANK = 30; // 출시 예정작: 스팀 "인기 출시 예정" 순위가 이 안 (팔로워 수는 로그인 없이 못 받아 순위로 대신함)
 export const UPCOMING_WITHIN_DAYS = 60; // 출시 예정작: 출시일이 이 기간 안 (출시일을 모르면 탈락)
-export const WEEKLY_MAX = 30;
-export const UPCOMING_QUOTA = 10; // 상한을 넘을 때 출시 예정작이 최소 이만큼 자리를 가짐 (출시작이 모자라면 더 가져감)
+export const WEEKLY_MAX_RELEASED = 20; // 주 상한: 출시작 (리뷰 많은 순)
+export const WEEKLY_MAX_UPCOMING = 10; //          출시 예정작 (출시일 가까운 순)
 export const SEXUAL_DESCRIPTOR_IDS = [1, 3, 4]; // ContentNotice와 같은 기준 (일부 노출·성인 전용·빈번한 노출)
 
 // GetItems의 supported_player_categoryids → 스팀 카테고리 이름 (협동·온라인 협동 중 하나는 필수, 멀티·PvP만 있는 게임은 제외)
@@ -74,12 +74,9 @@ export function secondPass(data) {
   return { ok: true };
 }
 
-// 주 최대 개수로 자르기: 출시작은 리뷰 많은 순, 출시 예정작은 출시일 가까운 순.
-// 합쳐서 max개를 넘으면 출시 예정작은 최소 UPCOMING_QUOTA개(출시작이 모자라면 남는 자리까지)를 가짐
-export function rankPassed(list, max = WEEKLY_MAX, quota = UPCOMING_QUOTA) {
-  const rel = list.filter((x) => x.kind !== 'upcoming').sort((a, b) => b.reviews - a.reviews);
-  const up = list.filter((x) => x.kind === 'upcoming').sort((a, b) => a.releaseTs - b.releaseTs);
-  const upN = Math.min(up.length, Math.max(quota, max - rel.length));
-  const relN = Math.min(rel.length, max - upN);
-  return [...rel.slice(0, relN), ...up.slice(0, upN)];
+// 상한으로 자르기: 출시작은 리뷰 많은 순 max.released개, 출시 예정작은 출시일 가까운 순 max.upcoming개 (서로 자리를 빌리지 않음)
+export function rankPassed(list, { released = WEEKLY_MAX_RELEASED, upcoming = WEEKLY_MAX_UPCOMING } = {}) {
+  const rel = list.filter((x) => x.kind !== 'upcoming').sort((a, b) => b.reviews - a.reviews).slice(0, released);
+  const up = list.filter((x) => x.kind === 'upcoming').sort((a, b) => a.releaseTs - b.releaseTs).slice(0, upcoming);
+  return [...rel, ...up];
 }

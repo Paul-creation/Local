@@ -38,16 +38,14 @@ test('성인 표시·제외 장르 탈락', () => {
   assert.equal(secondPass({ type: 'game', content_descriptors: { ids: [2, 5] }, genres: [{ description: 'Action' }], categories: [{ description: 'Co-op' }], name: 'X' }).ok, true);
   assert.equal(secondPass({ type: 'game', genres: [{ description: 'Utilities' }], categories: [] }).ok, false);
 });
-test('상한: 출시작은 리뷰 많은 순, 출시 예정작은 출시일 가까운 순, 출시 예정 최소 자리', () => {
+test('상한: 출시작은 리뷰 많은 순, 출시 예정작은 출시일 가까운 순, 자리를 빌리지 않음', () => {
   const rel = Array.from({ length: 40 }, (_, i) => ({ kind: 'released', reviews: 50 + i }));
   const up = Array.from({ length: 15 }, (_, i) => ({ kind: 'upcoming', releaseTs: 100 - i }));
-  const out = rankPassed([...rel, ...up], 30, 10);
-  assert.equal(out.length, 30);
+  const out = rankPassed([...rel, ...up]);
+  assert.equal(out.filter((x) => x.kind === 'released').length, 20);
   assert.equal(out.filter((x) => x.kind === 'upcoming').length, 10);
   assert.equal(out[0].reviews, 89);
-  assert.equal(out.find((x) => x.kind === 'upcoming').releaseTs, 86); // 가장 가까운 출시일
-  const few = rankPassed([...rel.slice(0, 5), ...up], 30, 10);
-  assert.equal(few.length, 20); // 둘 다 모자라면 있는 만큼
-  const mostlyUp = rankPassed([...rel.slice(0, 5), ...Array.from({ length: 40 }, (_, i) => ({ kind: 'upcoming', releaseTs: i }))], 30, 10);
-  assert.equal(mostlyUp.filter((x) => x.kind === 'upcoming').length, 25); // 출시작이 모자라면 남는 자리까지
+  assert.equal(out.find((x) => x.kind === 'upcoming').releaseTs, 86);
+  assert.equal(rankPassed([...rel.slice(0, 5), ...up]).length, 15); // 출시작이 모자라도 출시 예정작이 더 가져가지 않음
+  assert.equal(rankPassed([...rel, ...up], { released: 40, upcoming: 10 }).length, 50); // 첫 실행 상한
 });
