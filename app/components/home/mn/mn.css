@@ -191,6 +191,19 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
   .mn-cmd .filter-wrap.is-float { position: fixed; top: auto; left: 0; right: 0; bottom: 0; z-index: 90; max-height: 85vh; border-radius: 16px 16px 0 0; border-bottom: 0; }
 }
 
+/* 휴대폰(≤430px) 커맨드바: 윗줄 = 검색 아이콘 + 입력칸(전체 폭, ×는 입력칸 안쪽 오른쪽), 아랫줄 = 필터 · AI 추천. 검색 상자들을 display:contents로 풀어 한 줄 묶음으로 다룬다. 자동완성 목록은 커맨드바 전체 폭(위치는 SearchBox가 입력칸 아래로 계산) */
+@media (max-width: 430px) {
+  .mn .mn-cmd .search-row { position: static; flex-wrap: wrap; padding: 8px 12px 10px; gap: 8px; }
+  .mn .mn-cmd .search-row::after { content: ''; order: 4; flex: 0 0 100%; height: 0; margin-top: -8px; }
+  .mn .mn-cmd .search-box, .mn .mn-cmd .search-box-field, .mn .mn-cmd .search-bar-clean { display: contents; }
+  .mn .mn-cmd .mn-search-icon, .mn .mn-cmd .search-tag-chip { order: 1; }
+  .mn .mn-cmd .search-bar-clean input { order: 2; flex: 1 1 120px; min-width: 0; padding-right: 44px; }
+  .mn .mn-cmd .search-bar-clean .search-clear { order: 3; flex: 0 0 44px; width: 44px; margin-left: -52px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+  .mn .mn-cmd .filter-toggle { order: 5; }
+  .mn .mn-cmd .search-actions { order: 6; margin-left: auto; }
+  .mn .mn-cmd .search-suggest { left: 8px; right: 8px; }
+}
+
 /* 단축키 표시는 터치 기기·768px 미만에서 숨김 (CSS라 마운트 전후 차이 없음) */
 @media (max-width: 767px), (pointer: coarse), (hover: none) { .mn-kbd { display: none; } }
 

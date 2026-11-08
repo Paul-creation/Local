@@ -105,6 +105,11 @@ export default function SearchBox({ games, filters, leading, trailing, shortPlac
     const measure = () => {
       const ul = ulRef.current;
       if (!ul) return;
+      // 휴대폰(≤430px) 메인 커맨드바: 검색 상자가 display:contents라 목록이 커맨드바 전체 폭 기준으로 뜬다 — 위치는 입력칸 바로 아래로 직접 잡는다(버튼 줄이 아래에 있어서)
+      const flat = boxRef.current && getComputedStyle(boxRef.current).display === 'contents';
+      const parent = ul.offsetParent;
+      if (flat && parent && inputRef.current) ul.style.top = `${inputRef.current.getBoundingClientRect().bottom - parent.getBoundingClientRect().top + 8}px`;
+      else ul.style.removeProperty('top');
       const room = window.innerHeight - ul.getBoundingClientRect().top - SUGGEST_MARGIN;
       setMaxH(Math.max(0, Math.min(SUGGEST_MAX, Math.floor(room))));
       return room;
@@ -112,7 +117,9 @@ export default function SearchBox({ games, filters, leading, trailing, shortPlac
     const room = measure();
     if (room !== undefined && room < SUGGEST_MIN_ROOM && !scrolledRef.current) {
       scrolledRef.current = true;
-      boxRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      const box = boxRef.current;
+      const target = box && getComputedStyle(box).display === 'contents' ? box.closest<HTMLElement>('.search-row') : box; // display:contents는 상자가 없어 스크롤 대상이 못 된다
+      if (target) { target.style.scrollMarginTop = '84px'; target.scrollIntoView({ block: 'start', behavior: 'smooth' }); }
     }
     // 스크롤·resize는 프레임당 한 번만 다시 잰다
     let raf = 0;
