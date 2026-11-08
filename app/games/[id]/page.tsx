@@ -4,7 +4,7 @@ import { supabase } from '../../lib/supabase';
 import BackLink from '../../components/BackLink';
 import DiscountChart from '../../components/DiscountChart';
 import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL } from '../../lib/price';
-import { isComingSoon, hasDemo, comingSoonLabel, hasReleaseDate, demoStoreUrl } from '../../lib/release';
+import { isComingSoon, hasDemo, comingSoonLabel, hasReleaseDate, demoStoreUrl, releaseTile } from '../../lib/release';
 import { formatDate } from '../../lib/date';
 import { lowestGauge } from '../../lib/saleEnds';
 import SaleEnds from '../../components/SaleEnds';
@@ -215,7 +215,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const koreanOk = !!game.korean_support && game.korean_support !== '한국어 없음';
   // 소개: 스팀 한국어 설명 → 우리 한국어 설명(fun_description) → 둘 다 없을 때만 영어 원문. 스팀이 한국어 번역이 없으면 영어를 그대로 돌려줘서, 한글이 없는 설명은 영어로 본다
   const steamDescIsKorean = /[가-힣]/.test(game.description || '');
-  const showSteamDesc = !!game.description && (steamDescIsKorean || !game.fun_description);
+  const showSteamDesc = !!game.description && (steamDescIsKorean || (!game.fun_description && !game.description_ko));
   // 최근 30일 평가 — 리뷰 30개 이상일 때만, 전체와 15%p 이상 차이면 한 줄 안내
   const recentPct: number | null = game.recent_review_pct ?? null;
   const showRecent = recentPct != null && (game.recent_review_count ?? 0) >= 30;
@@ -262,10 +262,17 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const hours = (sec: number) => `${Math.max(1, Math.round(sec / 3600)).toLocaleString('ko-KR')}시간`;
   const n = (v: number) => v.toLocaleString('ko-KR');
   const tiles: Tile[] = [];
-  if (game.review_positive_percent) tiles.push({ key: 'review', tone: 'review', icon: 'thumb', label: 'Steam 평가', value: <span className="num">{game.review_positive_percent}%</span>, sub: [game.review_summary, game.review_total ? `리뷰 ${n(game.review_total)}개` : ''].filter(Boolean).join(' · ') });
-  if (showRecent) tiles.push({ key: 'recent', tone: 'review', icon: 'clock', label: '최근 30일 평가', value: <span className="num">{recentPct}%</span>, sub: Math.abs(recentGap) >= 15 ? (recentGap < 0 ? '최근 평가가 낮아졌어요' : '최근 평가가 좋아졌어요') : `리뷰 ${n(game.recent_review_count)}개` });
-  if (game.current_players > 0) tiles.push({ key: 'now', tone: 'live', icon: 'pulse', label: '지금 동접', value: <><span className="num">{n(game.current_players)}</span>명</> });
-  if (game.peak_players > 0) tiles.push({ key: 'peak', tone: 'live', icon: 'peak', label: '최고 동접', value: <><span className="num">{n(game.peak_players)}</span>명</>, sub: '역대 기준' });
+  // 출시 예정 게임은 평가·동접 대신 출시일·데모·스팀 인기 순위 타일 (출시되면 release_status가 released로 바뀌어 아래 원래 타일로 돌아옴)
+  if (comingSoon) {
+    const rt = releaseTile(game);
+    tiles.push({ key: 'release', tone: 'time', icon: 'clock', label: rt.label, value: rt.exact ? <span className="num">{rt.value}</span> : rt.value, valueClass: rt.exact ? undefined : 'is-text', sub: rt.exact ? (game.release_date_text || undefined) : undefined });
+    tiles.push({ key: 'demo', tone: 'party', icon: 'gate', label: '데모', value: demo ? '있음' : '없음', valueClass: `is-text${demo ? '' : ' is-down'}` });
+    if (game.upcoming_rank > 0) tiles.push({ key: 'rank', tone: 'live', icon: 'peak', label: '스팀 인기 출시 예정', value: <><span className="num">{game.upcoming_rank}</span>위</> });
+  }
+  if (!comingSoon && game.review_positive_percent) tiles.push({ key: 'review', tone: 'review', icon: 'thumb', label: 'Steam 평가', value: <span className="num">{game.review_positive_percent}%</span>, sub: [game.review_summary, game.review_total ? `리뷰 ${n(game.review_total)}개` : ''].filter(Boolean).join(' · ') });
+  if (!comingSoon && showRecent) tiles.push({ key: 'recent', tone: 'review', icon: 'clock', label: '최근 30일 평가', value: <span className="num">{recentPct}%</span>, sub: Math.abs(recentGap) >= 15 ? (recentGap < 0 ? '최근 평가가 낮아졌어요' : '최근 평가가 좋아졌어요') : `리뷰 ${n(game.recent_review_count)}개` });
+  if (!comingSoon && game.current_players > 0) tiles.push({ key: 'now', tone: 'live', icon: 'pulse', label: '지금 동접', value: <><span className="num">{n(game.current_players)}</span>명</> });
+  if (!comingSoon && game.peak_players > 0) tiles.push({ key: 'peak', tone: 'live', icon: 'peak', label: '최고 동접', value: <><span className="num">{n(game.peak_players)}</span>명</>, sub: '역대 기준' });
   if (ttb) tiles.push({ key: 'time', tone: 'time', icon: 'hourglass', label: '플레이 시간', value: <>보통 <span className="num">{hours(ttb.ttb_normally)}</span></>, sub: [ttb.ttb_hastily ? `빠르게 ${hours(ttb.ttb_hastily)}` : '', ttb.ttb_completely ? `전부 ${hours(ttb.ttb_completely)}` : ''].filter(Boolean).join(' · ') || undefined });
   else if (game.story_length && game.solo_mode !== 'none') tiles.push({ key: 'time', tone: 'time', icon: 'hourglass', label: '플레이 시간', value: game.story_length, valueClass: 'is-text' });
   if (friendsMax) tiles.push({ key: 'party', tone: 'party', icon: 'people', label: '인원', value: friendsMax === 1 ? '혼자' : <>최대 <span className="num">{friendsMax}</span>명</> });
@@ -431,6 +438,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               {game.fun_description && <InfoTip label="AI가 정리한 소개 안내" text="AI가 정리한 소개예요" />}
             </h3>
             {game.fun_description && <p className="detail-fun">{game.fun_description}</p>}
+            {!steamDescIsKorean && game.description_ko && <p className="detail-description-v2">{game.description_ko}</p>}
             {showSteamDesc && <p className="detail-description-v2">{game.description}</p>}
             {chipGroups.length > 0 && <TagChips groups={chipGroups} />}
             <ContentNotice ids={game.content_descriptor_ids} />

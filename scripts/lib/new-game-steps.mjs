@@ -20,6 +20,7 @@ export const NEW_GAME_STEPS = [
   ['enrich-cover-vertical', '--apply', 'IDS'],
   ['enrich-screenshots', 'IDS'],
   ['write-fun-descriptions', '--ids-file', 'FUN_IDS'], // 한국어 한 줄 소개 (fun_description이 빈 게임만, Haiku)
+  ['fill-description-ko', '--apply', 'IDS'], // 스팀 한국어 설명이 없는 게임의 한국어 상세 설명 (영어 about 기반, Haiku)
   ['fill-search-names', 'IDS'],
   ['fill-activities-v2', '--apply', '--yes', '--new-days', 'DAYS', '--limit', 'ACT_MAX', 'IDS'], // 가능한 활동 (Sonnet 5.5 배치, 한 번에 최대 ACT_MAX개 — 넘는 건 weekly가 채움)
   ['fill-english-names', '--apply', 'IDS'],
