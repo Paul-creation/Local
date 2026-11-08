@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-11-08 (main 290d217)
+기준: 2026-11-08 (main 0422840)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 11/8: feat/ko-description-coming-soon-tiles — 스팀 한국어 설명이 없는 게임의 한국어 상세 설명(games.description_ko·description_ko_at, scripts/fill-description-ko.mjs: 스팀 영어 about → Haiku, 해요체 2~3문장 250자 이내, 사실 위주·"협동" 용어, 한 번 처리한 게임은 다시 안 함, fill-new-game 단계에 포함). 상세 소개는 한 줄 요약 아래에 보이고 있으면 영어 원문은 숨김. 출시 예정 상세는 평가·동접 대신 출시까지 D-N(날짜까지 있는 원문만, 아니면 원문)·데모 있음/없음·스팀 인기 출시 예정 순위 타일(games.upcoming_rank, scripts/fill-upcoming-rank.mjs, daily의 check-coming-soon 뒤). 259개 작성(탈락 Fallout 2개·영어 설명 없음 6개). build·test 530개 통과
 - 11/8: feat/weekly-new-coop-games — 주간 스팀 협동 신작 자동 추가(scripts/find-new-coop-games.mjs, scripts/lib/new-coop-rules.mjs, weekly의 bulk-import 다음 단계 `--apply`). 기준: 협동 또는 온라인 협동 카테고리 필수(멀티·PvP만은 제외), 성인 표시·제외 장르·이미 있는 appid·판매 중단 제외, 출시작은 최근 14일+리뷰 50개 이상(주 20개, 리뷰 많은 순), 출시 예정작은 출시일 60일 안+스팀 인기 출시 예정 30위 안(주 10개, 출시일 가까운 순; 팔로워 수는 로그인 없이 못 받아 순위로 대신함). 후보는 스팀 검색+GetItems, 추가는 bulk-import --curator를 그대로 씀. 추가 뒤 /api/admin/revalidate 호출, Actions 요약에 추가 목록, scripts/.cache/new-coop-added.json에 게임 id 목록. 첫 실행(--backfill-days 30, 출시작 40+출시 예정 10)으로 50개 추가(출시작 40·출시 예정 10, 로컬에는 ADMIN_REVALIDATE_KEY가 없어 캐시 무효화는 생략). 새 게임 정보는 다음 weekly·daily 단계가 채우고, 첫 실행 50개는 머지 뒤 fill-new-game --ids로 바로 채움. build·test 통과
 - 11/8: feat/fill-new-game — 새 게임을 weekly를 기다리지 않고 바로 채우는 scripts/fill-new-game.mjs(기본 최근 14일, --days·--ids·--dry-run·--skip·--activities-max). 단계 22개는 scripts/lib/new-game-steps.mjs(weekly 순서, 한국어 소개 write-fun-descriptions는 fun_description 빈 게임만, 활동 fill-activities-v2는 한 번에 최대 10개·나머지는 weekly). bulk-import --curator --apply는 끝에서 자동 호출(일반 수집은 --fill-new, --no-fill로 끔), import-curator-queue는 자체 보강 목록을 없앰. 한국어 판정을 scripts/lib/korean-support.mjs로 통일(enrich-specs·fix-data-gaps·reel-trend, 음성 지원 *도 인식). judge-new-games에 --days, 스팀 Single-player면 possible 이상. 상세 페이지: korean_support가 null이면 한국어 칸 숨김, 영어 스팀 설명은 우리 한국어 소개가 있으면 숨김. 신규 33개에 실제 실행(실패 단계 0). build·test 514개 통과
 - 11/8: fix/search-tag-suggest — 메인 검색 자동완성이 마지막 단어 하나로만 매칭해 "finals w"에 태그 전쟁·무협이 뜨던 문제 수정. 새 app/lib/tagSuggestQuery.ts: 단어 하나는 그대로, 앞 단어가 전부 태그면(이어 치기) 마지막 단어로(영문·숫자 한 글자만 막고 한글 한 글자는 허용), 앞에 태그가 아닌 단어가 있으면 입력 전체(띄어쓰기 포함)로 태그 후보를 찾음. 게임 결과도 같은 원칙(이어 치기는 그 태그를 모두 가진 게임 안에서만 마지막 단어로 이름·별칭 매칭, 영문·숫자 한 글자면 이름 매칭 없이 그 태그의 인기 게임(heat_rank순), 그 밖은 입력 전체). 전체가 안 맞을 때 태그 단어를 뺀 나머지로 찾는 기존 동작은 이어 치기 외에 유지. 테스트 추가(501개), build 통과, 프리뷰 확인 없이 사용자 지시로 머지
@@ -162,6 +163,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- 배포 뒤 확인 대기(사용자): feat/ko-description-coming-soon-tiles — 다음 daily 로그의 fill-upcoming-rank 줄, 출시 예정 게임 상세의 타일, 영어 설명 게임의 한국어 소개. 탈락한 Fallout 2개 description_ko는 필요하면 fill-description-ko --retry --ids
 - 배포 뒤 확인 대기(사용자): feat/fill-new-game — 다음 daily 로그에서 import-curator-queue 안의 fill-new-game 단계 실행 시간과 활동(최대 10개) 처리 여부. 신규 게임 중 solo_mode·진입장벽 보류 3개(Idle Champions·표류도시·Knightica)는 weekly가 재시도
 - 머지 후 확인 대기(사용자): fix/search-tag-suggest — 프로덕션 메인 검색에서 "finals w"(Finals Week만, 태그 후보 없음), "좀비 w"(좀비 태그 게임만), "좀비 협"(게임 없음·협동 계열 태그 후보), "war"(전쟁 태그 그대로)
 - 배포 뒤 확인 대기(사용자): fix/admin-revalidate-scope — curl -X POST https://jamidunow.com/api/admin/revalidate -H "x-admin-key: $ADMIN_REVALIDATE_KEY" 응답의 revalidated에 세 경로가 나오는지
