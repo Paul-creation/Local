@@ -15,7 +15,7 @@ const startedAt = Date.now();
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-// 바뀐 게임이 있으면 /api/games/list 캐시 무효화 (ADMIN_REVALIDATE_KEY가 없으면 건너뜀 — 캐시는 5분 뒤 저절로 갱신됨)
+// 바뀐 게임이 있으면 /api/games/list·메인·/this-week 캐시 무효화 (ADMIN_REVALIDATE_KEY가 없으면 건너뜀 — 캐시는 1시간 뒤 저절로 갱신됨)
 async function revalidateList(changed) {
   if (!APPLY || !changed) return;
   const key = process.env.ADMIN_REVALIDATE_KEY;
