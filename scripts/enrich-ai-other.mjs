@@ -30,7 +30,6 @@ ${PLAYSTYLE_RULE} description·activities에 적용해.
   "ending_note": "엔딩 관련 한 줄 설명 또는 null",
   "story_length": "예: 약 20시간, 엔딩 없음(라이브 서비스)",
   "activities": ["친구와 할 수 있는 활동 3~5개, 각 2~6글자 한국어"],
-  "is_esports": true | false (공식 프로 대회가 있는지)
 }
 
 JSON 외의 설명, 코드블록, 출처 표기는 절대 쓰지 마.`;
@@ -88,7 +87,6 @@ function clean(ai, game) {
     const acts = kept.slice(0, 5);
     if (acts.length) u.activities = acts;
   }
-  if (typeof ai.is_esports === 'boolean') u.is_esports = ai.is_esports;
 
   // --force가 아니면 이미 있는 값은 건드리지 않음
   if (!FORCE) {
@@ -104,7 +102,7 @@ async function main() {
 
   const { data: games, error } = await supabase
     .from('games')
-    .select('id, name, source, description, korean_support, release_date, min_spec, recommended_spec, storage_gb, solo_playable, solo_mode, recommended_players, server_type, multiplayer_host, has_ending, ending_note, story_length, activities, is_esports, has_local_coop, steam_categories, ai_enriched_at').eq('hidden', false)
+    .select('id, name, source, description, korean_support, release_date, min_spec, recommended_spec, storage_gb, solo_playable, solo_mode, recommended_players, server_type, multiplayer_host, has_ending, ending_note, story_length, activities, has_local_coop, steam_categories, ai_enriched_at').eq('hidden', false)
     .is('steam_appid', null);
   if (error) return console.error('조회 실패:', error.message);
 

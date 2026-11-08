@@ -193,8 +193,9 @@ async function captureSplit(browser, game, files, split) {
   // 단계별로 숨길 부분을 늘려 가며, 페이지 전체가 slides×columns 조각에 100% 들어갈 때까지 줄인다 (반드시 남길 것: 커버·제목, 인원, 가격·할인·역대 최저가, PC 사양, 대표 영상 1개)
   await page.evaluate(() => {
     const sec = (t) => [...document.querySelectorAll('.detail-main > section')].find((e) => e.querySelector('h3')?.textContent.trim().startsWith(t));
-    sec('소개')?.setAttribute('data-hide', 'intro');
-    for (const t of ['같이 하기', '할인 전적']) sec(t)?.setAttribute('data-hide', 'misc');
+    sec('어떤 게임인가요?')?.setAttribute('data-hide', 'intro');
+    for (const t of ['플레이 방식', '게임 정보']) sec(t)?.setAttribute('data-hide', 'misc');
+    for (const t of ['한눈에 보기', '가격·할인']) sec(t)?.setAttribute('data-keep', '1'); // 인원 칸·가격 카드는 반드시 남긴다 (할인 기록 .price-record는 아래 단계에서 숨김)
     const video = sec('영상으로 미리 보기');
     video?.setAttribute('data-keep', '1');
     document.querySelector('.pcs-card')?.setAttribute('data-keep', '1');
@@ -207,12 +208,12 @@ async function captureSplit(browser, game, files, split) {
     { name: '투표', css: '.dx-votes' },
     { name: '트레일러·스크린샷·링크 줄', css: '.dx-trailer, .shots, .detail-links' },
     { name: '인원 외 지표 칸(평가·동접·플레이 시간·진입장벽·한국어·역대 최저가 칸)', css: '[data-hide="tiles"]' },
-    { name: '같이 하기·한눈에 보기·할인 전적·더 자세히', css: '[data-hide="misc"], .sec-glance, .detail-two' },
-    { name: '그 밖의 섹션·한 줄 소개·개발사 줄·구매 버튼·안내 문구·PC 사양 설명·원문 사양', css: '.detail-main > *:not([data-keep]):not(.detail-price), .dx-lead, .dx-credits, .price-card-buttons, .price-card-note, .price-card-compare-status, .pcs-sub, .pcs-raw' },
+    { name: '플레이 방식·게임 정보·할인 기록', css: '[data-hide="misc"], .price-record' },
+    { name: '그 밖의 섹션·한 줄 소개·개발사 줄·구매 버튼·안내 문구·PC 사양 설명·원문 사양', css: '.detail-main > *:not([data-keep]), .dx-lead, .price-card-buttons, .price-card-note, .price-card-compare-status, .pcs-sub, .pcs-raw' },
   ];
   const measure = () => page.evaluate(() => {
     const m = document.querySelector('main');
-    const units = [...m.querySelectorAll(':scope > header.dx-head, :scope > ul.dx-tiles, .detail-price, .detail-main > *')].filter((e) => e.getBoundingClientRect().height > 0);
+    const units = [...m.querySelectorAll(':scope > header.dx-head, .detail-main > *')].filter((e) => e.getBoundingClientRect().height > 0);
     const tops = units.map((e) => Math.round(e.getBoundingClientRect().top + scrollY));
     const last = units[units.length - 1].getBoundingClientRect();
     // 자르면 안 되는 덩어리(글줄·제목·카드·썸네일 등)의 세로 범위와 제목 위치
@@ -220,11 +221,11 @@ async function captureSplit(browser, game, files, split) {
     const inUnits = (e) => units.some((u) => u.contains(e));
     const atoms = [...m.querySelectorAll('*')].filter((e) => !e.children.length || e.matches('h1, h2, h3, p, li, img, picture, button, a, dt, dd, tr, svg, canvas, .dx-tile, .dx-badges > *, .dx-chips > *, .chip, .video-stage, .video-stage-info, .lowest-gauge, .price-card-was, .price-card-now, .detail-links > *'))
       .filter((e) => inUnits(e) && e.getBoundingClientRect().height > 0).map(box).map(([a, b]) => [Math.round(a), Math.round(b)]);
-    // 제목: h2·h3, 그리고 h가 아닌 섹션 제목(예: 할인 전적)도 잡도록 detail-main 안의 큼직한 굵은 짧은 글자
+    // 제목: h2·h3, 그리고 h가 아닌 섹션 제목(예: 가격·할인)도 잡도록 detail-main 안의 큼직한 굵은 짧은 글자
     const isHead = (e) => e.matches('h2, h3') || (e.closest('.detail-main') && !e.children.length && e.textContent.trim().length < 20 && parseFloat(getComputedStyle(e).fontSize) >= 20 && parseInt(getComputedStyle(e).fontWeight, 10) >= 600);
     const heads = [...m.querySelectorAll('*')].filter((e) => isHead(e) && inUnits(e) && e.getBoundingClientRect().height > 0).map((e) => Math.round(e.getBoundingClientRect().bottom + scrollY));
     const vis = (e, q) => [...e.querySelectorAll(q)].filter((x) => x.getBoundingClientRect().height > 0).map((x) => x.textContent.trim());
-    const kept = units.map((e) => e.matches('header.dx-head') ? '커버·제목' : e.matches('ul.dx-tiles') ? `지표 칸(${vis(e, '.dx-tile-label').join('·')})` : e.matches('.detail-price') ? 'Steam 가격·할인·역대 최저가'
+    const kept = units.map((e) => e.matches('header.dx-head') ? '커버·제목' : e.matches('.sec-glance') ? `한눈에 보기(${vis(e, '.dx-tile-label').join('·')})` : e.matches('.sec-price') ? 'Steam 가격·할인·역대 최저가'
       : vis(e, 'h1, h2, h3, .dx-tile-label')[0] || e.textContent.trim().slice(0, 14));
     return { bounds: tops, atoms, heads, kept, end: Math.round(last.bottom + scrollY) + 16 };
   });

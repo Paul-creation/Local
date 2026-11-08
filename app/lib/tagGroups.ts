@@ -4,6 +4,7 @@
 import { translateTag } from './tagTranslate';
 import { nameToTagId, tagName, type TagTree } from './tagTree';
 import { sortGoty, gotyLabel } from './goty';
+import { hasSplitScreen } from './splitScreen';
 
 export type ChipKind = 'special' | 'play' | 'genre' | 'feature';
 export type Chip = { text: string; kind: ChipKind; desc?: string; tagId?: number }; // tagId: 태그 나무 칸 번호 (있으면 누를 때 그 태그의 목록으로)
@@ -17,6 +18,7 @@ type GameLike = {
   tag_ids?: number[] | null;
   tags?: string[] | null;
   goty_awards?: unknown;
+  steam_categories?: string[] | null;
 };
 
 // 플레이 방식 칩 — 더 구체적인 쪽만: 온라인·로컬 협동이 있으면 그냥 "협동"은 뺀다
@@ -89,9 +91,11 @@ function specialChips(game: GameLike, isTop10: boolean): Chip[] {
 
 export function detailChipGroups(tree: TagTree | null, game: GameLike, isTop10: boolean): ChipGroup[] {
   const { genre, feature } = treeChips(tree, game);
+  const play = playChips(game);
+  if (hasSplitScreen(game)) play.push({ text: '화면 분할', kind: 'play', desc: '스팀에서 화면 분할(Shared/Split Screen)로 표시한 게임이에요' });
   return [
     { label: '수상·순위', chips: specialChips(game, isTop10) },
-    { label: '플레이 방식', chips: playChips(game) },
+    { label: '플레이 방식', chips: play },
     { label: '장르', chips: genre },
     { label: '특징', chips: feature },
   ].filter((g) => g.chips.length > 0);

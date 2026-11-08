@@ -244,7 +244,6 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   if (game.last_updated && upState) infoRows.push(['마지막 업데이트', <Fragment key="upd"><span className="num">{formatDate(game.last_updated)}</span> <span className={`info-sub ${upState.cls}`}>{upState.text}</span></Fragment>]);
   if (game.storage_gb) infoRows.push(['필요 용량', <span key="size" className="num">{game.storage_gb} GB</span>]);
   if (game.has_workshop) infoRows.push(['모드 지원', 'Steam 창작마당']);
-  if (game.is_esports) infoRows.push(['e스포츠', '공식 대회 있음']);
   // 스크린샷 — 주소가 둘 다 있는 것만, 없거나 비면 섹션 숨김
   const shots: Screenshot[] = Array.isArray(game.screenshots)
     ? game.screenshots.filter((s: any) => typeof s?.path_thumbnail === 'string' && typeof s?.path_full === 'string').slice(0, 10)
@@ -287,9 +286,6 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const showAbout = !!(game.fun_description || game.description_ko || showSteamDesc || shots.length > 0 || aboutRows.length > 0 || otherChipGroups.length > 0 || game.ending_note || (game.content_descriptor_ids?.length ?? 0) > 0);
 
   const heroBg: string | null = game.hero_image_url || shots[0]?.path_full || null;
-  const credits = game.developer && game.publisher
-    ? (game.developer === game.publisher ? `개발·배급 ${game.developer}` : `개발 ${game.developer} · 배급 ${game.publisher}`)
-    : game.developer ? `개발 ${game.developer}` : game.publisher ? `배급 ${game.publisher}` : '';
   // 플레이 시간 — IGDB game_time_to_beats(초). 세 값이 순서대로(빠르게 ≤ 보통 ≤ 완전히)일 때만 쓰고, 멀티 전용 게임은 숨긴다. 칸이 없으면 기존 story_length 문구
   const ttb = game.ttb_normally > 0 && game.solo_mode !== 'none' && (!game.ttb_hastily || game.ttb_hastily <= game.ttb_normally) && (!game.ttb_completely || game.ttb_completely >= game.ttb_normally) ? game : null;
   const hours = (sec: number) => `${Math.max(1, Math.round(sec / 3600)).toLocaleString('ko-KR')}시간`;
@@ -337,7 +333,6 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             {game.category && <span className={`badge-neutral ${badgeClass(game.category)}`}>{game.category}</span>}
           </div>
           <h1 className="dx-title">{gameName(game)}</h1>
-          {credits && <p className="dx-credits">{credits}</p>}
           {game.fun_description && <p className="dx-lead">{game.fun_description}</p>}
           {(subGenres.length > 0 || platformCategories.length > 0) && (
             <div className="dx-chips">

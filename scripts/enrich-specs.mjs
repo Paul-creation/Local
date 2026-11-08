@@ -129,7 +129,7 @@ async function getLowestPrice(gameId) {
 // 이 칸들이 비어 있으면 아직 스팀 정보를 못 채운 게임으로 본다
 const EMPTY_FILTER = 'min_spec.is.null,release_date.is.null';
 // 스팀 정보를 처음 채울 때만 정해지는 값 (추가할 때 기본값 false라서 빈 게임이면 스팀 값으로 바꾼다)
-const STEAM_FLAGS = ['has_dlc', 'family_sharing', 'is_early_access', 'has_workshop', 'is_esports'];
+const STEAM_FLAGS = ['has_dlc', 'family_sharing', 'is_early_access', 'has_workshop'];
 
 async function main() {
   const { data: games, error: loadError } = await onlyIds(supabase
@@ -235,7 +235,6 @@ async function main() {
       family_sharing: parseFamilySharing(data.categories),
       is_early_access: data.genres?.some((g) => g.id === '70') ?? false,
       has_workshop: categoryIds.includes(30),
-      is_esports: categoryIds.includes(24),
     });
     if (lowSpec && !currentTags.includes('저사양')) update.tags = [...currentTags, '저사양'];
 
