@@ -229,15 +229,22 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const lowestDate = formatDate(game.lowest_price_date);
   const isMulti = (game.party_max ?? game.max_players ?? 0) > 1;
   const playersChip = game.max_players === 1 ? '혼자' : playersText(game);
-  // 한눈에 보기 — 값이 있는 칸만 만든다
+  // 게임 정보 — 값이 있는 항목만 만든다
   const upState = game.last_updated ? updateState(game.last_updated) : null;
-  const glance: { key: string; label: string; value: ReactNode; sub?: ReactNode; subClass?: string; valueClass?: string }[] = [];
-  if (game.heat_rank) glance.push({ key: 'rank', label: 'ITAD 인기 순위', value: `#${game.heat_rank.toLocaleString('ko-KR')}`, valueClass: 'is-accent' });
-  if (game.achievement_count) glance.push({ key: 'ach', label: '도전과제', value: `${game.achievement_count.toLocaleString('ko-KR')}개` });
-  if (game.steam_appid && game.family_sharing != null) glance.push({ key: 'family', label: '가족 공유', value: game.family_sharing ? '공유 가능' : '공유 불가' });
-  if (game.has_dlc != null) glance.push({ key: 'dlc', label: 'DLC', value: game.has_dlc ? 'DLC 있음' : 'DLC 없음' });
-  if (game.last_updated && upState) glance.push({ key: 'upd', label: '마지막 업데이트', value: formatDate(game.last_updated), sub: upState.text, subClass: upState.cls });
-  if (game.storage_gb) glance.push({ key: 'size', label: '필요 용량', value: `${game.storage_gb} GB` });
+  const releaseText = comingSoon ? (hasReleaseDate(game) ? game.release_date_text : '') : game.release_date ? formatDate(game.release_date) : '';
+  const infoRows: [string, ReactNode][] = [];
+  if (game.developer) infoRows.push(['개발', game.developer]);
+  if (game.publisher && game.publisher !== game.developer) infoRows.push(['배급', game.publisher]);
+  if (releaseText) infoRows.push(['출시일', releaseText]);
+  if (platformCategories.length > 0) infoRows.push(['플랫폼', platformCategories.map((c) => CATEGORY_LABEL[c]).join(' · ')]);
+  if (game.heat_rank) infoRows.push(['ITAD 인기 순위', <span key="rank" className="num">#{game.heat_rank.toLocaleString('ko-KR')}</span>]);
+  if (game.achievement_count) infoRows.push(['도전과제', <span key="ach" className="num">{game.achievement_count.toLocaleString('ko-KR')}개</span>]);
+  if (game.has_dlc != null) infoRows.push(['DLC', game.has_dlc ? 'DLC 있음' : 'DLC 없음']);
+  if (game.steam_appid && game.family_sharing != null) infoRows.push(['가족 공유', game.family_sharing ? '공유 가능' : '공유 불가']);
+  if (game.last_updated && upState) infoRows.push(['마지막 업데이트', <Fragment key="upd"><span className="num">{formatDate(game.last_updated)}</span> <span className={`info-sub ${upState.cls}`}>{upState.text}</span></Fragment>]);
+  if (game.storage_gb) infoRows.push(['필요 용량', <span key="size" className="num">{game.storage_gb} GB</span>]);
+  if (game.has_workshop) infoRows.push(['모드 지원', 'Steam 창작마당']);
+  if (game.is_esports) infoRows.push(['e스포츠', '공식 대회 있음']);
   // 스크린샷 — 주소가 둘 다 있는 것만, 없거나 비면 섹션 숨김
   const shots: Screenshot[] = Array.isArray(game.screenshots)
     ? game.screenshots.filter((s: any) => typeof s?.path_thumbnail === 'string' && typeof s?.path_full === 'string').slice(0, 10)
@@ -251,7 +258,33 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const activityUnsure = orderActivities(game.activities_unsure);
   const hasV2Activities = activityConfirmed.length + activityUnsure.length > 0;
   const hasActivities = hasV2Activities || game.activities?.length > 0;
-  const hasMore = game.has_ending != null || game.server_type || hasActivities || game.story_length || game.is_esports || game.has_workshop;
+
+  // 플레이 방식 — 협동 방식 칩 + 인원·혼자·크로스플레이·서버·진입장벽 이유
+  const playGroup = chipGroups.find((g) => g.label === '플레이 방식');
+  const otherChipGroups = chipGroups.filter((g) => g.label !== '플레이 방식');
+  // 칩에 협동이 없으면(대전·혼자만) "협동 방식"이라 부르지 않는다
+  const playChipGroups = playGroup ? [{ ...playGroup, label: playGroup.chips.some((c) => c.text.includes('협동')) ? '협동 방식' : '게임 모드' }] : [];
+  const solo = game.solo_mode ? SOLO_LABEL[game.solo_mode] ?? null
+    : game.solo_playable == null ? null
+    : game.solo_playable && game.max_players === 1 ? '싱글 플레이 게임'
+    : game.solo_playable ? '혼자도 가능' : '멀티 전용';
+  const playRows: [string, ReactNode][] = [];
+  if (game.max_players > 1 && playersText(game)) playRows.push(['인원 범위', <span key="range" className="num">{playersText(game)}</span>]);
+  if (game.recommended_players) playRows.push(['추천 인원', game.recommended_players]);
+  if (game.session_max) playRows.push(['같은 서버', <span key="ss" className="num">{game.session_max}명</span>]);
+  if (solo) playRows.push(['혼자 하기', solo]);
+  if (game.has_crossplay != null && (game.has_online_coop || game.has_pvp)) playRows.push(['크로스플레이', game.has_crossplay ? '지원' : '미지원']);
+  if (game.server_type) playRows.push(['서버 방식', game.server_type]);
+  if (showHost) playRows.push(['멀티 방식', game.multiplayer_host === 'P2P' ? 'P2P(방장 컴퓨터로 연결)' : game.multiplayer_host]);
+  if (game.entry_barrier && game.entry_barrier_reason) playRows.push(['진입장벽 이유', game.entry_barrier_reason]);
+  const showPlay = playChipGroups.length > 0 || playRows.length > 0;
+  // 어떤 게임인가요? — 소개·스크린샷·활동·엔딩·특징 태그
+  const aboutRows: [string, ReactNode][] = [];
+  if (hasV2Activities) aboutRows.push(['가능한 활동', <span key="act" className="more-chips"><ActivityChips confirmed={activityConfirmed} unsure={activityUnsure} /></span>]);
+  else if (game.activities?.length > 0) aboutRows.push(['가능한 활동', <span key="act" className="more-chips">{game.activities.map((a: string) => <span key={a} className="activity-chip">{a}</span>)}</span>]);
+  if (game.has_ending != null) aboutRows.push(['엔딩', game.has_ending ? '있음' : '없음']);
+  if (game.story_length) aboutRows.push(['클리어까지', game.story_length]);
+  const showAbout = !!(game.fun_description || game.description_ko || showSteamDesc || shots.length > 0 || aboutRows.length > 0 || otherChipGroups.length > 0 || game.ending_note || (game.content_descriptor_ids?.length ?? 0) > 0);
 
   const heroBg: string | null = game.hero_image_url || shots[0]?.path_full || null;
   const credits = game.developer && game.publisher
@@ -315,206 +348,155 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </div>
       </header>
 
-      <StatTiles tiles={tiles} />
+      <div className="detail-main">
+        {/* 1 한눈에 보기 — 인원·진입장벽·한국어·가격·평가·동접 (출시 예정작은 D-day·데모·순위) */}
+        {tiles.length > 0 && (
+          <section className="detail-card sec-glance" aria-label="한눈에 보기">
+            <h3 className="detail-card-title">한눈에 보기</h3>
+            <StatTiles tiles={tiles} />
+          </section>
+        )}
 
-      <div className="detail-layout">
-        {/* 가격 카드 — 데스크톱 오른쪽 위, 좁은 화면에서는 제목 바로 아래 */}
-        <aside className="detail-price">
-          <div className="price-card" data-tour="price-card">
-            {comingSoon ? (
-              <>
-                <div className="price-card-head">
-                  <p className="price-card-label">출시 예정</p>
-                  <HeartButton gameId={game.id} variant="title" />
-                </div>
-                {/* 스팀이 알려 준 출시일 원문 그대로 (날짜가 아닌 문구는 위 제목만) */}
-                {hasReleaseDate(game) && <p className="price-card-now">{game.release_date_text}</p>}
-                <p className="price-card-lowest">아직 출시 전이라 가격·할인 정보가 없어요</p>
-                <div className="price-card-buttons">
-                  {demo ? (
-                    <a href={demoStoreUrl(game.demo_appid)} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg price-card-buy">
-                      스팀에서 데모 받기 ↗
-                    </a>
-                  ) : game.steam_appid ? (
-                    <a href={buyUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg price-card-buy">
-                      스팀에서 찜하기 ↗
-                    </a>
-                  ) : null}
-                  <AddToCompare gameId={game.id} name={gameName(game)} thumb={game.cover_image_url || game.card_image_url} />
-                </div>
-                <p className="price-card-note">출시일은 스팀 표기 기준이며 바뀔 수 있어요. 출시되면 가격 정보를 보여드려요.</p>
-              </>
-            ) : (
-              <>
+        {/* 2 가격·할인 — 지금 가격·할인율·역대 최저가·구매 버튼 + 할인 기록 */}
+        <section className="detail-card sec-price" aria-label="가격·할인">
+          <h3 className="detail-card-title">가격·할인</h3>
+          <div className="price-split">
+      <div className="price-card" data-tour="price-card">
+        {comingSoon ? (
+          <>
             <div className="price-card-head">
-              <p className="price-card-label">{buyLabel} 가격</p>
+              <p className="price-card-label">출시 예정</p>
               <HeartButton gameId={game.id} variant="title" />
             </div>
-            {price && price.discount > 0 && !game.is_free && (
-              <p className="price-card-was">
-                <span className="buy-discount-badge">-{price.discount}%</span>
-                <span className="buy-price-original">{price.formattedOriginal}</span>
-              </p>
-            )}
-            {price && price.discount > 0 && !game.is_free && <SaleEnds endsAt={price.saleEndsAt} variant="detail" />}
-            <p className="price-card-now">
-              {game.is_free ? '무료'
-                : price ? price.formattedFinal
-                : game.price_type === 'check_store' && buyUrl
-                  ? <a href={buyUrl} target="_blank" rel="noopener noreferrer" className="price-card-store">{PRICE_TYPE_LABEL.check_store} ↗</a>
-                  : PRICE_TYPE_LABEL[game.price_type] ?? '가격 정보 없음'}
+            {/* 스팀이 알려 준 출시일 원문 그대로 (날짜가 아닌 문구는 위 제목만) */}
+            {hasReleaseDate(game) && <p className="price-card-now">{game.release_date_text}</p>}
+            <p className="price-card-lowest">아직 출시 전이라 가격·할인 정보가 없어요</p>
+            <div className="price-card-buttons">
+              {demo ? (
+                <a href={demoStoreUrl(game.demo_appid)} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg price-card-buy">
+                  스팀에서 데모 받기 ↗
+                </a>
+              ) : game.steam_appid ? (
+                <a href={buyUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg price-card-buy">
+                  스팀에서 찜하기 ↗
+                </a>
+              ) : null}
+              <AddToCompare gameId={game.id} name={gameName(game)} thumb={game.cover_image_url || game.card_image_url} />
+            </div>
+            <p className="price-card-note">출시일은 스팀 표기 기준이며 바뀔 수 있어요. 출시되면 가격 정보를 보여드려요.</p>
+          </>
+        ) : (
+          <>
+        <div className="price-card-head">
+          <p className="price-card-label">{buyLabel} 가격</p>
+          <HeartButton gameId={game.id} variant="title" />
+        </div>
+        {price && price.discount > 0 && !game.is_free && (
+          <p className="price-card-was">
+            <span className="buy-discount-badge">-{price.discount}%</span>
+            <span className="buy-price-original">{price.formattedOriginal}</span>
+          </p>
+        )}
+        {price && price.discount > 0 && !game.is_free && <SaleEnds endsAt={price.saleEndsAt} variant="detail" />}
+        <p className="price-card-now">
+          {game.is_free ? '무료'
+            : price ? price.formattedFinal
+            : game.price_type === 'check_store' && buyUrl
+              ? <a href={buyUrl} target="_blank" rel="noopener noreferrer" className="price-card-store">{PRICE_TYPE_LABEL.check_store} ↗</a>
+              : PRICE_TYPE_LABEL[game.price_type] ?? '가격 정보 없음'}
+        </p>
+        {timing === 'best' && <span className="lowest-pill">역대 최저가</span>}
+        {/* 지금이 역대 최저여도 금액·날짜는 그대로 보여 준다 */}
+        {gauge && (
+          <div className="lowest-gauge">
+            <div className="lowest-gauge-track" role="img" aria-label={gauge.atLowest ? '역대 최저가와 같아요' : `역대 최저가까지 ${Math.round(100 - gauge.percent)}% 남음`}>
+              <div className="lowest-gauge-bar" style={{ width: `${gauge.percent}%` }} />
+            </div>
+            <p className="lowest-gauge-text">
+              {gauge.atLowest
+                ? <>역대 최저가와 같아요{lowestDate && ` · ${lowestDate}`}</>
+                : <>역대 최저가까지 <span className="num">₩{gauge.remaining.toLocaleString('ko-KR')}</span> · 역대 최저 <span className="num">₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}</span>{lowestDate && ` (${lowestDate})`}</>}
             </p>
-            {timing === 'best' && <span className="lowest-pill">역대 최저가</span>}
-            {/* 지금이 역대 최저여도 금액·날짜는 그대로 보여 준다 */}
-            {gauge && (
-              <div className="lowest-gauge">
-                <div className="lowest-gauge-track" role="img" aria-label={gauge.atLowest ? '역대 최저가와 같아요' : `역대 최저가까지 ${Math.round(100 - gauge.percent)}% 남음`}>
-                  <div className="lowest-gauge-bar" style={{ width: `${gauge.percent}%` }} />
-                </div>
-                <p className="lowest-gauge-text">
-                  {gauge.atLowest
-                    ? <>역대 최저가와 같아요{lowestDate && ` · ${lowestDate}`}</>
-                    : <>역대 최저가까지 <span className="num">₩{gauge.remaining.toLocaleString('ko-KR')}</span> · 역대 최저 <span className="num">₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}</span>{lowestDate && ` (${lowestDate})`}</>}
+          </div>
+        )}
+        {!gauge && showPriceRecord && game.lowest_price >= 100 && (
+          <p className="price-card-lowest">
+            역대 최저 <span className="num">₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}</span>
+            {lowestDate && ` (${lowestDate})`}
+          </p>
+        )}
+        {timing === 'near' && <LowestPriceBadge timing={timing} />}
+        <div className="price-card-buttons">
+          {buyUrl && (
+            <a href={buyUrl} target="_blank" rel="noopener noreferrer" className={`btn btn-primary btn-lg price-card-buy${game.steam_appid ? ' is-steam' : ''}`}>
+              {buyLabel}에서 {game.is_free ? '플레이하기' : '구매하기'}
+            </a>
+          )}
+          <AddToCompare gameId={game.id} name={gameName(game)} thumb={game.cover_image_url || game.card_image_url} />
+        </div>
+        <p className="price-card-note">가격·할인 정보는 실제와 다를 수 있어요. 가격은 하루 한 번 갱신되니 구매 전 스토어에서 확인해 주세요.</p>
+          </>
+        )}
+      </div>
+            {showPriceRecord && priceHistory.length === 1 && price && (
+              <div className="price-record">
+                <p className="detail-card-sub">
+                  {price.discount > 0
+                    ? `지금 ${price.discount}% 할인 중 · ${price.formattedFinal}`
+                    : `아직 할인한 적 없어요 · ${price.formattedFinal}`}
                 </p>
               </div>
             )}
-            {!gauge && showPriceRecord && game.lowest_price >= 100 && (
-              <p className="price-card-lowest">
-                역대 최저 <span className="num">₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}</span>
-                {lowestDate && ` (${lowestDate})`}
-              </p>
-            )}
-            {timing === 'near' && <LowestPriceBadge timing={timing} />}
-            <div className="price-card-buttons">
-              {buyUrl && (
-                <a href={buyUrl} target="_blank" rel="noopener noreferrer" className={`btn btn-primary btn-lg price-card-buy${game.steam_appid ? ' is-steam' : ''}`}>
-                  {buyLabel}에서 {game.is_free ? '플레이하기' : '구매하기'}
-                </a>
-              )}
-              <AddToCompare gameId={game.id} name={gameName(game)} thumb={game.cover_image_url || game.card_image_url} />
-            </div>
-            <p className="price-card-note">가격·할인 정보는 실제와 다를 수 있어요. 가격은 하루 한 번 갱신되니 구매 전 스토어에서 확인해 주세요.</p>
-              </>
+            {showPriceRecord && priceHistory.length >= 2 && (
+              <div className="price-record">
+                {timingLine && timingLine !== SAME_AS_LOWEST && <p className="buy-timing is-chart">{timingLine}</p>}
+                {/* 기간 기준 시각은 서버에서 정해 넘긴다 (서버·브라우저 계산이 어긋나지 않게) */}
+                <DiscountChart history={priceHistory} now={Date.now()} />
+              </div>
             )}
           </div>
-          {glance.length > 0 && (
-            <section className="detail-card sec-glance" aria-label="한눈에 보기">
-              <h3 className="detail-card-title">한눈에 보기</h3>
-              <ul className="glance-grid">
-                {glance.map((t) => (
-                  <li key={t.key} className="glance-tile">
-                    <span className="glance-label">{t.label}</span>
-                    <span className={`glance-value num${t.valueClass ? ` ${t.valueClass}` : ''}`}>{t.value}</span>
-                    {t.sub && <span className={`glance-sub ${t.subClass ?? ''}`}>{t.sub}</span>}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-          <CuratorsOfGame items={curators} gameId={game.id} />
-          {game.discord_url && (
-            <a href={game.discord_url} target="_blank" rel="noopener nofollow" className="detail-card discord-card">공식 디스코드 ↗</a>
-          )}
-        </aside>
+        </section>
 
-        <div className="detail-main">
-          {game.video_url && <DetailTrailer image={heroBg || heroImage} videoUrl={game.video_url} name={gameName(game)} />}
-          {shots.length > 0 && <ScreenshotGallery shots={shots} name={gameName(game)} />}
+        {/* 3 플레이 방식 — 협동 방식·인원 범위·혼자 하기·크로스플레이·서버 방식·진입장벽 이유 */}
+        {showPlay && (
+          <section className="detail-card sec-together" aria-label="플레이 방식">
+            <h3 className="detail-card-title">플레이 방식</h3>
+            {playChipGroups.length > 0 && <TagChips groups={playChipGroups} />}
+            {playRows.length > 0 && <dl className="more-list">{playRows.map(([k, v]) => <Fragment key={k}><dt>{k}</dt><dd>{v}</dd></Fragment>)}</dl>}
+          </section>
+        )}
 
-          {/* 링크 줄 */}
-          <div className="detail-links">
-            <a href={namuUrl} target="_blank" rel="noopener nofollow" className="detail-link">나무위키 ↗</a>
-            <a href={nexusUrl} target="_blank" rel="noopener nofollow" className="detail-link">넥서스 모드 ↗</a>
-            <ShareButton variant="text" title={gameName(game)} text={game.fun_description || `${gameName(game)} 같이 할래?`} />
-            {platformCategories.length > 0 && (
-              <span className="detail-platforms">플랫폼 · {platformCategories.map((c) => CATEGORY_LABEL[c]).join(' · ')}</span>
-            )}
-          </div>
-
-          {/* 소개 */}
-          <section className="detail-card sec-intro">
+        {/* 4 어떤 게임인가요? — 소개·스크린샷·활동·엔딩·특징 태그 */}
+        {showAbout && (
+          <section className="detail-card sec-intro" aria-label="어떤 게임인가요?">
             <h3 className="detail-card-title">
-              소개
+              어떤 게임인가요?
               {game.fun_description && <InfoTip label="AI가 정리한 소개 안내" text="AI가 정리한 소개예요" />}
             </h3>
             {game.fun_description && <p className="detail-fun">{game.fun_description}</p>}
             {!steamDescIsKorean && game.description_ko && <p className="detail-description-v2">{game.description_ko}</p>}
             {showSteamDesc && <p className="detail-description-v2">{game.description}</p>}
-            {chipGroups.length > 0 && <TagChips groups={chipGroups} />}
+            {shots.length > 0 && <ScreenshotGallery shots={shots} name={gameName(game)} />}
+            {aboutRows.length > 0 && <dl className="more-list">{aboutRows.map(([k, v]) => <Fragment key={k}><dt>{k}</dt><dd className={k === '가능한 활동' ? 'more-chips' : undefined}>{v}</dd></Fragment>)}</dl>}
+            {game.ending_note && <p className="accordion-note">{game.ending_note}</p>}
+            {hasV2Activities && <ActivityReport gameId={game.id} confirmed={game.activities_confirmed || []} unsure={game.activities_unsure || []} />}
+            {otherChipGroups.length > 0 && <TagChips groups={otherChipGroups} />}
             <ContentNotice ids={game.content_descriptor_ids} />
           </section>
+        )}
 
-          {/* 같이 하기 — 위 타일에 없는 정보만 (혼자 가능 여부·최소 인원·서버·크로스플레이·추천 인원·진입장벽 이유) */}
-          {(() => {
-            const solo = game.solo_mode ? SOLO_LABEL[game.solo_mode] ?? null
-              : game.solo_playable == null ? null
-              : game.solo_playable && game.max_players === 1 ? '싱글 플레이 게임'
-              : game.solo_playable ? '혼자도 가능' : '멀티 전용';
-            const rows: [string, ReactNode][] = [];
-            if (solo) rows.push(['혼자', solo]);
-            if (game.min_players > 1) rows.push(['최소 인원', <span key="min" className="num">{game.min_players}명</span>]);
-            if (game.session_max) rows.push(['같은 서버', <span key="ss" className="num">{game.session_max}명</span>]);
-            if (showHost) rows.push(['멀티 방식', game.multiplayer_host === 'P2P' ? 'P2P(방장 컴퓨터로 연결)' : game.multiplayer_host]);
-            if (game.has_crossplay != null && (game.has_online_coop || game.has_pvp)) rows.push(['크로스플레이', game.has_crossplay ? '지원' : '미지원']);
-            if (game.recommended_players) rows.push(['추천 인원', game.recommended_players]);
-            if (game.entry_barrier && game.entry_barrier_reason) rows.push(['진입장벽 이유', game.entry_barrier_reason]);
-            if (rows.length === 0) return null;
-            return (
-              <section className="detail-card sec-together" aria-label="같이 하기 정보">
-                <h3 className="detail-card-title">같이 하기</h3>
-                <dl className="more-list">{rows.map(([k, v]) => <Fragment key={k}><dt>{k}</dt><dd>{v}</dd></Fragment>)}</dl>
-              </section>
-            );
-          })()}
-
-          {/* 할인 전적 */}
-          {showPriceRecord && priceHistory.length === 1 && price && (
-            <section className="detail-card is-roomy sec-price">
-              <h3 className="detail-card-title">할인 전적</h3>
-              <p className="detail-card-sub">
-                {price.discount > 0
-                  ? `지금 ${price.discount}% 할인 중 · ${price.formattedFinal}`
-                  : `아직 할인한 적 없어요 · ${price.formattedFinal}`}
-              </p>
-            </section>
-          )}
-          {showPriceRecord && priceHistory.length >= 2 && (
-            <section className="detail-card is-roomy sec-price">
-              <h3 className="detail-card-title">할인 전적</h3>
-              {timingLine && timingLine !== SAME_AS_LOWEST && <p className="buy-timing is-chart">{timingLine}</p>}
-              {/* 기간 기준 시각은 서버에서 정해 넘긴다 (서버·브라우저 계산이 어긋나지 않게) */}
-              <DiscountChart history={priceHistory} now={Date.now()} />
-            </section>
-          )}
-
-          {/* 더 자세히 */}
-          {hasMore && (
-            <div className="detail-two">
-              {hasMore && (
-                <section className="detail-card sec-detail">
-                  <h3 className="detail-card-title">더 자세히</h3>
-                  <dl className="more-list">
-                    {game.has_ending != null && (<><dt>엔딩</dt><dd>{game.has_ending ? '있음' : '없음'}</dd></>)}
-                    {game.server_type && (<><dt>서버 방식</dt><dd>{game.server_type}</dd></>)}
-                    {game.story_length && (<><dt>클리어까지</dt><dd>{game.story_length}</dd></>)}
-                    {game.is_esports && (<><dt>e스포츠</dt><dd>공식 대회 있음</dd></>)}
-                    {game.has_workshop && (<><dt>모드 지원</dt><dd>Steam 창작마당</dd></>)}
-                    {hasV2Activities ? (
-                      <><dt>가능한 활동</dt><dd className="more-chips"><ActivityChips confirmed={activityConfirmed} unsure={activityUnsure} /></dd></>
-                    ) : game.activities?.length > 0 && (
-                      <><dt>가능한 활동</dt><dd className="more-chips">{game.activities.map((a: string) => <span key={a} className="activity-chip">{a}</span>)}</dd></>
-                    )}
-                  </dl>
-                  {game.ending_note && <p className="accordion-note">{game.ending_note}</p>}
-                  {hasV2Activities && <ActivityReport gameId={game.id} confirmed={game.activities_confirmed || []} unsure={game.activities_unsure || []} />}
-                </section>
-              )}
-            </div>
-          )}
+        {/* 5 게임 정보 — 개발·배급·출시일·플랫폼·도전과제·DLC·가족 공유·업데이트·용량 */}
+        {infoRows.length > 0 && (
+          <section className="detail-card sec-detail" aria-label="게임 정보">
+            <h3 className="detail-card-title">게임 정보</h3>
+            <dl className="more-list">{infoRows.map(([k, v]) => <Fragment key={k}><dt>{k}</dt><dd>{v}</dd></Fragment>)}</dl>
+          </section>
+        )}
 
           {/* PC 사양 카드 — 내 PC 판정 요약 + 부품별 표 + 원문 사양. 입력한 사양은 브라우저에만 있어서 클라이언트에서 판정. 최소 사양을 하나도 못 읽은 게임(spec_parsed가 없거나 전부 null)은 판정·표 없이 원문만 */}
           {(minSpec || recSpec) && <PcSpecCard parsed={game.spec_parsed} minRows={minSpec} recRows={recSpec} />}
 
+{game.video_url && <DetailTrailer image={heroBg || heroImage} videoUrl={game.video_url} name={gameName(game)} />}
           {/* 영상으로 미리 보기 — 친구랑 플레이(멀티 게임만) + 하이라이트 + 스트리머 영상을 한 목록으로 (순서·자르기: lib/videoList) + 스트리머 채널 */}
           <VideoPreviewSection
             videos={buildVideoList([
@@ -546,15 +528,25 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             ) : null}
           />
 
-          <div className="dx-votes">
+        <div className="dx-votes">
             <GameVotes gameId={game.id} />
             {isMulti && <PlayerCountVote gameId={game.id} />}
           </div>
+
+          {/* 링크 줄 */}
+          <div className="detail-links">
+            <a href={namuUrl} target="_blank" rel="noopener nofollow" className="detail-link">나무위키 ↗</a>
+            <a href={nexusUrl} target="_blank" rel="noopener nofollow" className="detail-link">넥서스 모드 ↗</a>
+            <ShareButton variant="text" title={gameName(game)} text={game.fun_description || `${gameName(game)} 같이 할래?`} />
+          </div>
+          <CuratorsOfGame items={curators} gameId={game.id} />
+          {game.discord_url && (
+            <a href={game.discord_url} target="_blank" rel="noopener nofollow" className="detail-card discord-card">공식 디스코드 ↗</a>
+          )}
           <GameOpinions gameId={game.id} />
           <RelatedPosts gameId={game.id} />
           {showSeries && seriesItems.length > 1 && <SeriesGames name={series?.name_ko ?? null} currentName={gameName(game)} items={seriesItems} />}
           {similarGames.length > 0 && <SimilarGames games={similarGames} />}
-        </div>
       </div>
     </main>
   );

@@ -12,13 +12,15 @@
   content: ""; display: inline-block; width: 4px; height: 1em; margin-right: 10px; border-radius: 2px; background: var(--sec); vertical-align: -0.12em;
 }
 
-/* 소개 — 플레이 방식·특징 칩 (수상·순위 특별 칩은 그대로) */
+/* 어떤 게임인가요? — 특징 칩 (수상·순위 특별 칩은 그대로), 가능한 활동 칩 */
 .mn.dx .sec-intro .category-tag:not(.tag-special) { color: var(--sec-intro-text); box-shadow: inset 0 0 0 1px var(--sec-intro-a33); }
 .mn.dx .sec-intro .category-tag:not(.tag-special):is(:hover, :focus-visible) { box-shadow: inset 0 0 0 1px var(--sec-intro); }
 
 /* 같이 하기 — 첫 값만 섹션 색 + 굵게 */
-.mn.dx .sec-together .more-list dt, .mn.dx .sec-detail .more-list dt { color: var(--sec-label); }
+.mn.dx :is(.sec-together, .sec-intro, .sec-detail) .more-list dt { color: var(--sec-label); }
 .mn.dx .sec-together .more-list dd:first-of-type { color: var(--sec-together); font-weight: 800; }
+.mn.dx .sec-together .category-tag { color: var(--sec-together); box-shadow: inset 0 0 0 1px var(--sec-together-a33); }
+.mn.dx .sec-together .category-tag:is(:hover, :focus-visible) { box-shadow: inset 0 0 0 1px var(--sec-together); }
 
 /* 할인 전적 — 요약 줄의 숫자·그래프 선, 가격 카드의 배지 */
 .dchart-key { color: var(--sec-price); font-weight: inherit; }
@@ -27,9 +29,13 @@
 .price-card .buy-discount-badge { color: var(--sec-price); background: var(--sec-price-a13); border-color: var(--sec-price); }
 .price-card .lowest-pill { color: var(--sec-price); border-color: var(--sec-price); }
 
-/* 더 자세히 — 첫 값, 가능한 활동 칩(확실하지 않은 활동의 점선 칩은 그대로) */
-.mn.dx .sec-detail .more-list dd:first-of-type:not(.more-chips) { color: var(--sec-detail-text); }
-.mn.dx .sec-detail .activity-chip:not(.is-unsure) { background: var(--sec-detail-a13); color: var(--sec-detail-text); }
+/* 가능한 활동 칩 — 확실하지 않은 활동의 점선 칩은 그대로 */
+.mn.dx .sec-intro .activity-chip:not(.is-unsure) { background: var(--sec-intro-a13); color: var(--sec-intro-text); }
+
+/* 게임 정보 — 첫 값, 업데이트 상태(활발히 업데이트 중은 글씨 앞에 점 하나) */
+.mn.dx .sec-detail .more-list dd:first-of-type { color: var(--sec-detail-text); }
+.info-sub { font-size: 14px; font-weight: 500; color: var(--mn-label); margin-left: 6px; }
+.info-sub.is-up::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: var(--sec-together); vertical-align: middle; }
 
 /* PC 사양 — 표의 부품 이름, 내 PC 등록하기·원문 사양 보기 */
 .mn.dx .sec-spec .pcs-table .pcs-part { color: var(--sec-spec); font-weight: 700; }
@@ -41,17 +47,15 @@
 .sec-video .video-rail-btn[aria-current="true"] .video-rail-thumb { border-color: var(--sec-video); }
 .sec-video .video-play-label { background: var(--sec-video); border-color: var(--sec-video); color: var(--mn-fg-inv); }
 
-/* 한눈에 보기 — 2열 타일, 값 없는 칸은 만들지 않고 마지막 홀수 칸은 한 줄 전체. ITAD 순위 숫자만 섹션 색. 활발히 업데이트 중은 라벨색 글씨 앞에 점 하나 */
-.glance-grid { list-style: none; margin: 14px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-.glance-tile { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; border-radius: 10px; background: var(--glance-tile); min-width: 0; }
-.glance-grid > .glance-tile:last-child:nth-child(odd) { grid-column: 1 / -1; }
-.glance-label { font-size: 13px; font-weight: 500; color: var(--mn-label); }
-.glance-value { font-size: 17px; font-weight: 800; color: #fff; overflow-wrap: anywhere; }
-.glance-value.is-accent { color: var(--sec-glance); }
-.glance-sub { font-size: 13px; font-weight: 500; color: var(--mn-label); }
-.glance-sub.is-up::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 6px; border-radius: 50%; background: var(--sec-together); vertical-align: middle; }
+/* 한눈에 보기 — 섹션 안의 타일 줄(타일 모양은 StatTiles 그대로), 제목 아래 간격만 */
+.dx .sec-glance .dx-tiles { margin: 0; }
 
-/* 데스크톱 오른쪽 열 — 한눈에 보기가 더해져 화면보다 길어질 수 있으니 창 높이가 충분할 때만 sticky */
-@media (min-width: 961px) and (max-height: 1049px) {
-  .detail-price { position: static; }
+/* 가격·할인 — 데스크톱은 가격 카드(왼쪽)·할인 기록(오른쪽), 좁으면 위아래. 카드는 섹션 안이라 세로선·안쪽 여백 없음 */
+.price-split { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 32px; align-items: start; }
+.price-split:not(:has(.price-record)) { grid-template-columns: minmax(0, 340px); }
+.dx .sec-price .price-card { border: 0; padding: 0; }
+.price-record { min-width: 0; }
+.price-record .detail-card-sub { margin: 0; }
+@media (max-width: 960px) {
+  .price-split, .price-split:not(:has(.price-record)) { grid-template-columns: minmax(0, 1fr); gap: 24px; }
 }
