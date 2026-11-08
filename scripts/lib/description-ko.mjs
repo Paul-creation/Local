@@ -20,15 +20,16 @@ export const needsDescriptionKo = (g) => lacksSteamKorean(g) && !g.description_k
 
 const sentences = (t) => t.split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter(Boolean);
 
-// 문제 목록 (비어 있으면 통과): 2~3문장 · 존댓말(요체) · 영어 덩어리·마크다운 없음 · 길이 60~320자
+// 문제 목록 (비어 있으면 통과): 2~3문장 · 해요체만(문장 끝이 ~요: ~에요·예요·거든요·어요 등, ~입니다·~합니다·~세요는 탈락) · 영어 덩어리·마크다운 없음 · 길이 60~250자
+export const MAX_LEN = 250;
 export function checkDescriptionKo(text) {
   const t = String(text || '').trim();
   const problems = [];
   const ss = sentences(t);
   if (ss.length < 2 || ss.length > 3) problems.push(`문장이 ${ss.length}개예요 — 2~3문장으로`);
-  if (t.length < 60 || t.length > 320) problems.push(`길이가 ${t.length}자예요 — 60~320자로`);
-  const bad = ss.filter((s) => !/(요|니다|세요)[.!?]?$/.test(s.replace(/["”')\]]+$/, '')));
-  if (bad.length) problems.push(`존댓말(~요체)이 아닌 문장: "${bad[0].slice(0, 30)}"`);
+  if (t.length < 60 || t.length > MAX_LEN) problems.push(`길이가 ${t.length}자예요 — 60~${MAX_LEN}자로`);
+  const bad = ss.filter((s) => !/요[.!?]?$/.test(s.replace(/["”')\]]+$/, '')) || /(입니다|합니다|습니다|세요)[.!?]?$/.test(s));
+  if (bad.length) problems.push(`해요체(~요)가 아닌 문장: "${bad[0].slice(0, 30)}" — ~입니다·~합니다·~세요 없이 ~에요·~예요·~어요·~거든요로`);
   if (/[*#`]|^\s*[-•]/m.test(t)) problems.push('마크다운·목록 표시가 있어요');
   if (/[A-Za-z]{4,}\s+[A-Za-z]{4,}\s+[A-Za-z]{4,}/.test(t)) problems.push('영어 문장이 섞여 있어요');
   if (!HANGUL.test(t)) problems.push('한글이 없어요');
