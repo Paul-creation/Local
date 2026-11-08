@@ -4,6 +4,7 @@
 //       node --env-file=.env.local scripts/judge-new-games.mjs --apply      (AI 판단 후 저장 — 매주 갱신이 쓰는 방식)
 //       --existing  날짜 조건 없이 entry_barrier·solo_mode가 미정인 기존 게임을 대상으로 (기본 동작은 그대로. --apply와 같이, --sample N과도 같이 쓰면 N개만 실제 판단)
 //       --existing --sample N  (--apply 없이) 기존 게임 N개를 실제로 AI에 물어 결과만 보여줌, DB는 안 바꿈 (Haiku 1번 호출)
+//       --days N  "새 게임" 기준을 7일 대신 N일로 (fill-new-game이 14일로 부름)
 //       --ids <파일>  지정한 게임만 (lib/only-ids.mjs, 대상 조건은 그대로)
 //       node --env-file=.env.local scripts/judge-new-games.mjs --sample 20  (예전 게임 20개로 프롬프트를 만들어 예상 비용만 계산, AI·DB 안 씀)
 //       --rejudge  숨기지 않은 모든 게임의 solo_mode를 지금 기준(친구 없이도 즐길 수 있으면 possible)으로 다시 판정 (진입장벽은 안 건드림)
@@ -34,6 +35,7 @@ const REJUDGE = process.argv.includes('--rejudge');
 const FRESH = process.argv.includes('--fresh');
 const REJUDGE_CACHE = 'scripts/.cache/rejudge-solo.json';
 const SAMPLE = process.argv.includes('--sample') ? Number(process.argv[process.argv.indexOf('--sample') + 1]) || 20 : 0;
+const DAYS = process.argv.includes('--days') ? Number(process.argv[process.argv.indexOf('--days') + 1]) || 7 : 7;
 const NEW_SINCE = '2026-10-05T00:00:00Z'; // 이 기능을 넣은 날 — 그 전에 들어온 게임은 대상 아님
 const DRY_AI = SAMPLE && EXISTING && !APPLY; // 기존 게임 N개 판단 결과만 보기 (저장 안 함)
 const MAX_GAMES = 200;
@@ -75,6 +77,7 @@ const PROMPT_HEAD = `너는 한국 게임 정보 사이트의 필터 데이터�
 const PROMPT_TAIL = `
 번호 순서대로 record_judgments 도구를 불러서 답해. 예: {"games": [{"index": 1, "barrier": "낮음", "reason": "줍고 나르고 도망치는 간단한 협동", "solo": "possible", "solo_reason": "혼자 할 수 있지만 협동이 핵심"}]}`;
 
+const hasSinglePlayer = (g) => (g.steam_categories || []).includes('Single-player');
 const clean = (s, max) => String(s || '').replace(/\s+/g, ' ').trim().slice(0, max);
 
 function buildPrompt(items) {
@@ -136,7 +139,7 @@ async function loadTargets(migrated) {
   let q = onlyIds(supabase.from('games').select(cols)).eq('hidden', false)
     .or('entry_barrier.is.null,solo_mode.is.null').order('created_at', { ascending: true }).limit(SAMPLE && EXISTING ? SAMPLE : MAX_GAMES);
   if (!EXISTING) {
-    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    const weekAgo = new Date(Date.now() - DAYS * 24 * 60 * 60 * 1000).toISOString();
     q = q.gte('created_at', weekAgo > NEW_SINCE ? weekAgo : NEW_SINCE);
   }
   if (migrated) q = q.is('filter_ai_at', null);
@@ -295,6 +298,8 @@ async function main() {
           if (bad) { console.log(`   ✂️ ${it.game.name}: 진입장벽 이유에 스팀 근거 없는 표현 "${bad}" — 이유만 뺌`); it.patch.entry_barrier_reason = null; }
         }
         if (it.askSolo && SOLOS.includes(r.solo)) it.patch.solo_mode = r.solo;
+        // 스팀 카테고리에 Single-player가 있으면 혼자 할 수 있는 게임 → none·보류는 possible로 (story 판정은 그대로)
+        if (it.askSolo && hasSinglePlayer(it.game) && it.patch.solo_mode !== 'story') { if (it.patch.solo_mode !== 'possible') it.soloReason = '스팀 Single-player'; it.patch.solo_mode = 'possible'; }
         if (it.askSolo) it.soloReason = clean(r.solo_reason, 60); // 저장 안 함, 미리보기 표시용
         it.asked = true;
       });

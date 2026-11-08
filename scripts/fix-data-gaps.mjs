@@ -2,22 +2,13 @@
 // 스팀 게임의 빈칸 채우기: 한국어 지원, 무료 여부·가격, 부족한 태그 (AI 사용 없음, 비용 0)
 import { createClient } from '@supabase/supabase-js';
 import { onlyIds } from './lib/only-ids.mjs';
+import { parseKoreanSupport } from './lib/korean-support.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-function parseKoreanSupport(languages, fullAudioLanguages) {
-  if (!languages) return '한국어 없음';
-  const stripped = languages.replace(/<[^>]+>/g, '');
-  const hasKorean = stripped.includes('한국어') || stripped.toLowerCase().includes('korean');
-  if (!hasKorean) return '한국어 없음';
-  const audio = (fullAudioLanguages || '').replace(/<[^>]+>/g, '');
-  const hasKoreanAudio = audio.includes('한국어') || audio.toLowerCase().includes('korean');
-  return hasKoreanAudio ? '자막+더빙' : '자막';
-}
 
 const GENRE_TAG = {
   Action: '액션', Adventure: '어드벤처', Casual: '캐주얼', RPG: 'RPG',

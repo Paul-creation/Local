@@ -2,7 +2,7 @@
 // 관리자 "게시물 연결" 도구가 쌓은 추가 대기열(curator_game_queue)을 처리 — 데일리 첫 단계
 // 실행: node --env-file=.env.local scripts/import-curator-queue.mjs           (미리보기 — 대기 중인 appid만 출력, DB·파일 안 건드림)
 //       node --env-file=.env.local scripts/import-curator-queue.mjs --apply   (가져오기·보강·연결·imported_at 기록)
-// 순서: DB에 없는 appid → bulk-import --curator --apply → 새 게임에 --ids 보강(AI는 Haiku만: judge-new-games·write-fun-descriptions) → 같은 게시물에 curator_posts 연결 → imported_at 기록
+// 순서: DB에 없는 appid → bulk-import --curator --apply → (bulk-import가 끝에서 fill-new-game으로 새 게임 보강) → 같은 게시물에 curator_posts 연결 → imported_at 기록
 // - 가격·리뷰·동접·ITAD는 이 단계 뒤의 데일리 단계가 모든 게임을 대상으로 받으므로 여기서 안 함. enrich-other-stores·ai-other·videos(--ids 없음)·fill-activities-v2(Sonnet)는 다음 weekly
 // - 못 가져온 appid(스팀 기준 미달 등)는 대기열에 남기고 14일 동안만 다시 시도. 이미 연결된 (계정, 게임, 게시물)은 건너뜀. 삭제 없음
 // - 결과 숫자는 scripts/.cache/curator-queue.json → 일일 요약 "큐레이터 게임 추가 N개"
@@ -16,16 +16,7 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.
 const envArgs = fs.existsSync('.env.local') ? ['--env-file=.env.local'] : [];
 const CACHE = 'scripts/.cache';
 const MAX_ROWS = 100;
-
-// 새 게임 보강 단계 (모두 --ids 지원). 하나가 실패해도 나머지는 계속
-const ENRICH = [
-  ['backfill-steam-categories', '--apply'], // 스팀 카테고리 원문 — 플레이 방식 검사 근거라 AI 보강(fill-game-details 등)보다 먼저
-  ['enrich-fallback'], ['enrich-igdb'], ['enrich-tags'], ['fix-data-gaps'], ['fill-tags-desc'], ['fill-game-details'],
-  ['link-new-game-tags', '--apply'], ['judge-new-games', '--apply'],
-  ['enrich-card-images'], ['enrich-hero-images'], ['enrich-screenshots'], ['fill-search-names'], ['enrich-update-date'],
-  ['enrich-specs'], ['parse-specs', '--apply'], ['fill-players-from-store', '--apply'],
-  ['write-fun-descriptions', '--ids-file'],
-];
+process.env.FILL_NEW_SKIP = 'fill-activities-v2'; // bulk-import가 부르는 fill-new-game에서 Sonnet 배치는 건너뜀 (데일리 단계 시간 제한, 다음 weekly가 채움)
 
 function run(script, args) {
   return new Promise((resolve) => {
@@ -69,15 +60,7 @@ async function main() {
   const added = missing.filter((a) => after.has(a));
   console.log(`\n새로 들어온 게임 ${added.length}개 / 요청 ${missing.length}개`);
 
-  if (added.length) {
-    const idsFile = `${CACHE}/curator-queue-ids.json`;
-    fs.writeFileSync(idsFile, JSON.stringify(added.map((a) => ({ id: after.get(a).id }))));
-    for (const [script, ...args] of ENRICH) {
-      const ids = args.includes('--ids-file') ? [idsFile] : ['--ids', idsFile];
-      const ok = await run(script, [...args, ...ids]);
-      if (!ok) console.log(`${script} 실패 — 건너뛰고 계속 (다음 weekly가 빈 칸을 채움)`);
-    }
-  }
+  // 새 게임 보강(태그·진입장벽·소개·활동 등)은 bulk-import --curator가 끝에서 fill-new-game으로 이미 함
 
   const visible = new Map([...after].filter(([, g]) => !g.hidden).map(([a, g]) => [a, g.id]));
   const { posts, doneIds, left } = buildLinks(rows, visible);

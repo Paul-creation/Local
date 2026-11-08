@@ -13,13 +13,15 @@
 //   판정은 scripts/lib/catalog-rules.mjs (테스트 있음)
 // - 후보에 스팀 공식 동접 차트 상위 100도 더함 (판매 순위보다 먼저). 차트의 현재 동접이 5,000 이상이면 긍정률·연도 조건 면제 (리뷰 1,000개·종류·장르는 그대로)
 // - --appids 목록 항목에 "force": true를 쓰면 그 게임만 긍정률·연도 조건 면제
+// - --apply로 새 게임이 들어오면 끝에서 fill-new-game을 그 게임 id만 대상으로 바로 실행 (태그·진입장벽·소개 등 weekly 보강을 기다리지 않음). --curator는 항상, 일반 수집은 --fill-new를 붙일 때만(매주 갱신은 뒤 단계가 같은 일을 함). --no-fill이면 안 함
 // - 한국 상점에 없는 게임은 무료일 때만 미국 상점(cc=us) 정보로 대신 넣음 (가격 기록 없음 = 무료). 유료는 예전처럼 제외
 // - --dry-run(또는 --apply 없이): 이번 변경 덕에 새로 들어오는 게임(이름·동접·긍정률·출시연도·통과 이유)을 따로 정리해 출력. DB 쓰기 없음
 // - 크로스플레이(스팀 카테고리 27)는 넣을 때 has_crossplay로 같이 저장
 // - 스팀 요청은 scripts/lib/steam.mjs(요청 간격 + 429 재시도)로 함. 끝까지 실패한 게임은 건너뛰고 마지막에 목록으로 출력
 // - --appids 파일: [{ "steam_appid": "1145350", "force": true }] 형식의 JSON (name·reason 칸은 출력용, force는 생략 가능)
 import { createClient } from '@supabase/supabase-js';
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { spawn } from 'node:child_process';
 import { isNonGame } from './lib/non-game.mjs';
 import { steamGet, appdetailsUrl } from './lib/steam.mjs';
 import { judge, parseChart } from './lib/catalog-rules.mjs';
@@ -172,6 +174,18 @@ async function insert(appid, { data, reviewSummary, enCategories }) {
   return true;
 }
 
+// 방금 들어온 게임만 바로 채움 (scripts/fill-new-game.mjs). 실패해도 수집 결과는 그대로, 다음 weekly가 빈 칸을 채움
+async function fillNewGames(appids) {
+  const { data, error } = await supabase.from('games').select('id').in('steam_appid', appids);
+  if (error || !data?.length) return console.log(`\n⚠️  새 게임 id를 못 읽어 fill-new-game을 건너뜀 ${error?.message ?? ''}`);
+  mkdirSync('scripts/.cache', { recursive: true });
+  const file = 'scripts/.cache/bulk-import-new-ids.json';
+  writeFileSync(file, JSON.stringify(data.map((g) => ({ id: g.id }))));
+  console.log(`\n새 게임 ${data.length}개 → fill-new-game`);
+  const envArgs = existsSync('.env.local') ? ['--env-file=.env.local'] : [];
+  await new Promise((resolve) => spawn('node', [...envArgs, 'scripts/fill-new-game.mjs', '--ids', file], { stdio: 'inherit' }).on('exit', resolve));
+}
+
 async function main() {
   const { data: existing, error } = await supabase.from('games').select('steam_appid');
   if (error) return console.error('게임 목록 조회 실패:', error.message);
@@ -246,6 +260,7 @@ async function main() {
     for (const f of failed) console.log(`   ❌ ${f.name || f.appid} (${f.appid}) — ${f.reason}`);
   }
   if (stoppedByTime) console.log(`\n⏱️  ${TIME_BUDGET_MS / 60000}분이 지나서 여기서 멈춤 (남은 후보는 다음 실행 때 처리)`);
+  if (APPLY && added.length && (CURATOR || process.argv.includes('--fill-new')) && !process.argv.includes('--no-fill')) await fillNewGames(added.map((x) => x.appid));
   if (!APPLY) console.log(`\n${DRY_RUN ? '--dry-run이라 DB는 안 건드렸어요.' : '미리보기만 했어요.'} 반영하려면 --apply를 붙여 주세요`);
 }
 

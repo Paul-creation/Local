@@ -213,6 +213,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const recSpec = parseMinSpec(game.recommended_spec);
   const nexusUrl = `https://www.nexusmods.com/search?gameName=${encodeURIComponent(game.name)}`;
   const koreanOk = !!game.korean_support && game.korean_support !== '한국어 없음';
+  // 소개: 스팀 한국어 설명 → 우리 한국어 설명(fun_description) → 둘 다 없을 때만 영어 원문. 스팀이 한국어 번역이 없으면 영어를 그대로 돌려줘서, 한글이 없는 설명은 영어로 본다
+  const steamDescIsKorean = /[가-힣]/.test(game.description || '');
+  const showSteamDesc = !!game.description && (steamDescIsKorean || !game.fun_description);
   // 최근 30일 평가 — 리뷰 30개 이상일 때만, 전체와 15%p 이상 차이면 한 줄 안내
   const recentPct: number | null = game.recent_review_pct ?? null;
   const showRecent = recentPct != null && (game.recent_review_count ?? 0) >= 30;
@@ -267,7 +270,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   else if (game.story_length && game.solo_mode !== 'none') tiles.push({ key: 'time', tone: 'time', icon: 'hourglass', label: '플레이 시간', value: game.story_length, valueClass: 'is-text' });
   if (friendsMax) tiles.push({ key: 'party', tone: 'party', icon: 'people', label: '인원', value: friendsMax === 1 ? '혼자' : <>최대 <span className="num">{friendsMax}</span>명</> });
   if (game.entry_barrier) tiles.push({ key: 'gate', tone: 'party', icon: 'gate', label: '진입장벽', value: game.entry_barrier, valueClass: 'is-text' });
-  tiles.push({ key: 'lang', tone: 'party', icon: 'lang', label: '한국어', value: !koreanOk ? '지원 안 함' : game.korean_support === '자막+더빙' ? '자막 · 더빙' : '자막', valueClass: `is-text${koreanOk ? '' : ' is-down'}` });
+  // korean_support가 비어 있으면(아직 확인 전) 칸을 숨긴다 — "지원 안 함"은 스팀에서 한국어 없음을 확인한 게임만
+  if (game.korean_support) tiles.push({ key: 'lang', tone: 'party', icon: 'lang', label: '한국어', value: !koreanOk ? '지원 안 함' : game.korean_support === '자막+더빙' ? '자막 · 더빙' : '자막', valueClass: `is-text${koreanOk ? '' : ' is-down'}` });
   if (!comingSoon) {
     if (showPriceRecord && game.lowest_price >= 100) tiles.push({ key: 'low', tone: 'price', icon: 'low', label: '역대 최저가', value: <span className="num">₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}</span>, sub: timing === 'best' ? '지금이 최저가' : lowestDate || undefined });
   }
@@ -427,7 +431,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               {game.fun_description && <InfoTip label="AI가 정리한 소개 안내" text="AI가 정리한 소개예요" />}
             </h3>
             {game.fun_description && <p className="detail-fun">{game.fun_description}</p>}
-            {game.description && <p className="detail-description-v2">{game.description}</p>}
+            {showSteamDesc && <p className="detail-description-v2">{game.description}</p>}
             {chipGroups.length > 0 && <TagChips groups={chipGroups} />}
             <ContentNotice ids={game.content_descriptor_ids} />
           </section>

@@ -3,6 +3,7 @@
 // 실행: node --env-file=.env.local scripts/enrich-specs.mjs
 import { createClient } from '@supabase/supabase-js';
 import { onlyIds } from './lib/only-ids.mjs';
+import { parseKoreanSupport } from './lib/korean-support.mjs';
 import { steamGet, appdetailsUrl, SteamLimitError } from './lib/steam.mjs';
 import { refreshCategory } from './lib/category.mjs';
 import { decodeEntities } from './lib/html-entities.mjs';
@@ -42,17 +43,6 @@ function isLowSpec(minSpec) {
     text.includes('intel hd') || text.includes('integrated') ||
     text.includes('4 gb ram') || text.includes('4gb ram')
   );
-}
-
-function parseKoreanSupport(languages, fullAudioLanguages) {
-  if (!languages) return '한국어 없음';
-  const stripped = languages.replace(/<[^>]+>/g, '');
-  const hasKorean = stripped.includes('한국어') || stripped.toLowerCase().includes('korean');
-  if (!hasKorean) return '한국어 없음';
-  const audio = (fullAudioLanguages || '').replace(/<[^>]+>/g, '');
-  const hasKoreanAudio = audio.includes('한국어') || audio.toLowerCase().includes('korean');
-  if (hasKoreanAudio) return '자막+더빙';
-  return '자막';
 }
 
 function parseFamilySharing(categories) {

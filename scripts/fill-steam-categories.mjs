@@ -15,6 +15,7 @@ import { createClient } from '@supabase/supabase-js';
 import { steamGet, appdetailsUrl, SteamLimitError } from './lib/steam.mjs';
 import { refreshCategory } from './lib/category.mjs';
 import { localCoopFromCategories } from './lib/local-coop.mjs';
+import { onlyIds } from './lib/only-ids.mjs';
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const CACHE = 'scripts/.cache/steam-categories.json';
@@ -30,9 +31,9 @@ async function main() {
   const cache = fs.existsSync(CACHE) ? JSON.parse(fs.readFileSync(CACHE, 'utf8')) : {};
   const save = () => { fs.mkdirSync('scripts/.cache', { recursive: true }); fs.writeFileSync(CACHE, JSON.stringify(cache, null, 2)); };
 
-  const { data, error } = await supabase
+  const { data, error } = await onlyIds(supabase
     .from('games')
-    .select(`id, name, steam_appid, solo_playable, ${FIELDS.join(', ')}`).eq('hidden', false)
+    .select(`id, name, steam_appid, solo_playable, ${FIELDS.join(', ')}`)).eq('hidden', false)
     .not('steam_appid', 'is', null)
     .order('id');
   if (error) throw new Error(`게임 목록을 못 불러옴: ${error.message}`);
