@@ -7,8 +7,8 @@ import { useRouter } from 'next/navigation';
 import type { GameFilters } from '../../lib/useGameFilters';
 import { matchRank } from '../../lib/searchMatch';
 import { playersText } from '../../lib/players';
-import { parseSearchInput, splitWords, suggestTags, tagKeyLabel } from '../../lib/tagSearch';
-import { suggestQuery } from '../../lib/tagSuggestQuery';
+import { hasTag, parseSearchInput, splitWords, suggestTags, tagKeyLabel } from '../../lib/tagSearch';
+import { planGameSearch, pickGames, suggestQuery } from '../../lib/tagSuggestQuery';
 import { suggestActivities } from '../../lib/activitySearch';
 import { activityForTag, activityLabel, type ActivityKey } from '../../lib/activities';
 import GameImage from '../GameImage';
@@ -56,25 +56,23 @@ export default function SearchBox({ games, filters, leading, trailing, shortPlac
 
   const q = input.trim();
   // 이름(영어·한국어·별명 중 하나)이 검색어로 시작하는 게임을 먼저, 그다음 이름에 포함된 게임
-  const matchNames = (text: string) =>
-    games
-      .map((g) => ({ g, rank: matchRank(g, text) }))
-      .filter((x) => x.rank >= 0)
-      .sort((a, b) => a.rank - b.rank)
-      .slice(0, MAX_SUGGESTIONS)
-      .map((x) => x.g);
-  // 입력 전체가 이름과 안 맞으면 태그 단어를 뺀 나머지로 ("엘든링 협동" → 엘든링)
-  let gameSuggestions = q ? matchNames(q) : [];
-  if (q && !gameSuggestions.length) {
-    const rest = splitInput(q).rest;
-    if (rest && rest !== q) gameSuggestions = matchNames(rest);
-  }
-  // 지금 입력 중인 마지막 단어로 태그 후보 (쉼표·띄어쓰기를 막 친 뒤에는 안 보여줌)
+  // 여러 단어를 칠 때는 태그 후보와 같은 원칙 (app/lib/tagSuggestQuery): 앞 단어가 전부 태그면 그 태그를 가진 게임 안에서 마지막 단어로, 아니면 입력 전체로 맞춘다
   const words = splitWords(input);
   const lastWord = /[,\s]$/.test(input) ? '' : words[words.length - 1] || '';
-  // 검색어 전체가 태그 이름·별칭에 포함될 때만 후보 — 앞 단어가 전부 태그일 때(태그 이어 치기)만 마지막 단어로 (app/lib/tagSuggestQuery)
-  const sWords = lastWord ? words : [];
-  const prefixAllTags = sWords.length > 1 && !parseSearchInput(sWords.slice(0, -1).join(' '), tagLookup).rest;
+  const sWords = lastWord ? words : []; // 태그 후보용(쉼표·띄어쓰기를 막 친 뒤에는 없음)
+  const planWords = lastWord ? words : splitWords(q); // 게임 결과용(끝에 띄어쓰기가 있어도 앞 입력으로 계속 찾음)
+  const prefixOf = (ws: string[]) => (ws.length > 1 ? parseSearchInput(ws.slice(0, -1).join(' '), tagLookup) : null);
+  const allTags = (p: ReturnType<typeof prefixOf>) => !!p && !p.rest && p.tags.length > 0;
+  const gamePrefix = prefixOf(planWords), prefixAllTags = allTags(prefixOf(sWords));
+  const plan = planGameSearch(planWords, allTags(gamePrefix) ? gamePrefix!.tags : null);
+  const pick = () => pickGames<any>(games, plan, { rank: matchRank, owns: (g, t) => hasTag(g, t, tree), heat: (g) => g.heat_rank ?? Infinity, limit: MAX_SUGGESTIONS });
+  let gameSuggestions = q ? pick() : [];
+  // 입력 전체가 이름과 안 맞으면 태그 단어를 뺀 나머지로 ("엘든링 협동" → 엘든링). 이어 치기(태그 안에서 찾는 중)에는 쓰지 않는다
+  if (q && !gameSuggestions.length && plan.mode !== 'chain') {
+    const rest = splitInput(q).rest;
+    if (rest && rest !== q) gameSuggestions = pickGames<any>(games, planGameSearch([rest], null), { rank: matchRank, owns: () => true, heat: () => 0, limit: MAX_SUGGESTIONS });
+  }
+  // 태그 후보 — 검색어 전체가 태그 이름·별칭에 포함될 때만, 앞 단어가 전부 태그일 때(태그 이어 치기)만 마지막 단어로
   const tagQuery = suggestQuery(sWords, prefixAllTags);
   const tagMatches = suggestTags(tagQuery, tagLookup, selectedTags, MAX_TAG_SUGGESTIONS);
   // 활동 라벨("운전"·"낚시")을 치면 그 활동 필터를 후보로 — 고르면 "가능한 활동" 조건이 걸린다 (app/lib/activitySearch)
