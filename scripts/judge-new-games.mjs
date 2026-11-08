@@ -6,6 +6,7 @@
 //       --existing --sample N  (--apply 없이) 기존 게임 N개를 실제로 AI에 물어 결과만 보여줌, DB는 안 바꿈 (Haiku 1번 호출)
 //       --days N  "새 게임" 기준을 7일 대신 N일로 (fill-new-game이 14일로 부름)
 //       --ids <파일>  지정한 게임만 (lib/only-ids.mjs, 대상 조건은 그대로)
+//       --force  (--ids와 같이만) 이미 한 번 판단한(filter_ai_at) 게임도 다시 판단. 날짜 조건은 --days로 맞춤. 확신 없으면 여전히 비워 둠
 //       node --env-file=.env.local scripts/judge-new-games.mjs --sample 20  (예전 게임 20개로 프롬프트를 만들어 예상 비용만 계산, AI·DB 안 씀)
 //       --rejudge  숨기지 않은 모든 게임의 solo_mode를 지금 기준(친구 없이도 즐길 수 있으면 possible)으로 다시 판정 (진입장벽은 안 건드림)
 //                  기본은 미리보기: AI(Haiku)를 불러 바뀌는 게임 수·목록만 보여주고 DB는 안 바꿈 (결과는 scripts/.cache/rejudge-solo.json에 저장)
@@ -33,6 +34,8 @@ const APPLY = process.argv.includes('--apply');
 const EXISTING = process.argv.includes('--existing');
 const REJUDGE = process.argv.includes('--rejudge');
 const FRESH = process.argv.includes('--fresh');
+const FORCE = process.argv.includes('--force'); // 한 번 판단한 게임(filter_ai_at)도 다시 묻기 — 반드시 --ids와 같이 (전체를 다시 묻지 않도록)
+if (FORCE && !process.argv.includes('--ids')) { console.error('--force는 --ids <파일>과 같이 써야 해요'); process.exit(1); }
 const REJUDGE_CACHE = 'scripts/.cache/rejudge-solo.json';
 const SAMPLE = process.argv.includes('--sample') ? Number(process.argv[process.argv.indexOf('--sample') + 1]) || 20 : 0;
 const DAYS = process.argv.includes('--days') ? Number(process.argv[process.argv.indexOf('--days') + 1]) || 7 : 7;
@@ -130,7 +133,7 @@ async function loadTargets(migrated) {
     const { data, error } = await supabase.from('games').select(cols).eq('hidden', false)
       .or('entry_barrier.is.null,solo_mode.is.null').order('created_at', { ascending: true });
     if (error) throw new Error(error.message);
-    const rows = data.filter((g) => !migrated || !g.filter_ai_at);
+    const rows = data.filter((g) => !migrated || FORCE || !g.filter_ai_at);
     const n = Math.min(3, Math.floor(SAMPLE * 0.3));
     return [...rows.filter((g) => !g.entry_barrier && g.solo_mode).slice(0, n),
       ...rows.filter((g) => g.entry_barrier && !g.solo_mode).slice(0, n),
@@ -142,7 +145,7 @@ async function loadTargets(migrated) {
     const weekAgo = new Date(Date.now() - DAYS * 24 * 60 * 60 * 1000).toISOString();
     q = q.gte('created_at', weekAgo > NEW_SINCE ? weekAgo : NEW_SINCE);
   }
-  if (migrated) q = q.is('filter_ai_at', null);
+  if (migrated && !FORCE) q = q.is('filter_ai_at', null);
   const { data, error } = await q;
   if (error) throw new Error(error.message);
   return data;
