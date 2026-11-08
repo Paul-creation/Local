@@ -244,5 +244,11 @@
  "gapDb": -8,
  "gapMin": 0.3,
  "cardFrom": "이름은",
- "cardTitle": "Finals Week"
+ "cardTitle": "Finals Week",
+ "planFixed": true,
+ "siteDemo": {
+  "game": "34cced8d-3f36-4c04-9d4d-7f5610f77d99",
+  "query": "finals week",
+  "label": "Finals Week"
+ }
 }

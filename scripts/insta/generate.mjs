@@ -37,10 +37,10 @@ const showcase = args.includes('--showcase');
 const reel = args.includes('--reel');
 const coverZooms = (args.find((a) => a.startsWith('--cover-zoom='))?.slice(13) ?? '').split(',').filter(Boolean).map(Number); // 표지 blur 비교용: 01a·01b… 로 따로 저장
 const postId = args.find((a) => !a.startsWith('--'));
-if (!postId) { console.error('사용법: npm run insta -- <post-id> [--refresh] [--detailed|--roundup|--showcase|--reel|--reel-single [--audio]|--reel-trend] [--cover-zoom=1,1.3,1.6]'); process.exit(1); }
+if (!postId) { console.error('사용법: npm run insta -- <post-id> [--refresh] [--detailed|--roundup|--showcase|--reel|--reel-single [--audio]|--reel-trend [--site-demo]] [--cover-zoom=1,1.3,1.6]'); process.exit(1); }
 
 if (args.includes('--reel-trend')) { // 신작 릴스(풀스크린·단어 자막·정보 카드·루프): copy/<post-id>.json만 쓴다
-  try { await (await import('./reel-trend.mjs')).runReelTrend(postId, { refresh, layout: (args.find((x) => x.startsWith('--layout=')) ?? '').slice(9) || undefined }); } catch (e) { console.error(e.message); process.exit(1); }
+  try { await (await import('./reel-trend.mjs')).runReelTrend(postId, { refresh, siteDemo: args.includes('--site-demo'), layout: (args.find((x) => x.startsWith('--layout=')) ?? '').slice(9) || undefined }); } catch (e) { console.error(e.message); process.exit(1); }
   process.exit(0);
 }
 

@@ -12,6 +12,7 @@
 // 원본 구간 중복 방지(기본): 컷의 원본 구간은 한 번만 쓴다 — 다른 컷과 조금이라도 겹치면 아직 안 쓴 다른 구간으로 옮긴다(scene-cuts.mjs uniqueSources). 렌더 뒤 연속한 두 컷의 첫 프레임 SSIM이 0.9 이상이면 실패로 보고 그 컷을 다른 구간으로 골라 다시 렌더(최대 4번)
 // 카드 전환(cardFrom): 카드 직전 컷은 카드 직전까지 이어지는 한 장면(카드 시작 1초 전~카드 끝에 원본 장면 전환 없음)이고, 카드 시작에 하드컷 대신 그 장면이 계속 재생되면서 0.4초 동안 블러 0→30px·밝기 100→60%(ease-out), 카드는 0.05초 늦게 0.35초 동안 불투명도 0→100%·94→100%·20px 아래에서 위로(ease-out). 카드 진입 효과음 없음. 카드→엔딩은 sfx-whoosh와 하드컷
 // 실행: npm run insta -- <post-id> --reel-trend   (copy/<post-id>.json → out/<post-id>/reel-ig.mp4 + still-subtitle.png + still-card.png)
+// --site-demo: 카드 장면 뒤·엔딩 샷 앞에 사이트 소개 영상(site-demo.mjs, copy.siteDemo {game, query, label}) → out/<post-id>/reel-v2.mp4 + still-*-v2.png (기존 reel-ig.mp4·still은 그대로)
 // 자막: copy.chunks(직접 지정, [핵심]) 없으면 자동(copy.keys = 민트 구절). 0.35초 미만 덩어리 합치기·12자·3어절 규칙은 subtitle-chunks.mjs
 // copy: appid, movie(스팀 영상 이름), maxPlayers(선택), cardTitle(선택), narration{voiceId, cacheName, voiceSettings, text}, chunks[](자막 어절 묶음, 대본 순서, [핵심]), card{chunk, sec}, cuts[{t, src:[시작초, 끝초]}](t=0부터), endClip(첫 컷과 같은 알 장면, 1초만 쓴다)
 import fs from 'fs';
@@ -26,12 +27,14 @@ import { RS, ff, buildAudio, trailerAudioFromDb, steamMovie } from './reel-singl
 import { trailerFromDb } from './reel.mjs';
 import { getNarrationBySentence } from './narration-sentences.mjs';
 import { autoChunks, mergeShortChunks, MIN_SEC } from './subtitle-chunks.mjs';
+import { renderSiteDemo } from './site-demo.mjs';
 import { CUT_EXTEND, MIN_CUT, SCENE_GAP, stretchCuts, uniqueSources, detectSceneCuts } from './scene-cuts.mjs';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DIR, '../..');
 const MINT = '#5CF2B0';
 const CX = (RS.w - RS.rightGap) / 2; // 자막·카드 가운데 x = 470
+const DEMO_XFADE = 0.2; // --site-demo: 카드 장면→소개 영상, 소개 영상→엔딩 샷 크로스페이드(초)
 const OUTRO_GAME_TAIL = 0.3, OUTRO_PAD = 0.6, OUTRO_SEC_NO_VOICE = 1.6; // 엔딩 길이 = 시그니처 음성 길이 + 0.6초, 게임 소리는 엔딩 진입 0.3초 안에 사라진다
 const SUB_X = 540, SUB_Y = 1000, SUB_Y_FULL = 960; // 자막 가운데(고정). full 레이아웃은 화면 정중앙(960)
 const FG_Y = 285, FG_W = 1080, FG_H = 1350; // 영상은 원본 높이 기준 4:5로 가운데 크롭(컷마다 cut.x 0~1로 가로 위치 조정, 기본 0.5)해 y 285~1635에 두고, 위아래는 같은 영상을 크게 블러·어둡게 깐다
@@ -394,7 +397,7 @@ export async function runReelTrend(postId, opts = {}) {
   }
 }
 
-async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned = []) {
+async function runReelTrendOnce(postId, { refresh = false, layout, siteDemo = false } = {}, banned = []) {
   const copyFile = path.join(DIR, 'copy', `${postId}.json`);
   if (!fs.existsSync(copyFile)) throw new Error(`--reel-trend: ${path.relative(ROOT, copyFile)}이 없어요`);
   const copy = JSON.parse(fs.readFileSync(copyFile, 'utf8'));
@@ -415,7 +418,8 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
   const partMovies = [...copy.cuts.map((c) => c.movie ?? copy.movie), ...(endSpec ? [endSpec.movie ?? copy.movie] : [])];
   const outDir = path.join(DIR, 'out', postId);
   fs.mkdirSync(outDir, { recursive: true });
-  if (!process.env.REEL_PLAN_ONLY) for (const f of ['reel-ig.mp4', 'reel-full.mp4', 'still-subtitle.png', 'still-card.png', 'still-end.png', 'still-outro.png']) fs.rmSync(path.join(outDir, f), { force: true }); // 내레이션 캐시(narration*.mp3·json)와 voice-samples는 남긴다
+  const SUF = siteDemo ? '-v2' : ''; // --site-demo는 reel-v2.mp4와 -v2 확인 이미지로 따로 저장(기존 reel-ig.mp4·still은 지우지도 덮어쓰지도 않는다)
+  if (!process.env.REEL_PLAN_ONLY && !siteDemo) for (const f of ['reel-ig.mp4', 'reel-full.mp4', 'still-subtitle.png', 'still-card.png', 'still-end.png', 'still-outro.png']) fs.rmSync(path.join(outDir, f), { force: true }); // 내레이션 캐시(narration*.mp3·json)와 voice-samples는 남긴다
 
   const rawNar = await getNarration(outDir, copy.narration);
   const nar = copy.narration.tighten === false ? rawNar : tightenNarration(outDir, rawNar, copy.narration.cacheName ?? 'narration', { ...copy.narration.silence, ...(copy.narration.atempo !== undefined ? { atempo: copy.narration.atempo } : {}) }); // 무음 압축(기본)
@@ -451,7 +455,7 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
       console.log(`  카드 직전 컷을 ${last.t.toFixed(2)}→${lead.toFixed(2)}초부터로 앞당김(카드 1초 전부터 한 장면)`);
     }
   }
-  if (!endSpec && !FULL) {
+  if (!endSpec && !FULL && !copy.planFixed) { // copy.planFixed:true면 이 단계를 건너뛰고 copy.cuts의 원본 구간을 그대로 쓴다(구간 이동·장면 전환 회피·SSIM 재선정 규칙이 생기기 전에 짠 카피, 예: finals-week를 예전 편집 그대로 다시 렌더할 때)
     const durOfMovie = {}, probe = (mv) => (durOfMovie[mv] ??= Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', trailers[mv]]).toString()));
     const sceneOf = (mv) => (copy.sceneAvoid === false ? [] : [...detectSceneCuts(trailers[mv], CACHE, SCENE_PICK), ...(copy.sceneExtra?.[mv] ?? [])].sort((x, y) => x - y)); // copy.sceneExtra: {영상 이름: [초…]} — 느린 디졸브처럼 자동 감지가 놓치는 전환을 눈으로 확인해 직접 적는다
     const segIn = cuts.map((c, i) => ({ movie: c.movie ?? copy.movie, a: c.src[0], pin: !!c.pin, dur: (cuts[i + 1]?.t ?? nar.duration) - c.t }));
@@ -514,7 +518,15 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
   const { parts, segs } = vid;
   const vidDur = vid.total;
   const outro = OUTRO ? loadOutro() : null;
-  const total = bodyDur + (outro ? outro.sec : 0); // 전체 길이(엔딩 샷 포함). 본편 영상·자막은 bodyDur까지
+  let demo = null; // --site-demo: 고정 마지막 멘트 + 소개 카드(본편) 뒤, 엔딩 샷 앞에 사이트 소개 영상. 앞뒤 0.2초 크로스페이드라 길이는 본편 + 영상 + 엔딩 − 0.4초
+  if (siteDemo) {
+    if (!OUTRO) throw new Error('--reel-trend: --site-demo는 엔딩 샷(outro)과 함께 써요');
+    if (!copy.siteDemo) throw new Error('--reel-trend: --site-demo에는 copy.siteDemo {game, query, label}가 필요해요');
+    demo = await renderSiteDemo({ ...copy.siteDemo, outDir, final: false, refresh });
+    console.log(`  사이트 소개 영상 ${demo.sec}초: ${path.relative(ROOT, demo.raw)}`);
+  }
+  const outroAt = demo ? bodyDur + demo.sec - 2 * DEMO_XFADE : bodyDur; // 엔딩 샷 시작(효과음·팝 기준)
+  const total = outroAt + (outro ? outro.sec : 0); // 전체 길이(엔딩 샷 포함). 본편 영상·자막은 bodyDur까지
   const hasCard = !!copy.card; // card가 없으면 정보 카드 없이(로고 장면 등으로 대신)
   let c0 = -10, c1 = -10;
   if (hasCard) {
@@ -611,16 +623,16 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
   for (const mv of movieNames) audioFiles[mv] = await trailerAudioFromDb(srcs[mv], CACHE, refresh);
   let audioIn = partMovies.map((mv) => audioFiles[mv]), aParts0 = all.parts;
   if (FULL) { // 컷마다 원본 구간 안의 소리만(슬로우면 같은 비율로 늘림), 모자라면 무음. 마지막 컷은 카드 끝까지
-    audioIn = fsegs.map((f, i) => { const wav = path.join(CACHE, `trend-${postId}-aseg${i}.wav`), len = f.tail + 0.4;
+    audioIn = fsegs.map((f, i) => { const wav = path.join(CACHE, `trend-${postId}-aseg${i}.wav`), len = f.tail + 0.4 + (i === fsegs.length - 1 ? outroAt - bodyDur : 0);
       ff(['-ss', T(f.a), '-t', T(f.use), '-i', audioFiles[f.movie], '-af', `atempo=${f.speed},apad=whole_dur=${T(len)}`, '-t', T(len), '-c:a', 'pcm_s16le', wav]); return wav; });
-    aParts0 = fsegs.map((f) => [0, f.tail]);
+    aParts0 = fsegs.map((f, i) => [0, f.tail + (i === fsegs.length - 1 ? outroAt - bodyDur : 0)]); // full 레이아웃은 마지막 컷 원본 구간이 끝나면 무음으로 이어진다
   }
-  const aParts = aParts0.map((p, i) => (OUTRO && !FULL && i === aParts0.length - 1 ? [p[0], p[1] + OUTRO_GAME_TAIL] : p)); // 엔딩 샷이 붙으면 마지막 컷 소리를 0.3초 더 떠서, 컷 뒤 0.3초 동안 페이드아웃
+  const aParts = aParts0.map((p, i) => (OUTRO && !FULL && i === aParts0.length - 1 ? [p[0], p[1] + OUTRO_GAME_TAIL + (outroAt - bodyDur)] : p)); // site-demo가 끼면 마지막 컷의 원본 소리를 그만큼 더 떠서 소개 영상 아래에도 이어서 깐다(기본 덕킹 빈틈 음량) // 엔딩 샷이 붙으면 마지막 컷 소리를 0.3초 더 떠서, 컷 뒤 0.3초 동안 페이드아웃
   const { measured } = buildAudio({ audio: audioIn, copy: { segments: aParts.slice(0, -1), endClip: aParts[aParts.length - 1] }, out: gameM4a });
   const extras = !outro ? [] : [
-    ...(outro.whoosh ? [{ name: '전환 효과음(whoosh)', file: outro.whoosh, at: Math.max(0, bodyDur - 0.2), lufs: -18 }] : []), // 휙 끝나는 시점에 컷이 오도록 0.2초 앞당김
-    ...(outro.voice ? [{ name: '시그니처 음성', file: outro.voice, at: bodyDur, lufs: -14 }] : []),
-    ...(outro.pop ? [{ name: '로고 팝 효과음', file: outro.pop, at: bodyDur, lufs: -20 }] : []),
+    ...(outro.whoosh ? [{ name: '전환 효과음(whoosh)', file: outro.whoosh, at: Math.max(0, outroAt - 0.2), lufs: -18 }] : []), // 휙 끝나는 시점에 컷이 오도록 0.2초 앞당김
+    ...(outro.voice ? [{ name: '시그니처 음성', file: outro.voice, at: outroAt, lufs: -14 }] : []),
+    ...(outro.pop ? [{ name: '로고 팝 효과음', file: outro.pop, at: outroAt, lufs: -20 }] : []),
   ];
   mixNarration({ game: gameM4a, nar, total, out: m4a, duckDb: copy.duckDb, gapDb: copy.gapDb, gapMin: copy.gapMin, extras, fadeOut: !outro });
   let silentAll = silent;
@@ -644,10 +656,19 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
       console.log(`  카드 장면 ${cardAt.toFixed(2)}~${bodyDur.toFixed(2)}초: 본편 마지막 프레임 정지 + 블러 디졸브, 자막 숨김`);
     }
     fs.writeFileSync(list, `file '${silent}'\n${cardMp4 ? `file '${cardMp4}'\n` : ''}file '${outroMp4}'\n`);
-    silentAll = path.join(CACHE, `trend-${postId}-silent-all.mp4`);
-    ff(['-f', 'concat', '-safe', '0', '-i', list, '-c', 'copy', silentAll]);
+    silentAll = path.join(CACHE, `trend-${postId}-silent-all${SUF}.mp4`);
+    if (!demo) ff(['-f', 'concat', '-safe', '0', '-i', list, '-c', 'copy', silentAll]);
+    else { // 본편(+카드) → 소개 영상 → 엔딩 샷, 이음새마다 0.2초 크로스페이드(xfade). 본편 길이 = bodyDur
+      const body = path.join(CACHE, `trend-${postId}-body${SUF}.mp4`);
+      fs.writeFileSync(list, `file '${silent}'\n${cardMp4 ? `file '${cardMp4}'\n` : ''}`);
+      ff(['-f', 'concat', '-safe', '0', '-i', list, '-c', 'copy', body]);
+      const norm = (i, o) => `[${i}:v]fps=${fps},scale=${w}:${h},setsar=1,format=yuv420p,settb=AVTB,setpts=PTS-STARTPTS[${o}]`;
+      ff(['-i', body, '-i', demo.raw, '-i', outroMp4, '-filter_complex', `${norm(0, 'a')};${norm(1, 'b')};${norm(2, 'c')};[a][b]xfade=transition=fade:duration=${DEMO_XFADE}:offset=${(bodyDur - DEMO_XFADE).toFixed(3)}[ab];[ab][c]xfade=transition=fade:duration=${DEMO_XFADE}:offset=${outroAt.toFixed(3)}[o]`,
+        '-map', '[o]', '-an', '-r', String(fps), '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '10', '-pix_fmt', 'yuv420p', silentAll]);
+      console.log(`  소개 영상 ${(bodyDur - DEMO_XFADE).toFixed(2)}~${(outroAt + DEMO_XFADE).toFixed(2)}초(앞뒤 ${DEMO_XFADE}초 크로스페이드), 엔딩 ${outroAt.toFixed(2)}초부터, 전체 ${total.toFixed(2)}초`);
+    }
   }
-  const mp4 = path.join(outDir, FULL ? 'reel-full.mp4' : 'reel-ig.mp4');
+  const mp4 = path.join(outDir, siteDemo ? 'reel-v2.mp4' : FULL ? 'reel-full.mp4' : 'reel-ig.mp4');
   // 최종 인코딩: 인스타 업로드용(encodeInstaFinal) — 믹스 오디오(96kHz)도 여기서 48kHz AAC로 다시 담는다
   encodeInstaFinal({ video: silentAll, audio: m4a, out: mp4, w, h, fps, passlog: path.join(CACHE, `trend-${postId}-x264pass`) });
 
@@ -672,11 +693,11 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
   {
     const r = run(['-i', mp4, '-an', '-vf', "scale=320:-2,select='gt(scene,0.25)',showinfo", '-f', 'null', '-']);
     const times = [...r.stderr.matchAll(/pts_time:([\d.]+)/g)].map((m) => Number(m[1]));
-    const planned = [...segs.map((x) => x.t).slice(1), ...(cardScene ? [cardAt] : []), bodyDur];
+    const planned = [...segs.map((x) => x.t).slice(1), ...(cardScene ? [cardAt] : []), ...(demo ? [bodyDur - DEMO_XFADE / 2, bodyDur - DEMO_XFADE + 2.55, outroAt + DEMO_XFADE / 2] : [bodyDur])]; // site-demo: 크로스페이드 두 곳 + 소개 영상 안의 홈→상세 크로스페이드(2.4~2.7초)
     const unplanned = times.filter((x) => !planned.some((p) => Math.abs(p - x) < SCENE_TOL)); // planned = 컷 +0.3초 연장을 이미 반영한 실제 경계(segs.t). 허용 오차 0.4초(컷 경계 앞뒤 원본 전환·페이드 때문에 감지 시각이 조금 어긋남)
     const doubles = times.slice(1).map((x, i) => [times[i], x]).filter(([x, y]) => y - x < 0.3); // 0.3초 안에 전환이 두 번 난 곳
     sceneReport = { times, planned, unplanned, doubles };
-    fs.writeFileSync(path.join(outDir, 'scene-check.txt'), `최종 영상 장면 전환(gt(scene,0.25)) ${times.length}곳\n${times.map((x) => x.toFixed(3)).join(' ')}\n의도한 경계 ${planned.length}곳\n${planned.map((x) => x.toFixed(3)).join(' ')}\n의도하지 않은 전환 ${unplanned.length}곳\n${unplanned.map((x) => x.toFixed(3)).join(' ')}\n0.3초 안에 두 번 난 전환 ${doubles.length}곳\n${doubles.map(([x, y]) => `${x.toFixed(3)}~${y.toFixed(3)}`).join(' ')}\n`);
+    fs.writeFileSync(path.join(outDir, `scene-check${SUF}.txt`), `최종 영상 장면 전환(gt(scene,0.25)) ${times.length}곳\n${times.map((x) => x.toFixed(3)).join(' ')}\n의도한 경계 ${planned.length}곳\n${planned.map((x) => x.toFixed(3)).join(' ')}\n의도하지 않은 전환 ${unplanned.length}곳\n${unplanned.map((x) => x.toFixed(3)).join(' ')}\n0.3초 안에 두 번 난 전환 ${doubles.length}곳\n${doubles.map(([x, y]) => `${x.toFixed(3)}~${y.toFixed(3)}`).join(' ')}\n`);
     console.log(`  최종 영상 장면 전환 ${times.length}곳: ${times.map((x) => x.toFixed(2)).join(' ')}`);
     console.log(`  의도한 경계 ${planned.length}곳: ${planned.map((x) => x.toFixed(2)).join(' ')} → 의도 밖 전환(±${SCENE_TOL}초 밖) ${unplanned.length}곳${unplanned.length ? ': ' + unplanned.map((x) => x.toFixed(2)).join(' ') : ''}`);
     console.log(`  0.3초 안에 전환이 두 번 난 곳 ${doubles.length}곳${doubles.length ? ': ' + doubles.map(([x, y]) => `${x.toFixed(3)}·${y.toFixed(3)}`).join(' ') : ''}`);
@@ -690,14 +711,14 @@ async function runReelTrendOnce(postId, { refresh = false, layout } = {}, banned
 
   // 정지 이미지: 자막 장면 1장(곡괭이 비트, 팝이 끝난 뒤), 정보 카드 1장(다 올라온 뒤)
   const pick = chunks.find((c) => chunkPlain(c.text).includes(chunkPlain(copy.stillChunk ?? '곡괭이'))) ?? chunks[Math.floor(chunks.length / 2)];
-  ff(['-ss', T(pick.start + 0.25), '-i', mp4, '-frames:v', '1', path.join(outDir, 'still-subtitle.png')]);
-  const second = hasCard ? 'still-card.png' : OUTRO ? 'still-outro.png' : 'still-end.png'; // 카드가 있으면 카드, 없으면 엔딩 샷(없으면 마지막 로고 장면)
-  const secondAt = hasCard ? c0 + 1.2 : OUTRO ? bodyDur + Math.min(outro.sec - 0.2, outro.nameAt + 0.6) : bodyDur - 0.3; // 엔딩은 세 줄이 다 나온 뒤
+  ff(['-ss', T(pick.start + 0.25), '-i', mp4, '-frames:v', '1', path.join(outDir, `still-subtitle${SUF}.png`)]);
+  const second = hasCard ? `still-card${SUF}.png` : OUTRO ? `still-outro${SUF}.png` : `still-end${SUF}.png`; // 카드가 있으면 카드, 없으면 엔딩 샷(없으면 마지막 로고 장면)
+  const secondAt = hasCard ? c0 + 1.2 : OUTRO ? outroAt + Math.min(outro.sec - 0.2, outro.nameAt + 0.6) : bodyDur - 0.3; // 엔딩은 세 줄이 다 나온 뒤
   ff(['-ss', T(secondAt), '-i', mp4, '-frames:v', '1', path.join(outDir, second)]);
-  if (cardScene) ff(['-ss', T(cardAt + 0.4), '-i', mp4, '-frames:v', '1', path.join(outDir, 'still-card.png')]);
-  if ((hasCard || cardScene) && OUTRO) ff(['-ss', T(bodyDur + Math.min(outro.sec - 0.2, outro.nameAt + 0.6)), '-i', mp4, '-frames:v', '1', path.join(outDir, 'still-outro.png')]);
+  if (cardScene) ff(['-ss', T(cardAt + 0.4), '-i', mp4, '-frames:v', '1', path.join(outDir, `still-card${SUF}.png`)]);
+  if ((hasCard || cardScene) && OUTRO) ff(['-ss', T(outroAt + Math.min(outro.sec - 0.2, outro.nameAt + 0.6)), '-i', mp4, '-frames:v', '1', path.join(outDir, `still-outro${SUF}.png`)]);
   const dur = Number(execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', mp4]).toString());
   console.log(`${path.relative(ROOT, mp4)} (${dur.toFixed(2)}초, 내레이션 + 덕킹한 원본 오디오 측정 ${measured} LUFS → -14 LUFS, 구간 경계 0.1초 크로스페이드)`);
-  console.log(path.relative(ROOT, path.join(outDir, 'still-subtitle.png')), path.relative(ROOT, path.join(outDir, second)));
+  console.log(path.relative(ROOT, path.join(outDir, `still-subtitle${SUF}.png`)), path.relative(ROOT, path.join(outDir, second)));
   return { bad, ssims, sceneReport };
 }
