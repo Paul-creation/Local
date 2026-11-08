@@ -4,7 +4,7 @@
 // 실행: node scripts/insta/site-demo.mjs --game <id> --query "<검색어>" --label "<표시 이름>" [--out <폴더>] [--base https://jamidunow.com]
 //   → out/<label 슬러그>/site-demo.mp4(H.264 High 8Mbps 30fps bt709, 무음) + site-demo-scene2/4/6.png
 // --reel-trend --site-demo는 renderSiteDemo()의 raw(crf 10 중간 파일)를 가져다 쓴다(copy.siteDemo = {game, query, label})
-// 장면: 0~0.5 홈(줌 1.00→1.03) · 0.5~0.8 검색창 탭 · 0.8~1.9 타이핑(글자당 약 0.08초, 불규칙) · 1.9~2.4 결과 드롭다운 + 결과 줄 탭(2.1~) · 2.4~2.7 상세로 0.3초 크로스페이드 · 2.7~5.3 상세 스크롤(타일에서 0.4초 멈춤) · 5.3~5.6 정지 · 5.6~6.0 페이드아웃
+// 장면: 0~0.5 홈(줌 1.00→1.03) · 0.5~0.8 검색창 탭 · 0.8~1.9 타이핑(글자당 약 0.08초, 불규칙) · 1.9~2.4 결과 드롭다운 + 결과 줄 탭(2.1~) · 2.4~2.7 상세로 0.3초 크로스페이드 · 2.7~5.3 상세 스크롤("한눈에 보기" 타일에서 0.4초 멈춤 → "어떤 게임인가요?" 제목까지) · 5.3~5.6 정지 · 5.6~6.0 페이드아웃
 // 안내 문구(Pretendard Bold 48px·외곽선 3px·위쪽 y 300·검정 70% 알약 배경, 860px 넘으면 두 줄)는 DOM이 아니라 별도 PNG로 올려서 줌·크로스페이드와 무관하게 고정
 import fs from 'fs';
 import path from 'path';
@@ -112,12 +112,12 @@ export async function renderSiteDemo({ game, query, label, base = 'https://jamid
     const resp = await det.goto(detUrl, { waitUntil: 'networkidle' });
     if (!resp?.ok()) throw new Error(`site-demo: 상세 페이지 ${detUrl}가 ${resp?.status()}예요`);
     await prep(det); await waitImages(det);
-    const scrollEnd = Math.round(await det.evaluate(() => { const h = document.getElementById('소개') ?? [...document.querySelectorAll('h2')].find((e) => e.textContent.startsWith('소개')); return h ? h.getBoundingClientRect().top + scrollY - 110 : 2400; })); // 소개 제목이 화면 위쪽에 오는 위치까지
-    const tileY = Math.round(await det.evaluate(() => { const t = document.querySelector('[data-tour="stat-tiles"]'); return t ? t.getBoundingClientRect().top + scrollY - 70 : 640; })); // 타일 묶음이 헤더 밑에 오는 위치(멈추는 자리)
+    const scrollEnd = Math.round(await det.evaluate(() => { const h = [...document.querySelectorAll('.detail-main h3')].find((e) => e.textContent.trim().startsWith('어떤 게임인가요?')); return h ? h.getBoundingClientRect().top + scrollY - 110 : 2400; })); // "어떤 게임인가요?" 제목이 화면 위쪽에 오는 위치까지
+    const tileY = Math.round(await det.evaluate(() => { const t = document.querySelector('.sec-glance') ?? document.querySelector('[data-tour="stat-tiles"]'); return t ? t.getBoundingClientRect().top + scrollY - 150 : 640; })); // "한눈에 보기" 제목이 상단 메뉴(56px)와 안내 문구 알약(css 약 137px까지) 바로 아래에 오는 위치(멈추는 자리)
     for (let y = 0; y <= scrollEnd + VH; y += 500) { await det.evaluate((y) => scrollTo(0, y), y); await det.waitForTimeout(150); await waitImages(det, 8000); }
     await det.evaluate(() => scrollTo(0, 0));
     await raf2(det);
-    console.log(`  스크롤: 0 → 타일 ${tileY}px(0.4초 멈춤) → 소개 ${scrollEnd}px`);
+    console.log(`  스크롤: 0 → 한눈에 보기 ${tileY}px(0.4초 멈춤) → 어떤 게임인가요? ${scrollEnd}px`);
 
     const input = home.locator('input[role=combobox]').first();
     const ib = await input.boundingBox();
