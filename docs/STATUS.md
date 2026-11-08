@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-11-08 (main a3b2cb5)
+기준: 2026-11-08 (main 3abec94)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 11/8: fix/admin-revalidate-scope — POST /api/admin/revalidate가 /api/games/list에 더해 /·/this-week도 revalidatePath, 응답 revalidated에 세 경로. daily 끝의 무효화(check-coming-soon)도 같은 엔드포인트라 같은 범위. 히어로 "비교할 수 있는 게임" 1,590은 hidden=true 11개(따로 숨긴 5·합쳐진 6)가 빠진 값이라 그대로 둠(캐시 문제 아님). build·test 492개 통과
 - 11/8: fix/mobile-search-bar — 폭 430px 이하 메인 커맨드바: 검색 상자를 display:contents로 풀어 윗줄 = 검색 아이콘 + 입력칸(전체 폭, × 입력칸 안쪽 오른쪽), 아랫줄 = 필터 · AI 추천, 자동완성 목록은 커맨드바 전체 폭(SearchBox가 입력칸 아래로 top 계산, 스크롤 대상은 .search-row). 데스크톱 CSS 무변경(mn.css 미디어쿼리 안). 375·390·430px 로컬 캡처에서 "finals week"·결과 이름 안 잘림·가로 넘침 없음. build·test 492개 통과, 프리뷰 확인은 사용자 지시로 머지
 - 11/8: feat/coming-soon-release-date — 출시 예정 게임의 출시 상태를 daily에서 매일 자동 갱신(scripts/check-coming-soon.mjs, scripts/lib/coming-soon.mjs), 게임 상세에서 날짜 미정 표시·데모 없는 게임은 찜하기 버튼, daily.yml 캐시 키를 별도 Secret으로 분리. build·test 492개 통과
 - 11/7: fix/seo-canonical-host — proxy.ts에서 host가 정확히 game-info-hub.vercel.app일 때만 같은 경로·쿼리로 jamidunow.com 301(프리뷰 host는 그대로 200, 로컬 확인). site.ts SITE_URL은 NEXT_PUBLIC_SITE_URL이 .vercel.app이면 무시하고 jamidunow.com 사용. canonical·og:site_name·WebSite JSON-LD·robots 주소는 이미 jamidunow.com이라 변경 없음. build·test 491개 통과
@@ -158,6 +159,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- 배포 뒤 확인 대기(사용자): fix/admin-revalidate-scope — curl -X POST https://jamidunow.com/api/admin/revalidate -H "x-admin-key: $ADMIN_REVALIDATE_KEY" 응답의 revalidated에 세 경로가 나오는지
 - 머지 후 확인 대기(사용자): fix/mobile-search-bar — 프로덕션 홈(375·430px)에서 "finals week" 입력 시 입력칸·결과 이름이 안 잘리는지, 태그 칩이 여러 개일 때 줄바꿈 모양, 데스크톱 검색창 그대로인지. 배포 뒤 site-demo 재촬영(reel-v3) 예정
 - 배포 뒤 확인 대기(사용자): feat/coming-soon-release-date — 다음 daily 로그의 출시 예정 갱신 줄과 daily.yml의 새 캐시 키 Secret 등록 여부, 게임 상세의 날짜 미정·찜하기 버튼 표시
 - 배포 뒤 확인 대기(사용자): curl -sI https://game-info-hub.vercel.app/games/1 → 301·location jamidunow.com. 구글 사이트 이름 반영은 재수집 뒤
