@@ -1,0 +1,304 @@
+{
+ "_doc": "One Tank Trip 릴스(--reel-trend, layout fit-blur 4:5: 소스 4:5 영역을 1080×1350으로 화면 가운데(y 285~1635)에 두고 위아래 285px은 같은 장면 확대+블러(sigma 30)+밝기 -0.15). 스냅제이 톤 대본(과장 없이 차분한 존댓말), 음성은 --reel-trend 기본값(stability 0.45·similarity 0.8·style 0.15·speed 1.2), 문장마다 2테이크 + STT 발음 검사(CER 5%). 소스: 4K 트레일러(OneTankTrip_4K) + 프레스킷 클립 c1·c3·c4(1080p). 마지막 멘트는 고정 템플릿(출시 예정) + 정보 카드 + 로고 엔딩. 자막은 fit-blur 기본(CRACK 스타일 48px·첫 덩어리 60px). versionedOut: 렌더마다 reel-v<N>.mp4로 저장(이전 버전 유지). sttAllow: 문장별 받아쓰기 허용 표기.",
+ "appid": "5483960",
+ "movie": "OneTankTrip_4K",
+ "clips": {
+  "OneTankTrip_4K": "https://example.invalid/OneTankTrip_4K.mp4",
+  "c1": "https://example.invalid/c1.mp4",
+  "c3": "https://example.invalid/c3.mp4",
+  "c4": "https://example.invalid/c4.mp4"
+ },
+ "maxPlayers": 3,
+ "duckDb": -20,
+ "stillChunk": "길을 알려줘야",
+ "gapDb": -8,
+ "gapMin": 0.3,
+ "cardTitle": "One Tank Trip",
+ "layout": "fit-blur",
+ "minCut": 1.0,
+ "cutExtend": 0,
+ "chunks": [
+  "이 게임은",
+  "철수 작전 때",
+  "부대에 버려진",
+  "병사 셋이",
+  "[탱크 한 대로]",
+  "[적진을 뚫고]",
+  "집까지",
+  "돌아가는",
+  "[협동 게임이에요]",
+  "근데",
+  "이 탱크는",
+  "혼자서는",
+  "[못 몰아요]",
+  "운전석에서는",
+  "앞이 거의",
+  "[안 보이거든요]",
+  "그래서",
+  "한 명이 운전하면",
+  "한 명은",
+  "[지도를 보면서]",
+  "[방향을 불러주고]",
+  "나머지 한 명은",
+  "밖에서 걸으면서",
+  "[길을 알려줘야]",
+  "해요",
+  "가다가",
+  "진흙에 빠지면",
+  "[윈치로 끌어내고]",
+  "부서진 데가",
+  "생기면",
+  "내려서",
+  "[직접 고쳐야]",
+  "해요",
+  "적을 만나면",
+  "포탄을 손으로",
+  "날라서",
+  "[장전해야]",
+  "대포를",
+  "쏠 수 있어요",
+  "이름은",
+  "[원 탱크 트립]입니다",
+  "저장해두고",
+  "출시 후",
+  "플레이해보세요"
+ ],
+ "narration": {
+  "cacheName": "narration-v10",
+  "pitch": {
+   "takes": 2,
+   "takesFor": {
+    "8": 3
+   },
+   "gap": 0.3
+  },
+  "text": "이 게임은, 철수 작전 때 부대에 버려진 병사 셋이 탱크 한 대로 적진을 뚫고 집까지 돌아가는 협동 게임이에요. 근데 이 탱크는 혼자서는 못 몰아요. 운전석에서는 앞이 거의 안 보이거든요. 그래서 한 명이 운전하면, 한 명은 지도를 보면서 방향을 불러주고, 나머지 한 명은 밖에서 걸으면서 길을 알려줘야 해요. 가다가 진흙에 빠지면 윈치로 끌어내고, 부서진 데가 생기면 내려서 직접 고쳐야 해요. 적을 만나면 포탄을 손으로 날라서 장전해야 대포를 쏠 수 있어요. 이름은 원 탱크 트립입니다. 저장해두고, 출시 후 플레이해보세요!",
+  "reuseCached": true,
+  "atempo": 1,
+  "silence": {
+   "word": 0.2,
+   "wordTo": 0.2,
+   "sentence": 0.3,
+   "sentenceTo": 0.3,
+   "lastGap": null
+  },
+  "sttAllow": [
+   {
+    "match": "진흙에",
+    "equal": [
+     "진흙에=진을게"
+    ]
+   }
+  ]
+ },
+ "cuts": [
+  {
+   "t": 0,
+   "movie": "OneTankTrip_4K",
+   "src": [
+    1.6,
+    4.0
+   ],
+   "x": 0.42
+  },
+  {
+   "at": "부대에 버려진",
+   "movie": "OneTankTrip_4K",
+   "src": [
+    39.2,
+    41.6
+   ],
+   "x": 0.5
+  },
+  {
+   "at": "탱크 한 대로",
+   "movie": "OneTankTrip_4K",
+   "src": [
+    25.85,
+    27.9
+   ],
+   "x": 0.4,
+   "fill": [
+    {
+     "movie": "OneTankTrip_4K",
+     "src": [
+      18.2,
+      19.5
+     ],
+     "x": 0.5
+    }
+   ]
+  },
+  {
+   "at": "근데",
+   "movie": "OneTankTrip_4K",
+   "src": [
+    8.6,
+    10.0
+   ],
+   "x": 0.5,
+   "fill": [
+    {
+     "movie": "c1",
+     "src": [
+      3.45,
+      4.75
+     ],
+     "x": 0.55
+    }
+   ]
+  },
+  {
+   "at": "운전석에서는",
+   "movie": "OneTankTrip_4K",
+   "src": [
+    15.9,
+    17.3
+   ],
+   "x": 0.5,
+   "fill": [
+    {
+     "movie": "OneTankTrip_4K",
+     "src": [
+      11.7,
+      12.45
+     ],
+     "x": 0.5
+    }
+   ]
+  },
+  {
+   "at": "그래서",
+   "movie": "OneTankTrip_4K",
+   "src": [
+    47.75,
+    49.55
+   ],
+   "x": 0.5
+  },
+  {
+   "at": "한 명은",
+   "movie": "OneTankTrip_4K",
+   "src": [
+    51.55,
+    53.35
+   ],
+   "x": 0.5,
+   "fill": [
+    {
+     "movie": "c1",
+     "src": [
+      5.1,
+      6.55
+     ],
+     "x": 0.5
+    }
+   ]
+  },
+  {
+   "at": "나머지 한 명은",
+   "movie": "OneTankTrip_4K",
+   "src": [
+    64.5,
+    66.15
+   ],
+   "x": 0.5,
+   "fill": [
+    {
+     "movie": "c4",
+     "src": [
+      3.3,
+      4.8
+     ],
+     "x": 0.5
+    }
+   ]
+  },
+  {
+   "at": "가다가",
+   "movie": "OneTankTrip_4K",
+   "src": [
+    60.3,
+    62.4
+   ],
+   "x": 0.5,
+   "fill": [
+    {
+     "movie": "OneTankTrip_4K",
+     "src": [
+      66.25,
+      67.3
+     ],
+     "x": 0.5
+    }
+   ]
+  },
+  {
+   "at": "부서진 데가",
+   "movie": "OneTankTrip_4K",
+   "src": [
+    57.25,
+    58.5
+   ],
+   "x": 0.5,
+   "fill": [
+    {
+     "movie": "OneTankTrip_4K",
+     "src": [
+      58.75,
+      60.2
+     ],
+     "x": 0.5
+    }
+   ]
+  },
+  {
+   "at": "적을 만나면",
+   "movie": "c3",
+   "src": [
+    0.0,
+    1.4
+   ],
+   "x": 0.5,
+   "fill": [
+    {
+     "movie": "c3",
+     "src": [
+      1.45,
+      2.75
+     ],
+     "x": 0.5
+    }
+   ]
+  },
+  {
+   "at": "장전해야",
+   "movie": "OneTankTrip_4K",
+   "src": [
+    53.8,
+    55.0
+   ],
+   "x": 0.5,
+   "fill": [
+    {
+     "movie": "OneTankTrip_4K",
+     "src": [
+      12.45,
+      13.05
+     ],
+     "x": 0.5
+    }
+   ]
+  }
+ ],
+ "closingName": "원 탱크 트립",
+ "fitRatio": "4:5",
+ "versionedOut": {
+  "dir": "/workspaces/Local/scripts/insta/out/one-tank-trip",
+  "start": 3
+ },
+ "targetSec": [
+  33,
+  34
+ ]
+}

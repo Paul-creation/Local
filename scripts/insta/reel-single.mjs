@@ -120,7 +120,7 @@ export function buildAudio({ audio, copy, out }) {
   // 1차: 음량 측정, 2차: 측정값으로 -14 LUFS에 맞추고 끝 0.8초 페이드아웃
   const r = spawnSync('ffmpeg', ['-hide_banner', '-y', ...inputs, '-filter_complex', `${cut.join(';')};${xf.join(';')};${chain}loudnorm=I=${LUFS}:TP=-1.5:LRA=11:print_format=json[o]`, '-map', '[o]', '-f', 'null', '-'], { encoding: 'utf8' });
   const m = JSON.parse(r.stderr.slice(r.stderr.lastIndexOf('{'), r.stderr.lastIndexOf('}') + 1));
-  const ln = `loudnorm=I=${LUFS}:TP=-1.5:LRA=11:measured_I=${m.input_i}:measured_TP=${m.input_tp}:measured_LRA=${m.input_lra}:measured_thresh=${m.input_thresh}:offset=${m.target_offset}:linear=true`;
+  const ln = !Number.isFinite(Number(m.input_i)) ? 'anull' : `loudnorm=I=${LUFS}:TP=-1.5:LRA=11:measured_I=${m.input_i}:measured_TP=${m.input_tp}:measured_LRA=${m.input_lra}:measured_thresh=${m.input_thresh}:offset=${m.target_offset}:linear=true`; // 무음 클립(측정 -inf)은 음량 맞춤을 건너뛴다
   ff([...inputs, '-filter_complex', `${cut.join(';')};${xf.join(';')};${chain}${ln},alimiter=limit=0.85:level=disabled,afade=t=out:st=${(total - FADE_OUT).toFixed(2)}:d=${FADE_OUT}[o]`, '-map', '[o]', '-t', String(total), '-c:a', 'aac', '-b:a', '192k', out]);
   return { measured: Number(m.input_i) };
 }

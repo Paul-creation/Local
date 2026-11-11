@@ -1,0 +1,238 @@
+{
+ "_doc": "Mountain Goatastrophe 릴스(--reel-trend, layout full: 9:16 꽉 채움, 문장 하나에 장면 하나). 소스는 스팀 공식 트레일러 1080p(1920×1080, 9:16 크롭 확대 1.78배 고정). 마지막 문장(cardFrom)에서 trash-island와 같은 블러 디졸브 정보 카드(출시 예정 + 인원·한국어) 뒤 로고 엔딩. 감정: sentenceSettings(문장별 stability·style) + pitch.takes(문장마다 2테이크, 억양 통과한 것 중 음높이 폭이 큰 쪽).",
+ "appid": "4465610",
+ "movie": "Mountain Goatastrophe - Official Announcement Trailer",
+ "maxPlayers": 4,
+ "duckDb": -20,
+ "stillChunk": "미끄러져도",
+ "narration": {
+  "voiceId": "uyVNoMrnUku1dZyVEXwD",
+  "cacheName": "narration-v2",
+  "voiceSettings": {
+   "stability": 0.35,
+   "similarity_boost": 0.8,
+   "style": 0.45,
+   "speed": 1.08
+  },
+  "sentenceSettings": {
+   "1": {
+    "stability": 0.25,
+    "style": 0.65
+   },
+   "2": {
+    "stability": 0.3,
+    "style": 0.55
+   },
+   "6": {
+    "stability": 0.25,
+    "style": 0.65
+   },
+   "7": {
+    "stability": 0.28,
+    "style": 0.7
+   },
+   "8": {
+    "stability": 0.55,
+    "similarity_boost": 0.8,
+    "style": 0,
+    "speed": 1.08
+   },
+   "9": {
+    "stability": 0.55,
+    "similarity_boost": 0.8,
+    "style": 0,
+    "speed": 1.08
+   }
+  },
+  "pitch": {
+   "takes": 2
+  },
+  "text": "넷 중에 한 명만 미끄러져도… 전원 다시 산 밑이에요. 보이시죠… 이 밧줄. 넷이 전부 이거 하나에 묶여 있거든요. 바위든, 나무든… 닿으면 다 감겨요. 누가 당기면, 다 같이 끌려가고요. 줄이 빨개지면… 곧 누가 떨어진다는 뜻이에요. 친구랑 하다 싸워도, 책임은 못 져요. 이름은 Mountain Goatastrophe입니다. 저장해두고, 출시 후 플레이해보세요!",
+  "reuseCached": false,
+  "atempo": 1,
+  "silence": {
+   "word": 0.3,
+   "wordTo": 0.25,
+   "sentence": 0.35,
+   "sentenceTo": 0.35,
+   "lastGap": null
+  },
+  "tts": {
+   "1": "넷 중에 한 명만 미끄러져도… 전원 다시 산 미치에요."
+  }
+ },
+ "cuts": [
+  {
+   "t": 0,
+   "src": [
+    26.67,
+    28.64
+   ],
+   "pan": [
+    0.37,
+    0.37
+   ],
+   "fill": [
+    {
+     "src": [
+      1.78,
+      3.4
+     ],
+     "x": 0.45
+    }
+   ]
+  },
+  {
+   "at": "보이시죠",
+   "src": [
+    0.05,
+    0.77
+   ],
+   "x": 0.42,
+   "fill": [
+    {
+     "src": [
+      3.48,
+      4.95
+     ],
+     "x": 0.47
+    }
+   ]
+  },
+  {
+   "at": "넷이 전부",
+   "src": [
+    16.2,
+    17.94
+   ],
+   "x": 0.5,
+   "fill": [
+    {
+     "src": [
+      14.55,
+      15.3
+     ],
+     "x": 0.55
+    }
+   ]
+  },
+  {
+   "at": "바위든",
+   "src": [
+    11.93,
+    14.4
+   ],
+   "pan": [
+    0.33,
+    0.38
+   ],
+   "fill": [
+    {
+     "src": [
+      5.08,
+      6.04
+     ],
+     "x": 0.38
+    }
+   ]
+  },
+  {
+   "at": "누가 당기면",
+   "src": [
+    20.06,
+    21.97
+   ],
+   "x": 0.45,
+   "fill": [
+    {
+     "src": [
+      22.12,
+      23.0
+     ],
+     "x": 0.5
+    }
+   ]
+  },
+  {
+   "at": "줄이 빨개지면",
+   "src": [
+    24.2,
+    26.55
+   ],
+   "x": 0.42,
+   "fill": [
+    {
+     "src": [
+      32.0,
+      32.94
+     ],
+     "x": 0.75
+    },
+    {
+     "src": [
+      6.15,
+      6.76
+     ],
+     "x": 0.42
+    }
+   ]
+  },
+  {
+   "at": "친구랑 하다",
+   "src": [
+    28.75,
+    30.65
+   ],
+   "x": 0.45,
+   "fill": [
+    {
+     "src": [
+      33.08,
+      33.95
+     ],
+     "x": 0.75
+    }
+   ]
+  }
+ ],
+ "gapDb": -8,
+ "gapMin": 0.3,
+ "cardFrom": "이름은",
+ "cardTitle": "Mountain Goatastrophe",
+ "chunks": [
+  "넷 중에",
+  "한 명만",
+  "[미끄러져도]",
+  "전원 다시",
+  "[산 밑이에요]",
+  "[보이시죠]",
+  "이 [밧줄]",
+  "넷이 전부",
+  "이거 하나에",
+  "묶여 있거든요",
+  "바위든",
+  "나무든",
+  "닿으면",
+  "[다 감겨요]",
+  "누가 당기면",
+  "[다 같이]",
+  "끌려가고요",
+  "[줄이 빨개지면]",
+  "곧 누가",
+  "떨어진다는",
+  "뜻이에요",
+  "친구랑 하다",
+  "싸워도",
+  "[책임은]",
+  "못 져요",
+  "이름은",
+  "[Mountain]",
+  "[Goatastrophe]입니다",
+  "저장해두고",
+  "출시 후",
+  "플레이해보세요"
+ ],
+ "minCut": 1.0,
+ "layout": "fit-blur",
+ "cutExtend": 0
+}

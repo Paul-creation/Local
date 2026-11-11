@@ -23,4 +23,5 @@ for span in (0.15, 0.30):
         end = float(np.median(st[sel])); break
 if end is None:
     print(json.dumps({"rise_st": None, "voiced": int(ok.sum())})); sys.exit(0)
-print(json.dumps({"rise_st": round(end - mean_st, 2), "f0_end_hz": round(440 * 2 ** (end / 12), 1), "f0_mean_hz": round(440 * 2 ** (mean_st / 12), 1), "voiced": int(ok.sum())}))
+p10, p90 = np.percentile(st[ok], [10, 90])  # 표현력 지표: 문장 안 음높이 폭(p90-p10, 반음)·표준편차
+print(json.dumps({"range_st": round(float(p90 - p10), 2), "std_st": round(float(np.std(st[ok])), 2), "rise_st": round(end - mean_st, 2), "f0_end_hz": round(440 * 2 ** (end / 12), 1), "f0_mean_hz": round(440 * 2 ** (mean_st / 12), 1), "voiced": int(ok.sum())}))
