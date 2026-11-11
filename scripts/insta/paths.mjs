@@ -1,4 +1,4 @@
-// 렌더 캐시·결과 폴더 — worktree가 아니라 메인 체크아웃의 scripts/insta/{cache,out}을 쓴다(worktree를 지워도 내레이션 캐시·클립 원본이 남게).
+// 렌더 캐시·결과·자산 폴더 — worktree가 아니라 메인 체크아웃의 scripts/insta/{cache,out,assets}를 쓴다(worktree를 지워도 내레이션 캐시·클립 원본이 남게).
 // 메인 체크아웃 = git 공통 디렉터리(.git)의 부모. git을 못 읽으면 이 파일이 있는 폴더(기존 동작).
 import path from 'path';
 import { execFileSync } from 'child_process';
@@ -15,3 +15,4 @@ function mainInsta() {
 export const MAIN_INSTA = mainInsta();
 export const CACHE_DIR = path.join(MAIN_INSTA, 'cache');
 export const OUT_DIR = path.join(MAIN_INSTA, 'out');
+export const ASSETS_DIR = path.join(MAIN_INSTA, 'assets'); // brand·crack 클립·bgm 등(gitignore 대상) — worktree에 복사할 필요 없음

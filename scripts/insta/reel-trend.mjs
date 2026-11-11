@@ -17,7 +17,7 @@
 // copy: appid, movie(스팀 영상 이름), maxPlayers(선택), cardTitle(선택), narration{voiceId, cacheName, voiceSettings, text}, chunks[](자막 어절 묶음, 대본 순서, [핵심]), card{chunk, sec}, cuts[{t, src:[시작초, 끝초]}](t=0부터), endClip(첫 컷과 같은 알 장면, 1초만 쓴다)
 import fs from 'fs';
 import path from 'path';
-import { CACHE_DIR, OUT_DIR } from './paths.mjs';
+import { CACHE_DIR, OUT_DIR, ASSETS_DIR } from './paths.mjs';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
 import { execFileSync, spawnSync } from 'child_process';
@@ -266,7 +266,7 @@ export function cutTimeline(cuts, endClip, narDur) {
 
 // 내레이션 -14 LUFS + 트레일러 소리(-14 LUFS로 맞춘 것)를 내레이션 중에 -8dB(≈-22 LUFS)로 덕킹해 섞는다
 // ── 엔딩 샷 자산(scripts/insta/assets/brand: outro-voice.mp3(선택)·sfx-whoosh.mp3·sfx-pop.mp3, gitignore 대상이라 커밋하지 않음) ──
-const BRAND_DIRS = [path.join(DIR, 'assets/brand')];
+const BRAND_DIRS = [path.join(ASSETS_DIR, 'brand')];
 const brandFile = (n) => BRAND_DIRS.map((d) => path.join(d, n)).find((p) => fs.existsSync(p)) ?? null;
 // 엔딩 음성: 기본은 없음(엔딩 1.6초 고정, 로고 팝 → 0.1초 간격 페이드인). assets/brand/outro-voice.mp3가 있으면 자동으로 쓴다(엔딩 = 음성 길이 + 0.6초, 이름은 "재미두나우" 순간에 등장). 그 시각은 같은 이름의 .json 글자 타이밍에서, 없으면 마지막 쉼 뒤로 잡는다. 테이크 후보(outro-voice-take*.mp3)는 자동으로 쓰지 않는다
 function loadOutro() {

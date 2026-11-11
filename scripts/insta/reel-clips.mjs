@@ -6,7 +6,7 @@
 // 실행: node scripts/insta/reel-clips.mjs crack-trend-v2   (copy/<id>.json → out/crack-trend/reel-v2.mp4 + still-subtitle-v2.png + still-card-v2.png)
 import fs from 'fs';
 import path from 'path';
-import { CACHE_DIR } from './paths.mjs';
+import { CACHE_DIR, ASSETS_DIR } from './paths.mjs';
 import { fileURLToPath } from 'url';
 import { execFileSync, spawnSync } from 'child_process';
 import { chromium } from 'playwright';
@@ -15,7 +15,7 @@ import { steamFacts, getNarration } from './reel-trend.mjs';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DIR, '../..');
-const CLIPS = path.join(DIR, 'assets/crack/clips');
+const CLIPS = path.join(ASSETS_DIR, 'crack/clips');
 const OUT = path.join(DIR, 'out/crack-trend');
 const CACHE = CACHE_DIR;
 const MINT = '#5CF2B0';

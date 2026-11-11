@@ -4,9 +4,10 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { ASSETS_DIR } from './paths.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const OUT = path.join(ROOT, 'scripts/insta/assets/brand');
+const OUT = path.join(ASSETS_DIR, 'brand');
 const TEXT = '친구랑 할 게임은, 재미두나우!';
 const VOICE = 'uyVNoMrnUku1dZyVEXwD';
 const SETTINGS = { stability: 0.35, similarity_boost: 0.8, style: 0.35, speed: 1.1 };
