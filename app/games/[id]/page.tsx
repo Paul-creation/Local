@@ -312,50 +312,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
     if (showPriceRecord && game.lowest_price >= 100) tiles.push({ key: 'low', tone: 'price', icon: 'low', label: '역대 최저가', value: <span className="num">₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}</span>, sub: timing === 'best' ? '지금이 최저가' : lowestDate || undefined });
   }
 
-  return (
-    <main className="page detail-page dx mn mn-inner">
-      <BackLink fallbackHref="/" label="목록으로" preferList />
-
-
-      {heroBg && <div className="dx-backdrop" aria-hidden="true"><GameImage src={heroBg} fallbackWidth={1280} alt="" /></div>}
-
-      <header className="dx-head">
-        <DetailCover verticalUrl={game.cover_vertical_url ?? null} steamAppid={game.steam_appid ? String(game.steam_appid) : null} fallback={heroImage} name={gameName(game)} />
-        <div className="dx-head-info">
-          <div className="dx-badges">
-            <OwnedChip steamAppid={game.steam_appid} />
-            {comingSoon
-              ? <span className="badge badge-accent">{comingSoonLabel(game)}</span>
-              : <>
-                  {game.is_early_access && <span className="badge badge-accent">앞서 해보기</span>}
-                  {game.release_date && <span className="badge-neutral">출시 <span className="num">{formatDate(game.release_date)}</span></span>}
-                </>}
-            {game.category && <span className={`badge-neutral ${badgeClass(game.category)}`}>{game.category}</span>}
-          </div>
-          <h1 className="dx-title">{gameName(game)}</h1>
-          {game.fun_description && <p className="dx-lead">{game.fun_description}</p>}
-          {(subGenres.length > 0 || platformCategories.length > 0) && (
-            <div className="dx-chips">
-              {subGenres.slice(0, 6).map((g) => <span key={g} className="chip">{g}</span>)}
-              {platformCategories.map((c) => <span key={c} className="chip">{CATEGORY_LABEL[c]}</span>)}
-            </div>
-          )}
-        </div>
-      </header>
-
-      <div className="detail-main">
-        {/* 1 한눈에 보기 — 인원·진입장벽·한국어·가격·평가·동접 (출시 예정작은 D-day·데모·순위) */}
-        {tiles.length > 0 && (
-          <section className="detail-card sec-glance" aria-label="한눈에 보기">
-            <h3 className="detail-card-title">한눈에 보기</h3>
-            <StatTiles tiles={tiles} />
-          </section>
-        )}
-
-        {/* 2 가격·할인 — 지금 가격·할인율·역대 최저가·구매 버튼 + 할인 기록 */}
-        <section className="detail-card sec-price" aria-label="가격·할인">
-          <h3 className="detail-card-title">가격·할인</h3>
-          <div className="price-split">
+  const priceCard = (
       <div className="price-card" data-tour="price-card">
         {comingSoon ? (
           <>
@@ -433,24 +390,66 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           </>
         )}
       </div>
-            {showPriceRecord && priceHistory.length === 1 && price && (
-              <div className="price-record">
-                <p className="detail-card-sub">
-                  {price.discount > 0
-                    ? `지금 ${price.discount}% 할인 중 · ${price.formattedFinal}`
-                    : `아직 할인한 적 없어요 · ${price.formattedFinal}`}
-                </p>
-              </div>
-            )}
-            {showPriceRecord && priceHistory.length >= 2 && (
-              <div className="price-record">
-                {timingLine && timingLine !== SAME_AS_LOWEST && <p className="buy-timing is-chart">{timingLine}</p>}
-                {/* 기간 기준 시각은 서버에서 정해 넘긴다 (서버·브라우저 계산이 어긋나지 않게) */}
-                <DiscountChart history={priceHistory} now={Date.now()} />
-              </div>
-            )}
+  );
+
+  return (
+    <main className="page detail-page dx mn mn-inner">
+      <BackLink fallbackHref="/" label="목록으로" preferList />
+
+
+      {heroBg && <div className="dx-backdrop" aria-hidden="true"><GameImage src={heroBg} fallbackWidth={1280} alt="" /></div>}
+
+      <header className="dx-head">
+        <DetailCover verticalUrl={game.cover_vertical_url ?? null} steamAppid={game.steam_appid ? String(game.steam_appid) : null} fallback={heroImage} name={gameName(game)} />
+        <div className="dx-head-info">
+          <div className="dx-badges">
+            <OwnedChip steamAppid={game.steam_appid} />
+            {comingSoon
+              ? <span className="badge badge-accent">{comingSoonLabel(game)}</span>
+              : <>
+                  {game.is_early_access && <span className="badge badge-accent">앞서 해보기</span>}
+                  {game.release_date && <span className="badge-neutral">출시 <span className="num">{formatDate(game.release_date)}</span></span>}
+                </>}
+            {game.category && <span className={`badge-neutral ${badgeClass(game.category)}`}>{game.category}</span>}
           </div>
-        </section>
+          <h1 className="dx-title">{gameName(game)}</h1>
+          {game.fun_description && <p className="dx-lead">{game.fun_description}</p>}
+          {(subGenres.length > 0 || platformCategories.length > 0) && (
+            <div className="dx-chips">
+              {subGenres.slice(0, 6).map((g) => <span key={g} className="chip">{g}</span>)}
+              {platformCategories.map((c) => <span key={c} className="chip">{CATEGORY_LABEL[c]}</span>)}
+            </div>
+          )}
+        </div>
+      </header>
+
+      <div className="detail-layout">
+        <aside className="detail-price">
+          {priceCard}
+        </aside>
+      <div className="detail-main">
+        {/* 1 한눈에 보기 — 인원·진입장벽·한국어·가격·평가·동접 (출시 예정작은 D-day·데모·순위) */}
+        {tiles.length > 0 && (
+          <section className="detail-card sec-glance" aria-label="한눈에 보기">
+            <h3 className="detail-card-title">한눈에 보기</h3>
+            <StatTiles tiles={tiles} />
+          </section>
+        )}
+
+        {/* 모바일: 가격 카드를 한눈에 보기 바로 아래에 (데스크톱은 오른쪽 sticky 열). 하단 고정 바는 쓰지 않음 */}
+        <div className="price-inline">{priceCard}</div>
+
+        {/* 2 가격·할인 — 할인 그래프와 기록 요약(최근 1년 할인 횟수·최대 할인·최저가·마지막 할인). 그래프를 그릴 기록이 2개 미만이면 섹션 숨김 */}
+        {showPriceRecord && priceHistory.length >= 2 && (
+          <section className="detail-card sec-price" aria-label="가격·할인">
+            <h3 className="detail-card-title">가격·할인</h3>
+            <div className="price-record">
+              {timingLine && timingLine !== SAME_AS_LOWEST && <p className="buy-timing is-chart">{timingLine}</p>}
+              {/* 기간 기준 시각은 서버에서 정해 넘긴다 (서버·브라우저 계산이 어긋나지 않게) */}
+              <DiscountChart history={priceHistory} now={Date.now()} />
+            </div>
+          </section>
+        )}
 
         {/* 3 플레이 방식 — 협동 방식·인원 범위·혼자 하기·크로스플레이·서버 방식·진입장벽 이유 */}
         {showPlay && (
@@ -542,6 +541,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           <RelatedPosts gameId={game.id} />
           {showSeries && seriesItems.length > 1 && <SeriesGames name={series?.name_ko ?? null} currentName={gameName(game)} items={seriesItems} />}
           {similarGames.length > 0 && <SimilarGames games={similarGames} />}
+      </div>
       </div>
     </main>
   );

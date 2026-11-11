@@ -50,12 +50,12 @@
 /* 한눈에 보기 — 섹션 안의 타일 줄(타일 모양은 StatTiles 그대로), 제목 아래 간격만 */
 .dx .sec-glance .dx-tiles { margin: 0; }
 
-/* 가격·할인 — 데스크톱은 가격 카드(왼쪽)·할인 기록(오른쪽), 좁으면 위아래. 카드는 섹션 안이라 세로선·안쪽 여백 없음 */
-.price-split { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 32px; align-items: start; }
-.price-split:not(:has(.price-record)) { grid-template-columns: minmax(0, 340px); }
-.dx .sec-price .price-card { border: 0; padding: 0; }
+/* 가격 카드 — 데스크톱은 오른쪽 sticky 열(.detail-price, globals.css), 960px 이하는 오른쪽 열을 없애고 한눈에 보기 바로 아래 카드를 보여 준다 */
+.price-inline { display: none; }
 .price-record { min-width: 0; }
-.price-record .detail-card-sub { margin: 0; }
 @media (max-width: 960px) {
-  .price-split, .price-split:not(:has(.price-record)) { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .dx .detail-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "main"; gap: 0; }
+  .dx .detail-price { display: none; }
+  .dx .price-inline { display: block; }
+  .dx .price-inline .price-card { border-left: 0; padding: 0; }
 }
