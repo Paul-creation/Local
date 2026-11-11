@@ -17,6 +17,7 @@
 // copy: appid, movie(스팀 영상 이름), maxPlayers(선택), cardTitle(선택), narration{voiceId, cacheName, voiceSettings, text}, chunks[](자막 어절 묶음, 대본 순서, [핵심]), card{chunk, sec}, cuts[{t, src:[시작초, 끝초]}](t=0부터), endClip(첫 컷과 같은 알 장면, 1초만 쓴다)
 import fs from 'fs';
 import path from 'path';
+import { CACHE_DIR, OUT_DIR } from './paths.mjs';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
 import { execFileSync, spawnSync } from 'child_process';
@@ -151,7 +152,7 @@ async function fetchCardImage(appid, headerUrl) {
   for (const n of names) {
     const buf = await get(n.url);
     if (!buf) continue;
-    const tmp = path.join(DIR, 'cache', `cardimg-${appid}.bin`);
+    const tmp = path.join(CACHE_DIR, `cardimg-${appid}.bin`);
     fs.writeFileSync(tmp, buf);
     const [w, h] = execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'stream=width,height', '-of', 'csv=p=0:s=x', tmp]).toString().trim().split('x').map(Number);
     console.log(`  카드 이미지: ${n.k} ${w}×${h}`);
@@ -448,7 +449,7 @@ async function runReelTrendOnce(postId, { refresh = false, layout, fitRatio, sit
   }
   console.log('  스팀 값:', JSON.stringify({ ...facts, header: undefined }));
 
-  const CACHE = path.join(DIR, 'cache');
+  const CACHE = CACHE_DIR;
   fs.mkdirSync(CACHE, { recursive: true });
   const endSpec = OUTRO ? null : Array.isArray(copy.endClip) ? { src: copy.endClip } : copy.endClip; // {movie?, src:[시작초, 끝초]}
   const movieNames = [...new Set([...copy.cuts.flatMap((c) => [c.movie ?? copy.movie, ...(c.fill ?? []).map((p) => p.movie ?? c.movie ?? copy.movie)]), ...(endSpec ? [endSpec.movie ?? copy.movie] : [])])]; // 컷마다 movie(영상 이름)를 따로 쓸 수 있다
@@ -458,7 +459,7 @@ async function runReelTrendOnce(postId, { refresh = false, layout, fitRatio, sit
     srcs[mv] = await steamMovie({ name: facts.name, steam_appid: copy.appid }, mv); trailers[mv] = await trailerFromDb(srcs[mv], CACHE, refresh);
   }
   const partMovies = [...copy.cuts.map((c) => c.movie ?? copy.movie), ...(endSpec ? [endSpec.movie ?? copy.movie] : [])];
-  const outDir = path.join(DIR, 'out', postId);
+  const outDir = path.join(OUT_DIR, postId);
   fs.mkdirSync(outDir, { recursive: true });
   const SUF = siteDemo ? reelName.replace(/^reel/, '') : ''; // --site-demo는 reel-v2.mp4와 -v2 확인 이미지로 따로 저장(기존 reel-ig.mp4·still은 지우지도 덮어쓰지도 않는다)
   if (!process.env.REEL_PLAN_ONLY && !siteDemo) for (const f of ['reel-ig.mp4', 'reel-full.mp4', 'still-subtitle.png', 'still-card.png', 'still-end.png', 'still-outro.png']) fs.rmSync(path.join(outDir, f), { force: true }); // 내레이션 캐시(narration*.mp3·json)와 voice-samples는 남긴다

@@ -14,6 +14,7 @@
 // 처음 한 번: npm ci (브라우저가 없으면 npx playwright install chromium)
 import fs from 'fs';
 import path from 'path';
+import { CACHE_DIR, OUT_DIR } from './paths.mjs';
 import { fileURLToPath } from 'url';
 import { execFileSync } from 'child_process';
 import { chromium } from 'playwright';
@@ -27,7 +28,7 @@ import { REEL, expandReel, reelInfo, trailerFromDb, composeHook, composeGame, co
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DIR, '../..');
-const CACHE = path.join(DIR, 'cache');
+const CACHE = CACHE_DIR;
 const SITE = (process.env.SITE || 'https://jamidunow.com').replace(/\/$/, '');
 const args = process.argv.slice(2);
 const refresh = args.includes('--refresh');
@@ -583,7 +584,7 @@ try {
   }
 
   const font = fs.readFileSync(path.join(ROOT, 'node_modules/pretendard/dist/web/variable/woff2/PretendardVariable.woff2')).toString('base64');
-  const outDir = path.join(DIR, 'out', postId);
+  const outDir = path.join(OUT_DIR, postId);
   fs.rmSync(outDir, { recursive: true, force: true }); // 옛 파일이 안 남게 폴더째 비움 (out/은 생성물만 있는 폴더)
   fs.mkdirSync(outDir, { recursive: true });
 
@@ -711,7 +712,7 @@ if (roundupMissing.length) console.log('상세 장에서 빠진 행:\n' + roundu
 
 // out/<post-id>/ 를 out/<post-id>.zip 으로 묶는다 (기존 zip은 덮어씀, 파일이 없는 og는 건너뜀). zip 명령이 필요해요
 {
-  const outDir = path.join(DIR, 'out', postId);
+  const outDir = path.join(OUT_DIR, postId);
   if (fs.existsSync(outDir) && fs.readdirSync(outDir).length) {
     const zipFile = `${outDir}.zip`;
     fs.rmSync(zipFile, { force: true });

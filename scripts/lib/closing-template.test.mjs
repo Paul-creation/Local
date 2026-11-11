@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { applyClosing, releaseState, CLOSING } from './closing-template.mjs';
 
-const load = (f) => JSON.parse(fs.readFileSync(new URL(`../insta/copy/${f}.json`, import.meta.url), 'utf8'));
+// 옛 copy에는 예전 방식 그대로 렌더되게 closing:false가 들어 있다 — 템플릿이 원문과 같은지 볼 때는 그 값을 뺀다
+const load = (f) => { const c = JSON.parse(fs.readFileSync(new URL(`../insta/copy/${f}.json`, import.meta.url), 'utf8')); delete c.closing; return c; };
 
 test('trash-island: 출시 예정 템플릿은 원문과 같다(문장·덩어리·설정)', () => {
   const c = load('trash-island'), before = JSON.stringify([c.narration.text, c.chunks]);

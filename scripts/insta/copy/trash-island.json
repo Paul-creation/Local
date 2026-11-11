@@ -29,6 +29,10 @@
    "sentence": 0.35,
    "sentenceTo": 0.35,
    "lastGap": null
+  },
+  "pitch": {
+   "stt": false,
+   "stretch": false
   }
  },
  "cuts": [
@@ -163,5 +167,6 @@
  ],
  "minCut": 1.0,
  "layout": "full",
- "cutExtend": 0
+ "cutExtend": 0,
+ "closing": false
 }

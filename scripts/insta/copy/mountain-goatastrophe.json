@@ -45,7 +45,9 @@
    }
   },
   "pitch": {
-   "takes": 2
+   "takes": 2,
+   "stt": false,
+   "stretch": false
   },
   "text": "넷 중에 한 명만 미끄러져도… 전원 다시 산 밑이에요. 보이시죠… 이 밧줄. 넷이 전부 이거 하나에 묶여 있거든요. 바위든, 나무든… 닿으면 다 감겨요. 누가 당기면, 다 같이 끌려가고요. 줄이 빨개지면… 곧 누가 떨어진다는 뜻이에요. 친구랑 하다 싸워도, 책임은 못 져요. 이름은 Mountain Goatastrophe입니다. 저장해두고, 출시 후 플레이해보세요!",
   "reuseCached": false,
@@ -234,5 +236,6 @@
  ],
  "minCut": 1.0,
  "layout": "fit-blur",
- "cutExtend": 0
+ "cutExtend": 0,
+ "closing": false
 }

@@ -8,6 +8,7 @@
 // 안내 문구(Pretendard Bold 48px·외곽선 3px·위쪽 y 300·검정 70% 알약 배경, 860px 넘으면 두 줄)는 DOM이 아니라 별도 PNG로 올려서 줌·크로스페이드와 무관하게 고정
 import fs from 'fs';
 import path from 'path';
+import { CACHE_DIR, OUT_DIR } from './paths.mjs';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { execFileSync, spawnSync } from 'child_process';
@@ -85,7 +86,7 @@ async function captionPng(file, lines) { // lines: 한 줄짜리 [text] 또는 �
   } finally { await b.close(); }
 }
 
-export async function renderSiteDemo({ game, query, label, base = 'https://jamidunow.com', outDir, cacheDir = path.join(DIR, 'cache'), refresh = false, final = true }) {
+export async function renderSiteDemo({ game, query, label, base = 'https://jamidunow.com', outDir, cacheDir = CACHE_DIR, refresh = false, final = true }) {
   if (!game || !query || !label) throw new Error('site-demo: game·query·label이 모두 필요해요');
   fs.mkdirSync(cacheDir, { recursive: true });
   fs.mkdirSync(outDir, { recursive: true });
@@ -208,7 +209,7 @@ if (process.argv[1] && fs.realpathSync(process.argv[1]) === fs.realpathSync(file
   const a = process.argv.slice(2), get = (n) => { const i = a.indexOf(`--${n}`); return i >= 0 ? a[i + 1] : undefined; };
   const game = get('game'), query = get('query'), label = get('label');
   if (!game || !query || !label) { console.error('사용법: node scripts/insta/site-demo.mjs --game <id> --query "<검색어>" --label "<표시 이름>" [--out <폴더>] [--base <주소>]'); process.exit(1); }
-  const outDir = path.resolve(get('out') ?? path.join(DIR, 'out', slug(label)));
+  const outDir = path.resolve(get('out') ?? path.join(OUT_DIR, slug(label)));
   try {
     const r = await renderSiteDemo({ game, query, label, base: get('base'), outDir, refresh: true });
     console.log(path.relative(ROOT, r.final));

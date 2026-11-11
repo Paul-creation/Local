@@ -10,6 +10,7 @@
 // 정보 줄: 출시 예정(release_status coming_soon + 날짜 있음)이면 "MM.DD 출시 예정 / 무료 데모 / 최대 N인 / 한국어 …"(데모 있을 때만 "무료 데모" 칸), 출시 30일 이내(할인 없음)면 "MM.DD 출시 / ₩가격 / 최대 N인 / 한국어 …". 그 외: 할인 중이면 "~M/D -N% 할인 / 최대 N인 / 한국어 …", 아니면 "₩13,800 / 최대 N인 / 한국어 …" (한국어는 DB korean_support 값, 없으면 미지원)
 import fs from 'fs';
 import path from 'path';
+import { CACHE_DIR, OUT_DIR } from './paths.mjs';
 import { fileURLToPath } from 'url';
 import { execFileSync, spawnSync } from 'child_process';
 import { chromium } from 'playwright';
@@ -144,11 +145,11 @@ export async function runReelSingle(postId, { refresh = false, audio = false } =
   const { data: game, error } = await db.from('games').select('id, name, display_name, steam_appid, solo_playable, min_players, max_players, korean_support, is_free, video_url, release_status, release_date, demo_appid, price_history(price, original_price, discount_percent, sale_ends_at, checked_at)').eq('steam_appid', copy.appid).single();
   if (error) throw new Error(`게임 조회 실패: ${error.message}`);
   const info = infoLines(game, copy);
-  const CACHE = path.join(DIR, 'cache');
+  const CACHE = CACHE_DIR;
   fs.mkdirSync(CACHE, { recursive: true });
   const src = copy.movie ? await steamMovie(game, copy.movie) : game; // movie가 있으면 스팀 appdetails의 그 영상, 없으면 DB video_url
   const trailer = await trailerFromDb(src, CACHE, refresh);
-  const outDir = path.join(DIR, 'out', postId);
+  const outDir = path.join(OUT_DIR, postId);
   fs.rmSync(outDir, { recursive: true, force: true });
   fs.mkdirSync(outDir, { recursive: true });
 

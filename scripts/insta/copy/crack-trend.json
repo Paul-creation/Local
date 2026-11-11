@@ -17,7 +17,11 @@
    "speed": 1.05
   },
   "text": "연구소에 갑자기 거대한 알이 생겼는데, 우리 일은 딱 하나야. 이거 깨기. 친구들이랑 곡괭이 들고 껍질 까고, 떨어진 조각 주워다 팔아서, 더 센 장비 사고, 또 까고. 근데 진짜 문제는, 이 안에 대체 뭐가 들었냐는 거지.",
-  "perSentence": false
+  "perSentence": false,
+  "pitch": {
+   "stt": false,
+   "stretch": false
+  }
  },
  "chunks": [
   "연구소에",
@@ -131,5 +135,6 @@
     73.49
    ]
   }
- ]
+ ],
+ "closing": false
 }

@@ -6,6 +6,7 @@
 // 실행: node scripts/insta/reel-clips.mjs crack-trend-v2   (copy/<id>.json → out/crack-trend/reel-v2.mp4 + still-subtitle-v2.png + still-card-v2.png)
 import fs from 'fs';
 import path from 'path';
+import { CACHE_DIR } from './paths.mjs';
 import { fileURLToPath } from 'url';
 import { execFileSync, spawnSync } from 'child_process';
 import { chromium } from 'playwright';
@@ -16,7 +17,7 @@ const DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DIR, '../..');
 const CLIPS = path.join(DIR, 'assets/crack/clips');
 const OUT = path.join(DIR, 'out/crack-trend');
-const CACHE = path.join(DIR, 'cache');
+const CACHE = CACHE_DIR;
 const MINT = '#5CF2B0';
 const CX = RS.w / 2, SUB_Y = 860, CARD_Y = 900, SAFE_BOTTOM = RS.h * 0.75, CARD_W = 800; // 카드는 오른쪽 140px 안전 영역 안(140~940)
 const DIM = 0.4; // 카드 컷 배경(앞 컷 마지막 프레임)을 흐리게 + 40% 어둡게
