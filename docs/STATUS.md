@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-11-08 (main 608bab4)
+기준: 2026-11-11 (main 4787143)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 11/11: fix/detail-restore-items — 상세 가격 카드를 오른쪽 sticky 열(.detail-price)로 되돌림(모바일은 한눈에 보기 바로 아래 .price-inline, 하단 고정 바 없음), "가격·할인" 섹션은 할인 그래프·기록 요약만(그래프 기록 2개 미만이면 섹션 숨김). 재배치 때 빠진 항목(클리어까지 등) 복구와 항목 렌더 테스트(detailItems.test.mjs, npm run verify-detail). 플레이 시간 타일 판정을 app/lib/playTime.ts로 분리: 순서가 어긋나도 보통값 표시, 멀티 전용은 "함께 클리어까지 N시간". scripts/insta/generate.mjs 선택자를 새 구조(.price-inline·.sec-price)에 맞춤. build·test 541개 통과
 - 11/8: fix/site-demo-selectors — site-demo.mjs 스크롤 멈춤 위치를 새 상세 구조에 맞춤("한눈에 보기" 제목이 상단 메뉴·안내 문구 아래에 오도록 멈추고, 끝은 "어떤 게임인가요?" 제목). Finals Week로 한 번 돌려 장면 6 확인. build·test 531개 통과
 - 11/8: 한 줄 소개 해요체 적용 — scripts/polite-fun-descriptions.mjs --apply로 fun_description 1,621개 저장(바꾸기 전 값은 games.fun_description_before에 백업). 되돌리려면 fun_description = fun_description_before
 - 11/8: feat/coming-soon-release-date(나머지 2커밋) — 릴스 끝 사이트 소개 애니메이션 scripts/insta/site-demo.mjs + reel-trend --site-demo(copy.siteDemo {game, query, label}), 안내 문구 상단 이동·배경. 앞 2커밋(출시 상태 daily 갱신·날짜 미정 표시)은 이미 main에 있어 rebase에서 빠짐. build·test 531개 통과
@@ -167,6 +168,8 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- 머지 후 확인 대기(사용자): fix/detail-restore-items — 프로덕션 상세(1440px)에서 스크롤 시 오른쪽 가격 카드가 따라오는지, 모바일에서 한눈에 보기 아래에 카드가 있는지, It Takes Two 한눈에 보기에 "함께 클리어까지 15시간". 인스타 detail 캡처(generate.mjs)는 다음에 돌릴 때 확인
+- 백업: 원격 backup/wt-nobody(insta/nobody-reel 커밋 6d6d4f3·0d06e81, 필요 없으면 삭제)
 - 배포 뒤 확인 대기(사용자): feat/ko-description-coming-soon-tiles — 다음 daily 로그의 fill-upcoming-rank 줄, 출시 예정 게임 상세의 타일, 영어 설명 게임의 한국어 소개. 탈락한 Fallout 2개 description_ko는 필요하면 fill-description-ko --retry --ids
 - 배포 뒤 확인 대기(사용자): feat/fill-new-game — 다음 daily 로그에서 import-curator-queue 안의 fill-new-game 단계 실행 시간과 활동(최대 10개) 처리 여부. 신규 게임 중 solo_mode·진입장벽 보류 3개(Idle Champions·표류도시·Knightica)는 weekly가 재시도
 - 머지 후 확인 대기(사용자): fix/search-tag-suggest — 프로덕션 메인 검색에서 "finals w"(Finals Week만, 태그 후보 없음), "좀비 w"(좀비 태그 게임만), "좀비 협"(게임 없음·협동 계열 태그 후보), "war"(전쟁 태그 그대로)
