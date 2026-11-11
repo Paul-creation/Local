@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase';
 import BackLink from '../../components/BackLink';
 import DiscountChart from '../../components/DiscountChart';
 import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL } from '../../lib/price';
+import { playTime, hoursText } from '../../lib/playTime';
 import { isComingSoon, hasDemo, comingSoonLabel, hasReleaseDate, demoStoreUrl, releaseTile } from '../../lib/release';
 import { formatDate } from '../../lib/date';
 import { lowestGauge } from '../../lib/saleEnds';
@@ -286,9 +287,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const showAbout = !!(game.fun_description || game.description_ko || showSteamDesc || shots.length > 0 || aboutRows.length > 0 || otherChipGroups.length > 0 || game.ending_note || (game.content_descriptor_ids?.length ?? 0) > 0);
 
   const heroBg: string | null = game.hero_image_url || shots[0]?.path_full || null;
-  // 플레이 시간 — IGDB game_time_to_beats(초). 세 값이 순서대로(빠르게 ≤ 보통 ≤ 완전히)일 때만 쓰고, 멀티 전용 게임은 숨긴다. 칸이 없으면 기존 story_length 문구
-  const ttb = game.ttb_normally > 0 && game.solo_mode !== 'none' && (!game.ttb_hastily || game.ttb_hastily <= game.ttb_normally) && (!game.ttb_completely || game.ttb_completely >= game.ttb_normally) ? game : null;
-  const hours = (sec: number) => `${Math.max(1, Math.round(sec / 3600)).toLocaleString('ko-KR')}시간`;
+  // 플레이 시간 타일 — 판정은 app/lib/playTime.ts (혼자 하기는 순서 어긋나면 보통값만, 멀티 전용은 '함께 클리어까지')
+  const pt = playTime(game);
+  const hours = hoursText;
   const n = (v: number) => v.toLocaleString('ko-KR');
   const tiles: Tile[] = [];
   // 출시 예정 게임은 평가·동접 대신 출시일·데모·스팀 인기 순위 타일 (출시되면 release_status가 released로 바뀌어 아래 원래 타일로 돌아옴)
@@ -302,8 +303,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   if (!comingSoon && showRecent) tiles.push({ key: 'recent', tone: 'review', icon: 'clock', label: '최근 30일 평가', value: <span className="num">{recentPct}%</span>, sub: Math.abs(recentGap) >= 15 ? (recentGap < 0 ? '최근 평가가 낮아졌어요' : '최근 평가가 좋아졌어요') : `리뷰 ${n(game.recent_review_count)}개` });
   if (!comingSoon && game.current_players > 0) tiles.push({ key: 'now', tone: 'live', icon: 'pulse', label: '지금 동접', value: <><span className="num">{n(game.current_players)}</span>명</> });
   if (!comingSoon && game.peak_players > 0) tiles.push({ key: 'peak', tone: 'live', icon: 'peak', label: '최고 동접', value: <><span className="num">{n(game.peak_players)}</span>명</>, sub: '역대 기준' });
-  if (ttb) tiles.push({ key: 'time', tone: 'time', icon: 'hourglass', label: '플레이 시간', value: <>보통 <span className="num">{hours(ttb.ttb_normally)}</span></>, sub: [ttb.ttb_hastily ? `빠르게 ${hours(ttb.ttb_hastily)}` : '', ttb.ttb_completely ? `전부 ${hours(ttb.ttb_completely)}` : ''].filter(Boolean).join(' · ') || undefined });
-  else if (game.story_length && game.solo_mode !== 'none') tiles.push({ key: 'time', tone: 'time', icon: 'hourglass', label: '플레이 시간', value: game.story_length, valueClass: 'is-text' });
+  if (pt?.kind === 'hours') tiles.push({ key: 'time', tone: 'time', icon: 'hourglass', label: pt.label, value: game.solo_mode === 'none' ? <span className="num">{hours(pt.normally)}</span> : <>보통 <span className="num">{hours(pt.normally)}</span></>, sub: [pt.hastily ? `빠르게 ${hours(pt.hastily)}` : '', pt.completely ? `전부 ${hours(pt.completely)}` : ''].filter(Boolean).join(' · ') || undefined });
+  else if (pt) tiles.push({ key: 'time', tone: 'time', icon: 'hourglass', label: pt.label, value: pt.text, valueClass: 'is-text' });
   if (friendsMax) tiles.push({ key: 'party', tone: 'party', icon: 'people', label: '인원', value: friendsMax === 1 ? '혼자' : <>최대 <span className="num">{friendsMax}</span>명</> });
   if (game.entry_barrier) tiles.push({ key: 'gate', tone: 'party', icon: 'gate', label: '진입장벽', value: game.entry_barrier, valueClass: 'is-text' });
   // korean_support가 비어 있으면(아직 확인 전) 칸을 숨긴다 — "지원 안 함"은 스팀에서 한국어 없음을 확인한 게임만

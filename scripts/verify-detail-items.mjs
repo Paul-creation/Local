@@ -7,9 +7,8 @@ const BASE = process.env.BASE_URL || 'http://localhost:3100';
 const NAMES = ['Lethal Company', 'Stardew Valley', 'It Takes Two', 'Deadly Days: Roadtrip', 'One Tank Trip', 'Finals Week'];
 const s = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-// 멀티 전용(solo_mode none) 게임의 플레이 시간 타일 숨김은 의도된 동작 — page.tsx의 ttb 조건과 같다
-const ttbShown = (g) => g.ttb_normally > 0 && g.solo_mode !== 'none'
-  && (!g.ttb_hastily || g.ttb_hastily <= g.ttb_normally) && (!g.ttb_completely || g.ttb_completely >= g.ttb_normally);
+// 플레이 시간 타일 — page.tsx와 같은 판정(app/lib/playTime.ts). 멀티 전용은 '함께 클리어까지', 순서가 어긋나도 보통값은 보여 줌
+import { playTime } from '../app/lib/playTime.ts';
 
 const COLS = 'id,name,release_status,is_free,price_type,story_length,ttb_hastily,ttb_normally,ttb_completely,solo_mode,max_players,party_max,entry_barrier,korean_support,developer,publisher,release_date,release_date_text,platform,has_ending,heat_rank,achievement_count,has_dlc,steam_appid,family_sharing,storage_gb,has_workshop,recommended_players,session_max';
 
@@ -32,7 +31,8 @@ for (const name of NAMES) {
   if (friends) need.push(['한눈에 보기', '인원', 'max_players']);
   if (g.entry_barrier) need.push(['한눈에 보기', '진입장벽', 'entry_barrier']);
   if (g.korean_support) need.push(['한눈에 보기', '한국어', 'korean_support']);
-  if (ttbShown(g)) need.push(['한눈에 보기', '플레이 시간', 'ttb_normally']);
+  const pt = playTime(g);
+  if (pt) need.push(['한눈에 보기', pt.label, pt.kind === 'hours' ? 'ttb_normally' : 'story_length']);
   if (!soon) need.push(['가격·할인', g.is_free ? '무료' : g.price_type ? '' : '₩', 'price']);
   if (g.max_players > 1) need.push(['플레이 방식', '인원 범위', 'max_players']);
   if (g.solo_mode) need.push(['플레이 방식', '혼자 하기', 'solo_mode']);

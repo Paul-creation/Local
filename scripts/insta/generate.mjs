@@ -155,7 +155,8 @@ async function captureDetail(browser, game, files) {
   }, find.toString());
   const parts = {
     people: () => [...document.querySelectorAll('.dx-tile')].filter((e) => e.querySelector('.dx-tile-label')?.textContent.trim() === '인원'),
-    price: () => ['.price-card-head', '.price-card-was', '.price-card-now', '.lowest-gauge'].flatMap((q) => [...document.querySelectorAll(q)]),
+    // 390px 폭에서는 오른쪽 열(.detail-price)이 숨겨지고 한눈에 보기 아래 .price-inline의 카드가 보인다
+    price: () => ['.price-card-head', '.price-card-was', '.price-card-now', '.lowest-gauge'].flatMap((q) => [...document.querySelectorAll(`.price-inline ${q}`)]),
     spec: () => [...document.querySelectorAll('.pcs-table tbody')],
     video: () => ['.video-stage', '.video-stage-info'].flatMap((q) => [...document.querySelectorAll(q)]),
   };
@@ -194,8 +195,9 @@ async function captureSplit(browser, game, files, split) {
   await page.evaluate(() => {
     const sec = (t) => [...document.querySelectorAll('.detail-main > section')].find((e) => e.querySelector('h3')?.textContent.trim().startsWith(t));
     sec('어떤 게임인가요?')?.setAttribute('data-hide', 'intro');
-    for (const t of ['플레이 방식', '게임 정보']) sec(t)?.setAttribute('data-hide', 'misc');
-    for (const t of ['한눈에 보기', '가격·할인']) sec(t)?.setAttribute('data-keep', '1'); // 인원 칸·가격 카드는 반드시 남긴다 (할인 기록 .price-record는 아래 단계에서 숨김)
+    for (const t of ['플레이 방식', '게임 정보', '가격·할인']) sec(t)?.setAttribute('data-hide', 'misc'); // 가격·할인 = 할인 그래프(.sec-price)만 — 가격 카드는 아래 .price-inline
+    sec('한눈에 보기')?.setAttribute('data-keep', '1'); // 인원 칸은 반드시 남긴다
+    document.querySelector('.detail-main > .price-inline')?.setAttribute('data-keep', '1'); // 가격 카드(.price-card)도 반드시 남긴다
     const video = sec('영상으로 미리 보기');
     video?.setAttribute('data-keep', '1');
     document.querySelector('.pcs-card')?.setAttribute('data-keep', '1');
@@ -208,7 +210,7 @@ async function captureSplit(browser, game, files, split) {
     { name: '투표', css: '.dx-votes' },
     { name: '트레일러·스크린샷·링크 줄', css: '.dx-trailer, .shots, .detail-links' },
     { name: '인원 외 지표 칸(평가·동접·플레이 시간·진입장벽·한국어·역대 최저가 칸)', css: '[data-hide="tiles"]' },
-    { name: '플레이 방식·게임 정보·할인 기록', css: '[data-hide="misc"], .price-record' },
+    { name: '플레이 방식·게임 정보·할인 그래프', css: '[data-hide="misc"], .price-record' },
     { name: '그 밖의 섹션·한 줄 소개·개발사 줄·구매 버튼·안내 문구·PC 사양 설명·원문 사양', css: '.detail-main > *:not([data-keep]), .dx-lead, .price-card-buttons, .price-card-note, .price-card-compare-status, .pcs-sub, .pcs-raw' },
   ];
   const measure = () => page.evaluate(() => {
@@ -225,7 +227,7 @@ async function captureSplit(browser, game, files, split) {
     const isHead = (e) => e.matches('h2, h3') || (e.closest('.detail-main') && !e.children.length && e.textContent.trim().length < 20 && parseFloat(getComputedStyle(e).fontSize) >= 20 && parseInt(getComputedStyle(e).fontWeight, 10) >= 600);
     const heads = [...m.querySelectorAll('*')].filter((e) => isHead(e) && inUnits(e) && e.getBoundingClientRect().height > 0).map((e) => Math.round(e.getBoundingClientRect().bottom + scrollY));
     const vis = (e, q) => [...e.querySelectorAll(q)].filter((x) => x.getBoundingClientRect().height > 0).map((x) => x.textContent.trim());
-    const kept = units.map((e) => e.matches('header.dx-head') ? '커버·제목' : e.matches('.sec-glance') ? `한눈에 보기(${vis(e, '.dx-tile-label').join('·')})` : e.matches('.sec-price') ? 'Steam 가격·할인·역대 최저가'
+    const kept = units.map((e) => e.matches('header.dx-head') ? '커버·제목' : e.matches('.sec-glance') ? `한눈에 보기(${vis(e, '.dx-tile-label').join('·')})` : e.matches('.price-inline') ? 'Steam 가격·할인·역대 최저가' : e.matches('.sec-price') ? '할인 그래프'
       : vis(e, 'h1, h2, h3, .dx-tile-label')[0] || e.textContent.trim().slice(0, 14));
     return { bounds: tops, atoms, heads, kept, end: Math.round(last.bottom + scrollY) + 16 };
   });
