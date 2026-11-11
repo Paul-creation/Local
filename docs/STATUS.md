@@ -1,6 +1,6 @@
 # JamiDuNow 현재 상황
 
-기준: 2026-11-11 (main 4787143)
+기준: 2026-11-11 (main fb45d03)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 11/11: chore/insta-integrate — insta 브랜치 5개(fix/insta-detail-footer, insta/sbg-reel-fix, insta/nobody-reel, insta/goatastrophe-reel, insta/one-tank-trip)를 main에 통합. reel-trend.mjs는 site-demo(siteDemo·outroAt·xfade·${SUF})와 prepareClip·fit-blur·atempo 2단·마지막 멘트 템플릿·발음 검사를 함께 살림(본편 길이 bodyDur, 이어붙이기 outroAt). reel-single.mjs 스타일은 main 기준 유지. 옛 copy(finals-week·mountain-goatastrophe·trash-island·crack-trend·crack-trend-v2)에 closing:false·pitch stt/stretch:false를 넣어 예전 방식 그대로 렌더. planFixed copy는 정지 프레임 검사 실패로 중단하지 않음. 렌더 캐시·결과는 worktree가 아니라 메인 폴더 scripts/insta/{cache,out}(paths.mjs). Finals Week(--site-demo)·Goatastrophe 렌더 비교로 길이·정지 구간·장면 전환 동일 확인, One Tank Trip은 내레이션·클립 원본이 없어져 렌더 검증 못 함. build·test 546개 통과
 - 11/11: fix/detail-restore-items — 상세 가격 카드를 오른쪽 sticky 열(.detail-price)로 되돌림(모바일은 한눈에 보기 바로 아래 .price-inline, 하단 고정 바 없음), "가격·할인" 섹션은 할인 그래프·기록 요약만(그래프 기록 2개 미만이면 섹션 숨김). 재배치 때 빠진 항목(클리어까지 등) 복구와 항목 렌더 테스트(detailItems.test.mjs, npm run verify-detail). 플레이 시간 타일 판정을 app/lib/playTime.ts로 분리: 순서가 어긋나도 보통값 표시, 멀티 전용은 "함께 클리어까지 N시간". scripts/insta/generate.mjs 선택자를 새 구조(.price-inline·.sec-price)에 맞춤. build·test 541개 통과
 - 11/8: fix/site-demo-selectors — site-demo.mjs 스크롤 멈춤 위치를 새 상세 구조에 맞춤("한눈에 보기" 제목이 상단 메뉴·안내 문구 아래에 오도록 멈추고, 끝은 "어떤 게임인가요?" 제목). Finals Week로 한 번 돌려 장면 6 확인. build·test 531개 통과
 - 11/8: 한 줄 소개 해요체 적용 — scripts/polite-fun-descriptions.mjs --apply로 fun_description 1,621개 저장(바꾸기 전 값은 games.fun_description_before에 백업). 되돌리려면 fun_description = fun_description_before
