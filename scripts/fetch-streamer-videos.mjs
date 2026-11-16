@@ -13,6 +13,8 @@
 //   제목 + 설명 앞부분(200자). 쇼츠는 제목만
 //   이름이 일반 단어인 게임(Muck·Inside 등, lib/video-filter.mjs)은 제목에 "게임"·game·스팀 등이나 영문 원제+한국어 이름이 같이 있을 때만
 //   이름 바로 뒤가 "같은·감성·후속작"이나 한 자리 숫자(속편)면 그 게임으로 보지 않음
+//   이름 바로 뒤가 사람 소개·수식어("롤 챌린저", "발로란트 프로 출신")면 그 게임으로 보지 않음 (app/lib/videoRelevance.mjs)
+//   이름이 짧거나(3글자 이하: 롤·발로·배그·피크·레포) 일반 단어인 게임은 유튜브 카테고리(게임)·태그·주제 링크·제목의 플레이 단서 중 하나가 있어야 연결 (videos.list는 part를 늘려도 50개당 1유닛)
 //   여러 게임이 걸리면 가장 긴 이름 하나 (길이가 같으면 제목 쪽, 먼저 나온 쪽)
 // - 연결 안 된 영상은 저장하지 않고 개수 집계 + 실행 로그에 채널 / 제목 / video id / 쇼츠 여부를 한 줄씩 출력 (미리보기·--apply 모두). 이미 저장된 영상은 건드리지 않음
 // - YouTube 하루 상한 200유닛 (lib/streamer-videos.mjs, 하이라이트 작업이 이 몫을 빼 두고 씀). 상한에 닿으면 그 채널은 확인 시각을 안 바꾸고 멈춤 → 다음 실행 때 이어서
@@ -114,7 +116,7 @@ async function scanChannel(ch, matchers, gamesById) {
   const unlinkedList = [];
   let cursor = startedAt;
   for (let i = 0; i < ids.length; i += 50) {
-    const res = await youtube('videos', { part: 'snippet,statistics,contentDetails', id: ids.slice(i, i + 50).join(',') }, 1);
+    const res = await youtube('videos', { part: 'snippet,statistics,contentDetails,topicDetails', id: ids.slice(i, i + 50).join(',') }, 1);
     for (const item of res.items || []) {
       const published = new Date(item.snippet?.publishedAt);
       // 생방송 중·예정: 끝난 뒤 다시 보도록 확인 시각을 그 영상 앞으로 둠
@@ -130,10 +132,14 @@ async function scanChannel(ch, matchers, gamesById) {
         published_at: published.toISOString(),
         view_count: Number(item.statistics?.viewCount || 0),
         is_short: duration > 0 && duration <= SHORT_MAX_SEC,
+        // 짧거나 흔한 이름 게임의 "실제 플레이 영상" 확인용 (저장하지 않음)
+        categoryId: item.snippet?.categoryId || '',
+        tags: item.snippet?.tags || [],
+        topics: item.topicDetails?.topicCategories || [],
       };
       const hit = matchVideo(v, matchers, gamesById);
       if (!hit) { unlinkedList.push({ id: v.video_id, title: v.title, short: v.is_short }); continue; }
-      const { description, ...row } = v;
+      const { description, categoryId, tags, topics, ...row } = v;
       linked.push({ ...row, channel_id: ch.channel_id, game_id: hit.id, match_method: hit.where });
     }
   }
