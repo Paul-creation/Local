@@ -3,9 +3,11 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import SearchPanel from '../../search/SearchPanel';
+import AbSearch from '../ab/AbSearch';
+import Situations from '../ab/Situations';
+import AIRecommend from '../../AIRecommend';
 import CmdRow from './CmdRow';
-import ShortcutHint from './ShortcutHint';
-import { SearchIcon, SparkIcon } from './icons';
+import { SparkIcon } from './icons';
 import type { GameFilters } from '../../../lib/useGameFilters';
 import type { HomeStats } from '../../../lib/homeMain';
 
@@ -21,18 +23,6 @@ const STATS: { key: keyof HomeStats; label: string }[] = [
 ];
 
 export default function MainHero({ games, filters, showHome, sidebar = false, event, covers, stats }: { games: any[]; filters: GameFilters; showHome: boolean; sidebar?: boolean; event?: ReactNode; covers: string[]; stats: HomeStats }) {
-  // ⌘K / Ctrl+K — 검색창으로 이동
-  useEffect(() => {
-    if (!showHome) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== 'k') return;
-      e.preventDefault();
-      document.querySelector<HTMLInputElement>('.mn-cmd input[role="combobox"]')?.focus();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [showHome]);
-
   // 표지 벽 — 하나씩 툭툭 나타나지 않게 전체를 투명에서 시작해, 이미지 대부분이 받아지면(또는 600ms 뒤) 400ms에 걸쳐 나타난다 (absolute 배경이라 레이아웃 영향 없음)
   const bgRef = useRef<HTMLDivElement>(null);
   const [bgReady, setBgReady] = useState(false);
@@ -67,10 +57,18 @@ export default function MainHero({ games, filters, showHome, sidebar = false, ev
             <p className="mn-sub">스팀, 유튜브, 할인 사이트를 따로 돌아다니지 않아도 돼요.{' '}<br />몇 명이서, 얼마에, 어떻게 하는지 한 곳에서.</p>
           </div>
         )}
-        <div className={showHome ? 'mn-cmd' : 'home-search'} data-tour={showHome ? 'cmdbar' : undefined}>
-          <SearchPanel games={games} filters={filters} sidebar={sidebar} floating={showHome} shortPlaceholder={showHome ? '게임·태그 검색' : undefined} lead={showHome ? <span className="mn-search-icon"><SearchIcon /></span> : undefined} hint={showHome ? <ShortcutHint /> : undefined} aiIcon={showHome ? <SparkIcon /> : undefined} />
-          {showHome && <div className="home-only"><CmdRow filters={filters} /></div>}
-        </div>
+        {showHome ? (
+          // 홈: 에어비앤비식 3칸 검색창(AI 추천 버튼은 그 오른쪽 그대로) → 이런 판 어때요? 타일 → 기존 칩 줄. 결과 화면(아래)은 예전 검색창 그대로
+          <div className="ab-hero" data-tour="cmdbar">
+            <AbSearch games={games} trailing={<AIRecommend icon={<SparkIcon />} />} />
+            <div className="home-only"><Situations /></div>
+            <div className="home-only mn-cmd ab-chips-row"><CmdRow filters={filters} /></div>
+          </div>
+        ) : (
+          <div className="home-search">
+            <SearchPanel games={games} filters={filters} sidebar={sidebar} floating={false} />
+          </div>
+        )}
         {showHome && shownStats.length > 0 && (
           <dl className="home-only mn-stats">
             {shownStats.map((s) => (

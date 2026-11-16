@@ -20,7 +20,7 @@ export const INDEX_FIELDS = `
   entry_barrier, solo_mode, party_max, session_max, multiplayer_host,
   is_free, price_type, lowest_price, steam_appid, source, cover_image_url, card_image_url, heat_rank,
   spec_parsed, activities_confirmed, activities_unsure,
-  review_summary, review_positive_percent, review_total, korean_support,
+  review_summary, review_positive_percent, review_total, korean_support, genres, themes,
   price_history(price, discount_percent, checked_at, currency, original_price, sale_ends_at)
 `;
 
@@ -35,6 +35,12 @@ const reviewOf = (g: { review_summary?: string | null; review_positive_percent?:
   ...(g.review_positive_percent ? { review_percent: g.review_positive_percent } : {}),
   ...(g.review_total ? { review_total: g.review_total } : {}),
   ...(isNoKorean(g.korean_support) ? { no_korean: true } : {}),
+});
+
+// 장르·테마(IGDB 영문 이름) — 에어비앤비식 검색의 장르 타일 판정용. 비어 있으면 칸 자체를 뺀다 (카드 조회에는 싣지 않음)
+const gtOf = (genres?: string[] | null, themes?: string[] | null) => ({
+  ...(genres?.length ? { genres } : {}),
+  ...(themes?.length ? { themes } : {}),
 });
 
 const activitiesOf = (confirmed?: string[] | null, unsure?: string[] | null) => ({
@@ -70,9 +76,9 @@ export async function getGameIndex() {
   const soonById = soonMap(soon);
   const tagIds = await getGameTagIds();
   return (list || []).map((g) => {
-    const { tags, spec_parsed, activities_confirmed, activities_unsure, review_summary, review_positive_percent, review_total, korean_support, ...rest } = g as typeof g & { tags?: string[] | null };
+    const { tags, spec_parsed, activities_confirmed, activities_unsure, review_summary, review_positive_percent, review_total, korean_support, genres, themes, ...rest } = g as typeof g & { tags?: string[] | null };
     const ids = tagIds?.get(g.id);
-    return flattenGame({ ...rest, ...reviewOf({ review_summary, review_positive_percent, review_total, korean_support }), ...(streamers.has(g.id) ? { streamers: streamers.get(g.id) } : {}), ...(tagIds ? { tag_ids: ids || [] } : { tags }), spec_min: specMinOf(spec_parsed), ...activitiesOf(activities_confirmed, activities_unsure), goty_awards: gotyById.get(g.id), ...(crossIds.has(g.id) ? { has_crossplay: true } : {}), ...trendById.get(g.id), ...soonById.get(g.id) });
+    return flattenGame({ ...rest, ...reviewOf({ review_summary, review_positive_percent, review_total, korean_support }), ...gtOf(genres, themes), ...(streamers.has(g.id) ? { streamers: streamers.get(g.id) } : {}), ...(tagIds ? { tag_ids: ids || [] } : { tags }), spec_min: specMinOf(spec_parsed), ...activitiesOf(activities_confirmed, activities_unsure), goty_awards: gotyById.get(g.id), ...(crossIds.has(g.id) ? { has_crossplay: true } : {}), ...trendById.get(g.id), ...soonById.get(g.id) });
   });
 }
 
@@ -100,8 +106,8 @@ export async function getCardGames(ids: string[]) {
   const tagIds = new Map<string, number[]>();
   for (const r of tagRows || []) tagIds.set(r.game_id, [...(tagIds.get(r.game_id) || []), Number(r.tag_id)]);
   const byId = new Map((list || []).map((g) => {
-    const { tags, spec_parsed, activities_confirmed, activities_unsure, review_summary, review_positive_percent, review_total, korean_support, ...rest } = g as typeof g & { tags?: string[] | null };
-    void tags; // 번호(tag_ids)만 보낸다
+    const { tags, spec_parsed, activities_confirmed, activities_unsure, review_summary, review_positive_percent, review_total, korean_support, genres, themes, ...rest } = g as typeof g & { tags?: string[] | null };
+    void tags; void genres; void themes; // 번호(tag_ids)만 보낸다
     return [g.id, flattenGame({ ...rest, ...reviewOf({ review_summary, review_positive_percent, review_total, korean_support }), ...trendById.get(g.id), ...(streamers.get(g.id)?.length ? { streamers: streamers.get(g.id)!.slice(0, STREAMER_NAMES_MAX) } : {}), tag_ids: tagIds.get(g.id) || [], spec_min: specMinOf(spec_parsed), ...activitiesOf(activities_confirmed, activities_unsure), goty_awards: gotyById.get(g.id), ...(crossIds.has(g.id) ? { has_crossplay: true } : {}), ...soonById.get(g.id) })] as const;
   }));
   return ids.map((id) => byId.get(id)).filter((g): g is NonNullable<typeof g> => !!g);
