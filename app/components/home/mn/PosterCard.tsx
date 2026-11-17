@@ -27,7 +27,7 @@ export default function PosterCard({ game, badge = null, eager = false, tourId }
   const cover = { vertical: game.cover_vertical_url ?? null, appid: game.steam_appid ?? null, wide: game.card_image_url || game.cover_image_url || null };
   const meta = [players, barrier ? `진입장벽 ${barrier}` : ''].filter(Boolean).join(' · ');
   return (
-    <Link href={`/games/${game.id}`} className="mn-card" data-tour={tourId}>
+    <Link href={`/games/${game.id}`} prefetch={false} className="mn-card" data-tour={tourId}>
       <span className="mn-poster">
         <PosterImage cover={cover} eager={eager} />
         {badge && <span className={`mn-badge ${badge === '신작' ? 'is-new' : 'is-trend'}`}>{badge}</span>}

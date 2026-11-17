@@ -10,7 +10,7 @@ export function loadCopy(dir, postId) {
   const file = path.join(dir, 'copy', `${postId}.json`);
   if (!fs.existsSync(file)) return {};
   const raw = fs.readFileSync(file, 'utf8');
-  if (raw.includes('재밌드나')) throw new Error('화면에는 "재밌드나"를 쓰지 않아요. JamiDuNow만 쓰세요.');
+  if (raw.includes('재밌드나')) throw new Error('화면에는 "재밌드나"를 쓰지 않아요. Select Screen만 쓰세요.');
   return JSON.parse(raw);
 }
 

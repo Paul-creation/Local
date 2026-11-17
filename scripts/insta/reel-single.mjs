@@ -76,7 +76,7 @@ function html(copy, infos, font) {
 .inf { margin-top: 18px; font-size: 34px; font-weight: 600; line-height: 1.35; color: #fff; font-variant-numeric: tabular-nums; }
 ${W ? `.desc { left: 0; width: ${w}px; top: ${descTop}px; font-size: 52px; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; color: #fff; white-space: pre-line; text-align: center; }` : `.desc { top: 1230px; font-size: 38px; font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; color: #fff; white-space: pre-line; }`}
 </style>
-<div class="box logo"><i>J</i><b>JamiDuNow</b></div>
+<div class="box logo"><i>J</i><b>Select Screen</b></div>
 <div class="block"><div class="t1" id="t1">${esc(copy.title1 ?? copy.kicker ?? '')}</div><div class="t2" id="t2">${esc(copy.title2 ?? copy.title)}</div><div class="inf" id="i">${infos.map(esc).join('<br>')}</div></div>
 <div class="box desc">${esc(copy.desc)}</div>`;
 }
@@ -139,7 +139,7 @@ export async function runReelSingle(postId, { refresh = false, audio = false } =
   const copyFile = path.join(DIR, 'copy', `${postId}.json`);
   if (!fs.existsSync(copyFile)) throw new Error(`--reel-single: ${path.relative(ROOT, copyFile)}이 없어요`);
   const copy = JSON.parse(fs.readFileSync(copyFile, 'utf8'));
-  if (JSON.stringify(copy).includes('재밌드나')) throw new Error('화면에는 "재밌드나"를 쓰지 않아요. JamiDuNow만 쓰세요.');
+  if (JSON.stringify(copy).includes('재밌드나')) throw new Error('화면에는 "재밌드나"를 쓰지 않아요. Select Screen만 쓰세요.');
   if (copy.desc.split('\n').length > 2) throw new Error('--reel-single: 설명은 최대 2줄이에요');
   const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
   const { data: game, error } = await db.from('games').select('id, name, display_name, steam_appid, solo_playable, min_players, max_players, korean_support, is_free, video_url, release_status, release_date, demo_appid, price_history(price, original_price, discount_percent, sale_ends_at, checked_at)').eq('steam_appid', copy.appid).single();

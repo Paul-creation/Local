@@ -85,3 +85,33 @@ test('여러 게임이 같이 쓰는 별칭은 영상 연결에 안 쓰고, 한 
   assert.equal(hit('몬헌 신작 첫인상'), null);
   assert.equal(hit('오늘의 배그 솔로 치킨'), 'pubg');
 });
+
+test('게스트 소개에 "롤"이 든 영상("롤 챌린저+카드 컬렉터")은 롤로 연결 안 됨 — 설명·태그에 롤이 있어도', () => {
+  const title = '포켓몬 카드 1장 = 2억5천만원.. 이걸 준비했다고?? 롤 챌린저+카드 컬렉터 | 조재원 장인초대석 [테스터훈]';
+  assert.equal(link({ title }), null);
+  assert.equal(link({ title, description: '롤 챌린저 조재원님과 함께' }), null);
+  const v = { title, description: '', is_short: false, categoryId: '20', tags: ['롤'] };
+  assert.equal(matchVideo(v, matchers, byId), null);
+});
+
+test('사람 소개·수식어: 롤 프로 출신 · 발로란트 그랜드마스터는 제외, "롤 챌린저 솔랭 도전"처럼 직접 플레이도 제외(보수적)', () => {
+  for (const t of ['롤 프로 출신 형이랑 듀오', '발로란트 프로게이머 초대석', '발로란트 출신 코치가 알려주는 법']) assert.equal(link({ title: t }), null, t);
+  assert.equal(link({ title: '롤 프로젝트 솔랭' }), 'League of Legends'); // "프로젝트"는 사람 소개 단어 "프로"가 아님 (낱말 경계)
+  assert.equal(link({ title: '롤 솔랭 듀오 도전' }), 'League of Legends');
+  assert.equal(link({ title: '긴 이름: 리그 오브 레전드 프로 경기 보기' }), 'League of Legends'); // 긴 이름은 "프로"까지는 안 거름
+});
+
+test('짧은 이름(롤)은 플레이 근거 필요: 카테고리 게임·태그·제목 단서 중 하나, 정보가 없으면 판단 안 하고 통과', () => {
+  const base = { title: '롤 하이라이트 모음', description: '', is_short: false };
+  assert.equal(matchVideo({ ...base, categoryId: '24', tags: ['예능'], topics: [] }, matchers, byId), null);
+  assert.equal(matchVideo({ ...base, categoryId: '20', tags: [], topics: [] }, matchers, byId)?.id, 'lol');
+  assert.equal(matchVideo({ ...base, categoryId: '24', tags: ['롤'], topics: [] }, matchers, byId)?.id, 'lol');
+  assert.equal(matchVideo({ ...base, categoryId: '24', tags: [], topics: ['https://en.wikipedia.org/wiki/League_of_Legends'] }, matchers, byId)?.id, 'lol');
+  assert.equal(matchVideo({ ...base, title: '롤 솔랭 하이라이트', categoryId: '24', tags: [], topics: [] }, matchers, byId)?.id, 'lol');
+  assert.equal(matchVideo(base, matchers, byId)?.id, 'lol'); // 예전 호출(메타 없음)
+});
+
+test('긴 이름 게임은 플레이 근거가 없어도 그대로 연결', () => {
+  const v = { title: '오버워치 2 신규 영웅 리뷰', description: '', is_short: false, categoryId: '24', tags: [], topics: [] };
+  assert.equal(matchVideo(v, matchers, byId)?.id, 'ow');
+});

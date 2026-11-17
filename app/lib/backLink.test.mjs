@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { isInSiteNav, pickFallback } from './backLink.ts';
 
-const O = 'https://jamidunow.com';
+const O = 'https://select-screen.com';
 const base = { clientNavs: 0, referrer: '', origin: O, historyLength: 1 };
 
 test('이 문서에서 클라이언트 이동이 1회 이상이면 사이트 안 이동', () => {
@@ -22,7 +22,7 @@ test('새 탭으로 연 상세(history.length 1)는 referrer가 같은 출처여
 test('주소 직접 입력·북마크(referrer 없음)·검색엔진·다른 출처는 fallback으로', () => {
   assert.equal(isInSiteNav({ ...base, historyLength: 5 }), false);
   assert.equal(isInSiteNav({ ...base, referrer: 'https://www.google.com/', historyLength: 5 }), false);
-  assert.equal(isInSiteNav({ ...base, referrer: 'https://jamidunow.com.evil.com/', historyLength: 5 }), false);
+  assert.equal(isInSiteNav({ ...base, referrer: 'https://select-screen.com.evil.com/', historyLength: 5 }), false);
 });
 
 test('깨진 referrer는 안전하게 fallback으로', () => {

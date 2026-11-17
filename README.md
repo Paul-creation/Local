@@ -40,5 +40,5 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 전체 게임 목록(/api/games/list) 캐시를 바로 새로 만들기 — Vercel 환경변수 ADMIN_REVALIDATE_KEY와 같은 값을 헤더로 보낸다:
 
 ```bash
-curl -X POST https://jamidunow.com/api/admin/revalidate -H "x-admin-key: $ADMIN_REVALIDATE_KEY"
+curl -X POST https://select-screen.com/api/admin/revalidate -H "x-admin-key: $ADMIN_REVALIDATE_KEY"
 ```

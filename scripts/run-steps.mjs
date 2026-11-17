@@ -4,6 +4,7 @@
 import { spawn } from 'child_process';
 import fs from 'fs';
 import { THU_TRAILER_YT_MAX, pacificNow } from './lib/quota-plan.mjs';
+import { flushChangedGames } from './lib/revalidateGames.mjs';
 
 const GROUPS = {
   // 매일: 가격·할인·접속자처럼 자주 바뀌는 것
@@ -111,6 +112,10 @@ function run(rawStep) {
 
 const results = [];
 for (const s of steps) results.push(await run(s));
+
+// 가격·할인·출시 상태가 바뀐 게임의 상세 페이지만 새로 만들게 알림 (바뀐 게 없으면 호출 안 함). 실패해도 단계 결과에는 영향 없음
+console.log('\n━━━━━━━━ ▶ 상세 페이지 갱신 ━━━━━━━━');
+try { await flushChangedGames(); } catch (e) { console.log(`⚠️ 상세 페이지 갱신 중 오류: ${e.message}`); }
 
 const lines = [
   `## ${{ daily: '매일 갱신', weekly: '매주 갱신', highlight: '하이라이트 영상' }[group]} 결과`,

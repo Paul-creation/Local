@@ -25,7 +25,7 @@ export type TourStep = {
 };
 
 export const TOUR_STEPS: TourStep[] = [
-  { id: 'hero', page: 'home', targets: ['hero'], title: 'JamiDuNow에 온 걸 환영해요', desc: '친구랑 할 게임을 인원·가격·할인으로 한 번에 비교하는 곳이에요', action: 'button', buttonLabel: '다음', block: true, optional: true },
+  { id: 'hero', page: 'home', targets: ['hero'], title: 'Select Screen에 온 걸 환영해요', desc: '친구랑 할 게임을 인원·가격·할인으로 한 번에 비교하는 곳이에요', action: 'button', buttonLabel: '다음', block: true, optional: true },
   { id: 'cmdbar', page: 'home', targets: ['cmdbar'], title: '게임 이름이나 태그로 바로 찾아요', desc: '무료·할인 중·내 PC로 돌아가는 게임만 골라볼 수도 있어요', action: 'button', buttonLabel: '다음', block: true, optional: true },
   { id: 'ai', page: 'home', targets: ['ai'], title: '뭘 할지 모르겠다면', desc: '질문 몇 개로 AI가 골라줘요', action: 'button', buttonLabel: '다음', block: true, optional: true },
   { id: 'people', page: 'home', targets: ['people-tabs'], title: '친구 몇 명이서 할 거예요?', desc: '인원을 눌러보세요', action: 'target' },

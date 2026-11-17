@@ -8,6 +8,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { steamGet, appdetailsUrl } from './lib/steam.mjs';
 import { comingSoonPatch, recordComingSoonCheck } from './lib/coming-soon.mjs';
+import { recordChangedGames } from './lib/revalidateGames.mjs';
 
 const APPLY = process.argv.includes('--apply');
 const TIME_BUDGET_MS = 40 * 60 * 1000; // run-steps 단계 시간 제한(45분) 전에 스스로 멈춤
@@ -20,7 +21,7 @@ async function revalidateList(changed) {
   if (!APPLY || !changed) return;
   const key = process.env.ADMIN_REVALIDATE_KEY;
   if (!key) { console.log('ℹ️  ADMIN_REVALIDATE_KEY 없음 — 캐시 무효화 생략'); return; }
-  const site = (process.env.NEXT_PUBLIC_SITE_URL || 'https://jamidunow.com').replace(/\/$/, '');
+  const site = (process.env.NEXT_PUBLIC_SITE_URL || 'https://select-screen.com').replace(/\/$/, '');
   try {
     const res = await fetch(`${site}/api/admin/revalidate`, { method: 'POST', headers: { 'x-admin-key': key } });
     console.log(res.ok ? '♻️  /api/games/list 캐시 무효화' : `⚠️ 캐시 무효화 실패 (${res.status})`);
@@ -39,6 +40,7 @@ async function main() {
   console.log(`${APPLY ? '반영' : '미리보기'} — 출시 예정 게임 ${games.length}개 확인\n`);
 
   let checked = 0, released = 0, failed = 0, updated = 0;
+  const changed = new Set(); // 출시 전환·출시일·데모가 바뀐 게임 (상세 페이지 갱신 대상)
   for (const game of games) {
     if (Date.now() - startedAt > TIME_BUDGET_MS) { console.log('⏱️  시간이 지나서 여기서 멈춤 (남은 게임은 내일)'); break; }
     try {
@@ -51,6 +53,7 @@ async function main() {
         const { error: upErr } = await supabase.from('games').update(patch).eq('id', game.id).eq('release_status', 'coming_soon');
         if (upErr) { failed++; checked--; console.log(`   ❌ ${game.name}: 저장 실패 ${upErr.message}`); continue; }
       }
+      changed.add(game.id);
       if (isOut) { released++; console.log(`🚀 출시됨: ${game.name} (${game.steam_appid})`); }
       else { updated++; console.log(`✏️  ${game.name}: ${Object.entries(patch).map(([k, v]) => `${k} → ${v}`).join(', ')}`); }
     } catch (e) {
@@ -59,6 +62,7 @@ async function main() {
     }
   }
   await revalidateList(released + updated);
+  if (APPLY) recordChangedGames([...changed]);
   console.log(`\n출시 전환 ${released}개 · 출시일·데모 갱신 ${updated}개 · 확인 실패 ${failed}개 (확인 ${checked}개)`);
   if (APPLY) recordComingSoonCheck({ checked, released, failed });
   else console.log('미리보기만 했어요. 반영하려면 --apply를 붙여 주세요');

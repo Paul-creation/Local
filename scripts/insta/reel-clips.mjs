@@ -33,7 +33,7 @@ const logoHtml = (font) => `<!doctype html><meta charset="utf-8"><style>${baseCs
 .logo { position: absolute; left: 44px; top: 150px; display: flex; align-items: center; gap: 10px; opacity: 0.92; }
 .logo i { width: 38px; height: 38px; border-radius: 11px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-style: normal; font-size: 27px; font-weight: 900; line-height: 1; }
 .logo b { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #fff; text-shadow: 0 0 8px rgba(0,0,0,.6); }
-</style><div class="logo"><i>J</i><b>JamiDuNow</b></div>`;
+</style><div class="logo"><i>J</i><b>Select Screen</b></div>`;
 // 자막: 56px Bold 흰색, 바깥쪽 3px 검은 외곽선(6px 선 + paint-order) + 아주 약한 그림자
 const subHtml = (font, text) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
 .sub { position: absolute; left: ${CX}px; top: ${SUB_Y}px; transform: translate(-50%, -50%); white-space: nowrap; font-size: 56px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; color: #fff; -webkit-text-stroke: 6px #000; paint-order: stroke fill; stroke-linejoin: round; text-shadow: 0 2px 0 rgba(0,0,0,.4); }
@@ -46,7 +46,7 @@ const cardHtml = (font, f, imgB64) => `<!doctype html><meta charset="utf-8"><sty
 .i em { font-style: normal; color: ${MINT}; }
 .u { margin-top: 20px; font-size: 28px; font-weight: 600; color: rgba(255,255,255,.55); letter-spacing: .02em; }
 </style><div class="card" id="c"><img src="data:image/jpeg;base64,${imgB64}"><div class="t">CRACK</div>
-<div class="i"><em>${esc(f.mmdd)} 출시</em> / ${esc(f.regular ?? f.price)}<br>최대 ${f.max}인 / ${esc(f.korean)}</div><div class="u">jamidunow.com</div></div>`;
+<div class="i"><em>${esc(f.mmdd)} 출시</em> / ${esc(f.regular ?? f.price)}<br>최대 ${f.max}인 / ${esc(f.korean)}</div><div class="u">select-screen.com</div></div>`;
 
 const clipFile = (prefix) => {
   const hit = fs.readdirSync(CLIPS).filter((n) => n.startsWith(prefix));

@@ -1,12 +1,12 @@
-# JamiDuNow 현재 상황
+# Select Screen 현재 상황
 
-기준: 2026-11-11 (main fb45d03)
+기준: 2026-11-17 (main f5a3abd)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
 - 저장소 Paul-creation/Local, Next.js + Supabase + Vercel(Hobby)
-- 주소 jamidunow.com(game-info-hub.vercel.app은 NEXT_PUBLIC_SITE_URL 재배포 뒤 jamidunow.com으로 308). 오픈·홍보는 11월쯤
-- 화면엔 "JamiDuNow"만, "재밌드나"는 구조화 데이터에만. 푸터 "© 2026 The Circles"
+- 주소 select-screen.com(옛 jamidunow.com·game-info-hub.vercel.app은 proxy.ts에서 select-screen.com으로 301). 오픈·홍보는 11월쯤
+- 화면엔 "Select Screen"만, 옛 이름(JamiDuNow·재밌드나)은 구조화 데이터 alternateName에만. 푸터 "© 2026 The Circles"
 
 ## 일하는 방식
 - 채팅 Claude는 방향·검토, 실행은 Claude Code(Codespaces) J·K 두 세션
@@ -16,6 +16,8 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 11/17: chore/rename-visible-text — 헤더·푸터·OG 라우트는 SITE_NAME을 써서 이미 바뀜, 이미지에 박혀 있던 public/og-default.png의 "JamiDuNow"를 npm run og로 다시 만들어 "Select Screen"으로 교체. 375·360·320px 헤더 한 줄·겹침 없음(CSS 변경 없음). build·test 565개 통과
+- 11/17: chore/rename-select-screen — 사이트 이름 JamiDuNow → Select Screen, 도메인 jamidunow.com → select-screen.com. site.ts(SITE_NAME·SITE_URL 기본값·alternateName에 옛 이름 JamiDuNow·재밌드나 유지(JDN 제거)·메타 설명에 "픽창"), proxy.ts(옛 jamidunow.com·www·game-info-hub.vercel.app을 select-screen.com으로 301), 가이드·투어 문구, scripts 기본 주소, scripts/insta 로고·URL 문구 변경. 로고·파비콘 "J" 이미지, 이메일 jamidunow@gmail.com, DB 이름, localStorage 키(jdn_*)·CSS 클래스(jdn-tour)는 그대로
 - 11/11: chore/insta-integrate — insta 브랜치 5개(fix/insta-detail-footer, insta/sbg-reel-fix, insta/nobody-reel, insta/goatastrophe-reel, insta/one-tank-trip)를 main에 통합. reel-trend.mjs는 site-demo(siteDemo·outroAt·xfade·${SUF})와 prepareClip·fit-blur·atempo 2단·마지막 멘트 템플릿·발음 검사를 함께 살림(본편 길이 bodyDur, 이어붙이기 outroAt). reel-single.mjs 스타일은 main 기준 유지. 옛 copy(finals-week·mountain-goatastrophe·trash-island·crack-trend·crack-trend-v2)에 closing:false·pitch stt/stretch:false를 넣어 예전 방식 그대로 렌더. planFixed copy는 정지 프레임 검사 실패로 중단하지 않음. 렌더 캐시·결과는 worktree가 아니라 메인 폴더 scripts/insta/{cache,out}(paths.mjs). Finals Week(--site-demo)·Goatastrophe 렌더 비교로 길이·정지 구간·장면 전환 동일 확인, One Tank Trip은 내레이션·클립 원본이 없어져 렌더 검증 못 함. build·test 546개 통과
 - 11/11: fix/detail-restore-items — 상세 가격 카드를 오른쪽 sticky 열(.detail-price)로 되돌림(모바일은 한눈에 보기 바로 아래 .price-inline, 하단 고정 바 없음), "가격·할인" 섹션은 할인 그래프·기록 요약만(그래프 기록 2개 미만이면 섹션 숨김). 재배치 때 빠진 항목(클리어까지 등) 복구와 항목 렌더 테스트(detailItems.test.mjs, npm run verify-detail). 플레이 시간 타일 판정을 app/lib/playTime.ts로 분리: 순서가 어긋나도 보통값 표시, 멀티 전용은 "함께 클리어까지 N시간". scripts/insta/generate.mjs 선택자를 새 구조(.price-inline·.sec-price)에 맞춤. build·test 541개 통과
 - 11/8: fix/site-demo-selectors — site-demo.mjs 스크롤 멈춤 위치를 새 상세 구조에 맞춤("한눈에 보기" 제목이 상단 메뉴·안내 문구 아래에 오도록 멈추고, 끝은 "어떤 게임인가요?" 제목). Finals Week로 한 번 돌려 장면 6 확인. build·test 531개 통과
@@ -169,6 +171,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- 배포 뒤 확인 대기(사용자): chore/rename-select-screen — Vercel에서 select-screen.com 도메인 연결·Primary 지정(옛 jamidunow.com은 연결 유지해 301), 환경변수 NEXT_PUBLIC_SITE_URL(https://select-screen.com)·NEXT_PUBLIC_SITE_NAME(설정돼 있다면 삭제 또는 Select Screen)·NEXT_PUBLIC_SITE_NAME_KO(있다면 확인) 변경 후 재배포, GitHub Actions 시크릿의 NEXT_PUBLIC_SITE_URL도 확인. 인스타 계정 핸들 jamidunow는 별도
 - 머지 후 확인 대기(사용자): fix/detail-restore-items — 프로덕션 상세(1440px)에서 스크롤 시 오른쪽 가격 카드가 따라오는지, 모바일에서 한눈에 보기 아래에 카드가 있는지, It Takes Two 한눈에 보기에 "함께 클리어까지 15시간". 인스타 detail 캡처(generate.mjs)는 다음에 돌릴 때 확인
 - 백업: 원격 backup/wt-nobody(insta/nobody-reel 커밋 6d6d4f3·0d06e81, 필요 없으면 삭제)
 - 배포 뒤 확인 대기(사용자): feat/ko-description-coming-soon-tiles — 다음 daily 로그의 fill-upcoming-rank 줄, 출시 예정 게임 상세의 타일, 영어 설명 게임의 한국어 소개. 탈락한 Fallout 2개 description_ko는 필요하면 fill-description-ko --retry --ids

@@ -67,7 +67,7 @@ export default function GameCard({ game, badge, tree = null, isTop10 = false, on
         {topBadge}
       </span>
       <span className="gc-body">
-        <span className="gc-name">{stretched ? <Link href={`/games/${game.id}`} className="gc-link" aria-label={ariaLabel}>{gameName(game)}</Link> : gameName(game)}</span>
+        <span className="gc-name">{stretched ? <Link href={`/games/${game.id}`} prefetch={false} className="gc-link" aria-label={ariaLabel}>{gameName(game)}</Link> : gameName(game)}</span>
         {store && <span className="result-store">{store}</span>}
         <OwnedChip steamAppid={game.steam_appid} />
         {/* 칸 높이는 CSS로 고정 — 값이 없어도 빈 칸을 남겨 같은 줄 카드의 제목·평가·칩·가격 위치가 맞는다 */}
@@ -139,5 +139,5 @@ export default function GameCard({ game, badge, tree = null, isTop10 = false, on
     </>
   );
   if (stretched) return <div className={`gc lift is-stretched${isPicked ? ' is-picked' : ''} ${className}`.trim()}>{body}</div>;
-  return <Link href={`/games/${game.id}`} className={`gc lift${isPicked ? ' is-picked' : ''} ${className}`.trim()} aria-label={ariaLabel} onClick={onClick}>{body}</Link>;
+  return <Link href={`/games/${game.id}`} prefetch={false} className={`gc lift${isPicked ? ' is-picked' : ''} ${className}`.trim()} aria-label={ariaLabel} onClick={onClick}>{body}</Link>;
 }

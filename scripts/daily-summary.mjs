@@ -13,7 +13,7 @@ import { readQueueResult, queueLine } from './lib/curator-queue.mjs';
 import { readStreamerVideos } from './lib/streamer-videos.mjs';
 
 const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
-const SITE = (process.env.NEXT_PUBLIC_SITE_URL || 'https://jamidunow.com').replace(/\/$/, '');
+const SITE = (process.env.NEXT_PUBLIC_SITE_URL || 'https://select-screen.com').replace(/\/$/, '');
 const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
 async function count(table, apply) {

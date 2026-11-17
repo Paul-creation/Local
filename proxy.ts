@@ -7,13 +7,13 @@ import { AI_CLIENT_COOKIE, AI_CLIENT_MAX_AGE, newAiClientCookie, verifyAiClientC
 // 미리보기(Preview) 배포와 로컬은 그대로 둔다. API는 fetch가 깨지지 않게 matcher에서 제외.
 const SITE_HOST = new URL(SITE_URL).host;
 
-// 예전 대표 주소: 정확히 이 host만 301. 프리뷰(…-git-<브랜치>-….vercel.app)는 절대 건드리지 않는다(포트 제외 비교)
-const LEGACY_HOST = 'game-info-hub.vercel.app';
-const CANONICAL_ORIGIN = 'https://jamidunow.com';
+// 예전 대표 주소(옛 vercel.app·옛 도메인 jamidunow.com): 정확히 이 host들만 301. 프리뷰(…-git-<브랜치>-….vercel.app)는 절대 건드리지 않는다(포트 제외 비교)
+const LEGACY_HOSTS = ['game-info-hub.vercel.app', 'jamidunow.com', 'www.jamidunow.com'];
+const CANONICAL_ORIGIN = 'https://select-screen.com';
 
 export function proxy(req: NextRequest) {
   const host = req.headers.get('host') || '';
-  if (host.toLowerCase().split(':')[0] === LEGACY_HOST) {
+  if (LEGACY_HOSTS.includes(host.toLowerCase().split(':')[0])) {
     return NextResponse.redirect(new URL(req.nextUrl.pathname + req.nextUrl.search, CANONICAL_ORIGIN), 301);
   }
   if (process.env.VERCEL_ENV === 'production' && host !== SITE_HOST && host.endsWith('.vercel.app')) {

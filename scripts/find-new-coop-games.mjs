@@ -53,7 +53,7 @@ async function loadItems(appids) {
 async function revalidate() {
   const key = process.env.ADMIN_REVALIDATE_KEY;
   if (!key) { console.log('ℹ️  ADMIN_REVALIDATE_KEY 없음 — 캐시 무효화 생략 (5분 뒤 저절로 갱신)'); return; }
-  const site = (process.env.NEXT_PUBLIC_SITE_URL || 'https://jamidunow.com').replace(/\/$/, '');
+  const site = (process.env.NEXT_PUBLIC_SITE_URL || 'https://select-screen.com').replace(/\/$/, '');
   try {
     const res = await fetch(`${site}/api/admin/revalidate`, { method: 'POST', headers: { 'x-admin-key': key } });
     console.log(res.ok ? '♻️  캐시 무효화 (/api/admin/revalidate)' : `⚠️ 캐시 무효화 실패 (${res.status})`);

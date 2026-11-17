@@ -73,3 +73,20 @@ test('출처 문구', () => {
   assert.equal(labelOf(st('x', '타요', 2)), '스트리머 · 타요 · 쇼츠');
   assert.equal(labelOf(st('x', '타요', 3)), '스트리머 · 타요 · 풀영상');
 });
+
+test('맨 앞 영상은 가장 최신이 아니라 관련도(rel)가 가장 높은 영상', () => {
+  const list = buildVideoList([
+    { ...st('newest', 'A', 1, '2026-11-07T00:00:00Z'), rel: 0 },
+    { ...st('play', 'B', 1, '2026-06-01T00:00:00Z'), rel: 3 },
+    { ...st('named', 'C', 1, '2026-09-01T00:00:00Z'), rel: 2 },
+  ]);
+  assert.deepEqual(ids(list), ['play', 'newest', 'named'].sort((a, b) => ids(list).indexOf(a) - ids(list).indexOf(b)));
+  assert.equal(list[0].video_id, 'play');
+});
+
+test('rel이 같으면 예전 순서 그대로, 스트리머 같은 단계에서는 rel 높은 영상이 최근 영상보다 앞', () => {
+  const same = buildVideoList([st('old', 'A', 1, '2026-01-01T00:00:00Z'), st('new', 'B', 1, '2026-09-01T00:00:00Z')]);
+  assert.deepEqual(ids(same), ['new', 'old']);
+  const withRel = buildVideoList([{ ...st('new', 'B', 1, '2026-09-01T00:00:00Z'), rel: 0 }, { ...st('old', 'A', 1, '2026-01-01T00:00:00Z'), rel: 2 }]);
+  assert.deepEqual(ids(withRel), ['old', 'new']);
+});

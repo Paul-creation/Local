@@ -7,6 +7,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { steamGet, appdetailsUrl } from './lib/steam.mjs';
 import { judgeDemo, parentListsDemo } from './lib/expired-demos.mjs';
+import { recordChangedGames } from './lib/revalidateGames.mjs';
 
 const APPLY = process.argv.includes('--apply');
 const TIME_BUDGET_MS = 40 * 60 * 1000; // run-steps 단계 시간 제한(45분) 전에 스스로 멈춤
@@ -26,6 +27,7 @@ async function main() {
   console.log(`${APPLY ? '반영' : '미리보기'} — 데모가 있는 게임 ${games.length}개 확인\n`);
 
   let alive = 0, expired = 0, skipped = 0;
+  const changed = new Set(); // 데모가 내려가 demo_appid를 비운 게임 (상세 페이지 갱신 대상)
   for (const game of games) {
     if (Date.now() - startedAt > TIME_BUDGET_MS) { console.log('⏱️  시간이 지나서 여기서 멈춤 (남은 게임은 내일)'); break; }
     try {
@@ -42,12 +44,14 @@ async function main() {
         if (upErr) { skipped++; console.log(`   ❌ ${game.name}: 저장 실패 ${upErr.message}`); continue; }
       }
       expired++;
+      changed.add(game.id);
       console.log(`🧹 종료된 데모: ${game.name} (데모 ${game.demo_appid})`);
     } catch (e) {
       skipped++;
       console.log(`   ⚠️ ${game.name}: ${e.message} (내일 다시 확인)`);
     }
   }
+  if (APPLY) recordChangedGames([...changed]);
   console.log(`\n종료된 데모 ${expired}개 · 유지 ${alive}개 · 건너뜀 ${skipped}개`);
   if (!APPLY) console.log('미리보기만 했어요. 반영하려면 --apply를 붙여 주세요');
 }
