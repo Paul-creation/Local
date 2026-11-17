@@ -5,8 +5,8 @@
 export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Select Screen';
 export const SITE_NAME_KO = process.env.NEXT_PUBLIC_SITE_NAME_KO || '재밌드나';
 export const SITE_NAME_FULL = SITE_NAME;
-// 구조화 데이터(WebSite) alternateName — 검색에서 이 이름들로도 사이트를 찾게(예전 이름 JamiDuNow·재밌드나·JDN 포함)
-export const SITE_ALT_NAMES = [SITE_NAME_KO, 'JamiDuNow', 'JDN', 'select-screen.com'];
+// 구조화 데이터(WebSite) alternateName — 검색에서 이 이름들로도 사이트를 찾게(예전 이름 JamiDuNow·재밌드나 포함)
+export const SITE_ALT_NAMES = [SITE_NAME_KO, 'JamiDuNow', 'select-screen.com'];
 export const SITE_TITLE = `${SITE_NAME_FULL} - 친구랑 할 게임 찾기`;
 // 환경변수가 예전 주소(vercel.app, jamidunow.com)로 남아 있어도 canonical·sitemap은 select-screen.com으로 나가게 무시한다
 const ENV_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL;
