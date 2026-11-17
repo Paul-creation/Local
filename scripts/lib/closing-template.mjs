@@ -12,8 +12,8 @@ export const CLOSING = {
   },
   released: {
     id: 'crack',
-    sentences: ['게임 이름은 {name}입니다.', '근데 진짜, 이 알 안에 뭐가 들었을까요?'],
-    chunks: ['게임 이름은', '[{name}]입니다', '근데 진짜', '이 알 안에', '[뭐가 들었을까요]'],
+    sentences: ['게임 이름은 {name}입니다.', '근데 진짜, {hook}'], // {hook} = copy.closingHook(게임마다 다름, "~?" 형식 — 앞의 "근데 진짜, "는 고정)
+    chunks: ['게임 이름은', '[{name}]입니다', '근데 진짜', '{hook}'], // {hook} 자리는 closingHookChunks(copy.closingHookChunks가 있으면 그것)로 풀린다
     voice: { stability: 0.5, similarity_boost: 0.8, style: 0.25, speed: 1.1 },
   },
 };
@@ -35,6 +35,13 @@ export async function releaseState(appid, soon, { fetchFn = fetch, env = process
   return { state: soon ? 'coming_soon' : 'released', source: 'steam appdetails' };
 }
 
+// 출시작 둘째 문장 자막 덩어리: 훅을 어절로 나눠 뒤 두 어절을 [핵심]으로, 앞은 한 덩어리로(예: "이 알 안에" + "[뭐가 들었을까요]"). 어절이 둘 이하면 통째로 [핵심]
+export function closingHookChunks(hook) {
+  const w = String(hook).replace(/[?？]+$/, '').trim().split(/\s+/).filter(Boolean);
+  if (w.length <= 2) return [`[${w.join(' ')}]`];
+  return [w.slice(0, -2).join(' '), `[${w.slice(-2).join(' ')}]`];
+}
+
 // copy를 제자리에서 고친다. 마지막 멘트 = "이름은"이 들어 있는 마지막 문장부터 끝까지(없으면 끝에 덧붙임)
 export function applyClosing(copy, { state, name }) {
   const n = copy.narration;
@@ -42,7 +49,12 @@ export function applyClosing(copy, { state, name }) {
   if (!n || n.perSentence === false) return { skipped: '문장 단위 생성이 아닌 copy' };
   const tpl = CLOSING[state];
   if (!tpl) throw new Error(`closing: 알 수 없는 출시 상태 ${state}`);
-  const fill = (s) => s.replaceAll('{name}', name);
+  let hook = '';
+  if (state === 'released') {
+    hook = String(copy.closingHook ?? '').trim();
+    if (!/\S.*\?$/.test(hook)) throw new Error('closing: 출시작은 copy.closingHook이 필요해요 — 둘째 문장 "근데 진짜, ~?"의 "~?" 부분을 적으세요(예: "이 알 안에 뭐가 들었을까요?")');
+  }
+  const fill = (s) => s.replaceAll('{name}', name).replaceAll('{hook}', hook);
   const sents = splitSentences(n.text);
   let k = sents.length;
   for (let i = sents.length - 1; i >= 0; i--) if (/이름은/.test(sents[i])) { k = i; break; }
@@ -58,7 +70,8 @@ export function applyClosing(copy, { state, name }) {
     let left = oldLetters.length, cut = copy.chunks.length;
     while (left > 0 && cut > 0) { cut--; left -= plain(copy.chunks[cut]).length; }
     if (left !== 0) throw new Error('closing: copy.chunks의 끝이 마지막 멘트 글자 수와 안 맞아요 — chunks 끝을 확인하세요');
-    copy.chunks = [...copy.chunks.slice(0, cut), ...tpl.chunks.map(fill)];
+    const hookChunks = copy.closingHookChunks ?? (hook ? closingHookChunks(hook) : []);
+    copy.chunks = [...copy.chunks.slice(0, cut), ...tpl.chunks.flatMap((c) => (c === '{hook}' ? hookChunks : [fill(c)]))];
   }
   copy.cardFrom = tpl.chunks[0].replace(/[[\]]/g, ''); // 정보 카드는 마지막 멘트 첫 덩어리에서 시작
   return { template: tpl.id, state, sentences: added, voice: tpl.voice };

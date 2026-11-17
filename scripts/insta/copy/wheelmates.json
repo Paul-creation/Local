@@ -1,0 +1,226 @@
+{
+ "_doc": "WheelMates 릴스(--reel-trend, fit-blur 4:5, 출시작: CRACK 마지막 멘트 템플릿 + copy.closingHook). 소스: Steam 트레일러 1080p(Gameplay·Launch·Release Date). 컷 순서: 두 대가 같이 달림 → 큰 방 전경 → 책장 위 → 책상 사이 → 연구실·단서 → 로프 스윙 → 자석 바퀴. 로고 컷은 정지 프레임이라 쓰지 않고 공통 엔딩 카드로 대신함.",
+ "appid": "3905450",
+ "movie": "WheelMates Gameplay Trailer",
+ "maxPlayers": 2,
+ "closingName": "WheelMates",
+ "closingHook": "그 과학자는 어디로 사라진 걸까요?",
+ "duckDb": -20,
+ "gapDb": -8,
+ "gapMin": 0.3,
+ "layout": "fit-blur",
+ "minCut": 1.0,
+ "cutExtend": 0,
+ "fitRatio": "4:5",
+ "stillChunk": "질주하고",
+ "chunks": [
+  "이 게임",
+  "둘 중에",
+  "한 명만",
+  "[사면 돼요]",
+  "산 사람이",
+  "친구한테",
+  "[코드 하나]",
+  "보내면",
+  "둘 다",
+  "처음부터",
+  "끝까지",
+  "[같이 해요]",
+  "둘이",
+  "손바닥만 한",
+  "[RC카가 돼서]",
+  "사라진",
+  "과학자의 집을",
+  "돌아다니는",
+  "게임이에요",
+  "차가 작으니까",
+  "방 하나가",
+  "[거의 맵 하나예요]",
+  "책장 위를",
+  "[질주하고]",
+  "책상 사이로",
+  "[드리프트하고]",
+  "과학자가",
+  "어디 갔는지",
+  "단서를 모으다 보면",
+  "[업그레이드가]",
+  "생겨요",
+  "로프에 매달려",
+  "[날아가고]",
+  "자석 바퀴로",
+  "붙어서",
+  "[달리고요]",
+  "게임 이름은",
+  "[WheelMates]입니다",
+  "근데 진짜",
+  "그 과학자는 어디로",
+  "[사라진 걸까요]"
+ ],
+ "narration": {
+  "cacheName": "narration-v1",
+  "pitch": {
+   "takes": 2,
+   "gap": 0.3
+  },
+  "text": "이 게임, 둘 중에 한 명만 사면 돼요. 산 사람이 친구한테 코드 하나 보내면, 둘 다 처음부터 끝까지 같이 해요. 둘이 손바닥만 한 RC카가 돼서, 사라진 과학자의 집을 돌아다니는 게임이에요. 차가 작으니까 방 하나가 거의 맵 하나예요. 책장 위를 질주하고, 책상 사이로 드리프트하고, 과학자가 어디 갔는지 단서를 모으다 보면 업그레이드가 생겨요. 로프에 매달려 날아가고, 자석 바퀴로 붙어서 달리고요. 게임 이름은 WheelMates입니다. 근데 진짜, 그 과학자는 어디로 사라진 걸까요?",
+  "reuseCached": true,
+  "atempo": 1,
+  "silence": {
+   "word": 0.2,
+   "wordTo": 0.2,
+   "sentence": 0.55,
+   "sentenceTo": 0.55,
+   "lastGap": null
+  },
+  "sttAllow": [
+   {
+    "match": "RC카",
+    "equal": [
+     "RC카=알시카",
+     "RC카=rc카"
+    ]
+   },
+   {
+    "match": "WheelMates",
+    "equal": [
+     "WheelMates=휠메이츠",
+     "WheelMates=휠메이트",
+     "WheelMates=wheelmates",
+     "WheelMates=wheelmate"
+    ]
+   }
+  ],
+  "tts": {
+   "7": "게임 이름은 휠메이츠입니다."
+  }
+ },
+ "cuts": [
+  {
+   "t": 0,
+   "movie": "WheelMates Gameplay Trailer",
+   "src": [
+    39.0,
+    41.8
+   ],
+   "x": 0.5
+  },
+  {
+   "at": "산 사람이",
+   "movie": "Launch Trailer",
+   "src": [
+    61.1,
+    64.4
+   ],
+   "x": 0.5
+  },
+  {
+   "at": "둘 다",
+   "movie": "Launch Trailer",
+   "src": [
+    54.0,
+    57.5
+   ],
+   "x": 0.5
+  },
+  {
+   "at": "둘이",
+   "movie": "Release Date Trailer",
+   "src": [
+    36.5,
+    38.9
+   ],
+   "x": 0.5
+  },
+  {
+   "at": "사라진",
+   "movie": "WheelMates Gameplay Trailer",
+   "src": [
+    24.3,
+    28.0
+   ],
+   "x": 0.5
+  },
+  {
+   "at": "차가 작으니까",
+   "movie": "Launch Trailer",
+   "src": [
+    3.0,
+    6.0
+   ],
+   "x": 0.5
+  },
+  {
+   "at": "방 하나가",
+   "movie": "WheelMates Gameplay Trailer",
+   "src": [
+    28.0,
+    31.0
+   ],
+   "x": 0.5
+  },
+  {
+   "at": "책장 위를",
+   "movie": "WheelMates Gameplay Trailer",
+   "src": [
+    3.0,
+    6.1
+   ],
+   "x": 0.5
+  },
+  {
+   "at": "책상 사이로",
+   "movie": "WheelMates Gameplay Trailer",
+   "src": [
+    10.5,
+    13.9
+   ],
+   "x": 0.5
+  },
+  {
+   "at": "과학자가",
+   "movie": "WheelMates Gameplay Trailer",
+   "src": [
+    20.0,
+    22.3
+   ],
+   "x": 0.5
+  },
+  {
+   "at": "업그레이드가",
+   "movie": "Launch Trailer",
+   "src": [
+    42.0,
+    45.0
+   ],
+   "x": 0.5
+  },
+  {
+   "at": "로프에 매달려",
+   "movie": "Launch Trailer",
+   "src": [
+    34.4,
+    38.9
+   ],
+   "x": 0.5
+  },
+  {
+   "at": "자석 바퀴로",
+   "movie": "Release Date Trailer",
+   "src": [
+    24.4,
+    31.9
+   ],
+   "x": 0.5
+  }
+ ],
+ "versionedOut": {
+  "dir": "/workspaces/Local/scripts/insta/out/wheelmates",
+  "start": 1
+ },
+ "targetSec": [
+  33,
+  34
+ ],
+ "cardTitle": "WheelMates",
+ "allowNoKorean": true
+}

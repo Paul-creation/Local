@@ -67,7 +67,8 @@ export async function steamFacts(appid, copy) {
     } catch { /* 종료 시각을 못 읽으면 정가 */ }
     if (saleEnd) price = `${won(po.final)} (-${po.discount_percent}%, ${saleEnd}까지)`;
   }
-  const kor = koreanLabel(parseKoreanSupport(en.supported_languages, en.full_audio_languages)); // DB 채우기와 같은 판정 (lib/korean-support.mjs)
+  const korSupport = parseKoreanSupport(en.supported_languages, en.full_audio_languages); // DB 채우기와 같은 판정 (lib/korean-support.mjs)
+  const kor = koreanLabel(korSupport) ?? (copy.allowNoKorean && korSupport === '한국어 없음' ? '한국어 없음' : null); // 한국어가 없는 게임은 기본으로 멈춘다. copy.allowNoKorean:true면 카드에 "한국어 없음"을 그대로 쓴다(멘트에서는 언급하지 않음)
   const range = /(\d+)\s*~\s*(\d+)\s*인/.exec(d.short_description ?? '');
   const max = copy.maxPlayers ?? (range ? Number(range[2]) : null);
   const soon = !!d.release_date?.coming_soon; // 출시 예정: 출시일·가격이 없어도 된다(카드에 "출시 예정"만 쓰고 가격은 뺀다)

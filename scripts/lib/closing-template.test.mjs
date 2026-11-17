@@ -21,6 +21,19 @@ test('crack-trend-v2: 출시작 템플릿은 원문 마지막 두 문장과 같�
   assert.match(c.narration.text, /게임 이름은 크랙입니다\. 근데 진짜, 이 알 안에 뭐가 들었을까요\?$/);
 });
 
+test('출시작: 둘째 문장은 copy.closingHook에서 오고, 없거나 "?"로 안 끝나면 오류', () => {
+  const mk = (extra) => ({ narration: { text: '하나예요. 게임 이름은 휠메이트입니다. 근데 진짜, 옛 훅이에요?' }, chunks: ['하나예요', '게임 이름은', '[휠메이트]입니다', '근데 진짜', '옛 훅이에요'], ...extra });
+  const c = mk({ closingHook: '그 과학자는 어디로 사라진 걸까요?' });
+  applyClosing(c, { state: 'released', name: '휠메이트' });
+  assert.equal(c.narration.text, '하나예요. 게임 이름은 휠메이트입니다. 근데 진짜, 그 과학자는 어디로 사라진 걸까요?');
+  assert.deepEqual(c.chunks.slice(-4), ['[휠메이트]입니다', '근데 진짜', '그 과학자는 어디로', '[사라진 걸까요]']);
+  const k = mk({ closingHook: '이 알 안에 뭐가 들었을까요?' });
+  applyClosing(k, { state: 'released', name: '크랙' });
+  assert.deepEqual(k.chunks.slice(-5), ['게임 이름은', '[크랙]입니다', '근데 진짜', '이 알 안에', '[뭐가 들었을까요]']);
+  assert.throws(() => applyClosing(mk({}), { state: 'released', name: 'x' }), /closingHook/);
+  assert.throws(() => applyClosing(mk({ closingHook: '훅이에요.' }), { state: 'released', name: 'x' }), /closingHook/);
+});
+
 test('copy에 다른 마지막 문장이 있어도 템플릿이 우선하고 이름만 바뀐다', () => {
   const c = { narration: { text: '하나예요. 둘이에요. 이름은 원 탱크 트립입니다. 출시 예정, 스팀에서 찜!', sentenceSettings: { 1: { stability: 0.2 }, 3: { stability: 0.9 }, 4: { stability: 0.9 } } }, chunks: ['하나예요', '둘이에요', '이름은', '[원 탱크 트립]입니다', '출시 예정', '[스팀에서 찜]'] };
   applyClosing(c, { state: 'coming_soon', name: '원 탱크 트립' });

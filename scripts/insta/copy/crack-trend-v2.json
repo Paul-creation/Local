@@ -134,5 +134,6 @@
    ]
   }
  ],
- "closing": false
+ "closing": false,
+ "closingHook": "이 알 안에 뭐가 들었을까요?"
 }
