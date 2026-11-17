@@ -6,6 +6,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { lookupItadId, getPriceHistory, ItadLimitError } from './lib/itad.mjs';
 import { onlyIds } from './lib/only-ids.mjs';
+import { recordChangedGames } from './lib/revalidateGames.mjs';
 import { isBackfillTarget, kstWeekday } from './lib/backfill-targets.mjs';
 
 const supabase = createClient(
@@ -17,6 +18,7 @@ const MAX_RECORDS_PER_GAME = 60;
 const minuteKey = (t) => new Date(t).toISOString().slice(0, 16);
 
 async function main() {
+  const changed = new Set(); // 새 기록이 들어간 게임 (상세 페이지 갱신 대상)
   if (!process.env.ITAD_API_KEY) return console.error('.env.local에 ITAD_API_KEY가 없어요');
 
   const { data: games, error } = await onlyIds(supabase
@@ -82,6 +84,7 @@ async function main() {
       }
 
       if (rows.length > 0) {
+        changed.add(game.id);
         console.log(`✅ ${game.name}: 새 기록 ${rows.length}개`);
         added += rows.length;
         touched++;
@@ -97,6 +100,7 @@ async function main() {
     }
   }
 
+  recordChangedGames([...changed]);
   console.log(`\n완료 — ${touched}개 게임에 새 할인 기록 ${added}개 추가`);
   console.log(`매칭 실패 ${notFound}개 · 요청 제한 ${limited}개 · 기타 오류 ${failed}개`);
 }

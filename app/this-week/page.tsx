@@ -6,7 +6,8 @@ import '../mono-tokens.css';
 import '../mono-page.css';
 import '../mono-lists.css';
 
-export const revalidate = 3600;
+// 하루에 한 번 새로 만든다 (ISR 쓰기 횟수 절약). 신작 추가·출시 때는 /api/admin/revalidate가 바로 무효화
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: '이번 주 할인 마감',

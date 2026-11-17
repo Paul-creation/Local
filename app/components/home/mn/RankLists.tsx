@@ -15,7 +15,7 @@ const COLUMNS: { key: keyof HomeLists; title: string; href?: string }[] = [
 function Row({ row, rank }: { row: ListRow; rank: number }) {
   return (
     <li>
-      <Link href={`/games/${row.id}`} className="mn-rank-row">
+      <Link href={`/games/${row.id}`} prefetch={false} className="mn-rank-row">
         <span className="mn-rank-n">{rank}</span>
         <span className="mn-mini"><PosterImage cover={row.cover} /></span>
         <span className="mn-rank-text">

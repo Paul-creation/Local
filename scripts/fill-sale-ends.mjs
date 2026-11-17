@@ -6,6 +6,7 @@ import { pathToFileURL } from 'node:url';
 import { getSteamDeals } from './lib/itad.mjs';
 import { processSaleEnds } from './lib/sale-ends.mjs';
 import { onlyIds } from './lib/only-ids.mjs';
+import { recordChangedGames } from './lib/revalidateGames.mjs';
 
 async function main() {
   if (!process.env.ITAD_API_KEY) return console.error('.env.local에 ITAD_API_KEY가 없어요');
@@ -19,7 +20,9 @@ async function main() {
     console.error('조회 실패:', error.message);
     process.exit(1);
   }
-  const r = await processSaleEnds({ supabase, games, getDeals: getSteamDeals });
+  const changed = new Set();
+  const r = await processSaleEnds({ supabase, games, getDeals: getSteamDeals, onChanged: (id) => changed.add(id) });
+  recordChangedGames([...changed]);
   console.log(`완료 — 종료일 저장 ${r.set}개 · 비움 ${r.cleared}개 · 변동 없음 ${r.kept}개 · 종료 시각 모름 ${r.noInfo}개 · 가격 불일치로 건너뜀 ${r.mismatch}개 · ITAD 응답 없음으로 유지 ${r.heldEmpty}개`);
   console.log(`ITAD 요청 ${r.requests}번 · 오류 ${r.errors}번`);
 }

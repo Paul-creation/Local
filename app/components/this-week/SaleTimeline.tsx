@@ -41,7 +41,7 @@ export default function SaleTimeline({ items, serverNow }: { items: TimelineGame
               const soon = new Date(game.endsAt).getTime() - now <= 24 * 3600_000;
               return (
                 <li key={game.id}>
-                  <Link href={`/games/${game.id}`} className="tl-card lift">
+                  <Link href={`/games/${game.id}`} prefetch={false} className="tl-card lift">
                     <span className="tl-thumb">
                       <GameImage src={game.image} alt="" loading="lazy" steamSize="header_292x136" fallbackWidth={320} />
                     </span>

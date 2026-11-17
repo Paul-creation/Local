@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { timingSafeEqual } from 'crypto';
+import { isUuid } from '../../../lib/uuid';
 
 // 관리자용 캐시 갱신 — x-admin-key 헤더가 ADMIN_REVALIDATE_KEY와 같을 때만
-// 전체 게임 목록(gameIndex)은 /api/games/list 응답 캐시 하나뿐이라 그 경로를 무효화하면 둘 다 새로 만들어진다
-// 메인("/")의 히어로 숫자·목록과 /this-week도 같은 게임 데이터를 쓰는 페이지 캐시라 함께 무효화한다
+// 본문 없이 부르면: 메인("/")과 /this-week 페이지 캐시를 무효화 (신작 추가·출시)
+//   /api/games/list·/api/games/taste는 ISR이 아니라 CDN Cache-Control(s-maxage=3600)만 쓰므로 여기서 무효화할 수 없다 (최대 1시간 뒤 반영)
+// 본문이 { ids: [...] }이면: 그 게임의 상세(/games/[id])만 무효화 (가격·할인·출시 상태가 바뀐 게임, 한 번에 최대 500개)
 // 환경변수가 비어 있으면 항상 401
 export const dynamic = 'force-dynamic';
+const MAX_IDS = 500;
 
 function keyOk(req: NextRequest) {
   const expected = process.env.ADMIN_REVALIDATE_KEY || '';
@@ -19,7 +22,19 @@ function keyOk(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   if (!keyOk(req)) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
-  const paths = ['/api/games/list', '/', '/this-week'];
+  const raw = await req.text();
+  if (raw.trim()) {
+    let body: unknown;
+    try { body = JSON.parse(raw); } catch { return NextResponse.json({ error: 'bad json' }, { status: 400 }); }
+    const ids = (body as { ids?: unknown })?.ids;
+    if (!Array.isArray(ids) || ids.length === 0 || ids.length > MAX_IDS || !ids.every((v) => typeof v === 'string' && isUuid(v))) {
+      return NextResponse.json({ error: `ids must be 1..${MAX_IDS} uuid strings` }, { status: 400 });
+    }
+    const unique = [...new Set(ids as string[])];
+    for (const id of unique) revalidatePath(`/games/${id}`);
+    return NextResponse.json({ ok: true, revalidated: unique.length });
+  }
+  const paths = ['/', '/this-week'];
   for (const p of paths) revalidatePath(p);
   return NextResponse.json({ ok: true, revalidated: paths });
 }

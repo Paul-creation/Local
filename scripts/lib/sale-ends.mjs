@@ -12,16 +12,18 @@ const latestOf = (history) =>
     .sort((a, b) => new Date(b.checked_at).getTime() - new Date(a.checked_at).getTime())[0] || null;
 
 // 반환: { heldEmpty, set, cleared, kept, noInfo, mismatch, errors, requests }
-export async function processSaleEnds({ supabase, games, getDeals, now = Date.now(), log = console.log }) {
+// onChanged(게임 id): 종료일이 실제로 바뀐 게임마다 부름 (상세 페이지 갱신 대상 모으기)
+export async function processSaleEnds({ supabase, games, getDeals, now = Date.now(), log = console.log, onChanged = () => {} }) {
   const r = { heldEmpty: 0, set: 0, cleared: 0, kept: 0, noInfo: 0, mismatch: 0, errors: 0, requests: 0 };
   const clearIds = [];
+  const ownerOf = new Map(); // price_history id → 게임 id
   const targets = []; // 최신 행이 할인 중인 게임
 
   for (const g of games) {
     const latest = latestOf(g.price_history);
     const live = latest && latest.discount_percent > 0;
     for (const p of g.price_history || []) {
-      if (p.sale_ends_at && !(live && p.id === latest.id)) clearIds.push(p.id); // 최신이 아니거나 할인이 아닌 행의 종료일은 비움
+      if (p.sale_ends_at && !(live && p.id === latest.id)) { clearIds.push(p.id); ownerOf.set(p.id, g.id); } // 최신이 아니거나 할인이 아닌 행의 종료일은 비움
     }
     if (live && g.itad_id) targets.push({ game: g, latest });
   }
@@ -29,7 +31,7 @@ export async function processSaleEnds({ supabase, games, getDeals, now = Date.no
   const clear = async (ids) => {
     if (!ids.length) return;
     const { error } = await supabase.from('price_history').update({ sale_ends_at: null }).in('id', ids);
-    if (error) { log(`⚠️ 종료일 비우기 실패: ${error.message}`); r.errors++; } else r.cleared += ids.length;
+    if (error) { log(`⚠️ 종료일 비우기 실패: ${error.message}`); r.errors++; } else { r.cleared += ids.length; for (const id of ids) if (ownerOf.has(id)) onChanged(ownerOf.get(id)); }
   };
   await clear(clearIds);
 
@@ -67,6 +69,7 @@ export async function processSaleEnds({ supabase, games, getDeals, now = Date.no
       const { error } = await supabase.from('price_history').update({ sale_ends_at: next }).eq('id', latest.id);
       if (error) { log(`⚠️ 저장 실패 (${game.name}): ${error.message}`); r.errors++; continue; }
       if (next) r.set++; else r.cleared++;
+      onChanged(game.id);
     }
   }
   return r;

@@ -41,7 +41,7 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
   if (view === 'row') {
     const barrier = barrierLabel(game);
     return (
-      <Link href={`/games/${game.id}`} className={`result-row lift${isSelected ? ' is-picked' : ''}`} onClick={onClick}>
+      <Link href={`/games/${game.id}`} prefetch={false} className={`result-row lift${isSelected ? ' is-picked' : ''}`} onClick={onClick}>
         <span className="rr-thumb">
           <GameImage src={game.cover_image_url || game.card_image_url} steamSize="header" alt="" loading={eager ? 'eager' : 'lazy'} />
         </span>
@@ -99,7 +99,7 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
   // 상세 "비슷한 게임"·"시리즈"·내 라이브러리의 작은 카드: 이미지·이름·인원·가격만
   if (compact) {
     return (
-      <Link href={`/games/${game.id}`} className="result-card lift" onClick={onClick}>
+      <Link href={`/games/${game.id}`} prefetch={false} className="result-card lift" onClick={onClick}>
         <span className="result-image">
           <GameImage src={game.cover_image_url || game.card_image_url} steamSize="header" alt="" loading={eager ? 'eager' : 'lazy'} />
         </span>
