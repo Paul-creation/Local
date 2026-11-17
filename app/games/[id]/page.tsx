@@ -27,6 +27,8 @@ import { buyTimingLine, SAME_AS_LOWEST } from '../../lib/buyTiming';
 import VideoPreviewSection from '../../components/VideoPreviewSection';
 import { buildVideoList, type VideoInput } from '../../lib/videoList';
 import { tierOf } from '../../lib/streamerPick';
+import { titleScore } from '../../lib/videoRelevance.mjs';
+import { buildMatchers } from '../../lib/gameMatch.mjs';
 import PcSpecCard from '../../components/pcspec/PcSpecCard';
 import ShareButton from '../../components/ShareButton';
 import { getTop10Ids } from '../../lib/hotChart';
@@ -395,6 +397,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
       </div>
   );
 
+  // 영상 목록의 맨 앞(큰 플레이어)을 고르는 점수용 — 제목에 이 게임 이름이 사람 소개가 아닌 모습으로 있는 영상이 앞 (lib/videoRelevance)
+  const videoMatchers = buildMatchers([{ id: game.id, name: game.name, search_name_ko: game.search_name_ko }]);
   return (
     <main className="page detail-page dx mn mn-inner">
       <BackLink fallbackHref="/" label="목록으로" preferList />
@@ -499,11 +503,11 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             videos={buildVideoList([
               ...((game.game_videos || []) as { kind: string; video_id: string; title: string; channel_title: string | null; published_at: string | null; view_count: number | null }[])
                 .filter((v) => v.kind === 'highlight' || (v.kind === 'coop' && game.max_players > 1))
-                .map((v): VideoInput => ({ ...v, source: v.kind === 'coop' ? 'coop' : 'highlight' })),
+                .map((v): VideoInput => ({ ...v, source: v.kind === 'coop' ? 'coop' : 'highlight', rel: titleScore(v.title, videoMatchers) })),
               ...((game.streamer_videos || []) as { video_id: string; title: string; published_at: string; view_count: number | null; is_short: boolean; streamer_channels: Ch | Ch[] | null }[]).flatMap((v): VideoInput[] => {
                 const c = Array.isArray(v.streamer_channels) ? v.streamer_channels[0] : v.streamer_channels;
                 if (!c) return [];
-                return [{ source: 'streamer', video_id: v.video_id, title: v.title, streamer_name: c.streamer_name, tier: tierOf(c.kind, v.is_short), published_at: v.published_at, view_count: v.view_count }];
+                return [{ source: 'streamer', video_id: v.video_id, title: v.title, streamer_name: c.streamer_name, tier: tierOf(c.kind, v.is_short), published_at: v.published_at, view_count: v.view_count, rel: titleScore(v.title, videoMatchers) }];
               }),
             ])}
             streamers={game.game_streamers?.length > 0 ? (
