@@ -60,11 +60,12 @@ import '../../mono-page.css';
 import '../../components/detail/detail-mono.css';
 import '../../components/detail/detail-sections.css';
 
-// 게임마다 처음 열릴 때 만들고 하루 동안 재사용 (ISR, Vercel 무료 플랜 쓰기 한도 때문). 가격·접속자는 하루 한 번 갱신되므로 충분
-// 의견 작성·수정·삭제(api/game-comments)와 신고 자동 숨김(api/community/report)은 그 게임 페이지를 바로 새로 만든다
-// 메인 카드의 <Link>가 화면에 보이면 상세를 미리 불러오므로(prefetch) 짧게 잡으면 방문마다 재생성이 몰린다
+// 게임마다 처음 열릴 때 만들고 7일 동안 재사용 (ISR, Vercel 무료 플랜 쓰기 한도 때문)
+// 가격·할인·출시 상태가 바뀐 게임은 매일 갱신 스크립트가 /api/admin/revalidate에 { ids }로 알려 그 게임만 바로 새로 만든다 (scripts/lib/revalidateGames.mjs)
+// 의견 작성·수정·삭제(api/game-comments)와 신고 자동 숨김(api/community/report)도 그 게임 페이지를 바로 새로 만든다
+// 카드의 <Link>는 prefetch={false} — 화면에 보인 것만으로 상세가 재생성되지 않게
 type Ch = { channel_title: string | null; streamer_name: string; kind: string };
-export const revalidate = 86400;
+export const revalidate = 604800;
 export async function generateStaticParams() {
   return []; // 빌드 때 미리 만들지 않고, 처음 방문할 때 만든다 (빈 배열이어야 ISR이 켜짐)
 }
@@ -80,16 +81,17 @@ async function getGameTagIds(game: { id: string }) {
   return !error && data?.length ? data.map((r) => r.tag_id as number) : [];
 }
 
-// 비슷한 게임 후보 — game_similar(태그 득표·확인된 활동 코사인 유사도, 주간 scripts/build-similar-games.mjs). 화면에는 앞 6장만 쓰고 18개를 받아 둔다(나머지는 숨긴 게임이 빠질 때를 대비)
+// 비슷한 게임 후보 — game_similar(태그 득표·확인된 활동 코사인 유사도, 주간 scripts/build-similar-games.mjs). 18개를 읽어 숨긴 게임을 뺀 뒤 화면에 보이는 앞 6장만 페이지에 싣는다(페이지 크기 = ISR 쓰기량)
 // 표가 아직 없거나 비어 있거나 실패하면 빈 목록 = 섹션 숨김. 숨긴 게임은 getCardGames가 뺀다
 const SIMILAR_CANDIDATES = 18;
+const SIMILAR_SHOWN = 6; // components/SimilarGames의 SHOW와 같은 값
 // 같은 시리즈 게임은 "시리즈" 섹션에 따로 나오므로 후보에서 빼고 다음 순위로 채운다
 async function getSimilarGames(gameId: string, excludeIds: string[]) {
   let q = supabase.from('game_similar').select('similar_id').eq('game_id', gameId);
   if (excludeIds.length) q = q.not('similar_id', 'in', `(${excludeIds.join(',')})`);
   const { data, error } = await q.order('rank').limit(SIMILAR_CANDIDATES);
   if (error || !data?.length) return [];
-  try { return await getCardGames(data.map((r: { similar_id: string }) => r.similar_id)); } catch { return []; }
+  try { return (await getCardGames(data.map((r: { similar_id: string }) => r.similar_id))).slice(0, SIMILAR_SHOWN); } catch { return []; }
 }
 
 // 마지막 업데이트로부터 지난 날 → 표시 (30일 안: 활발히 업데이트 중)

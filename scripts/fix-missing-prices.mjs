@@ -11,6 +11,7 @@ import { pathToFileURL } from 'node:url';
 import { steamGet, SteamLimitError } from './lib/steam.mjs';
 import { onlyIds } from './lib/only-ids.mjs';
 import { markPriceStatus, noPriceIds, recordPriceCheck } from './lib/price-check.mjs';
+import { recordChangedGames } from './lib/revalidateGames.mjs';
 
 export const BATCH = 50;
 // 요청 제한이 이만큼 연달아 풀리지 않으면 남은 배치는 시도하지 않고 멈춤 (막힌 상태로 계속 두드리지 않음. 배치당 최악 약 3.6분)
@@ -24,7 +25,8 @@ const originalOf = (initial, final) => {
 
 // 유료 게임 목록을 배치로 나눠 가격을 확인하고 저장한다. supabase·getBatch(배치 → appdetails JSON)를 받아서 테스트에서 가짜로 바꿔 끼울 수 있음
 // 반환: { added, same, filled, okIds, failed, unprocessed } — unprocessed: 요청 제한으로 확인하지 못한 게임 수 (실패로 세지 않음)
-export async function processPrices({ supabase, paid, getBatch, log = console.log }) {
+// onChanged(게임 id): 가격 기록이 실제로 추가·보강된 게임마다 부름 (상세 페이지 갱신 대상 모으기)
+export async function processPrices({ supabase, paid, getBatch, log = console.log, onChanged = () => {} }) {
   let added = 0, same = 0, filled = 0, unprocessed = 0, streak = 0;
   const okIds = [];
   const failed = [];
@@ -80,13 +82,14 @@ export async function processPrices({ supabase, paid, getBatch, log = console.lo
         }
         console.log(`✅ ${game.name}: ₩${price.toLocaleString('ko-KR')} (할인 ${discount}%)`);
         added++;
+        onChanged(game.id);
       } else {
         same++;
         // 변동이 없어도 최신 행에 정가가 비어 있으면 그 칸만 채움 (is null 조건이라 이미 있는 값은 안 건드림)
         if (original != null && latest.original_price == null) {
           const { data: done, error: updErr } = await supabase.from('price_history').update({ original_price: original }).eq('id', latest.id).is('original_price', null).select('id');
           if (updErr) console.error(`정가 저장 실패 (${game.name}):`, updErr.message);
-          else if (done?.length) filled++;
+          else if (done?.length) { filled++; onChanged(game.id); }
         }
       }
     }
@@ -112,8 +115,10 @@ async function main() {
   const getBatch = (batch) => steamGet(`https://store.steampowered.com/api/appdetails?appids=${batch.map((g) => g.steam_appid).join(',')}&cc=kr&filters=price_overview`, {
     retryIf: (j) => !j || typeof j !== 'object' || Object.keys(j).length === 0,
   });
-  const { added, same, filled, okIds, failed, unprocessed } = await processPrices({ supabase, paid, getBatch });
+  const changed = new Set();
+  const { added, same, filled, okIds, failed, unprocessed } = await processPrices({ supabase, paid, getBatch, onChanged: (id) => changed.add(id) });
 
+  recordChangedGames([...changed]);
   await markPriceStatus(supabase, { okIds, failed });
   recordPriceCheck('steam', { checked: paid.length - unprocessed, failed: failed.length, ...(unprocessed ? { unprocessed } : {}) });
 

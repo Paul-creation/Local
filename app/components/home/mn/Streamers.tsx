@@ -24,7 +24,7 @@ function Card({ g, eager }: { g: ThemeGame; eager: boolean }) {
           {names.slice(0, AVATARS).map((n) => <span key={n} className="mn-avatar">{[...n][0]}</span>)}
         </span>
         <span className="mn-vid-text">
-          <Link href={`/games/${g.id}`} className="mn-vid-game">{g.name}</Link>
+          <Link href={`/games/${g.id}`} prefetch={false} className="mn-vid-game">{g.name}</Link>
           <span className="mn-vid-by">{names.slice(0, 2).join(', ')}{names.length > 2 ? ` 외 ${names.length - 2}명` : ''}</span>
         </span>
       </div>

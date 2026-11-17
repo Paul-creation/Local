@@ -12,8 +12,8 @@ import { getHomeCurators } from './lib/curators';
 import { getPeopleRecs, getHomeExcludedIds } from './lib/peopleRecs';
 import { getCovers, getHeroCovers, getHomeLists, getHomeStats } from './lib/homeMain';
 
-// 1시간마다 새로 만든 결과를 모두에게 보여준다 (ISR 쓰기 횟수 절약). 인기 글·가격도 최대 1시간 늦게 반영
-export const revalidate = 3600;
+// 하루에 한 번 새로 만든 결과를 모두에게 보여준다 (ISR 쓰기 횟수 절약). 인기 글·가격은 최대 하루 늦게 반영 — 신작 추가·출시와 신고 숨김은 /api/admin/revalidate 등이 바로 무효화
+export const revalidate = 86400;
 export const metadata: Metadata = {
   alternates: { canonical: '/' },
   openGraph: { ...BASE_OG, title: SITE_TITLE, description: SITE_META_DESCRIPTION, url: '/' },

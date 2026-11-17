@@ -25,7 +25,7 @@ export default function DiscountSection({ games }: { games: any[] }) {
         {discounted.map((game) => {
           const price = getPriceInfo(game);
           return (
-            <Link href={`/games/${game.id}`} key={game.id} className="card">
+            <Link href={`/games/${game.id}`} prefetch={false} key={game.id} className="card">
                             <div className="card-image-wrap">
                 <GameImage src={game.card_image_url || game.cover_image_url} alt={gameName(game)} />
                 <span className="platform-badge">{game.steam_appid ? 'Steam' : (({ epic: 'Epic', battlenet: 'Battle.net', riot: 'Riot' } as Record<string, string>)[game.source] ?? 'PC') /* STORE_BADGE */}</span>

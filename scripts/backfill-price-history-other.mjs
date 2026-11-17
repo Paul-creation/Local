@@ -5,6 +5,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { lookupItadId, getPriceHistory, ItadLimitError } from './lib/itad.mjs';
 import { markPriceStatus, noPriceIds, recordPriceCheck } from './lib/price-check.mjs';
+import { recordChangedGames } from './lib/revalidateGames.mjs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -21,6 +22,7 @@ const SHOP_MATCH = {
 };
 
 async function main() {
+  const changed = new Set(); // 새 기록이 들어간 게임 (상세 페이지 갱신 대상)
   if (!process.env.ITAD_API_KEY) return console.error('.env.local에 ITAD_API_KEY가 없어요');
 
   const { data: games, error } = await supabase
@@ -111,6 +113,7 @@ async function main() {
 
       console.log(`✅ ${game.name}: ${records[0].shop.name} 새 기록 ${rows.length}개 · 최저 ₩${lowest.price.toLocaleString('ko-KR')}`);
       saved++;
+      changed.add(game.id);
     } catch (e) {
       if (e instanceof ItadLimitError) {
         console.log(`⏳ 요청 제한 (3번 재시도 후 실패): ${game.name} — ${e.message}`);
@@ -124,6 +127,7 @@ async function main() {
     }
   }
 
+  recordChangedGames([...changed]);
   console.log(`\n완료 — ${saved}개 게임 할인 기록 저장`);
   console.log(`매칭 실패 ${notFound}개 · 요청 제한 ${limited}개 · 기타 오류 ${failed}개`);
 
