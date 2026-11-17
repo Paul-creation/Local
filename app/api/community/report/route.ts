@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
   await db.from(table).update({ report_count: reportCount, hidden }).eq('id', id);
   if (hidden && type === 'comment' && t.post_id) await syncCommentCount(t.post_id);
   // 캐시된 화면(메인 인기 글 5분, 게임 상세 1시간)에서도 숨긴 내용이 바로 빠지게
-  if (hidden && type === 'post') revalidatePath('/');
+  if (hidden && type === 'post') { revalidatePath('/'); revalidatePath('/home-member'); }
   if (hidden && type === 'game_comment' && t.game_id) revalidatePath(`/games/${t.game_id}`);
   // 위에서 이미 숨김 상태면 거절하므로, 여기서 hidden이면 이번 신고로 막 숨겨진 것 → 관리자 알림 (응답을 보낸 뒤 실행 — 실패해도 신고는 그대로)
   if (hidden) {

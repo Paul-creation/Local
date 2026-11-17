@@ -28,6 +28,8 @@ export type TourStep = {
   nextHref?: string;
   // action이 target일 때 이 안쪽 요소를 눌렀을 때만 다음으로 (없으면 대상 어디든)
   hitSelector?: string;
+  // 로그인 상태에서는 아예 없는 단계 (진행 표시 "n/N"의 N에도 안 센다)
+  guestOnly?: boolean;
 };
 
 // 결과 화면으로 가는 예시 조건 — 상황 타일 첫 번째("둘이서 밤샘")와 같은 조건이라 근거 배지와 "N명 다 사면"이 모두 나온다
@@ -41,9 +43,11 @@ export const TOUR_STEPS: TourStep[] = [
   { id: 'go', page: 'home', targets: ['ab-go', 'ab-pill'], title: '다 고르면 찾기를 눌러요', desc: '안 골라도 괜찮아요. 비워 두면 인기 있는 순으로 보여줘요', action: 'button', buttonLabel: '다음', block: true },
   { id: 'situations', page: 'home', targets: ['situations'], title: '고민될 땐 상황부터 눌러봐요', desc: '"이런 판 어때요?"에서 하나 누르면 그 조건으로 바로 찾아줘요', action: 'target', buttonLabel: '다음', hitSelector: '.ab-sit-card', nextHref: TOUR_SAMPLE_HREF },
   { id: 'evidence', page: 'find', targets: ['evidence'], title: '왜 이 게임인지 알려줘요', desc: '근거 배지로 조건에 맞는 이유를, 아래 줄로 다 같이 사면 얼마인지 봐요', action: 'button', buttonLabel: '다음', block: true, optional: true, wait: 10000 },
-  { id: 'login', page: 'find', targets: ['login'], title: 'Steam으로 로그인해 보세요', desc: '찜목록과 내 PC에서 돌아가는 게임 찾기를 쓸 수 있어요', action: 'button', buttonLabel: '끝내기', block: true, optional: true },
+  { id: 'login', page: 'find', targets: ['login'], title: 'Steam으로 로그인해 보세요', desc: '찜목록과 내 PC에서 돌아가는 게임 찾기를 쓸 수 있어요', action: 'button', buttonLabel: '끝내기', block: true, optional: true, guestOnly: true },
 ];
 export const TOUR_TOTAL = TOUR_STEPS.length;
+// 실제로 보이는 단계 수 — 로그인 상태면 guestOnly 단계가 빠진다 (진행 표시용)
+export const tourTotal = (loggedIn: boolean) => TOUR_STEPS.filter((s) => !(loggedIn && s.guestOnly)).length;
 
 export const TOUR_FINALE = { title: '준비 끝!' };
 export const FINALE_MS = 2000;
@@ -84,7 +88,11 @@ export function decide(raw: string | null, pathname: string, search: string, ua:
 }
 
 // 다음 단계 번호, 마지막이면 'finale'
-export const advance = (step: number): number | 'finale' => (step + 1 >= TOUR_TOTAL ? 'finale' : step + 1);
+export function advance(step: number, loggedIn = false): number | 'finale' {
+  let to = step + 1;
+  while (to < TOUR_TOTAL && loggedIn && TOUR_STEPS[to].guestOnly) to++;
+  return to >= TOUR_TOTAL ? 'finale' : to;
+}
 
 export type Box = { left: number; top: number; width: number; height: number };
 export type Placement = { left: number; top: number; side: 'below' | 'above' | 'over'; tailX: number | null };

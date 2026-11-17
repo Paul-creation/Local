@@ -12,7 +12,7 @@ import { getPeopleRecs, getHomeExcludedIds } from '../../lib/peopleRecs';
 import { getCovers, getHeroCovers, getHomeLists, getHomeStats } from '../../lib/homeMain';
 
 // 메인 화면 서버 부분 — app/page.tsx(방문자)와 app/home-member/page.tsx(로그인 사용자, proxy.ts가 / 요청을 이쪽으로 다시 써 준다)가 같이 쓴다
-// member: 히어로(배경 표지 벽·제목·부제·이벤트 줄·숫자)를 아예 그리지 않는다. 두 페이지 모두 ISR이라 쿠키를 여기서 읽지 않는다
+// member: 히어로 중 제목·부제·이벤트 줄·숫자는 그리지 않고, 배경 표지 벽만 검색창·상황 타일 뒤에 깐다. 두 페이지 모두 ISR이라 쿠키를 여기서 읽지 않는다
 // 구조화 데이터(WebSite) — 검색 결과의 사이트 이름 표시용
 const websiteJsonLd = {
   '@context': 'https://schema.org',
@@ -35,7 +35,7 @@ export default async function HomePage({ member = false }: { member?: boolean })
     getHotChart().catch(() => ({ tabs: [], top10Ids: [] as string[] })),
     getPopularPosts().catch(() => []),
     member ? { games: null, sale: null, soon: null } : getHomeStats().catch(() => ({ games: null, sale: null, soon: null })),
-    member ? ([] as string[]) : getHeroCovers().catch(() => [] as string[]),
+    getHeroCovers().catch(() => [] as string[]),
   ]);
 
   // 인기 차트에 보이는 게임들의 스트리머를 한 번에 읽어 붙인다 (실패해도 배지만 빠짐)

@@ -5,8 +5,8 @@ import { usePathname, useRouter } from 'next/navigation';
 import './tour.css';
 import { SITE_NAME } from '../../lib/site';
 import {
-  TOUR_KEY, TOUR_STEPS, TOUR_TOTAL, TOUR_FINALE, FINALE_MS,
-  decide, advance, serializeState, placeBubble, resolveStep, stepTargetNames,
+  TOUR_KEY, TOUR_STEPS, TOUR_FINALE, FINALE_MS,
+  decide, advance, tourTotal, serializeState, placeBubble, resolveStep, stepTargetNames,
   type Box, type Placement, type StepContent, type TourState,
 } from '../../lib/tour';
 
@@ -26,6 +26,8 @@ const read = (): { ok: boolean; raw: string | null } => {
 const write = (s: TourState): boolean => {
   try { window.localStorage.setItem(TOUR_KEY, serializeState(s)); return true; } catch { return false; }
 };
+// logged_in 쿠키(로그인 표시, 값 1)가 있으면 로그인 상태 — 로그인 안내 단계를 건너뛰고 진행 표시도 그만큼 줄인다
+const isLoggedIn = () => /(?:^|; )logged_in=1(?:;|$)/.test(document.cookie);
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 // 대상의 화면 위치 — display: contents(홈 히어로의 .home-only)는 자기 박스가 없어서 자식들을 합친 영역을 쓴다. 보이지 않으면 null
 const rectOf = (el: HTMLElement): DOMRect | null => {
@@ -113,7 +115,7 @@ export default function TourRoot() {
         return;
       }
       if (!def.optional) { if (!first) write({ status: 'done', step: at }); return; }
-      const to = advance(at);
+      const to = advance(at, isLoggedIn());
       if (to === 'finale') { finish('done', at, true); return; }
       at = to;
     }
@@ -137,7 +139,7 @@ export default function TourRoot() {
 
   // go: 말풍선 버튼으로 넘어가는 경우 — 다른 화면의 단계면 그 주소로 직접 이동한다 (대상을 눌러 넘어갈 때는 눌린 링크가 이동시킴)
   const next = useCallback((step: number, go = false) => {
-    const to = advance(step);
+    const to = advance(step, isLoggedIn());
     if (to === 'finale') return finish('done', step, true);
     gen.current++;
     setView(null);
@@ -248,6 +250,7 @@ export default function TourRoot() {
   }
 
   const def = view.c;
+  const total = tourTotal(isLoggedIn());
   const lay = layout && layout.key === viewKey(view) ? layout : null;
   return (
     <div className="jdn-tour">
@@ -271,9 +274,9 @@ export default function TourRoot() {
             <span className={`jdn-tour-tail is-${lay.place.side}`} style={{ transform: `translateX(${lay.place.tailX - 8}px) rotate(45deg)` }} aria-hidden="true" />
           )}
           <div className="jdn-tour-head">
-            <span className="jdn-tour-badge">{view.step + 1} / {TOUR_TOTAL}</span>
+            <span className="jdn-tour-badge">{view.step + 1} / {total}</span>
             <span className="jdn-tour-bars" aria-hidden="true">
-              {TOUR_STEPS.map((s, i) => <i key={s.id} className={i <= view.step ? 'on' : undefined} />)}
+              {TOUR_STEPS.slice(0, total).map((s, i) => <i key={s.id} className={i <= view.step ? 'on' : undefined} />)}
             </span>
           </div>
           <p id="jdn-tour-title" className="jdn-tour-title">{def.title}</p>

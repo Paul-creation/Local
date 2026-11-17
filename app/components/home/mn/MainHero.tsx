@@ -12,7 +12,7 @@ import type { GameFilters } from '../../../lib/useGameFilters';
 import type { HomeStats } from '../../../lib/homeMain';
 
 // 메인 히어로(모노 + 흰색 네온): 배경 세로 표지 벽(3줄, 열 단위로 채움) → 이벤트 한 줄 → 헤드라인 → 서브카피 → 커맨드바(검색 + AI 추천 / 인원 탭 · 칩) → 숫자 3개
-// member(로그인): 배경 표지 벽·이벤트 줄·제목·부제·숫자 없이 검색창이 헤더 바로 아래 첫 요소 (서버에서 정해 첫 HTML부터 그렇다)
+// member(로그인): 이벤트 줄·제목·부제·숫자 없이 검색창이 헤더 바로 아래 첫 요소 (배경 표지 벽은 검색창·상황 타일 뒤에 그대로) (서버에서 정해 첫 HTML부터 그렇다)
 // 검색 결과를 볼 때는 예전 모양(검색창 줄만)으로 돌아간다 — 검색창이 같은 자리에 남도록 요소 위치는 두 모드가 같고 클래스만 바뀐다 (입력 중 포커스 유지)
 // home-only로 감싼 부분은 필터 주소로 들어온 첫 HTML에서 숨김 (globals.css)
 const EAGER_TILES = 12; // 앞 4열(375px 화면이 덮는 만큼)만 바로 받고, 나머지는 lazy
@@ -45,7 +45,7 @@ export default function MainHero({ games, filters, showHome, sidebar = false, ev
   const shownStats = member ? [] : STATS.filter((s) => stats[s.key] != null);
   return (
     <div className={showHome ? `mn-hero${member ? ' mn-hero-member' : ''}` : 'home-hero'}>
-      {showHome && !member && covers.length >= 12 && (
+      {showHome && covers.length >= 12 && (
         <div ref={bgRef} className={`home-only mn-hero-bg${bgReady ? ' is-ready' : ''}`} aria-hidden="true">
           {covers.map((src, i) => <img key={`${i}-${src}`} src={src} alt="" loading={i < EAGER_TILES ? 'eager' : 'lazy'} decoding="async" fetchPriority="low" />)}
         </div>

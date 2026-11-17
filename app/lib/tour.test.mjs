@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseState, serializeState, decide, advance, isBot, pageOf, placeBubble, resolveStep, stepTargetNames, TOUR_STEPS, TOUR_TOTAL, TOUR_KEY, TOUR_FINALE, FINALE_MS, TOUR_SAMPLE_HREF } from './tour.ts';
+import { parseState, serializeState, decide, advance, isBot, pageOf, placeBubble, resolveStep, stepTargetNames, TOUR_STEPS, TOUR_TOTAL, tourTotal, TOUR_KEY, TOUR_FINALE, FINALE_MS, TOUR_SAMPLE_HREF } from './tour.ts';
 import { SITE_NAME } from './site.ts';
 import { queryHref, SITUATIONS } from './abSearch.ts';
 
@@ -39,6 +39,15 @@ test('단계 진행: 마지막 다음은 마무리', () => {
   assert.equal(advance(0), 1);
   assert.equal(advance(TOUR_TOTAL - 2), TOUR_TOTAL - 1);
   assert.equal(advance(TOUR_TOTAL - 1), 'finale');
+});
+
+test('로그인 상태: 로그인 안내 단계가 빠져 7단계, 진행 표시도 7', () => {
+  assert.equal(tourTotal(false), 8);
+  assert.equal(tourTotal(true), 7);
+  assert.equal(advance(5, true), 6);
+  assert.equal(advance(6, true), 'finale');
+  assert.equal(advance(6, false), 7);
+  assert.equal(advance(7, false), 'finale');
 });
 
 test('단계 정의: 8단계 — 환영 → 누구랑·어떻게·뭐 할까·찾기 → 상황 타일 → 결과 근거 → 로그인', () => {

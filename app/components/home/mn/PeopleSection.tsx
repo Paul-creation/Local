@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PosterCard, { posterBadge } from './PosterCard';
 import { useMyPc } from '../../pcspec/useMyPc';
 import { toUserPc } from '../../../lib/myPc';
@@ -11,6 +11,7 @@ import { usePeople } from '../PeopleContext';
 import { peopleLabel, peopleHref, trendingHref } from '../PeopleSelect';
 import LibraryLink from '../LibraryLink';
 import PeopleTabs from './PeopleTabs';
+import { ArrowLeftIcon, ArrowRightIcon } from './icons';
 
 // 메인 "N인 추천 게임" — 서버가 인원 4종 후보를 한 번에 보냈으므로 히어로의 인원 탭을 눌러도 이동·추가 요청 없이 바로 바뀐다
 // 후보(재부상 + 신작, 날짜 시드 순서)의 앞 6개를 세로 표지 카드 한 줄(가로 스크롤)로. 내 PC 토글이 켜져 있으면 최소 사양 통과 게임만 (규칙은 lib/peopleShow)
@@ -29,6 +30,29 @@ export default function PeopleSection({ recs }: { recs: Data | null }) {
   const rowRef = useRef<HTMLDivElement>(null);
   const gamesKey = games.map((g) => g.id).join(',');
   useEffect(() => { rowRef.current?.scrollTo({ left: 0, behavior: 'instant' }); }, [gamesKey]);
+  // 줄이 폭보다 넓을 때만 오른쪽 페이드 + ←·→ 버튼 (HScrollRow와 같은 모양). 데스크톱에서 6장이 폭에 딱 맞으면 둘 다 안 나온다
+  const [edge, setEdge] = useState({ start: true, end: true });
+  const [overflow, setOverflow] = useState(false);
+  const update = useCallback(() => {
+    const el = rowRef.current;
+    if (!el) return;
+    const start = el.scrollLeft <= 1;
+    const end = el.scrollLeft + el.clientWidth >= el.scrollWidth - 1;
+    setEdge((e) => (e.start === start && e.end === end ? e : { start, end }));
+    setOverflow(el.scrollWidth > el.clientWidth + 1);
+  }, []);
+  useEffect(() => {
+    update();
+    const el = rowRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [update, gamesKey]);
+  const page = (dir: 1 | -1) => {
+    const el = rowRef.current;
+    if (el) el.scrollBy({ left: dir * el.clientWidth, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  };
   // 추천 데이터가 없어도 머리(제목 + 인원 탭)는 그린다 — 탭이 그 인원의 검색 결과로 가는 길이라서
   return (
     <section className="mn-sec" aria-labelledby="mn-people-title">
@@ -37,7 +61,13 @@ export default function PeopleSection({ recs }: { recs: Data | null }) {
           <h2 id="mn-people-title">{peopleLabel(n)} 추천 게임</h2>
           <PeopleTabs />
         </div>
-        <a href={trendingHref(n, myPcActive)} className="mn-more">뜨는 게임 더 보기</a>
+        <div className="mn-people-head-right">
+          {overflow && <div className="mn-hs-arrows">
+            <button type="button" className="mn-hs-arrow" aria-label="추천 게임 이전" disabled={edge.start} onClick={() => page(-1)}><ArrowLeftIcon /></button>
+            <button type="button" className="mn-hs-arrow" aria-label="추천 게임 다음" disabled={edge.end} onClick={() => page(1)}><ArrowRightIcon /></button>
+          </div>}
+          <a href={trendingHref(n, myPcActive)} className="mn-more">뜨는 게임 더 보기</a>
+        </div>
       </div>
       {filteredOut && (
         <p className="mn-note">
@@ -46,8 +76,10 @@ export default function PeopleSection({ recs }: { recs: Data | null }) {
         </p>
       )}
       {!recs ? null : games.length > 0 ? (
-        <div className="mn-row" ref={rowRef} tabIndex={0} role="region" aria-label={`${peopleLabel(n)} 추천 게임 목록`}>
-          {games.map((g, i) => <PosterCard key={g.id} game={g} eager={i < 3} tourId={i === 0 ? 'first-card' : undefined} badge={posterBadge(g, recs.badges[g.id])} />)}
+        <div className={`mn-row-wrap${edge.start ? '' : ' has-prev'}${edge.end ? '' : ' has-next'}`}>
+          <div className="mn-row mn-row-fit" ref={rowRef} onScroll={update} tabIndex={0} role="region" aria-label={`${peopleLabel(n)} 추천 게임 목록`} style={{ '--per': SHOW } as React.CSSProperties}>
+            {games.map((g, i) => <PosterCard key={g.id} game={g} eager={i < 3} tourId={i === 0 ? 'first-card' : undefined} badge={posterBadge(g, recs.badges[g.id])} />)}
+          </div>
         </div>
       ) : (
         <p className="mn-note">조건에 맞는 추천 게임이 아직 없어요</p>

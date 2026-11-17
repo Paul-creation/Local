@@ -36,6 +36,12 @@ export function proxy(req: NextRequest) {
     }
     previewState = token ? 'bad-cookie' : 'no-cookie';
   }
+  // 내부용 /home-member를 주소창에 직접 쳐서 들어오면 / 로 (rewrite된 요청은 proxy를 다시 거치지 않는다)
+  if (req.nextUrl.pathname === '/home-member') {
+    const url = req.nextUrl.clone();
+    url.pathname = '/';
+    return NextResponse.redirect(url, 307);
+  }
   // 로그인한 사용자의 메인: / 요청을 /home-member로 다시 써서(주소창은 그대로) 서버가 처음 HTML부터 히어로 없이 내려 준다. 두 페이지 모두 ISR이라 쿠키를 페이지에서 읽지 않고 여기서 가른다
   // logged_in은 화면 힌트일 뿐 권한이 없다(위조해도 히어로만 빠진다). 검색 조건이 붙은 /?q=… 도 같은 홈이라 함께 다시 쓴다 — 쿼리는 그대로 전달
   let rewriteHome = false;

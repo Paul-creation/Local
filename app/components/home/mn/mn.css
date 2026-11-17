@@ -220,4 +220,31 @@ body:has(.mn-page) { background: var(--mn-bg, #0A0A0A); }
 
 /* 로그인 사용자 메인 — 히어로 없이 검색창이 헤더 바로 아래 첫 요소. 위 여백은 헤더와 검색창 사이, 아래 여백은 칩 줄과 첫 섹션 사이만 */
 .mn-hero.mn-hero-member { padding: 32px 0 24px; }
+/* 표지 벽은 방문자 히어로와 같은 투명도(.22)·타일 크기. 높이는 이 영역(검색창·상황 타일·칩)만큼이라 아래쪽은 배경색 그라데이션으로 사라진다 — 상황 타일 줄까지는 비치고 칩 줄 아래부터 진해진다 */
+.mn-hero-member::after { background: linear-gradient(to bottom, transparent 0, transparent 55%, var(--mn-bg) 100%); }
 @media (max-width: 767px) { .mn-hero.mn-hero-member { padding: 16px 0 16px; } }
+
+/* "N인 추천 게임" 카드 줄 — 컨테이너가 6장을 담을 만큼 넓으면(1088px 이상) 카드가 폭에 딱 맞게 늘어나고(반쯤 잘림 없음), 좁으면 168px 고정 + 가로 스크롤 + 오른쪽 페이드 + ←·→ 버튼 */
+.mn-row-fit > .mn-card { flex-basis: max(168px, calc((100% - (var(--per) - 1) * 16px) / var(--per))); }
+.mn-people-head-right { display: flex; align-items: center; gap: 16px; }
+.mn-row-wrap { position: relative; }
+.mn-row-wrap::before, .mn-row-wrap::after { content: ""; position: absolute; top: 0; bottom: 12px; z-index: 2; width: 48px; pointer-events: none; opacity: 0; }
+.mn-row-wrap::before { left: 0; background: linear-gradient(to right, var(--mn-bg), transparent); }
+.mn-row-wrap::after { right: 0; background: linear-gradient(to left, var(--mn-bg), transparent); }
+.mn-row-wrap.has-prev::before, .mn-row-wrap.has-next::after { opacity: 1; }
+@media (max-width: 767px) { .mn-people-head-right .mn-hs-arrows { display: none; } }
+
+/* 1920×1080 브라우저(보이는 높이 약 900px) 첫 화면에 로그인 메인의 검색창·상황 타일·"N인 추천 게임" 제목·탭·카드 한 줄이 다 들어오게 — 데스크톱(768px 이상)만 */
+@media (min-width: 768px) {
+  .mn-hero.mn-hero-member { padding: 20px 0 4px; }
+  .mn-hero-member .ab-sit { margin-top: 20px; }
+  .mn-hero-member .ab-sit-h { margin-bottom: 8px; }
+  .mn-hero-member .ab-sit-grid { gap: 10px; }
+  .mn-hero-member .ab-sit-card { min-height: 64px; padding: 10px 16px; gap: 2px; }
+  .mn-hero-member .ab-hero .ab-chips-row { margin-top: 12px; }
+  .mn-hero-member + .home-only .mn-sec:first-child { margin-top: 0; }
+}
+/* 제목 옆에 인원 탭을 한 줄로 (넓은 화면) — 세로 한 줄 절약 */
+@media (min-width: 1024px) {
+  .mn-people-head-left { flex-direction: row; align-items: center; gap: 24px; flex-wrap: wrap; }
+}
