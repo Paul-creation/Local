@@ -1,5 +1,5 @@
 // scripts/insta/template.mjs
-// 인스타 슬라이드 공통 템플릿(HTML/CSS 하나) + 슬라이드 타입별 본문. 화면에는 JamiDuNow만 쓴다.
+// 인스타 슬라이드 공통 템플릿(HTML/CSS 하나) + 슬라이드 타입별 본문. 화면에는 Select Screen만 쓴다.
 const W = 1080;
 const H = 1350;
 
@@ -266,12 +266,12 @@ const poster = (s, ctx, headline, chips, brandBelow = false) => `
       ? `<div class="poster-bg blurred" style="background-image:url(${ctx.poster.image})"></div><div class="poster-fit"><img src="${ctx.poster.image}" style="width:${(s.zoom ?? 1.3) * 100}%; margin-left:-${((s.zoom ?? 1.3) - 1) * (s.focusX ?? 0.5) * 100}%"></div>`
       : `<div class="poster-bg" style="background-image:url(${ctx.poster.image});${s.zoom ? ` transform:scale(${s.zoom}); transform-origin:${(s.focusX ?? 0.5) * 100}% ${(s.focusY ?? 0.5) * 100}%;` : ''}"></div>`}
     <div class="poster-shade"></div>
-    ${brandBelow ? '' : '<div class="poster-logo"><i>J</i><b>JamiDuNow</b></div>'}
+    ${brandBelow ? '' : '<div class="poster-logo"><i>J</i><b>Select Screen</b></div>'}
     <div class="poster-text">
       ${s.kicker ? `<div class="poster-kicker">${rich(s.kicker)}</div>` : ''}
       <div class="poster-head">${rich(headline)}</div>
       ${chips.length ? `<div class="poster-chips">${chips.map((c) => `<span class="poster-chip${c.sale ? ' sale' : ''}">${rich(c.text)}</span>`).join('')}</div>` : ''}
-      ${brandBelow ? '<div class="poster-brand"><i>J</i><b>JamiDuNow</b></div>' : ''}
+      ${brandBelow ? '<div class="poster-brand"><i>J</i><b>Select Screen</b></div>' : ''}
     </div>`;
 
 const BODY = {
@@ -304,7 +304,7 @@ const BODY = {
       <div class="grid">${GRID_CELLS.map(([key, name]) => `
         <div class="cell"><div class="cell-label">${name}</div><div class="gcard ${key}"><img src="${ctx.parts[key]}" alt=""></div></div>`).join('')}
       </div>
-      <div class="foot">${rich(s.small ?? 'jamidunow.com')}</div>
+      <div class="foot">${rich(s.small ?? 'select-screen.com')}</div>
     </div>`,
   'detail-split': (s, ctx) => {
     const sp = ctx.split;
@@ -313,7 +313,7 @@ const BODY = {
     <div class="split" style="top:${sp.top}px;height:${sp.areaH}px;left:${sp.side}px;right:${sp.side}px;gap:${sp.gap}px">
       ${sp.pieces.map((p) => `<div class="sp" style="width:${p.outerW}px"><div class="spc" style="height:${p.h}px">${p.imgs.map((i) => `<img src="${i.src}" style="top:${i.top}px;width:${i.w}px" alt="">`).join('')}</div></div>`).join('')}
     </div>
-    ${sp.last ? `<div class="foot-abs">${rich(s.small ?? 'jamidunow.com')}</div>` : '<div class="next">→</div>'}`;
+    ${sp.last ? `<div class="foot-abs">${rich(s.small ?? 'select-screen.com')}</div>` : '<div class="next">→</div>'}`;
   },
   cta: (s) => `
     <div class="pad">
@@ -324,9 +324,9 @@ const BODY = {
   'end-card': () => `
     <div class="end">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><rect width="96" height="96" rx="22" fill="#0b0b0b"/><path d="M62 20 V58 A16 16 0 0 1 30 58" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round"/></svg>
-      <div class="end-name">JamiDuNow</div>
+      <div class="end-name">Select Screen</div>
       <div class="end-sub">모든 정보를 한곳에</div>
-      <div class="end-url">jamidunow.com</div>
+      <div class="end-url">select-screen.com</div>
     </div>`,
   'collage-cover': (s, ctx) => `
     <div class="collage">${ctx.photos.map((p) => `<div style="background-image:url(${p})"></div>`).join('')}</div>
@@ -391,7 +391,7 @@ const BODY = {
       <div class="rc-kicker">${rich(s.kicker)}</div>
       <div class="rc-title"><div class="rc-t1" data-fit="72,40">${rich(s.title1)}</div><div class="rc-t2" data-fit="80,44">${rich(s.title2)}</div></div>
     </div>
-    <div class="rc-brand"><i>J</i><b>JamiDuNow</b></div>`,
+    <div class="rc-brand"><i>J</i><b>Select Screen</b></div>`,
   'roundup-game': (s, ctx) => {
     const g = ctx.single;
     const won = (n) => `${Math.round(n).toLocaleString('ko-KR')}원`;
@@ -410,11 +410,11 @@ const BODY = {
     return `
     <div class="rd-bg" style="background-image:url(${g.bg})"></div>
     <div class="rd-dim"></div>
-    <div class="rd-top"><span class="rd-label">JamiDuNow 데이터</span><div class="rd-name" data-fit="52,34,1">${esc(g.name)}</div></div>
+    <div class="rd-top"><span class="rd-label">Select Screen 데이터</span><div class="rd-name" data-fit="52,34,1">${esc(g.name)}</div></div>
     <div class="rd-mid">${g.rows.map((r) => `<div class="rd-row"><div class="rd-label-s">${esc(r.label)}</div>${r.chips
       ? `<div class="rd-chips">${r.chips.map((c) => `<span class="rd-chip">${esc(c)}</span>`).join('')}</div>`
       : `<div class="rd-val${r.label === '한 줄 평' ? ' small' : ''}">${esc(r.value)}${r.badge ? `<span class="rd-badge">${esc(r.badge)}</span>` : ''}</div>`}</div>`).join('')}</div>
-    <div class="rd-foot">자세한 정보는 jamidunow.com</div>`;
+    <div class="rd-foot">자세한 정보는 select-screen.com</div>`;
   },
   'reel-hook': (s) => `
     <div class="rl"></div>
@@ -422,15 +422,15 @@ const BODY = {
     <div class="rl-hook">
       <div class="rl-hook-small" data-fit="36,26,1">${esc(s.small)}</div>
       <div class="rl-hook-title"><div data-fit="92,60,1">${rich(s.title1)}</div><div data-fit="92,60,1">${rich(s.title2)}</div></div>
-      <div class="rl-logo"><i>J</i><b>JamiDuNow</b></div>
+      <div class="rl-logo"><i>J</i><b>Select Screen</b></div>
     </div>`,
   'reel-game': (s, ctx) => {
     const v = ctx.single;
     return `
     <div class="rl"></div>
-    <div class="rl-bar"><div class="rl-logo"><i>J</i><b>JamiDuNow</b></div></div>
+    <div class="rl-bar"><div class="rl-logo"><i>J</i><b>Select Screen</b></div></div>
     <div class="rl-card">
-      <div class="rl-card-head"><span class="rl-label">JamiDuNow 한 줄 평</span>${v.badge ? `<span class="rl-badge">${esc(v.badge)}</span>` : ''}</div>
+      <div class="rl-card-head"><span class="rl-label">Select Screen 한 줄 평</span>${v.badge ? `<span class="rl-badge">${esc(v.badge)}</span>` : ''}</div>
       <div class="rl-one" data-fit="40,26,1">${esc(s.g.oneliner)}</div>
     </div>
     <div class="rl-panel">
@@ -448,7 +448,7 @@ const BODY = {
       <div class="sv-name" data-fit="58,36,1">${esc(v.name)}</div>
       <div class="sv-info" data-fit="30,24,1">${esc(v.info)}</div>
       <div class="sv-desc">${rich(s.g.desc)}</div>
-      <div class="sv-brand"><i>J</i><b>JamiDuNow</b></div>
+      <div class="sv-brand"><i>J</i><b>Select Screen</b></div>
     </div>`;
   },
   'showcase-sig': (s, ctx) => {
@@ -456,13 +456,13 @@ const BODY = {
     return `
     <div class="rd-bg" style="background-image:url(${g.bg})"></div>
     <div class="rd-dim"></div>
-    <div class="rd-top ss-top"><span class="rd-label">JamiDuNow 데이터</span><div class="rd-name" data-fit="52,34,1">${esc(g.name)}</div></div>
+    <div class="rd-top ss-top"><span class="rd-label">Select Screen 데이터</span><div class="rd-name" data-fit="52,34,1">${esc(g.name)}</div></div>
     <div class="ss-mid">${g.rows.map((r) => r.key === 'verdict'
       ? `<div class="ss-verdict"><div class="rd-label-s">${esc(r.label)}</div><div class="ss-head" data-fit="56,38,1">${esc(r.value)}</div><div class="ss-sub">${esc(r.sub)}</div></div>`
       : `<div class="rd-row"><div class="rd-label-s">${esc(r.label)}</div>${r.chips
         ? `<div class="rd-chips">${r.chips.map((c) => `<span class="rd-chip">${esc(c)}</span>`).join('')}</div>`
         : `<div class="rd-val${r.small ? ' small' : ''}${r.fit ? ' fit' : ''}"${r.fit ? ' data-fit="40,28,1"' : ''}>${esc(r.value)}</div>`}</div>`).join('')}</div>
-    <div class="rd-foot">자세한 정보는 jamidunow.com</div>`;
+    <div class="rd-foot">자세한 정보는 select-screen.com</div>`;
   },
   'shot-pair': (s, ctx) => `
     <div class="sp-wrap">${ctx.single.images.map((u) => `<div class="sp-half" style="background-image:url(${u})"></div>`).join('')}</div>
@@ -480,14 +480,14 @@ const BODY = {
       ${s.sub ? `<div class="fc-sub">${rich(s.sub)}</div>` : ''}
       <div class="fc-pill"><span class="fc-j">J</span><span class="fc-handle">jamidunow</span><span class="fc-btn">팔로우</span></div>
     </div>
-    <div class="fc-brand">JamiDuNow</div>`,
+    <div class="fc-brand">Select Screen</div>`,
   og: (s, ctx) => `
     <div class="og-wall" style="background-image:url(${ctx.wall})"></div>
     <div class="og-dim"></div>
     <div class="og">
       <div class="og-logo">J</div>
       <div class="og-head">친구들이랑 뭐 하지?</div>
-      <div class="og-name">JamiDuNow</div>
+      <div class="og-name">Select Screen</div>
     </div>`,
   'game-card': (s, ctx) => `
     <div class="gcard-wrap">

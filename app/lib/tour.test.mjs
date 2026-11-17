@@ -104,7 +104,7 @@ test('상세 slot 단계: 대상이 하나뿐이면 둘째 단계는 비어 건�
 });
 
 test('홈 소개 단계 문구와 마무리(한 줄, 2초)', () => {
-  assert.equal(resolveStep(0, {}).title, 'JamiDuNow에 온 걸 환영해요');
+  assert.equal(resolveStep(0, {}).title, 'Select Screen에 온 걸 환영해요');
   assert.equal(resolveStep(2, {}).names[0], 'ai');
   assert.equal(resolveStep(3, {}).block, false);
   assert.deepEqual(TOUR_FINALE, { title: '준비 끝!' });

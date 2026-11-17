@@ -1,8 +1,8 @@
 @AGENTS.md
 
-# JamiDuNow
+# Select Screen
 
-친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트. Next.js + Supabase + Vercel(Hobby). 화면엔 "JamiDuNow"만 쓰고 "재밌드나"는 구조화 데이터에만 쓴다.
+친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트. Next.js + Supabase + Vercel(Hobby). 화면엔 "Select Screen"만 쓰고 옛 이름(JamiDuNow·재밌드나)은 구조화 데이터에만 쓴다.
 - 현재 상황·로드맵: docs/STATUS.md (있으면 작업 전에 읽기)
 - 디자인 원칙: docs/design.md (UI를 건드리면 먼저 읽기). 시각 디자인 원칙은 재검토 중 — 사용자 지시가 우선.
 

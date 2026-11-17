@@ -21,7 +21,7 @@ async function revalidateList(changed) {
   if (!APPLY || !changed) return;
   const key = process.env.ADMIN_REVALIDATE_KEY;
   if (!key) { console.log('ℹ️  ADMIN_REVALIDATE_KEY 없음 — 캐시 무효화 생략'); return; }
-  const site = (process.env.NEXT_PUBLIC_SITE_URL || 'https://jamidunow.com').replace(/\/$/, '');
+  const site = (process.env.NEXT_PUBLIC_SITE_URL || 'https://select-screen.com').replace(/\/$/, '');
   try {
     const res = await fetch(`${site}/api/admin/revalidate`, { method: 'POST', headers: { 'x-admin-key': key } });
     console.log(res.ok ? '♻️  /api/games/list 캐시 무효화' : `⚠️ 캐시 무효화 실패 (${res.status})`);

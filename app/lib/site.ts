@@ -2,15 +2,15 @@
 // (NEXT_PUBLIC_* 값은 빌드할 때 코드에 박히므로 환경변수를 바꾼 뒤 재배포해야 반영됨)
 // 화면·<title>·OG·설명에는 영어 이름만 씀. 한국어 이름은 발음으로 스스로 알아채게 하려고 화면에 안 보이게 둠
 // SITE_NAME_KO는 구조화 데이터 alternateName(화면에 안 보임)과 커뮤니티 닉네임 금지 목록에만 씀
-export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'JamiDuNow';
+export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Select Screen';
 export const SITE_NAME_KO = process.env.NEXT_PUBLIC_SITE_NAME_KO || '재밌드나';
 export const SITE_NAME_FULL = SITE_NAME;
-// 구조화 데이터(WebSite) alternateName — 검색에서 이 이름들로도 사이트를 찾게
-export const SITE_ALT_NAMES = [SITE_NAME_KO, 'JDN', 'jamidunow.com'];
+// 구조화 데이터(WebSite) alternateName — 검색에서 이 이름들로도 사이트를 찾게(예전 이름 JamiDuNow·재밌드나·JDN 포함)
+export const SITE_ALT_NAMES = [SITE_NAME_KO, 'JamiDuNow', 'JDN', 'select-screen.com'];
 export const SITE_TITLE = `${SITE_NAME_FULL} - 친구랑 할 게임 찾기`;
-// 환경변수가 예전 vercel.app 주소로 남아 있어도 canonical·sitemap은 jamidunow.com으로 나가게 무시한다
+// 환경변수가 예전 주소(vercel.app, jamidunow.com)로 남아 있어도 canonical·sitemap은 select-screen.com으로 나가게 무시한다
 const ENV_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL;
-export const SITE_URL = (ENV_SITE_URL && !/\.vercel\.app/i.test(ENV_SITE_URL) ? ENV_SITE_URL : 'https://jamidunow.com').replace(/\/$/, '');
+export const SITE_URL = (ENV_SITE_URL && !/\.vercel\.app|jamidunow\.com/i.test(ENV_SITE_URL) ? ENV_SITE_URL : 'https://select-screen.com').replace(/\/$/, '');
 // 운영자(저작권 표시·개인정보 보호책임자 표기에 사용)
 export const OPERATOR_NAME = process.env.NEXT_PUBLIC_OPERATOR_NAME || 'The Circles';
 // 페이지에서 openGraph를 쓰면 layout 값을 통째로 덮어쓰므로 공통 값은 이걸 펼쳐서 같이 넣는다
@@ -19,6 +19,6 @@ export const BASE_OG = { siteName: SITE_NAME_FULL, locale: 'ko_KR', type: 'websi
 // 연락 이메일 — NEXT_PUBLIC_CONTACT_EMAIL로 바꿀 수 있고, 없으면 전용 주소를 쓴다
 export const CONTACT_EMAIL = (process.env.NEXT_PUBLIC_CONTACT_EMAIL || 'jamidunow@gmail.com').trim();
 export const CONTACT_TEXT = CONTACT_EMAIL || '준비 중';
-export const SITE_DESCRIPTION = '친구들이랑 뭐 할지 고민될 때 — 인원·난이도·가격·할인까지 한눈에 비교하는 게임 정보 사이트';
+export const SITE_DESCRIPTION = '친구들이랑 뭐 할지 고민될 때 — 게임 픽창 열듯 인원·난이도·가격·할인까지 한눈에 비교하는 게임 정보 사이트';
 // <meta description>·OG 설명용
 export const SITE_META_DESCRIPTION = `${SITE_NAME}: ${SITE_DESCRIPTION}`;

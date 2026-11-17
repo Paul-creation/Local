@@ -1,7 +1,7 @@
 // scripts/insta/site-demo.mjs
-// 릴스 끝에 넣는 "사이트 소개 애니메이션"(약 6초, 1080×1920, 30fps): jamidunow.com 홈에서 게임을 검색 → 결과를 눌러 상세로 → 부드럽게 스크롤
+// 릴스 끝에 넣는 "사이트 소개 애니메이션"(약 6초, 1080×1920, 30fps): select-screen.com 홈에서 게임을 검색 → 결과를 눌러 상세로 → 부드럽게 스크롤
 // 실제 사이트를 Playwright Chromium(모바일 390×693, deviceScaleFactor 1080/390)으로 열고, 화면 녹화 대신 프레임마다 상태(줌·타이핑·탭 효과·스크롤)를 직접 정해 page.screenshot으로 30fps를 한 장씩 찍어 ffmpeg로 묶는다
-// 실행: node scripts/insta/site-demo.mjs --game <id> --query "<검색어>" --label "<표시 이름>" [--out <폴더>] [--base https://jamidunow.com]
+// 실행: node scripts/insta/site-demo.mjs --game <id> --query "<검색어>" --label "<표시 이름>" [--out <폴더>] [--base https://select-screen.com]
 //   → out/<label 슬러그>/site-demo.mp4(H.264 High 8Mbps 30fps bt709, 무음) + site-demo-scene2/4/6.png
 // --reel-trend --site-demo는 renderSiteDemo()의 raw(crf 10 중간 파일)를 가져다 쓴다(copy.siteDemo = {game, query, label})
 // 장면: 0~0.5 홈(줌 1.00→1.03) · 0.5~0.8 검색창 탭 · 0.8~1.9 타이핑(글자당 약 0.08초, 불규칙) · 1.9~2.4 결과 드롭다운 + 결과 줄 탭(2.1~) · 2.4~2.7 상세로 0.3초 크로스페이드 · 2.7~5.3 상세 스크롤("한눈에 보기" 타일에서 0.4초 멈춤 → "어떤 게임인가요?" 제목까지) · 5.3~5.6 정지 · 5.6~6.0 페이드아웃
@@ -86,7 +86,7 @@ async function captionPng(file, lines) { // lines: 한 줄짜리 [text] 또는 �
   } finally { await b.close(); }
 }
 
-export async function renderSiteDemo({ game, query, label, base = 'https://jamidunow.com', outDir, cacheDir = CACHE_DIR, refresh = false, final = true }) {
+export async function renderSiteDemo({ game, query, label, base = 'https://select-screen.com', outDir, cacheDir = CACHE_DIR, refresh = false, final = true }) {
   if (!game || !query || !label) throw new Error('site-demo: game·query·label이 모두 필요해요');
   fs.mkdirSync(cacheDir, { recursive: true });
   fs.mkdirSync(outDir, { recursive: true });
@@ -176,7 +176,7 @@ export async function renderSiteDemo({ game, query, label, base = 'https://jamid
 
   // 안내 문구 PNG + 인코딩: 프레임 → 문구 올리기 → 마지막 0.4초 검은 화면으로 페이드아웃 → bt709 중간 파일(crf 10)
   const capFile = path.join(cacheDir, `site-demo-${key}-caption.png`);
-  const cap = await captionPng(capFile, ['jamidunow.com에서', `'${label}' 검색해보세요`]);
+  const cap = await captionPng(capFile, ['select-screen.com에서', `'${label}' 검색해보세요`]);
   const sizeOf = (f) => { const o = execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'stream=width,height', '-of', 'csv=p=0', f]).toString().trim().split(','); return { w: +o[0], h: +o[1] }; };
   const cs = sizeOf(capFile);
   const first = sizeOf(fname(0));

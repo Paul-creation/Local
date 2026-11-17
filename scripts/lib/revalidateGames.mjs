@@ -32,7 +32,7 @@ export async function flushChangedGames({ file = CHANGED_FILE, env = process.env
   if (!ids.length) { log('♻️  상세 페이지 갱신 대상 없음 — 호출 안 함'); return { ids: 0, calls: 0, skipped: 'none' }; }
   const key = env.ADMIN_REVALIDATE_KEY;
   if (!key) { log(`ℹ️  ADMIN_REVALIDATE_KEY 없음 — 상세 페이지 ${ids.length}개 갱신 생략 (7일 안에 저절로 갱신됨)`); return { ids: ids.length, calls: 0, skipped: 'no-key' }; }
-  const site = (env.NEXT_PUBLIC_SITE_URL || 'https://jamidunow.com').replace(/\/$/, '');
+  const site = (env.NEXT_PUBLIC_SITE_URL || 'https://select-screen.com').replace(/\/$/, '');
   let calls = 0, failed = 0;
   for (let i = 0; i < ids.length; i += MAX_IDS_PER_CALL) {
     const chunk = ids.slice(i, i + MAX_IDS_PER_CALL);

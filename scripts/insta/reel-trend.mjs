@@ -82,7 +82,7 @@ const logoHtml = (font, top = FG_Y + 26, full = false, o = {}) => `<!doctype htm
 .logo { position: absolute; left: ${o.x ?? (full ? 48 : FG_X + 28)}px; top: ${top}px; display: flex; align-items: center; gap: 10px; opacity: ${full ? 0.85 : 0.92}; ${full ? `transform: scale(${o.scale ?? 1}); transform-origin: 0 0; filter: drop-shadow(0 0 4px rgba(0,0,0,.4));` : ''} }
 .logo i { width: 38px; height: 38px; border-radius: 11px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-style: normal; font-size: 27px; font-weight: 900; line-height: 1; }
 .logo b { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #fff; ${full ? '' : 'text-shadow: 0 0 8px rgba(0,0,0,.6);'} }
-</style><div class="logo"><i>J</i><b>JamiDuNow</b></div>`;
+</style><div class="logo"><i>J</i><b>Select Screen</b></div>`;
 
 // 자막 한 덩어리: 흰 글씨 72px Black(900) + 검은 외곽선 5px(바깥쪽, 10px 선 + paint-order, 둥근 모서리), 그림자 없음. 2배 해상도(144px·외곽선 10px)로 그린 뒤 50%로 줄여 합성(가장자리 매끈하게). [ ]로 감싼 말, 그리고 KEY_WORDS는 민트
 const KEY_WORDS = ['컨닝으로', '지우개가', '무전기로', '기절시키고', '다 같이', '파이널스 위크'];
@@ -94,7 +94,7 @@ const subHtml = (font, text, size = 72, full = false, y = full ? SUB_Y_FULL : SU
 .sub .k { color: ${MINT}; }
 </style><div class="sub" id="s">${esc(subMark(text)).replace(/\[([^\]]+)\]/g, '<span class="k">$1</span>')}</div>`;
 
-// 정보 카드: 둥근 검은 카드 + 민트 포인트. 대표 이미지(스팀 header) · 이름 · 정보 2줄 · 아래 작게 jamidunow.com
+// 정보 카드: 둥근 검은 카드 + 민트 포인트. 대표 이미지(스팀 header) · 이름 · 정보 2줄 · 아래 작게 select-screen.com
 const cardHtml = (font, f, title, imgB64) => `<!doctype html><meta charset="utf-8"><style>${baseCss(font)}
 .card { position: absolute; left: ${CARD_CX - 380}px; width: 760px; top: ${CARD_Y}px; transform: translateY(-50%); padding: 28px 28px 24px; border-radius: 44px; background: rgba(10,10,10,.95); border: 3px solid ${MINT}; text-align: center; color: #fff; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
 .card img { display: block; width: auto; max-width: 100%; margin: 0 auto; border-radius: 26px; } /* 원본보다 크게 늘리지 않는다(원본이 넓으면 카드 폭에 맞춰 줄임) */
@@ -103,7 +103,7 @@ const cardHtml = (font, f, title, imgB64) => `<!doctype html><meta charset="utf-
 .i em { font-style: normal; color: ${MINT}; }
 .u { margin-top: 18px; font-size: 24px; font-weight: 600; color: rgba(255,255,255,.55); letter-spacing: .02em; }
 </style><div class="card" id="c"><img src="data:image/jpeg;base64,${imgB64}"><div class="t">${esc(title)}</div>
-<div class="i"><em>${f.mmdd ? `${esc(f.mmdd)} 출시` : '출시 예정'}</em>${f.price ? ` / ${esc(f.price)}` : ''}<br>최대 ${f.max}인 / ${esc(f.korean)}</div><div class="u">jamidunow.com</div></div>`;
+<div class="i"><em>${f.mmdd ? `${esc(f.mmdd)} 출시` : '출시 예정'}</em>${f.price ? ` / ${esc(f.price)}` : ''}<br>최대 ${f.max}인 / ${esc(f.korean)}</div><div class="u">select-screen.com</div></div>`;
 
 // ── ElevenLabs 내레이션 ──
 const DEFAULT_VOICE = 'uyVNoMrnUku1dZyVEXwD';
@@ -323,7 +323,7 @@ const outroHtml = (font) => `<!doctype html><meta charset="utf-8"><style>${baseC
 .nm { margin-top: 30px; font-size: 72px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
 .tg { margin-top: 14px; font-size: 44px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.3; color: ${MINT}; }
 .url { margin-top: 64px; font-size: 34px; font-weight: 500; line-height: 1.3; color: #9A9A9A; letter-spacing: .01em; }
-</style><div class="blk"><div class="lg" id="lg">J</div><div class="nm" id="nm">JamiDuNow</div><div class="tg" id="tg">친구랑 할 게임, 여기서 찾자</div><div class="url" id="url">jamidunow.com</div></div>`;
+</style><div class="blk"><div class="lg" id="lg">J</div><div class="nm" id="nm">Select Screen</div><div class="tg" id="tg">친구랑 할 게임, 여기서 찾자</div><div class="url" id="url">select-screen.com</div></div>`;
 
 async function composeOutro({ font, lastPng, out, CACHE, postId, outro }) {
   const { w, h, fps } = RS;
@@ -419,7 +419,7 @@ async function runReelTrendOnce(postId, { refresh = false, layout, fitRatio, sit
   const copyFile = path.join(DIR, 'copy', `${postId}.json`);
   if (!fs.existsSync(copyFile)) throw new Error(`--reel-trend: ${path.relative(ROOT, copyFile)}이 없어요`);
   const copy = JSON.parse(fs.readFileSync(copyFile, 'utf8'));
-  if (JSON.stringify(copy).includes('재밌드나')) throw new Error('화면에는 "재밌드나"를 쓰지 않아요. JamiDuNow만 쓰세요.');
+  if (JSON.stringify(copy).includes('재밌드나')) throw new Error('화면에는 "재밌드나"를 쓰지 않아요. Select Screen만 쓰세요.');
   const LAYOUT = layout ?? copy.layout;
   const FIT = LAYOUT === 'fit-blur'; // fit-blur: 소스에서 비율(--fit-ratio 1:1·4:5·4:3, 기본 4:5, copy.fitRatio)대로 자른 영역을 가로 1080으로 화면 세로 중앙에 두고(4:3이면 1080×810), 위아래는 같은 장면 9:16 크롭을 꽉 채워 키운 뒤 블러(sigma 30)·밝기 -0.15. 컷마다 cx(0~1, 주인공의 가로 위치)로 앞 영역·배경 위치를 정한다(pan/x가 있으면 full 기준 값을 cx로 환산). 엔딩 카드·로고 엔딩은 9:16 전체
   const FULL = LAYOUT === 'full' || FIT; // 9:16 꽉 채우기(fit-blur도 같은 컷·오디오 처리)

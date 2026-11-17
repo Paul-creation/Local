@@ -1,7 +1,7 @@
 // scripts/insta/generate.mjs
 // 인스타 게시물 이미지 생성: scripts/insta/posts/<post-id>.json → scripts/insta/out/<post-id>/01.png … (1080×1350)
 // 실행: npm run insta -- <post-id>             (카드 벽·스크린샷은 cache/에 저장해 재사용)
-//       npm run insta -- <post-id> --refresh   (jamidunow.com에서 벽·스크린샷을 다시 찍음)
+//       npm run insta -- <post-id> --refresh   (select-screen.com에서 벽·스크린샷을 다시 찍음)
 //       SITE=http://localhost:3000 npm run insta -- <post-id> --refresh
 //       npm run insta -- <post-id> --detailed  (표지·트레일러·팔로우 카드는 그대로, 사이에 개요·플레이 4장을 넣은 8장. 문구는 copy/<post-id>.json)
 //       (끝나면 out/<post-id>.zip도 같이 만든다 — zip 명령 필요)
@@ -29,7 +29,7 @@ import { REEL, expandReel, reelInfo, trailerFromDb, composeHook, composeGame, co
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DIR, '../..');
 const CACHE = CACHE_DIR;
-const SITE = (process.env.SITE || 'https://jamidunow.com').replace(/\/$/, '');
+const SITE = (process.env.SITE || 'https://select-screen.com').replace(/\/$/, '');
 const args = process.argv.slice(2);
 const refresh = args.includes('--refresh');
 const detailed = args.includes('--detailed');
@@ -53,7 +53,7 @@ if (args.includes('--reel-single')) { // 게임 하나 릴스: posts json 없이
 const postFile = path.join(DIR, 'posts', `${postId}.json`);
 if (!fs.existsSync(postFile)) { console.error(`게시물 파일이 없어요: ${path.relative(ROOT, postFile)}`); process.exit(1); }
 const raw = fs.readFileSync(postFile, 'utf8');
-if (raw.includes('재밌드나')) { console.error('화면에는 "재밌드나"를 쓰지 않아요. JamiDuNow만 쓰세요.'); process.exit(1); }
+if (raw.includes('재밌드나')) { console.error('화면에는 "재밌드나"를 쓰지 않아요. Select Screen만 쓰세요.'); process.exit(1); }
 const baseSlides = JSON.parse(raw);
 const slides = (reel ? expandReel(baseSlides, loadCopy(DIR, postId)) : showcase ? expandShowcase(baseSlides, loadCopy(DIR, postId)) : roundup ? expandRoundup(baseSlides, loadCopy(DIR, postId)) : detailed ? await expandDetailed(baseSlides, loadCopy(DIR, postId)) : baseSlides).flatMap((s) => (s.type === 'detail-split' ? Array.from({ length: s.slides ?? 1 }, (_, part) => ({ ...s, part, parts: s.slides ?? 1 })) : [s])); // detail-split 한 줄 = slides장
 if (!Array.isArray(slides) || slides.length === 0) { console.error('json은 슬라이드 배열이어야 해요.'); process.exit(1); }
@@ -258,7 +258,7 @@ async function captureSplit(browser, game, files, split) {
 const CANVAS_W = 1080;
 const SIDE = 72;
 const COL_GAP = 24;
-const AREA_BOTTOM = 1170; // 로고·넘김 표시·jamidunow.com 줄 위
+const AREA_BOTTOM = 1170; // 로고·넘김 표시·select-screen.com 줄 위
 const areaTop = (part) => (part === 0 ? 280 : 110); // 첫 장은 라벨 아래, 나머지는 페이지 번호 아래
 function planSplit(layout, slidesN, cols) {
   const outerW = (CANVAS_W - SIDE * 2 - COL_GAP * (cols - 1)) / cols;
