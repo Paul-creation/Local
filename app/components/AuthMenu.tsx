@@ -130,6 +130,7 @@ export default function AuthMenu() {
       <a
         href="/api/auth/steam/login"
         className="auth-login"
+        data-tour="login"
         style={me === undefined ? { visibility: 'hidden' } : undefined}
         tabIndex={me === undefined ? -1 : undefined}
         onClick={(e) => {

@@ -105,6 +105,7 @@ export default function AbSearch({ games, initial = EMPTY_QUERY, variant = 'home
                 <button
                   type="button"
                   className={`ab-cell${open === c.key ? ' is-open' : ''}`}
+                  data-tour={variant === 'home' ? `ab-${c.key}` : undefined}
                   aria-expanded={open === c.key}
                   aria-controls={`ab-panel-${c.key}`}
                   onClick={() => setOpen(open === c.key ? null : c.key)}
@@ -119,12 +120,12 @@ export default function AbSearch({ games, initial = EMPTY_QUERY, variant = 'home
                 )}
               </div>
             ))}
-            <button type="button" className="ab-go" onClick={() => submit()}>찾기</button>
+            <button type="button" className="ab-go" data-tour={variant === 'home' ? 'ab-go' : undefined} onClick={() => submit()}>찾기</button>
           </div>
         )}
 
         {/* ----- 휴대폰 ----- */}
-        <button type="button" className="ab-pill ab-mobile" onClick={() => { setSheet(true); setOpen('who'); }} aria-haspopup="dialog">
+        <button type="button" className="ab-pill ab-mobile" data-tour={variant === 'home' ? 'ab-pill' : undefined} onClick={() => { setSheet(true); setOpen('who'); }} aria-haspopup="dialog">
           <span className="ab-pill-main">{pillMain}</span>
           <span className="ab-pill-sub">{isEmptyQuery(q) ? '인원 · 방식 · 장르' : '눌러서 바꾸기'}</span>
         </button>

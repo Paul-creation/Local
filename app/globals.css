@@ -251,13 +251,13 @@ img { display: block; }
   font-weight: 700;
   white-space: nowrap;
   text-shadow: none;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.09);
+  box-shadow: 0 0 10px rgba(255, 255, 255, calc(0.09 * var(--glow-strength)));
   cursor: pointer;
   transition: box-shadow 0.15s ease;
 }
 /* 로그인 확인 중(숨긴 로그인 버튼)·로그인 버튼·아바타 버튼이 같은 폭이라 확인이 끝나도 메뉴가 밀리지 않는다 */
 .auth-login, .auth-user { min-width: 154px; justify-content: center; }
-.auth-login:hover, .auth-user:hover { box-shadow: 0 0 14px rgba(255, 255, 255, 0.18); }
+.auth-login:hover, .auth-user:hover { box-shadow: 0 0 14px rgba(255, 255, 255, calc(0.18 * var(--glow-strength))); }
 .auth-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
 .auth-name { max-width: 9em; overflow: hidden; text-overflow: ellipsis; }
 .auth-pop {
@@ -340,7 +340,7 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
 
 /* 모노 헤더 안의 비교 개수 배지·진행 바 (원래 규칙은 아래쪽 .nav-count·.nav-progress — 헤더 안에서만 덮어쓴다) */
 .site-header.mn .nav-count { background: var(--mn-fg); color: var(--mn-fg-inv); font-weight: 800; text-shadow: none; box-shadow: none; }
-.site-header.mn .nav-progress { background: var(--mn-fg); box-shadow: 0 0 8px rgba(255, 255, 255, 0.4); }
+.site-header.mn .nav-progress { background: var(--mn-fg); box-shadow: 0 0 8px rgba(255, 255, 255, calc(0.4 * var(--glow-strength))); }
 
 /* ============================================================
    공통 컴포넌트 — 버튼·칩·뱃지·입력창·탭·카드·스켈레톤

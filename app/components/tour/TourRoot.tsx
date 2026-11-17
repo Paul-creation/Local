@@ -1,17 +1,18 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import './tour.css';
+import { SITE_NAME } from '../../lib/site';
 import {
-  TOUR_KEY, TOUR_LEGACY_KEY, TOUR_STEPS, TOUR_TOTAL, TOUR_FINALE, FINALE_MS,
-  INFO_ITEMS, decide, advance, serializeState, placeBubble, resolveStep, stepTargetNames,
+  TOUR_KEY, TOUR_STEPS, TOUR_TOTAL, TOUR_FINALE, FINALE_MS,
+  decide, advance, serializeState, placeBubble, resolveStep, stepTargetNames,
   type Box, type Placement, type StepContent, type TourState,
 } from '../../lib/tour';
 
 // 첫 방문자 투어 — 서버에서는 아무것도 그리지 않고(렌더 결과 null), 브라우저에서 규칙(lib/tour)이 허락할 때만 position: fixed로 겹쳐 띄운다
-// 진행 상태는 localStorage(jdn_tour_v1)에 저장해 카드 → 상세 이동 뒤에도 이어간다. 저장소를 못 쓰면 시작하지 않는다
-// c: 이 단계에 실제로 보여줄 내용(lib/tour resolveStep) — 상세 slot 단계는 화면 위에서부터 순서가 정해짐
+// 진행 상태는 localStorage(jdn_tour_v3)에 저장해 홈 → 결과(/find) 이동 뒤에도 이어간다. 저장소를 못 쓰면 시작하지 않는다
+// c: 이 단계에 보여줄 내용(lib/tour resolveStep)
 type StepView = { kind: 'step'; step: number; c: StepContent };
 type View = StepView | { kind: 'finale' } | null;
 type Layout = { key: string; step: number; holes: Box[]; place: Placement; vw: number; vh: number };
@@ -19,8 +20,8 @@ type Layout = { key: string; step: number; holes: Box[]; place: Placement; vw: n
 const HOLE_PAD = 6;
 const HOLE_R = 10;
 
-const read = (): { ok: boolean; raw: string | null; legacy: string | null } => {
-  try { return { ok: true, raw: window.localStorage.getItem(TOUR_KEY), legacy: window.localStorage.getItem(TOUR_LEGACY_KEY) }; } catch { return { ok: false, raw: null, legacy: null }; }
+const read = (): { ok: boolean; raw: string | null } => {
+  try { return { ok: true, raw: window.localStorage.getItem(TOUR_KEY) }; } catch { return { ok: false, raw: null }; }
 };
 const write = (s: TourState): boolean => {
   try { window.localStorage.setItem(TOUR_KEY, serializeState(s)); return true; } catch { return false; }
@@ -51,6 +52,7 @@ function holePath(h: Box): string {
 
 export default function TourRoot() {
   const pathname = usePathname();
+  const router = useRouter();
   const [view, setView] = useState<View>(null);
   const [layout, setLayout] = useState<Layout | null>(null);
   const bubbleRef = useRef<HTMLDivElement>(null);
@@ -95,16 +97,14 @@ export default function TourRoot() {
     let at = step;
     for (;;) {
       const def = TOUR_STEPS[at];
-      const start = first && at === step; // 시작할 때는 인원 탭과 첫 카드까지 있어야 함 (추천이 비어 있으면 시작 안 함)
-      const ok = await waitFor(at, my, start ? ['people-tabs', 'first-card'] : [], start || !def.optional ? 8000 : 1200);
+      const start = first && at === step; // 시작할 때는 검색창 묶음이 그려져 있어야 함
+      const ok = await waitFor(at, my, start ? ['cmdbar'] : [], def.wait ?? (start || !def.optional ? 8000 : 1200));
       if (my !== gen.current) return;
       let c = null;
       if (ok) {
-        // 홈 맨 처음 단계와 상세에 처음 들어온 단계는 스크롤 맨 위(0)에서 시작
-        if (at === 0 || (def.page === 'detail' && TOUR_STEPS[at - 1].page !== 'detail')) window.scrollTo({ top: 0, behavior: 'instant' });
-        const tops: Record<string, number> = {};
-        for (const p of INFO_ITEMS) { const e = findTarget(p.target); if (e) tops[p.target] = rectOf(e)!.top; }
-        c = resolveStep(at, tops);
+        // 홈 맨 처음 단계는 스크롤 맨 위(0)에서 시작
+        if (at === 0) window.scrollTo({ top: 0, behavior: 'instant' });
+        c = resolveStep(at, SITE_NAME);
       }
       if (c) {
         if (!write({ status: 'running', step: at }) && first) return;
@@ -124,7 +124,7 @@ export default function TourRoot() {
     const my = ++gen.current;
     const r = read();
     if (!r.ok) return;
-    const d = decide(r.raw, window.location.pathname, window.location.search, navigator.userAgent, r.legacy);
+    const d = decide(r.raw, window.location.pathname, window.location.search, navigator.userAgent);
     if (d.kind === 'end') { write({ status: 'done', step: 0 }); return; }
     if (d.kind === 'none') return;
     void (async () => {
@@ -135,14 +135,20 @@ export default function TourRoot() {
     return () => { gen.current++; };
   }, [pathname, enter]);
 
-  const next = useCallback((step: number) => {
+  // go: 말풍선 버튼으로 넘어가는 경우 — 다른 화면의 단계면 그 주소로 직접 이동한다 (대상을 눌러 넘어갈 때는 눌린 링크가 이동시킴)
+  const next = useCallback((step: number, go = false) => {
     const to = advance(step);
     if (to === 'finale') return finish('done', step, true);
     gen.current++;
     setView(null);
-    if (TOUR_STEPS[to].page !== TOUR_STEPS[step].page) { write({ status: 'running', step: to }); return; } // 새 페이지에서 pathname 효과가 이어감
+    if (TOUR_STEPS[to].page !== TOUR_STEPS[step].page) { // 새 페이지에서 pathname 효과가 이어감
+      write({ status: 'running', step: to });
+      const href = TOUR_STEPS[step].nextHref;
+      if (go && href) router.push(href);
+      return;
+    }
     void enter(to, gen.current, false);
-  }, [enter, finish]);
+  }, [enter, finish, router]);
 
   const sv = view?.kind === 'step' ? view : null;
   const step = sv ? sv.step : -1;
@@ -155,7 +161,8 @@ export default function TourRoot() {
       if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const t = e.target as Element | null;
       if (!t || t.closest('.jdn-tour')) return;
-      const hit = TOUR_STEPS[step].id === 'people' ? t.closest('[data-tour="people-tabs"] button') : sv!.c.action === 'target' && names.some((n) => t.closest(`[data-tour="${n}"]`));
+      const sel = TOUR_STEPS[step].hitSelector;
+      const hit = sv!.c.action === 'target' && names.some((n) => { const box = t.closest(`[data-tour="${n}"]`); return !!box && (!sel || !!t.closest(sel)); });
       if (hit) next(step);
     };
     const onKey = (e: KeyboardEvent) => {
@@ -271,7 +278,7 @@ export default function TourRoot() {
           </div>
           <p id="jdn-tour-title" className="jdn-tour-title">{def.title}</p>
           {def.desc && <p className="jdn-tour-desc">{def.desc}</p>}
-          {def.buttonLabel && <button type="button" className="jdn-tour-next" onClick={() => next(view.step)}>{def.buttonLabel}</button>}
+          {def.buttonLabel && <button type="button" className="jdn-tour-next" onClick={() => next(view.step, true)}>{def.buttonLabel}</button>}
         </div>
       </div>
       <button ref={skipRef} type="button" className="jdn-tour-skip" onClick={() => finish('skipped', view.step, false)}>건너뛰기</button>

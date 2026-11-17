@@ -105,7 +105,7 @@
 .ab-sit-card { display: flex; flex-direction: column; justify-content: center; gap: 4px; min-height: 84px; height: 100%; box-sizing: border-box; padding: 14px 16px; text-decoration: none; background: var(--mn-surface); border: 1px solid var(--mn-line); border-radius: 14px; }
 .ab-sit-card strong { font-size: 16px; font-weight: 800; }
 .ab-sit-card span { font-size: 13px; font-weight: 500; line-height: 1.4; }
-.ab-sit-card:hover { border-color: rgba(255, 255, 255, .4); box-shadow: 0 0 18px rgba(255, 255, 255, .08); }
+.ab-sit-card:hover { border-color: rgba(255, 255, 255, .4); box-shadow: 0 0 18px rgba(255, 255, 255, calc(.08 * var(--glow-strength))); }
 @media (max-width: 767px) {
   .ab-sit-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .ab-sit-card { min-height: 76px; padding: 12px 14px; }

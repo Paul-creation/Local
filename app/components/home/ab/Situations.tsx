@@ -5,7 +5,7 @@ import './ab.css';
 // 검색창 아래 "이런 판 어때요?" — 누르면 그 조건이 채워진 결과(/find)로 이동. 서버에서 그려도 되는 링크 묶음
 export default function Situations() {
   return (
-    <section className="ab-sit" aria-labelledby="ab-sit-h">
+    <section className="ab-sit" aria-labelledby="ab-sit-h" data-tour="situations">
       <h2 id="ab-sit-h" className="ab-sit-h">이런 판 어때요?</h2>
       <ul className="ab-sit-grid">
         {SITUATIONS.map((s) => (

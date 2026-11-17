@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { SITE_URL } from './app/lib/site';
 import { ADMIN_COOKIE, isAdminToken } from './app/lib/adminAuth';
+import { LOGGED_IN_COOKIE } from './app/lib/user/session';
 import { AI_CLIENT_COOKIE, AI_CLIENT_MAX_AGE, newAiClientCookie, verifyAiClientCookie } from './app/lib/aiClient';
 
 // 운영(Production) 배포를 배포별 주소(…-abc123.vercel.app)로 열면 대표 주소로 보낸다.
@@ -35,15 +36,25 @@ export function proxy(req: NextRequest) {
     }
     previewState = token ? 'bad-cookie' : 'no-cookie';
   }
+  // 로그인한 사용자의 메인: / 요청을 /home-member로 다시 써서(주소창은 그대로) 서버가 처음 HTML부터 히어로 없이 내려 준다. 두 페이지 모두 ISR이라 쿠키를 페이지에서 읽지 않고 여기서 가른다
+  // logged_in은 화면 힌트일 뿐 권한이 없다(위조해도 히어로만 빠진다). 검색 조건이 붙은 /?q=… 도 같은 홈이라 함께 다시 쓴다 — 쿼리는 그대로 전달
+  let rewriteHome = false;
+  if (req.nextUrl.pathname === '/' && req.cookies.get(LOGGED_IN_COOKIE)?.value === '1') rewriteHome = true;
   // AI 한도용 익명 쿠키가 없거나 위조됐으면 새로 발급. 이번 요청의 서버 렌더링에서도 쓰이게 요청 쿠키에도 넣음
   const withNote = (res: NextResponse) => {
     if (previewState) res.headers.set('x-curator-preview', previewState);
     return res;
   };
-  if (verifyAiClientCookie(req.cookies.get(AI_CLIENT_COOKIE)?.value)) return withNote(NextResponse.next());
+  const pass = (init?: { request: { headers: Headers } }) => {
+    if (!rewriteHome) return NextResponse.next(init);
+    const url = req.nextUrl.clone();
+    url.pathname = '/home-member';
+    return NextResponse.rewrite(url, init);
+  };
+  if (verifyAiClientCookie(req.cookies.get(AI_CLIENT_COOKIE)?.value)) return withNote(pass());
   const value = newAiClientCookie();
   req.cookies.set(AI_CLIENT_COOKIE, value);
-  const res = NextResponse.next({ request: { headers: req.headers } });
+  const res = pass({ request: { headers: req.headers } });
   res.cookies.set(AI_CLIENT_COOKIE, value, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',

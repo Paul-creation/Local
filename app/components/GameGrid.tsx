@@ -30,7 +30,7 @@ function useWide() {
 
 // 메인 화면 틀 — 홈 섹션(이벤트 배너 포함)은 서버에서 그려 받고(sections), 검색·필터·결과만 여기서 상태로 다룬다
 // 전체 게임 목록은 첫 화면 뒤에 따로 받아서(useGameIndex) 받은 뒤부터 검색·필터·자동완성이 브라우저에서 바로 동작
-export default function GameGrid({ event, sections, top10Ids = [], peopleReady = true, heroCovers = [], stats }: { event: ReactNode; sections: ReactNode; top10Ids?: string[]; peopleReady?: boolean; heroCovers?: string[]; stats: HomeStats }) {
+export default function GameGrid({ event, sections, top10Ids = [], peopleReady = true, heroCovers = [], stats, member = false }: { event: ReactNode; sections: ReactNode; top10Ids?: string[]; peopleReady?: boolean; heroCovers?: string[]; stats: HomeStats; member?: boolean }) {
   const index = useGameIndex();
   const filters = useGameFilters(index.games, index.tree);
   const { showResults, normalizedQuery } = filters;
@@ -40,9 +40,9 @@ export default function GameGrid({ event, sections, top10Ids = [], peopleReady =
   return (
     <PeopleProvider filters={filters} recsReady={peopleReady}>
       {/* 홈 화면(결과 없을 때)만 모노 + 흰색 네온 루트(.mn). 같은 div의 클래스만 바뀌어서 입력 중에도 검색창이 그대로 유지된다 */}
-      <div className={showHome ? 'mn mn-page' : 'mn mn-inner'}>
+      <div className={showHome ? `mn mn-page${member ? ' mn-member' : ''}` : 'mn mn-inner'}>
         {/* 이벤트 라벨 → 제목 → 서브카피 → 커맨드바(검색·AI 추천·인원 탭·칩) → 숫자 (결과 화면에서는 검색창 줄만) */}
-        <MainHero games={index.games || []} filters={filters} showHome={showHome} sidebar={sidebar} event={event} covers={heroCovers} stats={stats} />
+        <MainHero games={index.games || []} filters={filters} showHome={showHome} sidebar={sidebar} event={event} covers={heroCovers} stats={stats} member={member} />
 
         {/* 섹션 — 결과 없을 때만 */}
         {showHome && <div className="home-only"><div className="mn-wrap">{sections}</div></div>}

@@ -79,7 +79,7 @@ export default function AbResults() {
                     <li key={g.id} className="ab-item">
                       <GameCard game={g} tree={index.tree} eager={i < 4} />
                       {(badges.length > 0 || total) && (
-                        <div className="ab-evidence">
+                        <div className="ab-evidence" data-tour={i === 0 ? 'evidence' : undefined}>
                           {badges.length > 0 && (
                             <ul className="ab-badges" aria-label="이 게임이 조건에 맞는 이유">
                               {badges.map((b) => (
