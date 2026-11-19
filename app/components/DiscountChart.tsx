@@ -24,9 +24,8 @@ const kst = (t: number) => {
 };
 const won = (n: number) => `₩${Math.round(n).toLocaleString('ko-KR')}`;
 
-// 계단형 선 (d3의 curveStepAfter와 같은 방식) — 가격은 기록된 시점에 바로 바뀌고 다음 기록까지 유지되므로
-// 값이 바뀌는 날에 수직으로 꺾는다
-function stepPath(pts: { x: number; y: number }[]) {
+// 꺾은선 — 가격은 기록된 시점에 바로 바뀌고 다음 기록까지 유지되므로, 값이 바뀌는 날에 수직으로 꺾는다 (점끼리 비스듬히 잇지 않음)
+function linePath(pts: { x: number; y: number }[]) {
   if (pts.length < 2) return '';
   let d = `M${pts[0].x},${pts[0].y}`;
   for (let i = 1; i < pts.length; i++) d += `H${pts[i].x}V${pts[i].y}`;
@@ -65,19 +64,26 @@ export default function DiscountChart({ history, now }: { history: PriceRecord[]
   const regular = points.length ? Math.max(...points.map((p) => p.price)) : 0;
   const lastStart = starts[starts.length - 1];
 
-  // 최대 할인율·최저가 숫자만 섹션 색으로 — 글자는 summaryNode, 스크린리더용 문자열은 summary
-  const key = (t: string) => <b className="dchart-key">{t}</b>;
+  // 평균 N일마다 — 할인 시작이 3번 이상일 때만 (시작 사이 간격의 평균)
+  const avgDays = starts.length >= 3
+    ? Math.round(starts.slice(1).reduce((sum, p, i) => sum + (p.t - starts[i].t), 0) / (starts.length - 1) / DAY)
+    : 0;
+
+  // 숫자만 강조 — 글자는 summaryNode, 스크린리더용 문자열은 summary
+  const key = (t: string) => <b className="gd-chart-key">{t}</b>;
   const lowestLabel = `${period === 'all' ? '역대 ' : ''}최저`;
   const lastLabel = lastStart ? `마지막 할인 ${kst(lastStart.t).m}월 ${kst(lastStart.t).d}일` : '';
+  const head = `${conf.summary} 동안`;
   const parts: { text: string; node: ReactNode }[] = !points.length
     ? [{ text: `${conf.summary} 가격 기록 없음`, node: `${conf.summary} 가격 기록 없음` }]
     : starts.length === 0
       ? [
-          { text: `${conf.summary} 할인 없음`, node: `${conf.summary} 할인 없음` },
+          { text: `${head} 할인하지 않았어요`, node: `${head} 할인하지 않았어요` },
           { text: `${lowestLabel} ${won(lowest)}`, node: <>{lowestLabel} {key(won(lowest))}</> },
         ]
       : [
-          { text: `${conf.summary} 할인 ${starts.length}회`, node: `${conf.summary} 할인 ${starts.length}회` },
+          { text: `${head} ${starts.length}번 할인했어요`, node: <>{head} {key(`${starts.length}번`)} 할인했어요</> },
+          ...(avgDays >= 1 ? [{ text: `평균 ${avgDays}일마다`, node: <>평균 {key(`${avgDays}일`)}마다</> }] : []),
           { text: `최대 ${maxDiscount}%`, node: <>최대 {key(`${maxDiscount}%`)}</> },
           { text: `${lowestLabel} ${won(lowest)}`, node: <>{lowestLabel} {key(won(lowest))}</> },
           { text: lastLabel, node: lastLabel },
@@ -98,10 +104,10 @@ export default function DiscountChart({ history, now }: { history: PriceRecord[]
   const y = (v: number) => PAD.top + (1 - (v - yMin) / (yMax - yMin)) * innerH;
 
   const xy = points.map((p) => ({ x: x(p.t), y: y(p.price) }));
-  const line = stepPath(xy);
+  const line = linePath(xy);
   const area = line && `${line}L${xy[xy.length - 1].x},${PAD.top + innerH}L${xy[0].x},${PAD.top + innerH}Z`;
   const dots = points.filter((p) => p.discount > 0);
-  // 빨간 점은 최저가 지점 하나만 (가장 최근의 최저가), 마우스·터치로 고른 지점은 포인트 색 점
+  // 점은 최저가 지점 하나만 (가장 최근의 최저가), 마우스·터치로 고른 지점은 큰 점
   const lowestPoint = [...points].reverse().find((p) => p.price === lowest) || null;
 
   // 가로축 날짜 3~4개 ("25.11"). 기간이 짧아 같은 달만 나오면 "11.3"처럼 일까지
@@ -133,10 +139,10 @@ export default function DiscountChart({ history, now }: { history: PriceRecord[]
   const tipAbove = active ? y(active.price) > PAD.top + 56 : true;
 
   return (
-    <div className="dchart">
-      <div className="dchart-head">
-        <p className="dchart-summary">{summaryNode}</p>
-        <div className="dchart-periods" role="group" aria-label="기간 선택">
+    <div className="gd-chart">
+      <div className="gd-chart-head">
+        <p className="gd-chart-summary">{summaryNode}</p>
+        <div className="gd-chart-periods" role="group" aria-label="기간 선택">
           {PERIODS.map((p) => (
             <button
               key={p.key}
@@ -144,15 +150,14 @@ export default function DiscountChart({ history, now }: { history: PriceRecord[]
               aria-pressed={period === p.key}
               className={period === p.key ? 'is-on' : ''}
               onClick={() => { setPeriod(p.key); setActive(null); }}
-              style={{ minHeight: 44 }}
             >{p.label}</button>
           ))}
         </div>
       </div>
 
-      <div ref={wrapRef} className="dchart-plot">
+      <div ref={wrapRef} className="gd-chart-plot">
         {points.length < 2 ? (
-          <div className="dchart-empty">이 기간엔 가격 변동이 없어요</div>
+          <div className="gd-chart-empty">이 기간엔 가격 변동이 없어요</div>
         ) : (
           <>
             <svg
@@ -167,8 +172,8 @@ export default function DiscountChart({ history, now }: { history: PriceRecord[]
               {/* 세로축: 정가·최저가만 */}
               {[regular, lowest].filter((v, i, arr) => arr.indexOf(v) === i).map((v) => (
                 <g key={v}>
-                  <line x1={PAD.left} x2={width - PAD.right} y1={y(v)} y2={y(v)} className="dchart-grid" />
-                  <text x={PAD.left - 8} y={y(v)} className="dchart-ylabel" textAnchor="end" dominantBaseline="middle">{won(v)}</text>
+                  <line x1={PAD.left} x2={width - PAD.right} y1={y(v)} y2={y(v)} className="gd-chart-grid" />
+                  <text x={PAD.left - 8} y={y(v)} className="gd-chart-label" textAnchor="end" dominantBaseline="middle">{won(v)}</text>
                 </g>
               ))}
               {ticks.map((tk, i) => (
@@ -176,27 +181,27 @@ export default function DiscountChart({ history, now }: { history: PriceRecord[]
                   key={tk.label}
                   x={x(tk.t)}
                   y={HEIGHT - 8}
-                  className="dchart-xlabel"
+                  className="gd-chart-label"
                   textAnchor={i === 0 ? 'start' : i === ticks.length - 1 ? 'end' : 'middle'}
                 >{tk.label}</text>
               ))}
-              <path d={area} className="dchart-area" />
-              <path d={line} className="dchart-line" />
-              {active && active !== lowestPoint && <circle cx={x(active.t)} cy={y(active.price)} r={5} className="dchart-dot-active" />}
-              {lowestPoint && <circle cx={x(lowestPoint.t)} cy={y(lowestPoint.price)} r={active === lowestPoint ? 6 : 4.5} className="dchart-dot" />}
+              <path d={area} className="gd-chart-area" />
+              <path d={line} className="gd-chart-line" />
+              {active && active !== lowestPoint && <circle cx={x(active.t)} cy={y(active.price)} r={5} className="gd-chart-dot is-active" />}
+              {lowestPoint && <circle cx={x(lowestPoint.t)} cy={y(lowestPoint.price)} r={active === lowestPoint ? 6 : 4.5} className="gd-chart-dot" />}
             </svg>
 
             {active && (
               <div
-                className="dchart-tip"
+                className="gd-chart-tip"
                 style={{
                   left: tipLeft,
                   top: tipAbove ? y(active.price) - 10 : y(active.price) + 10,
                   transform: `translate(-50%, ${tipAbove ? '-100%' : '0'})`,
                 }}
               >
-                <div className="dchart-tip-date">{formatDate(active.t)}</div>
-                <div><strong>{won(active.price)}</strong> <span className="dchart-tip-off">-{active.discount}%</span></div>
+                <div className="gd-chart-tip-date">{formatDate(active.t)}</div>
+                <div><strong>{won(active.price)}</strong> <span className="gd-chart-tip-off">-{active.discount}%</span></div>
               </div>
             )}
           </>

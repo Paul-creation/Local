@@ -12,9 +12,9 @@ export default function DetailCover({ verticalUrl, steamAppid, fallback, name }:
   const [failed, setFailed] = useState(false);
   const useVertical = !!vertical && !failed;
   const src = useVertical ? vertical : fallback;
-  if (!src) return <div className="dx-cover is-empty" aria-hidden="true" />;
+  if (!src) return <div className="gd-cover is-empty" aria-hidden="true" />;
   return (
-    <div className={`dx-cover${useVertical ? '' : ' is-wide'}`}>
+    <div className="gd-cover">
       <GameImage src={src} fallbackWidth={600} alt={name} fetchPriority="high" onError={() => { if (useVertical) setFailed(true); }} />
     </div>
   );

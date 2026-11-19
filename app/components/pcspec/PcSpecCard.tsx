@@ -3,13 +3,14 @@
 import { Fragment, type ReactNode } from 'react';
 import { hasJudgeableSpec, judgePc, LEVEL_TITLE, PART_SHORT, verdictReason, verdictText, type PartLevel, type PcPart, type SpecLike } from '../../lib/specJudge';
 import { toUserPc } from '../../lib/myPc';
+import GdSection from '../detail/GdSection';
 import MyPcLink from './MyPcLink';
 import { useMyPc } from './useMyPc';
 
 type Row = { label: string; value: string };
 type Parsed = { min?: SpecLike | null; rec?: SpecLike | null };
 
-// 상세 페이지 "내 PC 사양 진단" 카드 하나 — 입력 유도 · 판정 요약 · 부품별 표 · 원문 사양이 모두 이 카드 안에 있다
+// 상세 페이지 "내 PC에서 돌아갈까?" 섹션 하나 (본문 왼쪽, 가능한 활동 앞) — 입력 유도 · 판정 요약 · 부품별 표 · 원문 사양이 모두 이 카드 안에 있다
 // 사양 등록·수정은 /my-pc에서만 한다 (이 카드는 판정만, 링크는 지금 주소를 ?back=으로 실어 보냄)
 // 미입력: 제목 오른쪽 "내 PC 등록하기 →" + 제목 아래 보조 한 줄 → 부품 / 최소 / 권장 표 + 원문 사양 접기 (늘 보임)
 // 입력됨 + 최소 사양을 하나라도 읽은 게임: 제목 오른쪽 "사양 변경"(/my-pc) → 판정 요약 · 플래그 → 부품별 표 → 맨 아래 "원문 사양 보기" 접기
@@ -51,7 +52,7 @@ function RawColumns({ minRows, recRows }: { minRows: Row[] | null; recRows: Row[
 function SpecTable({ parsed, minRows, recRows, verdict, mine }: { parsed: Parsed | null; minRows: Row[] | null; recRows: Row[] | null; verdict?: NonNullable<ReturnType<typeof judgePc>>; mine?: Record<PcPart, string> }) {
   const withMine = !!verdict && !!mine;
   return (
-    <table className="pcs-table" role="table">
+    <table className="gd-spec" role="table">
       <thead role="rowgroup">
         <tr role="row">
           <th role="columnheader" scope="col">부품</th>
@@ -67,7 +68,7 @@ function SpecTable({ parsed, minRows, recRows, verdict, mine }: { parsed: Parsed
           const lv = r ? CELL_LEVEL[r.level] : null;
           return (
             <tr key={part} role="row">
-              <th role="rowheader" scope="row" className="pcs-part">{PART_SHORT[part]}</th>
+              <th role="rowheader" scope="row" className="gd-spec-part">{PART_SHORT[part]}</th>
               {withMine && <td role="cell" data-label="내 PC" className="pcs-mine">{mine[part]}</td>}
               <td role="cell" data-label="최소">{requirement(part, parsed?.min, minRows)}</td>
               <td role="cell" data-label="권장">{requirement(part, parsed?.rec, recRows)}</td>
@@ -86,13 +87,10 @@ export default function PcSpecCard({ parsed, minRows, recRows }: { parsed: Parse
   const verdict = ready && judgeable && pc ? judgePc(toUserPc(pc), parsed) : null;
   const state = !judgeable ? 'hidden' : !ready ? 'loading' : verdict ? verdict.level : 'empty'; // 테두리: rec·fail만 색
 
-  const title = (
-    <div className="pcs-card-head">
-      <h3 className="pcs-card-title">내 PC 사양 진단</h3>
-      {verdict && <MyPcLink className="pcs-change">사양 변경</MyPcLink>}
-      {state === 'empty' && <MyPcLink className="pcs-link">내 PC 등록하기 →</MyPcLink>}
-    </div>
-  );
+  // 섹션 머리 오른쪽 링크 — 미입력: "내 PC 등록 →", 입력됨: "사양 변경"
+  const right = verdict
+    ? <MyPcLink className="gd-link">사양 변경</MyPcLink>
+    : state === 'empty' ? <MyPcLink className="gd-link">내 PC 등록 →</MyPcLink> : undefined;
 
   let content: ReactNode;
   if (!judgeable) {
@@ -147,9 +145,10 @@ export default function PcSpecCard({ parsed, minRows, recRows }: { parsed: Parse
   }
 
   return (
-    <section className={`detail-card pcs-card sec-spec is-${state}`} aria-label="내 PC 사양 진단">
-      {title}
-      {content}
-    </section>
+    <GdSection title="내 PC에서 돌아갈까?" label="내 PC 사양 진단" right={right}>
+      <div className="gd-box gd-pcs">
+        {content}
+      </div>
+    </GdSection>
   );
 }
