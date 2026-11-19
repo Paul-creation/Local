@@ -47,6 +47,7 @@ import tagDict from '../../lib/tag-search-dict.json';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { isUuid } from '../../lib/uuid';
 import SimilarGames from '../../components/SimilarGames';
+import HeaderSolidOnScroll from '../../components/brand/HeaderSolidOnScroll';
 import SeriesGames from '../../components/SeriesGames';
 import { getCardGames } from '../../lib/gameIndex';
 import ActivityChips from '../../components/ActivityChips';
@@ -402,9 +403,10 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const videoMatchers = buildMatchers([{ id: game.id, name: game.name, search_name_ko: game.search_name_ko }]);
   return (
     <main className="page detail-page dx mn mn-inner">
-      <BackLink fallbackHref="/" label="목록으로" preferList />
-
+      {/* 히어로 — 헤더 밑까지 올라와(margin-top: -헤더 높이) 배경 이미지가 투명 헤더 뒤로 이어진다. 배경은 히어로 전체를 덮는다 */}
+      <div className="dx-hero">
       {heroBg && <div className="dx-backdrop" aria-hidden="true"><GameImage src={heroBg} fallbackWidth={1280} alt="" /></div>}
+      <BackLink fallbackHref="/" label="목록으로" preferList />
 
       <header className="dx-head">
         <DetailCover verticalUrl={game.cover_vertical_url ?? null} steamAppid={game.steam_appid ? String(game.steam_appid) : null} fallback={heroImage} name={gameName(game)} />
@@ -430,6 +432,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           )}
         </div>
       </header>
+      <HeaderSolidOnScroll />
+      </div>
 
       <div className="detail-layout">
         {/* 오른쪽 sticky 칸(모바일에서는 히어로 바로 아래): ① Steam 가격 박스 ② 게임 정보 ③ 내 PC 사양 진단 ④ 바로가기 */}

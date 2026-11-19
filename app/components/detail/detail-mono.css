@@ -1,13 +1,15 @@
 /* 게임 상세 — 새 브랜드. 공통 규칙(배경·포인트·보조 버튼 등)은 app/mono-page.css(.mn-inner), 색 값은 brand-tokens.css */
 .mn.dx { --tone-review: var(--ink-muted); --tone-live: var(--ink-muted); --tone-time: var(--ink-muted); --tone-party: var(--ink-muted); --tone-price: var(--ink-muted); }
 
-/* ---------- 히어로 — 게임 배경 이미지를 흐리게 깔고 메인 히어로와 같은 마스크(아래쪽 세로 + 가장자리 타원)로 검정에 녹인다 ---------- */
-.mn.dx .dx-backdrop { top: 0; height: 620px; z-index: -1;
-  -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent 100%), radial-gradient(ellipse 54% 130% at 50% 0%, #000 50%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 45%, transparent 100%), radial-gradient(ellipse 54% 130% at 50% 0%, #000 50%, transparent 100%);
-  -webkit-mask-composite: source-in; mask-composite: intersect; }
-.mn.dx .dx-backdrop img { filter: blur(6px) saturate(.85); opacity: .5; transform: scale(1.06); }
-.mn.dx .dx-backdrop::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20, 19, 17, .85) 0%, transparent 25%); }
+/* ---------- 히어로 — 헤더 밑까지 올라온다(margin-top: -헤더 높이, 안쪽 padding-top으로 보충). 게임 배경 이미지는 히어로 전체(inset 0)를 덮고,
+   위·옆·아래 어디에도 이미지 경계가 보이지 않게 radial(가장자리 → --bg-top) + linear(위 0~20% 살짝 어둡게, 45%부터 아래로 --bg-top) 그라데이션으로 녹인다 ---------- */
+.mn.dx .dx-hero { position: relative; margin-top: calc(-1 * var(--header-h)); padding-top: calc(var(--header-h) + var(--sp-4)); }
+.mn.dx .dx-backdrop { position: absolute; z-index: -1; top: 0; bottom: 0; left: 50%; width: 100vw; height: auto; transform: translateX(-50%); overflow: hidden; pointer-events: none; -webkit-mask-image: none; mask-image: none; }
+.mn.dx .dx-backdrop img { width: 100%; height: 100%; object-fit: cover; filter: blur(6px) saturate(.85); opacity: .55; transform: scale(1.06); }
+.mn.dx .dx-backdrop::after { content: ""; position: absolute; inset: 0; background:
+  radial-gradient(ellipse 70% 75% at 50% 35%, transparent 25%, rgba(20, 19, 17, .6) 65%, var(--bg-top) 100%),
+  linear-gradient(180deg, rgba(20, 19, 17, .5) 0%, transparent 20%, transparent 45%, var(--bg-top) 100%); }
+.hero-sentinel { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; pointer-events: none; }
 .mn.dx .dx-head { padding-top: var(--sp-6); }
 .mn.dx .dx-cover { border: 1px solid var(--poster-line); border-radius: var(--r-card); background: var(--surface); box-shadow: var(--shadow); }
 .mn.dx .dx-title { font-size: clamp(32px, 5vw, 52px); font-weight: 900; letter-spacing: -0.04em; color: var(--ink); }
@@ -18,10 +20,13 @@
 
 /* ---------- 2열 — 왼쪽 본문, 오른쪽 sticky 칸(top 24px, 폭 320px). 960px 이하는 한 줄로 쌓이고 오른쪽 칸이 히어로 바로 아래로 ---------- */
 .mn.dx .detail-layout { grid-template-columns: minmax(0, 1fr) 320px; gap: var(--sp-6); }
-.mn.dx .detail-price { position: sticky; top: 24px; align-self: start; max-height: calc(100vh - 48px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; gap: var(--sp-4); }
+/* 오른쪽 칸 — 칸 자체는 스크롤 없이 본문 높이만큼 늘어나고, sticky는 Steam 가격 박스에만 건다. 게임 정보·PC 사양·바로가기는 페이지와 같이 스크롤된다 (가격 박스 뒤로 지나감).
+   sticky top은 헤더(sticky) 높이 + 16px. 960px 이하(1열)에서는 sticky를 끈다 */
+.mn.dx .detail-price { position: static; align-self: stretch; max-height: none; overflow: visible; gap: var(--sp-4); }
+.mn.dx .detail-price > .price-card { position: sticky; top: calc(var(--header-h) + 16px); z-index: 2; }
 @media (max-width: 960px) {
   .mn.dx .detail-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "price" "main"; gap: var(--sp-5); }
-  .mn.dx .detail-price { position: static; max-height: none; overflow: visible; }
+  .mn.dx .detail-price > .price-card { position: static; }
 }
 
 /* ---------- 섹션 머리 — 제목 + 아래 1px --line (공통 섹션 머리와 같은 모양), 섹션 사이 --sec-gap ---------- */
