@@ -7,6 +7,9 @@ export const SITE_TOKEN = '{SITE}';
 // 검색창 개편(v3)으로 단계가 전부 바뀌어서 키를 올렸다 — 예전 키(v1·v2)는 읽지 않으므로 기존 방문자도 새 투어를 한 번 다시 본다 (jdn_ 접두사는 그대로)
 export const TOUR_KEY = 'jdn_tour_v3';
 
+// 첫 방문 투어 전체 스위치 — false면 투어 말풍선·오버레이·하이라이트·건너뛰기 버튼이 그려지지 않고 투어 코드도 불러오지 않는다 (components/tour/TourGate). 단계·저장 키·시험은 그대로
+export const TOUR_ENABLED = false;
+
 export type TourPage = 'home' | 'find';
 export type TourStep = {
   id: string;
