@@ -1,6 +1,6 @@
 # Select Screen 현재 상황
 
-기준: 2026-11-19 (main b61ede4)
+기준: 2026-11-19 (main ec82a2f)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 11/19: feat/match-mockup — 검색 팝오버·/find·메인을 docs/design 시안 값으로 일치화(docs/design/은 이번에 레포에 들어옴, Tokens 시안은 옛 밝은 테마라 제외·색 기준은 brand-tokens.css). 검색 팝오버: 연 칸 왼쪽 아래 12px(오른쪽이 넘으면 오른쪽 맞춤)·360/440px·z-index 40(.ab를 쌓임 맥락으로 올려 결과 카드·포스터 괄호 위), 열린 칸 --surface-open, 팝오버 푸터 "지우기 / 완료"(값은 즉시 반영, 완료는 닫기만, 뭐 할까는 "N개 보기"), 어떻게 2열 타일(아무거나 2칸), 여러 개 선택은 "공포 외 1개". 장르 모두/하나라도(?gm=any, 없으면 all)와 gm=all이 0개면 any로 다시 계산해 안내 한 줄(any도 0개면 기존대로 장르 해제). /find는 데스크톱 항상 펼친 막대+"다시 찾기", 1등 카드 전체에 괄호(--sb-*-card 토큰), "← 홈으로" 삭제. 메인 인원 탭·칩 시안 크기, 포스터 괄호 오프셋 8px. 시안에 있지만 기능이 없어 안 만든 것: /find 정렬·한 판 시간 필터, 친구 패스·크로스플레이 칩. 나머지 7개 시안 페이지(상세·큐레이터·비교·내 PC·찜·커뮤니티·의견)는 아직 안 맞춤. build·test 585개 통과, 프리뷰 확인 안 함(사용자 지시로 머지)
 - 11/19: perf/curator-isr — /c/[handle]에 generateStaticParams(빈 배열)를 넣어 ISR 활성화(전엔 revalidate가 있어도 매 요청 동적, 로컬 MISS 1.35초 → HIT 0.01초). /api/admin/revalidate가 Supabase Database Webhook 본문({type, table: curators|curator_posts, record, old_record})도 받아 그 핸들로 {curators:[handle]}와 똑같이 무효화(curator_posts는 curator_id로 curators.handle 조회, 이름이 바뀐 옛 핸들도 갱신), 인증은 x-admin-key 그대로. curators 무효화 대상에 /home-member 추가. app/c/[handle]/loading.tsx·app/community/loading.tsx 스켈레톤 추가(공용 app/components/status/skeleton.css). 없는 핸들이 HTTP 200(본문은 404, noindex)으로 응답하는 건 그대로 둠. build·test 581개 통과, 프리뷰 확인 안 함
 - 11/19: fix/curator-revalidate — /api/admin/revalidate가 { curators: [handle] }를 받아 /c/<handle>과 메인(/)을 갱신(ids와 같이 가능, 핸들 최대 20개, 형식 검사). import-curator-queue --apply는 연결이 생기면 그 큐레이터 페이지·메인·연결된 게임 상세를 갱신(ADMIN_REVALIDATE_KEY 없거나 실패해도 계속), 관리자 게시물 연결(connect)은 새 연결이 생기면 서버에서 바로 revalidatePath. 테스트 4개 추가. build·test 569개 통과
 - 11/17: chore/rename-visible-text — 헤더·푸터·OG 라우트는 SITE_NAME을 써서 이미 바뀜, 이미지에 박혀 있던 public/og-default.png의 "JamiDuNow"를 npm run og로 다시 만들어 "Select Screen"으로 교체. 375·360·320px 헤더 한 줄·겹침 없음(CSS 변경 없음). build·test 565개 통과
