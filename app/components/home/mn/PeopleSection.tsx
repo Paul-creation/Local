@@ -40,11 +40,13 @@ export default function PeopleSection({ recs }: { recs: Data | null }) {
     <section className="mn-sec" aria-labelledby="mn-people-title">
       {/* 머리 한 줄: 제목 → 인원 탭 → 세로 구분선 → 빠른 필터 칩 → 맨 오른쪽 "더 보기 →" (좁으면 줄바꿈) */}
       <div className="mn-people-head">
-        <h2 id="mn-people-title" className="mn-people-title">{peopleLabel(n)} 추천</h2>
+        <div className="mn-people-top">
+          <h2 id="mn-people-title" className="mn-people-title">{peopleLabel(n)} 추천</h2>
+          <a href={trendingHref(n, myPcActive)} className="sec-more mn-people-more">더 보기 →</a>
+        </div>
         <PeopleTabs />
         <span className="mn-vsep" aria-hidden="true" />
         <PeopleChips />
-        <a href={trendingHref(n, myPcActive)} className="sec-more mn-people-more">더 보기 →</a>
       </div>
       {filteredOut && (
         <p className="mn-note">

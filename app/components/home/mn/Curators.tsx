@@ -24,8 +24,11 @@ export default function Curators({ data }: { data: HomeCurators | null }) {
                   ))}
                 </span>
               )}
-              <span className="mn-curator-name">@{c.displayName}</span>
-              <span className="mn-curator-count">게임 {c.gameCount}개</span>
+              <span className="mn-curator-av" aria-hidden="true">{[...c.displayName][0]}</span>
+              <span className="mn-curator-text">
+                <span className="mn-curator-name"><span className="mn-at">@</span>{c.displayName}</span>
+                <span className="mn-curator-count">게임 {c.gameCount}개</span>
+              </span>
               {c.recent.length > 0 && <span className="mn-curator-recent">{c.recent.join(' · ')}</span>}
             </Link>
           </li>

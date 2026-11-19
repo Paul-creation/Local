@@ -320,7 +320,8 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
   .site-header-inner > .auth-menu { display: contents; }
   .site-header-inner > .auth-menu :is(.auth-login, .auth-user, .auth-pop) { display: none; }
   .auth-notice { position: fixed; top: calc(var(--header-h) + 8px); left: 16px; right: 16px; width: auto; max-width: none; }
-  .mnav-btn { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px; margin: 0 -11px 0 auto; padding: 0; color: var(--ink); background: none; border: 0; border-radius: var(--r-tile); cursor: pointer; }
+  .mnav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; flex-shrink: 0; width: 44px; height: 44px; margin: 0 -10px 0 auto; padding: 0; background: none; border: 0; cursor: pointer; }
+  .mnav-bar { display: block; width: 20px; height: 2px; background: var(--ink); border-radius: 1px; }
   .mnav-btn:focus-visible, .mnav :focus-visible { outline: 2px solid var(--brand-ink); outline-offset: 2px; }
 
   /* 드로어 — 오른쪽에서 슬라이드, 전체 높이, 폭 min(320px, 85vw). body로 포털이라 헤더 밖 (z 900 > 비교 트레이 800) */
@@ -328,21 +329,24 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
   .mnav.is-open { visibility: visible; pointer-events: auto; transition: none; }
   .mnav-scrim { position: absolute; inset: 0; background: rgba(0, 0, 0, .6); opacity: 0; }
   .mnav.is-open .mnav-scrim { opacity: 1; }
-  .mnav-drawer { position: absolute; top: 0; right: 0; bottom: 0; display: flex; flex-direction: column; box-sizing: border-box; width: min(320px, 85vw); padding: 0 16px calc(16px + env(safe-area-inset-bottom)); overflow-y: auto; overscroll-behavior: contain; background: var(--surface); border-left: 1px solid var(--line); box-shadow: var(--shadow); transform: translateX(100%); }
+  .mnav-drawer { position: absolute; top: 0; right: 0; bottom: 0; display: flex; flex-direction: column; box-sizing: border-box; width: min(320px, 85vw); padding: 0 0 env(safe-area-inset-bottom); overflow-y: auto; overscroll-behavior: contain; background: var(--surface); border-left: 1px solid var(--line); box-shadow: var(--shadow); transform: translateX(100%); }
   .mnav.is-open .mnav-drawer { transform: none; }
   @media (prefers-reduced-motion: no-preference) {
     .mnav-scrim { transition: opacity .25s ease; }
     .mnav-drawer { transition: transform .25s ease; }
   }
-  .mnav-top { display: flex; align-items: center; justify-content: flex-end; flex: 0 0 auto; height: var(--header-h); margin-right: -11px; }
-  .mnav-close { display: inline-grid; place-items: center; width: 44px; height: 44px; padding: 0; font-family: inherit; font-size: 28px; line-height: 1; color: var(--ink); background: none; border: 0; border-radius: var(--r-tile); cursor: pointer; }
+  .mnav-top { display: flex; align-items: center; justify-content: space-between; flex: 0 0 auto; box-sizing: border-box; height: var(--header-h); padding: 0 16px; border-bottom: 1px solid var(--line); }
+  .mnav-logo { display: inline-flex; align-items: center; min-height: 44px; }
+  .mnav-logo .wm-img { width: 96px; }
+  .mnav-close { display: inline-grid; place-items: center; width: 44px; height: 44px; margin-right: -10px; padding: 0; font-family: inherit; font-size: 22px; line-height: 1; color: var(--ink); background: none; border: 0; cursor: pointer; }
   .mnav-list { display: flex; flex-direction: column; flex: 1 0 auto; }
-  .mnav-link { display: flex; align-items: center; min-height: 52px; font-size: 16px; font-weight: 700; color: var(--ink-nav); border-bottom: 1px solid var(--line); }
+  .mnav-link { display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; height: 52px; padding: 0 20px; font-size: 16px; font-weight: 700; color: var(--ink-nav); border-bottom: 1px solid var(--line); }
   .mnav-link[aria-current="page"] { color: var(--ink); }
+  .mnav-chev { color: var(--ink-muted); font-weight: 400; }
   .mnav .nav-count { background: var(--brand); color: var(--on-brand); font-weight: 800; box-shadow: none; }
-  .mnav-auth { flex: 0 0 auto; padding-top: 16px; }
+  .mnav-auth { flex: 0 0 auto; padding: 20px; }
   .auth-menu.is-drawer { display: flex; flex-direction: column-reverse; gap: 8px; width: 100%; }
-  .auth-menu.is-drawer :is(.auth-login, .auth-user) { display: inline-flex; justify-content: center; width: 100%; min-width: 0; min-height: 52px; padding: 6px 16px; font-size: 16px; }
+  .auth-menu.is-drawer :is(.auth-login, .auth-user) { display: inline-flex; justify-content: center; width: 100%; min-width: 0; min-height: 48px; padding: 0 16px; font-size: 15px; font-weight: 700; border-radius: 8px; }
   .auth-menu.is-drawer .auth-name { max-width: none; }
   .auth-menu.is-drawer .auth-pop { position: static; min-width: 0; background: var(--bg-top); }
   .auth-menu.is-drawer .auth-pop-note { max-width: none; }

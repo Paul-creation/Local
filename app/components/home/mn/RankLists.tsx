@@ -3,6 +3,7 @@
 // 서버 컴포넌트. 줄이 하나도 없는 열은 숨긴다
 import Link from 'next/link';
 import PosterImage from './PosterImage';
+import RankColumns from './RankColumns';
 import SectionHead from '../../brand/SectionHead';
 import type { HomeLists, ListRow } from '../../../lib/homeMain';
 
@@ -32,15 +33,18 @@ export default function RankLists({ lists }: { lists: HomeLists }) {
   const cols = COLUMNS.filter((c) => lists[c.key].length > 0);
   if (!cols.length) return null;
   return (
-    <div className="mn-cols">
-      {cols.map((c) => (
+    <RankColumns
+      titles={cols.map((c) => c.title)}
+      panels={cols.map((c) => (
         <section key={c.key} className="mn-col" aria-labelledby={`mn-col-${c.key}`}>
           <SectionHead id={`mn-col-${c.key}`} label={c.title} more={c.href ? { href: c.href, text: '더 보기', hard: true } : undefined} />
           <ol className="mn-rank-list">
             {lists[c.key].map((row, i) => <Row key={row.id} row={row} rank={i + 1} />)}
           </ol>
+          {/* 휴대폰: 머리 줄 대신 목록 아래 "○○ 전체 →" (데스크톱은 CSS로 숨김) */}
+          {c.href && <a href={c.href} className="mn-rank-all">{c.title} 전체 →</a>}
         </section>
       ))}
-    </div>
+    />
   );
 }

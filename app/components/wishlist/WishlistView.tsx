@@ -107,7 +107,7 @@ export default function WishlistView() {
             <ul className="mn-grid wl-grid">
               {shown.map((g) => (
                 <li key={g.id} className="wishlist-item">
-                  <PosterCard game={g} badge={posterBadge(g)} showOriginal />
+                  <PosterCard game={g} badge={posterBadge(g)} showOriginal saleOverlay />
                   {!shared && <WishlistButton gameId={g.id} />}
                 </li>
               ))}

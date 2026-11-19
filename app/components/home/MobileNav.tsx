@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { usePathname } from 'next/navigation';
 import AuthMenu from '../AuthMenu';
 import CompareCount from '../CompareCount';
+import Wordmark from '../brand/Wordmark';
 import { MENU, isCurrent } from './menuItems';
 
 // 모바일(767px 이하) 헤더의 햄버거 버튼 + 오른쪽에서 슬라이드되는 전체 높이 드로어 (768px 이상에서는 CSS로 둘 다 숨김)
@@ -57,19 +58,22 @@ export default function MobileNav() {
   return (
     <>
       <button ref={btnRef} type="button" className="mnav-btn" aria-label="메뉴 열기" aria-haspopup="dialog" aria-expanded={open} aria-controls="mnav-drawer" onClick={() => setOpen(true)}>
-        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M3 6h16M3 11h16M3 16h16" /></svg>
+        <span className="mnav-bar" /><span className="mnav-bar" /><span className="mnav-bar" />
       </button>
       {mounted && createPortal(
         <div className={`mnav${open ? ' is-open' : ''}`} inert={!open}>
           <div className="mnav-scrim" onClick={close} aria-hidden="true" />
           <div ref={drawerRef} id="mnav-drawer" className="mnav-drawer" role="dialog" aria-modal="true" aria-label="메뉴">
             <div className="mnav-top">
-              <button type="button" className="mnav-close" aria-label="메뉴 닫기" onClick={close}>×</button>
+              {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- 메인 필터 상태를 주소에서 새로 읽게 a */}
+              <a href="/" className="mnav-logo" aria-label="Select Screen 홈"><Wordmark /></a>
+              <button type="button" className="mnav-close" aria-label="메뉴 닫기" onClick={close}>✕</button>
             </div>
             <nav className="mnav-list" aria-label="주요 메뉴">
               {MENU.map((m) => (
                 <a key={m.href} href={m.href} className="mnav-link" aria-current={isCurrent(m.href, path) ? 'page' : undefined} onClick={close}>
-                  {m.label}{m.href === '/compare' && <CompareCount />}
+                  <span>{m.label}{m.href === '/compare' && <CompareCount />}</span>
+                  <span className="mnav-chev" aria-hidden="true">›</span>
                 </a>
               ))}
             </nav>

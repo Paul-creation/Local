@@ -551,6 +551,25 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         </StickyAside>
       </div>
 
+      {/* 휴대폰(767px 이하) 하단 고정 구매 바 — 가격 + 비교 담기 + Steam에서 구매 (docs/design/mobile MobGame). 데스크톱은 CSS로 숨김, 가격 박스의 버튼은 휴대폰에서 이 바로 옮겨 간다 */}
+      <div className="dx-buybar" role="region" aria-label="구매">
+        <div className="dx-buybar-price">
+          <span className="dx-buybar-label">{comingSoon ? '출시 예정' : `${buyLabel}${price && price.discount > 0 && !game.is_free ? ` · -${price.discount}%` : ''}`}</span>
+          <span className="dx-buybar-now">
+            {comingSoon ? (hasReleaseDate(game) ? game.release_date_text : '날짜 미정')
+              : game.is_free ? '무료'
+              : price ? price.formattedFinal
+              : PRICE_TYPE_LABEL[game.price_type] ?? '가격 정보 없음'}
+          </span>
+        </div>
+        <AddToCompare gameId={game.id} name={gameName(game)} thumb={game.cover_image_url || game.card_image_url} compact />
+        {comingSoon
+          ? (demo
+            ? <a href={demoStoreUrl(game.demo_appid)} target="_blank" rel="noopener noreferrer" className="dx-buybar-buy">스팀에서 데모 받기 ↗</a>
+            : game.steam_appid ? <a href={buyUrl} target="_blank" rel="noopener noreferrer" className="dx-buybar-buy">스팀에서 찜하기 ↗</a> : null)
+          : buyUrl && <a href={buyUrl} target="_blank" rel="noopener noreferrer" className="dx-buybar-buy">{buyLabel}에서 {game.is_free ? '플레이하기' : '구매'} ↗</a>}
+      </div>
+
       {/* 본문 아래 전체 폭 — 시리즈(지금 보는 게임에만 괄호) → 비슷한 게임(6열) */}
       <div className="gd-bottom">
         {showSeries && seriesItems.length > 1 && <SeriesGames name={series?.name_ko ?? null} currentName={gameName(game)} currentGame={{ id: game.id, name: game.name, display_name: game.display_name ?? null, cover_vertical_url: game.cover_vertical_url ?? null, steam_appid: game.steam_appid ?? null, card_image_url: game.card_image_url ?? null, cover_image_url: game.cover_image_url ?? null }} items={seriesItems} />}

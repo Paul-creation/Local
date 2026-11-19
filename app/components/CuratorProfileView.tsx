@@ -45,6 +45,7 @@ export default function CuratorProfileView({ profile }: { profile: Profile }) {
             </dl>
           )}
         </div>
+        {curator.bio?.trim() && <p className="curator-bio-m">{curator.bio.trim()}</p>}
         <div className="curator-profile-actions">
           <OutboundLink href={curator.instagram_url} curator={curator.handle} className="btn btn-outline curator-btn curator-btn-ig">
             인스타그램에서 보기 ↗

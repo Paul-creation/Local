@@ -21,7 +21,7 @@ export const posterBadge = (game: Record<string, unknown>, badges?: string[]): P
   BADGES.find((b) => badges?.includes(b)) ?? TREND_LABEL[game.trend_badge as string] ?? null;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- 게임 카드 칸은 목록(gameIndex)과 같은 느슨한 모양
-export default function PosterCard({ game, badge = null, eager = false, tourId, brackets = false, showOriginal = false, compact = false, hideMeta = false }: { game: any; badge?: PosterBadge | null; eager?: boolean; tourId?: string; brackets?: boolean; showOriginal?: boolean; compact?: boolean; hideMeta?: boolean }) {
+export default function PosterCard({ game, badge = null, eager = false, tourId, brackets = false, showOriginal = false, compact = false, hideMeta = false, saleOverlay = false }: { game: any; badge?: PosterBadge | null; eager?: boolean; tourId?: string; brackets?: boolean; showOriginal?: boolean; compact?: boolean; hideMeta?: boolean; saleOverlay?: boolean }) {
   const price = getPriceInfo(game);
   const players = playersText(game);
   const barrier = barrierLabel(game);
@@ -34,6 +34,8 @@ export default function PosterCard({ game, badge = null, eager = false, tourId, 
       <span className={`mn-poster${brackets ? ' sb-host' : ''}`}>
         <PosterImage cover={cover} eager={eager} />
         {badge && !compact && <span className={`mn-badge ${badge === '다시 뜨는 중' ? 'is-rise' : 'is-ink'}`}>{badge}</span>}
+        {/* saleOverlay: 휴대폰 찜목록 — 포스터 왼쪽 위 초록 할인 배지 (데스크톱은 CSS로 숨김) */}
+        {saleOverlay && price && price.discount > 0 && !game.is_free && <span className="mn-sale-ov">-{price.discount}%</span>}
         {brackets && <BracketCorners size="poster" hover />}
       </span>
       <span className="mn-card-name">{gameName(game)}</span>

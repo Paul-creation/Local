@@ -8,7 +8,8 @@ import { useState } from 'react';
 // 상세 가격 카드 "비교에 담기" 토글 — 비교함(app/lib/compareStore)에 이 게임을 넣고 빼며, 이동 없이 버튼 아래에 안내
 // 담으면 오른쪽 아래 비교함 알약이 살짝 튀어 오름. 담긴 상태에서 다시 누르면 빠지고 기본 상태(배너 없음)로 돌아간다
 // 이미 3개가 차 있으면 빼지 않고 "꽉 찼어요"만 알린다. 헤더 숫자·알약은 writePick 이벤트로 바로 갱신
-export default function AddToCompare({ gameId, name, thumb }: { gameId: string; name: string; thumb?: string | null }) {
+// compact: 휴대폰 하단 고정 바용 — 아이콘만 있는 48px 정사각 버튼(안내 배너 없음)
+export default function AddToCompare({ gameId, name, thumb, compact = false }: { gameId: string; name: string; thumb?: string | null; compact?: boolean }) {
   const { ids } = useComparePick();
   const [full, setFull] = useState(false);
   const added = ids.includes(gameId);
@@ -24,6 +25,18 @@ export default function AddToCompare({ gameId, name, thumb }: { gameId: string; 
     setFull(false);
     writePick([...now, gameId], { bump: true, meta: [{ id: gameId, name, thumb }], source: 'detail' });
   };
+
+  if (compact) {
+    return (
+      <button type="button" className="dx-buybar-compare" data-tour="compare-add" onClick={toggle} aria-pressed={added} aria-label={added ? '비교에서 빼기' : full ? '비교함이 꽉 찼어요' : '비교에 담기'}>
+        {added ? (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>
+        ) : (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /></svg>
+        )}
+      </button>
+    );
+  }
 
   return (
     <>
