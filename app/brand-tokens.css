@@ -63,7 +63,6 @@
   --sb-w-chip: 2px;  --sb-l-chip: 8px;  --sb-o-chip: 3px;
   --sb-w-tile: 2px;  --sb-l-tile: 10px; --sb-o-tile: 4px;
   --sb-w-poster: 3px; --sb-l-poster: 18px; --sb-o-poster: 6px;
-  --sb-w-logo: .09em; --sb-l-logo: .3em; --sb-o-logo: .22em;
 }
 
 @media (max-width: 767px) { :root { --sec-gap: 40px; } }

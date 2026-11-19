@@ -1,5 +1,4 @@
 // 담당: Paul(메인 배너·디자인)
-import { SITE_NAME } from '../../lib/site';
 import AuthMenu from '../AuthMenu';
 import NavProgress from '../NavProgress';
 import Wordmark from '../brand/Wordmark';
@@ -16,7 +15,7 @@ export default function SiteHeader() {
     <header className="site-header mn">
       <div className="site-header-inner">
         {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- 메인 필터 상태를 주소에서 새로 읽게 a */}
-        <a href="/" className="site-logo" aria-label={`${SITE_NAME} 홈`}><Wordmark /></a>
+        <a href="/" className="site-logo"><Wordmark priority /></a>
         <HeaderMenu />
         <AuthMenu />
       </div>
