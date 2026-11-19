@@ -10,6 +10,11 @@ import './curator-mono.css';
 
 // 동의(consent_status=granted)한 계정만 보인다 — 아니면 getCuratorProfile이 null이라 404. 미리보기는 /c-preview/[handle] (proxy.ts가 관리자의 ?preview=1을 넘겨줌)
 export const revalidate = 86400;
+// 빌드 때 미리 만들지 않고 처음 방문할 때 만든다 — 빈 배열이어야 ISR이 켜짐 (/games/[id]와 같은 방식)
+// 동의 상태·게시물이 바뀌면(SQL 직접 수정 포함) /api/admin/revalidate {"curators":["handle"]}로 바로 새로 만든다. 안 하면 최대 하루 뒤 반영
+export async function generateStaticParams() {
+  return [];
+}
 
 const titleOf = (displayName: string) => `@${withSubjectJosa(displayName)} 소개한 게임`;
 

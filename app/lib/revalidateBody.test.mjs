@@ -17,7 +17,7 @@ test('ids만 · curators만 · 둘 다 허용, 빈 객체·잘못된 값은 거�
 
 test('경로: 큐레이터가 있으면 /c/handle과 메인, ids만이면 게임 상세만', () => {
   assert.deepEqual(pathsToRevalidate({ ids: [U], curators: [] }), [`/games/${U}`]);
-  assert.deepEqual(pathsToRevalidate({ ids: [U], curators: ['gamelog.archive'] }), [`/games/${U}`, '/c/gamelog.archive', '/']);
+  assert.deepEqual(pathsToRevalidate({ ids: [U], curators: ['gamelog.archive'] }), [`/games/${U}`, '/c/gamelog.archive', '/', '/home-member']);
 });
 
 test('revalidateCurators: 핸들 없으면 호출 안 함, 키 없으면 생략, 있으면 본문에 curators·ids, 로그에 키 없음', async () => {

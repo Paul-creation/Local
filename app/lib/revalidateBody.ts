@@ -1,5 +1,5 @@
 // /api/admin/revalidate 본문 검사와 무효화할 경로 계산 (순수 함수, 테스트 대상)
-// 본문 { ids?: uuid[], curators?: handle[] } — 하나 이상 필요. ids는 게임 상세, curators는 /c/<handle>과 메인("/")
+// 본문 { ids?: uuid[], curators?: handle[] } — 하나 이상 필요. ids는 게임 상세, curators는 /c/<handle>과 메인("/"·"/home-member")
 
 // uuid.ts와 같은 검사 (테스트가 .ts 확장자 없는 import를 못 따라가서 이 파일 안에 둠)
 const isUuid = (v: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
@@ -33,6 +33,6 @@ export function parseRevalidateBody(body: unknown): { ok: true; value: Revalidat
 
 export function pathsToRevalidate({ ids, curators }: RevalidateTargets): string[] {
   const paths = ids.map((id) => `/games/${id}`);
-  if (curators.length) paths.push(...curators.map((h) => `/c/${h}`), '/');
+  if (curators.length) paths.push(...curators.map((h) => `/c/${h}`), '/', '/home-member');
   return paths;
 }
