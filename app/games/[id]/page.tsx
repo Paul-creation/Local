@@ -18,6 +18,7 @@ import GameImage from '../../components/GameImage';
 import DetailCover from '../../components/detail/DetailCover';
 import DetailMedia, { type Screenshot } from '../../components/detail/DetailMedia';
 import GdSection from '../../components/detail/GdSection';
+import StickyAside from '../../components/detail/StickyAside';
 import StatTiles, { type Tile } from '../../components/detail/StatTiles';
 import AddToCompare from '../../components/AddToCompare';
 import HeartButton from '../../components/wishlist/HeartButton';
@@ -338,10 +339,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         <>
           <div className="gd-price-head">
             <span className="gd-price-label">{buyLabel} 가격</span>
-            <span className="gd-price-head-right">
-              <span>하루 한 번 갱신</span>
-              <HeartButton gameId={game.id} variant="title" />
-            </span>
+            <HeartButton gameId={game.id} variant="title" />
           </div>
           {price && price.discount > 0 && !game.is_free && (
             <span className="gd-price-was">
@@ -363,7 +361,6 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               <b>₩{Math.round(game.lowest_price).toLocaleString('ko-KR')}{lowestDate && <span> ({lowestDate})</span>}</b>
             </div>
           )}
-          {gauge && !gauge.atLowest && <span className="gd-price-sub">역대 최저가까지 <b>₩{gauge.remaining.toLocaleString('ko-KR')}</b></span>}
           {(timing === 'best' || gauge?.atLowest) && <span className="gd-price-sub is-good">지금이 역대 최저가예요</span>}
           {timing === 'near' && <LowestPriceBadge timing={timing} />}
           {buyUrl && (
@@ -533,8 +530,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           <RelatedPosts gameId={game.id} />
         </div>
 
-        {/* 오른쪽 칸 — 가격 박스 → 게임 정보 → 바로가기를 aside 하나로 묶어 통째로 sticky(top 16px). 960px 이하 1열에서는 sticky를 끄고 가격 박스는 히어로 바로 아래, 나머지는 본문 맨 아래(CSS order) */}
-        <aside className="gd-aside">
+        {/* 오른쪽 칸 — 가격 박스 → 게임 정보 → 바로가기를 aside 하나로 묶어 통째로 sticky(StickyAside가 --aside-top 계산: 화면보다 길면 맨 아래가 보인 뒤 고정). 960px 이하 1열에서는 sticky를 끄고 가격 박스는 히어로 바로 아래, 나머지는 본문 맨 아래(CSS order) */}
+        <StickyAside>
           <div className="gd-aside-price">{priceCard}</div>
           {infoRows.length > 0 && (
             <div className="gd-box gd-aside-info" aria-label="게임 정보">
@@ -551,7 +548,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
               <ShareButton variant="text" title={gameName(game)} text={game.fun_description || `${gameName(game)} 같이 할래?`} />
             </div>
           </div>
-        </aside>
+        </StickyAside>
       </div>
 
       {/* 본문 아래 전체 폭 — 시리즈(지금 보는 게임에만 괄호) → 비슷한 게임(6열) */}

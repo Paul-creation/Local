@@ -43,7 +43,7 @@
 /* ---------- 2열 — 왼쪽 본문 + 오른쪽 aside(통째로 sticky top 16px). 본문 섹션 사이 48px ---------- */
 .gd-layout { max-width: 1200px; margin: 0 auto; padding: 40px 32px 0; display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-start; }
 .gd-main { flex: 999 1 600px; min-width: 0; display: flex; flex-direction: column; gap: 48px; }
-.gd-aside { flex: 1 1 300px; max-width: 340px; display: flex; flex-direction: column; gap: 20px; position: sticky; top: 16px; }
+.gd-aside { flex: 1 1 300px; max-width: 340px; display: flex; flex-direction: column; gap: 20px; position: sticky; top: var(--aside-top, 16px); }
 .gd-bottom { max-width: 1200px; margin: 0 auto; padding: 56px 32px 80px; display: flex; flex-direction: column; gap: 48px; }
 
 /* 960px 이하(1열) — sticky 끄고, 가격 박스는 히어로 바로 아래(order -1), 게임 정보·바로가기는 본문 맨 아래 */
@@ -198,7 +198,6 @@ button.gd-video:hover .gd-video-title { text-decoration: underline; }
 .gd-price-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
 .gd-price-label { font-size: 13px; font-weight: 900; letter-spacing: .14em; color: var(--ink-muted); }
 .gd-price-label::before { content: ""; display: inline-block; width: 4px; height: .95em; margin-right: 8px; border-radius: 2px; background: var(--sec-price); vertical-align: -.1em; }
-.gd-price-head-right { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink-muted); }
 .gd-price-now { font-family: var(--font-num); font-weight: 900; font-size: 36px; letter-spacing: -.03em; color: var(--ink); line-height: 1.15; }
 .gd .gd-price-store { font-size: 22px; font-weight: 800; }
 .gd-price-was { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 14px; color: var(--ink-muted); }
