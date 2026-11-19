@@ -1,6 +1,6 @@
 # Select Screen 현재 상황
 
-기준: 2026-11-19 (main 453952f)
+기준: 2026-11-19 (main b61ede4)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 11/19: perf/curator-isr — /c/[handle]에 generateStaticParams(빈 배열)를 넣어 ISR 활성화(전엔 revalidate가 있어도 매 요청 동적, 로컬 MISS 1.35초 → HIT 0.01초). /api/admin/revalidate가 Supabase Database Webhook 본문({type, table: curators|curator_posts, record, old_record})도 받아 그 핸들로 {curators:[handle]}와 똑같이 무효화(curator_posts는 curator_id로 curators.handle 조회, 이름이 바뀐 옛 핸들도 갱신), 인증은 x-admin-key 그대로. curators 무효화 대상에 /home-member 추가. app/c/[handle]/loading.tsx·app/community/loading.tsx 스켈레톤 추가(공용 app/components/status/skeleton.css). 없는 핸들이 HTTP 200(본문은 404, noindex)으로 응답하는 건 그대로 둠. build·test 581개 통과, 프리뷰 확인 안 함
 - 11/19: fix/curator-revalidate — /api/admin/revalidate가 { curators: [handle] }를 받아 /c/<handle>과 메인(/)을 갱신(ids와 같이 가능, 핸들 최대 20개, 형식 검사). import-curator-queue --apply는 연결이 생기면 그 큐레이터 페이지·메인·연결된 게임 상세를 갱신(ADMIN_REVALIDATE_KEY 없거나 실패해도 계속), 관리자 게시물 연결(connect)은 새 연결이 생기면 서버에서 바로 revalidatePath. 테스트 4개 추가. build·test 569개 통과
 - 11/17: chore/rename-visible-text — 헤더·푸터·OG 라우트는 SITE_NAME을 써서 이미 바뀜, 이미지에 박혀 있던 public/og-default.png의 "JamiDuNow"를 npm run og로 다시 만들어 "Select Screen"으로 교체. 375·360·320px 헤더 한 줄·겹침 없음(CSS 변경 없음). build·test 565개 통과
 - 11/17: chore/rename-select-screen — 사이트 이름 JamiDuNow → Select Screen, 도메인 jamidunow.com → select-screen.com. site.ts(SITE_NAME·SITE_URL 기본값·alternateName에 옛 이름 JamiDuNow·재밌드나 유지(JDN 제거)·메타 설명에 "픽창"), proxy.ts(옛 jamidunow.com·www·game-info-hub.vercel.app을 select-screen.com으로 301), 가이드·투어 문구, scripts 기본 주소, scripts/insta 로고·URL 문구 변경. 로고·파비콘 "J" 이미지, 이메일 jamidunow@gmail.com, DB 이름, localStorage 키(jdn_*)·CSS 클래스(jdn-tour)는 그대로
@@ -172,6 +173,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- 설정 대기(사용자): perf/curator-isr — Supabase 대시보드 Database → Webhooks에서 curators·curator_posts(Insert·Update·Delete) 웹훅을 만들어 POST https://select-screen.com/api/admin/revalidate, 헤더 x-admin-key(ADMIN_REVALIDATE_KEY 값)·Content-Type application/json으로 보내기. 그 전에는 SQL로 동의·게시물을 바꾼 뒤 직접 revalidate를 불러야 함(안 하면 최대 24시간 지연). 운영에서 curators 한 행 수정 뒤 /c/<핸들> 반영 확인
 - 큐레이터 대기열 SQL 실행 대기(사용자): 겜로그 게시물 10개(게임 20개) — /workspaces/reports/gamelog-queue.sql. 실행 뒤 import-curator-queue 미리보기 → --apply로 가져오기. 가져온 appid: One More Lawn 5378110·TANUKI 3218570·HANDS OVER 4661070·QUIET 4228630·Dumpster Gang 2870790·Crypto in a Haystack 5330680·Mayday Airways 5460910·River Drift 4382680·Red Rust Pioneers 3664440·예비군 5367010·Grave Mistakes(기막힌 상조회사) 4635290·My Dirty Little Lake 5375170·Supermarket Chaos 4800590·Never Sort By Color 4876650·DinoBones 5064340·Bunker Tidy Up 5212940·Tidy Up the Flower Shop 5221510·Leaf it Alone 3981100·Orion Blue 4264000·HAPPY PROPAGANDA 4950600
 - 배포 뒤 확인 대기(사용자): chore/rename-select-screen — Vercel에서 select-screen.com 도메인 연결·Primary 지정(옛 jamidunow.com은 연결 유지해 301), 환경변수 NEXT_PUBLIC_SITE_URL(https://select-screen.com)·NEXT_PUBLIC_SITE_NAME(설정돼 있다면 삭제 또는 Select Screen)·NEXT_PUBLIC_SITE_NAME_KO(있다면 확인) 변경 후 재배포, GitHub Actions 시크릿의 NEXT_PUBLIC_SITE_URL도 확인. 인스타 계정 핸들 jamidunow는 별도
 - 머지 후 확인 대기(사용자): fix/detail-restore-items — 프로덕션 상세(1440px)에서 스크롤 시 오른쪽 가격 카드가 따라오는지, 모바일에서 한눈에 보기 아래에 카드가 있는지, It Takes Two 한눈에 보기에 "함께 클리어까지 15시간". 인스타 detail 캡처(generate.mjs)는 다음에 돌릴 때 확인
