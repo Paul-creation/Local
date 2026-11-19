@@ -41,6 +41,11 @@
   --gutter: 24px;            /* 본문 좌우 여백 (768px 미만은 16px) */
   --wrap: 1200px;            /* 본문 최대 폭 */
 
+  /* 메인 섹션 간격 — 섹션 사이 64px(모바일 40px), 머리(밑줄)와 내용 사이 18px, 푸터 위 마지막 섹션 아래 80px */
+  --sec-gap: 64px;
+  --sec-head-gap: 18px;
+  --sec-gap-end: 80px;
+
   /* 그림자 — 하나만 */
   --shadow: 0 12px 40px rgba(0, 0, 0, .55);
 
@@ -60,6 +65,8 @@
   --sb-w-poster: 3px; --sb-l-poster: 18px; --sb-o-poster: 6px;
   --sb-w-logo: .09em; --sb-l-logo: .3em; --sb-o-logo: .22em;
 }
+
+@media (max-width: 767px) { :root { --sec-gap: 40px; } }
 
 /* ---------- 옛 이름 다리 (.mn 루트 안 — 상세·비교·내 PC·찜목록·커뮤니티 등) ---------- */
 .mn {
