@@ -5,11 +5,13 @@
 // 순서: DB에 없는 appid → bulk-import --curator --apply → (bulk-import가 끝에서 fill-new-game으로 새 게임 보강) → 같은 게시물에 curator_posts 연결 → imported_at 기록
 // - 가격·리뷰·동접·ITAD는 이 단계 뒤의 데일리 단계가 모든 게임을 대상으로 받으므로 여기서 안 함. enrich-other-stores·ai-other·videos(--ids 없음)는 다음 weekly. 활동(fill-activities-v2, Sonnet)은 fill-new-game이 한 번에 최대 10개까지, 넘는 건 weekly
 // - 못 가져온 appid(스팀 기준 미달 등)는 대기열에 남기고 14일 동안만 다시 시도. 이미 연결된 (계정, 게임, 게시물)은 건너뜀. 삭제 없음
+// - 연결이 생기면 /api/admin/revalidate로 그 큐레이터 페이지(/c/handle)·메인·게임 상세를 바로 갱신 (ADMIN_REVALIDATE_KEY 없으면 생략)
 // - 결과 숫자는 scripts/.cache/curator-queue.json → 일일 요약 "큐레이터 게임 추가 N개"
 import { createClient } from '@supabase/supabase-js';
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import { pendingRows, buildLinks, recordQueueResult } from './lib/curator-queue.mjs';
+import { revalidateCurators } from './lib/revalidateGames.mjs';
 
 const APPLY = process.argv.includes('--apply');
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
@@ -71,6 +73,10 @@ async function main() {
       .select('game_id');
     if (upErr) throw new Error(`curator_posts 연결 실패: ${upErr.message}`);
     linked = data?.length ?? 0;
+    if (linked) {
+      const { data: cs } = await supabase.from('curators').select('handle').in('id', [...new Set(posts.map((p) => p.curator_id))]);
+      await revalidateCurators({ handles: (cs || []).map((c) => c.handle), gameIds: posts.map((p) => p.game_id) });
+    }
   }
   if (doneIds.length) {
     const { error: doneErr } = await supabase.from('curator_game_queue').update({ imported_at: new Date().toISOString() }).in('id', doneIds);
