@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import BackLink from '../components/BackLink';
 import SaleTimeline from '../components/this-week/SaleTimeline';
 import { getSaleTimeline } from '../lib/saleTimelineData';
-import '../mono-tokens.css';
+import '../brand-tokens.css';
 import '../mono-page.css';
 import '../mono-lists.css';
 

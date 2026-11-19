@@ -4,7 +4,7 @@ import 'pretendard/dist/web/static/pretendard-dynamic-subset.css';
 import './globals.css';
 import './status-pages.css';
 import StatusSearch from './components/status/StatusSearch';
-import './mono-tokens.css';
+import './brand-tokens.css';
 import './mono-page.css';
 import './mono-static.css';
 

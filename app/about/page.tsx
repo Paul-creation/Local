@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import BackLink from '../components/BackLink';
 import { SITE_NAME, SITE_META_DESCRIPTION, SITE_DESCRIPTION, OPERATOR_NAME, CONTACT_EMAIL, CONTACT_TEXT, BASE_OG } from '../lib/site';
-import '../mono-tokens.css';
+import '../brand-tokens.css';
 import '../mono-page.css';
 import '../mono-static.css';
 

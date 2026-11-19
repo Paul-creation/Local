@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { BOARD_KEYS, BOARDS } from '../lib/communityBoards';
 import WriteLink from '../components/community/WriteLink';
-import '../mono-tokens.css';
+import '../brand-tokens.css';
 import '../mono-page.css';
 import './community-mono.css';
 import '../mono-static.css';

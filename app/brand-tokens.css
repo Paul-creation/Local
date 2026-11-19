@@ -1,0 +1,145 @@
+/* ============================================================
+   Select Screen 브랜드 토큰 — 사이트 전체의 색·반경·간격·그림자·글꼴·선택 괄호 크기는 이 파일 한 곳에서만 정한다.
+   디자인 담당은 이 파일만 고치면 된다. 다크 고정(라이트 모드 없음), 네온(빛 번짐)은 쓰지 않는다.
+   아래 ".mn" 블록은 상세·비교·내 PC 등 아직 옛 모양인 화면이 쓰는 예전 이름(--mn-*)을 새 값으로 이어 주는 다리 — 2단계에서 그 화면을 옮기면 지운다.
+   ============================================================ */
+:root {
+  /* 배경 — 페이지 전체는 위에서 아래로 --page-bg 그라데이션 */
+  --bg-top: #141311;
+  --bg-bottom: #0B0A09;
+  --page-bg: linear-gradient(180deg, var(--bg-top) 0%, #121110 45%, var(--bg-bottom) 100%);
+
+  /* 면·선 */
+  --surface: #1E1D1A;        /* 카드·검색창·타일·칩 */
+  --line: #2E2C28;           /* 카드 테두리·섹션 밑줄 */
+  --line-strong: #3A3833;    /* 검색창 칸 구분·탭 테두리 */
+  --poster-line: rgba(244, 241, 234, .1);  /* 포스터 안쪽 1px 테두리 */
+
+  /* 글자 — 아래 셋은 --bg-top·--surface 위에서 4.5:1 이상 */
+  --ink: #F4F1EA;            /* 제목·본문 */
+  --ink-nav: #C9C4B8;        /* 메뉴·칩 글씨 */
+  --ink-muted: #A9A498;      /* 정보 줄·라벨 */
+
+  /* 브랜드 파랑 */
+  --brand: #3D7BFF;          /* 괄호·주요 버튼 배경·현재 메뉴 밑줄 */
+  --brand-ink: #7AA6FF;      /* 작은 링크·숫자 강조 */
+  --on-brand: #141311;       /* 파란 버튼 위 글씨 — 흰 글씨는 대비가 모자라 쓰지 않는다 */
+
+  /* 반경 */
+  --r-card: 4px;
+  --r-tile: 8px;
+  --r-search: 14px;
+
+  /* 간격 */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 40px;
+  --sp-7: 64px;
+  --gutter: 24px;            /* 본문 좌우 여백 (768px 미만은 16px) */
+  --wrap: 1200px;            /* 본문 최대 폭 */
+
+  /* 그림자 — 하나만 */
+  --shadow: 0 12px 40px rgba(0, 0, 0, .55);
+
+  /* 글꼴 — 영문 워드마크·숫자는 Inter 900(자간 -0.05em), 한글은 Pretendard. 변수는 app/mono-fonts.ts가 html에 붙인다 */
+  --font-ko: var(--font-pretendard, 'Pretendard Variable'), 'Pretendard', -apple-system, system-ui, sans-serif;
+  --font-num: var(--font-inter, Inter), var(--font-ko);
+  --num-weight: 900;
+  --num-ls: -0.05em;
+  --title-weight: 900;
+
+  /* 선택 괄호(<SelectBrackets>) — 굵기(w)·길이(l)·몸통에서 바깥으로 벌어진 정도(o, 음수면 안쪽) */
+  --sb-color: var(--brand);
+  --sb-ms: 150ms;
+  --sb-w-tab: 2px;   --sb-l-tab: 8px;   --sb-o-tab: 3px;
+  --sb-w-chip: 2px;  --sb-l-chip: 8px;  --sb-o-chip: 3px;
+  --sb-w-tile: 2px;  --sb-l-tile: 10px; --sb-o-tile: 4px;
+  --sb-w-poster: 3px; --sb-l-poster: 18px; --sb-o-poster: 6px;
+  --sb-w-logo: .09em; --sb-l-logo: .3em; --sb-o-logo: .22em;
+}
+
+/* ---------- 옛 이름 다리 (.mn 루트 안 — 상세·비교·내 PC·찜목록·커뮤니티 등) ---------- */
+.mn {
+  --mn-bg: var(--bg-top);
+  --mn-surface: var(--surface);
+  --mn-line: var(--line);
+  --mn-fg: var(--ink);
+  --mn-fg-inv: var(--bg-top);
+  --mn-label: var(--ink-muted);
+  --mn-tab-off-line: var(--line-strong);
+  --mn-font: var(--font-ko);
+  --mn-ls: -0.01em;
+  --mn-ls-display: -0.035em;
+  --mn-weight-display: 800;
+
+  /* 상세 섹션 포인트 색 — 섹션 막대·핵심 값·칩에만 쓴다. 쓰는 곳은 components/detail/detail-sections.css */
+  --sec-intro: #FFD84A;
+  --sec-together: #3DDCC4;
+  --sec-price: #4ADE80;
+  --sec-detail: #B794F6;
+  --sec-spec: #60A5FA;
+  --sec-video: #FF7A6B;
+  --sec-glance: #FFA94D;
+  --glance-tile: #161616;
+  --sec-intro-a33: #FFD84A54;
+  --sec-intro-a13: #FFD84A21;
+  --sec-together-a33: #3DDCC454;
+  --sec-video-a33: #FF7A6B54;
+  --sec-price-a13: #4ADE8021;
+  --sec-detail-a13: #B794F621;
+  --sec-intro-text: #FFE27A;
+  --sec-detail-text: #C9B0FA;
+  --sec-label: #8a8a8a;
+
+  /* 할인 배지·뜨는 중/신작 배지(공용 게임 카드 .gc-trend)·인스타 버튼 */
+  --mn-sale-bg: #4ADE80;
+  --mn-sale-fg: #052E16;
+  --mn-badge-trend: #66C0F4;
+  --mn-badge-trend-fg: #0B0E14;
+  --mn-badge-new: #FF7A70;
+  --mn-badge-new-fg: #0B0E14;
+  --mn-instagram: linear-gradient(45deg, #F58529 0%, #DD2A7B 45%, #8134AF 75%, #515BD4 100%);
+
+  /* 이 루트 안에서 예전 토큰을 쓰는 부품(검색 자동완성·AI 창·인기 게시물 등)도 같은 색으로 보이게 */
+  --bg: var(--mn-bg);
+  --card: var(--mn-surface);
+  --card-hover: var(--mn-surface);
+  --inset: var(--mn-bg);
+  --border: var(--mn-line);
+  --border-soft: var(--mn-line);
+  --text: var(--mn-fg);
+  --text-2: var(--mn-fg);
+  --text-muted: var(--mn-fg);
+  --text-faint: var(--mn-fg);
+  --text-dimmer: var(--mn-fg);
+  --accent: var(--mn-fg);
+  --accent-hover: var(--mn-fg);
+  --accent-ink: var(--mn-fg-inv);
+  --accent-text: var(--mn-fg);
+  --accent-soft: var(--mn-surface);
+  --focus-glow: 0 0 0 1px rgba(244, 241, 234, .4);
+  --card-surface: var(--mn-surface);
+  --price-surface: var(--mn-surface);
+  --card-line: var(--mn-line);
+  --card-info: transparent;
+  --panel-bg: var(--mn-surface);
+  --panel-line: var(--mn-line);
+  --results-bg: var(--mn-surface);
+  --results-line: var(--mn-line);
+  --tag-bg: transparent;
+  --tag-border: var(--mn-line);
+  --tag-text: var(--mn-fg);
+
+  /* 배경은 body의 그라데이션이 비쳐 보이게 비워 둔다 */
+  background: transparent;
+  color: var(--mn-fg);
+  font-family: var(--mn-font);
+  letter-spacing: var(--mn-ls);
+}
+
+/* 공용 게임 카드(.gc-trend, 상세 비슷한 게임 등)의 뜨는 중·신작 배지 */
+.mn .gc-trend > span.is-trend { color: var(--mn-badge-trend-fg); background: var(--mn-badge-trend); }
+.mn .gc-trend > span.is-new { color: var(--mn-badge-new-fg); background: var(--mn-badge-new); }

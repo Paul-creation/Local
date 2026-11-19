@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import StatusSearch from './components/status/StatusSearch';
 import './status-pages.css';
-import './mono-tokens.css';
+import './brand-tokens.css';
 import './mono-page.css';
 import './mono-static.css';
 

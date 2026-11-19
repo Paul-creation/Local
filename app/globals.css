@@ -141,9 +141,10 @@
 
 .pretendard-var { --font-pretendard: 'Pretendard Variable', 'Pretendard Hangul Fallback', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; }
 
-html, body { background: #0A0A0A; }
+html { background: var(--bg-bottom); }
 body {
-  background: var(--bg);
+  min-height: 100vh;
+  background: var(--page-bg);
   color: var(--text);
   font-family: var(--font-pretendard), 'Pretendard', -apple-system, BlinkMacSystemFont,
     'Apple SD Gothic Neo', sans-serif;
@@ -181,8 +182,9 @@ img { display: block; }
   z-index: 100;
   margin-bottom: 24px;
 }
-/* 모노 헤더 — 토큰은 mono-tokens.css(.mn). 이 구간은 --mn-* 토큰을 직접 쓴다 */
-.site-header.mn { text-shadow: none; background: rgba(10, 10, 10, 0.8); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-bottom: 1px solid var(--mn-line); }
+/* 헤더 — 토큰은 brand-tokens.css. 메인(히어로가 있을 때)에서는 히어로 위에 투명하게 얹고(가독성은 히어로의 위쪽 어두운 그라데이션), 다른 페이지에서는 --bg-top 배경 + 아래 1px --line */
+.site-header.mn { background: var(--bg-top); border-bottom: 1px solid var(--line); }
+body:has(.mn-hero) .site-header.mn { position: absolute; left: 0; right: 0; margin-bottom: 0; background: transparent; border-bottom-color: transparent; }
 
 .site-header-inner {
   max-width: 1200px;
@@ -198,10 +200,7 @@ img { display: block; }
   display: inline-flex;
   align-items: center;
   min-height: 44px; /* 터치 영역 */
-  font-size: 19px;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: var(--mn-fg);
+  color: var(--ink);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -225,14 +224,14 @@ img { display: block; }
   min-height: 44px;
   min-width: 44px;
   padding: 8px 12px;
-  border-radius: var(--radius-btn);
-  font-size: var(--fs-l);
-  font-weight: 500;
-  color: var(--mn-fg);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ink-nav);
   white-space: nowrap;
 }
-.site-menu a:hover { box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.4); border-radius: 0; }
-.site-menu a[aria-current="page"] { font-weight: 700; box-shadow: inset 0 -2px 0 var(--mn-fg); border-radius: 0; }
+.site-menu a:hover { color: var(--ink); }
+.site-menu a[aria-current="page"] { color: var(--ink); box-shadow: inset 0 -2px 0 var(--brand); }
 
 /* 헤더 로그인 영역 (AuthMenu) — 새 색 없이 기존 토큰만 */
 .auth-menu { position: relative; flex-shrink: 0; }
@@ -242,22 +241,19 @@ img { display: block; }
   gap: 8px;
   min-height: 44px;
   padding: 6px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: var(--radius-btn);
-  background: transparent;
-  color: var(--mn-fg);
+  border: 0;
+  border-radius: var(--r-tile);
+  background: var(--brand);
+  color: var(--on-brand);
   font-family: inherit;
   font-size: var(--fs-l);
-  font-weight: 700;
+  font-weight: 800;
   white-space: nowrap;
-  text-shadow: none;
-  box-shadow: 0 0 10px rgba(255, 255, 255, calc(0.09 * var(--glow-strength)));
   cursor: pointer;
-  transition: box-shadow 0.15s ease;
 }
 /* 로그인 확인 중(숨긴 로그인 버튼)·로그인 버튼·아바타 버튼이 같은 폭이라 확인이 끝나도 메뉴가 밀리지 않는다 */
 .auth-login, .auth-user { min-width: 154px; justify-content: center; }
-.auth-login:hover, .auth-user:hover { box-shadow: 0 0 14px rgba(255, 255, 255, calc(0.18 * var(--glow-strength))); }
+.auth-login:hover, .auth-user:hover { filter: brightness(1.1); }
 .auth-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
 .auth-name { max-width: 9em; overflow: hidden; text-overflow: ellipsis; }
 .auth-pop {
@@ -325,22 +321,22 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
 
 @media (max-width: 480px) {
   .site-header-inner { padding: 0 12px; height: 56px; gap: 4px; }
-  .site-logo { font-size: var(--fs-xl); }
+  .site-logo .wm-md { font-size: 19px; } .site-logo .wm-img.wm-md { height: 19px; }
   .site-menu { gap: 0; }
-  .site-menu a { padding: 6px 7px; font-size: var(--fs-s); } /* 헤더는 360~390px에서 한 줄이라 올리지 않음 */
+  .site-menu a { padding: 6px 7px; font-size: var(--fs-s); letter-spacing: 0.02em; } /* 헤더는 360~390px에서 한 줄이라 올리지 않음 */
 }
 /* 400px 이하: 로고·링크·테마 버튼 안쪽 여백과 글자를 조금 줄여 360px까지 메뉴와 로그인 버튼이 겹치지 않게 (링크 글자는 13px 아래로 내리지 않음, 터치 영역 44px은 유지) */
 @media (max-width: 400px) {
   .site-header-inner { padding: 0 8px; gap: 2px; }
-  .site-logo { font-size: 15px; }
+  .site-logo .wm-md { font-size: 16px; } .site-logo .wm-img.wm-md { height: 16px; }
   .site-menu a { padding: 6px 4px; font-size: var(--fs-xs); }
 }
 /* 350px 이하: 그래도 자리가 모자라 "커뮤니티"는 헤더에서 빼고 푸터 링크로 */
 @media (max-width: 349px) { .site-menu .is-narrow-hide { display: none; } }
 
 /* 모노 헤더 안의 비교 개수 배지·진행 바 (원래 규칙은 아래쪽 .nav-count·.nav-progress — 헤더 안에서만 덮어쓴다) */
-.site-header.mn .nav-count { background: var(--mn-fg); color: var(--mn-fg-inv); font-weight: 800; text-shadow: none; box-shadow: none; }
-.site-header.mn .nav-progress { background: var(--mn-fg); box-shadow: 0 0 8px rgba(255, 255, 255, calc(0.4 * var(--glow-strength))); }
+.site-header.mn .nav-count { background: var(--brand); color: var(--on-brand); font-weight: 800; box-shadow: none; }
+.site-header.mn .nav-progress { background: var(--brand); box-shadow: none; }
 
 /* ============================================================
    공통 컴포넌트 — 버튼·칩·뱃지·입력창·탭·카드·스켈레톤
@@ -1467,17 +1463,18 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
 .cm-opinion-form { margin-bottom: 4px; }
 
 /* 공통 푸터 (layout) */
-.site-footer.mn { max-width: none; margin: 56px 0 0; padding: 48px 16px 44px; text-align: center; font-size: 12px; font-weight: 400; line-height: 1.6; color: var(--mn-fg); text-shadow: none; background: var(--mn-bg); border-top: 1px solid var(--mn-line); }
-.site-footer-links { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; margin-bottom: 24px; font-size: 13px; font-weight: 500; }
-.site-footer a { color: var(--mn-fg); }
-.site-footer a:hover { box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.4); }
+.site-footer.mn { max-width: none; margin: var(--sp-7) 0 0; padding: var(--sp-6) 0 var(--sp-5); font-size: 13px; font-weight: 400; line-height: 1.6; color: var(--ink-muted); background: var(--bg-bottom); border-top: 1px solid var(--line); }
+.site-footer-inner { max-width: var(--wrap); margin-inline: auto; padding-inline: var(--gutter); }
+.site-footer-links { display: flex; flex-wrap: wrap; align-items: center; margin: 0 -14px var(--sp-4); font-size: 13px; font-weight: 500; }
+.site-footer a { color: var(--ink-nav); }
+.site-footer a:hover { color: var(--ink); }
 .site-footer-links a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; } /* 터치 영역 44px */
-.site-footer-links a:first-child { font-size: 14px; font-weight: 800; letter-spacing: -0.03em; }
-.site-footer-links a + a { border-left: 1px solid var(--mn-line); }
-.site-footer p { max-width: 640px; margin-inline: auto; word-break: keep-all; }
-.site-footer-copy { margin-top: 8px; }
+.site-footer-links a:first-child { font-weight: 800; }
+.site-footer p { max-width: 640px; word-break: keep-all; }
+.site-footer-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-3) var(--sp-4); margin-top: var(--sp-5); padding-top: var(--sp-4); border-top: 1px solid var(--line); }
+.site-footer-copy { color: var(--ink-muted); }
 /* 휴대폰: 링크가 여러 줄로 감길 때 줄 처음·끝에 구분선이 혼자 남지 않게 구분선을 없애고 간격으로만 나눈다 */
-@media (max-width: 767px) { .site-footer-links a + a { border-left: 0; } .site-footer-links a { padding: 0 12px; } }
+@media (max-width: 767px) { .site-footer-inner { padding-inline: 16px; } .site-footer-links { margin-inline: -12px; } .site-footer-links a { padding: 0 12px; } }
 
 /* 개인정보처리방침·이용약관 */
 .legal p { font-size: var(--fs-l); line-height: 1.7; color: var(--text); margin-bottom: 10px; }

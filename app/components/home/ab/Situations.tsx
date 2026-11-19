@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import { SITUATIONS, queryHref } from '../../../lib/abSearch';
+import SectionHead from '../../brand/SectionHead';
 import './ab.css';
 
-// 검색창 아래 "이런 판 어때요?" — 누르면 그 조건이 채워진 결과(/find)로 이동. 서버에서 그려도 되는 링크 묶음
+// 히어로 아래 첫 섹션 "이런 판 어때요?" — 작은 라벨 머리 + 상황 타일 3열. 누르면 그 조건이 채워진 결과(/find)로 이동. 서버에서 그려도 되는 링크 묶음
 export default function Situations() {
   return (
-    <section className="ab-sit" aria-labelledby="ab-sit-h" data-tour="situations">
-      <h2 id="ab-sit-h" className="ab-sit-h">이런 판 어때요?</h2>
+    <section className="mn-sec ab-sit" aria-labelledby="ab-sit-h" data-tour="situations">
+      <SectionHead id="ab-sit-h" label="이런 판 어때요?" />
       <ul className="ab-sit-grid">
         {SITUATIONS.map((s) => (
           <li key={s.key}>

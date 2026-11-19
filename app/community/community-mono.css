@@ -2,8 +2,8 @@
 .mn-inner .cm-h1 { font-weight: 800; letter-spacing: -0.035em; }
 .mn-inner .cm-h2 { font-weight: 800; letter-spacing: -0.03em; }
 /* 게시판 고르기(선택 있는 토글) — 선택 = 흰 배경 + 검은 글씨, 비선택 = 보조 스타일 */
-.mn-inner .cm-board-pick button { color: var(--mn-fg); background: transparent; border: 1px solid rgba(255, 255, 255, .4); box-shadow: 0 0 10px rgba(255, 255, 255, calc(.09 * var(--glow-strength))); text-shadow: none; }
-.mn-inner .cm-board-pick button.on { color: var(--mn-fg-inv); background: var(--mn-fg); border-color: transparent; box-shadow: var(--mn-glow-tab-on); }
+.mn-inner .cm-board-pick button { color: var(--mn-fg); background: transparent; border: 1px solid rgba(255, 255, 255, .4); box-shadow: none; text-shadow: none; }
+.mn-inner .cm-board-pick button.on { color: var(--mn-fg-inv); background: var(--mn-fg); border-color: transparent; box-shadow: none; }
 /* 게시판 탭 링크 — 표면 #111111 */
 .mn-inner .cm-tabs a:not(.cm-write-btn) { background: var(--mn-surface); border: 1px solid var(--mn-line); }
 .mn-inner .cm-tabs a:not(.cm-write-btn):hover { background: var(--mn-surface); border-color: rgba(255, 255, 255, .4); }

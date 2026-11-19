@@ -1,4 +1,4 @@
-/* 게임 상세 섹션별 포인트 색 — 색 값은 mono-tokens.css(--sec-*). 막대·핵심 값 1~2개·칩에만 쓰고 나머지 본문은 그대로 */
+/* 게임 상세 섹션별 포인트 색 — 색 값은 brand-tokens.css(--sec-*). 막대·핵심 값 1~2개·칩에만 쓰고 나머지 본문은 그대로 */
 .sec-intro { --sec: var(--sec-intro); }
 .sec-together { --sec: var(--sec-together); }
 .sec-price { --sec: var(--sec-price); }

@@ -9,8 +9,9 @@ import { gameName } from '../../../lib/gameName';
 import './ab.css';
 
 // 에어비앤비식 3칸 검색창 — 누구랑(인원) · 어떻게(방식) · 뭐 할까(장르·직접 입력). 모든 칸은 선택이고, 비우고 찾으면 인기순
-// 데스크톱: 가로 알약 하나 + 칸 아래에 패널(열린 칸은 흰 알약). 휴대폰(767px 이하): 알약 하나 → 전체 화면 시트에서 3칸이 차례로 펼쳐짐
+// 데스크톱: 가로 막대 하나 + 칸 아래에 패널(열린 칸은 --ink 배경). 휴대폰(767px 이하): 알약 하나 → 전체 화면 시트에서 3칸이 차례로 펼쳐짐
 // 두 모양을 모두 그리고 CSS(ab.css)로 가른다 — 마운트 전후 차이 없음
+// 값이 들어간 칸은 --ink 배경 + 어두운 글씨 (괄호 없음)
 // variant="results": 결과 화면 맨 위 — 접힌 한 줄("4명 | 같이 깨기 | 공포")로 시작해 누르면 펼침
 type Cell = 'who' | 'how' | 'what';
 
@@ -104,7 +105,7 @@ export default function AbSearch({ games, initial = EMPTY_QUERY, variant = 'home
               <div key={c.key} className="ab-slot">
                 <button
                   type="button"
-                  className={`ab-cell${open === c.key ? ' is-open' : ''}`}
+                  className={`ab-cell${c.value ? ' has-value' : ''}${open === c.key ? ' is-open' : ''}`}
                   data-tour={variant === 'home' ? `ab-${c.key}` : undefined}
                   aria-expanded={open === c.key}
                   aria-controls={`ab-panel-${c.key}`}
@@ -125,7 +126,7 @@ export default function AbSearch({ games, initial = EMPTY_QUERY, variant = 'home
         )}
 
         {/* ----- 휴대폰 ----- */}
-        <button type="button" className="ab-pill ab-mobile" data-tour={variant === 'home' ? 'ab-pill' : undefined} onClick={() => { setSheet(true); setOpen('who'); }} aria-haspopup="dialog">
+        <button type="button" className={`ab-pill ab-mobile${isEmptyQuery(q) ? '' : ' has-value'}`} data-tour={variant === 'home' ? 'ab-pill' : undefined} onClick={() => { setSheet(true); setOpen('who'); }} aria-haspopup="dialog">
           <span className="ab-pill-main">{pillMain}</span>
           <span className="ab-pill-sub">{isEmptyQuery(q) ? '인원 · 방식 · 장르' : '눌러서 바꾸기'}</span>
         </button>

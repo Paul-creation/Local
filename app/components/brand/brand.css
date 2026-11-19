@@ -1,0 +1,36 @@
+/* 새 브랜드 공용 부품 — 선택 괄호·워드마크·섹션 머리. 값은 전부 app/brand-tokens.css 토큰 */
+
+/* ---------- 선택 괄호 ---------- */
+.sb-host { position: relative; }
+.sb-wrap { display: inline-block; }
+.sb-set { position: absolute; inset: 0; pointer-events: none; --w: var(--sb-w-tab); --l: var(--sb-l-tab); --o: var(--sb-o-tab); --in: 6px; }
+.sb-set[data-size="chip"] { --w: var(--sb-w-chip); --l: var(--sb-l-chip); --o: var(--sb-o-chip); }
+.sb-set[data-size="tile"] { --w: var(--sb-w-tile); --l: var(--sb-l-tile); --o: var(--sb-o-tile); }
+.sb-set[data-size="poster"] { --w: var(--sb-w-poster); --l: var(--sb-l-poster); --o: var(--sb-o-poster); --in: 10px; }
+.sb-set[data-size="logo"] { --w: var(--sb-w-logo); --l: var(--sb-l-logo); --o: var(--sb-o-logo); --in: .12em; }
+.sb-c { position: absolute; display: block; width: var(--l); height: var(--l); border: 0 solid var(--sb-color); opacity: 0; }
+.sb-c.tl { top: calc(-1 * var(--o)); left: calc(-1 * var(--o)); border-top-width: var(--w); border-left-width: var(--w); transform: translate(calc(-1 * var(--in)), calc(-1 * var(--in))); }
+.sb-c.tr { top: calc(-1 * var(--o)); right: calc(-1 * var(--o)); border-top-width: var(--w); border-right-width: var(--w); transform: translate(var(--in), calc(-1 * var(--in))); }
+.sb-c.bl { bottom: calc(-1 * var(--o)); left: calc(-1 * var(--o)); border-bottom-width: var(--w); border-left-width: var(--w); transform: translate(calc(-1 * var(--in)), var(--in)); }
+.sb-c.br { bottom: calc(-1 * var(--o)); right: calc(-1 * var(--o)); border-bottom-width: var(--w); border-right-width: var(--w); transform: translate(var(--in), var(--in)); }
+.sb-set[data-on] .sb-c, .sb-group:is(:hover, :focus-visible, :focus-within) .sb-set[data-hover] .sb-c { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .sb-c { transition: opacity var(--sb-ms) ease-out, transform var(--sb-ms) ease-out; }
+}
+
+/* ---------- 워드마크 ---------- */
+.wm { display: inline-flex; align-items: baseline; gap: .42em; font-family: var(--font-num); font-weight: var(--num-weight); letter-spacing: var(--num-ls); line-height: 1; color: var(--ink); white-space: nowrap; text-transform: lowercase; }
+.wm .sb-wrap { padding: .02em .02em; margin-left: .22em; }
+.wm-md { font-size: 22px; }
+.wm-sm { font-size: 15px; }
+.wm-img { display: block; width: auto; }
+.wm-img.wm-md { height: 22px; }
+.wm-img.wm-sm { height: 15px; }
+
+/* ---------- 섹션 머리 ---------- */
+.sec-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; margin: 0 0 var(--sp-4); padding-bottom: var(--sp-3); border-bottom: 1px solid var(--line); }
+.sec-title { margin: 0; font-size: clamp(22px, 2.6vw, 28px); font-weight: var(--title-weight); letter-spacing: -0.03em; line-height: 1.25; color: var(--ink); }
+.sec-label { margin: 0; font-size: 13px; font-weight: 900; letter-spacing: .14em; line-height: 1.4; color: var(--ink-muted); }
+.sec-head-right { display: inline-flex; align-items: center; gap: var(--sp-4); }
+.sec-more { display: inline-flex; align-items: center; min-height: 32px; font-size: 14px; font-weight: 700; color: var(--brand-ink); text-decoration: none; }
+.sec-more:hover { text-decoration: underline; text-underline-offset: 3px; }

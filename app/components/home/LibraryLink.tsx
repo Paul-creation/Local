@@ -6,5 +6,5 @@ import { useOwned } from '../owned/useOwned';
 export default function LibraryLink() {
   const { ready, visibility } = useOwned();
   if (!ready || visibility !== 'public') return null;
-  return <a href="/library" className="people-more library-link">내 라이브러리에서 친구랑 할 게임 찾기 →</a>;
+  return <a href="/library" className="sec-more">내 라이브러리에서 친구랑 할 게임 찾기 →</a>;
 }

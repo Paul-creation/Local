@@ -57,7 +57,7 @@ import ScreenshotGallery, { type Screenshot } from '../../components/ScreenshotG
 import { gameName } from '../../lib/gameName';
 import CuratorsOfGame from '../../components/CuratorsOfGame';
 import { getCuratorsOfGame } from '../../lib/curators';
-import '../../mono-tokens.css';
+import '../../brand-tokens.css';
 import '../../mono-page.css';
 import '../../components/detail/detail-mono.css';
 import '../../components/detail/detail-sections.css';

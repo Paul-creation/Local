@@ -21,7 +21,7 @@ import HeartButton from '../components/wishlist/HeartButton';
 import { selectGames } from '../lib/visibleGames';
 import { isSoloPlayable } from '../lib/soloMode';
 import { gameName } from '../lib/gameName';
-import '../mono-tokens.css';
+import '../brand-tokens.css';
 import '../mono-page.css';
 import './compare-mono.css';
 

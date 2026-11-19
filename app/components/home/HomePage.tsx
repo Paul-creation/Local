@@ -1,5 +1,4 @@
 import GameGrid from '../GameGrid';
-import HomeEventLabel from './HomeEventLabel';
 import HomeSections from './HomeSections';
 import { SITE_NAME, SITE_ALT_NAMES, SITE_URL, SITE_META_DESCRIPTION } from '../../lib/site';
 import { getHotChart } from '../../lib/hotChart';
@@ -12,7 +11,7 @@ import { getPeopleRecs, getHomeExcludedIds } from '../../lib/peopleRecs';
 import { getCovers, getHeroCovers, getHomeLists, getHomeStats } from '../../lib/homeMain';
 
 // 메인 화면 서버 부분 — app/page.tsx(방문자)와 app/home-member/page.tsx(로그인 사용자, proxy.ts가 / 요청을 이쪽으로 다시 써 준다)가 같이 쓴다
-// member: 히어로 중 제목·부제·이벤트 줄·숫자는 그리지 않고, 배경 표지 벽만 검색창·상황 타일 뒤에 깐다. 두 페이지 모두 ISR이라 쿠키를 여기서 읽지 않는다
+// member: 히어로의 제목은 그리지 않고(검색창만 가운데), 숫자 현황 줄도 없다. 배경 표지 벽은 방문자와 같다. 두 페이지 모두 ISR이라 쿠키를 여기서 읽지 않는다
 // 구조화 데이터(WebSite) — 검색 결과의 사이트 이름 표시용
 const websiteJsonLd = {
   '@context': 'https://schema.org',
@@ -67,11 +66,9 @@ export default async function HomePage({ member = false }: { member?: boolean })
       <GameGrid
         member={member}
         peopleReady={!!peopleRecs}
-        event={member ? null : <HomeEventLabel />}
-        sections={<HomeSections lists={lists} popularPosts={popularPosts} streamerTheme={streamerTheme} peopleRecs={peopleRecs} homeExcluded={homeExcluded} curators={curators} />}
+        sections={<HomeSections lists={lists} stats={member ? null : stats} popularPosts={popularPosts} streamerTheme={streamerTheme} peopleRecs={peopleRecs} homeExcluded={homeExcluded} curators={curators} />}
         top10Ids={hot.top10Ids}
         heroCovers={heroCovers}
-        stats={stats}
       />
     </main>
   );
