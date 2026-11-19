@@ -7,6 +7,8 @@ import { playersText } from './players';
 import { gameName } from './gameName';
 import type { HotItem } from './hotChart';
 import { arrangeHeroWall } from './heroWall';
+import { supabase } from './supabase';
+import { playerGrowth, type Sample } from './trending';
 
 export type Cover = { vertical: string | null; appid: string | null; wide: string | null };
 export type ListRow = { id: string; name: string; cover: Cover; sub: string[] };
@@ -86,7 +88,7 @@ export async function getHomeStats(): Promise<HomeStats> {
 }
 
 // 출시 예정 — 출시일이 가까운 순 (날짜 없이 "2027년 1분기"처럼 글자만 있는 게임은 뒤)
-const SOON_FIELDS = `id, name, display_name, min_players, max_players, release_date_text, ${COVER_FIELDS.replace('id, ', '')}`;
+const SOON_FIELDS = `id, name, display_name, min_players, max_players, release_date, release_date_text, ${COVER_FIELDS.replace('id, ', '')}`;
 const PLACEHOLDER = /^(출시\s*예정|coming\s*soon|to\s*be\s*announced|tba)$/i;
 async function upcomingRows(): Promise<ListRow[]> {
   const { data } = await selectGames(SOON_FIELDS)
@@ -96,11 +98,34 @@ async function upcomingRows(): Promise<ListRow[]> {
     .order('release_date', { ascending: true, nullsFirst: false })
     .order('id')
     .limit(LIST_SIZE);
-  type Row = CoverRow & { name: string; display_name: string | null; min_players: number | null; max_players: number | null; release_date_text: string | null };
+  type Row = CoverRow & { name: string; display_name: string | null; min_players: number | null; max_players: number | null; release_date: string | null; release_date_text: string | null };
   return ((data ?? []) as unknown as Row[]).map((g) => {
     const text = (g.release_date_text ?? '').trim();
-    return { id: g.id, name: gameName(g), cover: coverOf(g), sub: [text && !PLACEHOLDER.test(text) ? text : '출시 예정', playersText(g)].filter(Boolean) };
+    // 보조 줄은 "M/D 출시" 하나 — 정확한 날짜가 없으면 스팀 원문(예: 2027년 1분기), 그것도 없으면 "출시 예정"
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(g.release_date ?? '');
+    const when = m ? `${Number(m[2])}/${Number(m[3])} 출시` : text && !PLACEHOLDER.test(text) ? text : '출시 예정';
+    return { id: g.id, name: gameName(g), cover: coverOf(g), sub: [when] };
   });
+}
+
+// 동접 증가율 "+N%" — 최근 3일 동접 중앙값 ÷ 7~10일 전 중앙값 (lib/trending playerGrowth, 인원별 추천·판정과 같은 계산). 기록이 모자라거나 늘지 않았으면 그 게임은 숫자 없음
+async function growthLabels(ids: string[]): Promise<Map<string, string>> {
+  const out = new Map<string, string>();
+  if (!ids.length) return out;
+  const now = Date.now();
+  const { data } = await supabase.from('player_history').select('game_id, player_count, recorded_at').in('game_id', ids)
+    .gte('recorded_at', new Date(now - 11 * 86400_000).toISOString()).order('recorded_at').limit(3000);
+  const by = new Map<string, Sample[]>();
+  for (const r of (data ?? []) as { game_id: string; player_count: number; recorded_at: string }[]) {
+    const list = by.get(r.game_id) ?? [];
+    list.push({ age: (now - new Date(r.recorded_at).getTime()) / 86400_000, count: r.player_count });
+    by.set(r.game_id, list);
+  }
+  for (const [id, samples] of by) {
+    const g = playerGrowth(samples);
+    if (g && g.gp > 1) out.set(id, `+${Math.round((g.gp - 1) * 100).toLocaleString('ko-KR')}%`);
+  }
+  return out;
 }
 
 // 다시 뜨는 중 — 게임 판정(trend_badge = rising_old) 점수 높은 순
@@ -116,10 +141,9 @@ async function risingRows(): Promise<ListRow[]> {
     .limit(1, { referencedTable: 'price_history' })
     .limit(LIST_SIZE);
   type Row = CoverRow & { name: string; display_name: string | null; min_players: number | null; max_players: number | null; is_free: boolean | null; price_type: string | null };
-  return ((data ?? []) as unknown as Row[]).map((g) => {
-    const price = getPriceInfo(g);
-    return { id: g.id, name: gameName(g), cover: coverOf(g), sub: [playersText(g), g.is_free ? '무료' : price ? price.formattedFinal : ''].filter(Boolean) };
-  });
+  const rows = (data ?? []) as unknown as Row[];
+  const growth = await growthLabels(rows.map((g) => g.id)).catch(() => new Map<string, string>());
+  return rows.map((g) => ({ id: g.id, name: gameName(g), cover: coverOf(g), sub: growth.has(g.id) ? [growth.get(g.id)!] : [] }));
 }
 
 // 인기 차트 — 기존 "지금 뜨는 게임"의 첫 탭 순위 그대로 (이름만 바뀜)
@@ -130,7 +154,7 @@ async function popularRows(items: HotItem[]): Promise<ListRow[]> {
     id: i.id,
     name: i.name,
     cover: covers[i.id] ?? { vertical: null, appid: null, wide: i.thumb },
-    sub: [i.players, i.price ? (i.discount > 0 ? `${i.price} (-${i.discount}%)` : i.price) : ''].filter(Boolean),
+    sub: i.currentPlayers != null ? [`${i.currentPlayers.toLocaleString('ko-KR')}명`] : [],
   }));
 }
 

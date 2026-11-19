@@ -1,5 +1,5 @@
 import GameGrid from '../GameGrid';
-import HomeSections from './HomeSections';
+import HomeSections, { HomeFirstSection } from './HomeSections';
 import { SITE_NAME, SITE_ALT_NAMES, SITE_URL, SITE_META_DESCRIPTION } from '../../lib/site';
 import { getHotChart } from '../../lib/hotChart';
 import { getPopularPosts } from '../../lib/community';
@@ -66,7 +66,8 @@ export default async function HomePage({ member = false }: { member?: boolean })
       <GameGrid
         member={member}
         peopleReady={!!peopleRecs}
-        sections={<HomeSections lists={lists} stats={member ? null : stats} popularPosts={popularPosts} streamerTheme={streamerTheme} peopleRecs={peopleRecs} homeExcluded={homeExcluded} curators={curators} />}
+        firstSection={<HomeFirstSection stats={member ? null : stats} peopleRecs={peopleRecs} />}
+        sections={<HomeSections lists={lists} popularPosts={popularPosts} streamerTheme={streamerTheme} homeExcluded={homeExcluded} curators={curators} />}
         top10Ids={hot.top10Ids}
         heroCovers={heroCovers}
       />

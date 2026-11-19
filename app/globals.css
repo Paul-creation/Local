@@ -64,9 +64,9 @@
   --results-bg: #151a23;
   --results-line: rgba(255, 255, 255, 0.06);
   --results-pad: 20px;
-  --discount-bg: #4c6b22;      /* 스팀식 할인 배지 */
-  --discount-text: #beee11;
-  --discount-border: #4c6b22;
+  --discount-bg: #4ADE80;      /* 스팀식 할인 배지 */
+  --discount-text: #052E16;
+  --discount-border: #4ADE80;
   --discount-radius: 3px;
   --lowest-text: #beee11;
   --verdict-rec: var(--lowest-text);  /* PC 사양 판정: 권장 충족 — 역대 최저가 녹색 */
@@ -177,20 +177,20 @@ img { display: block; }
    ============================================================ */
 
 .site-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  position: relative;
+  z-index: 50;
   margin-bottom: 24px;
 }
-/* 헤더 — 토큰은 brand-tokens.css. 메인(히어로가 있을 때)에서는 히어로 위에 투명하게 얹고(가독성은 히어로의 위쪽 어두운 그라데이션), 다른 페이지에서는 --bg-top 배경 + 아래 1px --line */
-.site-header.mn { background: var(--bg-top); border-bottom: 1px solid var(--line); }
-body:has(.mn-hero) .site-header.mn { position: absolute; left: 0; right: 0; margin-bottom: 0; background: transparent; border-bottom-color: transparent; }
+/* 헤더 (Letterboxd 식) — sticky 아님, 모든 페이지에서 스크롤하면 같이 올라간다. 배경·선·blur 없음(페이지 그라데이션 위에 그대로).
+   메인(.mn-hero)·게임 상세(.dx-hero)에서는 absolute로 맨 위에 히어로와 겹친다 (히어로가 y=0부터 시작, 히어로 padding-top에 --header-h) */
+.site-header.mn { background: transparent; border-bottom: 0; }
+body:has(.mn-hero, .dx-hero) .site-header.mn { position: absolute; top: 0; left: 0; right: 0; z-index: 50; margin-bottom: 0; }
 
 .site-header-inner {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
-  height: 60px;
+  height: var(--header-h);
   display: flex;
   align-items: center;
   gap: 16px;
@@ -320,7 +320,7 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
 #free, #discount { scroll-margin-top: 76px; }
 
 @media (max-width: 480px) {
-  .site-header-inner { padding: 0 12px; height: 56px; gap: 4px; }
+  .site-header-inner { padding: 0 12px; height: var(--header-h); gap: 4px; }
   .site-menu { gap: 0; }
   .site-menu a { padding: 6px 7px; font-size: var(--fs-s); letter-spacing: 0.02em; } /* 헤더는 360~390px에서 한 줄이라 올리지 않음 */
 }

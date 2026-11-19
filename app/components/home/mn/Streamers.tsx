@@ -20,12 +20,11 @@ function Card({ g, eager }: { g: ThemeGame; eager: boolean }) {
         <span className="mn-play"><PlayIcon /></span>
       </a>
       <div className="mn-vid-body">
-        <span className="mn-avatars" aria-hidden="true">
+        <span className="mn-avatars" title={names.slice(0, 2).join(', ') + (names.length > 2 ? ` 외 ${names.length - 2}명` : '')}>
           {names.slice(0, AVATARS).map((n) => <span key={n} className="mn-avatar">{[...n][0]}</span>)}
         </span>
         <span className="mn-vid-text">
           <Link href={`/games/${g.id}`} prefetch={false} className="mn-vid-game">{g.name}</Link>
-          <span className="mn-vid-by">{names.slice(0, 2).join(', ')}{names.length > 2 ? ` 외 ${names.length - 2}명` : ''}</span>
         </span>
       </div>
     </li>
@@ -35,7 +34,7 @@ function Card({ g, eager }: { g: ThemeGame; eager: boolean }) {
 export default function Streamers({ theme }: { theme: StreamerTheme | null }) {
   if (!theme?.games.length) return null;
   return (
-    <HScrollRow id="mn-streamer-title" title="스트리머들이 밤새운 협동 게임" label="스트리머 협동 게임 목록" perDesktop={3.3} perMobile={1.2}>
+    <HScrollRow id="mn-streamer-title" title="스트리머가 밤새운 게임" label="스트리머 협동 게임 목록" perDesktop={3.3} perMobile={1.2}>
       {theme.games.map((g, i) => <Card key={g.id} g={g} eager={i < EAGER} />)}
     </HScrollRow>
   );

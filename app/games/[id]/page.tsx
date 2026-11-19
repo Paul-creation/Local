@@ -60,6 +60,7 @@ import CuratorsOfGame from '../../components/CuratorsOfGame';
 import { getCuratorsOfGame } from '../../lib/curators';
 import '../../brand-tokens.css';
 import '../../mono-page.css';
+import '../../components/home/mn/mn.css';
 import '../../components/detail/detail-mono.css';
 import '../../components/detail/detail-sections.css';
 
@@ -283,13 +284,12 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   if (showHost) playRows.push(['멀티 방식', game.multiplayer_host === 'P2P' ? 'P2P(방장 컴퓨터로 연결)' : game.multiplayer_host]);
   if (game.entry_barrier && game.entry_barrier_reason) playRows.push(['진입장벽 이유', game.entry_barrier_reason]);
   const showPlay = playChipGroups.length > 0 || playRows.length > 0;
-  // 어떤 게임인가요? — 소개·스크린샷·활동·엔딩·특징 태그
+  // 어떤 게임인가요? — 소개·엔딩·클리어까지. 활동·특징 태그·스크린샷은 따로 섹션
   const aboutRows: [string, ReactNode][] = [];
-  if (hasV2Activities) aboutRows.push(['가능한 활동', <span key="act" className="more-chips"><ActivityChips confirmed={activityConfirmed} unsure={activityUnsure} /></span>]);
-  else if (game.activities?.length > 0) aboutRows.push(['가능한 활동', <span key="act" className="more-chips">{game.activities.map((a: string) => <span key={a} className="activity-chip">{a}</span>)}</span>]);
   if (game.has_ending != null) aboutRows.push(['엔딩', game.has_ending ? '있음' : '없음']);
   if (game.story_length) aboutRows.push(['클리어까지', game.story_length]);
-  const showAbout = !!(game.fun_description || game.description_ko || showSteamDesc || shots.length > 0 || aboutRows.length > 0 || otherChipGroups.length > 0 || game.ending_note || (game.content_descriptor_ids?.length ?? 0) > 0);
+  const showAbout = !!(game.fun_description || game.description_ko || showSteamDesc || aboutRows.length > 0 || game.ending_note || (game.content_descriptor_ids?.length ?? 0) > 0);
+  const legacyActivities: string[] = !hasV2Activities && game.activities?.length > 0 ? game.activities : [];
 
   const heroBg: string | null = game.hero_image_url || shots[0]?.path_full || null;
   // 플레이 시간 타일 — 판정은 app/lib/playTime.ts (혼자 하기는 순서 어긋나면 보통값만, 멀티 전용은 '함께 클리어까지')
@@ -387,7 +387,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
         <div className="price-card-buttons">
           {buyUrl && (
             <a href={buyUrl} target="_blank" rel="noopener noreferrer" className={`btn btn-primary btn-lg price-card-buy${game.steam_appid ? ' is-steam' : ''}`}>
-              {buyLabel}에서 {game.is_free ? '플레이하기' : '구매하기'}
+              {buyLabel}에서 {game.is_free ? "플레이하기" : "구매하기"} ↗
             </a>
           )}
           <AddToCompare gameId={game.id} name={gameName(game)} thumb={game.cover_image_url || game.card_image_url} />
@@ -402,10 +402,10 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
   const videoMatchers = buildMatchers([{ id: game.id, name: game.name, search_name_ko: game.search_name_ko }]);
   return (
     <main className="page detail-page dx mn mn-inner">
-      <BackLink fallbackHref="/" label="목록으로" preferList />
-
-
+      {/* 히어로 — 헤더 밑까지 올라와(margin-top: -헤더 높이) 배경 이미지가 투명 헤더 뒤로 이어진다. 배경은 히어로 전체를 덮는다 */}
+      <div className="dx-hero">
       {heroBg && <div className="dx-backdrop" aria-hidden="true"><GameImage src={heroBg} fallbackWidth={1280} alt="" /></div>}
+      <BackLink fallbackHref="/" label="목록으로" preferList />
 
       <header className="dx-head">
         <DetailCover verticalUrl={game.cover_vertical_url ?? null} steamAppid={game.steam_appid ? String(game.steam_appid) : null} fallback={heroImage} name={gameName(game)} />
@@ -425,81 +425,106 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           {(subGenres.length > 0 || platformCategories.length > 0) && (
             <div className="dx-chips">
               {subGenres.slice(0, 6).map((g) => <span key={g} className="chip">{g}</span>)}
+              {subGenres.length > 0 && platformCategories.length > 0 && <span className="dx-chips-sep" aria-hidden="true" />}
               {platformCategories.map((c) => <span key={c} className="chip">{CATEGORY_LABEL[c]}</span>)}
             </div>
           )}
         </div>
       </header>
+      </div>
 
       <div className="detail-layout">
+        {/* 오른쪽 칸 — Steam 가격 박스 하나만 (sticky, 모바일에서는 히어로 바로 아래에 일반 흐름으로) */}
         <aside className="detail-price">
           {priceCard}
         </aside>
-      <div className="detail-main">
-        {/* 1 한눈에 보기 — 인원·진입장벽·한국어·가격·평가·동접 (출시 예정작은 D-day·데모·순위) */}
-        {tiles.length > 0 && (
-          <section className="detail-card sec-glance" aria-label="한눈에 보기">
-            <h3 className="detail-card-title">한눈에 보기</h3>
-            <StatTiles tiles={tiles} />
-          </section>
-        )}
 
-        {/* 모바일: 가격 카드를 한눈에 보기 바로 아래에 (데스크톱은 오른쪽 sticky 열). 하단 고정 바는 쓰지 않음 */}
-        <div className="price-inline">{priceCard}</div>
+        <div className="detail-main">
+          {/* 1 한눈에 보기 — 인원·진입장벽·한국어·가격·평가·동접 (출시 예정작은 D-day·데모·순위) */}
+          {tiles.length > 0 && (
+            <section className="detail-card sec-glance" aria-label="한눈에 보기">
+              <h3 className="detail-card-title">한눈에 보기</h3>
+              <StatTiles tiles={tiles} />
+            </section>
+          )}
 
-        {/* 2 가격·할인 — 할인 그래프와 기록 요약(최근 1년 할인 횟수·최대 할인·최저가·마지막 할인). 그래프를 그릴 기록이 2개 미만이면 섹션 숨김 */}
-        {showPriceRecord && priceHistory.length >= 2 && (
-          <section className="detail-card sec-price" aria-label="가격·할인">
-            <h3 className="detail-card-title">가격·할인</h3>
-            <div className="price-record">
-              {timingLine && timingLine !== SAME_AS_LOWEST && <p className="buy-timing is-chart">{timingLine}</p>}
-              {/* 기간 기준 시각은 서버에서 정해 넘긴다 (서버·브라우저 계산이 어긋나지 않게) */}
-              <DiscountChart history={priceHistory} now={Date.now()} />
-            </div>
-          </section>
-        )}
+          {/* 2 트레일러·스크린샷 — 트레일러가 첫 큰 칸, 스크린샷이 이어진다 */}
+          {(game.video_url || shots.length > 0) && (
+            <section className="detail-card sec-video dx-media" aria-label="트레일러·스크린샷">
+              <h3 className="detail-card-title">트레일러·스크린샷</h3>
+              {game.video_url && <DetailTrailer image={heroBg || heroImage} videoUrl={game.video_url} name={gameName(game)} />}
+              {shots.length > 0 && <ScreenshotGallery shots={shots} name={gameName(game)} />}
+            </section>
+          )}
 
-        {/* 3 플레이 방식 — 협동 방식·인원 범위·혼자 하기·크로스플레이·서버 방식·진입장벽 이유 */}
-        {showPlay && (
-          <section className="detail-card sec-together" aria-label="플레이 방식">
-            <h3 className="detail-card-title">플레이 방식</h3>
-            {playChipGroups.length > 0 && <TagChips groups={playChipGroups} />}
-            {playRows.length > 0 && <dl className="more-list">{playRows.map(([k, v]) => <Fragment key={k}><dt>{k}</dt><dd>{v}</dd></Fragment>)}</dl>}
-          </section>
-        )}
+          {/* 3 플레이 방식 — 협동 방식·인원 범위·혼자 하기·크로스플레이·서버 방식·진입장벽 이유 */}
+          {showPlay && (
+            <section className="detail-card sec-together" aria-label="플레이 방식">
+              <h3 className="detail-card-title">플레이 방식</h3>
+              {playChipGroups.length > 0 && <TagChips groups={playChipGroups} />}
+              {playRows.length > 0 && <dl className="more-list">{playRows.map(([k, v]) => <Fragment key={k}><dt>{k}</dt><dd>{v}</dd></Fragment>)}</dl>}
+            </section>
+          )}
 
-        {/* 4 어떤 게임인가요? — 소개·스크린샷·활동·엔딩·특징 태그 */}
-        {showAbout && (
-          <section className="detail-card sec-intro" aria-label="어떤 게임인가요?">
-            <h3 className="detail-card-title">
-              어떤 게임인가요?
-              {game.fun_description && <InfoTip label="AI가 정리한 소개 안내" text="AI가 정리한 소개예요" />}
-            </h3>
-            {game.fun_description && <p className="detail-fun">{game.fun_description}</p>}
-            {!steamDescIsKorean && game.description_ko && <p className="detail-description-v2">{game.description_ko}</p>}
-            {showSteamDesc && <p className="detail-description-v2">{game.description}</p>}
-            {shots.length > 0 && <ScreenshotGallery shots={shots} name={gameName(game)} />}
-            {aboutRows.length > 0 && <dl className="more-list">{aboutRows.map(([k, v]) => <Fragment key={k}><dt>{k}</dt><dd className={k === '가능한 활동' ? 'more-chips' : undefined}>{v}</dd></Fragment>)}</dl>}
-            {game.ending_note && <p className="accordion-note">{game.ending_note}</p>}
-            {hasV2Activities && <ActivityReport gameId={game.id} confirmed={game.activities_confirmed || []} unsure={game.activities_unsure || []} />}
-            {otherChipGroups.length > 0 && <TagChips groups={otherChipGroups} />}
-            <ContentNotice ids={game.content_descriptor_ids} />
-          </section>
-        )}
+          {/* 4 어떤 게임인가요? — 소개·엔딩 */}
+          {showAbout && (
+            <section className="detail-card sec-intro" aria-label="어떤 게임인가요?">
+              <h3 className="detail-card-title">
+                어떤 게임인가요?
+                {game.fun_description && <InfoTip label="AI가 정리한 소개 안내" text="AI가 정리한 소개예요" />}
+              </h3>
+              {game.fun_description && <p className="detail-fun">{game.fun_description}</p>}
+              {!steamDescIsKorean && game.description_ko && <p className="detail-description-v2">{game.description_ko}</p>}
+              {showSteamDesc && <p className="detail-description-v2">{game.description}</p>}
+              {aboutRows.length > 0 && <dl className="more-list">{aboutRows.map(([k, v]) => <Fragment key={k}><dt>{k}</dt><dd>{v}</dd></Fragment>)}</dl>}
+              {game.ending_note && <p className="accordion-note">{game.ending_note}</p>}
+              <ContentNotice ids={game.content_descriptor_ids} />
+            </section>
+          )}
 
-        {/* 5 게임 정보 — 개발·배급·출시일·플랫폼·도전과제·DLC·가족 공유·업데이트·용량 */}
-        {infoRows.length > 0 && (
-          <section className="detail-card sec-detail" aria-label="게임 정보">
-            <h3 className="detail-card-title">게임 정보</h3>
-            <dl className="more-list">{infoRows.map(([k, v]) => <Fragment key={k}><dt>{k}</dt><dd>{v}</dd></Fragment>)}</dl>
-          </section>
-        )}
+          {/* 5 가격·할인 — 할인 그래프와 기록 요약(최근 1년 할인 횟수·최대 할인·최저가·마지막 할인). 그래프를 그릴 기록이 2개 미만이면 섹션 숨김 */}
+          {showPriceRecord && priceHistory.length >= 2 && (
+            <section className="detail-card sec-price" aria-label="가격·할인">
+              <h3 className="detail-card-title">가격·할인</h3>
+              <div className="price-record">
+                {timingLine && timingLine !== SAME_AS_LOWEST && <p className="buy-timing is-chart">{timingLine}</p>}
+                {/* 기간 기준 시각은 서버에서 정해 넘긴다 (서버·브라우저 계산이 어긋나지 않게) */}
+                <DiscountChart history={priceHistory} now={Date.now()} />
+              </div>
+            </section>
+          )}
 
-          {/* PC 사양 카드 — 내 PC 판정 요약 + 부품별 표 + 원문 사양. 입력한 사양은 브라우저에만 있어서 클라이언트에서 판정. 최소 사양을 하나도 못 읽은 게임(spec_parsed가 없거나 전부 null)은 판정·표 없이 원문만 */}
+          {/* 6 게임 정보 — 개발·배급·출시일·플랫폼·도전과제·DLC·가족 공유·업데이트·용량 (2열) */}
+          {infoRows.length > 0 && (
+            <section className="detail-card sec-detail dx-info" aria-label="게임 정보">
+              <h3 className="detail-card-title">게임 정보</h3>
+              <dl className="more-list is-two-col">{infoRows.map(([k, v]) => <Fragment key={k}><dt>{k}</dt><dd>{v}</dd></Fragment>)}</dl>
+            </section>
+          )}
+
+          {/* 7 내 PC 사양 진단 — 내 PC 판정 요약 + 부품별 표 + 원문 사양. 입력한 사양은 브라우저에만 있어서 클라이언트에서 판정. 최소 사양을 하나도 못 읽은 게임(spec_parsed가 없거나 전부 null)은 판정·표 없이 원문만 */}
           {(minSpec || recSpec) && <PcSpecCard parsed={game.spec_parsed} minRows={minSpec} recRows={recSpec} />}
 
-{game.video_url && <DetailTrailer image={heroBg || heroImage} videoUrl={game.video_url} name={gameName(game)} />}
-          {/* 영상으로 미리 보기 — 친구랑 플레이(멀티 게임만) + 하이라이트 + 스트리머 영상을 한 목록으로 (순서·자르기: lib/videoList) + 스트리머 채널 */}
+          {/* 8 가능한 활동 (+ 빠진 활동 추가·틀린 활동 신고) */}
+          {(hasV2Activities || legacyActivities.length > 0) && (
+            <section className="detail-card sec-intro" aria-label="가능한 활동">
+              <h3 className="detail-card-title">가능한 활동</h3>
+              {hasV2Activities
+                ? <div className="more-chips"><ActivityChips confirmed={activityConfirmed} unsure={activityUnsure} /></div>
+                : <div className="more-chips">{legacyActivities.map((a: string) => <span key={a} className="activity-chip">{a}</span>)}</div>}
+              {hasV2Activities && <ActivityReport gameId={game.id} confirmed={game.activities_confirmed || []} unsure={game.activities_unsure || []} />}
+            </section>
+          )}
+
+          {/* 9 특징 태그 */}
+          {otherChipGroups.length > 0 && (
+            <section className="detail-card sec-detail" aria-label="특징 태그">
+              <h3 className="detail-card-title">특징 태그</h3>
+              <TagChips groups={otherChipGroups} />
+            </section>
+          )}
+
+          {/* 10 인기 동영상 — 친구랑 플레이(멀티 게임만) + 하이라이트 + 스트리머 영상을 한 목록으로 (순서·자르기: lib/videoList) + 스트리머 채널. 영상이 없으면 섹션 없음 */}
           <VideoPreviewSection
             videos={buildVideoList([
               ...((game.game_videos || []) as { kind: string; video_id: string; title: string; channel_title: string | null; published_at: string | null; view_count: number | null }[])
@@ -530,27 +555,34 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             ) : null}
           />
 
-        <div className="dx-votes">
+          <div className="dx-votes">
             {/* 투표 두 섹션(어떤 상황에서 좋아요? · 몇 명이서 할 때 제일 재밌었나요?)은 당분간 그리지 않는다 — 컴포넌트·투표 데이터는 그대로 */}
             {SHOW_VOTES && <GameVotes gameId={game.id} />}
             {SHOW_VOTES && isMulti && <PlayerCountVote gameId={game.id} />}
           </div>
 
-          {/* 링크 줄 */}
-          <div className="detail-links">
-            <a href={namuUrl} target="_blank" rel="noopener nofollow" className="detail-link">나무위키 ↗</a>
-            <a href={nexusUrl} target="_blank" rel="noopener nofollow" className="detail-link">넥서스 모드 ↗</a>
-            <ShareButton variant="text" title={gameName(game)} text={game.fun_description || `${gameName(game)} 같이 할래?`} />
-          </div>
+          {/* 11 바로가기 — 한 줄 링크 칩 */}
+          <section className="detail-card" aria-label="바로가기">
+            <h3 className="detail-card-title">바로가기</h3>
+            <div className="detail-links is-chips">
+              <a href={namuUrl} target="_blank" rel="noopener nofollow" className="detail-link">나무위키 ↗</a>
+              <a href={nexusUrl} target="_blank" rel="noopener nofollow" className="detail-link">넥서스 모드 ↗</a>
+              {game.discord_url && <a href={game.discord_url} target="_blank" rel="noopener nofollow" className="detail-link">공식 디스코드 ↗</a>}
+              <ShareButton variant="text" title={gameName(game)} text={game.fun_description || `${gameName(game)} 같이 할래?`} />
+            </div>
+          </section>
+
           <CuratorsOfGame items={curators} gameId={game.id} />
-          {game.discord_url && (
-            <a href={game.discord_url} target="_blank" rel="noopener nofollow" className="detail-card discord-card">공식 디스코드 ↗</a>
-          )}
+          {/* 12 의견 달기 */}
           <GameOpinions gameId={game.id} />
           <RelatedPosts gameId={game.id} />
-          {showSeries && seriesItems.length > 1 && <SeriesGames name={series?.name_ko ?? null} currentName={gameName(game)} items={seriesItems} />}
-          {similarGames.length > 0 && <SimilarGames games={similarGames} />}
+        </div>
       </div>
+
+      {/* 본문 아래 전체 폭 — 시리즈(지금 보는 게임에만 괄호) → 비슷한 게임(6열) */}
+      <div className="dx-bottom">
+        {showSeries && seriesItems.length > 1 && <SeriesGames name={series?.name_ko ?? null} currentName={gameName(game)} currentGame={{ id: game.id, name: game.name, display_name: game.display_name ?? null, cover_vertical_url: game.cover_vertical_url ?? null, steam_appid: game.steam_appid ?? null, card_image_url: game.card_image_url ?? null, cover_image_url: game.cover_image_url ?? null }} items={seriesItems} />}
+        {similarGames.length > 0 && <SimilarGames games={similarGames} />}
       </div>
     </main>
   );

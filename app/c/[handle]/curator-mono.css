@@ -1,13 +1,46 @@
-/* 큐레이터 페이지(/c/[handle]) 모노 — 공통은 app/mono-page.css(.mn-inner). 여기엔 전용만: 이름 굵기, 보기 전환 세그먼트 컨트롤(선택 = 흰 배경), 인스타그램 버튼(인스타 색). 칩의 포인트 파랑은 원래대로 */
-.mn-inner .curator-profile-name { font-weight: 800; letter-spacing: -0.035em; }
-.mn-inner .curator-section-title { font-weight: 800; letter-spacing: -0.03em; }
-.mn-inner .curator-tabs { gap: 0; padding-bottom: 10px; }
-.mn-inner .curator-tabs-seg { display: inline-flex; gap: 2px; padding: 3px; background: var(--mn-surface); border: 1px solid var(--mn-line); border-radius: 10px; }
-.mn-inner .curator-tab { min-height: 0; height: 32px; padding: 0 14px; margin: 0; border: 0; border-radius: 7px; background: transparent; box-shadow: none; text-shadow: none; font-size: 14px; font-weight: 600; color: var(--mn-fg); }
-.mn-inner .curator-tab:hover { background: rgba(255, 255, 255, .06); color: var(--mn-fg); }
-.mn-inner .curator-tab[aria-selected="true"] { background: var(--mn-fg); color: var(--mn-fg-inv); }
-.mn-inner .curator-tab:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-.mn-inner .curator-profile-actions .curator-btn { min-height: 36px; height: 36px; padding: 0 16px; font-size: 14px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-.mn-inner .curator-btn-ig { background: var(--mn-instagram); color: #fff; font-weight: 600; border: 0; box-shadow: none; }
-.mn-inner .curator-btn-ig:hover { background: var(--mn-instagram); filter: brightness(1.08); }
-.mn-inner .curator-btn-ig svg { flex-shrink: 0; }
+/* 큐레이터 페이지(/c/[handle], /c-preview/[handle]) — 새 브랜드. 공통은 app/mono-page.css(.mn-inner), 게임 카드는 home/mn/mn.css */
+.mn-inner .curator-profile { display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-5); margin: var(--sp-5) 0 0; padding-bottom: var(--sp-5); border-bottom: 1px solid var(--line); }
+.mn-inner .curator-avatar { width: 112px; height: 112px; border-radius: 50%; border: 1px solid var(--line-strong); }
+.mn-inner .curator-profile-body { gap: 4px; }
+.mn-inner .curator-profile-name { font-size: clamp(28px, 4vw, 40px); font-weight: 900; letter-spacing: -0.035em; color: var(--ink); }
+.mn-inner .curator-profile-handle { font-size: 15px; color: var(--ink-nav); }
+.mn-inner .curator-profile-bio { color: var(--ink-muted); }
+.mn-inner .curator-profile-stats { display: flex; flex-wrap: wrap; gap: var(--sp-5); margin: var(--sp-3) 0 0; }
+.mn-inner .curator-profile-stats > div { display: flex; flex-direction: column-reverse; }
+.mn-inner .curator-profile-stats dd { margin: 0; font-family: var(--font-num); font-size: 26px; font-weight: var(--num-weight); letter-spacing: var(--num-ls); color: var(--brand-ink); }
+.mn-inner .curator-profile-stats dt { font-size: 13px; color: var(--ink-muted); }
+.mn-inner .curator-profile-actions { margin: 0 0 0 auto; align-self: flex-start; }
+.mn-inner .curator-btn { min-height: 40px; height: 40px; padding: 0 16px; font-size: 14px; font-weight: 700; color: var(--ink); background: transparent; border: 1px solid var(--line-strong); border-radius: var(--r-tile); }
+.mn-inner .curator-btn-ig { background: transparent; color: var(--ink); box-shadow: none; }
+.mn-inner .curator-btn-ig:hover { filter: none; border-color: var(--ink-muted); }
+
+/* 컨트롤 줄 — 왼쪽 보기 전환 세그먼트, 오른쪽 필터 칩 | 정렬 칩. 선택 = --ink 배경 + 어두운 글씨 (괄호 없음) */
+.mn-inner .curator-controls { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-3) var(--sp-4); margin: var(--sp-5) 0; }
+.mn-inner .curator-tabs-seg { display: inline-flex; gap: 2px; padding: 3px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r-tile); }
+.mn-inner .curator-tab { min-height: 0; height: 34px; padding: 0 14px; margin: 0; border: 0; border-radius: 6px; background: transparent; font-size: 14px; font-weight: 700; color: var(--ink-nav); }
+.mn-inner .curator-tab:hover { color: var(--ink); }
+.mn-inner .curator-tab[aria-selected="true"] { background: var(--ink); color: var(--bg-top); }
+.curator-control-right { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3) var(--sp-4); }
+.curator-control-row { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.curator-vsep { align-self: stretch; width: 1px; min-height: 28px; background: var(--line-strong); }
+@media (max-width: 767px) { .curator-vsep { display: none; } }
+
+/* 게시물별 — 게시물 하나 = 카드 하나 (3열 · 태블릿 2열 · 모바일 1열). 겹친 포스터: 폭 84px(2:3), 뒤 카드가 34px씩 겹침(다음 포스터는 50px 오른쪽), 오른쪽으로 그림자 */
+.curator-cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-4); }
+@media (max-width: 1023px) { .curator-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 639px) { .curator-cards { grid-template-columns: minmax(0, 1fr); } }
+.curator-card { display: flex; flex-direction: column; gap: 6px; width: 100%; height: 100%; padding: var(--sp-4); font: inherit; text-align: left; color: var(--ink); cursor: pointer; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.curator-card:hover { border-color: var(--line-strong); }
+.curator-stack { position: relative; display: block; height: 126px; margin-bottom: var(--sp-3); }
+.curator-stack-poster { position: absolute; top: 0; left: calc(var(--i) * 50px); display: block; width: 84px; aspect-ratio: 2 / 3; overflow: hidden; background: var(--bg-top); border: 1px solid var(--poster-line); border-radius: var(--r-card); box-shadow: 8px 0 14px -6px rgba(0, 0, 0, .55); }
+.curator-stack-poster img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.curator-stack-more { display: grid; place-items: center; font-family: var(--font-num); font-size: 18px; font-weight: var(--num-weight); color: var(--ink); background: var(--line); }
+.curator-card-title { display: -webkit-box; overflow: hidden; font-size: 16px; font-weight: 800; line-height: 1.35; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
+.curator-card-meta { font-size: 13px; color: var(--ink-muted); }
+.curator-card-games { overflow: hidden; font-size: 14px; color: var(--ink-nav); white-space: nowrap; text-overflow: ellipsis; }
+.curator-back { margin: 0 0 var(--sp-4); padding: 0; font: inherit; font-size: 14px; font-weight: 700; color: var(--brand-ink); background: none; border: 0; cursor: pointer; }
+.curator-post-detail { margin-top: var(--sp-5); }
+.curator-game { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.curator-game-posts { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.mn-inner .curator-link { font-size: 13px; color: var(--brand-ink); }
+.mn-inner .curator-note { margin: var(--sec-gap) 0 0; font-size: 13px; color: var(--ink-muted); }

@@ -42,7 +42,7 @@ export default function MainHero({ games, filters, showHome, sidebar = false, co
       <div className={showHome ? 'mn-wrap mn-hero-inner' : undefined}>
         {showHome && !member && (
           <div className="home-only mn-intro" data-tour="hero">
-            <h1 className="mn-h1">금요일 밤,<br />친구들이랑 뭐 하지?</h1>
+            <h1 className="mn-h1">금요일 밤,<br className="mn-h1-br" /> 친구들이랑 뭐 하지?</h1>
           </div>
         )}
         {showHome ? (

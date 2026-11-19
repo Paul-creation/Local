@@ -8,3 +8,34 @@
 .mn-inner .cmp-row-label.is-m { background: none; }
 .mn-inner .cmp-meter-bar span:not(.on) { background: var(--mn-line); }
 .mn-inner .cmp-mbox { background: var(--mn-bg); border: 1px solid var(--mn-line); }
+
+/* ---------- 2단계: 새 브랜드 ---------- */
+.mn-inner .cmp-page { max-width: var(--wrap); }
+.mn-inner .cmp-head { align-items: flex-end; margin: var(--sp-5) 0 var(--sp-5); padding-bottom: var(--sp-4); border-bottom: 1px solid var(--line); }
+.mn-inner .cmp-head .sec-label { margin: 0 0 6px; }
+.mn-inner .cmp-title { margin: 0; font-size: clamp(26px, 3.6vw, 36px); font-weight: 900; }
+.mn-inner .cmp-head .share-text-btn { font-size: 14px; font-weight: 700; color: var(--brand-ink); }
+.mn-inner .cmp-h2 { font-size: 22px; font-weight: 900; color: var(--ink); margin-bottom: var(--sec-head-gap); }
+.mn-inner .cmp-section { margin-bottom: var(--sec-gap); }
+/* 포스터 줄 — 게임마다 한 열(포스터 120px + 이름 + 빼기), 빈 칸은 점선 */
+.mn-inner .cmp-posters { align-items: start; gap: var(--sp-4); margin-bottom: var(--sp-5); }
+.mn-inner .cmp-poster { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-3); overflow: visible; background: none; border: 0; padding: 0; }
+.mn-inner .cmp-poster-link { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-3); text-decoration: none; color: var(--ink); }
+.mn-inner .cmp-poster-image { position: relative; width: 120px; aspect-ratio: 2 / 3; background: var(--surface); border-radius: var(--r-card); overflow: hidden; }
+.mn-inner .cmp-poster-image::after { content: ""; position: absolute; inset: 0; border: 1px solid var(--poster-line); border-radius: inherit; pointer-events: none; }
+.mn-inner .cmp-poster-image img { width: 100%; height: 100%; object-fit: cover; }
+.mn-inner .cmp-poster-body { padding: 0; }
+.mn-inner .cmp-poster-name { font-size: 15px; font-weight: 700; }
+.mn-inner .cmp-poster-meta { font-size: 13px; color: var(--ink-muted); }
+.mn-inner .cmp-poster-actions { display: flex; align-items: center; gap: var(--sp-3); }
+.mn-inner .cmp-remove { font-size: 13px; font-weight: 700; color: var(--ink-muted); text-decoration: underline; text-underline-offset: 3px; }
+.mn-inner .cmp-add-slot { display: grid; place-items: center; align-self: stretch; min-height: 180px; font-size: 14px; font-weight: 700; color: var(--ink-nav); text-decoration: none; border: 2px dashed var(--line-strong); border-radius: var(--r-tile); }
+.mn-inner .cmp-add-slot:hover { color: var(--ink); border-color: var(--ink-muted); }
+.mn-inner .cmp-table { border-radius: var(--r-tile); }
+.mn-inner .cmp-row-label { font-weight: 700; color: var(--ink-muted); }
+.mn-inner .cmp-meter-bar span.on { background: var(--brand); }
+@media (max-width: 767px) {
+  .mn-inner .cmp-posters { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: var(--sp-3); }
+  .mn-inner .cmp-poster-image { width: 100%; max-width: 120px; }
+  .mn-inner .cmp-head { flex-wrap: wrap; }
+}

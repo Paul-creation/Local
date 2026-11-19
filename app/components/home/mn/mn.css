@@ -12,27 +12,33 @@
 .mn-page { position: relative; isolation: isolate; margin-inline: calc(50% - 50vw); padding-bottom: var(--sec-gap-end); }
 main.page:has(.mn-page) { padding-bottom: 0; }
 main.page:has(.mn-page) + .site-footer { margin-top: 0; }
-.mn-hero { position: relative; display: flex; align-items: center; justify-content: center; padding: 124px 0 56px; text-align: center; }
+/* 첫 화면 맞춤(.mn-fold) — 히어로 + 인원별 추천을 한 래퍼로 묶어 화면 높이에 맞춘다. 히어로가 남는 높이를 채우고(내용은 세로 가운데),
+   인원별 추천은 래퍼 맨 아래에 걸친다 → 인기 차트부터는 스크롤. 아주 큰 모니터는 1100px까지만. 모바일(767px 이하)은 맞춤 없이 위에서부터 쌓는다 */
+.mn-fold { display: flex; flex-direction: column; }
+.mn-fold-next { flex: 0 0 auto; padding-bottom: 0; }
+.mn-rest { display: block; margin-top: var(--sec-gap); }
+.mn-hero { position: relative; flex: 1 1 auto; display: flex; align-items: center; justify-content: center; padding: calc(var(--header-h) + 32px) 0 48px; text-align: center; }
+@media (min-width: 768px) {
+  .mn-fold { min-height: min(100vh, 1100px); min-height: min(100svh, 1100px); }
+  .mn-fold-next { padding-bottom: 28px; }
+  .mn-rest { margin-top: calc(var(--sec-gap) - 28px); }
+}
 .mn-hero-inner { width: 100%; }
-/* 표지 벽 — 타일은 160×240px(모바일 96×144px)·간격 4px 고정. 4줄을 열 단위로 채워서(grid-auto-flow: column) 어떤 폭에서도 꽉 차고 오른쪽 끝 열만 잘린다 */
-.mn-hero-bg { position: absolute; top: 0; left: 0; right: 0; bottom: -120px; z-index: -1; overflow: hidden; display: grid; grid-template-rows: repeat(4, 240px); grid-auto-flow: column; grid-auto-columns: 160px; justify-content: start; align-content: start; gap: 4px; filter: blur(2px) saturate(.85); opacity: 0; transition: opacity .4s ease; pointer-events: none;
-  -webkit-mask-image: linear-gradient(to bottom, #000 45%, transparent 100%), radial-gradient(ellipse 54% 130% at 50% 0%, #000 50%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 45%, transparent 100%), radial-gradient(ellipse 54% 130% at 50% 0%, #000 50%, transparent 100%);
-  -webkit-mask-composite: source-in; mask-composite: intersect; }
+/* 표지 벽 — 히어로 전체(inset 0)를 덮는 배경 층. 타일은 160×240px(모바일 96×144px)·간격 4px 고정, 열 단위로 채워서(grid-auto-flow: column) 어떤 폭에서도 꽉 차고 오른쪽 끝 열만 잘린다 */
+.mn-hero-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; display: grid; grid-template-rows: repeat(4, 240px); grid-auto-flow: column; grid-auto-columns: 160px; justify-content: start; align-content: start; gap: 4px; filter: blur(2px) saturate(.85); clip-path: inset(0); opacity: 0; transition: opacity .4s ease; pointer-events: none; }
 .mn-hero-bg.is-ready { opacity: .55; }
 @media (prefers-reduced-motion: reduce) { .mn-hero-bg { transition: none; } }
 .mn-hero-bg img { display: block; width: 160px; height: 240px; object-fit: cover; }
-/* 위쪽만 헤더 글씨용으로 어둡게 + 가운데(제목·검색창) 쪽 가장자리를 살짝 눌러 줌 — 벽과 같은 길이(히어로 + 120px) */
-.mn-hero::after { content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: -120px; z-index: -1; pointer-events: none; background:
-  radial-gradient(ellipse 70% 60% at 50% 42%, rgba(20, 19, 17, .15) 0%, rgba(20, 19, 17, .55) 60%, rgba(20, 19, 17, .8) 100%),
-  linear-gradient(180deg, rgba(20, 19, 17, .85) 0%, transparent 22%);
-  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%); mask-image: linear-gradient(to bottom, #000 55%, transparent 100%); }
+/* 마스크(시안 MainFinal) — 두 겹 그라데이션: radial은 가장자리를 --bg-top으로, linear는 위(헤더용)를 어둡게 + 아래를 --bg-top으로 이어 붙임. 위·좌우·아래 어디에도 포스터 벽의 직선 경계가 없고, 아래 "N인 추천 게임"과 배경색 경계 없이 이어진다 */
+.mn-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background:
+  radial-gradient(ellipse 70% 75% at 50% 35%, rgba(20, 19, 17, 0.15) 0%, rgba(20, 19, 17, 0.75) 60%, var(--bg-top) 100%),
+  linear-gradient(180deg, rgba(20, 19, 17, 0.6) 0%, rgba(20, 19, 17, 0) 18%, rgba(20, 19, 17, 0) 50%, var(--bg-top) 100%); }
 .mn-h1 { margin: 0 0 36px; font-size: clamp(40px, 7.2vw, 72px); font-weight: var(--title-weight); letter-spacing: -0.035em; line-height: 1.12; word-break: keep-all; color: var(--ink); }
 /* 로그인 사용자: 제목 없이 검색창만 — 검색창 위 여백만 */
-.mn-hero.mn-hero-member { padding: 100px 0 56px; }
+.mn-hero.mn-hero-member { padding: calc(var(--header-h) + 32px) 0 48px; }
 @media (max-width: 767px) {
-  .mn-hero { padding: 96px 0 56px; }
-  .mn-hero.mn-hero-member { padding: 88px 0 56px; }
+  .mn-hero { padding: calc(var(--header-h) + 40px) 0 56px; }
+  .mn-hero.mn-hero-member { padding: calc(var(--header-h) + 32px) 0 56px; }
   .mn-hero-bg { grid-template-rows: repeat(4, 144px); grid-auto-columns: 96px; }
   .mn-hero-bg img { width: 96px; height: 144px; }
   .mn-hero-bg img:nth-child(n + 21) { display: none; }
@@ -168,3 +174,32 @@ main.page:has(.mn-page) + .site-footer { margin-top: 0; }
 /* 단축키 표시는 터치 기기·768px 미만에서 숨김 (CSS라 마운트 전후 차이 없음) */
 .mn-kbd { display: inline-block; flex-shrink: 0; min-width: 54px; box-sizing: border-box; text-align: center; padding: 3px 8px; font: inherit; font-size: 12px; font-weight: 700; color: var(--ink); background: var(--bg-top); border: 1px solid var(--line); border-radius: var(--r-card); }
 @media (max-width: 767px), (pointer: coarse), (hover: none) { .mn-kbd { display: none; } }
+
+/* ---------- 찜목록 ---------- */
+.mn-card-was { font-size: 13px; font-weight: 500; color: var(--ink-muted); }
+.wl-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 var(--sp-5); padding-bottom: var(--sp-4); border-bottom: 1px solid var(--line); }
+.wl-count { font-family: var(--font-num); font-weight: var(--num-weight); margin-left: 4px; }
+.wl-grid .wishlist-item { min-width: 0; }
+
+/* ---------- 첫 화면 정리: 히어로 축소 + 한 줄 머리 + 글자·색 줄이기 ---------- */
+/* 헤드라인 한 줄(데스크톱 60px / 1.1, 모바일 두 줄 허용 34~60px) — 히어로는 고정 높이 없이 내용 높이: 위 = --header-h + 52px, 아래 44px, 헤드라인↔검색창 28px */
+.mn-h1 { margin: 0 0 28px; font-size: clamp(34px, 5.2vw, 60px); line-height: 1.1; }
+.mn-hero, .mn-hero.mn-hero-member { padding: calc(var(--header-h) + 52px) 0 44px; }
+@media (min-width: 768px) { .mn-h1 { white-space: nowrap; } .mn-h1-br { display: none; } }
+@media (max-width: 767px) { .mn-hero, .mn-hero.mn-hero-member { padding: calc(var(--header-h) + 52px) 0 44px; } }
+
+/* "N인 추천" 머리 — 한 줄: 제목(22px) · 인원 탭 · 구분선 · 빠른 필터 칩 · 맨 오른쪽 "더 보기 →". 아래 1px --line, padding-bottom 12px, 카드와 간격 18px. 좁아지면 줄바꿈 */
+.mn-people-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3) var(--sp-4); margin: 0 0 18px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.mn-people-title { margin: 0; font-size: 22px; font-weight: var(--title-weight); letter-spacing: -0.03em; line-height: 1.25; color: var(--ink); }
+.mn-people-more { margin-left: auto; }
+.mn-people-head .mn-tab, .mn-people-head .mn-chip { min-height: 34px; padding: 0 12px; }
+.mn-people-head .mn-tabs, .mn-people-head .mn-chips { gap: 8px; }
+.mn-people-head .mn-vsep { min-height: 22px; }
+@media (max-width: 767px) { .mn-people-head .mn-vsep { display: none; } .mn-people-more { margin-left: 0; } }
+/* 추천 카드 — 포스터 + 게임명(한 줄 말줄임)만, 카드 안 간격 8px */
+.mn-card.is-compact { gap: var(--sp-2); }
+.mn-card.is-compact .mn-card-name { margin-top: 0; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; -webkit-line-clamp: unset; }
+
+/* 인기 게시물 — 카테고리 태그는 파란/테두리 없이 --ink-muted 글씨 (최소폭 72px) */
+.mn-post-board { min-width: 72px; padding: 0; text-align: left; color: var(--ink-muted); background: none; border: 0; border-radius: 0; }
+button.sec-more { padding: 0; font-family: inherit; background: none; border: 0; cursor: pointer; }

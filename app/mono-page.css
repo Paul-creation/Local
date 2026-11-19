@@ -3,11 +3,10 @@
    글씨 네온은 맨 위 제목(h1)에만, 버튼·칩의 box-shadow 빛은 유지. 공용 컴포넌트의 원본 규칙은 그대로 두고 이 범위 안에서만 덮어쓴다 */
 main.mn.mn-inner, div.mn.mn-inner {
   background: transparent; text-shadow: none;
-  /* 홈·헤더에서 흰색으로 바꾼 포인트 색은 원래 값으로 (주요 버튼·선택 칩·링크·포커스의 파랑) */
-  --accent: #66C0F4; --accent-hover: #8FD1F7; --accent-ink: #0B0E14; --accent-soft: #0F2232; --accent-text: #66C0F4;
-  --focus-glow: 0 0 0 3px rgba(102, 192, 244, 0.22); --focus-glow-color: rgba(102, 192, 244, 0.22);
+  /* 포인트는 브랜드 파랑 — 주요 버튼 배경 --brand + 글씨 --on-brand, 링크·강조 글씨 --brand-ink */
+  --accent: var(--brand); --accent-hover: color-mix(in srgb, var(--brand) 86%, white); --accent-ink: var(--on-brand); --accent-soft: color-mix(in srgb, var(--brand) 14%, transparent); --accent-text: var(--brand-ink);
+  --focus-glow: 0 0 0 2px rgba(122, 166, 255, .45); --focus-glow-color: rgba(122, 166, 255, .45);
 }
-body:has(.mn-inner) { background: #0A0A0A; }
 
 /* 글씨 네온 — h1만 남기고 제거 */
 main.mn.mn-inner, .mn.mn-inner :is(h2, h3, h4, h5, h6, p, span, a, li, dt, dd, div, th, td, label, strong) { text-shadow: none; }
@@ -17,20 +16,20 @@ main.mn.mn-inner, .mn.mn-inner :is(h2, h3, h4, h5, h6, p, span, a, li, dt, dd, d
 
 /* 보조 버튼 — 원래 색이 없던 버튼(기본 .btn·.btn-outline·기본 .cm-btn)만 모노 보조 스타일 */
 .mn.mn-inner :is(.btn:not(.btn-primary):not(.compare-add), .btn-outline, .cm-btn:not(.cm-btn-primary):not(.cm-btn-danger)) {
-  color: var(--mn-fg); background: transparent; border: 1px solid rgba(255, 255, 255, .4); box-shadow: none; font-weight: 700;
+  color: var(--mn-fg); background: transparent; border: 1px solid var(--line-strong); box-shadow: none; font-weight: 700;
 }
-.mn.mn-inner :is(.btn:not(.btn-primary):not(.compare-add), .btn-outline, .cm-btn:not(.cm-btn-primary):not(.cm-btn-danger)):hover:not(:disabled) { background: transparent; border-color: rgba(255, 255, 255, .4); box-shadow: none; }
+.mn.mn-inner :is(.btn:not(.btn-primary):not(.compare-add), .btn-outline, .cm-btn:not(.cm-btn-primary):not(.cm-btn-danger)):hover:not(:disabled) { background: transparent; border-color: var(--line-strong); box-shadow: none; }
 
 /* 원래 하드코딩 회색이던 안내 문구 */
 .mn.mn-inner .cm-hint { color: var(--mn-fg); border-left-color: var(--mn-line); font-weight: 500; }
 
 /* 입력창 — 표면 #111111·테두리 #262626, 포커스는 입력창에만 흰 빛 (기본 outline 없음). 상세(.dx)는 원래 포인트 파랑 포커스 그대로 */
 .mn.mn-inner:not(.dx) :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):not([type="hidden"]):not(.search-bar-clean *), textarea, select) { color: var(--mn-fg); background: var(--mn-surface); border: 1px solid var(--mn-line); border-radius: 10px; box-shadow: none; outline: none; }
-.mn.mn-inner:not(.dx) :is(input, textarea, select):focus, .mn.mn-inner:not(.dx) :is(input, textarea, select):focus-visible { outline: none; border-color: var(--mn-line); box-shadow: 0 0 0 1px rgba(255, 255, 255, .4); }
+.mn.mn-inner:not(.dx) :is(input, textarea, select):focus, .mn.mn-inner:not(.dx) :is(input, textarea, select):focus-visible { outline: none; border-color: var(--mn-line); box-shadow: 0 0 0 1px var(--line-strong); }
 .mn.mn-inner:not(.dx) :is(input, textarea)::placeholder { color: var(--mn-fg); opacity: .6; }
 
 /* 선택 있는 탭 — 선택 = 흰 배경 + 검은 글씨, 비선택 = 보조 스타일 (원래 의미 색이 없던 .tab만; 칩의 포인트 파랑 선택 표시는 그대로) */
-.mn.mn-inner:not(.dx) .tab { color: var(--mn-fg); background: transparent; border: 1px solid rgba(255, 255, 255, .4); box-shadow: none; }
+.mn.mn-inner:not(.dx) .tab { color: var(--mn-fg); background: transparent; border: 1px solid var(--line-strong); box-shadow: none; }
 .mn.mn-inner:not(.dx) :is(.tab.is-active, .tab[aria-selected="true"], .tab[aria-pressed="true"]) { color: var(--mn-fg-inv); background: var(--mn-fg); border-color: transparent; box-shadow: none; }
 
 /* 상태 표시에는 색만 쓰지 않고 아이콘(체크·X·경고)을 같이 — PC 사양 판정(충족·미달·정보 없음). 색은 원래 판정 색 그대로, 아이콘은 글씨색(currentColor)을 따른다 */
@@ -44,3 +43,46 @@ main.mn.mn-inner, .mn.mn-inner :is(h2, h3, h4, h5, h6, p, span, a, li, dt, dd, d
 
 /* 내 PC·찜목록 — 저장된 값을 읽기 전에도 본문이 화면 높이만큼 자리를 차지해 푸터가 첫 화면 밖에 있게 한다 (읽은 뒤 푸터가 아래로 밀려 보이는 것 방지). 헤더 약 60px */
 .mn.mn-inner.pg-fill { min-height: calc(100svh - 60px); }
+
+/* ============================================================
+   2단계 — 안쪽 페이지 공통 (찜목록·커뮤니티·의견·큐레이터·내 PC·비교·상세·검색 결과). 토큰은 brand-tokens.css만
+   ============================================================ */
+body:has(.mn-inner) { background: var(--page-bg); }
+.mn-inner :is(.wishlist-title, .lib-title, .this-week-title, .cm-h1) { font-size: clamp(24px, 3vw, 32px); font-weight: 900; letter-spacing: -0.035em; color: var(--ink); }
+.mn-inner .wishlist-head { margin: var(--sp-5) 0 var(--sp-5); }
+
+/* 커뮤니티 */
+.mn-inner .cm-tabs { gap: 10px; margin: var(--sp-5) 0 var(--sp-5); padding-bottom: var(--sp-4); border-bottom: 1px solid var(--line); }
+.mn-inner .cm-tabs a:not(.cm-write-btn) { min-height: 40px; padding: 0 16px; font-size: 14px; font-weight: 700; color: var(--ink-nav); background: transparent; border: 1px solid var(--line-strong); border-radius: var(--r-card); }
+.mn-inner .cm-tabs a:not(.cm-write-btn):hover { color: var(--ink); background: transparent; }
+.mn-inner .cm-tabs a[aria-current="page"] { color: var(--bg-top); background: var(--ink); border-color: var(--ink); }
+.mn-inner .cm-tabs .cm-write-btn { min-height: 40px; padding: 0 18px; font-size: 14px; font-weight: 800; color: var(--on-brand); background: var(--brand); border: 0; border-radius: var(--r-tile); }
+.mn-inner .cm-board-card, .mn-inner .cm-list, .mn-inner .cm-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-tile); }
+.mn-inner .cm-board-card:hover { transform: none; border-color: var(--line-strong); }
+.mn-inner .cm-row { flex-direction: row; align-items: center; justify-content: space-between; gap: var(--sp-4); padding: 14px 18px; }
+.mn-inner .cm-row-main { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; min-width: 0; }
+.mn-inner .cm-row-title { font-size: 16px; font-weight: 700; color: var(--ink); }
+.mn-inner .cm-row-sub { font-size: 14px; font-weight: 500; color: var(--ink-muted); }
+.mn-inner .cm-row-meta { flex-shrink: 0; font-size: 13px; color: var(--ink-muted); justify-content: flex-end; }
+.mn-inner .cm-board-chip { margin: 0; padding: 2px 8px; font-size: 12px; font-weight: 800; color: var(--brand-ink); background: color-mix(in srgb, var(--brand) 14%, transparent); border-radius: 2px; }
+.mn-inner .cm-admin-badge { padding: 1px 7px; font-size: 12px; font-weight: 800; color: var(--bg-top); background: var(--ink); border: 0; border-radius: 2px; }
+@media (max-width: 640px) { .mn-inner .cm-row { flex-direction: column; align-items: flex-start; gap: 6px; } .mn-inner .cm-row-meta { justify-content: flex-start; } }
+
+/* 의견 보내기 — 가운데 좁은 폭 760px */
+.fb-wrap { max-width: 760px; margin: var(--sp-6) auto 0; }
+.fb-title { margin: 6px 0 var(--sp-3); font-size: clamp(28px, 4.4vw, 40px); font-weight: 900; letter-spacing: -0.035em; line-height: 1.2; color: var(--ink); word-break: keep-all; }
+.fb-sub { margin: 0 0 var(--sp-5); font-size: 16px; color: var(--ink-nav); }
+.fb-wrap .cm-card { padding: var(--sp-5); }
+.mn-inner .cm-board-pick { display: flex; flex-wrap: wrap; gap: 10px; }
+.mn-inner .cm-board-pick button { min-height: 40px; padding: 0 16px; font-size: 14px; font-weight: 700; color: var(--ink-nav); background: transparent; border: 1px solid var(--line-strong); border-radius: var(--r-card); }
+.mn-inner .cm-board-pick button.on { color: var(--bg-top); background: var(--ink); border-color: var(--ink); }
+.mn-inner .cm-btn-primary { color: var(--on-brand); background: var(--brand); border: 0; border-radius: var(--r-tile); font-weight: 800; }
+
+/* 내 PC — 위 입력·요약 카드(720px) + 아래 결과 */
+.my-pc { max-width: var(--wrap); padding-top: var(--sp-6); }
+.my-pc > :is(.my-pc-title, .my-pc-sub, .my-pc-status, .my-pc-form, .my-pc-summary, .my-pc-back) { max-width: 720px; }
+.my-pc-title { font-size: clamp(28px, 4vw, 40px); font-weight: 900; color: var(--ink); }
+.my-pc-sub { font-size: 16px; color: var(--ink-nav); }
+.my-pc-form, .my-pc-summary { padding: var(--sp-5); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-tile); }
+.pc-results { margin-top: var(--sp-6); }
+.my-pc-uses { max-width: 720px; color: var(--ink-muted); }

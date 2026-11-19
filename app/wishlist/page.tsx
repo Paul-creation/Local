@@ -4,6 +4,7 @@ import WishlistView from '../components/wishlist/WishlistView';
 import '../brand-tokens.css';
 import '../mono-page.css';
 import '../mono-lists.css';
+import '../components/home/mn/mn.css';
 
 // 내 브라우저에 저장된 목록이거나 공유 주소(?ids=)마다 달라지는 화면이라 검색 결과에는 올리지 않음
 export const metadata: Metadata = { title: '찜목록', robots: { index: false } };

@@ -2,7 +2,6 @@
 
 import { useMemo } from 'react';
 import PosterCard, { posterBadge } from './PosterCard';
-import SectionHead from '../../brand/SectionHead';
 import { useMyPc } from '../../pcspec/useMyPc';
 import { toUserPc } from '../../../lib/myPc';
 import { runsOnMyPc } from '../../../lib/specJudge';
@@ -39,11 +38,13 @@ export default function PeopleSection({ recs }: { recs: Data | null }) {
   // 추천 데이터가 없어도 머리(제목 + 인원 탭)는 그린다 — 탭이 그 인원의 검색 결과로 가는 길이라서
   return (
     <section className="mn-sec" aria-labelledby="mn-people-title">
-      <SectionHead id="mn-people-title" title={`${peopleLabel(n)} 추천 게임`} more={{ href: trendingHref(n, myPcActive), text: '뜨는 게임 더 보기', hard: true }} />
-      <div className="mn-filter-row">
+      {/* 머리 한 줄: 제목 → 인원 탭 → 세로 구분선 → 빠른 필터 칩 → 맨 오른쪽 "더 보기 →" (좁으면 줄바꿈) */}
+      <div className="mn-people-head">
+        <h2 id="mn-people-title" className="mn-people-title">{peopleLabel(n)} 추천</h2>
         <PeopleTabs />
         <span className="mn-vsep" aria-hidden="true" />
         <PeopleChips />
+        <a href={trendingHref(n, myPcActive)} className="sec-more mn-people-more">더 보기 →</a>
       </div>
       {filteredOut && (
         <p className="mn-note">
@@ -53,7 +54,7 @@ export default function PeopleSection({ recs }: { recs: Data | null }) {
       )}
       {!recs ? null : games.length > 0 ? (
         <ul className="mn-grid" aria-label={`${peopleLabel(n)} 추천 게임 목록`}>
-          {games.map((g, i) => <li key={g.id}><PosterCard brackets game={g} eager={i < 3} tourId={i === 0 ? 'first-card' : undefined} badge={posterBadge(g, recs.badges[g.id])} /></li>)}
+          {games.map((g, i) => <li key={g.id}><PosterCard brackets compact game={g} eager={i < 3} tourId={i === 0 ? 'first-card' : undefined} badge={posterBadge(g, recs.badges[g.id])} /></li>)}
         </ul>
       ) : (
         <p className="mn-note">
