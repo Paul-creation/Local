@@ -81,24 +81,24 @@
   --mn-ls-display: -0.035em;
   --mn-weight-display: 800;
 
-  /* 상세 섹션 포인트 색 — 섹션 막대·핵심 값·칩에만 쓴다. 쓰는 곳은 components/detail/detail-sections.css */
-  --sec-intro: #FFD84A;
-  --sec-together: #3DDCC4;
+  /* 상세 섹션 포인트 색은 쓰지 않는다 — 전부 중립색. 예외는 Steam 가격 박스의 초록(--sec-price)과 아래 할인 배지뿐 */
+  --sec-intro: var(--ink-muted);
+  --sec-together: var(--ink-muted);
   --sec-price: #4ADE80;
-  --sec-detail: #B794F6;
-  --sec-spec: #60A5FA;
-  --sec-video: #FF7A6B;
-  --sec-glance: #FFA94D;
-  --glance-tile: #161616;
-  --sec-intro-a33: #FFD84A54;
-  --sec-intro-a13: #FFD84A21;
-  --sec-together-a33: #3DDCC454;
-  --sec-video-a33: #FF7A6B54;
+  --sec-detail: var(--ink-muted);
+  --sec-spec: var(--ink-muted);
+  --sec-video: var(--ink-muted);
+  --sec-glance: var(--ink-muted);
+  --glance-tile: var(--surface);
+  --sec-intro-a33: var(--line-strong);
+  --sec-intro-a13: var(--surface);
+  --sec-together-a33: var(--line-strong);
+  --sec-video-a33: var(--line-strong);
   --sec-price-a13: #4ADE8021;
-  --sec-detail-a13: #B794F621;
-  --sec-intro-text: #FFE27A;
-  --sec-detail-text: #C9B0FA;
-  --sec-label: #8a8a8a;
+  --sec-detail-a13: var(--surface);
+  --sec-intro-text: var(--ink);
+  --sec-detail-text: var(--ink);
+  --sec-label: var(--ink-muted);
 
   /* 할인 배지·뜨는 중/신작 배지(공용 게임 카드 .gc-trend)·인스타 버튼 */
   --mn-sale-bg: #4ADE80;
@@ -126,7 +126,7 @@
   --accent-ink: var(--mn-fg-inv);
   --accent-text: var(--mn-fg);
   --accent-soft: var(--mn-surface);
-  --focus-glow: 0 0 0 1px rgba(244, 241, 234, .4);
+  --focus-glow: 0 0 0 2px rgba(122, 166, 255, .45);
   --card-surface: var(--mn-surface);
   --price-surface: var(--mn-surface);
   --card-line: var(--mn-line);

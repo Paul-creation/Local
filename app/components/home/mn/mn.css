@@ -168,3 +168,9 @@ main.page:has(.mn-page) + .site-footer { margin-top: 0; }
 /* 단축키 표시는 터치 기기·768px 미만에서 숨김 (CSS라 마운트 전후 차이 없음) */
 .mn-kbd { display: inline-block; flex-shrink: 0; min-width: 54px; box-sizing: border-box; text-align: center; padding: 3px 8px; font: inherit; font-size: 12px; font-weight: 700; color: var(--ink); background: var(--bg-top); border: 1px solid var(--line); border-radius: var(--r-card); }
 @media (max-width: 767px), (pointer: coarse), (hover: none) { .mn-kbd { display: none; } }
+
+/* ---------- 찜목록 ---------- */
+.mn-card-was { font-size: 13px; font-weight: 500; color: var(--ink-muted); }
+.wl-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 var(--sp-5); padding-bottom: var(--sp-4); border-bottom: 1px solid var(--line); }
+.wl-count { font-family: var(--font-num); font-weight: var(--num-weight); margin-left: 4px; }
+.wl-grid .wishlist-item { min-width: 0; }

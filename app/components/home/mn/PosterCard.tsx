@@ -20,7 +20,7 @@ export const posterBadge = (game: Record<string, unknown>, badges?: string[]): P
   BADGES.find((b) => badges?.includes(b)) ?? TREND_LABEL[game.trend_badge as string] ?? null;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- 게임 카드 칸은 목록(gameIndex)과 같은 느슨한 모양
-export default function PosterCard({ game, badge = null, eager = false, tourId, brackets = false }: { game: any; badge?: PosterBadge | null; eager?: boolean; tourId?: string; brackets?: boolean }) {
+export default function PosterCard({ game, badge = null, eager = false, tourId, brackets = false, showOriginal = false }: { game: any; badge?: PosterBadge | null; eager?: boolean; tourId?: string; brackets?: boolean; showOriginal?: boolean }) {
   const price = getPriceInfo(game);
   const players = playersText(game);
   const barrier = barrierLabel(game);
@@ -49,6 +49,7 @@ export default function PosterCard({ game, badge = null, eager = false, tourId, 
           <>
             {price.discount > 0 && <span className="mn-sale">-{price.discount}%</span>}
             <span>{price.formattedFinal}</span>
+            {showOriginal && price.discount > 0 && <s className="mn-card-was">{price.formattedOriginal}</s>}
           </>
         ) : null}
       </span>

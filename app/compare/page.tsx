@@ -16,7 +16,7 @@ import ShareButton from '../components/ShareButton';
 import CompareBuilder from '../components/CompareBuilder';
 import { BUILDER_FIELDS } from '../lib/compareRule';
 import { playersText } from '../lib/players';
-import GameImage from '../components/GameImage';
+import PosterImage from '../components/home/mn/PosterImage';
 import HeartButton from '../components/wishlist/HeartButton';
 import { selectGames } from '../lib/visibleGames';
 import { isSoloPlayable } from '../lib/soloMode';
@@ -24,6 +24,7 @@ import { gameName } from '../lib/gameName';
 import '../brand-tokens.css';
 import '../mono-page.css';
 import './compare-mono.css';
+import '../components/home/mn/mn.css';
 
 export const dynamic = 'force-dynamic';
 
@@ -231,12 +232,16 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
     { label: 'DLC', render: steamOnly((g: any) => g.has_dlc ? '있음' : '없음') },
     { label: 'Steam 평점', render: steamOnly((g: any) => g.review_positive_percent ? `${g.review_positive_percent}% (${g.review_total?.toLocaleString('ko-KR')}개)` : '-') },
     { label: '현재 접속자', render: steamOnly((g: any) => g.current_players ? `${g.current_players.toLocaleString('ko-KR')}명` : '-') },
+    { label: '지금 가격', render: (g: any) => { const p = getPriceInfo(g); return g.is_free ? '무료' : p ? `${p.formattedFinal}${p.discount > 0 ? ` (-${p.discount}%)` : ''}` : '-'; } },
     { label: '역대 최저가', render: (g: any) => g.lowest_price ? `₩${g.lowest_price.toLocaleString('ko-KR')}${g.lowest_price_shop ? ` · ${g.lowest_price_shop}` : ''}` : '-' },
   ];
 
   const gameCount = games.length;
 
   const cols = { gridTemplateColumns: `180px repeat(${gameCount}, minmax(0, 1fr))` };
+  const slots = Math.max(gameCount, 3); // 포스터 줄은 늘 3칸 — 남는 칸은 "+ 게임 추가"
+  const postersCols = { gridTemplateColumns: `180px repeat(${slots}, minmax(0, 1fr))` };
+  const idList = games.map((g: any) => g.id);
 
   return (
     <main className="page cmp-page mn mn-inner">
@@ -244,35 +249,46 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
 
       <BackLink fallbackHref="/" label="목록으로" preferList />
       <div className="cmp-head">
-        <h1 className="cmp-title">게임 비교</h1>
+        <div>
+          <p className="sec-label">게임 비교</p>
+          <h1 className="cmp-title">뭐 할지 한눈에 비교해요</h1>
+        </div>
         <ShareButton
+          variant="text"
+          label="링크 복사해서 친구한테 보내기 →"
           title={`게임 ${games.length}개 비교 — 우리 뭐 할래?`}
           text={`${games.map((g: any) => gameName(g)).join(' vs ')} 중에 뭐 할래?`}
         />
       </div>
 
       {/* 포스터 카드 */}
-      <div className="compare-header cmp-posters" style={cols}>
+      <div className="compare-header cmp-posters" style={postersCols}>
         <div />
         {games.map((g: any) => {
           const price = getPriceInfo(g);
+          const rest = idList.filter((id: string) => id !== g.id);
           return (
-            <Link href={`/games/${g.id}`} key={g.id} className="cmp-poster lift">
-              <span className="cmp-poster-image">
-                <GameImage src={g.cover_image_url || g.card_image_url} steamSize="header" alt="" />
-              </span>
-              {/* 썸네일 우측 상단 하트 — 카드 전체가 링크라서 클릭이 이동으로 번지지 않게 막는다 (HeartButton) */}
-              <HeartButton gameId={g.id} variant="overlay" />
-              <span className="cmp-poster-body">
-                <span className="cmp-poster-name">{gameName(g)}</span>
-                <span className="cmp-poster-meta">
-                  {[playersText(g), g.is_free ? '무료' : price?.formattedFinal].filter(Boolean).join(' · ')}
-                  {price && price.discount > 0 && !g.is_free && <span className="discount-badge">-{price.discount}%</span>}
+            <div key={g.id} className="cmp-poster">
+              <Link href={`/games/${g.id}`} className="cmp-poster-link">
+                <span className="cmp-poster-image">
+                  <PosterImage cover={{ vertical: g.cover_vertical_url ?? null, appid: g.steam_appid ?? null, wide: g.cover_image_url || g.card_image_url || null }} />
                 </span>
-              </span>
-            </Link>
+                <span className="cmp-poster-body">
+                  <span className="cmp-poster-name">{gameName(g)}</span>
+                  <span className="cmp-poster-meta">
+                    {[playersText(g), g.is_free ? '무료' : price?.formattedFinal].filter(Boolean).join(' · ')}
+                    {price && price.discount > 0 && !g.is_free && <span className="discount-badge">-{price.discount}%</span>}
+                  </span>
+                </span>
+              </Link>
+              <div className="cmp-poster-actions">
+                <HeartButton gameId={g.id} variant="title" />
+                <Link href={rest.length >= 2 ? `/compare?ids=${rest.join(',')}` : `/compare/new?games=${rest.join(',')}`} className="cmp-remove">빼기</Link>
+              </div>
+            </div>
           );
         })}
+        {gameCount < 3 && <Link href={`/compare/new?games=${idList.join(',')}`} className="cmp-add-slot">+ 게임 추가</Link>}
       </div>
 
       {/* 상황별 추천도 */}

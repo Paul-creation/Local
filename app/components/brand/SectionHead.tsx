@@ -7,7 +7,12 @@ import './brand.css';
 export default function SectionHead({ id, title, label, more, actions }: { id: string; title?: string; label?: string; more?: { href: string; text: string; hard?: boolean }; actions?: ReactNode }) {
   return (
     <div className="sec-head">
-      <h2 id={id} className={label ? 'sec-label' : 'sec-title'}>{label ?? title}</h2>
+      {label && title ? (
+        <div className="sec-head-text">
+          <p className="sec-label">{label}</p>
+          <h2 id={id} className="sec-title">{title}</h2>
+        </div>
+      ) : <h2 id={id} className={label ? 'sec-label' : 'sec-title'}>{label ?? title}</h2>}
       {(actions || more) && (
         <div className="sec-head-right">
           {actions}

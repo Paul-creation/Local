@@ -5,6 +5,8 @@ import { useSearchParams } from 'next/navigation';
 import { safeBackPath } from '../../lib/backPath';
 import PcSpecPanel from './PcSpecPanel';
 import { useMyPc } from './useMyPc';
+import MyPcResults from './MyPcResults';
+import { toUserPc } from '../../lib/myPc';
 
 // /my-pc — 내 PC 사양을 등록·수정·삭제하는 유일한 화면 (다른 화면은 판정만 하고 이 화면으로 보냄)
 // 저장된 값을 읽기 전(ready 거짓)에는 같은 높이의 빈 자리만 두고, 읽은 뒤에 폼을 그린다 (폼 초기값이 저장된 값을 놓치지 않게)
@@ -55,13 +57,15 @@ export default function MyPcView() {
 
   return (
     <div className="my-pc">
-      <h1 className="my-pc-title">내 PC</h1>
+      <p className="sec-label">내 PC</p>
+      <h1 className="my-pc-title">내 PC로 돌아가는 게임</h1>
       <p className="my-pc-sub">등록하면 게임 페이지에서 내 PC로 돌아가는지 알려줘요.</p>
       <p className="my-pc-status" role="status" aria-live="polite">
         {notice === 'saved' && pc ? '저장했어요' : notice === 'cleared' && !pc ? '지웠어요' : ''}
       </p>
       {body}
       {notice === 'saved' && pc && !editing && back && <a href={back} className="pcs-link my-pc-back">돌아가기 →</a>}
+      {ready && pc && !editing && <MyPcResults user={toUserPc(pc)} />}
       {ready && (
         <ul className="my-pc-uses">
           <li>게임 페이지: 이 게임이 내 PC에서 돌아가는지 충족 여부로 보여줘요</li>

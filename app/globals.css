@@ -64,9 +64,9 @@
   --results-bg: #151a23;
   --results-line: rgba(255, 255, 255, 0.06);
   --results-pad: 20px;
-  --discount-bg: #4c6b22;      /* 스팀식 할인 배지 */
-  --discount-text: #beee11;
-  --discount-border: #4c6b22;
+  --discount-bg: #4ADE80;      /* 스팀식 할인 배지 */
+  --discount-text: #052E16;
+  --discount-border: #4ADE80;
   --discount-radius: 3px;
   --lowest-text: #beee11;
   --verdict-rec: var(--lowest-text);  /* PC 사양 판정: 권장 충족 — 역대 최저가 녹색 */

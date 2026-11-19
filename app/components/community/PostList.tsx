@@ -12,17 +12,17 @@ export default function PostList({ posts, showBoard = false, empty = '아직 글
       {posts.map((p) => (
         <li key={p.id}>
           <Link href={`/community/post/${p.id}`} className="cm-row">
-            <span className="cm-row-title">
+            <span className="cm-row-main">
               {showBoard && <span className="cm-board-chip">{BOARDS[p.board].label}</span>}
-              {p.title}
-              {p.comment_count > 0 && <span className="cm-row-count">[{p.comment_count}]</span>}
+              <span className="cm-row-title">{p.title}</span>
+              {p.games && <span className="cm-row-sub">{gameName(p.games)}</span>}
             </span>
             <span className="cm-row-meta">
-              {p.games && <span className="cm-game-chip">{gameName(p.games)}</span>}
               <span>{p.nickname}</span>
               {p.is_admin && <span className="cm-admin-badge">운영자</span>}
               <span>· {timeAgo(p.created_at, now)}</span>
               {p.like_count > 0 && <span>· 추천 {p.like_count}</span>}
+              <span>· 댓글 {p.comment_count}</span>
             </span>
           </Link>
         </li>

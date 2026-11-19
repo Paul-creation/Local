@@ -6,10 +6,11 @@ import { playTime } from './playTime.ts';
 
 const page = readFileSync(new URL('../games/[id]/page.tsx', import.meta.url), 'utf8');
 
-const SECTIONS = ['한눈에 보기', '가격·할인', '플레이 방식', '어떤 게임인가요?', '게임 정보'];
+// 2단계 재배치: 가능한 활동은 "어떤 게임인가요?" 안의 항목에서 따로 섹션으로, 게임 정보는 오른쪽 칸으로(섹션 이름은 그대로), 트레일러·스크린샷·특징 태그 섹션 추가
+const SECTIONS = ['한눈에 보기', '트레일러·스크린샷', '가격·할인', '플레이 방식', '어떤 게임인가요?', '가능한 활동', '특징 태그', '게임 정보'];
 const TILES = ['인원', '진입장벽', '한국어', '역대 최저가'];
 const PLAY = ['인원 범위', '추천 인원', '같은 서버', '혼자 하기', '크로스플레이', '서버 방식', '멀티 방식', '진입장벽 이유'];
-const ABOUT = ['가능한 활동', '엔딩', '클리어까지'];
+const ABOUT = ['엔딩', '클리어까지'];
 const INFO = ['개발', '배급', '출시일', '플랫폼', 'ITAD 인기 순위', '도전과제', 'DLC', '가족 공유', '마지막 업데이트', '필요 용량', '모드 지원'];
 const COLUMNS = ['story_length', 'entry_barrier', 'korean_support', 'min_players', 'max_players', 'party_max', 'developer', 'publisher', 'has_ending', 'server_type', 'has_workshop', 'recommended_players', 'session_max'];
 

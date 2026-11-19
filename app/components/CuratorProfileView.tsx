@@ -7,6 +7,8 @@ import type { getCuratorProfile } from '../lib/curators';
 import { groupByPost, groupByGame, dateLabel } from '../lib/curatorView';
 import { getPriceInfo } from '../lib/price';
 import { gameName } from '../lib/gameName';
+import '../brand-tokens.css';
+import './home/mn/mn.css';
 
 type Profile = NonNullable<Awaited<ReturnType<typeof getCuratorProfile>>>;
 
@@ -30,28 +32,26 @@ export default function CuratorProfileView({ profile }: { profile: Profile }) {
     <main className="page mn mn-inner">
       <BackLink fallbackHref="/" label="홈으로" />
       <header className="curator-profile">
-        {curator.avatar_url && <Image src={curator.avatar_url} alt="" width={128} height={128} className="curator-avatar" />}
+        {curator.avatar_url && <Image src={curator.avatar_url} alt="" width={112} height={112} className="curator-avatar" />}
         <div className="curator-profile-body">
+          <p className="sec-label">인스타그램 큐레이터</p>
           <h1 className="curator-profile-name">{curator.display_name}</h1>
-          <p className="curator-profile-handle">@{curator.handle}</p>
-          {curator.bio?.trim() && <p className="curator-profile-bio">{curator.bio.trim()}</p>}
+          <p className="curator-profile-handle">@{curator.handle}{curator.bio?.trim() ? <span className="curator-profile-bio"> · {curator.bio.trim()}</span> : null}</p>
           {stats.length > 0 && (
-            <p className="curator-profile-stats">
-              {stats.map((s, i) => (
-                <span key={s.label}>{i > 0 && ' · '}{s.label} <b>{s.n}</b></span>
+            <dl className="curator-profile-stats">
+              {stats.map((s) => (
+                <div key={s.label}><dd>{s.n}</dd><dt>{s.label}</dt></div>
               ))}
-            </p>
+            </dl>
           )}
-          <div className="curator-profile-actions">
-            <OutboundLink href={curator.instagram_url} curator={curator.handle} className="btn btn-primary curator-btn curator-btn-ig">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor" /></svg>
-              인스타그램에서 보기 ↗
-            </OutboundLink>
-            <CopyLinkButton path={`/c/${encodeURIComponent(curator.handle)}`} />
-          </div>
+        </div>
+        <div className="curator-profile-actions">
+          <OutboundLink href={curator.instagram_url} curator={curator.handle} className="btn btn-outline curator-btn curator-btn-ig">
+            인스타그램에서 보기 ↗
+          </OutboundLink>
+          <CopyLinkButton path={`/c/${encodeURIComponent(curator.handle)}`} />
         </div>
       </header>
-      <p className="curator-note">가격·할인·스팀 평가는 매일 갱신돼요.</p>
       {entries.length === 0 ? <p className="tl-note">아직 연결된 게임이 없어요.</p> : <CuratorBody curator={curator.handle} games={byId} sections={sections} entries={entries} />}
     </main>
   );

@@ -30,3 +30,6 @@
 .sec-head-right { display: inline-flex; align-items: center; gap: var(--sp-4); }
 .sec-more { display: inline-flex; align-items: center; min-height: 32px; font-size: 14px; font-weight: 700; color: var(--brand-ink); text-decoration: none; }
 .sec-more:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+.sec-head-text { min-width: 0; }
+.sec-head-text .sec-label { margin: 0 0 6px; }

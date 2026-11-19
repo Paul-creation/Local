@@ -6,17 +6,23 @@ import { useSearchParams } from 'next/navigation';
 import { SITE_URL } from '../../lib/site';
 import { parseIdsParam, shareQuery } from '../../lib/wishlist';
 import { useGameIndex } from '../../lib/useGameIndex';
-import GameCard from '../home/GameCard';
+import PosterCard, { posterBadge } from '../home/mn/PosterCard';
+import { getPriceInfo } from '../../lib/price';
+import { isComingSoon, type ReleaseGame } from '../../lib/release';
 import Loader from '../status/Loader';
 import WishlistButton from './WishlistButton';
 import { useWishlist } from './useWishlist';
 
 // 찜목록 페이지 — 내 목록(localStorage) 또는 공유 주소(?ids=)로 받은 목록을 읽기 전용으로 보여 준다
-// 목록 카드는 검색 결과·메인과 같은 통일 카드(GameCard), 판정은 넣지 않음. 없는 게임 id는 목록에서 빠진다
+// 목록 카드는 메인과 같은 게임 카드(PosterCard) 6열 격자 — 할인 중이면 할인 배지 + 가격·정가 취소선, 판정은 넣지 않음. 탭(전체·할인 중·출시 예정)은 같은 목록을 거르는 보기. 없는 게임 id는 목록에서 빠진다
 // 공유받은 목록은 "내 찜목록에 합치기"를 눌렀을 때만 저장
 
 // 목록 API가 주는 게임 줄(카드 칸은 느슨한 모양)
 type Game = { id: string; [key: string]: unknown };
+
+type Tab = 'all' | 'sale' | 'soon';
+const TABS: { key: Tab; label: string }[] = [{ key: 'all', label: '전체' }, { key: 'sale', label: '할인 중' }, { key: 'soon', label: '출시 예정' }];
+const onSale = (g: Game) => (getPriceInfo(g)?.discount ?? 0) > 0;
 
 export default function WishlistView() {
   const params = useSearchParams();
@@ -27,6 +33,7 @@ export default function WishlistView() {
   const index = useGameIndex();
   const [copied, setCopied] = useState(false);
   const [merged, setMerged] = useState(false);
+  const [tab, setTab] = useState<Tab>('all');
 
   const ids = shared ? sharedIds : mine.ids;
   const games = useMemo(() => {
@@ -34,6 +41,9 @@ export default function WishlistView() {
     const byId = new Map((index.games as Game[]).map((g) => [g.id, g]));
     return ids.map((id) => byId.get(id)).filter((g): g is Game => !!g); // 없는 id는 무시
   }, [index.games, ids]);
+
+  const counts: Record<Tab, number> = { all: games.length, sale: games.filter(onSale).length, soon: games.filter((g) => isComingSoon(g as ReleaseGame)).length };
+  const shown = tab === 'sale' ? games.filter(onSale) : tab === 'soon' ? games.filter((g) => isComingSoon(g as ReleaseGame)) : games;
 
   const copyLink = async () => {
     try {
@@ -87,14 +97,23 @@ export default function WishlistView() {
       )}
 
       {!waiting && games.length > 0 && (
-        <div className="result-grid">
-          {games.map((g) => (
-            <div key={g.id} className="wishlist-item">
-              <GameCard game={g} tree={index.tree} />
-              {!shared && <WishlistButton gameId={g.id} />}
-            </div>
-          ))}
-        </div>
+        <>
+          <div className="wl-tabs" role="group" aria-label="찜목록 보기">
+            {TABS.map((t) => (
+              <button key={t.key} type="button" className="mn-tab" aria-pressed={tab === t.key} onClick={() => setTab(t.key)}>{t.label} <span className="wl-count">{counts[t.key]}</span></button>
+            ))}
+          </div>
+          {shown.length > 0 ? (
+            <ul className="mn-grid wl-grid">
+              {shown.map((g) => (
+                <li key={g.id} className="wishlist-item">
+                  <PosterCard game={g} badge={posterBadge(g)} showOriginal />
+                  {!shared && <WishlistButton gameId={g.id} />}
+                </li>
+              ))}
+            </ul>
+          ) : <p className="wishlist-empty">이 보기에 해당하는 게임이 없어요.</p>}
+        </>
       )}
     </>
   );

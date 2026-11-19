@@ -97,7 +97,7 @@ export default function AbSearch({ games, initial = EMPTY_QUERY, variant = 'home
             <span className="ab-collapsed-part">{sum.who || '인원 상관없음'}</span>
             <span className="ab-collapsed-part">{sum.how || '방식 상관없음'}</span>
             <span className="ab-collapsed-part">{sum.what || '장르 상관없음'}</span>
-            <span className="ab-collapsed-go">바꾸기</span>
+            <span className="ab-collapsed-go">다시 찾기</span>
           </button>
         ) : (
           <div className="ab-bar ab-desktop" role="group" aria-label="게임 찾기">
