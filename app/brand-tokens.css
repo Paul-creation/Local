@@ -72,7 +72,7 @@
 }
 
 @media (max-width: 767px) { :root { --sec-gap: 40px; } }
-@media (max-width: 480px) { :root { --header-h: 56px; } }
+@media (max-width: 767px) { :root { --header-h: 56px; --gutter: 16px; } }
 
 /* ---------- 옛 이름 다리 (.mn 루트 안 — 상세·비교·내 PC·찜목록·커뮤니티 등) ---------- */
 .mn {

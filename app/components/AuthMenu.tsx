@@ -26,13 +26,23 @@ const readCache = (): State => {
 const writeCache = (me: Me | null) => { try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), me })); } catch {} };
 const clearCache = () => { try { sessionStorage.removeItem(CACHE_KEY); } catch {} };
 
-export default function AuthMenu() {
+// 헤더와 모바일 드로어에 AuthMenu가 둘 다 마운트되니, 동시에 부르면 요청 하나를 같이 쓴다
+let meRequest: Promise<Me | null> | null = null;
+const loadMe = () => (meRequest ??= fetch('/api/me', { cache: 'no-store', credentials: 'same-origin' })
+  .then(async (r) => (r.ok ? ((await r.json()) as Me) : null))
+  .catch(() => null)
+  .then((m) => { writeCache(m); meRequest = null; return m; }));
+
+// variant="drawer": 모바일 드로어 맨 아래 — 버튼 전체 폭, 메뉴는 버튼 위에 펼침, 안내 문구는 헤더 쪽 인스턴스만 그린다
+export default function AuthMenu({ variant = 'header' }: { variant?: 'header' | 'drawer' }) {
+  const drawer = variant === 'drawer';
   const [me, setMe] = useState<State>(undefined);
   const [open, setOpen] = useState(false);
   const [notice, setNotice] = useState('');
   const box = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (drawer) return;
     // 로그인 실패로 돌아온 경우(?login=failed) 안내를 잠깐 보이고 주소에서 지운다
     const url = new URL(window.location.href);
     const flag = url.searchParams.get('login');
@@ -45,7 +55,7 @@ export default function AuthMenu() {
       const t = setTimeout(() => setNotice(''), 6000);
       return () => clearTimeout(t);
     }
-  }, []);
+  }, [drawer]);
 
   useEffect(() => {
     if (!hasLoggedInCookie()) {
@@ -60,10 +70,7 @@ export default function AuthMenu() {
       return;
     }
     let alive = true;
-    fetch('/api/me', { cache: 'no-store', credentials: 'same-origin' })
-      .then(async (r) => (r.ok ? ((await r.json()) as Me) : null))
-      .catch(() => null)
-      .then((m) => { if (alive) { setMe(m); writeCache(m); } });
+    loadMe().then((m) => { if (alive) setMe(m); });
     return () => { alive = false; };
   }, []);
 
@@ -100,12 +107,12 @@ export default function AuthMenu() {
   };
 
   const { visibility } = useOwned();
-  const noticeEl = notice ? <div className="auth-notice" role="status">{notice}</div> : null;
+  const noticeEl = notice && !drawer ? <div className="auth-notice" role="status">{notice}</div> : null;
 
   if (me) {
     const name = me.persona_name || '스팀 사용자';
     return (
-      <div className="auth-menu" ref={box}>
+      <div className={`auth-menu${drawer ? ' is-drawer' : ''}`} ref={box}>
         <button type="button" className="auth-user" aria-haspopup="menu" aria-expanded={open} aria-label={`${name} 메뉴`} onClick={() => setOpen((v) => !v)}>
           {me.avatar_url && /* eslint-disable-next-line @next/next/no-img-element -- 스팀 이미지 서버 주소, 24px 아바타 */
             <img src={me.avatar_url} alt="" width={24} height={24} className="auth-avatar" referrerPolicy="no-referrer" />}
@@ -125,12 +132,12 @@ export default function AuthMenu() {
   }
 
   return (
-    <div className="auth-menu">
+    <div className={`auth-menu${drawer ? ' is-drawer' : ''}`}>
       {/* 아직 모를 때도 같은 자리를 차지하게 숨겨서 그려 둔다 (로그인한 사람에게 버튼이 번쩍이지 않게) */}
       <a
         href="/api/auth/steam/login"
         className="auth-login"
-        data-tour="login"
+        data-tour={drawer ? undefined : 'login'}
         style={me === undefined ? { visibility: 'hidden' } : undefined}
         tabIndex={me === undefined ? -1 : undefined}
         onClick={(e) => {

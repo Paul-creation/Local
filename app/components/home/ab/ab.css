@@ -55,6 +55,7 @@
 .ab-step { display: inline-grid; place-items: center; width: 34px; height: 34px; padding: 0; font-family: inherit; font-size: 18px; line-height: 1; color: var(--ink); background: transparent; border: 1px solid var(--line-strong); border-radius: 50%; cursor: pointer; }
 .ab-step:disabled { opacity: .35; cursor: default; }
 .ab-step-num { min-width: 20px; font-family: var(--font-num); font-size: 18px; font-weight: 900; text-align: center; font-variant-numeric: tabular-nums; }
+.ab-step-num.is-empty { color: var(--ink-muted); }
 .ab-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .ab-count { margin: 0; font-size: 14px; font-weight: 500; color: var(--ink-nav); }
 .ab-count strong { font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
@@ -77,10 +78,10 @@
 
 /* ---------- 휴대폰 알약 + 전체 화면 시트 ---------- */
 .ab-mobile { display: none; }
-.ab-pill { flex: 1; min-width: 0; flex-direction: column; align-items: center; gap: 2px; min-height: 60px; padding: 10px 20px; font-family: inherit; text-align: center; color: var(--ink); background: rgba(30, 29, 26, .88); border: 1px solid var(--line-strong); border-radius: var(--r-search); cursor: pointer; box-shadow: var(--shadow); }
+.ab-pill { flex: 1; min-width: 0; flex-direction: row; align-items: center; justify-content: center; gap: 10px; height: 56px; padding: 0 20px; font-family: inherit; text-align: center; color: var(--ink); background: rgba(30, 29, 26, .88); border: 1px solid var(--line-strong); border-radius: var(--r-search); cursor: pointer; box-shadow: var(--shadow); }
 .ab-pill.has-value { color: var(--bg-top); background: var(--ink); }
-.ab-pill-main { max-width: 100%; overflow: hidden; font-size: 16px; font-weight: 800; white-space: nowrap; text-overflow: ellipsis; }
-.ab-pill-sub { font-size: 13px; font-weight: 500; }
+.ab-pill-main { min-width: 0; overflow: hidden; font-size: 16px; font-weight: 800; white-space: nowrap; text-overflow: ellipsis; }
+.ab-pill-sub { flex: 0 0 auto; font-size: 13px; font-weight: 500; color: var(--ink-muted); white-space: nowrap; }
 .ab-sheet { position: fixed; inset: 0; z-index: 100; flex-direction: column; background: var(--bg-top); color: var(--ink); }
 .ab-sheet-head { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--mn-line); }
 .ab-sheet-head strong { font-size: 17px; font-weight: 800; }
@@ -91,7 +92,7 @@
 .ab-acc-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 60px; padding: 12px 18px; font-family: inherit; color: var(--mn-fg); background: transparent; border: 0; border-radius: 18px; cursor: pointer; }
 .ab-acc-head .ab-cell-value { max-width: 60%; }
 .ab-acc-body { padding: 4px 18px 18px; }
-.ab-next { margin-top: 16px; }
+.ab-next { display: block; min-height: 44px; margin: 8px 0 0 auto; padding: 0 4px; font-family: inherit; font-size: 15px; font-weight: 700; color: var(--brand); background: transparent; border: 0; cursor: pointer; }
 .ab-sheet-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--mn-line); background: var(--mn-bg); }
 .ab-clear { min-height: 48px; padding: 0 8px; font-family: inherit; font-size: 15px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; color: var(--mn-fg); background: transparent; border: 0; cursor: pointer; }
 .ab-sheet-foot .ab-go { margin-left: 0; }
@@ -103,6 +104,8 @@
   .ab-desktop { display: none; }
   .ab-pill { display: flex; }
   .ab-sheet { display: flex; }
+  /* 시트는 .ab(z 40) 안에 있어 헤더(z 50)·비교 트레이(z 800)가 시트 위로 그려진다 — 로고가 시트 닫기 버튼(원형 테두리) 위에 겹쳐 보이던 원인. 시트가 열려 있는 동안은 숨긴다 */
+  body:has(.ab-sheet) :is(.site-header, .ctray) { visibility: hidden; }
   .ab-row { flex-wrap: wrap; }
   .ab-trailing { flex: 1 0 100%; }
   .mn .ab-trailing .ai-trigger-clean { width: 100%; justify-content: center; }
@@ -142,7 +145,7 @@
 .ab-badges .is-warn { color: var(--down, var(--mn-fg)); border-color: var(--down, var(--mn-line)); }
 .ab-total { margin: 0; font-size: 13px; font-weight: 700; }
 @media (max-width: 767px) {
-  .ab-res { padding-inline: 16px; }
+  .ab-res.mn-wrap { padding-inline: 0; } /* main.page가 이미 좌우 16px — 겹쳐서 32px가 되던 것 */
   .ab-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 10px; }
   .ab-count-h { font-size: 19px; }
 }

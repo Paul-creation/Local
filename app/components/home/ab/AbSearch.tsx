@@ -122,7 +122,7 @@ export default function AbSearch({ games, initial = EMPTY_QUERY, variant = 'home
         {/* ----- 휴대폰 ----- */}
         <button type="button" className={`ab-pill ab-mobile${isEmptyQuery(q) ? '' : ' has-value'}`} data-tour={variant === 'home' ? 'ab-pill' : undefined} onClick={() => { setSheet(true); setOpen('who'); }} aria-haspopup="dialog">
           <span className="ab-pill-main">{pillMain}</span>
-          <span className="ab-pill-sub">{isEmptyQuery(q) ? '인원 · 방식 · 장르' : '눌러서 바꾸기'}</span>
+          {isEmptyQuery(q) && <span className="ab-pill-sub">인원 · 방식 · 장르</span>}
         </button>
         {trailing && <div className="ab-trailing">{trailing}</div>}
       </div>
@@ -143,7 +143,7 @@ export default function AbSearch({ games, initial = EMPTY_QUERY, variant = 'home
                 {open === c.key && (
                   <div className="ab-acc-body">
                     {c.panel}
-                    {i < cells.length - 1 && <button type="button" className="mn-chip ab-next" onClick={() => setOpen(cells[i + 1].key)}>다음</button>}
+                    {i < cells.length - 1 && <button type="button" className="ab-next" onClick={() => setOpen(cells[i + 1].key)}>다음</button>}
                   </div>
                 )}
               </section>
@@ -203,7 +203,7 @@ function WhoPanel({ n, count, onChange, onClear, onDone }: { n: number | null; c
         </div>
         <div className="ab-stepper-ctl" role="group" aria-labelledby={labelId}>
           <button type="button" className="ab-step" aria-label="한 명 줄이기" disabled={n == null} onClick={() => onChange(n == null || n <= 1 ? null : n - 1)}>−</button>
-          <output className="ab-step-num" aria-live="polite">{n ?? '–'}</output>
+          <output className={`ab-step-num${n == null ? ' is-empty' : ''}`} aria-live="polite">{n ?? 0}</output>
           <button type="button" className="ab-step" aria-label="한 명 늘리기" disabled={n != null && n >= 16} onClick={() => onChange(n == null ? 2 : n + 1)}>+</button>
         </div>
       </div>
