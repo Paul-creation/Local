@@ -12,7 +12,17 @@
 .mn-page { position: relative; isolation: isolate; margin-inline: calc(50% - 50vw); padding-bottom: var(--sec-gap-end); }
 main.page:has(.mn-page) { padding-bottom: 0; }
 main.page:has(.mn-page) + .site-footer { margin-top: 0; }
-.mn-hero { position: relative; display: flex; align-items: center; justify-content: center; padding: calc(var(--header-h) + 64px) 0 56px; text-align: center; }
+/* 첫 화면 맞춤(.mn-fold) — 히어로 + 인원별 추천을 한 래퍼로 묶어 화면 높이에 맞춘다. 히어로가 남는 높이를 채우고(내용은 세로 가운데),
+   인원별 추천은 래퍼 맨 아래에 걸친다 → 인기 차트부터는 스크롤. 아주 큰 모니터는 1100px까지만. 모바일(767px 이하)은 맞춤 없이 위에서부터 쌓는다 */
+.mn-fold { display: flex; flex-direction: column; }
+.mn-fold-next { flex: 0 0 auto; padding-bottom: 0; }
+.mn-rest { display: block; margin-top: var(--sec-gap); }
+.mn-hero { position: relative; flex: 1 1 auto; display: flex; align-items: center; justify-content: center; padding: calc(var(--header-h) + 32px) 0 48px; text-align: center; }
+@media (min-width: 768px) {
+  .mn-fold { min-height: min(100vh, 1100px); min-height: min(100svh, 1100px); }
+  .mn-fold-next { padding-bottom: 28px; }
+  .mn-rest { margin-top: calc(var(--sec-gap) - 28px); }
+}
 .mn-hero-inner { width: 100%; }
 /* 표지 벽 — 히어로 전체(inset 0)를 덮는 배경 층. 타일은 160×240px(모바일 96×144px)·간격 4px 고정, 열 단위로 채워서(grid-auto-flow: column) 어떤 폭에서도 꽉 차고 오른쪽 끝 열만 잘린다 */
 .mn-hero-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; display: grid; grid-template-rows: repeat(4, 240px); grid-auto-flow: column; grid-auto-columns: 160px; justify-content: start; align-content: start; gap: 4px; filter: blur(2px) saturate(.85); clip-path: inset(0); opacity: 0; transition: opacity .4s ease; pointer-events: none; }
@@ -25,7 +35,7 @@ main.page:has(.mn-page) + .site-footer { margin-top: 0; }
   linear-gradient(180deg, rgba(20, 19, 17, 0.6) 0%, rgba(20, 19, 17, 0) 18%, rgba(20, 19, 17, 0) 50%, var(--bg-top) 100%); }
 .mn-h1 { margin: 0 0 36px; font-size: clamp(40px, 7.2vw, 72px); font-weight: var(--title-weight); letter-spacing: -0.035em; line-height: 1.12; word-break: keep-all; color: var(--ink); }
 /* 로그인 사용자: 제목 없이 검색창만 — 검색창 위 여백만 */
-.mn-hero.mn-hero-member { padding: calc(var(--header-h) + 40px) 0 56px; }
+.mn-hero.mn-hero-member { padding: calc(var(--header-h) + 32px) 0 48px; }
 @media (max-width: 767px) {
   .mn-hero { padding: calc(var(--header-h) + 40px) 0 56px; }
   .mn-hero.mn-hero-member { padding: calc(var(--header-h) + 32px) 0 56px; }

@@ -24,15 +24,22 @@ const SHOW_SITUATIONS = false;
 // 현황 한 줄(StatsLine) — 숨김 (코드·데이터는 그대로)
 const SHOW_STATS = false;
 
-export default function HomeSections({ lists, stats = null, popularPosts = [], streamerTheme = null, peopleRecs = null, homeExcluded = [], curators = null }: { lists: HomeLists; stats?: HomeStats | null; popularPosts?: PostListItem[]; streamerTheme?: StreamerTheme | null; peopleRecs?: PeopleRecsData | null; homeExcluded?: string[]; curators?: HomeCurators | null }) {
-  // 스팀 이미지 서버에 미리 연결 — 첫 화면은 인원별 추천 카드
+// 첫 화면 래퍼(.mn-fold) 안에 히어로와 함께 들어가는 부분 — 인원별 추천
+export function HomeFirstSection({ stats = null, peopleRecs = null }: { stats?: HomeStats | null; peopleRecs?: PeopleRecsData | null }) {
   preconnect('https://shared.akamai.steamstatic.com');
-
   return (
     <>
       {SHOW_SITUATIONS && <Situations />}
       {SHOW_STATS && stats && <StatsLine stats={stats} />}
       <PeopleSection recs={peopleRecs} />
+    </>
+  );
+}
+
+// 래퍼 다음 섹션들 (개인 추천 → 인기 차트 …)
+export default function HomeSections({ lists, popularPosts = [], streamerTheme = null, homeExcluded = [], curators = null }: { lists: HomeLists; popularPosts?: PostListItem[]; streamerTheme?: StreamerTheme | null; homeExcluded?: string[]; curators?: HomeCurators | null }) {
+  return (
+    <>
       <PersonalRecs homeExcluded={homeExcluded} />
       <RankLists lists={lists} />
       <Streamers theme={streamerTheme} />
