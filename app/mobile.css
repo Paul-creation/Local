@@ -138,40 +138,52 @@
   html body .fr-price-now { font-size: 18px; letter-spacing: 0; }
   html body .fr-price-sale { gap: 6px; font-size: 12px; }
 
-  /* ---------- 게임 상세 (MobGame) ---------- */
+  /* ---------- 게임 상세 (MobGame) — main의 gd-* 구조 위에 모바일 값만 덮어쓴다 ---------- */
   /* 히어로: 위 70px, 캡슐 104px + 오른쪽(출시일·협동 / 제목 24px), 아래로 한 줄 소개 14px, 칩 가로 스크롤 */
-  html body .mn.dx .dx-hero { padding-top: 70px; padding-bottom: 20px; }
-  html body .mn.dx .dx-backdrop img { filter: blur(3px); opacity: .7; }
-  html body .mn.dx .back-link, html body .mn.dx .dx-hero > a[href] { display: none; }
-  html body .mn.dx .dx-head { display: grid; grid-template-columns: 104px minmax(0, 1fr); column-gap: 14px; row-gap: 8px; align-items: end; padding-top: 14px; }
-  html body .mn.dx .dx-head-info { display: contents; }
-  html body .mn.dx .dx-cover { grid-column: 1; grid-row: 1 / span 2; width: 104px; box-shadow: none; }
-  html body .mn.dx .dx-badges { grid-column: 2; grid-row: 1; align-self: end; display: flex; flex-wrap: wrap; gap: 0 4px; font-size: 12px; font-weight: 700; color: var(--ink-muted); }
-  html body .mn.dx.mn-inner .dx-badges > * { padding: 0; font-size: 12px; font-weight: 700; color: var(--ink-muted); background: transparent; border: 0; border-radius: 0; }
-  html body .mn.dx.mn-inner .dx-badges > * + *::before { content: "· "; }
-  html body .mn.dx.mn-inner .dx-badges > .badge-neutral:last-child { color: var(--brand-ink); }
-  html body .mn.dx .dx-title { grid-column: 2; grid-row: 2; align-self: start; margin: 0; font-size: 24px; line-height: 1.15; letter-spacing: -0.03em; }
-  html body .mn.dx .dx-lead { grid-column: 1 / -1; margin: 6px 0 4px; font-size: 14px; line-height: 1.6; color: var(--ink-nav); }
-  html body .mn.dx .dx-chips { grid-column: 1 / -1; flex-wrap: nowrap; gap: 6px; margin-inline: -16px; padding-inline: 16px; overflow-x: auto; scrollbar-width: none; }
-  html body .mn.dx .dx-chips::-webkit-scrollbar { display: none; }
-  html body .mn.dx .dx-chips .chip { flex: 0 0 auto; display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; font-size: 13px; font-weight: 700; color: var(--ink-nav); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; white-space: nowrap; }
+  html body .gd-back { display: none; }
+  html body .gd .gd-hero-inner { display: grid; grid-template-columns: 104px minmax(0, 1fr); column-gap: 14px; row-gap: 8px; align-items: end; padding: 70px 16px 20px; }
+  html body .gd .gd-hero-info { display: contents; }
+  html body .gd .gd-cover { grid-column: 1; grid-row: 1 / span 2; width: 104px; }
+  html body .gd .gd-hero-meta { grid-column: 2; grid-row: 1; align-self: end; gap: 0 4px; font-size: 12px; font-weight: 700; letter-spacing: 0; color: var(--ink-muted); }
+  html body .gd .gd-hero-meta > * + *::before { content: "· "; }
+  html body .gd .gd-hero-meta .gd-badge { padding: 0; color: var(--brand-ink); background: transparent; }
+  html body .gd .gd-title { grid-column: 2; grid-row: 2; align-self: start; font-size: 24px; line-height: 1.15; letter-spacing: -0.03em; }
+  html body .gd .gd-lead { grid-column: 1 / -1; margin: 6px 0 4px; font-size: 14px; color: var(--ink-nav); }
+  html body .gd .gd-hero-info > .gd-chips { grid-column: 1 / -1; flex-wrap: nowrap; gap: 6px; margin-inline: -16px; padding-inline: 16px; overflow-x: auto; scrollbar-width: none; }
+  html body .gd .gd-hero-info > .gd-chips::-webkit-scrollbar { display: none; }
+  html body .gd .gd-chips-sep { display: none; }
+  html body .gd .gd-chip.is-pill { flex: 0 0 auto; min-height: 36px; padding: 0 14px; white-space: nowrap; }
+  html body .gd .gd-chip.is-tag { min-height: 36px; padding: 0 14px; border-radius: 6px; }
 
-  /* 가격 박스: 히어로 바로 아래, 구매 버튼은 하단 고정 바로 */
-  html body .mn.dx .detail-layout { display: block; }
-  html body .mn.dx .detail-price { margin-bottom: 36px; }
-  html body .mn.dx .price-card { display: grid; grid-template-columns: auto auto 1fr; align-items: baseline; column-gap: 8px; row-gap: 12px; padding: 16px; border-radius: 12px; }
-  html body .mn.dx .price-card > * { grid-column: 1 / -1; margin: 0; }
-  html body .mn.dx .price-card-head { display: flex; align-items: center; justify-content: space-between; }
-  html body .mn.dx .price-card-label { font-size: 14px; font-weight: 900; letter-spacing: 0; }
-  html body .mn.dx .price-card .price-card-label::before { width: 3px; height: 14px; margin-right: 8px; vertical-align: -2px; }
-  html body .mn.dx .price-card-was { display: contents; }
-  html body .mn.dx .price-card-was .buy-discount-badge { grid-column: 1; grid-row: 2; padding: 3px 8px; font-size: 14px; font-weight: 900; color: #052E16; background: var(--sec-price); border: 0; border-radius: 4px; }
-  html body .mn.dx .price-card-was .buy-price-original { grid-column: 3; grid-row: 2; font-size: 13px; font-weight: 400; color: var(--ink-muted); text-decoration: line-through; }
-  html body .mn.dx .price-card-now { grid-column: 2; grid-row: 2; font-family: var(--font-num); font-size: 28px; font-weight: 900; letter-spacing: 0; line-height: 1.2; }
-  html body .mn.dx .price-card:not(:has(.price-card-was)) .price-card-now { grid-column: 1 / -1; grid-row: auto; }
-  html body .mn.dx .price-card-lowest, html body .mn.dx .lowest-gauge-text { font-size: 13px; line-height: 1.5; color: var(--ink-nav); }
-  html body .mn.dx .price-card-buttons, html body .mn.dx .price-card-compare-status { display: none; }
-  html body .mn.dx .price-card-note { font-size: 12px; line-height: 1.5; color: var(--ink-muted); }
+  /* 본문: 한 줄로 쌓고 섹션 간격 36px. aside의 게임 정보·바로가기는 영상 섹션 바로 뒤로 (gd-main을 풀어 한 흐름으로) */
+  html body .gd .gd-layout { gap: 36px; padding: 0 16px; }
+  html body .gd .gd-main { display: contents; }
+  html body .gd .gd-aside-info, html body .gd .gd-aside-links { order: 1; }
+  html body .gd .gd-sec[aria-label="인기 동영상"] ~ * { order: 2; }
+  html body .gd .gd-bottom { gap: 36px; padding: 36px 16px 40px; }
+  html body .gd .gd-sec-head { gap: 12px; margin-bottom: 14px; padding-bottom: 10px; }
+  html body .gd .gd-sec-title, html body .gd .gd-box-label { font-size: 20px; font-weight: 900; letter-spacing: -0.03em; }
+  html body .gd .gd-link { font-size: 13px; letter-spacing: 0; }
+  /* 게임 정보·바로가기: 박스 대신 일반 섹션 (머리 20/900 + 선) */
+  html body .gd .gd-aside-info, html body .gd .gd-aside-links { padding: 0; gap: 0; background: transparent; border: 0; border-radius: 0; }
+  html body .gd .gd-box-label { display: block; margin-bottom: 14px; padding-bottom: 10px; color: var(--ink); border-bottom: 1px solid var(--line); }
+  html body .gd .gd-dl-row, html body .gd .gd-dl.is-compact .gd-dl-row { padding: 10px 0; }
+
+  /* 가격 박스: 히어로 바로 아래, 구매 버튼·비교 담기는 하단 고정 바로 */
+  html body .gd .gd-price { display: grid; grid-template-columns: auto auto 1fr; align-items: baseline; column-gap: 8px; row-gap: 12px; padding: 16px; border-radius: 12px; }
+  html body .gd .gd-price > * { grid-column: 1 / -1; }
+  html body .gd .gd-price-head { display: flex; align-items: center; justify-content: space-between; }
+  html body .gd .gd-price-label { font-size: 14px; letter-spacing: 0; }
+  html body .gd .gd-price-label::before { width: 3px; height: 14px; margin-right: 8px; vertical-align: -2px; }
+  html body .gd .gd-price-was { display: contents; }
+  html body .gd .gd-price-was .gd-price-off { grid-column: 1; grid-row: 2; padding: 3px 8px; font-size: 14px; border-radius: 4px; }
+  html body .gd .gd-price-was s { grid-column: 3; grid-row: 2; font-size: 13px; color: var(--ink-muted); }
+  html body .gd .gd-price-was > :not(.gd-price-off):not(s) { grid-column: 1 / -1; grid-row: 3; font-size: 13px; }
+  html body .gd .gd-price-now { grid-column: 2; grid-row: 2; font-size: 28px; letter-spacing: 0; }
+  html body .gd .gd-price:not(:has(.gd-price-was)) .gd-price-now { grid-column: 1 / -1; grid-row: auto; }
+  html body .gd .gd-price .gd-buy, html body .gd .gd-price .btn.compare-add, html body .gd .gd-price .price-card-compare-status { display: none; }
+  html body .gd .gd-lowest { padding: 10px 12px; }
+  html body .gd .gd-lowest > span, html body .gd .gd-lowest > b { font-size: 13px; }
 
   /* 하단 고정 구매 바 — 가격 + 비교 담기 48px + Steam에서 구매 48px, iOS 홈 인디케이터를 피한다 */
   html body .dx-buybar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; display: flex; align-items: center; gap: 12px; padding: 10px 16px max(22px, env(safe-area-inset-bottom)); background: rgba(20, 19, 17, .94); border-top: 1px solid var(--line); }
@@ -184,38 +196,22 @@
   html body:has(.dx-buybar) .ctray { bottom: calc(86px + env(safe-area-inset-bottom)); }
   html body:has(.dx-buybar) .site-footer.mn { padding-bottom: 108px; }
 
-  /* 본문 섹션: 머리 20/900 pb 10 mb 14 + 선, 섹션 간격 36px. 게임 정보는 영상 아래로 */
-  html body .mn.dx .detail-main { display: flex; flex-direction: column; }
-  html body .mn.dx .detail-main > * + * { margin-top: 36px; }
-  html body .mn.dx .detail-card-title { margin: 0 0 14px; padding-bottom: 10px; font-size: 20px; letter-spacing: -0.03em; }
-  html body .mn.dx .detail-main > .dx-info { order: 1; }
-  html body .mn.dx .detail-main > .dx-votes, html body .mn.dx .detail-main > .dx-votes ~ * { order: 2; }
   /* 한눈에 보기: 2열 타일 gap 10, 타일 pad 12 radius 12 라벨 12 값 18/900 */
-  html body .mn.dx .dx-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-  html body .mn.dx .dx-tile { gap: 4px; padding: 12px; border-radius: 12px; }
-  html body .mn.dx .dx-tile-icon { display: none; }
-  html body .mn.dx .dx-tile-label { font-size: 12px; font-weight: 400; color: var(--ink-muted); }
-  html body .mn.dx .dx-tile-value, html body .mn.dx .dx-tile-value.is-text { font-size: 18px; font-weight: 900; }
-  html body .mn.dx .dx-tile-sub { font-size: 12px; }
-  /* 라벨-값 행 (플레이 방식·게임 정보) */
-  html body .mn.dx .more-list, html body .mn.dx .more-list.is-two-col { display: grid; grid-template-columns: max-content minmax(0, 1fr); column-gap: 0; font-size: 14px; }
-  html body .mn.dx .more-list dt { padding-right: 12px; }
-  html body .mn.dx .more-list dt, html body .mn.dx .more-list dd { margin: 0; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
-  html body .mn.dx .more-list dt { font-weight: 400; color: var(--ink-muted); }
-  html body .mn.dx .more-list dd { font-weight: 700; color: var(--ink); text-align: right; }
-  html body .mn.dx .detail-fun, html body .mn.dx .detail-description-v2 { font-size: 15px; line-height: 1.8; color: var(--ink-nav); max-width: none; }
-  html body .mn.dx .detail-fun { font-weight: 700; color: var(--ink); }
-  html body .mn.dx .detail-card.sec-price .price-record, html body .mn.dx .pcs-card { padding: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
-  html body .mn.dx .detail-main :is(.category-tag, .activity-chip, .chip.is-static) { display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; font-size: 13px; font-weight: 700; border-radius: 999px; border: 1px solid var(--line); }
-  html body .mn.dx .detail-links.is-chips { gap: 6px; }
-  html body .mn.dx .detail-links.is-chips :is(.detail-link, .share-text-btn) { min-height: 36px; padding: 0 14px; font-size: 13px; border-radius: 999px; border: 1px solid var(--line); }
-  html body .dx-bottom { margin-top: 36px; }
-  /* 의견 달기 카드: 입력칸 2열 + 등록 전체 폭 */
-  html body .cm-opinion-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 4px; padding: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
-  html body .cm-opinion-form .cm-input { padding: 12px; font-size: 15px; color: var(--ink); background: var(--bg-top); border: 1px solid var(--line-strong); border-radius: 8px; }
-  html body .cm-opinion-form .cm-inline-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  html body .cm-opinion-form .cm-inline-row .cm-input { height: 44px; padding: 0 12px; min-width: 0; }
-  html body .cm-opinion-form .cm-inline-row .cm-btn { grid-column: 1 / -1; width: 100%; height: 44px; font-size: 15px; font-weight: 700; color: var(--on-brand); background: var(--brand); border: 0; border-radius: 8px; }
+  html body .gd .gd-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  html body .gd .gd-tile { padding: 12px; border-radius: 12px; }
+  html body .gd .gd-tile-label, html body .gd .gd-tile-sub { font-size: 12px; }
+  html body .gd .gd-tile-value { font-size: 18px; letter-spacing: 0; }
+  /* 트레일러·스크린샷 / 본문 글 / 박스 카드 */
+  html body .gd .gd-media { gap: 6px; }
+  html body .gd .gd-about p { font-size: 15px; line-height: 1.8; }
+  html body .gd .gd-box { padding: 14px; border-radius: 12px; }
+  html body .gd .gd-videos { display: flex; gap: 10px; margin-inline: -16px; padding-inline: 16px; overflow-x: auto; scrollbar-width: none; }
+  html body .gd .gd-videos::-webkit-scrollbar { display: none; }
+  html body .gd .gd-videos > li { flex: 0 0 220px; }
+  /* 의견 달기: 입력칸 2열 + 등록 전체 폭 44px */
+  html body .gd .gd-form { gap: 10px; }
+  html body .gd .gd-form-foot { flex-direction: column; align-items: stretch; }
+  html body .gd .gd-submit { width: 100%; height: 44px; padding: 0; font-size: 15px; }
   /* 비슷한 게임: 포스터 + 이름 + 가격만 */
   html body .similar-section .mn-card-meta, html body .similar-section .mn-card-rating { display: none; }
   html body .similar-section .mn-card-price { font-size: 13px; font-weight: 700; }
