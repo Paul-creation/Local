@@ -170,3 +170,26 @@ main.page:has(.mn-page) + .site-footer { margin-top: 0; }
 .wl-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 var(--sp-5); padding-bottom: var(--sp-4); border-bottom: 1px solid var(--line); }
 .wl-count { font-family: var(--font-num); font-weight: var(--num-weight); margin-left: 4px; }
 .wl-grid .wishlist-item { min-width: 0; }
+
+/* ---------- 첫 화면 정리: 히어로 축소 + 한 줄 머리 + 글자·색 줄이기 ---------- */
+/* 헤드라인 한 줄(데스크톱 60px / 1.1, 모바일 두 줄 허용 34~60px) — 히어로는 고정 높이 없이 내용 높이: 위 = --header-h + 52px, 아래 44px, 헤드라인↔검색창 28px */
+.mn-h1 { margin: 0 0 28px; font-size: clamp(34px, 5.2vw, 60px); line-height: 1.1; }
+.mn-hero, .mn-hero.mn-hero-member { padding: calc(var(--header-h) + 52px) 0 44px; }
+@media (min-width: 768px) { .mn-h1 { white-space: nowrap; } .mn-h1-br { display: none; } }
+@media (max-width: 767px) { .mn-hero, .mn-hero.mn-hero-member { padding: calc(var(--header-h) + 52px) 0 44px; } }
+
+/* "N인 추천" 머리 — 한 줄: 제목(22px) · 인원 탭 · 구분선 · 빠른 필터 칩 · 맨 오른쪽 "더 보기 →". 아래 1px --line, padding-bottom 12px, 카드와 간격 18px. 좁아지면 줄바꿈 */
+.mn-people-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3) var(--sp-4); margin: 0 0 18px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.mn-people-title { margin: 0; font-size: 22px; font-weight: var(--title-weight); letter-spacing: -0.03em; line-height: 1.25; color: var(--ink); }
+.mn-people-more { margin-left: auto; }
+.mn-people-head .mn-tab, .mn-people-head .mn-chip { min-height: 34px; padding: 0 12px; }
+.mn-people-head .mn-tabs, .mn-people-head .mn-chips { gap: 8px; }
+.mn-people-head .mn-vsep { min-height: 22px; }
+@media (max-width: 767px) { .mn-people-head .mn-vsep { display: none; } .mn-people-more { margin-left: 0; } }
+/* 추천 카드 — 포스터 + 게임명(한 줄 말줄임)만, 카드 안 간격 8px */
+.mn-card.is-compact { gap: var(--sp-2); }
+.mn-card.is-compact .mn-card-name { margin-top: 0; display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; -webkit-line-clamp: unset; }
+
+/* 인기 게시물 — 카테고리 태그는 파란/테두리 없이 --ink-muted 글씨 (최소폭 72px) */
+.mn-post-board { min-width: 72px; padding: 0; text-align: left; color: var(--ink-muted); background: none; border: 0; border-radius: 0; }
+button.sec-more { padding: 0; font-family: inherit; background: none; border: 0; cursor: pointer; }

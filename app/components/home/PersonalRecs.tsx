@@ -78,6 +78,12 @@ export default function PersonalRecs({ homeExcluded }: { homeExcluded: string[] 
     return candidates.filter((g) => !skipHome.has(g.id) && (!user || runsOnMyPc(user, g))).slice(0, SHOW);
   }, [tasteMode, tasteRanked, wishMode, index, scored, seedKey, ids, homeExcluded, pcReady, pc, myPcOn]);
 
+  // 닉네임 — 헤더(AuthMenu)가 sessionStorage에 잠깐 기억해 둔 로그인 정보에서만 읽는다 (서버 호출 없음)
+  const [persona, setPersona] = useState('');
+  useEffect(() => {
+    try { const c = JSON.parse(sessionStorage.getItem('auth_me') || 'null'); setPersona(c?.me?.persona_name || ''); } catch { /* 저장소를 못 쓰면 이름 없이 */ } // eslint-disable-line react-hooks/set-state-in-effect
+  }, []);
+
   // 보여줄 카드의 평가·태그·한국어 지원은 게임 목록에 없어 따로 읽는다 (못 읽으면 그 줄만 빠짐)
   const shownKey = shown.map((g) => g.id).join(',');
   const [extras, setExtras] = useState<{ key: string; map: Record<string, CardExtras> } | null>(null);
@@ -95,12 +101,12 @@ export default function PersonalRecs({ homeExcluded }: { homeExcluded: string[] 
 
   // 확인·받는 중에는 아무것도 그리지 않고, 추천이 도착하면 그때 섹션을 그린다 (로그인하지 않았고 찜도 없으면 처음부터 안 그림)
   if (shown.length === 0) return null;
-  const title = tasteMode ? '취향에 맞는 게임' : '찜한 게임과 비슷한 게임';
+  const title = tasteMode ? (persona ? `${persona}님 취향` : '내 취향') : '찜한 게임과 비슷한 게임';
   return (
     <section className="mn-sec" aria-labelledby="personal-recs-title">
-      <SectionHead id="personal-recs-title" title={title} more={tasteMode ? { href: '/library?tab=taste', text: '더 보기', hard: true } : undefined} />
+      <SectionHead id="personal-recs-title" title={title} more={tasteMode ? { href: '/library?tab=taste', text: '다시 받기', hard: true } : undefined} />
       <div className="mn-row" ref={rowRef} tabIndex={0} role="region" aria-label={`${title} 목록`}>
-        {shown.map((g) => <PosterCard key={g.id} game={{ ...g, ...extraMap[g.id] }} badge={posterBadge(g)} />)}
+        {shown.map((g) => <PosterCard key={g.id} hideMeta game={{ ...g, ...extraMap[g.id] }} badge={posterBadge(g)} />)}
       </div>
     </section>
   );

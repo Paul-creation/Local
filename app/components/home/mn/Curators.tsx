@@ -25,7 +25,7 @@ export default function Curators({ data }: { data: HomeCurators | null }) {
                 </span>
               )}
               <span className="mn-curator-name">@{c.displayName}</span>
-              <span className="mn-curator-count">게임 {c.gameCount}개 · 게시물 {c.postCount}</span>
+              <span className="mn-curator-count">게임 {c.gameCount}개</span>
               {c.recent.length > 0 && <span className="mn-curator-recent">{c.recent.join(' · ')}</span>}
             </Link>
           </li>
