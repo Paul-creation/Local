@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { HOWS, GENRES, EMPTY_QUERY, countFitting, countMatching, isEmptyQuery, queryHref, summaryParts, type AbQuery, type GenreKey, type GenreMode } from '../../../lib/abSearch';
@@ -31,6 +32,7 @@ export default function AbSearch({ games, initial = EMPTY_QUERY, variant = 'home
   const [open, setOpen] = useState<Cell | null>(null);
   const [sheet, setSheet] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
+  const mounted = useSyncExternalStore(() => () => {}, () => true, () => false); // 시트는 body로 포털 — 헤더(z 50)·비교 트레이(z 800) 위, 헤더도 어둡게 덮인다
 
   // 결과 화면에서 주소가 바뀌면(상황 타일·조건 칩·뒤로가기) 입력창도 그 조건으로
   const initialKey = JSON.stringify(initial);
@@ -42,7 +44,7 @@ export default function AbSearch({ games, initial = EMPTY_QUERY, variant = 'home
   // 바깥을 누르거나 Esc면 패널 닫기 (데스크톱)
   useEffect(() => {
     if (!open) return;
-    const onDown = (e: MouseEvent) => { if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(null); };
+    const onDown = (e: MouseEvent) => { if (wrapRef.current && !wrapRef.current.contains(e.target as Node) && !(e.target as Element).closest?.('.ab-sheet')) setOpen(null); };
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(null); };
     document.addEventListener('mousedown', onDown);
     document.addEventListener('keydown', onKey);
@@ -91,7 +93,7 @@ export default function AbSearch({ games, initial = EMPTY_QUERY, variant = 'home
     { key: 'what', label: '뭐 할까', value: sum.what, empty: '장르·게임 검색', panel: what },
   ];
 
-  const pillMain = isEmptyQuery(q) ? '누구랑 할 거야?' : [sum.who, sum.how, sum.what].filter(Boolean).join(' | ');
+  const pillMain = isEmptyQuery(q) ? '누구랑 할 거야?' : [sum.who, sum.how, sum.what].filter(Boolean).join(' · ');
 
   return (
     <div className={`ab ab-${variant}`} ref={wrapRef}>
@@ -121,39 +123,46 @@ export default function AbSearch({ games, initial = EMPTY_QUERY, variant = 'home
 
         {/* ----- 휴대폰 ----- */}
         <button type="button" className={`ab-pill ab-mobile${isEmptyQuery(q) ? '' : ' has-value'}`} data-tour={variant === 'home' ? 'ab-pill' : undefined} onClick={() => { setSheet(true); setOpen('who'); }} aria-haspopup="dialog">
-          <span className="ab-pill-main">{pillMain}</span>
-          <span className="ab-pill-sub">{isEmptyQuery(q) ? '인원 · 방식 · 장르' : '눌러서 바꾸기'}</span>
+          <span className="ab-pill-text">
+            <span className="ab-pill-main">{pillMain}</span>
+            {isEmptyQuery(q) && variant === 'home' && <span className="ab-pill-sub">인원 · 방식 · 장르</span>}
+          </span>
+          {variant === 'results' ? <span className="ab-pill-edit">바꾸기</span> : <span className="ab-pill-go" aria-hidden="true">→</span>}
         </button>
         {trailing && <div className="ab-trailing">{trailing}</div>}
       </div>
 
-      {sheet && (
-        <div className="ab-sheet ab-mobile" role="dialog" aria-modal="true" aria-label="게임 찾기">
-          <div className="ab-sheet-head">
-            <button type="button" className="ab-sheet-close" onClick={() => setSheet(false)} aria-label="닫기">×</button>
-            <strong>누구랑 할 거야?</strong>
+      {sheet && mounted && createPortal(
+        <div className="ab-sheet ab-mobile" onClick={(e) => { if (e.target === e.currentTarget) setSheet(false); }}>
+          <div className="ab-sheet-panel" role="dialog" aria-modal="true" aria-label="게임 찾기">
+            <div className="ab-sheet-grip" aria-hidden="true"><span /></div>
+            <div className="ab-sheet-head">
+              <strong>누구랑 할 거야?</strong>
+              <button type="button" className="ab-sheet-close" onClick={() => setSheet(false)} aria-label="닫기">✕</button>
+            </div>
+            <div className="ab-sheet-body">
+              {cells.map((c, i) => (
+                <section key={c.key} className={`ab-acc${open === c.key ? ' is-open' : ''}`}>
+                  <button type="button" className="ab-acc-head" aria-expanded={open === c.key} onClick={() => setOpen(open === c.key ? null : c.key)}>
+                    <span className="ab-cell-label">{c.label}</span>
+                    <span className={`ab-cell-value${c.value ? '' : ' is-empty'}`}>{c.value || c.empty}</span>
+                  </button>
+                  {open === c.key && (
+                    <div className="ab-acc-body">
+                      {c.panel}
+                      {i < cells.length - 1 && <button type="button" className="ab-next" onClick={() => setOpen(cells[i + 1].key)}>다음 →</button>}
+                    </div>
+                  )}
+                </section>
+              ))}
+            </div>
+            <div className="ab-sheet-foot">
+              <button type="button" className="ab-clear" onClick={() => setQ({ ...EMPTY_QUERY, opts: q.opts })}>전체 지우기</button>
+              <button type="button" className="ab-go" onClick={() => submit()}>{matching == null || isEmptyQuery(q) ? '찾기' : `${matching.toLocaleString('ko-KR')}개 찾기`}</button>
+            </div>
           </div>
-          <div className="ab-sheet-body">
-            {cells.map((c, i) => (
-              <section key={c.key} className={`ab-acc${open === c.key ? ' is-open' : ''}`}>
-                <button type="button" className="ab-acc-head" aria-expanded={open === c.key} onClick={() => setOpen(open === c.key ? null : c.key)}>
-                  <span className="ab-cell-label">{c.label}</span>
-                  <span className={`ab-cell-value${c.value ? '' : ' is-empty'}`}>{c.value || c.empty}</span>
-                </button>
-                {open === c.key && (
-                  <div className="ab-acc-body">
-                    {c.panel}
-                    {i < cells.length - 1 && <button type="button" className="mn-chip ab-next" onClick={() => setOpen(cells[i + 1].key)}>다음</button>}
-                  </div>
-                )}
-              </section>
-            ))}
-          </div>
-          <div className="ab-sheet-foot">
-            <button type="button" className="ab-clear" onClick={() => setQ({ ...EMPTY_QUERY, opts: q.opts })}>전체 지우기</button>
-            <button type="button" className="ab-go" onClick={() => submit()}>찾기</button>
-          </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );
@@ -203,7 +212,7 @@ function WhoPanel({ n, count, onChange, onClear, onDone }: { n: number | null; c
         </div>
         <div className="ab-stepper-ctl" role="group" aria-labelledby={labelId}>
           <button type="button" className="ab-step" aria-label="한 명 줄이기" disabled={n == null} onClick={() => onChange(n == null || n <= 1 ? null : n - 1)}>−</button>
-          <output className="ab-step-num" aria-live="polite">{n ?? '–'}</output>
+          <output className={`ab-step-num${n == null ? ' is-empty' : ''}`} aria-live="polite">{n ?? 0}</output>
           <button type="button" className="ab-step" aria-label="한 명 늘리기" disabled={n != null && n >= 16} onClick={() => onChange(n == null ? 2 : n + 1)}>+</button>
         </div>
       </div>

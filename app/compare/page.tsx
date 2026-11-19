@@ -261,6 +261,43 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
         />
       </div>
 
+      {/* 휴대폰 전용 비교표 (docs/design/mobile MobCompare) — 첫 열(항목명 92px) sticky, 게임 열 132px 가로 스크롤. 데스크톱은 CSS로 숨기고, 휴대폰은 아래 포스터 줄·스펙 표를 숨긴다 */}
+      <section className="cmp-m" aria-label="게임 비교표">
+        <div className="cmp-m-scroll">
+          <div className="cmp-m-table">
+            <div className="cmp-m-row cmp-m-head">
+              <div className="cmp-m-label" />
+              {games.map((g: any) => {
+                const rest = idList.filter((id: string) => id !== g.id);
+                return (
+                  <div key={g.id} className="cmp-m-col">
+                    <Link href={`/games/${g.id}`} className="cmp-m-poster">
+                      <PosterImage cover={{ vertical: g.cover_vertical_url ?? null, appid: g.steam_appid ?? null, wide: g.cover_image_url || g.card_image_url || null }} />
+                    </Link>
+                    <span className="cmp-m-name">{gameName(g)}</span>
+                    <Link href={rest.length >= 2 ? `/compare?ids=${rest.join(',')}` : `/compare/new?games=${rest.join(',')}`} className="cmp-m-remove">빼기</Link>
+                  </div>
+                );
+              })}
+              {gameCount < 3 && <div className="cmp-m-col"><Link href={`/compare/new?games=${idList.join(',')}`} className="cmp-m-add">+ 추가</Link></div>}
+            </div>
+            {ROWS.map((row) => (
+              <div key={row.label} className="cmp-m-row">
+                <div className="cmp-m-label">{row.label}</div>
+                {games.map((g: any) => <div key={g.id} className="cmp-m-cell">{row.render ? row.render(g) : (g[row.key!] || '-')}</div>)}
+                {gameCount < 3 && <div className="cmp-m-cell" />}
+              </div>
+            ))}
+          </div>
+        </div>
+        <ShareButton
+          variant="text"
+          label="링크 복사해서 친구한테 보내기"
+          title={`게임 ${games.length}개 비교 — 우리 뭐 할래?`}
+          text={`${games.map((g: any) => gameName(g)).join(' vs ')} 중에 뭐 할래?`}
+        />
+      </section>
+
       {/* 포스터 카드 */}
       <div className="compare-header cmp-posters" style={postersCols}>
         <div />
@@ -334,7 +371,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
       )}
 
       {/* 스펙 비교 */}
-      <section className="cmp-section">
+      <section className="cmp-section cmp-spec-desktop">
         <h2 className="cmp-h2">스펙 비교</h2>
         <div className="cmp-table">
           <div className="compare-desktop">

@@ -171,6 +171,8 @@ img { display: block; }
   margin: 0 auto;
   padding: 0 24px 100px;
 }
+/* 휴대폰: 본문 좌우 16px (--gutter와 같은 값) */
+@media (max-width: 767px) { .page { padding-inline: var(--gutter); } }
 
 /* ============================================================
    TOP NAV — 모든 페이지 공통 상단 바 (SiteHeader)
@@ -309,28 +311,46 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
   font-size: var(--fs-s);
   z-index: 110;
 }
-@media (max-width: 480px) {
-  .auth-login, .auth-user { padding: 6px 8px; font-size: var(--fs-xs); gap: 0; }
-  .auth-login, .auth-user { min-width: 51px; } /* 로그인 확인 전·후에 같은 폭 ("로그인" 버튼 = 아바타 버튼) */
-  .auth-login-long, .auth-avatar ~ .auth-name { display: none; } /* 좁은 화면: "로그인" / 아바타만 (아바타가 없으면 닉네임은 남김) */
-  .auth-user { padding: 6px; }
-}
+/* ---------- 모바일 헤더 (767px 이하) — 높이 56px(--header-h), 좌우 16px, 로고 112px, 메뉴·로그인은 햄버거 드로어(MobileNav)로 ---------- */
+.mnav-btn, .mnav { display: none; }
+@media (max-width: 767px) {
+  .site-header-inner { padding: 0 16px; height: var(--header-h); gap: 0; }
+  .site-menu { display: none; }
+  /* 로그인 버튼·프로필은 드로어에 있다. 헤더 쪽 AuthMenu는 안내 문구(.auth-notice)만 남겨 화면 위에 띄운다 */
+  .site-header-inner > .auth-menu { display: contents; }
+  .site-header-inner > .auth-menu :is(.auth-login, .auth-user, .auth-pop) { display: none; }
+  .auth-notice { position: fixed; top: calc(var(--header-h) + 8px); left: 16px; right: 16px; width: auto; max-width: none; }
+  .mnav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; flex-shrink: 0; width: 44px; height: 44px; margin: 0 -10px 0 auto; padding: 0; background: none; border: 0; cursor: pointer; }
+  .mnav-bar { display: block; width: 20px; height: 2px; background: var(--ink); border-radius: 1px; }
+  .mnav-btn:focus-visible, .mnav :focus-visible { outline: 2px solid var(--brand-ink); outline-offset: 2px; }
 
-/* 상단 바로 이동할 때 섹션 제목이 바에 가려지지 않게 */
-#free, #discount { scroll-margin-top: 76px; }
-
-@media (max-width: 480px) {
-  .site-header-inner { padding: 0 12px; height: var(--header-h); gap: 4px; }
-  .site-menu { gap: 0; }
-  .site-menu a { padding: 6px 7px; font-size: var(--fs-s); letter-spacing: 0.02em; } /* 헤더는 360~390px에서 한 줄이라 올리지 않음 */
+  /* 드로어 — 오른쪽에서 슬라이드, 전체 높이, 폭 min(320px, 85vw). body로 포털이라 헤더 밖 (z 900 > 비교 트레이 800) */
+  .mnav { display: block; position: fixed; inset: 0; z-index: 900; visibility: hidden; pointer-events: none; transition: visibility 0s linear .25s; }
+  .mnav.is-open { visibility: visible; pointer-events: auto; transition: none; }
+  .mnav-scrim { position: absolute; inset: 0; background: rgba(0, 0, 0, .6); opacity: 0; }
+  .mnav.is-open .mnav-scrim { opacity: 1; }
+  .mnav-drawer { position: absolute; top: 0; right: 0; bottom: 0; display: flex; flex-direction: column; box-sizing: border-box; width: min(320px, 85vw); padding: 0 0 env(safe-area-inset-bottom); overflow-y: auto; overscroll-behavior: contain; background: var(--surface); border-left: 1px solid var(--line); box-shadow: var(--shadow); transform: translateX(100%); }
+  .mnav.is-open .mnav-drawer { transform: none; }
+  @media (prefers-reduced-motion: no-preference) {
+    .mnav-scrim { transition: opacity .25s ease; }
+    .mnav-drawer { transition: transform .25s ease; }
+  }
+  .mnav-top { display: flex; align-items: center; justify-content: space-between; flex: 0 0 auto; box-sizing: border-box; height: var(--header-h); padding: 0 16px; border-bottom: 1px solid var(--line); }
+  .mnav-logo { display: inline-flex; align-items: center; min-height: 44px; }
+  .mnav-logo .wm-img { width: 96px; }
+  .mnav-close { display: inline-grid; place-items: center; width: 44px; height: 44px; margin-right: -10px; padding: 0; font-family: inherit; font-size: 22px; line-height: 1; color: var(--ink); background: none; border: 0; cursor: pointer; }
+  .mnav-list { display: flex; flex-direction: column; flex: 1 0 auto; }
+  .mnav-link { display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; height: 52px; padding: 0 20px; font-size: 16px; font-weight: 700; color: var(--ink-nav); border-bottom: 1px solid var(--line); }
+  .mnav-link[aria-current="page"] { color: var(--ink); }
+  .mnav-chev { color: var(--ink-muted); font-weight: 400; }
+  .mnav .nav-count { background: var(--brand); color: var(--on-brand); font-weight: 800; box-shadow: none; }
+  .mnav-auth { flex: 0 0 auto; padding: 20px; }
+  .auth-menu.is-drawer { display: flex; flex-direction: column-reverse; gap: 8px; width: 100%; }
+  .auth-menu.is-drawer :is(.auth-login, .auth-user) { display: inline-flex; justify-content: center; width: 100%; min-width: 0; min-height: 48px; padding: 0 16px; font-size: 15px; font-weight: 700; border-radius: 8px; }
+  .auth-menu.is-drawer .auth-name { max-width: none; }
+  .auth-menu.is-drawer .auth-pop { position: static; min-width: 0; background: var(--bg-top); }
+  .auth-menu.is-drawer .auth-pop-note { max-width: none; }
 }
-/* 400px 이하: 로고·링크·테마 버튼 안쪽 여백과 글자를 조금 줄여 360px까지 메뉴와 로그인 버튼이 겹치지 않게 (링크 글자는 13px 아래로 내리지 않음, 터치 영역 44px은 유지) */
-@media (max-width: 400px) {
-  .site-header-inner { padding: 0 8px; gap: 2px; }
-  .site-menu a { padding: 6px 4px; font-size: var(--fs-xs); }
-}
-/* 350px 이하: 그래도 자리가 모자라 "커뮤니티"는 헤더에서 빼고 푸터 링크로 */
-@media (max-width: 349px) { .site-menu .is-narrow-hide { display: none; } }
 
 /* 모노 헤더 안의 비교 개수 배지·진행 바 (원래 규칙은 아래쪽 .nav-count·.nav-progress — 헤더 안에서만 덮어쓴다) */
 .site-header.mn .nav-count { background: var(--brand); color: var(--on-brand); font-weight: 800; box-shadow: none; }

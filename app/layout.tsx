@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
+import "./mobile.css"; // 모바일(767px 이하) 시안 덮어쓰기
 import { mnFontClass } from "./mono-fonts";
 import { SITE_NAME, SITE_URL, SITE_TITLE, SITE_META_DESCRIPTION, BASE_OG, OG_DEFAULT_IMAGE } from "./lib/site";
 import SiteHeader from "./components/home/SiteHeader";

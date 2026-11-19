@@ -74,6 +74,24 @@ export default function DetailMedia({ image, videoUrl, shots, name }: { image: s
         ))}
       </div>
 
+      {/* 휴대폰(767px 이하) 전용: 스크린샷 전부를 가로 스크롤 한 줄로 (각 120px 16:9). 데스크톱은 CSS로 숨기고 위 3칸 줄을 쓴다 */}
+      {count > 0 && (
+        <div className="gd-media-rail">
+          {shots.map((s, i) => (
+            <button
+              key={s.path_thumbnail}
+              type="button"
+              className="gd-media-rail-shot"
+              onClick={(e) => { lastFocus.current = e.currentTarget; setOpen(i); }}
+              aria-label={`${name} 스크린샷 ${i + 1} 크게 보기`}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={s.path_thumbnail} alt="" loading="lazy" decoding="async" />
+            </button>
+          ))}
+        </div>
+      )}
+
       {count > 0 && (
         <div className="gd-media-bar">
           <span>스크린샷 {count}장</span>

@@ -186,7 +186,11 @@ main.page:has(.mn-page) + .site-footer { margin-top: 0; }
 .mn-h1 { margin: 0 0 28px; font-size: clamp(34px, 5.2vw, 60px); line-height: 1.1; }
 .mn-hero, .mn-hero.mn-hero-member { padding: calc(var(--header-h) + 52px) 0 44px; }
 @media (min-width: 768px) { .mn-h1 { white-space: nowrap; } .mn-h1-br { display: none; } }
-@media (max-width: 767px) { .mn-hero, .mn-hero.mn-hero-member { padding: calc(var(--header-h) + 52px) 0 44px; } }
+/* 휴대폰: 위 = 헤더(56px) + 28px, 제목 30~40px(8.5vw) 가운데 두 줄("금요일 밤," / "친구들이랑 뭐 하지?") — 제목이 헤더 밑으로 겹치지 않는다 */
+@media (max-width: 767px) {
+  .mn-hero, .mn-hero.mn-hero-member { padding: calc(var(--header-h) + 28px) 0 44px; }
+  .mn-h1 { font-size: clamp(30px, 8.5vw, 40px); text-align: center; white-space: normal; }
+}
 
 /* "N인 추천" 머리 — 한 줄: 제목(22px) · 인원 탭 · 구분선 · 빠른 필터 칩 · 맨 오른쪽 "더 보기 →". 아래 1px --line, padding-bottom 12px, 카드와 간격 18px. 좁아지면 줄바꿈 */
 .mn-people-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3) var(--sp-4); margin: 0 0 18px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
@@ -208,3 +212,9 @@ main.page:has(.mn-page) + .site-footer { margin-top: 0; }
 /* 인기 게시물 — 카테고리 태그는 파란/테두리 없이 --ink-muted 글씨 (최소폭 72px) */
 .mn-post-board { min-width: 72px; padding: 0; text-align: left; color: var(--ink-muted); background: none; border: 0; border-radius: 0; }
 button.sec-more { padding: 0; font-family: inherit; background: none; border: 0; cursor: pointer; }
+
+/* 데스크톱 기본값 — 휴대폰 구조(순위 탭·큐레이터 아바타·"N인 추천" 윗줄)는 숨기거나 풀어 둔다 (mobile.css가 휴대폰에서 켠다) */
+.mn-people-top { display: contents; }
+.mn-people-more { order: 99; }
+.mn-rank-tabs, .mn-rank-all, .mn-curator-av, .mn-sale-ov { display: none; }
+.mn-col-panel, .mn-curator-text { display: contents; }
