@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseState, serializeState, decide, advance, isBot, pageOf, placeBubble, orderInfo, resolveStep, stepTargetNames, TOUR_STEPS, TOUR_TOTAL, TOUR_KEY, TOUR_LEGACY_KEY, TOUR_FINALE, FINALE_MS } from './tour.ts';
+import { parseState, serializeState, decide, advance, isBot, pageOf, placeBubble, resolveStep, stepTargetNames, TOUR_STEPS, TOUR_TOTAL, tourTotal, TOUR_KEY, TOUR_FINALE, FINALE_MS, TOUR_SAMPLE_HREF } from './tour.ts';
+import { SITE_NAME } from './site.ts';
+import { queryHref, SITUATIONS } from './abSearch.ts';
 
 const UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/130 Safari/537.36';
 const run = (step) => serializeState({ status: 'running', step });
@@ -27,10 +29,10 @@ test('끝냈거나 건너뛴 사람에게는 다시 안 뜸', () => {
 
 test('진행 중: 그 단계의 페이지에서만 이어가고 다른 페이지면 종료', () => {
   assert.deepEqual(decide(run(4), '/', '', UA), { kind: 'resume', step: 4 });
-  assert.deepEqual(decide(run(5), '/games/abc', '', UA), { kind: 'resume', step: 5 });
-  assert.equal(decide(run(5), '/', '', UA).kind, 'end');
+  assert.deepEqual(decide(run(6), '/find', '?n=2&how=coop', UA), { kind: 'resume', step: 6 });
+  assert.equal(decide(run(6), '/', '', UA).kind, 'end');
   assert.equal(decide(run(0), '/community', '', UA).kind, 'end');
-  assert.equal(decide(run(7), '/games/abc/extra', '', UA).kind, 'end');
+  assert.equal(decide(run(7), '/games/abc', '', UA).kind, 'end');
 });
 
 test('단계 진행: 마지막 다음은 마무리', () => {
@@ -39,36 +41,52 @@ test('단계 진행: 마지막 다음은 마무리', () => {
   assert.equal(advance(TOUR_TOTAL - 1), 'finale');
 });
 
-test('단계 정의: 8단계 — 히어로 소개 3개 → 직접 해보기 2개 → 상세 3개', () => {
-  assert.equal(TOUR_TOTAL, 8);
-  assert.deepEqual(TOUR_STEPS.map((s) => s.id), ['hero', 'cmdbar', 'ai', 'people', 'card', 'info1', 'info2', 'compare']);
-  assert.deepEqual(TOUR_STEPS.map((s) => s.page), ['home', 'home', 'home', 'home', 'home', 'detail', 'detail', 'detail']);
-  // 설명만 보는 단계는 "다음" 버튼으로만 진행하고 대상 클릭을 막는다. 직접 해보는 단계(인원·카드·비교)는 막지 않는다
-  assert.deepEqual(TOUR_STEPS.filter((s) => s.action === 'button').map((s) => s.id), ['hero', 'cmdbar', 'ai', 'info1', 'info2']);
-  assert.deepEqual(TOUR_STEPS.filter((s) => s.block).map((s) => s.id), ['hero', 'cmdbar', 'ai', 'info1', 'info2']);
-  assert.deepEqual(TOUR_STEPS.filter((s) => s.action === 'target').map((s) => s.id), ['people', 'card', 'compare']);
-  assert.deepEqual(TOUR_STEPS.filter((s) => !s.optional).map((s) => s.id), ['people', 'card', 'compare']);
-  assert.deepEqual(stepTargetNames(0), ['hero']);
-  assert.deepEqual(stepTargetNames(2), ['ai']);
-  assert.deepEqual(stepTargetNames(5), ['stat-tiles', 'price-card']);
-  assert.deepEqual(stepTargetNames(7), ['compare-add']);
+test('로그인 상태: 로그인 안내 단계가 빠져 7단계, 진행 표시도 7', () => {
+  assert.equal(tourTotal(false), 8);
+  assert.equal(tourTotal(true), 7);
+  assert.equal(advance(5, true), 6);
+  assert.equal(advance(6, true), 'finale');
+  assert.equal(advance(6, false), 7);
+  assert.equal(advance(7, false), 'finale');
 });
 
-test('저장 키는 v2, v1 값이 있는 사람(이미 본 사람)은 처음 방문 취급하지 않음', () => {
-  assert.equal(TOUR_KEY, 'jdn_tour_v2');
-  assert.equal(TOUR_LEGACY_KEY, 'jdn_tour_v1');
-  assert.equal(decide(null, '/', '', UA, null).kind, 'start');
-  for (const v1 of ['{"status":"done","step":3}', '{"status":"skipped","step":0}', '{"status":"running","step":1}', 'completed']) {
-    assert.equal(decide(null, '/', '', UA, v1).kind, 'none');
-  }
-  // v2가 있으면 v1과 상관없이 v2를 따른다 (다시 보기로 v2를 running으로 만든 경우)
-  assert.deepEqual(decide(run(0), '/', '', UA, '{"status":"done","step":3}'), { kind: 'resume', step: 0 });
-  assert.equal(decide(serializeState({ status: 'done', step: 7 }), '/', '', UA, null).kind, 'none');
+test('단계 정의: 8단계 — 환영 → 누구랑·어떻게·뭐 할까·찾기 → 상황 타일 → 결과 근거 → 로그인', () => {
+  assert.equal(TOUR_TOTAL, 8);
+  assert.deepEqual(TOUR_STEPS.map((s) => s.id), ['welcome', 'who', 'how', 'what', 'go', 'situations', 'evidence', 'login']);
+  assert.deepEqual(TOUR_STEPS.map((s) => s.page), ['home', 'home', 'home', 'home', 'home', 'home', 'find', 'find']);
+  // 검색창 단계는 설명만 보는 단계라 대상 클릭을 막고, 상황 타일만 직접 눌러 결과로 간다 (말풍선 "다음"으로도 같은 곳으로 이동)
+  assert.deepEqual(TOUR_STEPS.filter((s) => s.action === 'target').map((s) => s.id), ['situations']);
+  assert.deepEqual(TOUR_STEPS.filter((s) => s.block).map((s) => s.id), ['welcome', 'who', 'how', 'what', 'go', 'evidence', 'login']);
+  assert.equal(TOUR_STEPS[5].nextHref, TOUR_SAMPLE_HREF);
+  assert.equal(TOUR_STEPS[5].hitSelector, '.ab-sit-card');
+  // 결과 화면 단계는 대상이 없으면(근거 배지 없음·로그인 상태) 건너뛴다
+  assert.deepEqual(TOUR_STEPS.filter((s) => s.optional).map((s) => s.id), ['evidence', 'login']);
+  assert.ok(TOUR_STEPS.every((s) => s.title && s.desc && s.targets.length > 0));
+  assert.ok(TOUR_STEPS.every((s) => s.action === 'target' || s.buttonLabel));
+});
+
+test('결과 화면으로 가는 예시 주소는 첫 상황 타일과 같은 조건', () => {
+  assert.equal(TOUR_SAMPLE_HREF, queryHref(SITUATIONS[0].query));
+});
+
+test('대상 이름: 데스크톱 칸·휴대폰 알약, 방문자 히어로·로그인 사용자 검색창 중 보이는 쪽', () => {
+  assert.deepEqual(stepTargetNames(0), ['hero', 'welcome-member']);
+  assert.deepEqual(stepTargetNames(1), ['ab-who', 'ab-pill']);
+  assert.deepEqual(stepTargetNames(4), ['ab-go', 'ab-pill']);
+  assert.deepEqual(stepTargetNames(5), ['situations']);
+  assert.deepEqual(stepTargetNames(6), ['evidence']);
+  assert.deepEqual(stepTargetNames(7), ['login']);
+});
+
+test('저장 키는 v3 — 예전(v1·v2) 값은 읽지 않아서 기존 방문자도 처음 방문으로 본다', () => {
+  assert.equal(TOUR_KEY, 'jdn_tour_v3');
+  assert.ok(TOUR_KEY.startsWith('jdn_'));
+  assert.equal(decide(null, '/', '', UA).kind, 'start');
 });
 
 test('저장된 단계가 범위를 벗어나도 깨지지 않음', () => {
   for (let step = 0; step < TOUR_TOTAL; step++) {
-    const page = TOUR_STEPS[step].page === 'home' ? '/' : '/games/x';
+    const page = TOUR_STEPS[step].page === 'home' ? '/' : '/find';
     assert.deepEqual(decide(run(step), page, '', UA), { kind: 'resume', step });
   }
   assert.equal(parseState('{"status":"running","step":8}').step, 0);
@@ -76,44 +94,21 @@ test('저장된 단계가 범위를 벗어나도 깨지지 않음', () => {
   assert.equal(parseState('{"status":"running","step":"3"}').step, 0);
 });
 
-test('상세 slot 단계: 화면 위에서부터, 문구는 대상을 따라감', () => {
-  const desk = { 'stat-tiles': 90, 'price-card': 360 };
-  assert.deepEqual(orderInfo(desk).map((p) => p.target), ['stat-tiles', 'price-card']);
-  const a = resolveStep(5, desk), b = resolveStep(6, desk);
-  assert.equal(a.names[0], 'stat-tiles');
-  assert.equal(a.title, '인원·평가·플레이 시간은 여기서 봐요');
-  assert.equal(b.names[0], 'price-card');
-  assert.equal(b.title, '지금 가격이랑 역대 최저가예요');
-  assert.equal(a.block, true);
-  // 모바일에서 가격 카드가 위면 순서가 바뀌고 문구도 같이 따라감
-  const mob = { 'stat-tiles': 900, 'price-card': 200 };
-  assert.equal(resolveStep(5, mob).names[0], 'price-card');
-  assert.equal(resolveStep(5, mob).title, '지금 가격이랑 역대 최저가예요');
-  assert.equal(resolveStep(6, mob).names[0], 'stat-tiles');
-  assert.equal(resolveStep(6, mob).action, 'button');
-});
-
-test('상세 slot 단계: 대상이 하나뿐이면 둘째 단계는 비어 건너뜀, 비교 단계는 항상 있음', () => {
-  assert.equal(resolveStep(5, { 'price-card': 100 }).names[0], 'price-card');
-  assert.equal(resolveStep(6, { 'price-card': 100 }), null);
-  assert.equal(resolveStep(5, {}), null);
-  const cmp = resolveStep(7, {});
-  assert.equal(cmp.names[0], 'compare-add');
-  assert.equal(cmp.buttonLabel, '끝내기');
-  assert.equal(cmp.block, false);
-});
-
-test('홈 소개 단계 문구와 마무리(한 줄, 2초)', () => {
-  assert.equal(resolveStep(0, {}).title, 'Select Screen에 온 걸 환영해요');
-  assert.equal(resolveStep(2, {}).names[0], 'ai');
-  assert.equal(resolveStep(3, {}).block, false);
+test('단계 문구: 사이트 이름은 SITE_NAME, 마무리는 한 줄·2초', () => {
+  const w = resolveStep(0, SITE_NAME);
+  assert.equal(w.title, `${SITE_NAME}에 온 걸 환영해요`);
+  assert.equal(w.block, true);
+  assert.equal(resolveStep(5, SITE_NAME).action, 'target');
+  assert.equal(resolveStep(5, SITE_NAME).block, false);
+  assert.equal(resolveStep(7, SITE_NAME).buttonLabel, '끝내기');
   assert.deepEqual(TOUR_FINALE, { title: '준비 끝!' });
   assert.equal(FINALE_MS, 2000);
 });
 
 test('pageOf·isBot', () => {
   assert.equal(pageOf('/'), 'home');
-  assert.equal(pageOf('/games/x1'), 'detail');
+  assert.equal(pageOf('/find'), 'find');
+  assert.equal(pageOf('/games/x1'), null);
   assert.equal(pageOf('/games'), null);
   assert.equal(isBot(UA), false);
   assert.equal(isBot('Yeti/1.1 (NHN Corp.)'), true);

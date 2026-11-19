@@ -13,13 +13,14 @@ import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { execFileSync, spawnSync } from 'child_process';
 import { chromium } from 'playwright';
+import { TOUR_KEY } from '../../app/lib/tour.ts'; // 투어 저장 키 — 버전을 올리면 여기도 같이 바뀐다
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(DIR, '../..');
 const W = 1080, H = 1920, FPS = 30, VW = 390, VH = 693, DSF = W / VW;
 export const DEMO_SEC = 6;
 const T = { zoomEnd: 0.5, tap1: 0.5, typeStart: 0.8, typeEnd: 1.82, tap2: 2.1, tapDur: 0.3, xfade0: 2.4, xfade1: 2.7, scroll0: 2.7, hold0: 3.6, hold1: 4.0, scroll1: 5.3, fade0: 5.6, end: 6.0 };
-const TOUR_OFF = JSON.stringify({ status: 'done', step: 0 }); // app/lib/tour.ts: localStorage jdn_tour_v2 — 사용 가이드 말풍선 끄기
+const TOUR_OFF = JSON.stringify({ status: 'done', step: 0 }); // app/lib/tour.ts: localStorage TOUR_KEY — 사용 가이드 말풍선 끄기
 
 const clamp01 = (x) => Math.min(1, Math.max(0, x));
 const easeOut = (x) => 1 - (1 - clamp01(x)) ** 3;
@@ -103,7 +104,7 @@ export async function renderSiteDemo({ game, query, label, base = 'https://selec
 
   const browser = await chromium.launch();
   const ctx = await browser.newContext({ viewport: { width: VW, height: VH }, deviceScaleFactor: DSF, isMobile: true, hasTouch: true, locale: 'ko-KR', colorScheme: 'dark' });
-  await ctx.addInitScript((v) => { try { localStorage.setItem('jdn_tour_v2', v); } catch { /* 저장소 못 쓰면 가이드가 뜰 수 있음 */ } }, TOUR_OFF);
+  await ctx.addInitScript(([k, v]) => { try { localStorage.setItem(k, v); } catch { /* 저장소 못 쓰면 가이드가 뜰 수 있음 */ } }, [TOUR_KEY, TOUR_OFF]);
   const home = await ctx.newPage(), det = await ctx.newPage();
   try {
     // 준비: 홈·상세를 따로 열어 이미지가 다 로드될 때까지 기다린다. 상세는 끝까지 한 번 내려가 lazy 이미지를 불러온 뒤 맨 위로

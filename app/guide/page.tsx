@@ -9,7 +9,7 @@ import {
   GUIDE_META, GUIDE_HEAD, GUIDE_SECTIONS, GUIDE_FOOT, GUIDE_SHOW_STEAM,
   GUIDE_ACTION_PREFIX, GUIDE_ACTION_SUFFIX, EXAMPLE_GAME_TOKEN,
 } from '../lib/guideCopy';
-import '../mono-tokens.css';
+import '../brand-tokens.css';
 import '../mono-page.css';
 import '../mono-static.css';
 

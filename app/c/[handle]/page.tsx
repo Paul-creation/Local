@@ -4,7 +4,7 @@ import CuratorProfileView from '../../components/CuratorProfileView';
 import { getCuratorProfile } from '../../lib/curators';
 import { withSubjectJosa } from '../../lib/josa';
 import { BASE_OG } from '../../lib/site';
-import '../../mono-tokens.css';
+import '../../brand-tokens.css';
 import '../../mono-page.css';
 import './curator-mono.css';
 

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import WishlistView from '../components/wishlist/WishlistView';
-import '../mono-tokens.css';
+import '../brand-tokens.css';
 import '../mono-page.css';
 import '../mono-lists.css';
 

@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import CuratorProfileView from '../../components/CuratorProfileView';
 import { getCuratorProfile } from '../../lib/curators';
 import { ADMIN_COOKIE, isAdminToken } from '../../lib/adminAuth';
-import '../../mono-tokens.css';
+import '../../brand-tokens.css';
 import '../../mono-page.css';
 import '../../c/[handle]/curator-mono.css';
 

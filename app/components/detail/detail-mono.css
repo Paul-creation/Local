@@ -1,6 +1,6 @@
 /* 게임 상세 모노 — 공통 규칙(배경·포인트 파랑 복원·네온 제거·보조 버튼·회색 안내 문구)은 app/mono-page.css(.mn-inner)로 뺐다. 여기엔 상세 전용만 둔다 */
 /* ---------- 글씨 위계 — 상세는 맨 위 게임 이름(h1)만 흰 네온 ---------- */
-.mn.dx .dx-title { font-weight: 800; letter-spacing: -0.035em; text-shadow: var(--mn-glow-h1); }
+.mn.dx .dx-title { font-weight: 800; letter-spacing: -0.035em; text-shadow: none; }
 .mn.dx :is(.detail-card-title, .dx-votes .detail-card-title, .shots-title, .vote-group-title) { font-weight: 800; letter-spacing: -0.03em; }
 
 /* ---------- 스탯 타일: 표면 #111111, 위쪽 선은 원래 의미 색(--tone) ---------- */

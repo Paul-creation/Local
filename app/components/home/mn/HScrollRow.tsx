@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import SectionHead from '../../brand/SectionHead';
 import { ArrowLeftIcon, ArrowRightIcon } from './icons';
 
 // 메인 가로 스크롤 줄 공용 컴포넌트 — 제목 줄(데스크톱 ←·→ 버튼) + 스크롤 스냅 한 줄 + 양쪽 끝 페이드
@@ -31,13 +32,10 @@ export default function HScrollRow({ id, title, label, perDesktop, perMobile, ch
   const page = (dir: 1 | -1) => rowRef.current?.scrollBy({ left: dir * rowRef.current.clientWidth, behavior: reduced() ? 'auto' : 'smooth' });
   return (
     <section className="mn-sec" aria-labelledby={id}>
-      <div className="mn-sec-head">
-        <h2 id={id}>{title}</h2>
-        {overflow && <div className="mn-hs-arrows">
-          <button type="button" className="mn-hs-arrow" aria-label={`${label} 이전`} disabled={edge.start} onClick={() => page(-1)}><ArrowLeftIcon /></button>
-          <button type="button" className="mn-hs-arrow" aria-label={`${label} 다음`} disabled={edge.end} onClick={() => page(1)}><ArrowRightIcon /></button>
-        </div>}
-      </div>
+      <SectionHead id={id} title={title} actions={overflow ? <div className="mn-hs-arrows">
+        <button type="button" className="mn-hs-arrow" aria-label={`${label} 이전`} disabled={edge.start} onClick={() => page(-1)}><ArrowLeftIcon /></button>
+        <button type="button" className="mn-hs-arrow" aria-label={`${label} 다음`} disabled={edge.end} onClick={() => page(1)}><ArrowRightIcon /></button>
+      </div> : undefined} />
       <div className={`mn-hs${edge.start ? '' : ' has-prev'}${edge.end ? '' : ' has-next'}`} style={{ '--per-d': perDesktop, '--per-m': perMobile } as React.CSSProperties}>
         <ul
           ref={rowRef}

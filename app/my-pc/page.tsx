@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import MyPcView from '../components/pcspec/MyPcView';
-import '../mono-tokens.css';
+import '../brand-tokens.css';
 import '../mono-page.css';
 import './my-pc-mono.css';
 

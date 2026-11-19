@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     for (const p of paths) revalidatePath(p);
     return NextResponse.json({ ok: true, revalidated: parsed.value.ids.length + parsed.value.curators.length });
   }
-  const paths = ['/', '/this-week'];
+  const paths = ['/', '/home-member', '/this-week']; // /home-member: 로그인 사용자용 메인(proxy.ts가 / 요청을 다시 써 줌) — /와 같이 갱신
   for (const p of paths) revalidatePath(p);
   return NextResponse.json({ ok: true, revalidated: paths });
 }

@@ -1,40 +1,58 @@
 // 첫 방문자용 단계별 투어의 진행 규칙 — 화면 없이 판단만 한다 (components/tour/TourRoot이 이 규칙대로 그림)
-// 저장값(localStorage jdn_tour_v1)은 JSON {status, step}. 저장소를 못 쓰면 투어를 띄우지 않는다
+// 저장값(localStorage jdn_tour_v3)은 JSON {status, step}. 저장소를 못 쓰면 투어를 띄우지 않는다
 
-export const TOUR_KEY = 'jdn_tour_v2';
-// v1(4단계 시절)은 단계 번호의 뜻이 달라 읽지 않는다. 다만 v1 값이 있는 사람은 이미 투어를 본 사람이라 v2에서도 처음 방문으로 치지 않는다
-export const TOUR_LEGACY_KEY = 'jdn_tour_v1';
+// 문구의 사이트 이름 자리 — resolveStep이 SITE_NAME(lib/site)으로 바꾼다 (이 파일은 node 시험에서 바로 읽혀 site.ts를 직접 import하지 못함)
+export const SITE_TOKEN = '{SITE}';
 
-export type TourPage = 'home' | 'detail';
+// 검색창 개편(v3)으로 단계가 전부 바뀌어서 키를 올렸다 — 예전 키(v1·v2)는 읽지 않으므로 기존 방문자도 새 투어를 한 번 다시 본다 (jdn_ 접두사는 그대로)
+export const TOUR_KEY = 'jdn_tour_v3';
+
+// 첫 방문 투어 전체 스위치 — false면 투어 말풍선·오버레이·하이라이트·건너뛰기 버튼이 그려지지 않고 투어 코드도 불러오지 않는다 (components/tour/TourGate). 단계·저장 키·시험은 그대로
+export const TOUR_ENABLED = false;
+
+export type TourPage = 'home' | 'find';
 export type TourStep = {
   id: string;
   page: TourPage;
-  // data-tour 속성값 (slot 단계는 비워 둠)
+  // data-tour 속성값. 한 단계에 여러 개를 적으면 화면에 보이는 것만 쓴다 (데스크톱 칸 / 휴대폰 알약, 방문자 히어로 / 로그인 사용자 검색창)
   targets: string[];
   title: string;
   desc: string;
-  // target: 대상을 직접 누르면 다음 / button: 말풍선 버튼으로만 다음 (마지막 단계는 둘 다)
+  // target: 대상을 직접 누르면 다음 / button: 말풍선 버튼으로만 다음
   action: 'target' | 'button';
   buttonLabel?: string;
-  // 설명만 보는 단계 — 대상 요소를 눌러도 아무 일도 안 일어나게 막는다 (검색창 입력·AI 창·칩 필터로 투어가 끊기지 않게)
+  // 설명만 보는 단계 — 대상 요소를 눌러도 아무 일도 안 일어나게 막는다 (검색창 입력·패널이 열려 투어가 끊기지 않게)
   block?: boolean;
   // 대상이 없으면 이 단계만 건너뜀 (없으면 투어 종료)
   optional?: boolean;
-  // 상세의 "화면 위에서부터 하나씩" 단계 — 스탯 타일·가격 카드 중 화면에서 위에 있는 순서대로 slot번째를 보여준다 (resolveStep)
-  slot?: number;
+  // 대상이 나타나길 기다리는 최대 시간(ms) — 결과 화면처럼 목록을 받은 뒤에 그려지는 대상용 (기본: 필수 8000, 선택 1200)
+  wait?: number;
+  // "다음" 버튼으로 넘어갈 때 이동할 주소 (다른 화면의 단계로 이어질 때)
+  nextHref?: string;
+  // action이 target일 때 이 안쪽 요소를 눌렀을 때만 다음으로 (없으면 대상 어디든)
+  hitSelector?: string;
+  // 로그인 상태에서는 아예 없는 단계 (진행 표시 "n/N"의 N에도 안 센다)
+  guestOnly?: boolean;
 };
 
+// 결과 화면으로 가는 예시 조건 — 상황 타일 첫 번째("둘이서 밤샘")와 같은 조건이라 근거 배지와 "N명 다 사면"이 모두 나온다
+export const TOUR_SAMPLE_HREF = '/find?n=2&how=coop';
+
 export const TOUR_STEPS: TourStep[] = [
-  { id: 'hero', page: 'home', targets: ['hero'], title: 'Select Screen에 온 걸 환영해요', desc: '친구랑 할 게임을 인원·가격·할인으로 한 번에 비교하는 곳이에요', action: 'button', buttonLabel: '다음', block: true, optional: true },
-  { id: 'cmdbar', page: 'home', targets: ['cmdbar'], title: '게임 이름이나 태그로 바로 찾아요', desc: '무료·할인 중·내 PC로 돌아가는 게임만 골라볼 수도 있어요', action: 'button', buttonLabel: '다음', block: true, optional: true },
-  { id: 'ai', page: 'home', targets: ['ai'], title: '뭘 할지 모르겠다면', desc: '질문 몇 개로 AI가 골라줘요', action: 'button', buttonLabel: '다음', block: true, optional: true },
-  { id: 'people', page: 'home', targets: ['people-tabs'], title: '친구 몇 명이서 할 거예요?', desc: '인원을 눌러보세요', action: 'target' },
-  { id: 'card', page: 'home', targets: ['first-card'], title: '하나 골라볼까요?', desc: '카드를 눌러 자세히 봐요', action: 'target' },
-  { id: 'info1', page: 'detail', targets: [], title: '', desc: '', action: 'button', buttonLabel: '다음', block: true, optional: true, slot: 0 },
-  { id: 'info2', page: 'detail', targets: [], title: '', desc: '', action: 'button', buttonLabel: '다음', block: true, optional: true, slot: 1 },
-  { id: 'compare', page: 'detail', targets: ['compare-add'], title: '친구랑 고민되면 담아서 비교해요', desc: '버튼을 누르거나 아래 끝내기를 눌러요', action: 'target', buttonLabel: '끝내기' },
+  { id: 'welcome', page: 'home', targets: ['hero', 'welcome-member'], title: `${SITE_TOKEN}에 온 걸 환영해요`, desc: '친구랑 할 게임을 인원·가격·할인으로 한 번에 비교해요', action: 'button', buttonLabel: '다음', block: true },
+  { id: 'who', page: 'home', targets: ['ab-who', 'ab-pill'], title: '누구랑 할 거예요?', desc: '인원부터 골라요. 그 인원이 같이 할 수 있는 게임만 보여줘요', action: 'button', buttonLabel: '다음', block: true },
+  { id: 'how', page: 'home', targets: ['ab-how', 'ab-pill'], title: '어떻게 할래요?', desc: '같이 깨기·서로 붙기처럼 플레이 방식을 골라요', action: 'button', buttonLabel: '다음', block: true },
+  { id: 'what', page: 'home', targets: ['ab-what', 'ab-pill'], title: '뭐 할까요?', desc: '장르를 고르거나 게임 이름을 검색해요', action: 'button', buttonLabel: '다음', block: true },
+  { id: 'go', page: 'home', targets: ['ab-go', 'ab-pill'], title: '다 고르면 찾기를 눌러요', desc: '안 골라도 괜찮아요. 비워 두면 인기 있는 순으로 보여줘요', action: 'button', buttonLabel: '다음', block: true },
+  { id: 'situations', page: 'home', targets: ['situations'], title: '고민될 땐 상황부터 눌러봐요', desc: '"이런 판 어때요?"에서 하나 누르면 그 조건으로 바로 찾아줘요', action: 'target', buttonLabel: '다음', hitSelector: '.ab-sit-card', nextHref: TOUR_SAMPLE_HREF },
+  { id: 'evidence', page: 'find', targets: ['evidence'], title: '왜 이 게임인지 알려줘요', desc: '근거 배지로 조건에 맞는 이유를, 아래 줄로 다 같이 사면 얼마인지 봐요', action: 'button', buttonLabel: '다음', block: true, optional: true, wait: 10000 },
+  { id: 'login', page: 'find', targets: ['login'], title: 'Steam으로 로그인해 보세요', desc: '찜목록과 내 PC에서 돌아가는 게임 찾기를 쓸 수 있어요', action: 'button', buttonLabel: '끝내기', block: true, optional: true, guestOnly: true },
 ];
 export const TOUR_TOTAL = TOUR_STEPS.length;
+// 지금 화면에서 숨겨진 대상을 가리키는 단계 — advance·tourTotal이 건너뛴다 (단계 목록·번호·저장값은 그대로). "이런 판 어때요?" 타일(HomeSections SHOW_SITUATIONS)을 다시 보이게 하면 비운다
+export const TOUR_HIDDEN: readonly string[] = ['situations'];
+// 실제로 보이는 단계 수 — 로그인 상태면 guestOnly 단계가 빠진다 (진행 표시용)
+export const tourTotal = (loggedIn: boolean, hidden: readonly string[] = []) => TOUR_STEPS.filter((s) => !(loggedIn && s.guestOnly) && !hidden.includes(s.id)).length;
 
 export const TOUR_FINALE = { title: '준비 끝!' };
 export const FINALE_MS = 2000;
@@ -59,7 +77,7 @@ export const isBot = (ua: string) => !ua || BOT.test(ua);
 
 export function pageOf(pathname: string): TourPage | null {
   if (pathname === '/') return 'home';
-  if (/^\/games\/[^/]+\/?$/.test(pathname)) return 'detail';
+  if (pathname === '/find' || pathname === '/find/') return 'find';
   return null;
 }
 
@@ -67,16 +85,19 @@ export type Decision = { kind: 'none' } | { kind: 'start' } | { kind: 'resume'; 
 
 // raw: 저장된 값(없으면 null). 첫 방문 + 홈(주소에 검색 조건 없음) + 봇 아님 → 시작
 // 진행 중이면 지금 페이지가 그 단계의 페이지일 때만 이어가고, 아니면(다른 페이지로 갔으면) 종료
-// legacy: v1 저장값 — 있으면(본 사람) 새로 시작하지 않는다
-export function decide(raw: string | null, pathname: string, search: string, ua: string, legacy: string | null = null): Decision {
+export function decide(raw: string | null, pathname: string, search: string, ua: string): Decision {
   const st = parseState(raw);
-  if (!st) return !legacy && pathname === '/' && !search && !isBot(ua) ? { kind: 'start' } : { kind: 'none' };
+  if (!st) return pathname === '/' && !search && !isBot(ua) ? { kind: 'start' } : { kind: 'none' };
   if (st.status !== 'running') return { kind: 'none' };
   return pageOf(pathname) === TOUR_STEPS[st.step].page ? { kind: 'resume', step: st.step } : { kind: 'end' };
 }
 
 // 다음 단계 번호, 마지막이면 'finale'
-export const advance = (step: number): number | 'finale' => (step + 1 >= TOUR_TOTAL ? 'finale' : step + 1);
+export function advance(step: number, loggedIn = false, hidden: readonly string[] = []): number | 'finale' {
+  let to = step + 1;
+  while (to < TOUR_TOTAL && ((loggedIn && TOUR_STEPS[to].guestOnly) || hidden.includes(TOUR_STEPS[to].id))) to++;
+  return to >= TOUR_TOTAL ? 'finale' : to;
+}
 
 export type Box = { left: number; top: number; width: number; height: number };
 export type Placement = { left: number; top: number; side: 'below' | 'above' | 'over'; tailX: number | null };
@@ -95,21 +116,11 @@ export function placeBubble(a: Box, b: { w: number; h: number }, vw: number, vh:
   return { left: clampX((vw - b.w) / 2), top: Math.max(8, vh - b.h - bottomReserve), side: 'over', tailX: null };
 }
 
-export const INFO_ITEMS = [
-  { target: 'stat-tiles', title: '인원·평가·플레이 시간은 여기서 봐요' },
-  { target: 'price-card', title: '지금 가격이랑 역대 최저가예요' },
-];
-// 화면에 있는 INFO_ITEMS를 위쪽 좌표 순으로 (모바일에서 가격 카드가 위면 순서가 바뀜, 문구는 대상을 따라간다)
-export function orderInfo(tops: Record<string, number | undefined>) {
-  return INFO_ITEMS.filter((p) => typeof tops[p.target] === 'number').sort((a, b) => (tops[a.target] as number) - (tops[b.target] as number));
-}
-export const stepTargetNames = (i: number) => (TOUR_STEPS[i].slot === undefined ? TOUR_STEPS[i].targets : INFO_ITEMS.map((p) => p.target));
+export const stepTargetNames = (i: number) => TOUR_STEPS[i].targets;
 
 export type StepContent = { names: string[]; title: string; desc: string; action: 'target' | 'button'; buttonLabel?: string; block: boolean };
-// 지금 단계에 보여줄 내용 — 대상이 없어 비는 slot 단계는 null(건너뜀)
-export function resolveStep(i: number, tops: Record<string, number | undefined>): StepContent | null {
+// 지금 단계에 보여줄 내용
+export function resolveStep(i: number, siteName: string): StepContent {
   const s = TOUR_STEPS[i];
-  if (s.slot === undefined) return { names: s.targets, title: s.title, desc: s.desc, action: s.action, buttonLabel: s.buttonLabel, block: !!s.block };
-  const item = orderInfo(tops)[s.slot];
-  return item ? { names: [item.target], title: item.title, desc: '', action: s.action, buttonLabel: s.buttonLabel, block: !!s.block } : null;
+  return { names: s.targets, title: s.title.replaceAll(SITE_TOKEN, siteName), desc: s.desc.replaceAll(SITE_TOKEN, siteName), action: s.action, buttonLabel: s.buttonLabel, block: !!s.block };
 }

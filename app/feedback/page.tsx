@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import FeedbackForm from '../components/feedback/FeedbackForm';
-import '../mono-tokens.css';
+import '../brand-tokens.css';
 import '../mono-page.css';
 import '../mono-static.css';
 

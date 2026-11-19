@@ -5,7 +5,7 @@ import CompareBuilder from '../../components/CompareBuilder';
 import { BUILDER_FIELDS, MAX_COMPARE, compareBlockReason } from '../../lib/compareRule';
 import { UUID } from '../../lib/postLinks';
 import { selectGames } from '../../lib/visibleGames';
-import '../../mono-tokens.css';
+import '../../brand-tokens.css';
 import '../../mono-page.css';
 import '../compare-mono.css';
 

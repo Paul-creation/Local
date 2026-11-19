@@ -5,7 +5,7 @@ import BackLink from '../components/BackLink';
 import { SITE_NAME, SITE_NAME_FULL, SITE_ALT_NAMES, SITE_URL, BASE_OG } from '../lib/site';
 import { LARGE_LOBBY } from '../lib/players';
 import { FAQ_GUIDE_LINE } from '../lib/guideCopy';
-import '../mono-tokens.css';
+import '../brand-tokens.css';
 import '../mono-page.css';
 import '../mono-static.css';
 

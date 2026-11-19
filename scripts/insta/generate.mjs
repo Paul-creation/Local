@@ -18,6 +18,7 @@ import { CACHE_DIR, OUT_DIR } from './paths.mjs';
 import { fileURLToPath } from 'url';
 import { execFileSync } from 'child_process';
 import { chromium } from 'playwright';
+import { TOUR_KEY } from '../../app/lib/tour.ts'; // 투어 저장 키 — 버전을 올리면 여기도 같이 바뀐다
 import { renderSlide, sizeOf, SIZE } from './template.mjs';
 import { resolveGame, pickCandidates, gameTitle } from './pick.mjs';
 import { loadCopy, expandDetailed } from './detailed.mjs';
@@ -58,10 +59,10 @@ const baseSlides = JSON.parse(raw);
 const slides = (reel ? expandReel(baseSlides, loadCopy(DIR, postId)) : showcase ? expandShowcase(baseSlides, loadCopy(DIR, postId)) : roundup ? expandRoundup(baseSlides, loadCopy(DIR, postId)) : detailed ? await expandDetailed(baseSlides, loadCopy(DIR, postId)) : baseSlides).flatMap((s) => (s.type === 'detail-split' ? Array.from({ length: s.slides ?? 1 }, (_, part) => ({ ...s, part, parts: s.slides ?? 1 })) : [s])); // detail-split 한 줄 = slides장
 if (!Array.isArray(slides) || slides.length === 0) { console.error('json은 슬라이드 배열이어야 해요.'); process.exit(1); }
 
-// 첫 방문자 투어(jdn_tour_v2)가 화면을 덮어 클릭을 막으니, 투어를 건너뛴 상태로 시작한다
+// 첫 방문자 투어(TOUR_KEY)가 화면을 덮어 클릭을 막으니, 투어를 건너뛴 상태로 시작한다
 async function newContext(browser, opts) {
   const ctx = await browser.newContext(opts);
-  await ctx.addInitScript(() => { try { localStorage.setItem('jdn_tour_v2', JSON.stringify({ status: 'skipped', step: 0 })); } catch { /* 저장소 없음 */ } });
+  await ctx.addInitScript((key) => { try { localStorage.setItem(key, JSON.stringify({ status: 'skipped', step: 0 })); } catch { /* 저장소 없음 */ } }, TOUR_KEY);
   return ctx;
 }
 

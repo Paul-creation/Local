@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import PosterCard, { posterBadge } from './mn/PosterCard';
+import SectionHead from '../brand/SectionHead';
 import { useWishlist } from '../wishlist/useWishlist';
 import { useMyPc } from '../pcspec/useMyPc';
 import { useOwned } from '../owned/useOwned';
@@ -97,10 +98,7 @@ export default function PersonalRecs({ homeExcluded }: { homeExcluded: string[] 
   const title = tasteMode ? '취향에 맞는 게임' : '찜한 게임과 비슷한 게임';
   return (
     <section className="mn-sec" aria-labelledby="personal-recs-title">
-      <div className="mn-sec-head">
-        <h2 id="personal-recs-title">{title}</h2>
-        {tasteMode && <a href="/library?tab=taste" className="mn-more">더 보기</a>}
-      </div>
+      <SectionHead id="personal-recs-title" title={title} more={tasteMode ? { href: '/library?tab=taste', text: '더 보기', hard: true } : undefined} />
       <div className="mn-row" ref={rowRef} tabIndex={0} role="region" aria-label={`${title} 목록`}>
         {shown.map((g) => <PosterCard key={g.id} game={{ ...g, ...extraMap[g.id] }} badge={posterBadge(g)} />)}
       </div>

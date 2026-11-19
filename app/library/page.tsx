@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import BackLink from '../components/BackLink';
 import LibraryView from '../components/library/LibraryView';
-import '../mono-tokens.css';
+import '../brand-tokens.css';
 import '../mono-page.css';
 import '../mono-lists.css';
 

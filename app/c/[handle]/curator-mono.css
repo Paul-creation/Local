@@ -8,6 +8,6 @@
 .mn-inner .curator-tab[aria-selected="true"] { background: var(--mn-fg); color: var(--mn-fg-inv); }
 .mn-inner .curator-tab:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 .mn-inner .curator-profile-actions .curator-btn { min-height: 36px; height: 36px; padding: 0 16px; font-size: 14px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-.mn-inner .curator-btn-ig { background: var(--mn-instagram); color: #fff; font-weight: 600; border: 0; box-shadow: var(--mn-instagram-glow); }
+.mn-inner .curator-btn-ig { background: var(--mn-instagram); color: #fff; font-weight: 600; border: 0; box-shadow: none; }
 .mn-inner .curator-btn-ig:hover { background: var(--mn-instagram); filter: brightness(1.08); }
 .mn-inner .curator-btn-ig svg { flex-shrink: 0; }
