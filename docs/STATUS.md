@@ -1,6 +1,6 @@
 # Select Screen 현재 상황
 
-기준: 2026-11-17 (main f5a3abd)
+기준: 2026-11-19 (main 453952f)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 11/19: fix/curator-revalidate — /api/admin/revalidate가 { curators: [handle] }를 받아 /c/<handle>과 메인(/)을 갱신(ids와 같이 가능, 핸들 최대 20개, 형식 검사). import-curator-queue --apply는 연결이 생기면 그 큐레이터 페이지·메인·연결된 게임 상세를 갱신(ADMIN_REVALIDATE_KEY 없거나 실패해도 계속), 관리자 게시물 연결(connect)은 새 연결이 생기면 서버에서 바로 revalidatePath. 테스트 4개 추가. build·test 569개 통과
 - 11/17: chore/rename-visible-text — 헤더·푸터·OG 라우트는 SITE_NAME을 써서 이미 바뀜, 이미지에 박혀 있던 public/og-default.png의 "JamiDuNow"를 npm run og로 다시 만들어 "Select Screen"으로 교체. 375·360·320px 헤더 한 줄·겹침 없음(CSS 변경 없음). build·test 565개 통과
 - 11/17: chore/rename-select-screen — 사이트 이름 JamiDuNow → Select Screen, 도메인 jamidunow.com → select-screen.com. site.ts(SITE_NAME·SITE_URL 기본값·alternateName에 옛 이름 JamiDuNow·재밌드나 유지(JDN 제거)·메타 설명에 "픽창"), proxy.ts(옛 jamidunow.com·www·game-info-hub.vercel.app을 select-screen.com으로 301), 가이드·투어 문구, scripts 기본 주소, scripts/insta 로고·URL 문구 변경. 로고·파비콘 "J" 이미지, 이메일 jamidunow@gmail.com, DB 이름, localStorage 키(jdn_*)·CSS 클래스(jdn-tour)는 그대로
 - 11/11: chore/insta-integrate — insta 브랜치 5개(fix/insta-detail-footer, insta/sbg-reel-fix, insta/nobody-reel, insta/goatastrophe-reel, insta/one-tank-trip)를 main에 통합. reel-trend.mjs는 site-demo(siteDemo·outroAt·xfade·${SUF})와 prepareClip·fit-blur·atempo 2단·마지막 멘트 템플릿·발음 검사를 함께 살림(본편 길이 bodyDur, 이어붙이기 outroAt). reel-single.mjs 스타일은 main 기준 유지. 옛 copy(finals-week·mountain-goatastrophe·trash-island·crack-trend·crack-trend-v2)에 closing:false·pitch stt/stretch:false를 넣어 예전 방식 그대로 렌더. planFixed copy는 정지 프레임 검사 실패로 중단하지 않음. 렌더 캐시·결과는 worktree가 아니라 메인 폴더 scripts/insta/{cache,out}(paths.mjs). Finals Week(--site-demo)·Goatastrophe 렌더 비교로 길이·정지 구간·장면 전환 동일 확인, One Tank Trip은 내레이션·클립 원본이 없어져 렌더 검증 못 함. build·test 546개 통과
@@ -171,6 +172,7 @@
 - 메인 순서: 이벤트 배너(900px 미만에서는 한 줄 띠) → h1 → 설명 → 검색 → 인원 → 내 PC 바 → 인원별 추천 → 빠른 칩 3개 → 찜 추천 → 지금 뜨는 게임 → 이번주의 게임(h2 제목 + 이번 주 할인 마감 링크) → 스트리머 → 인기 게시물(기준 이상일 때만)
 
 ## 진행 중
+- 큐레이터 대기열 SQL 실행 대기(사용자): 겜로그 게시물 10개(게임 20개) — /workspaces/reports/gamelog-queue.sql. 실행 뒤 import-curator-queue 미리보기 → --apply로 가져오기. 가져온 appid: One More Lawn 5378110·TANUKI 3218570·HANDS OVER 4661070·QUIET 4228630·Dumpster Gang 2870790·Crypto in a Haystack 5330680·Mayday Airways 5460910·River Drift 4382680·Red Rust Pioneers 3664440·예비군 5367010·Grave Mistakes(기막힌 상조회사) 4635290·My Dirty Little Lake 5375170·Supermarket Chaos 4800590·Never Sort By Color 4876650·DinoBones 5064340·Bunker Tidy Up 5212940·Tidy Up the Flower Shop 5221510·Leaf it Alone 3981100·Orion Blue 4264000·HAPPY PROPAGANDA 4950600
 - 배포 뒤 확인 대기(사용자): chore/rename-select-screen — Vercel에서 select-screen.com 도메인 연결·Primary 지정(옛 jamidunow.com은 연결 유지해 301), 환경변수 NEXT_PUBLIC_SITE_URL(https://select-screen.com)·NEXT_PUBLIC_SITE_NAME(설정돼 있다면 삭제 또는 Select Screen)·NEXT_PUBLIC_SITE_NAME_KO(있다면 확인) 변경 후 재배포, GitHub Actions 시크릿의 NEXT_PUBLIC_SITE_URL도 확인. 인스타 계정 핸들 jamidunow는 별도
 - 머지 후 확인 대기(사용자): fix/detail-restore-items — 프로덕션 상세(1440px)에서 스크롤 시 오른쪽 가격 카드가 따라오는지, 모바일에서 한눈에 보기 아래에 카드가 있는지, It Takes Two 한눈에 보기에 "함께 클리어까지 15시간". 인스타 detail 캡처(generate.mjs)는 다음에 돌릴 때 확인
 - 백업: 원격 backup/wt-nobody(insta/nobody-reel 커밋 6d6d4f3·0d06e81, 필요 없으면 삭제)
