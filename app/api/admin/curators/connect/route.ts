@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { createClient } from '@supabase/supabase-js';
+import { pathsToRevalidate } from '../../../../lib/revalidateBody';
 import { isAdmin } from '../../../../lib/adminAuth';
 import { LIMITS, isAppid, isUuid, normalizePostUrl, postTypeFor, postedAtIso } from '../../../../lib/curatorImport';
 
@@ -29,7 +31,7 @@ export async function POST(req: NextRequest) {
   if (gameIds.length > LIMITS.names || queueRaw.length > LIMITS.names) return fail(`한 번에 ${LIMITS.names}개까지 가능해요.`);
   if (!gameIds.length && !queueRaw.length) return fail('연결할 게임을 체크해 주세요.');
 
-  const { data: curator, error: cErr } = await supabase.from('curators').select('id').eq('id', body.curatorId).maybeSingle();
+  const { data: curator, error: cErr } = await supabase.from('curators').select('id, handle').eq('id', body.curatorId).maybeSingle();
   if (cErr) return fail(cErr.message, 500);
   if (!curator) return fail('없는 계정이에요.');
 
@@ -70,6 +72,10 @@ export async function POST(req: NextRequest) {
     if (error) return fail(`연결 실패: ${error.message}`, 500);
     result.linked = data?.length ?? 0;
     result.alreadyLinked = validIds.length - result.linked;
+    // 새 연결이 생겼으면 그 큐레이터 페이지·메인·게임 상세를 바로 새로 만든다 (같은 서버라 키 없이 직접 무효화)
+    if (result.linked) {
+      try { for (const p of pathsToRevalidate({ ids: (data || []).map((r) => r.game_id as string), curators: [curator.handle as string] })) revalidatePath(p); } catch { /* 하루 안에 저절로 갱신됨 */ }
+    }
   }
 
   if (queueList.length) {

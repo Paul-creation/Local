@@ -49,3 +49,25 @@ export async function flushChangedGames({ file = CHANGED_FILE, env = process.env
   log(`♻️  상세 페이지 갱신 요청 ${ids.length - failed}개 (호출 ${calls}번${failed ? `, 실패 ${failed}개` : ''})`);
   return { ids: ids.length, calls, failed };
 }
+
+// 큐레이터 게시물을 추가한 뒤 그 큐레이터 페이지(/c/<handle>)·메인·연결된 게임 상세를 바로 새로 만들게 한다. 키가 없거나 실패해도 던지지 않음(하루 안에 저절로 갱신됨)
+export async function revalidateCurators({ handles, gameIds = [], env = process.env, fetchImpl = fetch, log = console.log } = {}) {
+  const hs = [...new Set((handles || []).filter(Boolean))];
+  if (!hs.length) return { ok: false, skipped: 'none' };
+  const key = env.ADMIN_REVALIDATE_KEY;
+  if (!key) { log('ℹ️  ADMIN_REVALIDATE_KEY 없음 — 큐레이터 페이지 갱신 생략 (하루 안에 저절로 갱신됨)'); return { ok: false, skipped: 'no-key' }; }
+  const site = (env.NEXT_PUBLIC_SITE_URL || 'https://select-screen.com').replace(/\/$/, '');
+  const ids = [...new Set(gameIds.filter(Boolean))].slice(0, MAX_IDS_PER_CALL);
+  try {
+    const res = await fetchImpl(`${site}/api/admin/revalidate`, {
+      method: 'POST',
+      headers: { 'x-admin-key': key, 'content-type': 'application/json' },
+      body: JSON.stringify({ curators: hs.slice(0, 20), ...(ids.length ? { ids } : {}) }),
+    });
+    log(res.ok ? `♻️  큐레이터 페이지 갱신 요청 ${hs.length}개 (+게임 상세 ${ids.length}개)` : `⚠️ 큐레이터 페이지 갱신 실패 (${res.status})`);
+    return { ok: res.ok };
+  } catch (e) {
+    log(`⚠️ 큐레이터 페이지 갱신 실패 (${e.message})`);
+    return { ok: false };
+  }
+}
