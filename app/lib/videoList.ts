@@ -5,11 +5,12 @@
 // tier는 호출하는 쪽이 lib/streamerPick의 tierOf로 계산해서 넘긴다
 // 자르기: 같은 video_id는 앞에 온 것 하나만, 친구랑 플레이 최대 3개, 하이라이트 최대 2개, 스트리머 1명당 최대 2개, vod는 전체 최대 2개, 전체 최대 8개 (스트리머 영상 자리 3개 확보)
 export type VideoInput =
-  | { source: 'coop'; rel?: number; video_id: string; title: string; channel_title: string | null; published_at: string | null; view_count: number | null }
-  | { source: 'highlight'; rel?: number; video_id: string; title: string; channel_title: string | null; published_at: string | null; view_count: number | null }
+  | { source: 'coop'; rel?: number; video_id: string; title: string; channel_title: string | null; published_at: string | null; view_count: number | null; duration_sec?: number | null }
+  | { source: 'highlight'; rel?: number; video_id: string; title: string; channel_title: string | null; published_at: string | null; view_count: number | null; duration_sec?: number | null }
   | { source: 'streamer'; rel?: number; video_id: string; title: string; streamer_name: string; tier: 1 | 2 | 3; published_at: string | null; view_count: number | null };
 
-export type VideoItem = { video_id: string; title: string; label: string; published_at: string | null; view_count: number | null };
+// channel: 화면에 쓰는 채널·스트리머 이름, duration_sec: 길이(game_videos에만 저장됨 — 없으면 null)
+export type VideoItem = { video_id: string; title: string; label: string; channel: string | null; duration_sec: number | null; published_at: string | null; view_count: number | null };
 
 export const MAX_VIDEOS = 8;
 export const MAX_COOP = 3;
@@ -50,7 +51,7 @@ export function buildVideoList(inputs: VideoInput[]): VideoItem[] {
       if (v.tier === 3) vod++;
     }
     seen.add(v.video_id);
-    out.push({ video_id: v.video_id, title: v.title, label: labelOf(v), published_at: v.published_at, view_count: v.view_count });
+    out.push({ video_id: v.video_id, title: v.title, label: labelOf(v), channel: v.source === 'streamer' ? v.streamer_name : v.channel_title, duration_sec: v.source === 'streamer' ? null : v.duration_sec ?? null, published_at: v.published_at, view_count: v.view_count });
   }
   // 맨 앞: 가장 관련이 확실한 영상 (rel 최고, 같으면 지금 순서의 앞쪽). 나머지 순서는 그대로
   let best = 0;

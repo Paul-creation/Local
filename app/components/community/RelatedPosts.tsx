@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { db, PUBLIC_POST_LIST, type PostListItem } from '../../lib/community';
 import { BOARDS, timeAgo } from '../../lib/communityBoards';
 import { UUID } from '../../lib/postLinks';
+import GdSection from '../detail/GdSection';
 
 // 게임 상세 "관련 게시물" — 직접 고른 게임(game_id) 또는 자동 매칭(related_game_ids)된 최근 글 3개, 숨김 글 제외. 없으면 안 그림
 export default async function RelatedPosts({ gameId }: { gameId: string }) {
@@ -13,8 +14,7 @@ export default async function RelatedPosts({ gameId }: { gameId: string }) {
   if (!posts.length) return null;
 
   return (
-    <section className="detail-card">
-      <h3 className="detail-card-title">관련 게시물</h3>
+    <GdSection title="관련 게시물">
       <ul className="cm-list">
         {posts.map((p) => (
           <li key={p.id}>
@@ -29,6 +29,6 @@ export default async function RelatedPosts({ gameId }: { gameId: string }) {
           </li>
         ))}
       </ul>
-    </section>
+    </GdSection>
   );
 }

@@ -17,11 +17,11 @@ export default function ActivityChips({ confirmed, unsure }: { confirmed: string
 
   return (
     <>
-      {confirmed.map((label) => <span key={label} className="activity-chip">{label}</span>)}
+      {confirmed.map((label) => <span key={label} className="gd-chip is-pill">{label}</span>)}
       {shown.map((label) => {
         const on = tip === label;
         return (
-          <span key={label} className="activity-chip is-unsure">
+          <span key={label} className="gd-chip is-pill is-unsure">
             {label}
             <InfoTip
               label={`${label}: 확인 중이 무슨 뜻인가요?`}
@@ -33,7 +33,7 @@ export default function ActivityChips({ confirmed, unsure }: { confirmed: string
         );
       })}
       {unsure.length > 0 && hidden > 0 && !open && (
-        <button type="button" className="activity-chip is-unsure activity-more" aria-expanded={false} onClick={() => setOpen(true)}>
+        <button type="button" className="gd-chip is-pill is-unsure activity-more" aria-expanded={false} onClick={() => setOpen(true)}>
           +{hidden}
         </button>
       )}

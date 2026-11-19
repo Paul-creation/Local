@@ -1,6 +1,7 @@
 'use client';
 
 import PosterCard, { posterBadge } from './home/mn/PosterCard';
+import GdSection from './detail/GdSection';
 
 const SHOW = 6;
 
@@ -11,11 +12,10 @@ export default function SimilarGames({ games }: { games: any[] }) {
   const shown = games.slice(0, SHOW);
   if (shown.length === 0) return null;
   return (
-    <section className="dx-wide similar-section" aria-labelledby="similar-title">
-      <div className="sec-head"><h3 id="similar-title" className="sec-title">이 게임과 비슷한 게임</h3></div>
+    <GdSection title="이 게임과 비슷한 게임">
       <ul className="mn-grid">
         {shown.map((g) => <li key={g.id}><PosterCard game={g} badge={posterBadge(g)} /></li>)}
       </ul>
-    </section>
+    </GdSection>
   );
 }

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import OutboundLink from './OutboundLink';
+import GdSection from './detail/GdSection';
 
 type Item = { id: string; postUrl: string; handle: string; displayName: string };
 
@@ -7,8 +8,7 @@ type Item = { id: string; postUrl: string; handle: string; displayName: string }
 export default function CuratorsOfGame({ items, gameId }: { items: Item[]; gameId: string }) {
   if (!items.length) return null;
   return (
-    <section className="curators-card" aria-labelledby="curators-title">
-      <h3 id="curators-title" className="detail-card-title">이 게임을 소개한 계정</h3>
+    <GdSection title="이 게임을 소개한 계정">
       <ul className="curator-list">
         {items.map((c) => (
           <li key={c.id} className="curator-row">
@@ -20,6 +20,6 @@ export default function CuratorsOfGame({ items, gameId }: { items: Item[]; gameI
           </li>
         ))}
       </ul>
-    </section>
+    </GdSection>
   );
 }

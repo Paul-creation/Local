@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { LIMITS } from '../../lib/communityBoards';
 import { send, loadNickname, saveNickname } from './api';
 import { CommentItem, type Comment } from './Comments';
+import GdSection from '../detail/GdSection';
 
 const MAX = LIMITS.gameComment[1];
 
@@ -29,20 +30,25 @@ export default function OpinionBox({ gameId, initial }: { gameId: string; initia
   };
 
   return (
-    <section className="detail-card">
-      <h3 className="detail-card-title">의견 달기</h3>
-      <form className="cm-comment-form cm-opinion-form" onSubmit={(e) => { e.preventDefault(); submit(); }}>
-        <textarea className="cm-input cm-textarea-xs" placeholder="이 게임 어땠어요? 한두 줄로 남겨주세요" value={body} maxLength={MAX} onChange={(e) => setBody(e.target.value)} aria-label="의견" />
-        <div className="cm-inline-row">
-          <input className="cm-input" placeholder="닉네임" value={nickname} maxLength={LIMITS.nickname[1]} onChange={(e) => setNickname(e.target.value)} aria-label="닉네임" />
-          <input className="cm-input" type="password" placeholder="비밀번호" value={password} maxLength={LIMITS.password[1]} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" aria-label="비밀번호" />
-          <button className="cm-btn cm-btn-primary" disabled={busy || !body.trim()}>등록</button>
+    <GdSection title="의견 달기">
+      <div className="gd-box gd-opinion">
+      <form className="gd-form" onSubmit={(e) => { e.preventDefault(); submit(); }}>
+        <label className="gd-field">
+          <span className="gd-field-label">이 게임 해본 사람 한마디</span>
+          <textarea rows={3} placeholder={`친구랑 해보니 어땠어요? (${MAX}자)`} value={body} maxLength={MAX} onChange={(e) => setBody(e.target.value)} />
+        </label>
+        <div className="gd-form-inputs">
+          <input placeholder="닉네임" value={nickname} maxLength={LIMITS.nickname[1]} onChange={(e) => setNickname(e.target.value)} aria-label="닉네임" />
+          <input type="password" placeholder="비밀번호" value={password} maxLength={LIMITS.password[1]} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" aria-label="비밀번호" />
         </div>
-        <p className="cm-hint">{[...body].length} / {MAX}자 · 비밀번호는 수정·삭제할 때 써요 · <a href="/community/policy">운영정책</a></p>
+        <div className="gd-form-foot">
+          <span className="gd-form-hint">닉네임과 비밀번호로 수정·삭제할 수 있어요 · <a href="/community/policy">운영정책</a></span>
+          <button type="submit" className="gd-submit" disabled={busy || !body.trim()}>등록</button>
+        </div>
         {error && <p className="cm-error">{error}</p>}
       </form>
       {list.length === 0 ? (
-        <p className="cm-hint cm-hint-gap">아직 의견이 없어요. 첫 의견을 남겨주세요!</p>
+        <p className="gd-empty">아직 의견이 없어요. 첫 의견을 남겨주세요!</p>
       ) : (
         <ul className="cm-comment-list">
           {list.map((c) => (
@@ -57,6 +63,7 @@ export default function OpinionBox({ gameId, initial }: { gameId: string; initia
           ))}
         </ul>
       )}
-    </section>
+      </div>
+    </GdSection>
   );
 }
