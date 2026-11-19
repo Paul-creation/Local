@@ -23,6 +23,7 @@ import HeartButton from '../../components/wishlist/HeartButton';
 import { translateTag } from '../../lib/tagTranslate';
 import GameVotes from '../../components/GameVotes';
 import PlayerCountVote from '../../components/PlayerCountVote';
+const SHOW_VOTES = false;
 import { buyTimingLine, SAME_AS_LOWEST } from '../../lib/buyTiming';
 import VideoPreviewSection from '../../components/VideoPreviewSection';
 import { buildVideoList, type VideoInput } from '../../lib/videoList';
@@ -530,8 +531,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           />
 
         <div className="dx-votes">
-            <GameVotes gameId={game.id} />
-            {isMulti && <PlayerCountVote gameId={game.id} />}
+            {/* 투표 두 섹션(어떤 상황에서 좋아요? · 몇 명이서 할 때 제일 재밌었나요?)은 당분간 그리지 않는다 — 컴포넌트·투표 데이터는 그대로 */}
+            {SHOW_VOTES && <GameVotes gameId={game.id} />}
+            {SHOW_VOTES && isMulti && <PlayerCountVote gameId={game.id} />}
           </div>
 
           {/* 링크 줄 */}

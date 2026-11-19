@@ -49,8 +49,10 @@ export const TOUR_STEPS: TourStep[] = [
   { id: 'login', page: 'find', targets: ['login'], title: 'Steam으로 로그인해 보세요', desc: '찜목록과 내 PC에서 돌아가는 게임 찾기를 쓸 수 있어요', action: 'button', buttonLabel: '끝내기', block: true, optional: true, guestOnly: true },
 ];
 export const TOUR_TOTAL = TOUR_STEPS.length;
+// 지금 화면에서 숨겨진 대상을 가리키는 단계 — advance·tourTotal이 건너뛴다 (단계 목록·번호·저장값은 그대로). "이런 판 어때요?" 타일(HomeSections SHOW_SITUATIONS)을 다시 보이게 하면 비운다
+export const TOUR_HIDDEN: readonly string[] = ['situations'];
 // 실제로 보이는 단계 수 — 로그인 상태면 guestOnly 단계가 빠진다 (진행 표시용)
-export const tourTotal = (loggedIn: boolean) => TOUR_STEPS.filter((s) => !(loggedIn && s.guestOnly)).length;
+export const tourTotal = (loggedIn: boolean, hidden: readonly string[] = []) => TOUR_STEPS.filter((s) => !(loggedIn && s.guestOnly) && !hidden.includes(s.id)).length;
 
 export const TOUR_FINALE = { title: '준비 끝!' };
 export const FINALE_MS = 2000;
@@ -91,9 +93,9 @@ export function decide(raw: string | null, pathname: string, search: string, ua:
 }
 
 // 다음 단계 번호, 마지막이면 'finale'
-export function advance(step: number, loggedIn = false): number | 'finale' {
+export function advance(step: number, loggedIn = false, hidden: readonly string[] = []): number | 'finale' {
   let to = step + 1;
-  while (to < TOUR_TOTAL && loggedIn && TOUR_STEPS[to].guestOnly) to++;
+  while (to < TOUR_TOTAL && ((loggedIn && TOUR_STEPS[to].guestOnly) || hidden.includes(TOUR_STEPS[to].id))) to++;
   return to >= TOUR_TOTAL ? 'finale' : to;
 }
 

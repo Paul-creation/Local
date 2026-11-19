@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import './tour.css';
 import { SITE_NAME } from '../../lib/site';
 import {
-  TOUR_KEY, TOUR_STEPS, TOUR_FINALE, FINALE_MS,
+  TOUR_KEY, TOUR_STEPS, TOUR_HIDDEN, TOUR_FINALE, FINALE_MS,
   decide, advance, tourTotal, serializeState, placeBubble, resolveStep, stepTargetNames,
   type Box, type Placement, type StepContent, type TourState,
 } from '../../lib/tour';
@@ -115,7 +115,7 @@ export default function TourRoot() {
         return;
       }
       if (!def.optional) { if (!first) write({ status: 'done', step: at }); return; }
-      const to = advance(at, isLoggedIn());
+      const to = advance(at, isLoggedIn(), TOUR_HIDDEN);
       if (to === 'finale') { finish('done', at, true); return; }
       at = to;
     }
@@ -139,13 +139,14 @@ export default function TourRoot() {
 
   // go: 말풍선 버튼으로 넘어가는 경우 — 다른 화면의 단계면 그 주소로 직접 이동한다 (대상을 눌러 넘어갈 때는 눌린 링크가 이동시킴)
   const next = useCallback((step: number, go = false) => {
-    const to = advance(step, isLoggedIn());
+    const to = advance(step, isLoggedIn(), TOUR_HIDDEN);
     if (to === 'finale') return finish('done', step, true);
     gen.current++;
     setView(null);
     if (TOUR_STEPS[to].page !== TOUR_STEPS[step].page) { // 새 페이지에서 pathname 효과가 이어감
       write({ status: 'running', step: to });
-      const href = TOUR_STEPS[step].nextHref;
+      // 건너뛴(숨겨진) 단계가 다른 화면으로 이어 주던 주소가 있으면 그 주소로 (상황 타일 단계가 빠져도 결과 화면 단계로 이어진다)
+      const href = TOUR_STEPS[step].nextHref ?? TOUR_STEPS.slice(step + 1, to).map((s) => s.nextHref).find(Boolean);
       if (go && href) router.push(href);
       return;
     }
@@ -250,7 +251,7 @@ export default function TourRoot() {
   }
 
   const def = view.c;
-  const total = tourTotal(isLoggedIn());
+  const total = tourTotal(isLoggedIn(), TOUR_HIDDEN);
   const lay = layout && layout.key === viewKey(view) ? layout : null;
   return (
     <div className="jdn-tour">

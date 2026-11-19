@@ -4,8 +4,13 @@
 .ab { position: relative; z-index: 3; max-width: 880px; margin-inline: auto; text-align: left; }
 .ab, .ab * { text-shadow: none; }
 .ab-row { display: flex; align-items: center; gap: 12px; }
-.ab-bar { position: relative; flex: 1; min-width: 0; display: flex; align-items: center; padding: 6px; background: rgba(30, 29, 26, .88); border: 1px solid var(--line-strong); border-radius: var(--r-search); box-shadow: var(--shadow); }
+.ab-bar { position: relative; flex: 0 1 auto; min-width: 0; display: flex; align-items: center; padding: 6px; background: rgba(30, 29, 26, .88); border: 1px solid var(--line-strong); border-radius: var(--r-search); box-shadow: var(--shadow); }
 .ab-slot { position: relative; flex: 1 1 0; min-width: 0; }
+/* 홈 검색창은 칸 폭 고정(누구랑·어떻게 170px, 뭐 할까 190px) + 찾기 버튼이 바로 오른쪽 — 막대 전체는 내용 폭만큼만, 가운데 */
+.ab-home { width: fit-content; }
+.ab-home .ab-slot { flex: 0 0 170px; }
+.ab-home .ab-slot:nth-child(3) { flex-basis: 190px; }
+.ab-home .ab-cell { padding-inline: 20px; }
 .ab-slot + .ab-slot::before { content: ""; position: absolute; left: 0; top: 14px; bottom: 14px; width: 1px; background: var(--line-strong); }
 .ab-slot:has(.is-open)::before, .ab-slot:has(.is-open) + .ab-slot::before { opacity: 0; }
 .ab-cell { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; min-height: 58px; padding: 10px 24px; font-family: inherit; text-align: left; color: var(--ink); background: transparent; border: 0; border-radius: 10px; cursor: pointer; }
@@ -91,6 +96,7 @@
 .ab-sheet-foot .ab-go { margin-left: 0; }
 
 @media (max-width: 767px) {
+  .ab-home { width: auto; }
   .ab-desktop { display: none; }
   .ab-pill { display: flex; }
   .ab-sheet { display: flex; }

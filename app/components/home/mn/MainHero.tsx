@@ -4,11 +4,9 @@
 import { useEffect, useRef, useState } from 'react';
 import SearchPanel from '../../search/SearchPanel';
 import AbSearch from '../ab/AbSearch';
-import AIRecommend from '../../AIRecommend';
-import { SparkIcon } from './icons';
 import type { GameFilters } from '../../../lib/useGameFilters';
 
-// 메인 히어로: 배경 세로 표지 벽(흐리게, 3줄·열 단위로 채움) 위에 어두운 그라데이션 두 겹 → 제목 한 줄 → 3칸 검색창(+ AI 추천)
+// 메인 히어로: 배경 세로 표지 벽(흐리게, 3줄·열 단위로 채움) 위에 어두운 그라데이션 두 겹 → 제목 한 줄 → 3칸 검색창
 // member(로그인): 제목 없이 검색창만 가운데, 높이도 낮다 (서버에서 정해 첫 HTML부터 그렇다). 표지 벽·그라데이션은 방문자와 같다
 // 검색 결과를 볼 때는 예전 모양(검색창 줄만)으로 돌아간다 — 검색창이 같은 자리에 남도록 요소 위치는 두 모드가 같고 클래스만 바뀐다 (입력 중 포커스 유지)
 // home-only로 감싼 부분은 필터 주소로 들어온 첫 HTML에서 숨김 (globals.css)
@@ -48,11 +46,12 @@ export default function MainHero({ games, filters, showHome, sidebar = false, co
           </div>
         )}
         {showHome ? (
-          // 홈: 에어비앤비식 3칸 검색창(AI 추천 버튼은 그 오른쪽 그대로). 결과 화면(아래)은 예전 검색창 그대로
+          // 홈: 에어비앤비식 3칸 검색창. 결과 화면(아래)은 예전 검색창 그대로
           <div className="ab-hero" data-tour="cmdbar">
+            {/* AI 추천 버튼(AIRecommend, trailing 자리)은 당분간 그리지 않는다 — 코드는 그대로, 나중에 한 줄 상황 입력으로 다시 쓸 예정 */}
             {member
-              ? <div data-tour="welcome-member"><AbSearch games={games} trailing={<AIRecommend icon={<SparkIcon />} />} /></div>
-              : <AbSearch games={games} trailing={<AIRecommend icon={<SparkIcon />} />} />}
+              ? <div data-tour="welcome-member"><AbSearch games={games} /></div>
+              : <AbSearch games={games} />}
           </div>
         ) : (
           <div className="home-search">

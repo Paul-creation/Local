@@ -27,13 +27,12 @@ main.page:has(.mn-page) + .site-footer { margin-top: 0; }
   radial-gradient(ellipse 70% 60% at 50% 42%, rgba(20, 19, 17, .15) 0%, rgba(20, 19, 17, .55) 60%, rgba(20, 19, 17, .8) 100%),
   linear-gradient(180deg, rgba(20, 19, 17, .85) 0%, transparent 22%);
   -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%); mask-image: linear-gradient(to bottom, #000 55%, transparent 100%); }
-.mn-h1 { margin: 0 0 var(--sp-6); font-size: clamp(40px, 7.2vw, 72px); font-weight: var(--title-weight); letter-spacing: -0.035em; line-height: 1.12; word-break: keep-all; color: var(--ink); }
+.mn-h1 { margin: 0 0 36px; font-size: clamp(40px, 7.2vw, 72px); font-weight: var(--title-weight); letter-spacing: -0.035em; line-height: 1.12; word-break: keep-all; color: var(--ink); }
 /* 로그인 사용자: 제목 없이 검색창만 — 검색창 위 여백만 */
 .mn-hero.mn-hero-member { padding: 100px 0 56px; }
 @media (max-width: 767px) {
   .mn-hero { padding: 96px 0 56px; }
   .mn-hero.mn-hero-member { padding: 88px 0 56px; }
-  .mn-h1 { margin-bottom: var(--sp-5); }
   .mn-hero-bg { grid-template-rows: repeat(4, 144px); grid-auto-columns: 96px; }
   .mn-hero-bg img { width: 96px; height: 144px; }
   .mn-hero-bg img:nth-child(n + 21) { display: none; }

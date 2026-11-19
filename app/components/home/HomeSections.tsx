@@ -19,6 +19,8 @@ import { preconnect } from 'react-dom';
 
 // 공개 글이 이만큼 이상일 때만 인기 게시물을 보인다 (getPopularPosts는 글이 5개 이상이면 항상 5개를 돌려준다)
 const POPULAR_MIN = 5;
+// "이런 판 어때요?" 상황 타일 — 당분간 숨김(코드·데이터는 그대로). 다시 보이게 하면 lib/tour TOUR_HIDDEN도 비운다
+const SHOW_SITUATIONS = false;
 
 export default function HomeSections({ lists, stats = null, popularPosts = [], streamerTheme = null, peopleRecs = null, homeExcluded = [], curators = null }: { lists: HomeLists; stats?: HomeStats | null; popularPosts?: PostListItem[]; streamerTheme?: StreamerTheme | null; peopleRecs?: PeopleRecsData | null; homeExcluded?: string[]; curators?: HomeCurators | null }) {
   // 스팀 이미지 서버에 미리 연결 — 첫 화면은 인원별 추천 카드
@@ -26,7 +28,7 @@ export default function HomeSections({ lists, stats = null, popularPosts = [], s
 
   return (
     <>
-      <Situations />
+      {SHOW_SITUATIONS && <Situations />}
       {stats && <StatsLine stats={stats} />}
       <PeopleSection recs={peopleRecs} />
       <PersonalRecs homeExcluded={homeExcluded} />
