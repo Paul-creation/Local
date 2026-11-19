@@ -204,6 +204,11 @@ export function search(games: AbGame[], q: AbQuery, ctx: AbCtx, kw: KwMatcher) {
   let parts = ALL_PARTS(q);
   let list = games.filter((g) => matchesQuery(g, q, parts, ctx, kw));
   const relaxed: string[] = [];
+  // 장르를 여러 개 "모두"로 골랐는데 결과가 없으면, 조건을 풀기 전에 "하나라도"로 다시 계산해 보여 준다
+  if (list.length === 0 && parts.genres && q.gm === 'all' && q.genres.length > 1) {
+    const anyList = games.filter((g) => matchesQuery(g, { ...q, gm: 'any' }, parts, ctx, kw));
+    if (anyList.length > 0) return { list: [...anyList].sort(byHeat), relaxed, parts, genresAny: true };
+  }
   for (const step of DROP_ORDER) {
     if (list.length > 0) break;
     const next = step.apply(parts);
@@ -212,7 +217,7 @@ export function search(games: AbGame[], q: AbQuery, ctx: AbCtx, kw: KwMatcher) {
     relaxed.push(step.label);
     list = games.filter((g) => matchesQuery(g, q, parts, ctx, kw));
   }
-  return { list: [...list].sort(byHeat), relaxed, parts };
+  return { list: [...list].sort(byHeat), relaxed, parts, genresAny: false };
 }
 
 // 조건 전체에 맞는 게임 수 (조건을 풀어 주는 단계 없이) — 뭐 할까 팝오버의 "N개 보기"

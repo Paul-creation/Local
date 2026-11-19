@@ -55,7 +55,6 @@ export default function AbResults() {
 
   return (
     <div className="ab-res mn-wrap">
-      <Link href="/" className="results-home ab-back">← 홈으로</Link>
       <AbSearch games={index.games} initial={q} variant="results" onSubmit={go} />
 
       <div className="find-layout">
@@ -78,6 +77,7 @@ export default function AbResults() {
             ) : <Loader />
           ) : (
             <>
+              {result.genresAny && <p className="ab-gm-note" role="status">선택한 장르를 모두 가진 게임이 없어서, 하나라도 해당하는 게임을 보여줘요</p>}
               <SectionHead id="find-h" label={summary} title={`조건에 맞는 게임 ${result.list.length.toLocaleString('ko-KR')}개`} actions={<ShareButton variant="text" title="게임 검색 결과" text="이 조건으로 찾은 게임들 같이 보자!" />} />
               {result.relaxed.length > 0 && (
                 <p className="ab-relaxed" role="status">조건을 조금 넓혔어요 <span>({result.relaxed.join(', ')} 조건을 뺐어요)</span></p>

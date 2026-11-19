@@ -85,3 +85,22 @@ test('칸 글자: 여럿이면 "공포 외 1개"', () => {
   assert.equal(summaryParts({ ...EMPTY_QUERY, genres: ['horror'], kw: '좀비' }).what, '공포 외 1개');
   assert.equal(summaryParts({ ...EMPTY_QUERY, kw: '좀비' }).what, '좀비');
 });
+
+test('장르 모두로 0개면 하나라도로 대체, 그래도 0개면 장르를 푼다', () => {
+  const games = [
+    { id: 'h', name: 'H', themes: ['Horror'], heat_rank: 1 },
+    { id: 'p', name: 'P', genres: ['Puzzle'], heat_rank: 2 },
+    { id: 'x', name: 'X', heat_rank: 3 },
+  ];
+  const q = { ...EMPTY_QUERY, genres: ['horror', 'puzzle'] };
+  const r = search(games, q, NO_TAGS, kw);
+  assert.equal(r.genresAny, true);
+  assert.deepEqual(r.list.map((g) => g.id), ['h', 'p']);
+  assert.deepEqual(r.relaxed, []);
+  const none = search(games, { ...q, genres: ['cook', 'racing'] }, NO_TAGS, kw);
+  assert.equal(none.genresAny, false);
+  assert.deepEqual(none.relaxed, ['장르']);
+  assert.equal(none.list.length, 3);
+  assert.equal(search(games, { ...q, gm: 'any' }, NO_TAGS, kw).genresAny, false);
+  assert.equal(search(games, { ...EMPTY_QUERY, genres: ['horror'] }, NO_TAGS, kw).genresAny, false);
+});
