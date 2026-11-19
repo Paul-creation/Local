@@ -18,7 +18,7 @@
   .sb-c { transition: opacity var(--sb-ms) ease-out, transform var(--sb-ms) ease-out; }
 }
 
-/* ---------- 워드마크 (디자인팀 원본 PNG, 글자 영역으로 잘라 냄) — 너비로 정한다 ---------- */
+/* ---------- 워드마크 (디자인팀 원본 PNG, 글자 영역으로 잘라 내고 배경은 투명 — 원본은 public/select-screen-logo-original.png) — 너비로 정한다 ---------- */
 .wm-img { display: block; height: auto; max-width: none; }
 .wm-img.wm-md { width: 168px; }
 .wm-img.wm-sm { width: 132px; }
