@@ -177,14 +177,14 @@ img { display: block; }
    ============================================================ */
 
 .site-header {
-  position: sticky;
-  top: 0;
+  position: relative;
   z-index: 50;
   margin-bottom: 24px;
 }
-/* 헤더 — 모든 페이지 sticky top 0 · z-index 50 · 배경은 늘 rgba(20,19,17,.82) + blur(14px), 아래 선 없음. 메인·게임 상세 히어로는 margin-top: -헤더 높이로 헤더 밑까지 올라온다 */
-.site-header.mn { background: rgba(20, 19, 17, 0.82); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-bottom: 0; }
-body:has(.mn-hero, .dx-hero) .site-header.mn { margin-bottom: 0; }
+/* 헤더 (Letterboxd 식) — sticky 아님, 모든 페이지에서 스크롤하면 같이 올라간다. 배경·선·blur 없음(페이지 그라데이션 위에 그대로).
+   메인(.mn-hero)·게임 상세(.dx-hero)에서는 absolute로 맨 위에 히어로와 겹친다 (히어로가 y=0부터 시작, 히어로 padding-top에 --header-h) */
+.site-header.mn { background: transparent; border-bottom: 0; }
+body:has(.mn-hero, .dx-hero) .site-header.mn { position: absolute; top: 0; left: 0; right: 0; z-index: 50; margin-bottom: 0; }
 
 .site-header-inner {
   max-width: 1200px;
