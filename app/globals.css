@@ -179,22 +179,18 @@ img { display: block; }
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 50;
   margin-bottom: 24px;
 }
-/* 헤더 — 토큰은 brand-tokens.css. 메인(히어로가 있을 때)에서는 히어로 위에 투명하게 얹고(가독성은 히어로의 위쪽 어두운 그라데이션), 다른 페이지에서는 --bg-top 배경 + 아래 1px --line */
-.site-header.mn { background: var(--bg-top); border-bottom: 1px solid var(--line); }
-body:has(.mn-hero) .site-header.mn { position: absolute; left: 0; right: 0; margin-bottom: 0; background: transparent; border-bottom-color: transparent; }
-/* 게임 상세(.dx-hero) — 헤더는 sticky 그대로, 맨 위에서는 투명이고 히어로 밑까지 겹친다. 스크롤이 히어로를 지나가면(data-solid, components/brand/HeaderSolidOnScroll) 배경 + blur + 아래 1px 선 */
-body:has(.dx-hero) .site-header.mn { margin-bottom: 0; background: transparent; border-bottom-color: transparent; }
-body:has(.dx-hero) .site-header.mn[data-solid] { background: rgba(20, 19, 17, 0.85); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-bottom-color: var(--line); }
-@media (prefers-reduced-motion: no-preference) { body:has(.dx-hero) .site-header.mn { transition: background-color .2s, border-color .2s; } }
+/* 헤더 — 모든 페이지 sticky top 0 · z-index 50 · 배경은 늘 rgba(20,19,17,.82) + blur(14px), 아래 선 없음. 메인·게임 상세 히어로는 margin-top: -헤더 높이로 헤더 밑까지 올라온다 */
+.site-header.mn { background: rgba(20, 19, 17, 0.82); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-bottom: 0; }
+body:has(.mn-hero, .dx-hero) .site-header.mn { margin-bottom: 0; }
 
 .site-header-inner {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
-  height: calc(var(--header-h) - 1px);
+  height: var(--header-h);
   display: flex;
   align-items: center;
   gap: 16px;
@@ -324,7 +320,7 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
 #free, #discount { scroll-margin-top: 76px; }
 
 @media (max-width: 480px) {
-  .site-header-inner { padding: 0 12px; height: calc(var(--header-h) - 1px); gap: 4px; }
+  .site-header-inner { padding: 0 12px; height: var(--header-h); gap: 4px; }
   .site-menu { gap: 0; }
   .site-menu a { padding: 6px 7px; font-size: var(--fs-s); letter-spacing: 0.02em; } /* 헤더는 360~390px에서 한 줄이라 올리지 않음 */
 }

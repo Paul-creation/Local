@@ -9,7 +9,6 @@
 .mn.dx .dx-backdrop::after { content: ""; position: absolute; inset: 0; background:
   radial-gradient(ellipse 70% 75% at 50% 35%, transparent 25%, rgba(20, 19, 17, .6) 65%, var(--bg-top) 100%),
   linear-gradient(180deg, rgba(20, 19, 17, .5) 0%, transparent 20%, transparent 45%, var(--bg-top) 100%); }
-.hero-sentinel { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; pointer-events: none; }
 .mn.dx .dx-head { padding-top: var(--sp-6); }
 .mn.dx .dx-cover { border: 1px solid var(--poster-line); border-radius: var(--r-card); background: var(--surface); box-shadow: var(--shadow); }
 .mn.dx .dx-title { font-size: clamp(32px, 5vw, 52px); font-weight: 900; letter-spacing: -0.04em; color: var(--ink); }
@@ -20,13 +19,11 @@
 
 /* ---------- 2열 — 왼쪽 본문, 오른쪽 sticky 칸(top 24px, 폭 320px). 960px 이하는 한 줄로 쌓이고 오른쪽 칸이 히어로 바로 아래로 ---------- */
 .mn.dx .detail-layout { grid-template-columns: minmax(0, 1fr) 320px; gap: var(--sp-6); }
-/* 오른쪽 칸 — 칸 자체는 스크롤 없이 본문 높이만큼 늘어나고, sticky는 Steam 가격 박스에만 건다. 게임 정보·PC 사양·바로가기는 페이지와 같이 스크롤된다 (가격 박스 뒤로 지나감).
-   sticky top은 헤더(sticky) 높이 + 16px. 960px 이하(1열)에서는 sticky를 끈다 */
-.mn.dx .detail-price { position: static; align-self: stretch; max-height: none; overflow: visible; gap: var(--sp-4); }
-.mn.dx .detail-price > .price-card { position: sticky; top: calc(var(--header-h) + 16px); z-index: 2; }
+/* 오른쪽 칸 = Steam 가격 박스 하나 — sticky(top: 헤더 높이 + 16px), 칸 안 스크롤·max-height 없음. 960px 이하(1열)에서는 sticky를 끄고 히어로 바로 아래에 둔다 */
+.mn.dx .detail-price { position: sticky; top: calc(var(--header-h) + 16px); align-self: start; max-height: none; overflow: visible; display: block; }
 @media (max-width: 960px) {
   .mn.dx .detail-layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "price" "main"; gap: var(--sp-5); }
-  .mn.dx .detail-price > .price-card { position: static; }
+  .mn.dx .detail-price { position: static; }
 }
 
 /* ---------- 섹션 머리 — 제목 + 아래 1px --line (공통 섹션 머리와 같은 모양), 섹션 사이 --sec-gap ---------- */
@@ -60,15 +57,16 @@
 .mn.dx .price-card-buy:hover, .mn.dx .price-card-buy.is-steam:hover { background: color-mix(in srgb, var(--brand) 86%, white); }
 .mn.dx .price-card .compare-add { color: var(--ink); background: transparent; border: 1px solid var(--line-strong); border-radius: var(--r-tile); }
 .mn.dx .price-card-note { color: var(--ink-muted); }
-/* ②③④ 게임 정보·바로가기 카드, PC 사양 카드 */
-.dx-side-card, .mn.dx .pcs-card { padding: var(--sp-5); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-tile); margin: 0; }
-.dx-side-title { margin: 0 0 var(--sp-3); font-size: 13px; font-weight: 900; letter-spacing: .14em; color: var(--ink-muted); }
-.dx-side-card .more-list { font-size: 14px; }
-.mn.dx .pcs-card { gap: var(--sp-3); }
+/* 본문으로 옮긴 게임 정보(2열 dl)·PC 사양 카드·바로가기 칩 */
+.mn.dx .pcs-card { padding: var(--sp-5); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-tile); margin: 0; gap: var(--sp-3); }
 .mn.dx .pcs-card.is-rec, .mn.dx .pcs-card.is-fail { border-top: 1px solid var(--line); }
 .mn.dx .pcs-card-title { font-size: 13px; font-weight: 900; letter-spacing: .14em; color: var(--ink-muted); }
-.mn.dx .detail-links { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-2); padding: 0; }
-.mn.dx .detail-link, .mn.dx .detail-links .share-text-btn { font-size: 14px; font-weight: 700; color: var(--brand-ink); }
+.mn.dx .more-list.is-two-col { display: grid; grid-template-columns: max-content minmax(0, 1fr) max-content minmax(0, 1fr); gap: var(--sp-3) var(--sp-4); font-size: 15px; }
+.mn.dx .more-list.is-two-col dt, .mn.dx .more-list.is-two-col dd { margin: 0; }
+@media (max-width: 760px) { .mn.dx .more-list.is-two-col { grid-template-columns: max-content minmax(0, 1fr); } }
+.mn.dx .detail-links.is-chips { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: var(--sp-2); padding: 0; }
+.mn.dx .detail-links.is-chips :is(.detail-link, .share-text-btn) { display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; font-size: 14px; font-weight: 700; color: var(--ink-nav); background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r-card); text-decoration: none; }
+.mn.dx .detail-links.is-chips :is(.detail-link, .share-text-btn):hover { color: var(--ink); }
 .mn.dx .discord-card { display: none; }
 
 /* ---------- 본문 아래 전체 폭 — 시리즈·비슷한 게임 ---------- */

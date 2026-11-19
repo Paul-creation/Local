@@ -41,8 +41,8 @@
   --gutter: 24px;            /* 본문 좌우 여백 (768px 미만은 16px) */
   --wrap: 1200px;            /* 본문 최대 폭 */
 
-  /* 헤더 높이(아래 1px 선 포함) — 한 곳에서만 정한다. 투명 헤더를 히어로 위에 겹치는 화면(게임 상세)과 sticky 칸의 top이 이 값을 쓴다. globals.css .site-header-inner 높이도 이 값에서 1px을 뺀 값 */
-  --header-h: 61px;
+  /* 헤더 높이 — 한 곳에서만 정한다. 헤더 밑까지 올라오는 히어로(메인·게임 상세)의 margin-top과 sticky 칸의 top이 이 값을 쓴다. globals.css .site-header-inner 높이도 이 값 */
+  --header-h: 60px;
 
   /* 메인 섹션 간격 — 섹션 사이 64px(모바일 40px), 머리(밑줄)와 내용 사이 18px, 푸터 위 마지막 섹션 아래 80px */
   --sec-gap: 64px;
@@ -69,7 +69,7 @@
 }
 
 @media (max-width: 767px) { :root { --sec-gap: 40px; } }
-@media (max-width: 480px) { :root { --header-h: 57px; } }
+@media (max-width: 480px) { :root { --header-h: 56px; } }
 
 /* ---------- 옛 이름 다리 (.mn 루트 안 — 상세·비교·내 PC·찜목록·커뮤니티 등) ---------- */
 .mn {

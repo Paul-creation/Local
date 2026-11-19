@@ -47,7 +47,6 @@ import tagDict from '../../lib/tag-search-dict.json';
 import { notFound, permanentRedirect } from 'next/navigation';
 import { isUuid } from '../../lib/uuid';
 import SimilarGames from '../../components/SimilarGames';
-import HeaderSolidOnScroll from '../../components/brand/HeaderSolidOnScroll';
 import SeriesGames from '../../components/SeriesGames';
 import { getCardGames } from '../../lib/gameIndex';
 import ActivityChips from '../../components/ActivityChips';
@@ -432,30 +431,12 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           )}
         </div>
       </header>
-      <HeaderSolidOnScroll />
       </div>
 
       <div className="detail-layout">
-        {/* 오른쪽 sticky 칸(모바일에서는 히어로 바로 아래): ① Steam 가격 박스 ② 게임 정보 ③ 내 PC 사양 진단 ④ 바로가기 */}
+        {/* 오른쪽 칸 — Steam 가격 박스 하나만 (sticky, 모바일에서는 히어로 바로 아래에 일반 흐름으로) */}
         <aside className="detail-price">
           {priceCard}
-          {infoRows.length > 0 && (
-            <section className="dx-side-card sec-detail" aria-label="게임 정보">
-              <h3 className="dx-side-title">게임 정보</h3>
-              <dl className="more-list">{infoRows.map(([k, v]) => <Fragment key={k}><dt>{k}</dt><dd>{v}</dd></Fragment>)}</dl>
-            </section>
-          )}
-          {/* PC 사양 카드 — 내 PC 판정 요약 + 부품별 표 + 원문 사양. 입력한 사양은 브라우저에만 있어서 클라이언트에서 판정. 최소 사양을 하나도 못 읽은 게임(spec_parsed가 없거나 전부 null)은 판정·표 없이 원문만 */}
-          {(minSpec || recSpec) && <PcSpecCard parsed={game.spec_parsed} minRows={minSpec} recRows={recSpec} />}
-          <section className="dx-side-card" aria-label="바로가기">
-            <h3 className="dx-side-title">바로가기</h3>
-            <div className="detail-links">
-              <a href={namuUrl} target="_blank" rel="noopener nofollow" className="detail-link">나무위키 ↗</a>
-              <a href={nexusUrl} target="_blank" rel="noopener nofollow" className="detail-link">넥서스 모드 ↗</a>
-              {game.discord_url && <a href={game.discord_url} target="_blank" rel="noopener nofollow" className="detail-link">공식 디스코드 ↗</a>}
-              <ShareButton variant="text" title={gameName(game)} text={game.fun_description || `${gameName(game)} 같이 할래?`} />
-            </div>
-          </section>
         </aside>
 
         <div className="detail-main">
@@ -513,7 +494,18 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             </section>
           )}
 
-          {/* 6 가능한 활동 (+ 빠진 활동 추가·틀린 활동 신고) */}
+          {/* 6 게임 정보 — 개발·배급·출시일·플랫폼·도전과제·DLC·가족 공유·업데이트·용량 (2열) */}
+          {infoRows.length > 0 && (
+            <section className="detail-card sec-detail dx-info" aria-label="게임 정보">
+              <h3 className="detail-card-title">게임 정보</h3>
+              <dl className="more-list is-two-col">{infoRows.map(([k, v]) => <Fragment key={k}><dt>{k}</dt><dd>{v}</dd></Fragment>)}</dl>
+            </section>
+          )}
+
+          {/* 7 내 PC 사양 진단 — 내 PC 판정 요약 + 부품별 표 + 원문 사양. 입력한 사양은 브라우저에만 있어서 클라이언트에서 판정. 최소 사양을 하나도 못 읽은 게임(spec_parsed가 없거나 전부 null)은 판정·표 없이 원문만 */}
+          {(minSpec || recSpec) && <PcSpecCard parsed={game.spec_parsed} minRows={minSpec} recRows={recSpec} />}
+
+          {/* 8 가능한 활동 (+ 빠진 활동 추가·틀린 활동 신고) */}
           {(hasV2Activities || legacyActivities.length > 0) && (
             <section className="detail-card sec-intro" aria-label="가능한 활동">
               <h3 className="detail-card-title">가능한 활동</h3>
@@ -524,7 +516,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             </section>
           )}
 
-          {/* 7 특징 태그 */}
+          {/* 9 특징 태그 */}
           {otherChipGroups.length > 0 && (
             <section className="detail-card sec-detail" aria-label="특징 태그">
               <h3 className="detail-card-title">특징 태그</h3>
@@ -532,7 +524,7 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             </section>
           )}
 
-          {/* 8 인기 동영상 — 친구랑 플레이(멀티 게임만) + 하이라이트 + 스트리머 영상을 한 목록으로 (순서·자르기: lib/videoList) + 스트리머 채널. 영상이 없으면 섹션 없음 */}
+          {/* 10 인기 동영상 — 친구랑 플레이(멀티 게임만) + 하이라이트 + 스트리머 영상을 한 목록으로 (순서·자르기: lib/videoList) + 스트리머 채널. 영상이 없으면 섹션 없음 */}
           <VideoPreviewSection
             videos={buildVideoList([
               ...((game.game_videos || []) as { kind: string; video_id: string; title: string; channel_title: string | null; published_at: string | null; view_count: number | null }[])
@@ -569,8 +561,19 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
             {SHOW_VOTES && isMulti && <PlayerCountVote gameId={game.id} />}
           </div>
 
+          {/* 11 바로가기 — 한 줄 링크 칩 */}
+          <section className="detail-card" aria-label="바로가기">
+            <h3 className="detail-card-title">바로가기</h3>
+            <div className="detail-links is-chips">
+              <a href={namuUrl} target="_blank" rel="noopener nofollow" className="detail-link">나무위키 ↗</a>
+              <a href={nexusUrl} target="_blank" rel="noopener nofollow" className="detail-link">넥서스 모드 ↗</a>
+              {game.discord_url && <a href={game.discord_url} target="_blank" rel="noopener nofollow" className="detail-link">공식 디스코드 ↗</a>}
+              <ShareButton variant="text" title={gameName(game)} text={game.fun_description || `${gameName(game)} 같이 할래?`} />
+            </div>
+          </section>
+
           <CuratorsOfGame items={curators} gameId={game.id} />
-          {/* 9 의견 달기 */}
+          {/* 12 의견 달기 */}
           <GameOpinions gameId={game.id} />
           <RelatedPosts gameId={game.id} />
         </div>

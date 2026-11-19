@@ -17,11 +17,11 @@
   .sb-c { transition: opacity var(--sb-ms) ease-out, transform var(--sb-ms) ease-out; }
 }
 
-/* ---------- 워드마크 (디자인팀 원본 PNG) ---------- */
-.wm-img { display: block; width: auto; max-width: none; mix-blend-mode: lighten; }
-.wm-img.wm-md { height: 28px; }
-.wm-img.wm-sm { height: 22px; }
-@media (max-width: 767px) { .wm-img.wm-md { height: 22px; } }
+/* ---------- 워드마크 (디자인팀 원본 PNG, 글자 영역으로 잘라 냄) — 너비로 정한다 ---------- */
+.wm-img { display: block; height: auto; max-width: none; }
+.wm-img.wm-md { width: 168px; }
+.wm-img.wm-sm { width: 132px; }
+@media (max-width: 767px) { .wm-img.wm-md { width: 132px; } }
 
 /* ---------- 섹션 머리 ---------- */
 .sec-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; margin: 0 0 var(--sec-head-gap); padding-bottom: var(--sp-3); border-bottom: 1px solid var(--line); }
