@@ -1,9 +1,11 @@
 'use client';
 
-import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { HOWS, GENRES, EMPTY_QUERY, countFitting, isEmptyQuery, queryHref, summaryParts, type AbQuery, type GenreKey } from '../../../lib/abSearch';
+import { HOWS, GENRES, EMPTY_QUERY, countFitting, countMatching, isEmptyQuery, queryHref, summaryParts, type AbQuery, type GenreKey, type GenreMode } from '../../../lib/abSearch';
+import { makeAbCtx, makeKwMatcher } from '../../../lib/abCtx';
+import { useGameIndex } from '../../../lib/useGameIndex';
 import { matchRank } from '../../../lib/searchMatch';
 import { gameName } from '../../../lib/gameName';
 import './ab.css';
@@ -11,8 +13,9 @@ import './ab.css';
 // 에어비앤비식 3칸 검색창 — 누구랑(인원) · 어떻게(방식) · 뭐 할까(장르·직접 입력). 모든 칸은 선택이고, 비우고 찾으면 인기순
 // 데스크톱: 가로 막대 하나 + 칸 아래에 패널(열린 칸은 --ink 배경). 휴대폰(767px 이하): 알약 하나 → 전체 화면 시트에서 3칸이 차례로 펼쳐짐
 // 두 모양을 모두 그리고 CSS(ab.css)로 가른다 — 마운트 전후 차이 없음
-// 값이 들어간 칸은 --ink 배경 + 어두운 글씨 (괄호 없음)
-// variant="results": 결과 화면 맨 위 — 접힌 한 줄("4명 | 같이 깨기 | 공포")로 시작해 누르면 펼침
+// 열린 칸은 --surface-open 배경 + 안쪽 테두리, 팝오버 안 선택 표시는 크림 채움만 (괄호 없음). 팝오버는 z-index 40 (docs/design/SearchPopovers.dc.html)
+// 값은 바뀌는 즉시 입력 상태에 반영되고, 팝오버 푸터는 "지우기 / 완료"(완료는 닫기만). 뭐 할까 푸터만 "N개 보기"(결과 수 표시, 누르면 찾기)
+// variant="results": 결과 화면 맨 위 — 데스크톱은 늘 펼친 막대("다시 찾기"), 휴대폰은 접힌 알약 한 줄
 type Cell = 'who' | 'how' | 'what';
 
 export default function AbSearch({ games, initial = EMPTY_QUERY, variant = 'home', trailing, onSubmit }: {
@@ -27,7 +30,6 @@ export default function AbSearch({ games, initial = EMPTY_QUERY, variant = 'home
   const [q, setQ] = useState<AbQuery>(initial);
   const [open, setOpen] = useState<Cell | null>(null);
   const [sheet, setSheet] = useState(false);
-  const [expanded, setExpanded] = useState(variant === 'home');
   const wrapRef = useRef<HTMLDivElement>(null);
 
   // 결과 화면에서 주소가 바뀌면(상황 타일·조건 칩·뒤로가기) 입력창도 그 조건으로
@@ -60,23 +62,27 @@ export default function AbSearch({ games, initial = EMPTY_QUERY, variant = 'home
   const submit = (next: AbQuery = q) => {
     setOpen(null);
     setSheet(false);
-    if (variant === 'results') setExpanded(false);
     if (onSubmit) onSubmit(next);
     else router.push(queryHref(next));
   };
+
+  const index = useGameIndex(); // 목록·태그 나무는 메인·결과 화면과 같은 캐시를 쓴다
+  const ctx = useMemo(() => makeAbCtx(index.tree), [index.tree]);
+  const kwMatch = useMemo(() => makeKwMatcher(index.tree), [index.tree]);
+  const matching = games ? countMatching(games, q, ctx, kwMatch) : null;
 
   const sum = summaryParts(q);
   const fits = (n: number) => (games ? countFitting(games, n) : null);
 
   // ---------- 칸 안의 패널 (데스크톱 팝오버와 모바일 시트가 같이 쓴다) ----------
   const who = (
-    <WhoPanel n={q.n} count={q.n ? fits(q.n) : null} onChange={(n) => setQ({ ...q, n })} />
+    <WhoPanel n={q.n} count={q.n ? fits(q.n) : null} onChange={(n) => setQ({ ...q, n })} onClear={() => setQ({ ...q, n: null })} onDone={() => setOpen(null)} />
   );
   const how = (
-    <HowPanel how={q.how} onChange={(h) => { setQ({ ...q, how: q.how === h ? null : h }); }} />
+    <HowPanel how={q.how} onChange={(h) => { setQ({ ...q, how: q.how === h ? null : h }); }} onClear={() => setQ({ ...q, how: null })} onDone={() => setOpen(null)} />
   );
   const what = (
-    <WhatPanel games={games} kw={q.kw} genres={q.genres} onKw={(kw) => setQ({ ...q, kw })} onGenres={(genres) => setQ({ ...q, genres })} onEnter={() => submit()} />
+    <WhatPanel games={games} kw={q.kw} genres={q.genres} gm={q.gm} matching={matching} onKw={(kw) => setQ({ ...q, kw })} onGenres={(genres) => setQ({ ...q, genres })} onGm={(gm) => setQ({ ...q, gm })} onClear={() => setQ({ ...q, kw: '', genres: [] })} onShow={() => submit()} onEnter={() => submit()} />
   );
 
   const cells: { key: Cell; label: string; value: string; empty: string; panel: ReactNode }[] = [
@@ -85,45 +91,33 @@ export default function AbSearch({ games, initial = EMPTY_QUERY, variant = 'home
     { key: 'what', label: '뭐 할까', value: sum.what, empty: '장르·게임 검색', panel: what },
   ];
 
-  const collapsed = variant === 'results' && !expanded;
   const pillMain = isEmptyQuery(q) ? '누구랑 할 거야?' : [sum.who, sum.how, sum.what].filter(Boolean).join(' | ');
 
   return (
     <div className={`ab ab-${variant}`} ref={wrapRef}>
       <div className="ab-row">
         {/* ----- 데스크톱 ----- */}
-        {collapsed ? (
-          <button type="button" className="ab-collapsed ab-desktop" onClick={() => setExpanded(true)} aria-label="검색 조건 바꾸기">
-            <span className="ab-collapsed-part">{sum.who || '인원 상관없음'}</span>
-            <span className="ab-collapsed-part">{sum.how || '방식 상관없음'}</span>
-            <span className="ab-collapsed-part">{sum.what || '장르 상관없음'}</span>
-            <span className="ab-collapsed-go">다시 찾기</span>
-          </button>
-        ) : (
-          <div className="ab-bar ab-desktop" role="group" aria-label="게임 찾기">
-            {cells.map((c) => (
-              <div key={c.key} className="ab-slot">
-                <button
-                  type="button"
-                  className={`ab-cell${c.value ? ' has-value' : ''}${open === c.key ? ' is-open' : ''}`}
-                  data-tour={variant === 'home' ? `ab-${c.key}` : undefined}
-                  aria-expanded={open === c.key}
-                  aria-controls={`ab-panel-${c.key}`}
-                  onClick={() => setOpen(open === c.key ? null : c.key)}
-                >
-                  <span className="ab-cell-label">{c.label}</span>
-                  <span className={`ab-cell-value${c.value ? '' : ' is-empty'}`}>{c.value || c.empty}</span>
-                </button>
-                {open === c.key && (
-                  <div id={`ab-panel-${c.key}`} className={`ab-panel ab-panel-${c.key}`} role="dialog" aria-label={c.label}>
-                    {c.panel}
-                  </div>
-                )}
-              </div>
-            ))}
-            <button type="button" className="ab-go" data-tour={variant === 'home' ? 'ab-go' : undefined} onClick={() => submit()}>찾기</button>
-          </div>
-        )}
+        <div className="ab-bar ab-desktop" role="group" aria-label="게임 찾기">
+          {cells.map((c) => (
+            <div key={c.key} className="ab-slot">
+              <button
+                type="button"
+                className={`ab-cell${c.value ? ' has-value' : ''}${open === c.key ? ' is-open' : ''}`}
+                data-tour={variant === 'home' ? `ab-${c.key}` : undefined}
+                aria-expanded={open === c.key}
+                aria-controls={`ab-panel-${c.key}`}
+                onClick={() => setOpen(open === c.key ? null : c.key)}
+              >
+                <span className="ab-cell-label">{c.label}</span>
+                <span className={`ab-cell-value${c.value ? '' : ' is-empty'}`}>{c.value || c.empty}</span>
+              </button>
+              {open === c.key && (
+                <Popover id={`ab-panel-${c.key}`} cell={c.key} label={c.label}>{c.panel}</Popover>
+              )}
+            </div>
+          ))}
+          <button type="button" className="ab-go" data-tour={variant === 'home' ? 'ab-go' : undefined} onClick={() => submit()}>{variant === 'results' ? '다시 찾기' : '찾기'}</button>
+        </div>
 
         {/* ----- 휴대폰 ----- */}
         <button type="button" className={`ab-pill ab-mobile${isEmptyQuery(q) ? '' : ' has-value'}`} data-tour={variant === 'home' ? 'ab-pill' : undefined} onClick={() => { setSheet(true); setOpen('who'); }} aria-haspopup="dialog">
@@ -165,6 +159,32 @@ export default function AbSearch({ games, initial = EMPTY_QUERY, variant = 'home
   );
 }
 
+// ---------- 팝오버 (데스크톱) ----------
+// 연 칸의 왼쪽 아래 12px. 오른쪽이 화면 밖으로 나가면 칸의 오른쪽에 맞춘다 — 그려진 직후(화면에 보이기 전) 한 번 재서 정한다
+function Popover({ id, cell, label, children }: { id: string; cell: Cell; label: string; children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [flip, setFlip] = useState(false);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (el && el.getBoundingClientRect().right > window.innerWidth - 8) setFlip(true);
+  }, []);
+  return (
+    <div ref={ref} id={id} className={`ab-panel ab-panel-${cell}${flip ? ' is-flip' : ''}`} role="dialog" aria-label={label}>
+      {children}
+    </div>
+  );
+}
+
+// 푸터 "지우기 / 완료" (휴대폰 시트에서는 시트 푸터가 대신해서 CSS로 숨김)
+function PanelFoot({ onClear, onDone, doneLabel = '완료' }: { onClear: () => void; onDone: () => void; doneLabel?: string }) {
+  return (
+    <div className="ab-pfoot">
+      <button type="button" className="ab-pclear" onClick={onClear}>지우기</button>
+      <button type="button" className="ab-pdone" onClick={onDone}>{doneLabel}</button>
+    </div>
+  );
+}
+
 // ---------- 누구랑 ----------
 const WHO_CHIPS: { label: string; n: number; on: (n: number | null) => boolean }[] = [
   { label: '혼자', n: 1, on: (n) => n === 1 },
@@ -172,12 +192,15 @@ const WHO_CHIPS: { label: string; n: number; on: (n: number | null) => boolean }
   { label: '3~4명', n: 4, on: (n) => n === 3 || n === 4 },
   { label: '5명 이상', n: 5, on: (n) => n != null && n >= 5 },
 ];
-function WhoPanel({ n, count, onChange }: { n: number | null; count: number | null; onChange: (n: number | null) => void }) {
+function WhoPanel({ n, count, onChange, onClear, onDone }: { n: number | null; count: number | null; onChange: (n: number | null) => void; onClear: () => void; onDone: () => void }) {
   const labelId = useId();
   return (
     <div className="ab-who">
       <div className="ab-stepper">
-        <span id={labelId} className="ab-stepper-label">같이 할 사람 (나 포함)</span>
+        <div className="ab-stepper-text">
+          <span id={labelId} className="ab-stepper-label">같이 할 사람</span>
+          <span className="ab-stepper-sub">나 포함 인원</span>
+        </div>
         <div className="ab-stepper-ctl" role="group" aria-labelledby={labelId}>
           <button type="button" className="ab-step" aria-label="한 명 줄이기" disabled={n == null} onClick={() => onChange(n == null || n <= 1 ? null : n - 1)}>−</button>
           <output className="ab-step-num" aria-live="polite">{n ?? '–'}</output>
@@ -186,36 +209,40 @@ function WhoPanel({ n, count, onChange }: { n: number | null; count: number | nu
       </div>
       <div className="ab-chips">
         {WHO_CHIPS.map((c) => (
-          <button key={c.label} type="button" className={`mn-chip${c.on(n) ? ' on' : ''}`} aria-pressed={c.on(n)} onClick={() => onChange(c.on(n) ? null : c.n)}>{c.label}</button>
+          <button key={c.label} type="button" className={`ab-pchip${c.on(n) ? ' is-on' : ''}`} aria-pressed={c.on(n)} onClick={() => onChange(c.on(n) ? null : c.n)}>{c.label}</button>
         ))}
       </div>
       {n != null && (
         <p className="ab-count">{n}명이 같이 할 수 있는 게임 <strong>{count == null ? '…' : count.toLocaleString('ko-KR')}</strong>개</p>
       )}
+      <PanelFoot onClear={onClear} onDone={onDone} />
     </div>
   );
 }
 
 // ---------- 어떻게 ----------
-function HowPanel({ how, onChange }: { how: AbQuery['how']; onChange: (h: NonNullable<AbQuery['how']>) => void }) {
+function HowPanel({ how, onChange, onClear, onDone }: { how: AbQuery['how']; onChange: (h: NonNullable<AbQuery['how']>) => void; onClear: () => void; onDone: () => void }) {
   return (
-    <ul className="ab-hows" role="radiogroup" aria-label="어떻게">
-      {HOWS.map((h) => (
-        <li key={h.key}>
-          <button type="button" role="radio" aria-checked={how === h.key} className={`ab-how${how === h.key ? ' is-on' : ''}`} onClick={() => onChange(h.key)}>
-            <span className="ab-how-mark" aria-hidden="true">{h.mark}</span>
-            <span className="ab-how-text"><strong>{h.label}</strong><span>{h.desc}</span></span>
-          </button>
-        </li>
-      ))}
-    </ul>
+    <div className="ab-how-panel">
+      <div className="ab-tiles ab-tiles-how" role="radiogroup" aria-label="어떻게">
+        {HOWS.map((h) => (
+          <button key={h.key} type="button" role="radio" aria-checked={how === h.key} className={`ab-tile${how === h.key ? ' is-on' : ''}`} onClick={() => onChange(h.key)}>{h.label}</button>
+        ))}
+      </div>
+      <PanelFoot onClear={onClear} onDone={onDone} />
+    </div>
   );
 }
 
 // ---------- 뭐 할까 ----------
-function WhatPanel({ games, kw, genres, onKw, onGenres, onEnter }: {
+const GM_OPTIONS: { key: GenreMode; label: string }[] = [
+  { key: 'any', label: '하나라도' },
+  { key: 'all', label: '모두' },
+];
+function WhatPanel({ games, kw, genres, gm, matching, onKw, onGenres, onGm, onClear, onShow, onEnter }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  games: any[] | null; kw: string; genres: GenreKey[]; onKw: (kw: string) => void; onGenres: (g: GenreKey[]) => void; onEnter: () => void;
+  games: any[] | null; kw: string; genres: GenreKey[]; gm: GenreMode; matching: number | null;
+  onKw: (kw: string) => void; onGenres: (g: GenreKey[]) => void; onGm: (gm: GenreMode) => void; onClear: () => void; onShow: () => void; onEnter: () => void;
 }) {
   // 입력이 게임 이름과 맞으면 게임 페이지 바로가기 (이름이 앞에서부터 맞는 것 먼저, 최대 4개)
   const hits = useMemo(() => {
@@ -253,6 +280,13 @@ function WhatPanel({ games, kw, genres, onKw, onGenres, onEnter }: {
           <button key={t.key} type="button" className={`ab-tile${genres.includes(t.key) ? ' is-on' : ''}`} aria-pressed={genres.includes(t.key)} onClick={() => toggle(t.key)}>{t.label}</button>
         ))}
       </div>
+      <div className="ab-gm" role="group" aria-label="장르를 여러 개 고르면">
+        <span>여러 개 고르면</span>
+        {GM_OPTIONS.map((o) => (
+          <button key={o.key} type="button" className={`ab-gm-btn${gm === o.key ? ' is-on' : ''}`} aria-pressed={gm === o.key} onClick={() => onGm(o.key)}>{o.label}</button>
+        ))}
+      </div>
+      <PanelFoot onClear={onClear} onDone={onShow} doneLabel={matching == null ? '보기' : `${matching.toLocaleString('ko-KR')}개 보기`} />
     </div>
   );
 }

@@ -53,7 +53,7 @@ export default function PeopleSection({ recs }: { recs: Data | null }) {
         </p>
       )}
       {!recs ? null : games.length > 0 ? (
-        <ul className="mn-grid" aria-label={`${peopleLabel(n)} 추천 게임 목록`}>
+        <ul className="mn-grid mn-grid-people" aria-label={`${peopleLabel(n)} 추천 게임 목록`}>
           {games.map((g, i) => <li key={g.id}><PosterCard brackets compact game={g} eager={i < 3} tourId={i === 0 ? 'first-card' : undefined} badge={posterBadge(g, recs.badges[g.id])} /></li>)}
         </ul>
       ) : (

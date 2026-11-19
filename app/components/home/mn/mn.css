@@ -192,9 +192,14 @@ main.page:has(.mn-page) + .site-footer { margin-top: 0; }
 .mn-people-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3) var(--sp-4); margin: 0 0 18px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
 .mn-people-title { margin: 0; font-size: 22px; font-weight: var(--title-weight); letter-spacing: -0.03em; line-height: 1.25; color: var(--ink); }
 .mn-people-more { margin-left: auto; }
-.mn-people-head .mn-tab, .mn-people-head .mn-chip { min-height: 34px; padding: 0 12px; }
-.mn-people-head .mn-tabs, .mn-people-head .mn-chips { gap: 8px; }
-.mn-people-head .mn-vsep { min-height: 22px; }
+.mn-people-head .mn-tab { min-height: 0; padding: 9px 16px; line-height: 1.2; border-radius: 6px; }
+.mn-people-head .mn-chip { min-height: 0; padding: 8px 14px; font-size: 13px; line-height: 1.2; color: var(--ink-nav); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; }
+.mn-people-head .mn-chip[aria-pressed="true"] { color: var(--bg-top); background: var(--ink); border-color: var(--ink); }
+.mn-people-head .mn-tabs { gap: 10px; }
+.mn-people-head .mn-chips { gap: 8px; }
+.mn-people-head .mn-vsep { align-self: center; min-height: 26px; margin-inline: 4px; }
+/* 인원별 추천 격자 — 1024px 이상 6열 gap 16 (MainFinal 시안) */
+@media (min-width: 1024px) { .mn-grid.mn-grid-people { gap: var(--sp-4); } }
 @media (max-width: 767px) { .mn-people-head .mn-vsep { display: none; } .mn-people-more { margin-left: 0; } }
 /* 추천 카드 — 포스터 + 게임명(한 줄 말줄임)만, 카드 안 간격 8px */
 .mn-card.is-compact { gap: var(--sp-2); }
