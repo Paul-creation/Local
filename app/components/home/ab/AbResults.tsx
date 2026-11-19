@@ -22,7 +22,8 @@ import '../mn/mn.css';
 import { PAGE_SIZE } from '../../../lib/useGameFilters';
 import './ab.css';
 
-// 에어비앤비식 검색 결과 — 맨 위 조건이 채워진 검색 바(+ 다시 찾기) → 왼쪽 "더 좁히기" 칩 + 오른쪽 가로 결과 카드(포스터 96px · 이름 · 정보 줄 · 근거 배지 · 오른쪽 끝 Steam 가격). 1등 카드만 괄호 + "가장 잘 맞아요"
+// 에어비앤비식 검색 결과(docs/design/PageSearch.dc.html) — 맨 위 조건이 채워진 검색 바(+ 다시 찾기) → 왼쪽 "더 좁히기" 칩 + 오른쪽 가로 결과 카드(포스터 96px · 이름 · 정보 줄 · 근거 배지 · 오른쪽 끝 Steam 가격). 1등 카드(카드 전체)만 괄호 + "가장 잘 맞아요"
+// 시안의 "정렬"·"한 판 시간" 필터는 정렬·플레이 시간 기능이 아직 없어 그리지 않는다
 // 파티 합산("N명 다 사면")은 파티제 도입 전까지 그리지 않는다 (SHOW_GROUP_TOTAL)
 // 조건은 전부 주소 쿼리(n·how·g·kw·o)에 있어서 링크로 공유된다. 결과가 0개면 덜 중요한 조건부터 풀고 알려 준다
 const SHOW_GROUP_TOTAL = false;
@@ -49,7 +50,8 @@ export default function AbResults() {
   const toggleOpt = (o: OptKey) => go({ ...q, opts: q.opts.includes(o) ? q.opts.filter((x) => x !== o) : [...q.opts, o] });
 
   const sum = summaryParts(q);
-  const summary = [sum.who, sum.how, sum.what].filter(Boolean).join(' · ') || '조건 없음';
+  const optLabels = OPTS.filter((o) => q.opts.includes(o.key)).map((o) => o.label);
+  const summary = [sum.who, sum.how, sum.what, ...optLabels].filter(Boolean).join(' · ') || '조건 없음';
 
   return (
     <div className="ab-res mn-wrap">
@@ -97,13 +99,13 @@ export default function AbResults() {
                       const meta = [playersText(g), barrier ? `진입장벽 ${barrier}` : '', g.review_percent ? `${g.review_summary ? `${g.review_summary} ` : ''}${g.review_percent}%` : ''].filter(Boolean).join(' · ');
                       const first = i === 0;
                       return (
-                        <li key={g.id} className="fr-row">
+                        <li key={g.id} className={`fr-row${first ? ' sb-host' : ''}`}>
                           <Link href={`/games/${g.id}`} prefetch={false} className="fr-poster-link" aria-label={`${gameName(g)} 보기`}>
                             <span className="fr-poster sb-host">
                               <PosterImage cover={{ vertical: g.cover_vertical_url ?? null, appid: g.steam_appid ?? null, wide: g.card_image_url || g.cover_image_url || null }} eager={i < 4} />
-                              {first && <BracketCorners size="poster" on />}
                             </span>
                           </Link>
+                          {first && <BracketCorners size="card" on />}
                           <div className="fr-body">
                             {first && <span className="fr-best">가장 잘 맞아요</span>}
                             <Link href={`/games/${g.id}`} prefetch={false} className="fr-name">{gameName(g)}</Link>

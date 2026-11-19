@@ -6,6 +6,7 @@
 .sb-set { position: absolute; inset: 0; pointer-events: none; --w: var(--sb-w-tab); --l: var(--sb-l-tab); --o: var(--sb-o-tab); --in: 6px; }
 .sb-set[data-size="chip"] { --w: var(--sb-w-chip); --l: var(--sb-l-chip); --o: var(--sb-o-chip); }
 .sb-set[data-size="tile"] { --w: var(--sb-w-tile); --l: var(--sb-l-tile); --o: var(--sb-o-tile); }
+.sb-set[data-size="card"] { --w: var(--sb-w-card); --l: var(--sb-l-card); --o: var(--sb-o-card); --in: 10px; }
 .sb-set[data-size="poster"] { --w: var(--sb-w-poster); --l: var(--sb-l-poster); --o: var(--sb-o-poster); --in: 10px; }
 .sb-c { position: absolute; display: block; width: var(--l); height: var(--l); border: 0 solid var(--sb-color); opacity: 0; }
 .sb-c.tl { top: calc(-1 * var(--o)); left: calc(-1 * var(--o)); border-top-width: var(--w); border-left-width: var(--w); transform: translate(calc(-1 * var(--in)), calc(-1 * var(--in))); }

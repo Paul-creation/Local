@@ -1,7 +1,7 @@
 // 실행: npm test (Node 내장 테스트, .ts를 바로 불러온다)
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseQuery, queryToParams, search, badgesFor, groupTotal, fitsPlayers, countFitting, NO_TAGS, EMPTY_QUERY, ALL_PARTS, summaryParts } from './abSearch.ts';
+import { parseQuery, queryToParams, search, badgesFor, groupTotal, fitsPlayers, countFitting, countMatching, NO_TAGS, EMPTY_QUERY, ALL_PARTS, summaryParts } from './abSearch.ts';
 
 const kw = (g, k) => g.name.toLowerCase().includes(k.toLowerCase());
 const G = [
@@ -12,7 +12,7 @@ const G = [
 
 test('주소 ↔ 조건', () => {
   const q = parseQuery(new URLSearchParams('n=4&how=coop&g=horror,zzz&o=free,ko,bad&kw=abc'));
-  assert.deepEqual(q, { n: 4, how: 'coop', genres: ['horror'], kw: 'abc', opts: ['free', 'ko'] });
+  assert.deepEqual(q, { n: 4, how: 'coop', genres: ['horror'], gm: 'all', kw: 'abc', opts: ['free', 'ko'] });
   assert.equal(queryToParams(q), 'n=4&how=coop&g=horror&kw=abc&o=free%2Cko');
   assert.deepEqual(parseQuery(new URLSearchParams('n=0&how=x')), EMPTY_QUERY);
 });
@@ -56,4 +56,32 @@ test('근거 배지와 합계', () => {
 
 test('접힌 검색창 글자', () => {
   assert.deepEqual(summaryParts({ ...EMPTY_QUERY, n: 4, how: 'coop', genres: ['horror'] }), { who: '4명', how: '같이 깨기', what: '공포' });
+});
+
+test('장르 모두/하나라도: 주소에 gm이 없으면 all', () => {
+  assert.equal(parseQuery(new URLSearchParams('g=horror,puzzle')).gm, 'all');
+  assert.equal(parseQuery(new URLSearchParams('g=horror,puzzle&gm=all')).gm, 'all');
+  assert.equal(parseQuery(new URLSearchParams('g=horror,puzzle&gm=any')).gm, 'any');
+  assert.equal(parseQuery(new URLSearchParams('g=horror,puzzle&gm=zzz')).gm, 'all');
+  assert.equal(queryToParams(parseQuery(new URLSearchParams('g=horror,puzzle&gm=any'))), 'g=horror%2Cpuzzle&gm=any');
+  assert.equal(queryToParams(parseQuery(new URLSearchParams('g=horror,puzzle'))), 'g=horror%2Cpuzzle');
+});
+
+test('장르 모두/하나라도: 모두는 전부 가진 게임만, 하나라도는 합집합', () => {
+  const games = [
+    { id: 'h', name: 'H', themes: ['Horror'] },
+    { id: 'p', name: 'P', genres: ['Puzzle'] },
+    { id: 'hp', name: 'HP', themes: ['Horror'], genres: ['Puzzle'] },
+  ];
+  const base = { ...EMPTY_QUERY, genres: ['horror', 'puzzle'] };
+  assert.deepEqual(search(games, base, NO_TAGS, kw).list.map((g) => g.id), ['h', 'p', 'hp'].filter((id) => id === 'hp'));
+  assert.deepEqual(search(games, { ...base, gm: 'any' }, NO_TAGS, kw).list.map((g) => g.id).sort(), ['h', 'hp', 'p']);
+  assert.equal(countMatching(games, base, NO_TAGS, kw), 1);
+  assert.equal(countMatching(games, { ...base, gm: 'any' }, NO_TAGS, kw), 3);
+});
+
+test('칸 글자: 여럿이면 "공포 외 1개"', () => {
+  assert.equal(summaryParts({ ...EMPTY_QUERY, genres: ['horror', 'cook'] }).what, '공포 외 1개');
+  assert.equal(summaryParts({ ...EMPTY_QUERY, genres: ['horror'], kw: '좀비' }).what, '공포 외 1개');
+  assert.equal(summaryParts({ ...EMPTY_QUERY, kw: '좀비' }).what, '좀비');
 });
