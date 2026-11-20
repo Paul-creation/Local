@@ -163,3 +163,38 @@ export async function getHomeLists(hotItems: HotItem[]): Promise<HomeLists> {
   // 세로 표지가 없는 게임의 대체 이미지가 비어 있으면 줄에서 뺄 필요는 없다 — PosterImage가 빈 칸으로 그린다
   return { popular, upcoming, rising };
 }
+
+// ---------- 로그인 전 메인 히어로 — 이번 주 대표 게임 1장 ----------
+// 대표 게임 = featured_games의 가장 최근 주 게임(운영자가 고른 게임이 있으면 그것, 없으면 scripts/pick-weekly-featured.mjs가 고른 게임), 그 이미지가 없으면 지금 인기 순위 순서로 넘어간다
+// 이미지 = Steam 라이브러리 히어로 library_hero_2x.jpg(3840×1240). 서버에서 HEAD로 실제로 있는지 확인(404인 게임 건너뜀) — ISR이라 하루에 한 번만
+export type HeroFeatured = { id: string; title: string; src: string; srcSmall: string };
+const STEAM_APP_ASSETS = 'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps';
+const HERO_CANDIDATES_FROM_HOT = 5;
+
+async function heroImageExists(url: string): Promise<boolean> {
+  try {
+    const r = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(4000), cache: 'force-cache' });
+    return r.ok;
+  } catch {
+    return false;
+  }
+}
+
+export async function getHeroFeatured(hotIds: string[]): Promise<HeroFeatured | null> {
+  const { data: weeks } = await supabase.from('featured_games').select('game_id').order('week_start', { ascending: false }).limit(3);
+  const ids = [...new Set([...((weeks ?? []) as { game_id: string }[]).map((w) => w.game_id), ...hotIds.slice(0, HERO_CANDIDATES_FROM_HOT)])];
+  if (!ids.length) return null;
+  const { data } = await selectHomeGames('id, name, display_name, steam_appid, release_date, release_date_text').in('id', ids);
+  type Row = { id: string; name: string; display_name: string | null; steam_appid: string | number | null; release_date: string | null; release_date_text: string | null };
+  const byId = new Map(((data ?? []) as unknown as Row[]).map((g) => [g.id, g]));
+  for (const id of ids) {
+    const g = byId.get(id);
+    if (!g?.steam_appid) continue;
+    const src = `${STEAM_APP_ASSETS}/${g.steam_appid}/library_hero_2x.jpg`;
+    if (!(await heroImageExists(src))) continue;
+    const year = /^(\d{4})/.exec(g.release_date ?? '')?.[1] ?? /(\d{4})/.exec(g.release_date_text ?? '')?.[1];
+    const name = g.display_name ?? g.name;
+    return { id: g.id, title: year ? `${name} (${year})` : name, src, srcSmall: `${STEAM_APP_ASSETS}/${g.steam_appid}/library_hero.jpg` };
+  }
+  return null;
+}

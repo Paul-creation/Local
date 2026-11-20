@@ -37,7 +37,7 @@ export default function PeopleSection({ recs }: { recs: Data | null }) {
   const allHref = `${peopleHref(n, myPcActive)}${chipQuery}`;
   // 추천 데이터가 없어도 머리(제목 + 인원 탭)는 그린다 — 탭이 그 인원의 검색 결과로 가는 길이라서
   return (
-    <section className="mn-sec" aria-labelledby="mn-people-title">
+    <section className="mn-sec mn-sec-people" aria-labelledby="mn-people-title">
       {/* 머리 한 줄: 제목 → 인원 탭 → 세로 구분선 → 빠른 필터 칩 → 맨 오른쪽 "더 보기 →" (좁으면 줄바꿈) */}
       <div className="mn-people-head">
         <div className="mn-people-top">

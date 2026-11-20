@@ -8,6 +8,7 @@ import SearchResults from './search/SearchResults';
 import Loader from './status/Loader';
 import { FilterPanel } from './search/SearchPanel';
 import PeopleProvider from './home/PeopleContext';
+import type { HeroFeatured } from '../lib/homeMain';
 import '../brand-tokens.css';
 import './home/mn/mn.css';
 import '../mono-page.css';
@@ -29,7 +30,7 @@ function useWide() {
 
 // 메인 화면 틀 — 홈 섹션은 서버에서 그려 받고(sections), 검색·필터·결과만 여기서 상태로 다룬다
 // 전체 게임 목록은 첫 화면 뒤에 따로 받아서(useGameIndex) 받은 뒤부터 검색·필터·자동완성이 브라우저에서 바로 동작
-export default function GameGrid({ firstSection, sections, top10Ids = [], peopleReady = true, heroCovers = [], member = false }: { firstSection: ReactNode; sections: ReactNode; top10Ids?: string[]; peopleReady?: boolean; heroCovers?: string[]; member?: boolean }) {
+export default function GameGrid({ firstSection, sections, top10Ids = [], peopleReady = true, hero = null, heroLines = [], member = false }: { firstSection: ReactNode; sections?: ReactNode; top10Ids?: string[]; peopleReady?: boolean; hero?: HeroFeatured | null; heroLines?: string[]; member?: boolean }) {
   const index = useGameIndex();
   const filters = useGameFilters(index.games, index.tree);
   const { showResults, normalizedQuery } = filters;
@@ -42,13 +43,13 @@ export default function GameGrid({ firstSection, sections, top10Ids = [], people
       <div className={showHome ? `mn mn-page${member ? ' mn-member' : ''}` : 'mn mn-inner'}>
         {/* 제목 → 3칸 검색창 + AI 추천 (결과 화면에서는 검색창 줄만) */}
         {/* 첫 화면 래퍼(.mn-fold, 홈만): 히어로 + 인원별 추천을 화면 높이에 맞춘다. 래퍼 div는 항상 있어서 검색 중에도 검색창이 다시 만들어지지 않는다 */}
-        <div className={showHome ? 'mn-fold' : undefined}>
-          <MainHero games={index.games || []} filters={filters} showHome={showHome} sidebar={sidebar} covers={heroCovers} member={member} />
+        <div className={showHome && !member ? 'mn-fold' : undefined}>
+          <MainHero games={index.games || []} filters={filters} showHome={showHome} sidebar={sidebar} hero={hero} heroLines={heroLines} member={member} />
           {showHome && <div className="mn-fold-next"><div className="mn-wrap">{firstSection}</div></div>}
         </div>
 
         {/* 나머지 섹션 — 결과 없을 때만 */}
-        {showHome && <div className="home-only mn-rest"><div className="mn-wrap">{sections}</div></div>}
+        {showHome && sections && <div className="home-only mn-rest"><div className="mn-wrap">{sections}</div></div>}
 
         {/* 필터 주소로 들어온 첫 HTML에서만 보이는 로딩 막대 (React가 그리기 시작하면 결과 영역이 대신함) */}
         {showHome && <div className="home-url-skel"><Loader /></div>}

@@ -8,7 +8,7 @@ import { CommentIcon, LikeIcon } from './mn/icons';
 // 새 브랜드 스타일(.mn-posts, mn.css). 한 줄: 게시판 라벨 + 제목 + 추천·댓글 수(아이콘은 stroke SVG)
 export default function PopularPosts({ posts }: { posts: PostListItem[] }) {
   return (
-    <section className="mn-sec" aria-labelledby="mn-posts-title">
+    <section className="mn-sec mn-sec-posts" aria-labelledby="mn-posts-title">
       <SectionHead id="mn-posts-title" title="인기 게시물" more={{ href: '/community', text: '커뮤니티 가기' }} />
       <ol className="mn-posts">
         {posts.map((p) => (

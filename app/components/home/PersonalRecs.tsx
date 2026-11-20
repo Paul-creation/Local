@@ -17,6 +17,7 @@ import type { CardGame } from '../../lib/peopleRecs';
 import { getCardExtras } from '../../lib/cardExtras';
 import type { CardExtras } from '../../lib/cardInfo';
 import { usePeople } from './PeopleContext';
+import { fetchMyName } from '../AuthMenu';
 
 // 메인 개인 추천 — 위에서부터 먼저 맞는 것 하나만 보인다
 // 1) 로그인 + 보유 목록 있음(공개 또는 예전 목록) + 보유 5개 이상: "취향에 맞는 게임" — /library 취향 탭과 같은 계산(rankByTaste)과 같은 결과. 보유 게임만으로 취향을 만들고 보유 게임은 결과에서 뺀다(찜은 계산에도 제외에도 쓰지 않음)
@@ -78,10 +79,12 @@ export default function PersonalRecs({ homeExcluded }: { homeExcluded: string[] 
     return candidates.filter((g) => !skipHome.has(g.id) && (!user || runsOnMyPc(user, g))).slice(0, SHOW);
   }, [tasteMode, tasteRanked, wishMode, index, scored, seedKey, ids, homeExcluded, pcReady, pc, myPcOn]);
 
-  // 닉네임 — 헤더(AuthMenu)가 sessionStorage에 잠깐 기억해 둔 로그인 정보에서만 읽는다 (서버 호출 없음)
+  // 닉네임 — 헤더(AuthMenu)와 같은 로그인 정보(캐시 또는 /api/me)에서 읽는다
   const [persona, setPersona] = useState('');
   useEffect(() => {
-    try { const c = JSON.parse(sessionStorage.getItem('auth_me') || 'null'); setPersona(c?.me?.persona_name || ''); } catch { /* 저장소를 못 쓰면 이름 없이 */ } // eslint-disable-line react-hooks/set-state-in-effect
+    let alive = true;
+    fetchMyName().then((n) => { if (alive) setPersona(n); }).catch(() => {});
+    return () => { alive = false; };
   }, []);
 
   // 보여줄 카드의 평가·태그·한국어 지원은 게임 목록에 없어 따로 읽는다 (못 읽으면 그 줄만 빠짐)
@@ -103,7 +106,7 @@ export default function PersonalRecs({ homeExcluded }: { homeExcluded: string[] 
   if (shown.length === 0) return null;
   const title = tasteMode ? (persona ? `${persona}님 취향` : '내 취향') : '찜한 게임과 비슷한 게임';
   return (
-    <section className="mn-sec" aria-labelledby="personal-recs-title">
+    <section className="mn-sec mn-sec-personal" aria-labelledby="personal-recs-title">
       <SectionHead id="personal-recs-title" title={title} more={tasteMode ? { href: '/library?tab=taste', text: '다시 받기', hard: true } : undefined} />
       <div className="mn-row" ref={rowRef} tabIndex={0} role="region" aria-label={`${title} 목록`}>
         {shown.map((g) => <PosterCard key={g.id} hideMeta game={{ ...g, ...extraMap[g.id] }} badge={posterBadge(g)} />)}

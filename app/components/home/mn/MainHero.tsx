@@ -1,50 +1,40 @@
 // 담당: Paul(메인 배너·디자인)
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import SearchPanel from '../../search/SearchPanel';
 import AbSearch from '../ab/AbSearch';
+import MemberHeadline from './MemberHeadline';
+import GameLink from '../../GameLink';
 import type { GameFilters } from '../../../lib/useGameFilters';
+import type { HeroFeatured } from '../../../lib/homeMain';
 
-// 메인 히어로: 배경 세로 표지 벽(흐리게, 3줄·열 단위로 채움) 위에 어두운 그라데이션 두 겹 → 제목 한 줄 → 3칸 검색창
-// member(로그인): 제목 없이 검색창만 가운데, 높이도 낮다 (서버에서 정해 첫 HTML부터 그렇다). 표지 벽·그라데이션은 방문자와 같다
-// 검색 결과를 볼 때는 예전 모양(검색창 줄만)으로 돌아간다 — 검색창이 같은 자리에 남도록 요소 위치는 두 모드가 같고 클래스만 바뀐다 (입력 중 포커스 유지)
+// 메인 상단
+// 방문자: 높이 640px 히어로 — 이번 주 대표 게임의 Steam 라이브러리 히어로 이미지 1장(와이드) 위에 좌우·위아래 그라데이션 마스크 → 제목 + 한 줄 설명 → 3칸 검색창. 오른쪽 가장자리에 세로 글씨 "게임 이름 (출시연도)"(누르면 그 게임 상세)
+// 로그인(member): 이미지 없이 헤더 아래 멘트(MemberHeadline, 2시간마다) → 검색창. 헤더는 흐름 안에서 아래 1px 선
+// 검색 결과를 볼 때는 예전 모양(검색창 줄만)으로 돌아간다 — 검색창이 같은 자리에 남도록 요소 위치는 모드가 같고 클래스만 바뀐다 (입력 중 포커스 유지)
 // home-only로 감싼 부분은 필터 주소로 들어온 첫 HTML에서 숨김 (globals.css)
 // 상황 타일("이런 판 어때요?")·인원 탭·필터 칩·현황 숫자는 히어로 밖 섹션에 있다 (HomeSections)
-const EAGER_TILES = 12; // 앞 4열(375px 화면이 덮는 만큼)만 바로 받고, 나머지는 lazy
-
-export default function MainHero({ games, filters, showHome, sidebar = false, covers, member = false }: { games: any[]; filters: GameFilters; showHome: boolean; sidebar?: boolean; covers: string[]; member?: boolean }) { // eslint-disable-line @typescript-eslint/no-explicit-any
-  // 표지 벽 — 하나씩 툭툭 나타나지 않게 전체를 투명에서 시작해, 이미지 대부분이 받아지면(또는 600ms 뒤) 400ms에 걸쳐 나타난다 (absolute 배경이라 레이아웃 영향 없음)
-  const bgRef = useRef<HTMLDivElement>(null);
-  const [bgReady, setBgReady] = useState(false);
-  useEffect(() => {
-    const el = bgRef.current;
-    if (!el) return;
-    // 화면 밖으로 잘리는 타일은 lazy라 받아지지 않는다 — 화면 안에 들어오는 타일만 센다
-    const imgs = [...el.querySelectorAll('img')].filter((i) => i.getBoundingClientRect().left < window.innerWidth);
-    const need = Math.ceil(imgs.length * 0.8);
-    let done = false;
-    const show = () => { if (!done) { done = true; setBgReady(true); } };
-    const check = () => { if (imgs.filter((i) => i.complete).length >= need) show(); };
-    imgs.forEach((i) => i.addEventListener('load', check));
-    check();
-    const t = window.setTimeout(show, 600);
-    return () => { window.clearTimeout(t); imgs.forEach((i) => i.removeEventListener('load', check)); };
-  }, [covers.length, showHome]);
-
+export default function MainHero({ games, filters, showHome, sidebar = false, hero = null, heroLines = [], member = false }: { games: any[]; filters: GameFilters; showHome: boolean; sidebar?: boolean; hero?: HeroFeatured | null; heroLines?: string[]; member?: boolean }) { // eslint-disable-line @typescript-eslint/no-explicit-any
   return (
-    <div className={showHome ? `mn-hero${member ? ' mn-hero-member' : ''}` : 'home-hero'}>
-      {showHome && covers.length >= 12 && (
-        <div ref={bgRef} className={`home-only mn-hero-bg${bgReady ? ' is-ready' : ''}`} aria-hidden="true">
-          {covers.map((src, i) => <img key={`${i}-${src}`} src={src} alt="" loading={i < EAGER_TILES ? 'eager' : 'lazy'} decoding="async" fetchPriority="low" />)}
+    <div className={showHome ? (member ? 'mn-top' : 'mn-hero') : 'home-hero'}>
+      {showHome && !member && hero && (
+        <div className="home-only mn-hero-media" aria-hidden="true">
+          <img src={hero.src} srcSet={`${hero.srcSmall} 1920w, ${hero.src} 3840w`} sizes="100vw" alt="" width={3840} height={1240} loading="eager" decoding="async" fetchPriority="high" />
+        </div>
+      )}
+      {showHome && !member && hero && (
+        <div className="home-only mn-hero-credit">
+          <GameLink href={`/games/${hero.id}`}>{hero.title}</GameLink>
         </div>
       )}
       <div className={showHome ? 'mn-wrap mn-hero-inner' : undefined}>
         {showHome && !member && (
           <div className="home-only mn-intro" data-tour="hero">
             <h1 className="mn-h1">금요일 밤,<br className="mn-h1-br" /> 친구들이랑 뭐 하지?</h1>
+            <p className="mn-hero-sub">몇 명이서, 어떻게 놀지만 고르면 같이 할 게임을 찾아줘요.</p>
           </div>
         )}
+        {showHome && member && <div className="home-only mn-intro"><MemberHeadline lines={heroLines} /></div>}
         {showHome ? (
           // 홈: 에어비앤비식 3칸 검색창. 결과 화면(아래)은 예전 검색창 그대로
           <div className="ab-hero" data-tour="cmdbar">

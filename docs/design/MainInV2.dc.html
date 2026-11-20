@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>select screen 메인 · 로그인 후 (히어로 없음)</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;family=Noto+Sans+KR:wght@400;500;700;900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0B0A09}
+a{color:#7AA6FF}a:hover{color:#A9C5FF}
+</style>
+</helmet>
+<div style="position: relative; min-height: 3300px; background: linear-gradient(180deg, #141311 0%, #121110 45%, #0B0A09 100%); color: #F4F1EA; font-family: Inter, 'Noto Sans KR', system-ui, sans-serif; display: flex; flex-direction: column">
+
+  
+  <section aria-label="상단" style="position: relative">
+    <header style="position: relative; z-index: 2; border-bottom: 1px solid #2E2C28">
+      <div style="max-width: 1200px; margin: 0 auto; padding: 0 32px; height: 84px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap">
+        <a href="#top" aria-label="Select Screen 홈" style="display: inline-flex; align-items: center; gap: 12px; text-decoration: none">
+          <span style="position: relative; display: inline-flex; padding: 6px 9px">
+            <span aria-hidden="true" style="position: absolute; top: 0; left: 0; width: 8px; height: 8px; border-top: 2px solid {{brand}}; border-left: 2px solid {{brand}}"></span>
+            <span aria-hidden="true" style="position: absolute; top: 0; right: 0; width: 8px; height: 8px; border-top: 2px solid {{brand}}; border-right: 2px solid {{brand}}"></span>
+            <span aria-hidden="true" style="position: absolute; bottom: 0; left: 0; width: 8px; height: 8px; border-bottom: 2px solid {{brand}}; border-left: 2px solid {{brand}}"></span>
+            <span aria-hidden="true" style="position: absolute; bottom: 0; right: 0; width: 8px; height: 8px; border-bottom: 2px solid {{brand}}; border-right: 2px solid {{brand}}"></span>
+            <span style="font-family: Inter, sans-serif; font-weight: 900; font-size: 24px; letter-spacing: -0.05em; color: #F4F1EA; line-height: 1">select</span>
+          </span>
+          <span style="font-family: Inter, sans-serif; font-weight: 900; font-size: 24px; letter-spacing: -0.05em; color: #F4F1EA; line-height: 1">screen</span>
+        </a>
+        <nav aria-label="주요 메뉴" style="display: flex; align-items: center; gap: 26px; flex-wrap: wrap">
+          <a href="#top" style="color: #F4F1EA; text-decoration: none; font-weight: 700; font-size: 14px; letter-spacing: 0.04em; padding: 8px 0; border-bottom: 2px solid {{brand}}">홈</a>
+          <a href="#top" style="color: #C9C4B8; text-decoration: none; font-weight: 700; font-size: 14px; letter-spacing: 0.04em; padding: 8px 0; display: none">비교</a>
+          <a href="#top" style="color: #C9C4B8; text-decoration: none; font-weight: 700; font-size: 14px; letter-spacing: 0.04em; padding: 8px 0">내 PC</a>
+          <a href="#top" style="color: #C9C4B8; text-decoration: none; font-weight: 700; font-size: 14px; letter-spacing: 0.04em; padding: 8px 0">찜목록</a>
+          <a href="#top" style="color: #C9C4B8; text-decoration: none; font-weight: 700; font-size: 14px; letter-spacing: 0.04em; padding: 8px 0; display: none">커뮤니티</a>
+          <a href="#top" style="color: #C9C4B8; text-decoration: none; font-weight: 700; font-size: 14px; letter-spacing: 0.04em; padding: 8px 0; display: none">의견 보내기</a>
+          <a href="#top" style="background: {{brand}}; color: #141311; text-decoration: none; font-weight: 700; font-size: 14px; padding: 11px 18px; border-radius: 6px">PPPAUL</a>
+        </nav>
+      </div>
+    </header>
+  </section>
+  <section aria-label="인사말" style="max-width: 1200px; margin: 0 auto; padding: 96px 32px 0; display: flex; flex-direction: column; align-items: center; text-align: center"><h1 style="margin: 0; font-family: 'Noto Sans KR', sans-serif; font-weight: 900; font-size: 48px; line-height: 1.2; letter-spacing: -0.035em; color: #F4F1EA; text-align: center">{{heroLine}}</h1></section>
+  <section aria-label="검색" style="max-width: 1200px; margin: 0 auto; padding: 64px 32px 0; display: flex; justify-content: center">
+      <form style="width: fit-content; max-width: 100%; background: rgba(30, 29, 26, 0.88); border: 1px solid #3A3833; border-radius: 14px; box-shadow: none; padding: 8px; display: flex; align-items: stretch; gap: 8px; flex-wrap: wrap">
+        <label style="flex: 0 1 170px; display: flex; flex-direction: column; gap: 4px; padding: 12px 20px; border-right: 1px solid #3A3833">
+          <span style="font-size: 13px; font-weight: 700; color: #F4F1EA">누구랑</span>
+          <input type="text" placeholder="인원 추가" style="border: none; outline: none; font: inherit; font-size: 15px; color: #F4F1EA; background: transparent; padding: 0">
+        </label>
+        <label style="flex: 0 1 170px; display: flex; flex-direction: column; gap: 4px; padding: 12px 20px; border-right: 1px solid #3A3833">
+          <span style="font-size: 13px; font-weight: 700; color: #F4F1EA">어떻게</span>
+          <input type="text" placeholder="방식 선택" style="border: none; outline: none; font: inherit; font-size: 15px; color: #F4F1EA; background: transparent; padding: 0">
+        </label>
+        <label style="flex: 0 1 190px; display: flex; flex-direction: column; gap: 4px; padding: 12px 8px 12px 20px">
+          <span style="font-size: 13px; font-weight: 700; color: #F4F1EA">뭐 할까</span>
+          <input type="text" placeholder="장르·게임 검색" style="border: none; outline: none; font: inherit; font-size: 15px; color: #F4F1EA; background: transparent; padding: 0">
+        </label>
+        <div style="display: flex; gap: 8px; align-items: center">
+          <button type="button" style="background: {{brand}}; color: #141311; border: none; border-radius: 10px; font: inherit; font-weight: 700; font-size: 16px; padding: 0 28px; height: 56px; cursor: pointer">찾기</button>
+        </div>
+      </form>
+  </section>
+
+  <main style="flex-grow: 1">
+
+<section aria-label="개인 추천" style="max-width: 1200px; margin: 0 auto; padding: 64px 32px 96px"><div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid #2E2C28; padding-bottom: 14px; margin-bottom: 20px"><div style="display: flex; flex-direction: column; gap: 6px"><h2 style="margin: 0; font-size: 24px; font-weight: 900; letter-spacing: -0.03em; color: #F4F1EA">PPPAUL님 취향</h2></div><a href="#top" style="font-size: 14px; font-weight: 700; letter-spacing: 0.04em">다시 받기 →</a></div><div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px"><a href="#top" style="display: flex; flex-direction: column; gap: 10px; text-decoration: none"><span style="display: block; width: 100%; aspect-ratio: 2 / 3; border-radius: 4px; background: #24303B; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">Deep Rock Galactic</span></a><a href="#top" style="display: flex; flex-direction: column; gap: 10px; text-decoration: none"><span style="display: block; width: 100%; aspect-ratio: 2 / 3; border-radius: 4px; background: #2C2C3E; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">GTFO</span></a><a href="#top" style="display: flex; flex-direction: column; gap: 10px; text-decoration: none"><span style="display: block; width: 100%; aspect-ratio: 2 / 3; border-radius: 4px; background: #352A3F; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">Helldivers 2</span></a><a href="#top" style="display: flex; flex-direction: column; gap: 10px; text-decoration: none"><span style="display: block; width: 100%; aspect-ratio: 2 / 3; border-radius: 4px; background: #3B2F2A; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">Valheim</span></a><a href="#top" style="display: flex; flex-direction: column; gap: 10px; text-decoration: none"><span style="display: block; width: 100%; aspect-ratio: 2 / 3; border-radius: 4px; background: #3A2433; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">Back 4 Blood</span></a><a href="#top" style="display: flex; flex-direction: column; gap: 10px; text-decoration: none"><span style="display: block; width: 100%; aspect-ratio: 2 / 3; border-radius: 4px; background: #1F3534; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">Payday 3</span></a></div></section>
+    <section aria-label="인원별 추천 게임" style="max-width: 1200px; margin: 0 auto; padding: 0 32px 120px">
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid #2E2C28; padding-bottom: 12px; margin-bottom: 18px">
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center">
+          <h2 style="margin: 0; font-size: 22px; font-weight: 900; letter-spacing: -0.03em; color: #F4F1EA">{{tabLabel}} 추천</h2>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center">
+            <div role="group" aria-label="인원 선택" style="display: flex; gap: 10px; flex-wrap: wrap">
+              <sc-for list="{{tabs}}" as="tab" hint-placeholder-count="4">
+                <button type="button" onClick="{{tab.pick}}" aria-pressed="{{tab.pressed}}" style="position: relative; background: {{tab.bg}}; color: {{tab.fg}}; border: 1px solid #3A3833; border-radius: 6px; font: inherit; font-weight: 700; font-size: 14px; padding: 9px 16px; cursor: pointer">
+                  {{tab.label}}
+                </button>
+              </sc-for>
+            </div>
+            <span aria-hidden="true" style="width: 1px; height: 26px; background: #3A3833; margin: 0 4px"></span>
+            <div role="group" aria-label="빠른 필터" style="display: flex; gap: 8px; flex-wrap: wrap">
+              <button type="button" aria-pressed="false" style="background: #1E1D1A; color: #C9C4B8; border: 1px solid #2E2C28; border-radius: 999px; font: inherit; font-weight: 700; font-size: 13px; padding: 8px 14px; cursor: pointer">내 PC OK</button>
+              <button type="button" aria-pressed="false" style="background: #1E1D1A; color: #C9C4B8; border: 1px solid #2E2C28; border-radius: 999px; font: inherit; font-weight: 700; font-size: 13px; padding: 8px 14px; cursor: pointer">무료</button>
+              <button type="button" aria-pressed="false" style="background: #1E1D1A; color: #C9C4B8; border: 1px solid #2E2C28; border-radius: 999px; font: inherit; font-weight: 700; font-size: 13px; padding: 8px 14px; cursor: pointer">데모</button>
+              <button type="button" aria-pressed="false" style="background: #1E1D1A; color: #C9C4B8; border: 1px solid #2E2C28; border-radius: 999px; font: inherit; font-weight: 700; font-size: 13px; padding: 8px 14px; cursor: pointer">할인 중</button>
+            </div>
+          </div>
+        </div>
+        <a href="#top" style="font-size: 14px; font-weight: 700; letter-spacing: 0.04em">더 보기 →</a>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px">
+        <sc-for list="{{recs}}" as="r" hint-placeholder-count="6">
+          <button type="button" onClick="{{r.pick}}" aria-pressed="{{r.pressed}}" style="position: relative; display: flex; flex-direction: column; gap: 8px; background: transparent; border: none; padding: 0; text-align: left; min-width: 0; font: inherit; cursor: pointer">
+            <span style="position: relative; display: block; width: 100%; aspect-ratio: 2 / 3; border-radius: 4px; background: {{r.bg}}; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)">
+              <sc-if value="{{r.hasBadge}}" hint-placeholder-val="{{true}}">
+                <span style="position: absolute; top: 8px; left: 8px; background: {{r.badgeBg}}; color: {{r.badgeFg}}; font-size: 11px; font-weight: 700; padding: 3px 7px; border-radius: 3px">{{r.badge}}</span>
+              </sc-if>
+              <span style="position: absolute; left: 10px; bottom: 10px; color: rgba(244, 241, 234, 0.55); font-size: 12px; font-weight: 700">[포스터]</span>
+              <sc-if value="{{r.selected}}" hint-placeholder-val="{{false}}">
+                <span aria-hidden="true" style="position: absolute; top: -8px; left: -8px; width: 18px; height: 18px; border-top: 3px solid {{brand}}; border-left: 3px solid {{brand}}"></span>
+                <span aria-hidden="true" style="position: absolute; top: -8px; right: -8px; width: 18px; height: 18px; border-top: 3px solid {{brand}}; border-right: 3px solid {{brand}}"></span>
+                <span aria-hidden="true" style="position: absolute; bottom: -8px; left: -8px; width: 18px; height: 18px; border-bottom: 3px solid {{brand}}; border-left: 3px solid {{brand}}"></span>
+                <span aria-hidden="true" style="position: absolute; bottom: -8px; right: -8px; width: 18px; height: 18px; border-bottom: 3px solid {{brand}}; border-right: 3px solid {{brand}}"></span>
+              </sc-if>
+            </span>
+            <span style="font-size: 15px; font-weight: 700; color: #F4F1EA; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.name}}</span>
+          </button>
+        </sc-for>
+      </div>
+    </section>
+
+<section aria-label="순위" style="max-width: 1200px; margin: 0 auto; padding: 0 32px 88px"><div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px">
+<div style="display: flex; flex-direction: column"><div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #3A3833; padding-bottom: 10px"><h3 style="margin: 0; font-size: 18px; font-weight: 900; color: #F4F1EA">인기 차트</h3><a href="#top" style="font-size: 13px; font-weight: 700">전체 →</a></div><a href="#top" style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #2E2C28; text-decoration: none"><span style="flex: 0 0 22px; font-family: Inter, sans-serif; font-weight: 900; font-size: 18px; color: #F4F1EA">1</span><span style="flex: 0 0 44px; aspect-ratio: 2 / 3; border-radius: 3px; background: #24303B; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">[게임]</span><span style="font-size: 13px; color: #A9A498">[N]명</span></span></a><a href="#top" style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #2E2C28; text-decoration: none"><span style="flex: 0 0 22px; font-family: Inter, sans-serif; font-weight: 900; font-size: 18px; color: #A9A498">2</span><span style="flex: 0 0 44px; aspect-ratio: 2 / 3; border-radius: 3px; background: #2C2C3E; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">[게임]</span><span style="font-size: 13px; color: #A9A498">[N]명</span></span></a><a href="#top" style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #2E2C28; text-decoration: none"><span style="flex: 0 0 22px; font-family: Inter, sans-serif; font-weight: 900; font-size: 18px; color: #A9A498">3</span><span style="flex: 0 0 44px; aspect-ratio: 2 / 3; border-radius: 3px; background: #352A3F; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">[게임]</span><span style="font-size: 13px; color: #A9A498">[N]명</span></span></a><a href="#top" style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #2E2C28; text-decoration: none"><span style="flex: 0 0 22px; font-family: Inter, sans-serif; font-weight: 900; font-size: 18px; color: #A9A498">4</span><span style="flex: 0 0 44px; aspect-ratio: 2 / 3; border-radius: 3px; background: #3B2F2A; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">[게임]</span><span style="font-size: 13px; color: #A9A498">[N]명</span></span></a><a href="#top" style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #2E2C28; text-decoration: none"><span style="flex: 0 0 22px; font-family: Inter, sans-serif; font-weight: 900; font-size: 18px; color: #A9A498">5</span><span style="flex: 0 0 44px; aspect-ratio: 2 / 3; border-radius: 3px; background: #3A2433; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">[게임]</span><span style="font-size: 13px; color: #A9A498">[N]명</span></span></a></div>
+<div style="display: flex; flex-direction: column"><div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #3A3833; padding-bottom: 10px"><h3 style="margin: 0; font-size: 18px; font-weight: 900; color: #F4F1EA">출시 예정</h3><a href="#top" style="font-size: 13px; font-weight: 700">전체 →</a></div><a href="#top" style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #2E2C28; text-decoration: none"><span style="flex: 0 0 22px; font-family: Inter, sans-serif; font-weight: 900; font-size: 18px; color: #F4F1EA">1</span><span style="flex: 0 0 44px; aspect-ratio: 2 / 3; border-radius: 3px; background: #2C2C3E; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">One Tank Trip</span><span style="font-size: 13px; color: #A9A498">1/6 출시</span></span></a><a href="#top" style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #2E2C28; text-decoration: none"><span style="flex: 0 0 22px; font-family: Inter, sans-serif; font-weight: 900; font-size: 18px; color: #A9A498">2</span><span style="flex: 0 0 44px; aspect-ratio: 2 / 3; border-radius: 3px; background: #352A3F; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">[게임]</span><span style="font-size: 13px; color: #A9A498">[출시일]</span></span></a><a href="#top" style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #2E2C28; text-decoration: none"><span style="flex: 0 0 22px; font-family: Inter, sans-serif; font-weight: 900; font-size: 18px; color: #A9A498">3</span><span style="flex: 0 0 44px; aspect-ratio: 2 / 3; border-radius: 3px; background: #3B2F2A; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">[게임]</span><span style="font-size: 13px; color: #A9A498">[출시일]</span></span></a><a href="#top" style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #2E2C28; text-decoration: none"><span style="flex: 0 0 22px; font-family: Inter, sans-serif; font-weight: 900; font-size: 18px; color: #A9A498">4</span><span style="flex: 0 0 44px; aspect-ratio: 2 / 3; border-radius: 3px; background: #3A2433; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">[게임]</span><span style="font-size: 13px; color: #A9A498">[출시일]</span></span></a><a href="#top" style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #2E2C28; text-decoration: none"><span style="flex: 0 0 22px; font-family: Inter, sans-serif; font-weight: 900; font-size: 18px; color: #A9A498">5</span><span style="flex: 0 0 44px; aspect-ratio: 2 / 3; border-radius: 3px; background: #1F3534; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">[게임]</span><span style="font-size: 13px; color: #A9A498">[출시일]</span></span></a></div>
+<div style="display: flex; flex-direction: column"><div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #3A3833; padding-bottom: 10px"><h3 style="margin: 0; font-size: 18px; font-weight: 900; color: #F4F1EA">다시 뜨는 중</h3><a href="#top" style="font-size: 13px; font-weight: 700">전체 →</a></div><a href="#top" style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #2E2C28; text-decoration: none"><span style="flex: 0 0 22px; font-family: Inter, sans-serif; font-weight: 900; font-size: 18px; color: #F4F1EA">1</span><span style="flex: 0 0 44px; aspect-ratio: 2 / 3; border-radius: 3px; background: #352A3F; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">[게임]</span><span style="font-size: 13px; color: #A9A498">+[N]%</span></span></a><a href="#top" style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #2E2C28; text-decoration: none"><span style="flex: 0 0 22px; font-family: Inter, sans-serif; font-weight: 900; font-size: 18px; color: #A9A498">2</span><span style="flex: 0 0 44px; aspect-ratio: 2 / 3; border-radius: 3px; background: #3B2F2A; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">[게임]</span><span style="font-size: 13px; color: #A9A498">+[N]%</span></span></a><a href="#top" style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #2E2C28; text-decoration: none"><span style="flex: 0 0 22px; font-family: Inter, sans-serif; font-weight: 900; font-size: 18px; color: #A9A498">3</span><span style="flex: 0 0 44px; aspect-ratio: 2 / 3; border-radius: 3px; background: #3A2433; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">[게임]</span><span style="font-size: 13px; color: #A9A498">+[N]%</span></span></a><a href="#top" style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #2E2C28; text-decoration: none"><span style="flex: 0 0 22px; font-family: Inter, sans-serif; font-weight: 900; font-size: 18px; color: #A9A498">4</span><span style="flex: 0 0 44px; aspect-ratio: 2 / 3; border-radius: 3px; background: #1F3534; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">[게임]</span><span style="font-size: 13px; color: #A9A498">+[N]%</span></span></a><a href="#top" style="display: flex; align-items: center; gap: 14px; padding: 10px 0; border-bottom: 1px solid #2E2C28; text-decoration: none"><span style="flex: 0 0 22px; font-family: Inter, sans-serif; font-weight: 900; font-size: 18px; color: #A9A498">5</span><span style="flex: 0 0 44px; aspect-ratio: 2 / 3; border-radius: 3px; background: #26323F; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"></span><span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">[게임]</span><span style="font-size: 13px; color: #A9A498">+[N]%</span></span></a></div>
+</div></section>
+<section aria-label="스트리머 협동 게임 목록" style="max-width: 1200px; margin: 0 auto; padding: 0 32px 88px"><div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid #2E2C28; padding-bottom: 14px; margin-bottom: 20px"><div style="display: flex; flex-direction: column; gap: 6px"><h2 style="margin: 0; font-size: 24px; font-weight: 900; letter-spacing: -0.03em; color: #F4F1EA">스트리머가 밤새운 게임</h2></div><a href="#top" style="font-size: 14px; font-weight: 700; letter-spacing: 0.04em">더 보기 →</a></div><div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px"><a href="#top" style="display: flex; flex-direction: column; gap: 10px; text-decoration: none"><span style="position: relative; display: block; aspect-ratio: 16 / 9; border-radius: 6px; background: #2F3A2A; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"><span style="position: absolute; left: 10px; bottom: 10px; display: flex; align-items: center; gap: 6px; background: rgba(11, 10, 9, 0.8); color: #F4F1EA; font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 4px"><span aria-hidden="true" style="width: 16px; height: 16px; border-radius: 50%; background: #3A3833"></span>[스트리머]</span></span><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">[게임]</span><span style="font-size: 13px; color: #A9A498">[N]시간</span></a><a href="#top" style="display: flex; flex-direction: column; gap: 10px; text-decoration: none"><span style="position: relative; display: block; aspect-ratio: 16 / 9; border-radius: 6px; background: #1F3534; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"><span style="position: absolute; left: 10px; bottom: 10px; display: flex; align-items: center; gap: 6px; background: rgba(11, 10, 9, 0.8); color: #F4F1EA; font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 4px"><span aria-hidden="true" style="width: 16px; height: 16px; border-radius: 50%; background: #3A3833"></span>[스트리머]</span></span><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">[게임]</span><span style="font-size: 13px; color: #A9A498">[N]시간</span></a><a href="#top" style="display: flex; flex-direction: column; gap: 10px; text-decoration: none"><span style="position: relative; display: block; aspect-ratio: 16 / 9; border-radius: 6px; background: #3B2F2A; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"><span style="position: absolute; left: 10px; bottom: 10px; display: flex; align-items: center; gap: 6px; background: rgba(11, 10, 9, 0.8); color: #F4F1EA; font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 4px"><span aria-hidden="true" style="width: 16px; height: 16px; border-radius: 50%; background: #3A3833"></span>[스트리머]</span></span><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">[게임]</span><span style="font-size: 13px; color: #A9A498">[N]시간</span></a><a href="#top" style="display: flex; flex-direction: column; gap: 10px; text-decoration: none"><span style="position: relative; display: block; aspect-ratio: 16 / 9; border-radius: 6px; background: #2C2C3E; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.1)"><span style="position: absolute; left: 10px; bottom: 10px; display: flex; align-items: center; gap: 6px; background: rgba(11, 10, 9, 0.8); color: #F4F1EA; font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 4px"><span aria-hidden="true" style="width: 16px; height: 16px; border-radius: 50%; background: #3A3833"></span>[스트리머]</span></span><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">[게임]</span><span style="font-size: 13px; color: #A9A498">[N]시간</span></a></div></section>
+<section aria-label="큐레이터 목록" style="max-width: 1200px; margin: 0 auto; padding: 0 32px 88px"><div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid #2E2C28; padding-bottom: 14px; margin-bottom: 20px"><div style="display: flex; flex-direction: column; gap: 6px"><h2 style="margin: 0; font-size: 24px; font-weight: 900; letter-spacing: -0.03em; color: #F4F1EA">인스타에서 봤던 그 게임</h2></div><a href="#top" style="font-size: 14px; font-weight: 700; letter-spacing: 0.04em">큐레이터 전체 →</a></div><div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px"><a href="#top" style="display: flex; align-items: center; gap: 14px; background: #1E1D1A; border: 1px solid #2E2C28; border-radius: 10px; padding: 14px 16px; text-decoration: none"><span aria-hidden="true" style="flex: 0 0 48px; height: 48px; border-radius: 50%; background: #3D3426; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.12)"></span><span style="display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">겜로그</span><span style="font-size: 13px; color: #A9A498">게임 [N]개</span></span></a><a href="#top" style="display: flex; align-items: center; gap: 14px; background: #1E1D1A; border: 1px solid #2E2C28; border-radius: 10px; padding: 14px 16px; text-decoration: none"><span aria-hidden="true" style="flex: 0 0 48px; height: 48px; border-radius: 50%; background: #2E2A26; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.12)"></span><span style="display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">게임 큐레이션</span><span style="font-size: 13px; color: #A9A498">게임 [N]개</span></span></a><a href="#top" style="display: flex; align-items: center; gap: 14px; background: #1E1D1A; border: 1px solid #2E2C28; border-radius: 10px; padding: 14px 16px; text-decoration: none"><span aria-hidden="true" style="flex: 0 0 48px; height: 48px; border-radius: 50%; background: #24303B; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.12)"></span><span style="display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">글리치</span><span style="font-size: 13px; color: #A9A498">게임 [N]개</span></span></a><a href="#top" style="display: flex; align-items: center; gap: 14px; background: #1E1D1A; border: 1px solid #2E2C28; border-radius: 10px; padding: 14px 16px; text-decoration: none"><span aria-hidden="true" style="flex: 0 0 48px; height: 48px; border-radius: 50%; background: #2C2C3E; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.12)"></span><span style="display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">세이브슬롯</span><span style="font-size: 13px; color: #A9A498">게임 [N]개</span></span></a><a href="#top" style="display: flex; align-items: center; gap: 14px; background: #1E1D1A; border: 1px solid #2E2C28; border-radius: 10px; padding: 14px 16px; text-decoration: none"><span aria-hidden="true" style="flex: 0 0 48px; height: 48px; border-radius: 50%; background: #352A3F; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.12)"></span><span style="display: flex; flex-direction: column; gap: 3px"><span style="font-size: 15px; font-weight: 700; color: #F4F1EA">겜위시</span><span style="font-size: 13px; color: #A9A498">게임 [N]개</span></span></a></div></section>
+<section aria-label="인기 게시물" style="max-width: 1200px; margin: 0 auto; padding: 0 32px 104px"><div style="display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid #2E2C28; padding-bottom: 14px; margin-bottom: 20px"><div style="display: flex; flex-direction: column; gap: 6px"><h2 style="margin: 0; font-size: 24px; font-weight: 900; letter-spacing: -0.03em; color: #F4F1EA">커뮤니티 인기 글</h2></div><a href="#top" style="font-size: 14px; font-weight: 700; letter-spacing: 0.04em">커뮤니티 가기 →</a></div><div><a href="#top" style="display: flex; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px solid #2E2C28; text-decoration: none"><span style="flex: 0 0 22px; font-family: Inter, sans-serif; font-weight: 900; font-size: 16px; color: #A9A498">1</span><span style="flex: 0 0 auto; color: #A9A498; font-size: 13px; font-weight: 700; min-width: 72px">같이 할 사람</span><span style="flex: 1 1 auto; font-size: 15px; font-weight: 700; color: #F4F1EA">[글 제목]</span><span style="font-size: 13px; color: #A9A498">[N]</span></a><a href="#top" style="display: flex; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px solid #2E2C28; text-decoration: none"><span style="flex: 0 0 22px; font-family: Inter, sans-serif; font-weight: 900; font-size: 16px; color: #A9A498">2</span><span style="flex: 0 0 auto; color: #A9A498; font-size: 13px; font-weight: 700; min-width: 72px">뭐 하지</span><span style="flex: 1 1 auto; font-size: 15px; font-weight: 700; color: #F4F1EA">[글 제목]</span><span style="font-size: 13px; color: #A9A498">[N]</span></a><a href="#top" style="display: flex; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px solid #2E2C28; text-decoration: none"><span style="flex: 0 0 22px; font-family: Inter, sans-serif; font-weight: 900; font-size: 16px; color: #A9A498">3</span><span style="flex: 0 0 auto; color: #A9A498; font-size: 13px; font-weight: 700; min-width: 72px">자유</span><span style="flex: 1 1 auto; font-size: 15px; font-weight: 700; color: #F4F1EA">[글 제목]</span><span style="font-size: 13px; color: #A9A498">[N]</span></a><a href="#top" style="display: flex; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px solid #2E2C28; text-decoration: none"><span style="flex: 0 0 22px; font-family: Inter, sans-serif; font-weight: 900; font-size: 16px; color: #A9A498">4</span><span style="flex: 0 0 auto; color: #A9A498; font-size: 13px; font-weight: 700; min-width: 72px">뭐 하지</span><span style="flex: 1 1 auto; font-size: 15px; font-weight: 700; color: #F4F1EA">[글 제목]</span><span style="font-size: 13px; color: #A9A498">[N]</span></a><a href="#top" style="display: flex; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px solid #2E2C28; text-decoration: none"><span style="flex: 0 0 22px; font-family: Inter, sans-serif; font-weight: 900; font-size: 16px; color: #A9A498">5</span><span style="flex: 0 0 auto; color: #A9A498; font-size: 13px; font-weight: 700; min-width: 72px">같이 할 사람</span><span style="flex: 1 1 auto; font-size: 15px; font-weight: 700; color: #F4F1EA">[글 제목]</span><span style="font-size: 13px; color: #A9A498">[N]</span></a></div></section>
+  </main>
+
+  <footer style="border-top: 1px solid #2E2C28; background: #0B0A09">
+    <div style="max-width: 1200px; margin: 0 auto; padding: 28px 32px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; font-size: 14px; color: #A9A498">
+      <span style="font-family: Inter, sans-serif; font-weight: 900; letter-spacing: -0.05em; color: #F4F1EA; font-size: 18px">select screen</span><a href="#top" style="color: #A9A498; text-decoration: none; font-size: 14px; font-weight: 700">의견 보내기</a>
+      
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"brand":{"editor":"color","default":"#3D7BFF","options":["#3D7BFF","#5A8FD8","#2F6BEB"]},"$preview":{"width":1440,"height":3600}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { tab: 0, rec: 0, line: 0 };
+  }
+  renderVals() {
+    const brand = this.props.brand ?? '#3D7BFF';
+    const hues = ['#3B2F2A', '#24303B', '#2F3A2A', '#3A2433', '#2C2C3E', '#3D3426', '#1F3534', '#352A3F', '#2E2A26', '#26323F'];
+    const wallNames = ['R.E.P.O.', 'Fallout 4', 'Raft', 'Divinity II', 'Among Us', 'No Man’s Sky', 'Split Fiction', 'Expedition 33', 'Don’t Starve Together', 'The Witcher 3',
+      'Skyrim', 'Phasmophobia', 'NieR:Automata', 'Palworld', 'Elden Ring', 'Portal 2', 'Dead by Daylight', 'Sea of Thieves', 'Baldur’s Gate 3', 'Lethal Company',
+      'It Takes Two', 'Sekiro', 'Valheim', 'Stardew Valley', 'PEAK', 'Overcooked! 2', 'Half-Life 2', 'Rainbow Six Siege', 'Terraria', 'Hollow Knight'];
+    const wall = wallNames.map((name, i) => ({ name: name, bg: hues[(i * 3) % hues.length] }));
+    const tabNames = ['2인', '3인', '4인', '5인 이상'];
+    const tabs = tabNames.map((label, i) => {
+      const selected = this.state.tab === i;
+      return {
+        label: label,
+        selected: selected,
+        pressed: selected ? 'true' : 'false',
+        bg: selected ? '#F4F1EA' : 'transparent',
+        fg: selected ? '#141311' : '#C9C4B8',
+        pick: () => this.setState({ tab: i })
+      };
+    });
+    const tiles = [
+      { title: '둘이서 밤샘', sub: '둘이 끝까지 같이 깨는 협동' },
+      { title: '4명 첫 협동', sub: '넷이 처음 같이 해 보는 판' },
+      { title: '게임 안 하는 친구랑', sub: '진입장벽 낮은 게임만' },
+      { title: '무료로 바로', sub: '결제 없이 지금 시작' },
+      { title: '비명 지르는 공포', sub: '같이 하면 더 무서운 판' },
+      { title: '오늘 할인 파티게임', sub: '할인 중인 왁자지껄' }
+    ];
+    const recs = [
+      { name: 'It Takes Two', info: '2인 협동', badge: '다시 뜨는 중', kind: 'brand' },
+      { name: 'Split Fiction', info: '2인 협동', badge: '요즘 뜨는 중', kind: 'light' },
+      { name: 'Portal 2', info: '2인 협동 · 퍼즐', badge: '', kind: '' },
+      { name: 'Unravel Two', info: '2인 협동 · 퍼즐', badge: '', kind: '' },
+      { name: 'Overcooked! 2', info: '최대 4인 · 파티', badge: '요즘 뜨는 중', kind: 'light' },
+      { name: 'Stardew Valley', info: '온라인 협동 · 농장', badge: '', kind: '' }
+    ].map((r, i) => {
+      const selected = this.state.rec === i;
+      return {
+        name: r.name,
+        info: r.info,
+        badge: r.badge,
+        hasBadge: false,
+        badgeBg: '#66C0F4',
+        badgeFg: '#0B0E14',
+        bg: hues[(i * 7 + 2) % hues.length],
+        selected: selected,
+        pressed: selected ? 'true' : 'false',
+        pick: () => this.setState({ rec: i })
+      };
+    });
+    const heroLines = ["아 줴줴이야~ 그래도 한 판 더","줴줴 쳐도 다음 판은 같이","친구랑 할 게임 찾기, 이제 딸깍","한 판만 하겠습니다 안 하겠습니다 하겠습니다","누가 돌아왔게~? 2P가 돌아왔지","오늘 할 게임 고르기 좋🤙다👍","할인 떴다, 야르~","친구 패스면 한 명만 사도 돼요, 아자스","이번 주 신작 라인업 난리자베스","쉬었음 청년 말고 놀았음 청년","져도 웃는 장항준적 사고","협동은 그린그린, 팀킬은 레드레드","갑차기스러운데 오늘 같이 할래?","셋로그 말고 넷이서 겜로그","할인 마감 30분 전에도 간바레","새벽 3시 클럽 회원 모집 중","1P 준비 완료, 2P 대기 중","오늘의 캐리는 누구?","진 사람이 다음 게임 고르기","패드 하나 더 있어요?","\"아무거나\"는 메뉴가 아니에요","리스폰까지 3, 2, 1…","비명은 마이크 끄고","찜해둔 게임이 할인을 기다려요","우정 패치 적용 완료","핑 0ms짜리 우정","디코 켜졌다, 게임 고르자","이름은 캐릭터 선택창에서 따왔어요","처음 하는 친구도 끼워주기","{name}님, 오늘은 누구랑?"];
+    const slot = Math.floor(Date.now() / (2 * 60 * 60 * 1000));
+    const heroLine = heroLines[slot % heroLines.length].replace('{name}', 'PPPAUL');
+    return {
+      heroLine: heroLine,
+      brand: brand,
+      wall: wall,
+      tabs: tabs,
+      tabLabel: tabNames[this.state.tab],
+      tiles: tiles,
+      recs: recs
+    };
+  }
+}
+</script>
+</body>
+</html>

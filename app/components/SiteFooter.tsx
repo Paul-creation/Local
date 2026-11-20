@@ -1,10 +1,10 @@
 import Link from 'next/link';
-import { SITE_NAME, OPERATOR_NAME, CONTACT_EMAIL } from '../lib/site';
+import { SITE_NAME, CONTACT_EMAIL } from '../lib/site';
 import { FOOTER_GUIDE_LABEL } from '../lib/guideCopy';
 import Wordmark from './brand/Wordmark';
 import '../brand-tokens.css';
 
-// 모든 페이지 하단 공통 푸터 — 링크·비공식 고지 아래에, 왼쪽 작은 워드마크 / 오른쪽 저작권 (--bg-bottom 배경, 위 1px --line)
+// 모든 페이지 하단 공통 푸터 — 링크·비공식 고지 아래에, 왼쪽 작은 워드마크 + 옆에 의견 보내기 링크 (저작권 줄 없음) (--bg-bottom 배경, 위 1px --line)
 export default function SiteFooter() {
   return (
     <footer className="site-footer mn">
@@ -17,13 +17,14 @@ export default function SiteFooter() {
           <Link href="/community">커뮤니티</Link> {/* 350px 이하에서는 헤더에서 빠짐 */}
           <Link href="/terms">이용약관</Link>
           <Link href="/privacy">개인정보처리방침</Link>
-          <Link href="/feedback">의견 보내기</Link>
           <a href={`mailto:${CONTACT_EMAIL}`}>문의</a>
         </nav>
         <p>{SITE_NAME}은 Valve 및 각 게임사와 관련 없는 비공식 사이트입니다. Steam은 Valve Corporation의 상표이며, 게임 이미지와 데이터의 권리는 각 권리자에게 있습니다.</p>
         <div className="site-footer-bar">
-          <Wordmark size="sm" />
-          <span className="site-footer-copy">© 2026 {OPERATOR_NAME}</span>
+          <div className="site-footer-brand">
+            <Wordmark size="sm" />
+            <Link href="/feedback" className="site-footer-feedback">의견 보내기</Link>
+          </div>
         </div>
       </div>
     </footer>

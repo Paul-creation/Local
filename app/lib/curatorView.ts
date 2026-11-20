@@ -1,6 +1,7 @@
 // 계정 프로필 페이지의 순수 계산 — 게시물별 묶기, 날짜 글자, 게임 전체 보기의 필터·정렬 (화면·테스트 공용)
 export type PostRow = { id: string; game_id: string; post_url: string; post_type: 'single' | 'collection'; post_title?: string | null; posted_at: string };
-export type PostSection = { key: string; url: string; postedAt: string; title: string; gameIds: string[] };
+// postType: post_type 기준(한 게시물 안에 collection 행이 하나라도 있으면 collection). titled: post_title이 실제로 있는지(없으면 title은 게임 이름·"게임 N개 모음" 대체값)
+export type PostSection = { key: string; url: string; postedAt: string; title: string; titled: boolean; postType: 'single' | 'collection'; gameIds: string[] };
 export type GameEntry = { gameId: string; postedAt: string; posts: { id: string; url: string }[] };
 
 // 같은 post_url끼리 한 섹션 (최신 posted_at 순). 보이는 게임이 없는 게시물은 뺀다
@@ -12,11 +13,12 @@ export function groupByPost(posts: PostRow[], visible: Map<string, string>): Pos
     const cur = map.get(p.post_url);
     const title = p.post_title?.trim() || '';
     if (!cur) {
-      map.set(p.post_url, { key: p.post_url, url: p.post_url, postedAt: p.posted_at, title, gameIds: [p.game_id] });
+      map.set(p.post_url, { key: p.post_url, url: p.post_url, postedAt: p.posted_at, title, titled: !!title, postType: p.post_type === 'collection' ? 'collection' : 'single', gameIds: [p.game_id] });
       continue;
     }
     if (p.posted_at > cur.postedAt) cur.postedAt = p.posted_at;
-    if (!cur.title && title) cur.title = title;
+    if (!cur.title && title) { cur.title = title; cur.titled = true; }
+    if (p.post_type === 'collection') cur.postType = 'collection';
     if (!cur.gameIds.includes(p.game_id)) cur.gameIds.push(p.game_id);
   }
   return [...map.values()]

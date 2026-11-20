@@ -1490,7 +1490,8 @@ a.auth-pop-item { display: flex; align-items: center; text-decoration: none; }
 .site-footer-links a:first-child { font-weight: 800; }
 .site-footer p { max-width: 640px; word-break: keep-all; }
 .site-footer-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-3) var(--sp-4); margin-top: var(--sp-5); padding-top: var(--sp-4); border-top: 1px solid var(--line); }
-.site-footer-copy { color: var(--ink-muted); }
+.site-footer-brand { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3) var(--sp-4); }
+.site-footer-feedback { font-size: 14px; font-weight: 700; text-decoration: none; }
 /* 휴대폰: 링크가 여러 줄로 감길 때 줄 처음·끝에 구분선이 혼자 남지 않게 구분선을 없애고 간격으로만 나눈다 */
 @media (max-width: 767px) { .site-footer-inner { padding-inline: 16px; } .site-footer-links { margin-inline: -12px; } .site-footer-links a { padding: 0 12px; } }
 

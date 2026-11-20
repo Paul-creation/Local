@@ -20,7 +20,6 @@
   html body .h-scroll::-webkit-scrollbar { display: none; }
 
   /* ---------- 메인 히어로 ---------- */
-  html body .mn-hero, html body .mn-hero.mn-hero-member { padding: calc(var(--header-h) + 28px) 0 36px; }
   html body .mn-hero-inner { display: flex; flex-direction: column; align-items: center; gap: 22px; }
   html body .mn-intro { width: 100%; }
   html body .mn-h1 { margin: 0; font-size: 34px; line-height: 1.18; letter-spacing: -0.035em; text-align: center; white-space: normal; }
@@ -104,8 +103,9 @@
   html body .site-footer-links a:first-child { display: none; }
   html body .site-footer p { margin: 0; font-size: 13px; }
   html body .site-footer-bar { display: contents; }
-  html body .site-footer-bar > .wm-img { order: -1; width: 96px; }
-  html body .site-footer-copy { order: 3; }
+  html body .site-footer-brand { order: -1; gap: 8px 16px; }
+  html body .site-footer-brand .wm-img { width: 96px; }
+  html body .site-footer-feedback { font-size: 13px; color: var(--ink-muted); }
 
   /* ---------- 검색 결과 /find (MobFind) ---------- */
   html body { --sb-w-card: 2px; --sb-l-card: 12px; --sb-o-card: 5px; }
@@ -247,16 +247,14 @@
   html body .curator-vsep { display: block; flex: 0 0 1px; align-self: stretch; min-height: 0; margin: 6px 2px; }
   html body .curator-control-right .mn-chip { flex: 0 0 auto; min-height: 36px; padding: 0 14px; font-size: 13px; border-radius: 999px; color: var(--ink-nav); background: var(--surface); border: 1px solid var(--line); white-space: nowrap; }
   html body .curator-control-right .mn-chip[aria-pressed="true"] { color: var(--bg-top); background: var(--ink); border-color: var(--ink); }
-  html body .curator-cards { grid-template-columns: minmax(0, 1fr); gap: 12px; margin-top: 16px; }
-  html body .curator-card { gap: 10px; padding: 14px; border-radius: 10px; }
-  html body .curator-stack { display: flex; height: auto; margin: 0; }
-  html body .curator-stack-poster { position: relative; top: auto; left: auto; flex: 0 0 64px; width: 64px; z-index: calc(10 - var(--i)); box-shadow: 6px 0 12px rgba(0, 0, 0, .5); }
-  html body .curator-stack-poster:not(:first-child) { margin-left: -26px; }
-  html body .curator-stack-more { z-index: 1; display: flex; align-items: center; justify-content: flex-end; box-sizing: border-box; padding-right: 8px; box-shadow: none; font-family: inherit; font-size: 13px; font-weight: 900; }
-  html body .curator-card-title { font-size: 15px; font-weight: 900; line-height: 1.35; }
-  html body .curator-card-meta { font-size: 12px; }
-  html body .curator-card-games { font-size: 13px; color: var(--ink-nav); }
   html body .curator-note { margin: 18px 0 0; font-size: 12px; }
+  html body .curator-tab-n { opacity: .6; }
+  html body .mn-inner .curator-controls + .tl-note, html body .mn-inner .curator-controls + .cg-single, html body .mn-inner .curator-controls + .cg-colls { margin-top: 16px; }
+  html body .cg-single { gap: 12px; }
+  html body .cg-coll { padding: 14px; gap: 14px; border-radius: 10px; }
+  html body .cg-coll-title h3 { font-size: 17px; }
+  html body .cg-coll-grid { gap: 12px 10px; }
+  html body .cg-coll-name { font-size: 13px; }
 
   /* ---------- 비교 /compare (MobCompare) ---------- */
   html body .mn-inner .cmp-head { margin: 16px 0 14px; padding-bottom: 10px; }

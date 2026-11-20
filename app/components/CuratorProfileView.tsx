@@ -4,7 +4,7 @@ import CuratorBody from './CuratorBody';
 import CopyLinkButton from './CopyLinkButton';
 import OutboundLink from './OutboundLink';
 import type { getCuratorProfile } from '../lib/curators';
-import { groupByPost, groupByGame, dateLabel } from '../lib/curatorView';
+import { groupByPost, groupByGame } from '../lib/curatorView';
 import { getPriceInfo } from '../lib/price';
 import { gameName } from '../lib/gameName';
 import '../brand-tokens.css';
@@ -19,7 +19,7 @@ export default function CuratorProfileView({ profile }: { profile: Profile }) {
   // 숨긴 게임은 카드 조회에서 빠진다 → 보이는 게임만 묶는다
   const byId = Object.fromEntries(games.map((g) => [g.id, g]));
   const visible = new Map(games.map((g) => [g.id, gameName(g)]));
-  const sections = groupByPost(posts, visible).map((s) => ({ ...s, dateText: dateLabel(s.postedAt) }));
+  const sections = groupByPost(posts, visible);
   const entries = groupByGame(posts, visible);
   const saleCount = games.filter((g) => (getPriceInfo(g)?.discount ?? 0) > 0).length;
   const stats = [
@@ -53,7 +53,7 @@ export default function CuratorProfileView({ profile }: { profile: Profile }) {
           <CopyLinkButton path={`/c/${encodeURIComponent(curator.handle)}`} />
         </div>
       </header>
-      {entries.length === 0 ? <p className="tl-note">아직 연결된 게임이 없어요.</p> : <CuratorBody curator={curator.handle} games={byId} sections={sections} entries={entries} />}
+      {entries.length === 0 ? <p className="tl-note">아직 연결된 게임이 없어요.</p> : <CuratorBody curator={curator.handle} games={byId} sections={sections} />}
     </main>
   );
 }

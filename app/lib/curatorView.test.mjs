@@ -36,3 +36,9 @@ test('필터 겹치기·정렬', () => {
   assert.deepEqual(filterSortEntries(e, facts, [], 'discount').map((x) => x.gameId), ['g3', 'g2', 'g1']);
   assert.deepEqual(filterSortEntries(e, facts, [], 'review').map((x) => x.gameId), ['g1', 'g2', 'g3']);
 });
+
+test('게시물 종류(post_type)와 제목 유무: collection이 하나라도 있으면 모음집, 제목 없으면 titled false', () => {
+  const posts = [P('a', 'g1', 'u1', '2026-10-04T00:00:00Z'), P('b', 'g2', 'u2', '2026-10-03T00:00:00Z', { post_type: 'collection', post_title: '모음' }), P('c', 'g3', 'u2', '2026-10-03T00:00:00Z', { post_type: 'collection' })];
+  const s = groupByPost(posts, vis);
+  assert.deepEqual(s.map((x) => [x.key, x.postType, x.titled]), [['u1', 'single', false], ['u2', 'collection', true]]);
+});

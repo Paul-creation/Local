@@ -33,6 +33,14 @@ const loadMe = () => (meRequest ??= fetch('/api/me', { cache: 'no-store', creden
   .catch(() => null)
   .then((m) => { writeCache(m); meRequest = null; return m; }));
 
+// 스팀 닉네임 — 캐시(sessionStorage)에 있으면 그것, 없으면 /api/me (헤더와 같은 요청을 공유). 로그인 안 했거나 실패하면 ''
+export async function fetchMyName(): Promise<string> {
+  if (!hasLoggedInCookie()) return '';
+  const cached = readCache();
+  const me = cached !== undefined ? cached : await loadMe();
+  return me?.persona_name || '';
+}
+
 // variant="drawer": 모바일 드로어 맨 아래 — 버튼 전체 폭, 메뉴는 버튼 위에 펼침, 안내 문구는 헤더 쪽 인스턴스만 그린다
 export default function AuthMenu({ variant = 'header' }: { variant?: 'header' | 'drawer' }) {
   const drawer = variant === 'drawer';

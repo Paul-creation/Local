@@ -17,32 +17,13 @@ main.page:has(.mn-page) + .site-footer { margin-top: 0; }
 .mn-fold { display: flex; flex-direction: column; }
 .mn-fold-next { flex: 0 0 auto; padding-bottom: 0; }
 .mn-rest { display: block; margin-top: var(--sec-gap); }
-.mn-hero { position: relative; flex: 1 1 auto; display: flex; align-items: center; justify-content: center; padding: calc(var(--header-h) + 32px) 0 48px; text-align: center; }
 @media (min-width: 768px) {
   .mn-fold { min-height: min(100vh, 1100px); min-height: min(100svh, 1100px); }
   .mn-fold-next { padding-bottom: 28px; }
   .mn-rest { margin-top: calc(var(--sec-gap) - 28px); }
 }
 .mn-hero-inner { width: 100%; }
-/* 표지 벽 — 히어로 전체(inset 0)를 덮는 배경 층. 타일은 160×240px(모바일 96×144px)·간격 4px 고정, 열 단위로 채워서(grid-auto-flow: column) 어떤 폭에서도 꽉 차고 오른쪽 끝 열만 잘린다 */
-.mn-hero-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; display: grid; grid-template-rows: repeat(4, 240px); grid-auto-flow: column; grid-auto-columns: 160px; justify-content: start; align-content: start; gap: 4px; filter: blur(2px) saturate(.85); clip-path: inset(0); opacity: 0; transition: opacity .4s ease; pointer-events: none; }
-.mn-hero-bg.is-ready { opacity: .55; }
-@media (prefers-reduced-motion: reduce) { .mn-hero-bg { transition: none; } }
-.mn-hero-bg img { display: block; width: 160px; height: 240px; object-fit: cover; }
-/* 마스크(시안 MainFinal) — 두 겹 그라데이션: radial은 가장자리를 --bg-top으로, linear는 위(헤더용)를 어둡게 + 아래를 --bg-top으로 이어 붙임. 위·좌우·아래 어디에도 포스터 벽의 직선 경계가 없고, 아래 "N인 추천 게임"과 배경색 경계 없이 이어진다 */
-.mn-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background:
-  radial-gradient(ellipse 70% 75% at 50% 35%, rgba(20, 19, 17, 0.15) 0%, rgba(20, 19, 17, 0.75) 60%, var(--bg-top) 100%),
-  linear-gradient(180deg, rgba(20, 19, 17, 0.6) 0%, rgba(20, 19, 17, 0) 18%, rgba(20, 19, 17, 0) 50%, var(--bg-top) 100%); }
 .mn-h1 { margin: 0 0 36px; font-size: clamp(40px, 7.2vw, 72px); font-weight: var(--title-weight); letter-spacing: -0.035em; line-height: 1.12; word-break: keep-all; color: var(--ink); }
-/* 로그인 사용자: 제목 없이 검색창만 — 검색창 위 여백만 */
-.mn-hero.mn-hero-member { padding: calc(var(--header-h) + 32px) 0 48px; }
-@media (max-width: 767px) {
-  .mn-hero { padding: calc(var(--header-h) + 40px) 0 56px; }
-  .mn-hero.mn-hero-member { padding: calc(var(--header-h) + 32px) 0 56px; }
-  .mn-hero-bg { grid-template-rows: repeat(4, 144px); grid-auto-columns: 96px; }
-  .mn-hero-bg img { width: 96px; height: 144px; }
-  .mn-hero-bg img:nth-child(n + 21) { display: none; }
-}
 
 /* ---------- 섹션 공통 (머리는 brand.css .sec-head) ---------- */
 .mn-sec { margin: 0 0 var(--sec-gap); }
@@ -184,11 +165,9 @@ main.page:has(.mn-page) + .site-footer { margin-top: 0; }
 /* ---------- 첫 화면 정리: 히어로 축소 + 한 줄 머리 + 글자·색 줄이기 ---------- */
 /* 헤드라인 한 줄(데스크톱 60px / 1.1, 모바일 두 줄 허용 34~60px) — 히어로는 고정 높이 없이 내용 높이: 위 = --header-h + 52px, 아래 44px, 헤드라인↔검색창 28px */
 .mn-h1 { margin: 0 0 28px; font-size: clamp(34px, 5.2vw, 60px); line-height: 1.1; }
-.mn-hero, .mn-hero.mn-hero-member { padding: calc(var(--header-h) + 52px) 0 44px; }
 @media (min-width: 768px) { .mn-h1 { white-space: nowrap; } .mn-h1-br { display: none; } }
 /* 휴대폰: 위 = 헤더(56px) + 28px, 제목 30~40px(8.5vw) 가운데 두 줄("금요일 밤," / "친구들이랑 뭐 하지?") — 제목이 헤더 밑으로 겹치지 않는다 */
 @media (max-width: 767px) {
-  .mn-hero, .mn-hero.mn-hero-member { padding: calc(var(--header-h) + 28px) 0 44px; }
   .mn-h1 { font-size: clamp(30px, 8.5vw, 40px); text-align: center; white-space: normal; }
 }
 
@@ -218,3 +197,50 @@ button.sec-more { padding: 0; font-family: inherit; background: none; border: 0;
 .mn-people-more { order: 99; }
 .mn-rank-tabs, .mn-rank-all, .mn-curator-av, .mn-sale-ov { display: none; }
 .mn-col-panel, .mn-curator-text { display: contents; }
+
+/* ---------- 메인 v2 ---------- */
+/* 방문자 히어로 — 높이 640px(헤더 포함, 헤더는 이미지 위에 absolute), 내용은 위에서 236px 아래부터: 제목(60px) → 한 줄 설명(17px) → 검색창, 요소 간격 32px, 아래 72px
+   이미지는 Steam library_hero 1장(object-fit: cover, 가운데). 마스크 = 좌우(양 끝 22%를 --bg-top으로) + 위아래(위 16%까지 헤더용 어둡게, 45%부터 아래로 점점 --bg-top) — 아래 "N인 추천"과 경계 없이 이어진다 */
+.mn-hero { position: relative; box-sizing: border-box; height: 640px; padding: 236px 0 72px; text-align: center; }
+.mn-hero .mn-hero-media { display: block; position: absolute; inset: 0; z-index: -1; overflow: hidden; background: var(--bg-top); }
+.mn-hero .mn-hero-media img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.mn-hero::before, .mn-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.mn-hero::before { background: linear-gradient(90deg, var(--bg-top) 0%, transparent 22%, transparent 78%, var(--bg-top) 100%); }
+.mn-hero::after { background: linear-gradient(180deg, rgba(20, 19, 17, .55) 0%, transparent 16%, transparent 45%, rgba(20, 19, 17, .85) 80%, var(--bg-top) 100%); }
+.mn-hero-inner { display: flex; flex-direction: column; align-items: center; gap: 32px; width: 100%; }
+.mn-hero .mn-intro { display: flex; flex-direction: column; align-items: center; gap: 32px; }
+.mn-hero .mn-h1 { margin: 0; }
+.mn-hero-sub { margin: 0; font-size: 17px; font-weight: 500; line-height: 1.5; color: var(--ink-nav); word-break: keep-all; }
+/* 오른쪽 가장자리 세로 글씨 — 폭 16px 칸 안에서 가운데 정렬한 뒤 -90도 회전(칸 밖으로 넘치는 만큼은 위아래로 고르게) */
+.mn-hero-credit { position: absolute; top: 0; right: 16px; bottom: 0; z-index: 3; display: flex; align-items: center; justify-content: center; width: 16px; pointer-events: none; }
+.mn-hero-credit a { flex: 0 0 auto; font-size: 12px; line-height: 16px; color: rgba(244, 241, 234, .45); text-decoration: none; white-space: nowrap; transform: rotate(-90deg); pointer-events: auto; }
+.mn-hero-credit a:hover { color: var(--ink); }
+@media (max-width: 767px) {
+  .mn-hero { height: auto; min-height: 0; padding: calc(var(--header-h) + 28px) 0 36px; }
+  .mn-hero-inner, .mn-hero .mn-intro { gap: 22px; }
+  .mn-hero-sub { font-size: 15px; }
+  .mn-hero-credit { display: none; }
+}
+
+/* 로그인 후 상단 — 이미지 없음. 헤더(흐름 안, 아래 1px --line) → 멘트(위 96px, 48px/900 가운데) → 검색창(위 64px) → 첫 섹션(아래 64px) */
+body:has(.mn-top) .site-header.mn { margin-bottom: 0; border-bottom: 1px solid var(--line); }
+.mn-top { padding: 96px 0 64px; }
+.mn-top .mn-hero-inner { gap: 64px; }
+.mn-member-h1 { margin: 0; font-size: 48px; font-weight: 900; line-height: 1.2; letter-spacing: -0.035em; text-align: center; word-break: keep-all; color: var(--ink); }
+.mn-top .mn-intro { width: 100%; }
+@media (max-width: 767px) {
+  .mn-top { padding: 40px 0 32px; }
+  .mn-top .mn-hero-inner { gap: 28px; }
+  .mn-member-h1 { font-size: 30px; }
+}
+
+/* 로그인 후 섹션 간격 (768px 이상) — 시안 padding-bottom: 개인 추천 96 · N인 추천 120 · 순위·스트리머·큐레이터 88 · 인기 글 104(마지막, 페이지 아래 여백) */
+@media (min-width: 768px) {
+  .mn-member .mn-fold-next { padding-bottom: 0; }
+  .mn-member .mn-rest { margin-top: 0; }
+  .mn-member .mn-wrap > .mn-sec, .mn-member .mn-wrap > .mn-cols { margin-bottom: 88px; }
+  .mn-member .mn-wrap > .mn-sec-personal { margin-bottom: 96px; }
+  .mn-member .mn-wrap > .mn-sec-people { margin-bottom: 120px; }
+  .mn-member .mn-wrap > .mn-sec-posts { margin-bottom: 0; }
+  .mn-member.mn-page { padding-bottom: 104px; }
+}

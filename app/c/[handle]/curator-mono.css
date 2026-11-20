@@ -1,46 +1,79 @@
 /* 큐레이터 페이지(/c/[handle], /c-preview/[handle]) — 새 브랜드. 공통은 app/mono-page.css(.mn-inner), 게임 카드는 home/mn/mn.css */
-.mn-inner .curator-profile { display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-5); margin: var(--sp-5) 0 0; padding-bottom: var(--sp-5); border-bottom: 1px solid var(--line); }
+.mn-inner .curator-profile { display: flex; align-items: center; flex-wrap: wrap; gap: 28px; margin: 24px 0 0; padding-bottom: 28px; border-bottom: 1px solid var(--line); }
 .mn-inner .curator-avatar { width: 112px; height: 112px; border-radius: 50%; border: 1px solid var(--line-strong); }
 .mn-inner .curator-profile-body { gap: 4px; }
-.mn-inner .curator-profile-name { font-size: clamp(28px, 4vw, 40px); font-weight: 900; letter-spacing: -0.035em; color: var(--ink); }
+.mn-inner .curator-profile-name { font-size: clamp(28px, 4vw, 40px); font-weight: 900; letter-spacing: -0.03em; color: var(--ink); }
 .mn-inner .curator-profile-handle { font-size: 15px; color: var(--ink-nav); }
 .mn-inner .curator-profile-bio { color: var(--ink-muted); }
-.mn-inner .curator-profile-stats { display: flex; flex-wrap: wrap; gap: var(--sp-5); margin: var(--sp-3) 0 0; }
+.mn-inner .curator-profile-stats { display: flex; flex-wrap: wrap; gap: 28px; margin: 6px 0 0; }
 .mn-inner .curator-profile-stats > div { display: flex; flex-direction: column-reverse; }
-.mn-inner .curator-profile-stats dd { margin: 0; font-family: var(--font-num); font-size: 26px; font-weight: var(--num-weight); letter-spacing: var(--num-ls); color: var(--brand-ink); }
+.mn-inner .curator-profile-stats dd { margin: 0; font-family: var(--font-num); font-size: 24px; font-weight: var(--num-weight); letter-spacing: -0.03em; color: var(--ink); }
 .mn-inner .curator-profile-stats dt { font-size: 13px; color: var(--ink-muted); }
 .mn-inner .curator-profile-actions { margin: 0 0 0 auto; align-self: flex-start; }
 .mn-inner .curator-btn { min-height: 40px; height: 40px; padding: 0 16px; font-size: 14px; font-weight: 700; color: var(--ink); background: transparent; border: 1px solid var(--line-strong); border-radius: var(--r-tile); }
 .mn-inner .curator-btn-ig { background: transparent; color: var(--ink); box-shadow: none; }
 .mn-inner .curator-btn-ig:hover { filter: none; border-color: var(--ink-muted); }
 
-/* 컨트롤 줄 — 왼쪽 보기 전환 세그먼트, 오른쪽 필터 칩 | 정렬 칩. 선택 = --ink 배경 + 어두운 글씨 (괄호 없음) */
-.mn-inner .curator-controls { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-3) var(--sp-4); margin: var(--sp-5) 0; }
-.mn-inner .curator-tabs-seg { display: inline-flex; gap: 2px; padding: 3px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r-tile); }
-.mn-inner .curator-tab { min-height: 0; height: 34px; padding: 0 14px; margin: 0; border: 0; border-radius: 6px; background: transparent; font-size: 14px; font-weight: 700; color: var(--ink-nav); }
+/* 컨트롤 줄(PageCurator) — 왼쪽 탭 세그먼트(단일 소개 N / 모음집 N), 오른쪽 필터 | 정렬. 선택 = --ink 배경 + 어두운 글씨 */
+.mn-inner .curator-controls { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin: 24px 0 0; }
+.mn-inner .curator-tabs-seg { display: inline-flex; gap: 4px; padding: 4px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 8px; }
+.mn-inner .curator-tab { min-height: 0; height: auto; padding: 8px 16px; margin: 0; border: 0; border-radius: 6px; background: transparent; font: inherit; font-size: 14px; font-weight: 700; color: var(--ink-nav); cursor: pointer; }
 .mn-inner .curator-tab:hover { color: var(--ink); }
 .mn-inner .curator-tab[aria-selected="true"] { background: var(--ink); color: var(--bg-top); }
-.curator-control-right { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3) var(--sp-4); }
-.curator-control-row { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
-.curator-vsep { align-self: stretch; width: 1px; min-height: 28px; background: var(--line-strong); }
+.curator-tab-n { opacity: .6; }
+.curator-control-right { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; }
+.curator-control-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.curator-control-right .mn-chip { min-height: 0; padding: 9px 16px; font-size: 14px; line-height: 1.2; color: var(--ink-nav); background: transparent; border: 1px solid var(--line-strong); border-radius: 6px; }
+.curator-control-right .mn-chip[aria-pressed="true"] { color: var(--bg-top); background: var(--ink); border-color: var(--ink); }
+.curator-vsep { align-self: center; width: 1px; height: 26px; background: var(--line-strong); }
 @media (max-width: 767px) { .curator-vsep { display: none; } }
+.mn-inner .curator-controls + .tl-note, .mn-inner .curator-controls + .cg-single, .mn-inner .curator-controls + .cg-colls { margin-top: 24px; }
 
-/* 게시물별 — 게시물 하나 = 카드 하나 (3열 · 태블릿 2열 · 모바일 1열). 겹친 포스터: 폭 84px(2:3), 뒤 카드가 34px씩 겹침(다음 포스터는 50px 오른쪽), 오른쪽으로 그림자 */
-.curator-cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-4); }
-@media (max-width: 1023px) { .curator-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 639px) { .curator-cards { grid-template-columns: minmax(0, 1fr); } }
-.curator-card { display: flex; flex-direction: column; gap: 6px; width: 100%; height: 100%; padding: var(--sp-4); font: inherit; text-align: left; color: var(--ink); cursor: pointer; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
-.curator-card:hover { border-color: var(--line-strong); }
-.curator-stack { position: relative; display: block; height: 126px; margin-bottom: var(--sp-3); }
-.curator-stack-poster { position: absolute; top: 0; left: calc(var(--i) * 50px); display: block; width: 84px; aspect-ratio: 2 / 3; overflow: hidden; background: var(--bg-top); border: 1px solid var(--poster-line); border-radius: var(--r-card); box-shadow: 8px 0 14px -6px rgba(0, 0, 0, .55); }
-.curator-stack-poster img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.curator-stack-more { display: grid; place-items: center; font-family: var(--font-num); font-size: 18px; font-weight: var(--num-weight); color: var(--ink); background: var(--line); }
-.curator-card-title { display: -webkit-box; overflow: hidden; font-size: 16px; font-weight: 800; line-height: 1.35; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
-.curator-card-meta { font-size: 13px; color: var(--ink-muted); }
-.curator-card-games { overflow: hidden; font-size: 14px; color: var(--ink-nav); white-space: nowrap; text-overflow: ellipsis; }
-.curator-back { margin: 0 0 var(--sp-4); padding: 0; font: inherit; font-size: 14px; font-weight: 700; color: var(--brand-ink); background: none; border: 0; cursor: pointer; }
-.curator-post-detail { margin-top: var(--sp-5); }
-.curator-game { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-.curator-game-posts { display: flex; flex-wrap: wrap; gap: 4px 12px; }
-.mn-inner .curator-link { font-size: 13px; color: var(--brand-ink); }
+/* 공통 조각 — 포스터(2:3·반경 4·안쪽 1px 테두리), 가격 줄, 인스타 버튼 */
+.cp-poster { position: relative; display: block; flex: 0 0 auto; width: 100%; aspect-ratio: 2 / 3; overflow: hidden; border-radius: 4px; background: var(--surface); }
+.cp-poster::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(244, 241, 234, 0.12); pointer-events: none; }
+.cp-poster img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.cp-poster .cp-bg { position: absolute; inset: 0; filter: blur(14px) brightness(.55); transform: scale(1.2); }
+.cp-poster .cp-fg { position: absolute; inset: 0; object-fit: contain; }
+.cg-price { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.cg-price b { font-family: var(--font-num); font-weight: var(--num-weight); font-size: 16px; color: var(--ink); }
+.cg-price b.cg-price-text { font-family: inherit; font-size: 13px; font-weight: 700; }
+.cg-price s { font-size: 12px; color: var(--ink-muted); }
+.cg-sale { padding: 2px 6px; font-size: 12px; font-weight: 900; color: var(--mn-sale-fg); background: var(--mn-sale-bg); border-radius: 3px; }
+.cg-soon { font-size: 13px; font-weight: 700; color: var(--brand-ink); }
+.cg-ig { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; width: 32px; height: 32px; color: var(--ink); background: var(--bg-top); border: 1px solid var(--line-strong); border-radius: 50%; text-decoration: none; }
+.cg-ig:hover { border-color: var(--ink-muted); }
+.cg-ig img { display: block; width: 14px; height: 14px; }
+
+/* 단일 소개 — 3열(태블릿 2·모바일 1) 카드: 포스터 80px + 인용 소개 + 원래 이름·인원·평가 + 가격·날짜·인스타 */
+.cg-single { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 1023px) { .cg-single { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 639px) { .cg-single { grid-template-columns: minmax(0, 1fr); } }
+.cg-card { position: relative; display: flex; gap: 14px; padding: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; }
+.cg-card:hover { border-color: var(--line-strong); }
+.cg-card .cp-poster { width: 80px; }
+.cg-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.cg-quote { display: -webkit-box; overflow: hidden; font-size: 15px; font-weight: 900; line-height: 1.4; color: var(--ink); -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
+.cg-names { display: flex; flex-direction: column; gap: 3px; }
+.cg-orig { font-size: 14px; font-weight: 700; color: var(--ink-nav); overflow-wrap: anywhere; }
+.cg-info { font-size: 13px; color: var(--ink-muted); }
+.cg-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 10px; margin-top: auto; padding-right: 40px; }
+.cg-date { font-size: 12px; color: var(--ink-muted); }
+.cg-cover { position: absolute; inset: 0; z-index: 1; border-radius: inherit; }
+.cg-ig-slot { position: absolute; right: 14px; bottom: 14px; z-index: 2; display: inline-flex; }
+
+/* 모음집 — 큰 카드 하나 = 게시물 하나. 안에 게임 전부 6열(태블릿·모바일 3열) */
+.cg-colls { display: flex; flex-direction: column; gap: 20px; }
+.cg-coll { display: flex; flex-direction: column; gap: 18px; padding: 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.cg-coll-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.cg-coll-title { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.cg-coll-label { font-size: 12px; font-weight: 900; letter-spacing: .12em; color: var(--ink-muted); }
+.cg-coll-title h3 { margin: 0; font-size: 22px; font-weight: 900; letter-spacing: -0.02em; line-height: 1.3; color: var(--ink); overflow-wrap: anywhere; }
+.cg-coll-right { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink-muted); }
+.cg-coll-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 1023px) { .cg-coll-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.cg-coll-item { display: flex; flex-direction: column; gap: 6px; min-width: 0; text-decoration: none; }
+.cg-coll-name { overflow: hidden; font-size: 14px; font-weight: 700; color: var(--ink); white-space: nowrap; text-overflow: ellipsis; }
+.cg-coll-players { font-size: 12px; color: var(--ink-muted); }
+.cg-coll-item:hover .cg-coll-name { text-decoration: underline; text-underline-offset: 3px; }
 .mn-inner .curator-note { margin: var(--sec-gap) 0 0; font-size: 13px; color: var(--ink-muted); }
