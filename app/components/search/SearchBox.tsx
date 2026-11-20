@@ -1,7 +1,7 @@
 // 담당: 친구(검색·태그·비교)
 'use client';
 
-import Link from 'next/link';
+import GameLink, { prefetchOnce } from '../GameLink';
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import type { GameFilters } from '../../lib/useGameFilters';
@@ -100,6 +100,9 @@ export default function SearchBox({ games, filters, leading, trailing, shortPlac
     ...side.slice(0, Math.max(0, sideMax)),
   ];
   const showList = open && suggestions.length > 0;
+  // 키보드(↑↓)·마우스로 선택된 제안이 게임이면 미리 받아 둠 (같은 주소는 한 번만)
+  const activeGameId = showList && active >= 0 && suggestions[active]?.kind === 'game' ? (suggestions[active] as { g: { id: string } }).g.id : null;
+  useEffect(() => { if (activeGameId) prefetchOnce(router, `/games/${activeGameId}`); }, [activeGameId, router]);
 
   // 드롭다운 높이 = min(308, 화면 아래 남은 공간 - 16). 열릴 때·창 크기·스크롤 때 다시 잰다.
   // 남은 공간이 너무 좁으면 열릴 때 한 번만 검색창을 화면 위쪽으로 부드럽게 올린다 (입력할 때마다 반복하지 않음)
@@ -276,7 +279,7 @@ export default function SearchBox({ games, filters, leading, trailing, shortPlac
             </li>
           ) : (
             <li key={s.g.id} role="option" id={`search-suggest-${i}`} aria-selected={i === active}>
-              <Link
+              <GameLink
                 href={`/games/${s.g.id}`}
                 className={`search-suggest-item${i === active ? ' is-active' : ''}`}
                 onClick={() => { setOpen(false); rememberList(); }}
@@ -285,7 +288,7 @@ export default function SearchBox({ games, filters, leading, trailing, shortPlac
                 {s.g.cover_image_url ? <GameImage src={s.g.cover_image_url} steamSize="header_292x136" /> : <span className="search-suggest-noimg" />}
                 <span className="search-suggest-name">{gameName(s.g)}</span>
                 <span className="search-suggest-players">{playersLabel(s.g)}</span>
-              </Link>
+              </GameLink>
             </li>
           ))}
         </ul>
