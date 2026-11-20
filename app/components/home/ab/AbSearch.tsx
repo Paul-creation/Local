@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import Link from 'next/link';
+import GameLink from '../../GameLink';
 import { useRouter } from 'next/navigation';
 import { HOWS, GENRES, EMPTY_QUERY, countFitting, countMatching, isEmptyQuery, queryHref, summaryParts, type AbQuery, type GenreKey, type GenreMode } from '../../../lib/abSearch';
 import { makeAbCtx, makeKwMatcher } from '../../../lib/abCtx';
@@ -280,7 +280,7 @@ function WhatPanel({ games, kw, genres, gm, matching, onKw, onGenres, onGm, onCl
       {hits.length > 0 && (
         <ul className="ab-hits" aria-label="게임 바로가기">
           {hits.map((g) => (
-            <li key={g.id}><Link href={`/games/${g.id}`} className="ab-hit"><span>{gameName(g)}</span><span className="ab-hit-go">게임 페이지 →</span></Link></li>
+            <li key={g.id}><GameLink href={`/games/${g.id}`} className="ab-hit"><span>{gameName(g)}</span><span className="ab-hit-go">게임 페이지 →</span></GameLink></li>
           ))}
         </ul>
       )}
