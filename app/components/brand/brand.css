@@ -3,19 +3,23 @@
 /* ---------- 선택 괄호 ---------- */
 .sb-host { position: relative; }
 .sb-wrap { display: inline-block; }
-.sb-set { position: absolute; inset: 0; pointer-events: none; --w: var(--sb-w-tab); --l: var(--sb-l-tab); --o: var(--sb-o-tab); --in: 6px; }
+.sb-set { position: absolute; inset: 0; pointer-events: none; --w: var(--sb-w-tab); --l: var(--sb-l-tab); --o: var(--sb-o-tab); --in: 2px; }
 .sb-set[data-size="chip"] { --w: var(--sb-w-chip); --l: var(--sb-l-chip); --o: var(--sb-o-chip); }
 .sb-set[data-size="tile"] { --w: var(--sb-w-tile); --l: var(--sb-l-tile); --o: var(--sb-o-tile); }
-.sb-set[data-size="card"] { --w: var(--sb-w-card); --l: var(--sb-l-card); --o: var(--sb-o-card); --in: 10px; }
-.sb-set[data-size="poster"] { --w: var(--sb-w-poster); --l: var(--sb-l-poster); --o: var(--sb-o-poster); --in: 10px; }
+.sb-set[data-size="card"] { --w: var(--sb-w-card); --l: var(--sb-l-card); --o: var(--sb-o-card); }
+.sb-set[data-size="poster"] { --w: var(--sb-w-poster); --l: var(--sb-l-poster); --o: var(--sb-o-poster); }
 .sb-c { position: absolute; display: block; width: var(--l); height: var(--l); border: 0 solid var(--sb-color); opacity: 0; }
 .sb-c.tl { top: calc(-1 * var(--o)); left: calc(-1 * var(--o)); border-top-width: var(--w); border-left-width: var(--w); transform: translate(calc(-1 * var(--in)), calc(-1 * var(--in))); }
 .sb-c.tr { top: calc(-1 * var(--o)); right: calc(-1 * var(--o)); border-top-width: var(--w); border-right-width: var(--w); transform: translate(var(--in), calc(-1 * var(--in))); }
 .sb-c.bl { bottom: calc(-1 * var(--o)); left: calc(-1 * var(--o)); border-bottom-width: var(--w); border-left-width: var(--w); transform: translate(calc(-1 * var(--in)), var(--in)); }
 .sb-c.br { bottom: calc(-1 * var(--o)); right: calc(-1 * var(--o)); border-bottom-width: var(--w); border-right-width: var(--w); transform: translate(var(--in), var(--in)); }
-.sb-set[data-on] .sb-c, .sb-group:is(:hover, :focus-visible, :focus-within) .sb-set[data-hover] .sb-c { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: no-preference) {
-  .sb-c { transition: opacity var(--sb-ms) ease-out, transform var(--sb-ms) ease-out; }
+.sb-set[data-on] .sb-c, .sb-group:is(:focus-visible, :focus-within) .sb-set[data-hover] .sb-c { opacity: 1; transform: none; }
+@media (hover: hover) {
+  .sb-group:hover .sb-set[data-hover] .sb-c { opacity: 1; transform: none; }
+}
+.sb-c { transition: transform 180ms cubic-bezier(0.2, 0.7, 0.2, 1), opacity 140ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+@media (prefers-reduced-motion: reduce) {
+  .sb-c, .sb-c.tl, .sb-c.tr, .sb-c.bl, .sb-c.br { transform: none; transition: opacity 140ms cubic-bezier(0.2, 0.7, 0.2, 1); }
 }
 
 /* ---------- 워드마크 (디자인팀 원본 PNG, 글자 영역으로 잘라 내고 배경은 투명 — 원본은 public/select-screen-logo-original.png) — 너비로 정한다 ---------- */
