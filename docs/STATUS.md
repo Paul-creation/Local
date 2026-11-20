@@ -6,7 +6,7 @@
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
 - 저장소 Paul-creation/Local, Next.js + Supabase + Vercel(Hobby)
 - 주소 select-screen.com(옛 jamidunow.com·game-info-hub.vercel.app은 proxy.ts에서 select-screen.com으로 301). 오픈·홍보는 11월쯤
-- 화면엔 "Select Screen"만, 옛 이름(JamiDuNow·재밌드나)은 구조화 데이터 alternateName에만. 푸터 "© 2026 The Circles"
+- 화면엔 "select screen"(소문자)만, 옛 이름(JamiDuNow·재밌드나)은 구조화 데이터 alternateName에만. 푸터 "© 2026 The Circles"
 
 ## 일하는 방식
 - 채팅 Claude는 방향·검토, 실행은 Claude Code(Codespaces) J·K 두 세션
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 11/20: chore/brand-lowercase — 사이트 이름 SITE_NAME 기본값을 "select screen"(소문자)으로, 탭 제목 부제(" - 친구랑 할 게임 찾기") 제거: SITE_TITLE=SITE_NAME_FULL, 기본 title "select screen", 템플릿 "%s | select screen". OG siteName·manifest·WebSite name·푸터·소개·약관·개인정보·워드마크 alt가 SITE_NAME을 써서 함께 바뀜. 가이드 문구·MobileNav aria-label은 직접 소문자로. SITE_ALT_NAMES에 Select Screen·셀렉트 스크린·select-screen 추가(재밌드나·JamiDuNow·select-screen.com 유지). 안 바꾼 것: scripts/insta 템플릿 로고 글자, docs/design 시안, brand-tokens.css 주석. 주의: Vercel에 NEXT_PUBLIC_SITE_NAME이 설정돼 있으면 코드 기본값을 덮어씀. build·test 585개 통과, 프리뷰 확인 안 함(사용자 지시로 머지)
 - 11/20: chore/favicon — 새 파비콘(괄호+점, 원본 docs/brand/favicon-source.svg=app/icon.svg)으로 app/favicon.ico(16·32·48)·icon.png(512)·apple-icon.png(180, #26262A 꽉 채움·안쪽 여백 12%) 교체, SVG를 정수배 최근접으로 렌더. app/manifest.ts 추가(display browser·배경/테마색 #141311·lang ko, 아이콘 192·512·maskable 512[여백 20%]는 public/icons/ — app/ 아래 일반 이름 파일은 서빙되지 않아 public에 둠). layout viewport themeColor는 이미 있었음. OG 이미지 그대로. build·test 585개 통과, 프리뷰 확인 안 함
 - 11/19: fix/mobile-layout — 모바일(767px 이하) 전 페이지를 docs/design/mobile 시안 기준으로 일치화, 768px 이상은 그대로. 새 파일 app/mobile.css(layout.tsx에서 globals.css 다음에 import, 전부 @media 안·`html body` 접두어로 우선순위). 헤더: 56px·로고 112px·햄버거(MobileNav.tsx, 오른쪽 드로어 min(320px,85vw)·Esc·바깥 클릭·focus trap·스크롤 잠금, body 포털)·메뉴 목록 menuItems.ts 공용. 비홈 페이지 로고가 2151px로 커지던 원인은 Wordmark가 brand.css를 import 안 한 것(import 추가). 검색 시트는 아래에서 올라오는 시트(body 포털, 원형 테두리 겹침 원인은 헤더 z 50이 시트 위로 그려지던 것). 메인: 순위 3개를 탭 하나로(RankColumns.tsx), 큐레이터 알약 칩, 인원 탭·칩 가로 스크롤, 괄호는 첫 포스터만. /find: 상단 고정 조건 막대·72px 카드. 상세(gd-*): 하단 고정 구매 바(.dx-buybar, 가격+비교 담기+Steam 구매, safe-area), 가격 박스는 히어로 바로 아래·버튼은 바로, 게임 정보·바로가기는 인기 동영상 뒤, 스크린샷 가로 스크롤 줄(.gd-media-rail). 비교: 첫 열 92px sticky·게임 열 132px(.cmp-m). 커뮤니티: 글쓰기 떠 있는 버튼. 큐레이터·의견·찜(할인 배지 오버레이)도 시안 값. 못 맞춘 것: 내 PC 등록 상태 화면, 검색 필터·정렬 칩(기능 없음), 상세 "목록으로" 링크는 모바일에서 숨김, 푸터는 기존 링크 전체 유지, 로컬에서 375·390·430px 가로 넘침 0. build·test 585개 통과, 프리뷰 확인은 사용자가 휴대폰으로
 - 11/19: fix/logo-transparent — 워드마크 PNG(public/select-screen_13.png)의 #141311 배경을 color-to-alpha로 투명 처리(35,860→26,907바이트, 원본은 public/select-screen-logo-original.png). public/brand/logo.svg(코드 참조 없음, 파비콘 마스터였음)는 11/19 삭제, 파비콘·OG 그대로. 모바일 시안 docs/design/mobile/ 추가(12개 파일). build·test 585개 통과, 프리뷰 확인 안 함
