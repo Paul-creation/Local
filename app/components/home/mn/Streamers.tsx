@@ -1,7 +1,7 @@
 // 메인 "스트리머들이 밤새운 협동 게임" — 선정은 lib/streamerTheme (6개 미만이면 theme이 null → 통째로 숨김, 조건에 맞는 게임 전부)
 // 16:9 영상 썸네일 카드 한 줄 가로 스크롤(HScrollRow): 썸네일은 첫 스트리머의 대표 영상(YouTube 새 탭), 아래에 겹친 스트리머 아바타 + 게임명(상세 페이지 링크) / 스트리머 이름
 // 아바타는 스트리머 채널에 프로필 이미지 칸이 없어 이름 첫 글자로 그린다
-import Link from 'next/link';
+import GameLink from '../../GameLink';
 import { PlayIcon } from './icons';
 import HScrollRow from './HScrollRow';
 import ThumbImage from './ThumbImage';
@@ -24,7 +24,7 @@ function Card({ g, eager }: { g: ThemeGame; eager: boolean }) {
           {names.slice(0, AVATARS).map((n) => <span key={n} className="mn-avatar">{[...n][0]}</span>)}
         </span>
         <span className="mn-vid-text">
-          <Link href={`/games/${g.id}`} prefetch={false} className="mn-vid-game">{g.name}</Link>
+          <GameLink href={`/games/${g.id}`} className="mn-vid-game">{g.name}</GameLink>
         </span>
       </div>
     </li>

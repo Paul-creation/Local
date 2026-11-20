@@ -4,7 +4,7 @@
 // 위→아래: 이미지(왼쪽 위에 순위 배지 또는 뜨는 중·신작 배지) → 이름 → 인원·진입장벽 한 줄 → Steam 평가 한 줄 → 칩 줄(무료 데모·TOP 10·GOTY·태그 최대 2·크로스플레이·한국어 미지원, 한 줄 고정 — 넘치면 +N 칩) → 스트리머 한 줄("방송 · 이름, 이름 +N") → 가격(맨 아래에 붙음, 역대 최저가 칩은 가격 줄 오른쪽 끝, compare를 넘기면 오른쪽에 "+ 비교")
 // 값이 없는 줄·칩은 숨긴다. 동접·소개문은 넣지 않는다. 게임 칸 모양은 목록(gameIndex)·카드 조회와 같은 느슨한 모양 (태그는 top_tags 또는 tag_ids+tree, 평가·한국어는 목록/카드 조회가 넣어 줌)
 import type { ReactNode } from 'react';
-import Link from 'next/link';
+import GameLink from '../GameLink';
 import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL } from '../../lib/price';
 import { playersText } from '../../lib/players';
 import { reviewTone } from '../../lib/review';
@@ -67,7 +67,7 @@ export default function GameCard({ game, badge, tree = null, isTop10 = false, on
         {topBadge}
       </span>
       <span className="gc-body">
-        <span className="gc-name">{stretched ? <Link href={`/games/${game.id}`} prefetch={false} className="gc-link" aria-label={ariaLabel}>{gameName(game)}</Link> : gameName(game)}</span>
+        <span className="gc-name">{stretched ? <GameLink href={`/games/${game.id}`} className="gc-link" aria-label={ariaLabel}>{gameName(game)}</GameLink> : gameName(game)}</span>
         {store && <span className="result-store">{store}</span>}
         <OwnedChip steamAppid={game.steam_appid} />
         {/* 칸 높이는 CSS로 고정 — 값이 없어도 빈 칸을 남겨 같은 줄 카드의 제목·평가·칩·가격 위치가 맞는다 */}
@@ -139,5 +139,5 @@ export default function GameCard({ game, badge, tree = null, isTop10 = false, on
     </>
   );
   if (stretched) return <div className={`gc lift is-stretched${isPicked ? ' is-picked' : ''} ${className}`.trim()}>{body}</div>;
-  return <Link href={`/games/${game.id}`} prefetch={false} className={`gc lift${isPicked ? ' is-picked' : ''} ${className}`.trim()} aria-label={ariaLabel} onClick={onClick}>{body}</Link>;
+  return <GameLink href={`/games/${game.id}`} className={`gc lift${isPicked ? ' is-picked' : ''} ${className}`.trim()} aria-label={ariaLabel} onClick={onClick}>{body}</GameLink>;
 }

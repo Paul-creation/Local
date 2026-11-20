@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import GameLink from '../GameLink';
 import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL } from '../../lib/price';
 import LowestPriceBadge from '../LowestPriceBadge';
 import SaleEnds from '../SaleEnds';
@@ -41,7 +41,7 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
   if (view === 'row') {
     const barrier = barrierLabel(game);
     return (
-      <Link href={`/games/${game.id}`} prefetch={false} className={`result-row lift${isSelected ? ' is-picked' : ''}`} onClick={onClick}>
+      <GameLink href={`/games/${game.id}`} className={`result-row lift${isSelected ? ' is-picked' : ''}`} onClick={onClick}>
         <span className="rr-thumb">
           <GameImage src={game.cover_image_url || game.card_image_url} steamSize="header" alt="" loading={eager ? 'eager' : 'lazy'} />
         </span>
@@ -93,13 +93,13 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
             {isSelected ? '비교 중' : '+ 비교'}
           </button>
         )}
-      </Link>
+      </GameLink>
     );
   }
   // 상세 "비슷한 게임"·"시리즈"·내 라이브러리의 작은 카드: 이미지·이름·인원·가격만
   if (compact) {
     return (
-      <Link href={`/games/${game.id}`} prefetch={false} className="result-card lift" onClick={onClick}>
+      <GameLink href={`/games/${game.id}`} className="result-card lift" onClick={onClick}>
         <span className="result-image">
           <GameImage src={game.cover_image_url || game.card_image_url} steamSize="header" alt="" loading={eager ? 'eager' : 'lazy'} />
         </span>
@@ -133,7 +133,7 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
             </span>
           </span>
         </span>
-      </Link>
+      </GameLink>
     );
   }
   // 검색 결과 카드 보기 — 메인과 같은 통일 카드

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import GameLink from '../../GameLink';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useGameIndex } from '../../../lib/useGameIndex';
 import { makeAbCtx, makeKwMatcher } from '../../../lib/abCtx';
@@ -100,15 +101,15 @@ export default function AbResults() {
                       const first = i === 0;
                       return (
                         <li key={g.id} className={`fr-row${first ? ' sb-host' : ''}`}>
-                          <Link href={`/games/${g.id}`} prefetch={false} className="fr-poster-link" aria-label={`${gameName(g)} 보기`}>
+                          <GameLink href={`/games/${g.id}`} className="fr-poster-link" aria-label={`${gameName(g)} 보기`}>
                             <span className="fr-poster sb-host">
                               <PosterImage cover={{ vertical: g.cover_vertical_url ?? null, appid: g.steam_appid ?? null, wide: g.card_image_url || g.cover_image_url || null }} eager={i < 4} />
                             </span>
-                          </Link>
+                          </GameLink>
                           {first && <BracketCorners size="card" on />}
                           <div className="fr-body">
                             {first && <span className="fr-best">가장 잘 맞아요</span>}
-                            <Link href={`/games/${g.id}`} prefetch={false} className="fr-name">{gameName(g)}</Link>
+                            <GameLink href={`/games/${g.id}`} className="fr-name">{gameName(g)}</GameLink>
                             {meta && <span className="fr-meta">{meta}</span>}
                             {(badges.length > 0 || total) && (
                               <div className="ab-evidence" data-tour={i === 0 ? 'evidence' : undefined}>
