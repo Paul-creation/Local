@@ -93,10 +93,13 @@ export default function AuthMenu({ variant = 'header' }: { variant?: 'header' | 
 
   const logout = async () => {
     setOpen(false);
-    try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' }); } catch {}
+    // 303 응답을 따라가 메인을 또 받지 않게 redirect: 'manual'. 쿠키는 이 응답에서 이미 지워진다
+    try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin', redirect: 'manual' }); } catch {}
     clearCache();
     clearOwnedCache();
     setMe(null);
+    // 새로 불러와서 로그인 후 화면이 남지 않고 바로 로그인 전 메인이 보이게 (뒤로 가기·브라우저 캐시 포함)
+    window.location.replace('/');
   };
 
   // 내 정보 삭제 — 확인 창 뒤 서버가 세션의 사용자 행을 지우고 쿠키도 지운다. 성공하면 브라우저에 남은 로그인 기억(sessionStorage)도 비운다

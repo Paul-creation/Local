@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SITE_URL } from '../../../../lib/site';
 import { consumeNonce, isSessionConfigured, setSessionCookie, upsertSteamUser } from '../../../../lib/user';
+import { requestHost, resolveAuthOrigin } from '../../../../lib/user/authOrigin';
 import { verifySteamLogin } from '../../../../lib/user/steamOpenId';
 import { fetchSteamProfile } from '../../../../lib/user/steamProfile';
 
@@ -12,15 +13,17 @@ export const maxDuration = 20; // 스팀 확인 + 프로필 조회가 겹쳐도 
 // 결과는 로그에 짧은 코드와 소요 시간(ms)만 남긴다 (Steam ID·nonce·쿠키·스팀 응답 값은 남기지 않음)
 export async function GET(req: NextRequest) {
   const t0 = Date.now();
+  // 로그인을 시작한 origin(프리뷰 포함)에서 돌아온다 — 응답 쿠키가 그 주소에 설정되도록 이동도 같은 origin으로
+  const origin = resolveAuthOrigin(requestHost(req.headers), SITE_URL);
   const done = (code: string, res: NextResponse) => {
     console.info('[steam-callback]', code, Date.now() - t0);
     return res;
   };
-  const back = (flag: string, code: string) => done(code, NextResponse.redirect(`${SITE_URL}/?login=${flag}`));
+  const back = (flag: string, code: string) => done(code, NextResponse.redirect(`${origin}/?login=${flag}`));
 
   if (!isSessionConfigured()) return back('unavailable', 'unconfigured');
 
-  const result = await verifySteamLogin(req.nextUrl.searchParams, SITE_URL);
+  const result = await verifySteamLogin(req.nextUrl.searchParams, origin);
   if (!result.ok) {
     console.warn('[steam-login] 거부:', result.reason);
     return back('failed', result.reason);
@@ -37,7 +40,7 @@ export async function GET(req: NextRequest) {
   const userId = await upsertSteamUser(result.steamId, await profilePromise);
   if (!userId) return back('failed', 'user_save_failed');
 
-  const res = NextResponse.redirect(`${SITE_URL}${result.next}`);
+  const res = NextResponse.redirect(`${origin}${result.next}`);
   setSessionCookie(res, userId);
   return done('ok', res);
 }

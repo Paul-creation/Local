@@ -1,6 +1,6 @@
 // 담당: Paul(메인 배너·디자인)
 // 서버 컴포넌트 — 메인 첫 HTML에 바로 들어감 (인원별 추천·개인 추천처럼 상태가 있는 부분만 클라이언트 컴포넌트)
-// 방문자: 인원별 추천 하나만. 로그인: 개인 추천(추천 결과가 있을 때만 그려짐) → 인원별 추천 → 3단 리스트(인기 차트·출시 예정·다시 뜨는 중) → 스트리머 협동 → 인스타 큐레이터 → 인기 게시물
+// 인원별 추천 → 3단 리스트(인기 차트·출시 예정·다시 뜨는 중) → 스트리머 협동 → 인스타 큐레이터 → 인기 게시물. 로그인하면 맨 앞에 개인 추천(추천 결과가 있을 때만 그려짐)이 더 붙는다
 // 히어로(mn/MainHero)에는 제목과 검색창만 있다. 인원 탭·필터 칩은 인원별 추천 머리에, 숫자는 현황 한 줄(StatsLine)에 있다
 import PopularPosts from './PopularPosts';
 import PeopleSection from './mn/PeopleSection';
@@ -25,7 +25,7 @@ const SHOW_SITUATIONS = false;
 const SHOW_STATS = false;
 
 // 첫 화면 래퍼(.mn-fold) 안에 히어로와 함께 들어가는 부분 — 인원별 추천
-// member(로그인): 인원별 추천 앞에 개인 추천({닉네임}님 취향)이 먼저. 방문자는 "N인 추천" 하나만 (나머지 섹션은 로그인 전에는 숨김 — HomePage)
+// member(로그인): 인원별 추천 앞에 개인 추천({닉네임}님 취향)이 먼저
 export function HomeFirstSection({ stats = null, peopleRecs = null, member = false, homeExcluded = [] }: { stats?: HomeStats | null; peopleRecs?: PeopleRecsData | null; member?: boolean; homeExcluded?: string[] }) {
   preconnect('https://shared.akamai.steamstatic.com');
   return (
@@ -38,7 +38,7 @@ export function HomeFirstSection({ stats = null, peopleRecs = null, member = fal
   );
 }
 
-// 첫 화면 다음 섹션들 (인기 차트 …) — 로그인 사용자만
+// 첫 화면 다음 섹션들 (인기 차트 …) — 방문자·로그인 공통
 export default function HomeSections({ lists, popularPosts = [], streamerTheme = null, curators = null }: { lists: HomeLists; popularPosts?: PostListItem[]; streamerTheme?: StreamerTheme | null; curators?: HomeCurators | null }) {
   return (
     <>

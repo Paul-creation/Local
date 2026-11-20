@@ -22,6 +22,7 @@ export default function MainHero({ games, filters, showHome, sidebar = false, he
           <img src={hero.src} srcSet={`${hero.srcSmall} 1920w, ${hero.src} 3840w`} sizes="100vw" alt="" width={3840} height={1240} loading="eager" decoding="async" fetchPriority="high" />
         </div>
       )}
+      {showHome && !member && hero && <div className="home-only mn-hero-scrim" aria-hidden="true" />}
       {showHome && !member && hero && (
         <div className="home-only mn-hero-credit">
           <GameLink href={`/games/${hero.id}`}>{hero.title}</GameLink>

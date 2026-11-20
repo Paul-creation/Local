@@ -204,12 +204,14 @@ button.sec-more { padding: 0; font-family: inherit; background: none; border: 0;
 .mn-hero { position: relative; box-sizing: border-box; height: 640px; padding: 236px 0 72px; text-align: center; }
 .mn-hero .mn-hero-media { display: block; position: absolute; inset: 0; z-index: -1; overflow: hidden; background: var(--bg-top); }
 .mn-hero .mn-hero-media img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+/* 글자 아래 어두운 층 — 이미지 위·글자 아래. 가운데(제목·검색창 자리)만 어둡게 해서 밝은 이미지에서도 글자가 읽히게 */
+.mn-hero .mn-hero-scrim { position: absolute; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(ellipse 46% 34% at 50% 60%, rgba(20, 19, 17, .72) 0%, rgba(20, 19, 17, .35) 55%, transparent 100%); }
 .mn-hero::before, .mn-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; }
 .mn-hero::before { background: linear-gradient(90deg, var(--bg-top) 0%, transparent 22%, transparent 78%, var(--bg-top) 100%); }
 .mn-hero::after { background: linear-gradient(180deg, rgba(20, 19, 17, .55) 0%, transparent 16%, transparent 45%, rgba(20, 19, 17, .85) 80%, var(--bg-top) 100%); }
 .mn-hero-inner { display: flex; flex-direction: column; align-items: center; gap: 32px; width: 100%; }
 .mn-hero .mn-intro { display: flex; flex-direction: column; align-items: center; gap: 32px; }
-.mn-hero .mn-h1 { margin: 0; }
+.mn-hero .mn-h1 { margin: 0; text-shadow: 0 2px 24px rgba(0, 0, 0, .45); }
 .mn-hero-sub { margin: 0; font-size: 17px; font-weight: 500; line-height: 1.5; color: var(--ink-nav); word-break: keep-all; }
 /* 오른쪽 가장자리 세로 글씨 — 폭 16px 칸 안에서 가운데 정렬한 뒤 -90도 회전(칸 밖으로 넘치는 만큼은 위아래로 고르게) */
 .mn-hero-credit { position: absolute; top: 0; right: 16px; bottom: 0; z-index: 3; display: flex; align-items: center; justify-content: center; width: 16px; pointer-events: none; }
@@ -234,13 +236,13 @@ body:has(.mn-top) .site-header.mn { margin-bottom: 0; border-bottom: 1px solid v
   .mn-member-h1 { font-size: 30px; }
 }
 
-/* 로그인 후 섹션 간격 (768px 이상) — 시안 padding-bottom: 개인 추천 96 · N인 추천 120 · 순위·스트리머·큐레이터 88 · 인기 글 104(마지막, 페이지 아래 여백) */
+/* 섹션 간격 (768px 이상, 방문자·로그인 공통 — .mn-page) — 시안 padding-bottom: 개인 추천 96 · N인 추천 120 · 순위·스트리머·큐레이터 88 · 인기 글 104(마지막, 페이지 아래 여백) */
 @media (min-width: 768px) {
-  .mn-member .mn-fold-next { padding-bottom: 0; }
-  .mn-member .mn-rest { margin-top: 0; }
-  .mn-member .mn-wrap > .mn-sec, .mn-member .mn-wrap > .mn-cols { margin-bottom: 88px; }
-  .mn-member .mn-wrap > .mn-sec-personal { margin-bottom: 96px; }
-  .mn-member .mn-wrap > .mn-sec-people { margin-bottom: 120px; }
-  .mn-member .mn-wrap > .mn-sec-posts { margin-bottom: 0; }
-  .mn-member.mn-page { padding-bottom: 104px; }
+  .mn-page .mn-fold-next { padding-bottom: 0; }
+  .mn-page .mn-rest { margin-top: 0; }
+  .mn-page .mn-wrap > .mn-sec, .mn-page .mn-wrap > .mn-cols { margin-bottom: 88px; }
+  .mn-page .mn-wrap > .mn-sec-personal { margin-bottom: 96px; }
+  .mn-page .mn-wrap > .mn-sec-people { margin-bottom: 120px; }
+  .mn-page .mn-wrap > .mn-sec-posts { margin-bottom: 0; }
+  .mn-page { padding-bottom: 104px; }
 }
