@@ -66,7 +66,7 @@ export default function MobileNav() {
           <div ref={drawerRef} id="mnav-drawer" className="mnav-drawer" role="dialog" aria-modal="true" aria-label="메뉴">
             <div className="mnav-top">
               {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- 메인 필터 상태를 주소에서 새로 읽게 a */}
-              <a href="/" className="mnav-logo" aria-label="Select Screen 홈"><Wordmark /></a>
+              <a href="/" className="mnav-logo" aria-label="select screen 홈"><Wordmark /></a>
               <button type="button" className="mnav-close" aria-label="메뉴 닫기" onClick={close}>✕</button>
             </div>
             <nav className="mnav-list" aria-label="주요 메뉴">

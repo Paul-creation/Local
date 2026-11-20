@@ -2,12 +2,12 @@
 // (NEXT_PUBLIC_* 값은 빌드할 때 코드에 박히므로 환경변수를 바꾼 뒤 재배포해야 반영됨)
 // 화면·<title>·OG·설명에는 영어 이름만 씀. 한국어 이름은 발음으로 스스로 알아채게 하려고 화면에 안 보이게 둠
 // SITE_NAME_KO는 구조화 데이터 alternateName(화면에 안 보임)과 커뮤니티 닉네임 금지 목록에만 씀
-export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'Select Screen';
+export const SITE_NAME = process.env.NEXT_PUBLIC_SITE_NAME || 'select screen';
 export const SITE_NAME_KO = process.env.NEXT_PUBLIC_SITE_NAME_KO || '재밌드나';
 export const SITE_NAME_FULL = SITE_NAME;
 // 구조화 데이터(WebSite) alternateName — 검색에서 이 이름들로도 사이트를 찾게(예전 이름 JamiDuNow·재밌드나 포함)
-export const SITE_ALT_NAMES = [SITE_NAME_KO, 'JamiDuNow', 'select-screen.com'];
-export const SITE_TITLE = `${SITE_NAME_FULL} - 친구랑 할 게임 찾기`;
+export const SITE_ALT_NAMES = ['Select Screen', '셀렉트 스크린', 'select-screen', SITE_NAME_KO, 'JamiDuNow', 'select-screen.com'];
+export const SITE_TITLE = SITE_NAME_FULL;
 // 환경변수가 예전 주소(vercel.app, jamidunow.com)로 남아 있어도 canonical·sitemap은 select-screen.com으로 나가게 무시한다
 const ENV_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL;
 export const SITE_URL = (ENV_SITE_URL && !/\.vercel\.app|jamidunow\.com/i.test(ENV_SITE_URL) ? ENV_SITE_URL : 'https://select-screen.com').replace(/\/$/, '');
