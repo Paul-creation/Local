@@ -131,7 +131,7 @@ export default function CuratorGames({ curator, games, sections, tab, filterPara
             const rating = g.review_percent ? `${g.review_summary ? `${g.review_summary} ` : ''}${g.review_percent}%` : '';
             const info = [playersText(g), rating].filter(Boolean).join(' · ');
             return (
-              <li key={s.key} className="cg-card">
+              <li key={s.key} className="cg-card sb-group">
                 <CuratorPoster game={g} eager={i < 3} />
                 <span className="cg-body">
                   {s.titled && <span className="cg-quote">{quoted(s.title)}</span>}

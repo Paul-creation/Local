@@ -3,6 +3,7 @@
 // 서버 컴포넌트. 줄이 하나도 없는 열은 숨긴다
 import GameLink from '../../GameLink';
 import PosterImage from './PosterImage';
+import AutoBrackets from '../../brand/AutoBrackets';
 import RankColumns from './RankColumns';
 import SectionHead from '../../brand/SectionHead';
 import type { HomeLists, ListRow } from '../../../lib/homeMain';
@@ -19,7 +20,7 @@ function Row({ row, rank }: { row: ListRow; rank: number }) {
     <li>
       <GameLink href={`/games/${row.id}`} className="mn-rank-row">
         <span className="mn-rank-n">{rank}</span>
-        <span className="mn-mini"><PosterImage cover={row.cover} /></span>
+        <span className="mn-mini sb-host"><PosterImage cover={row.cover} /><AutoBrackets /></span>
         <span className="mn-rank-text">
           <span className="mn-rank-name">{row.name}</span>
           {row.sub.length > 0 && <span className="mn-rank-sub">{row.sub.join(' · ')}</span>}

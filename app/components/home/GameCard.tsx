@@ -4,6 +4,7 @@
 // 위→아래: 이미지(왼쪽 위에 순위 배지 또는 뜨는 중·신작 배지) → 이름 → 인원·진입장벽 한 줄 → Steam 평가 한 줄 → 칩 줄(무료 데모·TOP 10·GOTY·태그 최대 2·크로스플레이·한국어 미지원, 한 줄 고정 — 넘치면 +N 칩) → 스트리머 한 줄("방송 · 이름, 이름 +N") → 가격(맨 아래에 붙음, 역대 최저가 칩은 가격 줄 오른쪽 끝, compare를 넘기면 오른쪽에 "+ 비교")
 // 값이 없는 줄·칩은 숨긴다. 동접·소개문은 넣지 않는다. 게임 칸 모양은 목록(gameIndex)·카드 조회와 같은 느슨한 모양 (태그는 top_tags 또는 tag_ids+tree, 평가·한국어는 목록/카드 조회가 넣어 줌)
 import type { ReactNode } from 'react';
+import AutoBrackets from '../brand/AutoBrackets';
 import GameLink from '../GameLink';
 import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL } from '../../lib/price';
 import { playersText } from '../../lib/players';
@@ -62,9 +63,10 @@ export default function GameCard({ game, badge, tree = null, isTop10 = false, on
   const isPicked = !!compare?.selected;
   const body = (
     <>
-      <span className="gc-image">
+      <span className="gc-image sb-host">
         <GameImage src={image ?? (game.cover_image_url || game.card_image_url)} alt="" loading={eager ? 'eager' : 'lazy'} {...imgProps} />
         {topBadge}
+        <AutoBrackets />
       </span>
       <span className="gc-body">
         <span className="gc-name">{stretched ? <GameLink href={`/games/${game.id}`} className="gc-link" aria-label={ariaLabel}>{gameName(game)}</GameLink> : gameName(game)}</span>
@@ -138,6 +140,6 @@ export default function GameCard({ game, badge, tree = null, isTop10 = false, on
       </span>
     </>
   );
-  if (stretched) return <div className={`gc lift is-stretched${isPicked ? ' is-picked' : ''} ${className}`.trim()}>{body}</div>;
+  if (stretched) return <div className={`gc lift sb-group is-stretched${isPicked ? ' is-picked' : ''} ${className}`.trim()}>{body}</div>;
   return <GameLink href={`/games/${game.id}`} className={`gc lift${isPicked ? ' is-picked' : ''} ${className}`.trim()} aria-label={ariaLabel} onClick={onClick}>{body}</GameLink>;
 }

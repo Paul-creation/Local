@@ -1,5 +1,6 @@
 'use client';
 
+import AutoBrackets from '../brand/AutoBrackets';
 import GameLink from '../GameLink';
 import { getPriceInfo, getLowestTiming, PRICE_TYPE_LABEL } from '../../lib/price';
 import LowestPriceBadge from '../LowestPriceBadge';
@@ -42,8 +43,9 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
     const barrier = barrierLabel(game);
     return (
       <GameLink href={`/games/${game.id}`} className={`result-row lift${isSelected ? ' is-picked' : ''}`} onClick={onClick}>
-        <span className="rr-thumb">
+        <span className="rr-thumb sb-host">
           <GameImage src={game.cover_image_url || game.card_image_url} steamSize="header" alt="" loading={eager ? 'eager' : 'lazy'} />
+          <AutoBrackets />
         </span>
         <span className="rr-main">
           <span className="rr-name">{gameName(game)}</span>
@@ -100,8 +102,9 @@ export default function ResultCard({ game, tree, isTop10 = false, eager = false,
   if (compact) {
     return (
       <GameLink href={`/games/${game.id}`} className="result-card lift" onClick={onClick}>
-        <span className="result-image">
+        <span className="result-image sb-host">
           <GameImage src={game.cover_image_url || game.card_image_url} steamSize="header" alt="" loading={eager ? 'eager' : 'lazy'} />
+          <AutoBrackets />
         </span>
         <span className="result-body">
           <span className="result-title">{gameName(game)}</span>

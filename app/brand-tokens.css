@@ -68,6 +68,8 @@
   --sb-w-chip: 2px;  --sb-l-chip: 8px;  --sb-o-chip: 3px;
   --sb-w-tile: 2px;  --sb-l-tile: 10px; --sb-o-tile: 4px;
   --sb-w-poster: 3px; --sb-l-poster: 18px; --sb-o-poster: 8px;
+  --sb-w-thumb: 2px; --sb-l-thumb: 14px; --sb-o-thumb: 6px;   /* 게임 카드 이미지 — 짧은 변 60~119px (AutoBrackets가 크기를 보고 고름) */
+  --sb-w-mini: 2px;  --sb-l-mini: 10px;  --sb-o-mini: 5px;    /* 짧은 변 60px 미만 (순위 행 썸네일 등) */
   --sb-w-card: 3px;  --sb-l-card: 16px; --sb-o-card: 7px;   /* 결과 카드 한 장 전체 (/find 1등) */
 }
 

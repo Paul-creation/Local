@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import AutoBrackets from './brand/AutoBrackets';
 
 // 큐레이터 페이지 포스터 — Steam 세로 캡슐(library_600x900, 2:3, cover). 칸 크기별 작은 버전이 Steam CDN에 없어 이 파일 하나를 쓴다(lazy)
 // 세로 이미지가 없거나(404) 받기 실패하면: 가로 헤더 이미지를 흐린 배경으로 깔고 원본 헤더를 가운데에
@@ -20,7 +21,8 @@ export default function CuratorPoster({ game, eager = false }: { game: any; eage
   }, [vertical]);
   const loading = eager ? 'eager' : 'lazy';
   return (
-    <span className="cp-poster">
+    <span className="cp-poster sb-host">
+      <span className="cp-clip">
       {vertical && !failed ? (
         <img ref={ref} src={vertical} alt="" loading={loading} decoding="async" onError={() => setFailed(true)} />
       ) : wide ? (
@@ -29,6 +31,8 @@ export default function CuratorPoster({ game, eager = false }: { game: any; eage
           <img className="cp-fg" src={wide} alt="" loading={loading} decoding="async" />
         </>
       ) : null}
+      </span>
+      <AutoBrackets />
     </span>
   );
 }

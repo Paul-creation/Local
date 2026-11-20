@@ -11,6 +11,7 @@ import { hasTag, parseSearchInput, splitWords, suggestTags, tagKeyLabel } from '
 import { planGameSearch, pickGames, suggestQuery } from '../../lib/tagSuggestQuery';
 import { suggestActivities } from '../../lib/activitySearch';
 import { activityForTag, activityLabel, type ActivityKey } from '../../lib/activities';
+import AutoBrackets from '../brand/AutoBrackets';
 import GameImage from '../GameImage';
 import { gameName } from '../../lib/gameName';
 
@@ -285,7 +286,10 @@ export default function SearchBox({ games, filters, leading, trailing, shortPlac
                 onClick={() => { setOpen(false); rememberList(); }}
                 onMouseEnter={() => setActive(i)}
               >
-                {s.g.cover_image_url ? <GameImage src={s.g.cover_image_url} steamSize="header_292x136" /> : <span className="search-suggest-noimg" />}
+                <span className="search-suggest-thumb sb-host">
+                  {s.g.cover_image_url ? <GameImage src={s.g.cover_image_url} steamSize="header_292x136" /> : <span className="search-suggest-noimg" />}
+                  <AutoBrackets />
+                </span>
                 <span className="search-suggest-name">{gameName(s.g)}</span>
                 <span className="search-suggest-players">{playersLabel(s.g)}</span>
               </GameLink>
