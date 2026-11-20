@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Fragment, type ReactNode } from 'react';
+import { Fragment, Suspense, cache, type ReactNode } from 'react';
 import { supabase } from '../../lib/supabase';
 import BackLink from '../../components/BackLink';
 import DiscountChart from '../../components/DiscountChart';
@@ -89,13 +89,27 @@ async function getGameTagIds(game: { id: string }) {
 const SIMILAR_CANDIDATES = 18;
 const SIMILAR_SHOWN = 6; // components/SimilarGames의 SHOW와 같은 값
 // 같은 시리즈 게임은 "시리즈" 섹션에 따로 나오므로 후보에서 빼고 다음 순위로 채운다
-async function getSimilarGames(gameId: string, excludeIds: string[]) {
-  let q = supabase.from('game_similar').select('similar_id').eq('game_id', gameId);
-  if (excludeIds.length) q = q.not('similar_id', 'in', `(${excludeIds.join(',')})`);
-  const { data, error } = await q.order('rank').limit(SIMILAR_CANDIDATES);
-  if (error || !data?.length) return [];
-  try { return (await getCardGames(data.map((r: { similar_id: string }) => r.similar_id))).slice(0, SIMILAR_SHOWN); } catch { return []; }
+async function getSimilarCandidates(gameId: string): Promise<string[]> {
+  const { data, error } = await supabase.from('game_similar').select('similar_id').eq('game_id', gameId).order('rank').limit(SIMILAR_CANDIDATES + 12);
+  return error || !data?.length ? [] : data.map((r: { similar_id: string }) => r.similar_id);
 }
+async function getSimilarGames(candidates: string[], excludeIds: string[]) {
+  const skip = new Set(excludeIds);
+  const ids = candidates.filter((sid) => !skip.has(sid)).slice(0, SIMILAR_CANDIDATES);
+  if (!ids.length) return [];
+  try { return (await getCardGames(ids)).slice(0, SIMILAR_SHOWN); } catch { return []; }
+}
+
+// 게임 한 건 조회 — generateMetadata와 본문이 같은 요청 안에서 한 번만 부른다 (React cache). 영상·스트리머는 본 조회에서 빼고 VideosSection이 따로 읽는다
+// 숨긴 중복 게임이면 mergedTarget(남긴 게임 id)을 함께 돌려준다. 조회 오류는 없는 게임(404)과 구분해 던진다 — 일시 오류가 404로 나가 색인에서 빠지면 안 됨
+const getGameDetail = cache(async (id: string) => {
+  const { data: game, error } = await selectGames('*, price_history(price, discount_percent, checked_at, original_price, sale_ends_at)')
+    .eq('id', id)
+    .maybeSingle();
+  if (error) throw new Error(`게임 조회 실패(${id}): ${error.message}`);
+  const mergedTarget = game ? null : await mergedTargetOf(id);
+  return { game, mergedTarget };
+});
 
 // 마지막 업데이트로부터 지난 날 → 상태 (30일 안: 활발히 업데이트 중 / 30~179일: N개월 전 / 180일 이상: 업데이트 뜸함 — 날짜가 있으므로 "없음"이라고 쓰지 않는다)
 function updateState(date: string) {
@@ -124,15 +138,10 @@ function parseMinSpec(raw: string | null) {
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   if (!isUuid(id)) notFound();
-  const { data: game, error } = await selectGames('name, display_name, description, fun_description, min_players, max_players, difficulty, tags, is_free, price_type, release_status, release_date_text, price_history(price, discount_percent, checked_at, original_price)')
-    .eq('id', id)
-    .maybeSingle();
-  // 조회 오류는 없는 게임(404)과 구분해 던진다 — 일시 오류가 404로 나가 색인에서 빠지면 안 됨
-  if (error) throw new Error(`게임 조회 실패(${id}): ${error.message}`);
+  const { game, mergedTarget } = await getGameDetail(id);
   if (!game) {
     // 숨긴 중복 게임이면 남긴 게임으로 영구 이동 (메타데이터 단계에서 먼저 처리해야 308 응답이 됨)
-    const target = await mergedTargetOf(id);
-    if (target) permanentRedirect(`/games/${target}`);
+    if (mergedTarget) permanentRedirect(`/games/${mergedTarget}`);
     notFound();
   }
 
@@ -156,37 +165,88 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   };
 }
 
+// 영상·스트리머 — 본문(히어로·가격 박스)을 막지 않게 따로 읽는다 (Suspense 안에서 렌더)
+async function VideosSection({ game }: { game: { id: string; name: string; search_name_ko: string | null; max_players: number } }) {
+  const { data: v0 } = await selectGames('id, game_streamers(streamer_id, streamers(id, name, platform, handle)), game_videos(kind, video_id, title, channel_title, published_at, view_count, duration_sec), streamer_videos(video_id, title, published_at, view_count, is_short, streamer_channels(channel_title, streamer_name, kind))')
+    .order('published_at', { referencedTable: 'streamer_videos', ascending: false })
+    .limit(24, { referencedTable: 'streamer_videos' })
+    .eq('id', game.id)
+    .maybeSingle();
+  if (!v0) return null;
+  // 영상 목록 맨 앞을 고르는 점수용 — 제목에 이 게임 이름이 사람 소개가 아닌 모습으로 있는 영상이 앞 (lib/videoRelevance)
+  const videoMatchers = buildMatchers([{ id: game.id, name: game.name, search_name_ko: game.search_name_ko }]);
+  return (
+      <VideoPreviewSection
+        videos={buildVideoList([
+          ...((v0.game_videos || []) as { kind: string; video_id: string; title: string; channel_title: string | null; published_at: string | null; view_count: number | null; duration_sec: number | null }[])
+            .filter((v) => v.kind === 'highlight' || (v.kind === 'coop' && game.max_players > 1))
+            .map((v): VideoInput => ({ ...v, source: v.kind === 'coop' ? 'coop' : 'highlight', rel: titleScore(v.title, videoMatchers) })),
+          ...((v0.streamer_videos || []) as { video_id: string; title: string; published_at: string; view_count: number | null; is_short: boolean; streamer_channels: Ch | Ch[] | null }[]).flatMap((v): VideoInput[] => {
+            const c = Array.isArray(v.streamer_channels) ? v.streamer_channels[0] : v.streamer_channels;
+            if (!c) return [];
+            return [{ source: 'streamer', video_id: v.video_id, title: v.title, streamer_name: c.streamer_name, tier: tierOf(c.kind, v.is_short), published_at: v.published_at, view_count: v.view_count, rel: titleScore(v.title, videoMatchers) }];
+          }),
+        ])}
+        streamers={v0.game_streamers?.length > 0 ? (
+          <div className="gd-streamer-list">
+            {v0.game_streamers.map((gs: any) => {
+              const s = gs.streamers;
+              const platformLabel =
+                s.platform === 'chzzk' ? '치지직' :
+                s.platform === 'youtube' ? '유튜브' :
+                s.platform === 'soop' ? '숲(SOOP)' : s.platform;
+              return (
+                <a key={s.id} href={s.handle} target="_blank" rel="noopener noreferrer" className="gd-chip is-tag">
+                  {s.name} ↗ <span className="gd-chip-sub">{platformLabel}</span>
+                </a>
+              );
+            })}
+          </div>
+        ) : null}
+      />
+  );
+}
+
+// 본문 아래 전체 폭 — 시리즈(지금 보는 게임에만 괄호) → 비슷한 게임(6열). 시리즈 목록과 비슷한 후보를 동시에 읽고, 카드는 그 다음 한 번에
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- 게임 칸은 목록(gameIndex)과 같은 느슨한 모양
+async function GameBottom({ game }: { game: any }) {
+  const [seriesGames, candidates] = await Promise.all([
+    game.series_id ? selectGames('id').eq('series_id', game.series_id).order('series_order') : null,
+    getSimilarCandidates(game.id),
+  ]);
+  const seriesIds: string[] = (seriesGames?.data ?? []).map((g: { id: string }) => g.id);
+  const showSeries = seriesIds.length > 1 && seriesIds.includes(game.id);
+  const seriesOthers = seriesIds.filter((sid) => sid !== game.id);
+  const [series, seriesCards, similarGames] = await Promise.all([
+    showSeries ? supabase.from('series').select('name_ko').eq('id', game.series_id).maybeSingle().then((r) => r.data) : null,
+    showSeries ? getCardGames(seriesOthers).catch(() => []) : [],
+    getSimilarGames(candidates, seriesOthers),
+  ]);
+  const cardsById = new Map((seriesCards as { id: string }[]).map((g) => [g.id, g]));
+  const seriesItems = seriesIds.map((sid) => ({ id: sid, current: sid === game.id, game: cardsById.get(sid) })).filter((it) => it.current || it.game);
+  return (
+    <>
+      {showSeries && seriesItems.length > 1 && <SeriesGames name={series?.name_ko ?? null} currentName={gameName(game)} currentGame={{ id: game.id, name: game.name, display_name: game.display_name ?? null, cover_vertical_url: game.cover_vertical_url ?? null, steam_appid: game.steam_appid ?? null, card_image_url: game.card_image_url ?? null, cover_image_url: game.cover_image_url ?? null }} items={seriesItems} />}
+      {similarGames.length > 0 && <SimilarGames games={similarGames} />}
+    </>
+  );
+}
+
 export default async function GameDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   if (!isUuid(id)) notFound();
 
-  const top10Promise = getTop10Ids().catch(() => [] as string[]);
-    const { data: game, error } = await selectGames('*, price_history(price, discount_percent, checked_at, original_price, sale_ends_at), game_streamers(streamer_id, streamers(id, name, platform, handle)), game_videos(kind, video_id, title, channel_title, published_at, view_count, duration_sec), streamer_videos(video_id, title, published_at, view_count, is_short, streamer_channels(channel_title, streamer_name, kind))')
-    .order('published_at', { referencedTable: 'streamer_videos', ascending: false })
-    .limit(24, { referencedTable: 'streamer_videos' })
-    .eq('id', id)
-    .maybeSingle();
-
-  if (error) throw new Error(`게임 조회 실패(${id}): ${error.message}`);
+  // 게임 조회와 id만 있으면 되는 조회(인기 순위·태그·큐레이터)를 한꺼번에. 시리즈·비슷한 게임·의견은 아래 Suspense 안에서 따로
+  const [{ game, mergedTarget }, top10, tagIds, curators] = await Promise.all([
+    getGameDetail(id),
+    getTop10Ids().catch(() => [] as string[]),
+    getGameTagIds({ id }),
+    getCuratorsOfGame(id),
+  ]);
   if (!game) {
-    const target = await mergedTargetOf(id);
-    if (target) permanentRedirect(`/games/${target}`);
+    if (mergedTarget) permanentRedirect(`/games/${mergedTarget}`);
     notFound();
   }
-  // 같은 시리즈 (series_id가 있을 때만, series_order 순). 숨긴 게임은 selectGames가 뺀다
-  const { data: seriesGames } = game.series_id
-    ? await selectGames('id').eq('series_id', game.series_id).order('series_order')
-    : { data: null };
-  const seriesIds: string[] = (seriesGames ?? []).map((g: { id: string }) => g.id);
-  const showSeries = seriesIds.length > 1 && seriesIds.includes(game.id);
-  const seriesOthers = seriesIds.filter((sid) => sid !== game.id);
-  const [top10, tagIds, similarGames, curators, series, seriesCards] = await Promise.all([
-    top10Promise, getGameTagIds(game), getSimilarGames(game.id, seriesOthers), getCuratorsOfGame(game.id),
-    showSeries ? supabase.from('series').select('name_ko').eq('id', game.series_id).maybeSingle().then((r) => r.data) : null,
-    showSeries ? getCardGames(seriesOthers).catch(() => []) : [],
-  ]);
-  const cardsById = new Map((seriesCards as { id: string }[]).map((g) => [g.id, g]));
-  const seriesItems = seriesIds.map((sid) => ({ id: sid, current: sid === game.id, game: cardsById.get(sid) })).filter((it) => it.current || it.game);
   const isTop10 = top10.includes(game.id);
   // 장르는 위쪽 칩에만 둔다 — 소개 아래 태그 줄에서는 뺀다
   const chipGroups = detailChipGroups(TAG_TREE, { ...game, tag_ids: tagIds }, isTop10).filter((g) => g.label !== '장르');
@@ -373,8 +433,6 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
     </div>
   );
 
-  // 영상 목록 맨 앞을 고르는 점수용 — 제목에 이 게임 이름이 사람 소개가 아닌 모습으로 있는 영상이 앞 (lib/videoRelevance)
-  const videoMatchers = buildMatchers([{ id: game.id, name: game.name, search_name_ko: game.search_name_ko }]);
   return (
     <main className="gd mn mn-inner">
       {/* 히어로 — 헤더 밑까지 올라와(y=0부터) 배경 이미지가 투명 헤더 뒤로 이어진다. 시안: 위 여백 236px, 표지 210px, 제목 52px */}
@@ -491,34 +549,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
           )}
 
           {/* 9 인기 동영상 — 친구랑 플레이(멀티 게임만) + 하이라이트 + 스트리머 영상을 한 목록으로 (순서·자르기: lib/videoList) + 스트리머 채널. 영상이 없으면 섹션 없음 */}
-          <VideoPreviewSection
-            videos={buildVideoList([
-              ...((game.game_videos || []) as { kind: string; video_id: string; title: string; channel_title: string | null; published_at: string | null; view_count: number | null; duration_sec: number | null }[])
-                .filter((v) => v.kind === 'highlight' || (v.kind === 'coop' && game.max_players > 1))
-                .map((v): VideoInput => ({ ...v, source: v.kind === 'coop' ? 'coop' : 'highlight', rel: titleScore(v.title, videoMatchers) })),
-              ...((game.streamer_videos || []) as { video_id: string; title: string; published_at: string; view_count: number | null; is_short: boolean; streamer_channels: Ch | Ch[] | null }[]).flatMap((v): VideoInput[] => {
-                const c = Array.isArray(v.streamer_channels) ? v.streamer_channels[0] : v.streamer_channels;
-                if (!c) return [];
-                return [{ source: 'streamer', video_id: v.video_id, title: v.title, streamer_name: c.streamer_name, tier: tierOf(c.kind, v.is_short), published_at: v.published_at, view_count: v.view_count, rel: titleScore(v.title, videoMatchers) }];
-              }),
-            ])}
-            streamers={game.game_streamers?.length > 0 ? (
-              <div className="gd-streamer-list">
-                {game.game_streamers.map((gs: any) => {
-                  const s = gs.streamers;
-                  const platformLabel =
-                    s.platform === 'chzzk' ? '치지직' :
-                    s.platform === 'youtube' ? '유튜브' :
-                    s.platform === 'soop' ? '숲(SOOP)' : s.platform;
-                  return (
-                    <a key={s.id} href={s.handle} target="_blank" rel="noopener noreferrer" className="gd-chip is-tag">
-                      {s.name} ↗ <span className="gd-chip-sub">{platformLabel}</span>
-                    </a>
-                  );
-                })}
-              </div>
-            ) : null}
-          />
+          <Suspense fallback={null}>
+            <VideosSection game={{ id: game.id, name: game.name, search_name_ko: game.search_name_ko, max_players: game.max_players }} />
+          </Suspense>
 
           {/* 투표 두 섹션(어떤 상황에서 좋아요? · 몇 명이서 할 때 제일 재밌었나요?)은 당분간 그리지 않는다 — 컴포넌트·투표 데이터는 그대로 */}
           {SHOW_VOTES && <GameVotes gameId={game.id} />}
@@ -526,8 +559,8 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
 
           <CuratorsOfGame items={curators} gameId={game.id} />
           {/* 10 의견 달기 */}
-          <GameOpinions gameId={game.id} />
-          <RelatedPosts gameId={game.id} />
+          <Suspense fallback={null}><GameOpinions gameId={game.id} /></Suspense>
+          <Suspense fallback={null}><RelatedPosts gameId={game.id} /></Suspense>
         </div>
 
         {/* 오른쪽 칸 — 가격 박스 → 게임 정보 → 바로가기를 aside 하나로 묶어 통째로 sticky(StickyAside가 --aside-top 계산: 화면보다 길면 맨 아래가 보인 뒤 고정). 960px 이하 1열에서는 sticky를 끄고 가격 박스는 히어로 바로 아래, 나머지는 본문 맨 아래(CSS order) */}
@@ -572,8 +605,9 @@ export default async function GameDetail({ params }: { params: Promise<{ id: str
 
       {/* 본문 아래 전체 폭 — 시리즈(지금 보는 게임에만 괄호) → 비슷한 게임(6열) */}
       <div className="gd-bottom">
-        {showSeries && seriesItems.length > 1 && <SeriesGames name={series?.name_ko ?? null} currentName={gameName(game)} currentGame={{ id: game.id, name: game.name, display_name: game.display_name ?? null, cover_vertical_url: game.cover_vertical_url ?? null, steam_appid: game.steam_appid ?? null, card_image_url: game.card_image_url ?? null, cover_image_url: game.cover_image_url ?? null }} items={seriesItems} />}
-        {similarGames.length > 0 && <SimilarGames games={similarGames} />}
+        <Suspense fallback={null}>
+          <GameBottom game={game} />
+        </Suspense>
       </div>
     </main>
   );
