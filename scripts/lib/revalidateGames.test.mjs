@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { recordChangedGames, flushChangedGames, MAX_IDS_PER_CALL } from './revalidateGames.mjs';
+import { recordChangedGames, flushChangedGames, warmGamePages, MAX_IDS_PER_CALL } from './revalidateGames.mjs';
 import { processPrices } from '../fix-missing-prices.mjs';
 
 const tmp = () => path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'rg-')), 'ids.json');
@@ -71,4 +71,22 @@ test('processPrices: 가격이 실제로 바뀐 게임만 onChanged로 알림', 
   const changed = [];
   await processPrices({ supabase: db, paid, getBatch, log: () => {}, onChanged: (id) => changed.push(id) });
   assert.deepEqual(changed, ['2']);
+});
+
+test('예열: 비운 게임 중 인기순 상위 N개만 GET, 실패는 로그만 남기고 계속', async () => {
+  const urls = [];
+  const logs = [];
+  const fetchImpl = async (u) => { urls.push(u); return u.endsWith('/b') ? { ok: false, status: 500 } : { ok: true, arrayBuffer: async () => new ArrayBuffer(0) }; };
+  const r = await warmGamePages({ ids: ['a', 'b', 'c', 'd'], rankedIds: ['x', 'a', 'b', 'c', 'd'], env, fetchImpl, log: (m) => logs.push(m), topN: 3, concurrency: 2, gapMs: 0 });
+  assert.deepEqual(urls.sort(), ['https://example.test/games/a', 'https://example.test/games/b', 'https://example.test/games/c']);
+  assert.equal(r.warmed, 2);
+  assert.equal(r.failed, 1);
+  assert.ok(logs.some((l) => l.includes('예열 2개') && l.includes('실패 1개')));
+});
+
+test('예열: 대상이 없으면 요청하지 않음', async () => {
+  let called = 0;
+  const r = await warmGamePages({ ids: ['a'], rankedIds: ['z'], env, fetchImpl: async () => { called++; return { ok: true }; }, log: () => {} });
+  assert.equal(called, 0);
+  assert.equal(r.warmed, 0);
 });

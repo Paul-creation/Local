@@ -7,6 +7,9 @@ import path from 'node:path';
 
 export const CHANGED_FILE = path.join('scripts', '.cache', 'changed-game-ids.json');
 export const MAX_IDS_PER_CALL = 500; // /api/admin/revalidate의 한 번 최대 개수
+export const WARM_TOP_N = 200; // 갱신 뒤 미리 만들어 둘 상세 페이지 수 (비운 게임 중 인기 순위 상위) — 조절은 이 값만
+export const WARM_CONCURRENCY = 5; // 동시에 요청하는 수
+export const WARM_GAP_MS = 200; // 각 작업자가 요청 사이에 쉬는 시간
 
 function readIds(file) {
   try {
@@ -47,7 +50,33 @@ export async function flushChangedGames({ file = CHANGED_FILE, env = process.env
   }
   if (!failed) { try { fs.unlinkSync(file); } catch { /* 이미 없음 */ } }
   log(`♻️  상세 페이지 갱신 요청 ${ids.length - failed}개 (호출 ${calls}번${failed ? `, 실패 ${failed}개` : ''})`);
-  return { ids: ids.length, calls, failed };
+  return { ids: ids.length, calls, failed, idList: ids };
+}
+
+// 방금 비운 게임 중 인기 순위(games.heat_rank) 상위 WARM_TOP_N개의 상세 페이지를 한 번씩 GET해서 미리 만든다 (첫 방문자가 느린 첫 로딩을 겪지 않게)
+// 실패는 로그만 남기고 계속한다. rankedIds는 인기 순위순 id 목록 (없으면 아무것도 안 함)
+export async function warmGamePages({ ids, rankedIds, env = process.env, fetchImpl = fetch, log = console.log, topN = WARM_TOP_N, concurrency = WARM_CONCURRENCY, gapMs = WARM_GAP_MS, now = Date.now } = {}) {
+  const changed = new Set(ids || []);
+  const targets = (rankedIds || []).filter((id) => changed.has(id)).slice(0, topN);
+  if (!targets.length) { log('🔥 예열 대상 없음'); return { warmed: 0, failed: 0, sec: 0 }; }
+  const site = (env.NEXT_PUBLIC_SITE_URL || 'https://select-screen.com').replace(/\/$/, '');
+  const started = now();
+  let next = 0, warmed = 0, failed = 0;
+  const worker = async () => {
+    while (next < targets.length) {
+      const id = targets[next++];
+      try {
+        const res = await fetchImpl(`${site}/games/${id}`);
+        await res.arrayBuffer?.();
+        if (res.ok) warmed++; else { failed++; log(`⚠️ 예열 실패 (${res.status}) ${id}`); }
+      } catch (e) { failed++; log(`⚠️ 예열 실패 (${e.message}) ${id}`); }
+      if (gapMs > 0 && next < targets.length) await new Promise((r) => setTimeout(r, gapMs));
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(concurrency, targets.length) }, worker));
+  const sec = Math.round((now() - started) / 1000);
+  log(`🔥 상세 페이지 예열 ${warmed}개${failed ? `, 실패 ${failed}개` : ''} (${sec}초)`);
+  return { warmed, failed, sec };
 }
 
 // 큐레이터 게시물을 추가한 뒤 그 큐레이터 페이지(/c/<handle>)·메인·연결된 게임 상세를 바로 새로 만들게 한다. 키가 없거나 실패해도 던지지 않음(하루 안에 저절로 갱신됨)
