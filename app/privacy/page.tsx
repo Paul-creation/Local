@@ -8,7 +8,7 @@ import '../mono-static.css';
 
 export const metadata: Metadata = {
   title: '개인정보처리방침',
-  description: `${SITE_NAME}가 수집하는 정보, 보유 기간, 처리 위탁·국외 이전 안내`,
+  description: `${SITE_NAME}이 수집하는 정보, 보유 기간, 처리 위탁·국외 이전 안내`,
   alternates: { canonical: '/privacy' },
 };
 

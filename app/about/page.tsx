@@ -8,7 +8,7 @@ import '../mono-static.css';
 
 export const metadata: Metadata = {
   title: '사이트 소개',
-  description: `${SITE_NAME}는 친구랑 같이 할 게임을 인원·난이도·가격·할인으로 비교해 주는 비공식 게임 정보 사이트예요.`,
+  description: `${SITE_NAME}은 친구랑 같이 할 게임을 인원·난이도·가격·할인으로 비교해 주는 비공식 게임 정보 사이트예요.`,
   alternates: { canonical: '/about' },
   openGraph: { ...BASE_OG, title: `사이트 소개 · ${SITE_NAME}`, description: SITE_DESCRIPTION, url: '/about' },
 };
@@ -43,7 +43,7 @@ export default function AboutPage() {
 
         <h2 className="cm-h2">비공식 사이트 안내</h2>
         <p>
-          {SITE_NAME}는 Valve(스팀)와 각 게임사·스토어와 관계없는 <strong>비공식 사이트</strong>예요.
+          {SITE_NAME}은 Valve(스팀)와 각 게임사·스토어와 관계없는 <strong>비공식 사이트</strong>예요.
           게임 이미지·상표·영상의 권리는 각 권리자에게 있어요. 가격과 할인 정보는 실제와 다를 수 있으니 구매 전 각 스토어에서 꼭 확인해주세요.
         </p>
 

@@ -76,7 +76,7 @@ function html(copy, infos, font) {
 .inf { margin-top: 18px; font-size: 34px; font-weight: 600; line-height: 1.35; color: #fff; font-variant-numeric: tabular-nums; }
 ${W ? `.desc { left: 0; width: ${w}px; top: ${descTop}px; font-size: 52px; font-weight: 700; line-height: 1.2; letter-spacing: -0.02em; color: #fff; white-space: pre-line; text-align: center; }` : `.desc { top: 1230px; font-size: 38px; font-weight: 500; line-height: 1.45; letter-spacing: -0.02em; color: #fff; white-space: pre-line; }`}
 </style>
-<div class="box logo"><i>J</i><b>Select Screen</b></div>
+<div class="box logo"><i>J</i><b>select screen</b></div>
 <div class="block"><div class="t1" id="t1">${esc(copy.title1 ?? copy.kicker ?? '')}</div><div class="t2" id="t2">${esc(copy.title2 ?? copy.title)}</div><div class="inf" id="i">${infos.map(esc).join('<br>')}</div></div>
 <div class="box desc">${esc(copy.desc)}</div>`;
 }

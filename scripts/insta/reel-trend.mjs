@@ -82,7 +82,7 @@ const logoHtml = (font, top = FG_Y + 26, full = false, o = {}) => `<!doctype htm
 .logo { position: absolute; left: ${o.x ?? (full ? 48 : FG_X + 28)}px; top: ${top}px; display: flex; align-items: center; gap: 10px; opacity: ${full ? 0.85 : 0.92}; ${full ? `transform: scale(${o.scale ?? 1}); transform-origin: 0 0; filter: drop-shadow(0 0 4px rgba(0,0,0,.4));` : ''} }
 .logo i { width: 38px; height: 38px; border-radius: 11px; background: #fff; color: #0b0b0b; display: grid; place-items: center; font-style: normal; font-size: 27px; font-weight: 900; line-height: 1; }
 .logo b { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; color: #fff; ${full ? '' : 'text-shadow: 0 0 8px rgba(0,0,0,.6);'} }
-</style><div class="logo"><i>J</i><b>Select Screen</b></div>`;
+</style><div class="logo"><i>J</i><b>select screen</b></div>`;
 
 // 자막 한 덩어리: 흰 글씨 72px Black(900) + 검은 외곽선 5px(바깥쪽, 10px 선 + paint-order, 둥근 모서리), 그림자 없음. 2배 해상도(144px·외곽선 10px)로 그린 뒤 50%로 줄여 합성(가장자리 매끈하게). [ ]로 감싼 말, 그리고 KEY_WORDS는 민트
 const KEY_WORDS = ['컨닝으로', '지우개가', '무전기로', '기절시키고', '다 같이', '파이널스 위크'];
@@ -323,7 +323,7 @@ const outroHtml = (font) => `<!doctype html><meta charset="utf-8"><style>${baseC
 .nm { margin-top: 30px; font-size: 72px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
 .tg { margin-top: 14px; font-size: 44px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.3; color: ${MINT}; }
 .url { margin-top: 64px; font-size: 34px; font-weight: 500; line-height: 1.3; color: #9A9A9A; letter-spacing: .01em; }
-</style><div class="blk"><div class="lg" id="lg">J</div><div class="nm" id="nm">Select Screen</div><div class="tg" id="tg">친구랑 할 게임, 여기서 찾자</div><div class="url" id="url">select-screen.com</div></div>`;
+</style><div class="blk"><div class="lg" id="lg">J</div><div class="nm" id="nm">select screen</div><div class="tg" id="tg">친구랑 할 게임, 여기서 찾자</div><div class="url" id="url">select-screen.com</div></div>`;
 
 async function composeOutro({ font, lastPng, out, CACHE, postId, outro }) {
   const { w, h, fps } = RS;

@@ -22,7 +22,7 @@ export const GUIDE_META = {
 
 export const GUIDE_HEAD = {
   title: '사용 가이드',
-  intro: 'select screen를 처음 쓰는 분을 위한 안내예요. 하고 싶은 일부터 골라 읽어 주세요. 각 부분 끝의 버튼을 누르면 실제 화면이 그 상태로 열려요.',
+  intro: 'select screen을 처음 쓰는 분을 위한 안내예요. 하고 싶은 일부터 골라 읽어 주세요. 각 부분 끝의 버튼을 누르면 실제 화면이 그 상태로 열려요.',
   tocLabel: '가이드 목차',
 };
 
@@ -37,7 +37,7 @@ export const GUIDE_SECTIONS: GuideSection[] = [
     title: '30초 요약',
     blocks: [{
       paragraphs: [
-        'select screen는 친구랑 같이 할 게임을 인원, 가격, 할인, 진입장벽으로 비교해 찾는 사이트예요.',
+        'select screen은 친구랑 같이 할 게임을 인원, 가격, 할인, 진입장벽으로 비교해 찾는 사이트예요.',
         '메인에서 인원을 고르면 그 인원이 함께할 수 있는 게임이 나와요. 마음에 드는 게임은 상세 페이지에서 내 PC 사양과 가격 기록을 확인할 수 있어요.',
         '찜목록, 내 PC, 비교는 로그인 없이 쓸 수 있어요.',
       ],
