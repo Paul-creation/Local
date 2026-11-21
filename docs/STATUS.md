@@ -1,6 +1,6 @@
 # Select Screen 현재 상황
 
-기준: 2026-11-20 (main)
+기준: 2026-11-21 (main)
 
 ## 개요
 - 친구랑 할 게임을 인원·가격·할인·진입장벽·PC 사양으로 비교하는 한국어 사이트
@@ -16,6 +16,7 @@
 - 5시간 한도 80%를 넘으면 큰 작업은 새로 시작하지 않음
 
 ## main 반영 (최근)
+- 11/21: insta/noah-setup — 인스타 담당(노아) Codespace 준비: .devcontainer(Node 22, ffmpeg·zip·Playwright 크롬·Python 3.12 설치), scripts/insta/requirements.txt(faster-whisper·librosa·numpy 고정), .env.example 인스타 섹션, docs/insta/README.md(첫 실행부터 릴스 하나까지·Drive 자산 받기·brand 파일 출처 표), CLAUDE.md '인스타 담당' 규칙(노아는 scripts/insta·data/insta·docs/insta·public/insta 안만 바뀌면 main 직접 머지). 인스타 스크립트 6개의 SUPABASE_SERVICE_ROLE_KEY 폴백을 없애 anon 키만 씀(전부 games·game_similar 읽기, anon 결과 동일 확인). .gitignore에 outro-voice* 예외. 남은 것: Drive 링크 채우기, sfx-pop.mp3 확보, 효과음·BGM 라이선스 확인, weekly.yml만 Node 24
 - 11/20: perf/game-detail — 게임 상세: 게임 조회를 React cache()로 메타데이터와 통합(영상·스트리머는 본 조회에서 빼 VideosSection으로 분리), 인기 순위·태그·큐레이터를 게임 조회와 동시에, 시리즈·비슷한 게임은 GameBottom에서 병렬(순차 5→약 3단계), 영상·시리즈·비슷한 게임·의견·관련 게시물을 Suspense로. vercel.json regions ["icn1"]. 갱신 후 예열: run-steps가 상세 페이지를 비운 뒤 그 게임 중 heat_rank 상위 WARM_TOP_N(200, scripts/lib/revalidateGames.mjs)개를 select-screen.com/games/<id>로 GET(동시 5·200ms 간격, 실패는 로그만, 개수·시간을 갱신 로그에 남김). 카드 링크는 components/GameLink(prefetch={false} + 호버·포커스·터치 때 router.prefetch 한 번). 로컬 측정에서 첫 로딩(MISS) 시간은 거의 안 달라졌고(ISR은 전체를 다 만든 뒤 응답해 Suspense 스트리밍 효과 없음), 실제 효과는 icn1·예열에 달림. build·test 587개 통과, 프리뷰 확인 안 함(사용자 지시로 머지)
 - 11/20: chore/brand-lowercase — 사이트 이름 SITE_NAME 기본값을 "select screen"(소문자)으로, 탭 제목 부제(" - 친구랑 할 게임 찾기") 제거: SITE_TITLE=SITE_NAME_FULL, 기본 title "select screen", 템플릿 "%s | select screen". OG siteName·manifest·WebSite name·푸터·소개·약관·개인정보·워드마크 alt가 SITE_NAME을 써서 함께 바뀜. 가이드 문구·MobileNav aria-label은 직접 소문자로. SITE_ALT_NAMES에 Select Screen·셀렉트 스크린·select-screen 추가(재밌드나·JamiDuNow·select-screen.com 유지). 안 바꾼 것: scripts/insta 템플릿 로고 글자, docs/design 시안, brand-tokens.css 주석. 주의: Vercel에 NEXT_PUBLIC_SITE_NAME이 설정돼 있으면 코드 기본값을 덮어씀. build·test 585개 통과, 프리뷰 확인 안 함(사용자 지시로 머지)
 - 11/20: chore/favicon — 새 파비콘(괄호+점, 원본 docs/brand/favicon-source.svg=app/icon.svg)으로 app/favicon.ico(16·32·48)·icon.png(512)·apple-icon.png(180, #26262A 꽉 채움·안쪽 여백 12%) 교체, SVG를 정수배 최근접으로 렌더. app/manifest.ts 추가(display browser·배경/테마색 #141311·lang ko, 아이콘 192·512·maskable 512[여백 20%]는 public/icons/ — app/ 아래 일반 이름 파일은 서빙되지 않아 public에 둠). layout viewport themeColor는 이미 있었음. OG 이미지 그대로. build·test 585개 통과, 프리뷰 확인 안 함
