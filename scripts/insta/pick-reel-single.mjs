@@ -37,7 +37,7 @@ function postedNumbers() {
 const kst = (iso) => new Date(iso).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
 const n = Number(process.argv[2]) || 5;
 const { ids, nums } = postedNumbers();
-const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 let all = [];
 for (let from = 0; ; from += 1000) {
   const { data, error } = await db.from('games').select(FIELDS).eq('hidden', false).is('merged_into', null).gte('max_players', 2).range(from, from + 999);

@@ -43,7 +43,7 @@ export function expandShowcase(base, copy) {
   return out;
 }
 
-const db = () => createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+const db = () => createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 const SHOWCASE_FIELDS = 'id, lowest_price, current_players, recent_review_label, recent_review_pct, entry_barrier, entry_barrier_reason, has_ending, ttb_normally, price_history(price, discount_percent, checked_at)';
 
 // 시그니처 장·영상 장에 쓰는 DB 값 (읽기만). 비슷한 게임 = game_similar 점수순에서 숨김·병합·1인 전용 제외 후 상위 2개

@@ -7,7 +7,7 @@ import fs from 'fs';
 import { createClient } from '@supabase/supabase-js';
 
 try { if (!process.env.NEXT_PUBLIC_SUPABASE_URL) process.loadEnvFile('.env.local'); } catch { /* .env.local 없음 */ }
-const db = () => createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+const db = () => createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 const FIELDS = 'id, name, display_name, steam_appid, tags, themes, review_summary, review_total, review_positive_percent, current_players, korean_support, min_players, max_players, has_online_coop, has_local_coop, release_status, screenshots, price_history(price, original_price, discount_percent, sale_ends_at, checked_at)';
 const GOOD = ['대체로 긍정적', '긍정적', '매우 긍정적', '압도적으로 긍정적'];
 const HORROR_TAGS = ['호러', '심리 공포', '서바이벌 호러'];

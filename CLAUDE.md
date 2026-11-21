@@ -44,6 +44,13 @@
 - CRACK(Rafoli) 원본 클립은 개발사 허락받음(2026-11-02, 인스타 숏폼 한정), 게시 전 개발사에게 영상 먼저 전달
 - worktree를 지우기 전에 scripts/insta/cache·out의 내레이션 캐시와 클립 원본을 메인 폴더로 옮길 것
 
+## 인스타 담당 (노아)
+- 노아(GitHub NoahDyKim)의 세션은 scripts/insta/, data/insta/, docs/insta/, public/insta/ 안에서 자유롭게 수정한다. 바뀐 파일이 전부 이 경로 안이면 "세션과 브랜치"·"머지"의 기능 브랜치 규칙과 달리 main에 직접 머지·푸시해도 된다.
+- 이 경로 밖 파일이 하나라도 바뀌면 insta/* 브랜치로 푸시만 하고 Paul에게 넘긴다. 머지하지 않는다.
+- 노아는 DB 쓰기·마이그레이션·Vercel 설정·비밀값(Codespaces secrets 포함) 변경을 하지 않는다.
+- 인스타용 DB 데이터(curator_game_queue 등)가 필요하면 SQL을 한 줄로 만들어 노아가 Supabase SQL 에디터에 직접 넣는다. Claude가 실행하지 않는다.
+- 노아의 Codespace 준비물: .devcontainer/, .env.example 인스타 섹션, scripts/insta/requirements.txt, docs/insta/README.md. 자산(crack 클립·효과음·BGM)은 git에 없고 Google Drive에서 받는다.
+
 ## 보안 점검
 - security-check는 로그인·세션·쓰기 API·마이그레이션·권한·비밀 키·관리자 변경이 있을 때만 머지 전에 실행한다.
 

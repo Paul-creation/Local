@@ -14,7 +14,7 @@ const HORROR_TAGS = ['호러', '서바이벌 호러', '심리 공포', '좀비']
 const COUNT = 4;
 const MIN_REVIEWS = 1000; // 리뷰가 너무 적은 게임이 퍼센트만으로 위에 오르지 않게
 
-const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 const FIELDS = 'id, name, display_name, steam_appid, tags, min_players, max_players, review_positive_percent, review_total, fun_description, screenshots, cover_image_url, release_status, price_type, price_history(price, discount_percent, original_price, checked_at)';
 
 // 가장 최근 원화(100원 이상) 가격 기록 — app/lib/price.ts getPriceInfo와 같은 기준
