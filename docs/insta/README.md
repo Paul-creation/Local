@@ -25,14 +25,16 @@ scripts/insta/assets/
    └─ clips/                      (CRACK 원본 클립, 약 1.2GB)
 ```
 
+outro-voice 파일은 드라이브에서 받아 `scripts/insta/assets/brand/`에 넣습니다.
+
 `scripts/insta/cache/`와 `out/`은 만들어 쓰는 폴더라 받을 필요 없습니다. 내레이션 캐시가 지워지면 ElevenLabs를 다시 호출하니, 지우기 전에 CLAUDE.md "인스타" 규칙을 보세요.
 
 `assets/brand/` 파일별 출처(레포 기록으로 확인한 것만 적었습니다):
 
 | 파일 | 출처 | 공유 방법 |
 |---|---|---|
-| outro-voice-take1~3.mp3, .json | 우리가 만든 것(`outro-voice.mjs`가 ElevenLabs로 생성) | git 예외 처리(`.gitignore`). 파일 자체는 아직 커밋하지 않음 |
-| outro-voice.mp3 | 위 테이크 중 고른 것(있을 때) | 위와 같음 |
+| outro-voice-take1~3.mp3, .json | 우리가 만든 것(`outro-voice.mjs`가 ElevenLabs로 생성) | 드라이브(레포가 공개라 git에 올리지 않음) |
+| outro-voice.mp3 | 위 테이크 중 고른 것(있을 때) | 드라이브 |
 | sfx-whoosh.mp3 | 레포에 출처 기록 없음 — 라이선스 불명 | 드라이브 |
 | sfx-pop.mp3 | 레포에 출처 기록 없음, 현재 파일도 없음 — 라이선스 불명 | 드라이브 |
 | ../jamidunow-original-bgm.mp3 | 레포에 출처 기록 없음 — 라이선스 불명 | 드라이브 |

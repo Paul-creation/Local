@@ -49,8 +49,4 @@ data/verification/
 # instagram image generator
 /scripts/insta/cache/
 /scripts/insta/out/
-/scripts/insta/assets/*
-!/scripts/insta/assets/brand/
-/scripts/insta/assets/brand/*
-# 우리가 만든 엔딩 음성(ElevenLabs로 생성)만 커밋. 효과음·BGM·crack 클립은 드라이브로 공유
-!/scripts/insta/assets/brand/outro-voice*
+/scripts/insta/assets/
