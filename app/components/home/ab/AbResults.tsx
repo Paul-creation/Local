@@ -11,7 +11,6 @@ import AbSearch from './AbSearch';
 import PosterImage from '../mn/PosterImage';
 import SectionHead from '../../brand/SectionHead';
 import { BracketCorners } from '../../brand/SelectBrackets';
-import AutoBrackets from '../../brand/AutoBrackets';
 import { getPriceInfo, PRICE_TYPE_LABEL } from '../../../lib/price';
 import { playersText } from '../../../lib/players';
 import { barrierLabel } from '../../../lib/cardInfo';
@@ -104,8 +103,7 @@ export default function AbResults() {
                         <li key={g.id} className={`fr-row${first ? ' sb-host' : ''}`}>
                           <GameLink href={`/games/${g.id}`} className="fr-poster-link" aria-label={`${gameName(g)} 보기`}>
                             <span className="fr-poster sb-host">
-                              <PosterImage cover={{ vertical: g.cover_vertical_url ?? null, appid: g.steam_appid ?? null, wide: g.card_image_url || g.cover_image_url || null }} eager={i < 4} />
-                              {!first && <AutoBrackets />}
+                              <PosterImage cover={{ vertical: g.cover_vertical_url ?? null, appid: g.steam_appid ?? null, wide: g.card_image_url || g.cover_image_url || null }} eager={i < 4} brackets={!first} />
                             </span>
                           </GameLink>
                           {first && <BracketCorners size="card" on />}

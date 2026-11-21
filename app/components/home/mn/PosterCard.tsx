@@ -1,10 +1,9 @@
 // 게임 카드(메인 공통) — 세로 표지 2:3(반경 4px, 안쪽 1px 테두리) 위 왼쪽 위 배지 → 이름(15px 굵게) → 정보 줄(13px: 인원·진입장벽, 평가) → 할인 배지 + 가격. 카드 전체가 링크
 // compact: 포스터 + 게임명(한 줄)만 — 정보 줄·가격·배지를 그리지 않는다 ("N인 추천 게임"). hideMeta: 정보 줄(인원·진입장벽·평가)만 뺀다 (개인 추천)
-// 마우스를 올리거나 키보드 포커스가 오면 표지에 선택 괄호가 바깥에서 안으로 들어온다 (GameLink의 .sb-group + AutoBrackets, 크기는 표지 크기에 맞춰 자동)
+// 마우스를 올리거나 키보드 포커스가 오면 표지에 선택 괄호가 바깥에서 안으로 들어온다 (GameLink의 .sb-group + PosterImage의 괄호, 크기는 표지 크기에 맞춰 자동)
 // 값이 없는 줄은 숨긴다 (지어내지 않음). 게임 칸 모양은 목록(gameIndex)·카드 조회와 같은 느슨한 모양
 import GameLink from '../../GameLink';
 import PosterImage from './PosterImage';
-import AutoBrackets from '../../brand/AutoBrackets';
 import { getPriceInfo, PRICE_TYPE_LABEL } from '../../../lib/price';
 import { playersText } from '../../../lib/players';
 import { barrierLabel } from '../../../lib/cardInfo';
@@ -32,11 +31,10 @@ export default function PosterCard({ game, badge = null, eager = false, tourId, 
   return (
     <GameLink href={`/games/${game.id}`} className={`mn-card${compact ? ' is-compact' : ''}`} data-tour={tourId}>
       <span className="mn-poster sb-host">
-        <PosterImage cover={cover} eager={eager} />
+        <PosterImage cover={cover} eager={eager} brackets />
         {badge && !compact && <span className={`mn-badge ${badge === '다시 뜨는 중' ? 'is-rise' : 'is-ink'}`}>{badge}</span>}
         {/* saleOverlay: 휴대폰 찜목록 — 포스터 왼쪽 위 초록 할인 배지 (데스크톱은 CSS로 숨김) */}
         {saleOverlay && price && price.discount > 0 && !game.is_free && <span className="mn-sale-ov">-{price.discount}%</span>}
-        <AutoBrackets />
       </span>
       <span className="mn-card-name">{gameName(game)}</span>
       {!compact && !hideMeta && meta && <span className="mn-card-meta">{meta}</span>}

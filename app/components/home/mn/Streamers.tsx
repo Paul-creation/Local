@@ -5,7 +5,6 @@ import GameLink from '../../GameLink';
 import { PlayIcon } from './icons';
 import HScrollRow from './HScrollRow';
 import ThumbImage from './ThumbImage';
-import AutoBrackets from '../../brand/AutoBrackets';
 import type { StreamerTheme, ThemeGame } from '../../../lib/streamerTheme';
 
 const AVATARS = 3;
@@ -15,11 +14,10 @@ function Card({ g, eager }: { g: ThemeGame; eager: boolean }) {
   const lead = g.streamers[0];
   const names = g.streamers.map((s) => s.name);
   return (
-    <li className="mn-vid sb-group">
-      <a className="mn-vid-thumb sb-host" href={`https://www.youtube.com/watch?v=${lead.videoId}`} target="_blank" rel="noopener noreferrer" aria-label={`${lead.name}의 ${g.name} 영상 보기 (새 탭)`}>
+    <li className="mn-vid">
+      <a className="mn-vid-thumb" href={`https://www.youtube.com/watch?v=${lead.videoId}`} target="_blank" rel="noopener noreferrer" aria-label={`${lead.name}의 ${g.name} 영상 보기 (새 탭)`}>
         <ThumbImage videoId={lead.videoId} eager={eager} />
         <span className="mn-play"><PlayIcon /></span>
-        <AutoBrackets />
       </a>
       <div className="mn-vid-body">
         <span className="mn-avatars" title={names.slice(0, 2).join(', ') + (names.length > 2 ? ` 외 ${names.length - 2}명` : '')}>

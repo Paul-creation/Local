@@ -4,7 +4,6 @@
 // "오늘/내일"과 이미 끝난 할인은 브라우저 시각 기준으로 다시 계산한다 (페이지는 1시간 캐시라 서버가 정한 목록에 지난 것이 남을 수 있음)
 // 끝난 카드는 숨기고, 비게 된 날짜 마디도 숨긴다. 전부 비면 빈 상태 문구
 import { useEffect, useState } from 'react';
-import AutoBrackets from '../brand/AutoBrackets';
 import GameLink from '../GameLink';
 import GameImage from '../GameImage';
 import { groupByDay, endTimeText } from '../../lib/saleTimeline';
@@ -43,9 +42,8 @@ export default function SaleTimeline({ items, serverNow }: { items: TimelineGame
               return (
                 <li key={game.id}>
                   <GameLink href={`/games/${game.id}`} className="tl-card lift">
-                    <span className="tl-thumb sb-host">
+                    <span className="tl-thumb">
                       <GameImage src={game.image} alt="" loading="lazy" steamSize="header_292x136" fallbackWidth={320} />
-                      <AutoBrackets />
                     </span>
                     <span className="tl-body">
                       <span className="tl-name">{game.name}</span>

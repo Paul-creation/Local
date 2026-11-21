@@ -18,7 +18,7 @@ export function prefetchOnce(router: Pick<AppRouterInstance, 'prefetch'>, href: 
 
 type Props = Omit<ComponentProps<typeof Link>, 'prefetch'>;
 
-// 모든 게임 링크는 .sb-group — 안에 AutoBrackets(이미지 호버 괄호)가 있으면 마우스를 올리거나 포커스가 올 때 나타난다
+// 모든 게임 링크는 .sb-group — 안에 괄호 붙은 포스터(PosterImage brackets, CuratorPoster)가 있으면 마우스를 올리거나 포커스가 올 때 나타난다. 포스터가 아닌 이미지에는 괄호를 달지 않는다
 export default function GameLink({ onMouseEnter, onFocus, onTouchStart, className, ...rest }: Props) {
   const router = useRouter();
   const warm = () => prefetchOnce(router, typeof rest.href === 'string' ? rest.href : (rest.href.pathname ?? ''));
